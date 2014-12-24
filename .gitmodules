@@ -1,0 +1,3 @@
+[submodule "OpenCLHelper"]
+	path = OpenCLHelper
+	url = https://github.com/hughperkins/OpenCLHelper.git
