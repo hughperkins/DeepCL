@@ -7,7 +7,6 @@
 #pragma once
 
 #include "OpenCLHelper.h"
-//#include "utils/Timer.h"
 
 class ClConvolve {
 public:
@@ -17,8 +16,6 @@ public:
     // the array should be contiguous
     // assumes image is square, and filter is square
     static void convolveImage( int imageWidth, int filterWidth, int *image, int *filter, int *result ) {
-//        Timer timer;
-
         OpenCLHelper *cl = new OpenCLHelper(0);
         CLIntWrapper *imagesBuffer = cl->intWrapper( imageWidth * imageWidth, image );
         CLIntWrapper *filterBuffer = cl->intWrapper( filterWidth * filterWidth, filter );
@@ -27,20 +24,17 @@ public:
         filterBuffer->copyToDevice();
 
         CLKernel *kernel = 0;
-        kernel = cl->   buildKernel( "../test/testarraysquare.cl", "convolve_ints" );
+        kernel = cl->   buildKernel( "../ClConvolve.cl", "convolve_ints" );
         kernel->input( 1, &imageWidth );
         kernel->input( 1, &filterWidth );
         kernel->input( imagesBuffer );
         kernel->input( filterBuffer);
         kernel->output( resultsBuffer );
-//        timer.timeCheck("after dataload");
         int globalSize = imageWidth * imageWidth;
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;  
         kernel->run_1d( globalSize, workgroupsize );
         resultsBuffer->copyToHost();
-//        timer.timeCheck("after copytohost");
         delete kernel;
         delete cl;
         delete imagesBuffer;
@@ -54,7 +48,6 @@ public:
     // the arrays should be contiguous
     // assumes image is square, and filter is square
     static void convolveImages( int N, int imageWidth, int filterWidth, int *images, int *filter, int *results ) {
-//        Timer timer;
         OpenCLHelper *cl = new OpenCLHelper(0);
 
         CLIntWrapper *imagesBuffer = cl->intWrapper( N * imageWidth * imageWidth, images );
@@ -64,20 +57,17 @@ public:
         filterBuffer->copyToDevice();
 
         CLKernel *kernel = 0;
-        kernel = cl->   buildKernel( "../test/testarraysquare.cl", "convolve_ints" );
+        kernel = cl->   buildKernel( "../ClConvolve.cl", "convolve_ints" );
         kernel->input( 1, &imageWidth );
         kernel->input( 1, &filterWidth );
         kernel->input( imagesBuffer );
         kernel->input( filterBuffer);
         kernel->output( resultsBuffer );
-//        timer.timeCheck("after dataload");
         int globalSize = N * imageWidth * imageWidth;
-        int workgroupsize = 512;
+        int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;  
         kernel->run_1d( globalSize, workgroupsize );
         resultsBuffer->copyToHost();
-//        timer.timeCheck("after copytohost");
         delete kernel;  
         delete cl;
         delete imagesBuffer;
@@ -92,7 +82,6 @@ public:
     // assumes image is square, and filter is square
     static void convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
            int *images, int *filters, int *results ) {
-//        Timer timer;
         OpenCLHelper *cl = new OpenCLHelper(0);
 
         CLIntWrapper *imagesBuffer = cl->intWrapper( numImages * numInputPlanes * imageWidth * imageWidth, images );
@@ -102,7 +91,7 @@ public:
         filterBuffer->copyToDevice();
 
         CLKernel *kernel = 0;
-        kernel = cl->buildKernel( "../test/testarraysquare.cl", "convolve_imagecubes_int" );
+        kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_int" );
         kernel->input( 1, &numInputPlanes );
         kernel->input( 1, &numFilters );
         kernel->input( 1, &imageWidth );
@@ -110,14 +99,11 @@ public:
         kernel->input( imagesBuffer );
         kernel->input( filterBuffer);
         kernel->output( resultsBuffer );
-//        timer.timeCheck("after dataload");
         int globalSize = numImages * numFilters * imageWidth * imageWidth;
-        int workgroupsize = 512;
+        int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;  
         kernel->run_1d( globalSize, workgroupsize );
         resultsBuffer->copyToHost();
-//        timer.timeCheck("after copytohost");
         delete kernel;  
         delete cl;
         delete imagesBuffer;

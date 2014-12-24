@@ -10,6 +10,8 @@ link_libraries(dl)
 add_library( ClConvolve SHARED ClConvolve.h OpenCLHelper/OpenCLHelper.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
 
+file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
+
 find_package(PNG)
 link_libraries(${PNG_LIBRARY})
 

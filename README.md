@@ -40,3 +40,14 @@ To build
     cmake ..
     make ClConvolve
 
+Linking
+=======
+
+You will need:
+- libClConvolve.so
+- ClConvolve.cl
+
+ClConvolve.cl should be in the current working directory at the time that you call into any clconvolve methods.
+
+
+
