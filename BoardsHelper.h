@@ -55,7 +55,7 @@ public:
         *p_boards = 0;
     }
 
-    static float ***allocateBoardsFloat( int N, int boardSize ) {
+    static float ***allocateBoardsFloats( int N, int boardSize ) {
         float *contiguousSpace = new float[N * boardSize * boardSize ];
         if( contiguousSpace == 0 ) {
             throw MyException("failed to allocate memory");

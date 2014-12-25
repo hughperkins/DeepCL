@@ -13,6 +13,11 @@ Simply call:
     ClConvolve::convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
            int *images, int *filters, int *results );
 
+Or for floats:
+
+    ClConvolve::convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
+           float *images, float *filters, float *results );
+
 - you need to provide the images, filters, and results arrays as contiguous arrays of integers
 - the images array should consist of numImages cubes of images
   - each cube should have numInputPlanes planes
@@ -75,6 +80,16 @@ Use like this:
 
 To clean up at the end:
     BoardHelper::deleteBoards( &boards, 10, 19 );
+
+Also available for floats:
+
+    float **BoardHelper::allocateBoardFloats( int boardSize ); // allocates square array of size 
+                                                       // boardSize by boardSize
+    int ***BoardsHelper::allocateBoardsFloats( int numBoards, int boardSize ); 
+                 // allocates numBoards square arrays of size 
+                 // boardSize by boardSize
+    BoardHelper::deleteBoard( float *p_board, int boardSize );
+    BoardsHelper::deleteBoards( float *p_boards, int numBoards, int boardSize );
 
 *MnistLoader*
 

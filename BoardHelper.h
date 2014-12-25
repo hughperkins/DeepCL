@@ -18,7 +18,7 @@ public:
         return board;
     }
 
-    static float **allocateFloats( int boardSize ) {
+    static float **allocateBoardFloats( int boardSize ) {
         float *contiguousarray = new float[ boardSize * boardSize ];
         memset(contiguousarray, 0, sizeof(float) * boardSize * boardSize );
         float **board = new float*[boardSize];

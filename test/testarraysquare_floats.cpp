@@ -38,9 +38,9 @@ void run( int argc, char *argv[] ) {
     BoardHelper::copyBoard( filters[2], blurfilter, filterSize );
     BoardHelper::copyBoard( filters[3], pointfilter, filterSize );
 
-    float ***boardsFloat = BoardsHelper::allocateBoardsFloat( N, boardSize );
-    float ***filtersFloat = BoardsHelper::allocateBoardsFloat( 4, filterSize );
-    float ***resultsFloat = BoardsHelper::allocateBoardsFloat( N, boardSize );
+    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( N, boardSize );
+    float ***filtersFloat = BoardsHelper::allocateBoardsFloats( 4, filterSize );
+    float ***resultsFloat = BoardsHelper::allocateBoardsFloats( N, boardSize );
 
     BoardsHelper::copyBoards( boardsFloat, boards, N, boardSize );
     BoardsHelper::copyBoards( filtersFloat, filters, 4, filterSize );
