@@ -139,6 +139,6 @@ Third-party libraries
 License
 =======
 
-Mozilla Public License 2.0
+(Mozilla Public License 2.0)[http://mozilla.org/MPL/2.0/]
 
 
