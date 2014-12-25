@@ -94,7 +94,9 @@ To clean up at the end:
 
 * use to print one or more boards to a png file
 * use like this:
+
     BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100), boardSize );
+
 * where:
 ** first argument is filename to write png to
 ** second is array of boards, in same format as returned by BoardsHelper::allocateBoards
@@ -105,9 +107,12 @@ Sample/test
 ===========
 
 * Run:
+
     ./testarraysquare
+
 * You should see various png files appear in the current directory
 * Examples of some of the samples in testarraysquare:
+
     ClConvolve::convolveImage( boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImage-ints.png", results, 1, boardSize );
 
