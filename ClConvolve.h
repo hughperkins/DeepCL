@@ -99,7 +99,7 @@ public:
         timer.timeCheck("copied data to device");
 
         CLKernel *kernel = 0;
-        kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_int" );
+        kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_int" );
         kernel->input( 1, &numInputPlanes );
         kernel->input( 1, &numFilters );
         kernel->input( 1, &imageWidth );
@@ -140,7 +140,7 @@ public:
         timer.timeCheck("copied data to device");
 
         CLKernel *kernel = 0;
-        kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float" );
+        kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float" );
         kernel->input( 1, &numInputPlanes );
         kernel->input( 1, &numFilters );
         kernel->input( 1, &imageWidth );
