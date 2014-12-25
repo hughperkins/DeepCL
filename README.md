@@ -115,19 +115,14 @@ Sample/test
 
     ClConvolve::convolveImage( boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImage-ints.png", results, 1, boardSize );
-
     ClConvolve::convolveImages( N, boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImages-ints.png", results, min(100,N), boardSize );
-
     ClConvolve::convolveImageCubes( N, 1, 1, boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-1plane-1filter.png", results, min(100,N), boardSize );
-
     ClConvolve::convolveImageCubes( N / 4, 1, 4, boardSize, filterSize, &(boards[0][0][0]), &(filters[0][0][0]), &(results[0][0][0]) );
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-1plane-4filter.png", results, min(100,N), boardSize );
-
     ClConvolve::convolveImageCubes( N / 4, 4, 1, boardSize, filterSize, &(boards[0][0][0]), &(filters[0][0][0]), &(results[0][0][0]) );
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-4plane-1filter.png", results, min(100,N), boardSize );
-
 
 Third-party libraries
 =====================
