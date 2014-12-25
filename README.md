@@ -101,3 +101,39 @@ To clean up at the end:
 ** third argument is number of boards to write to png
 ** third argument is the length of one side of each board
 
+Sample/test
+===========
+
+* Run:
+    ./testarraysquare
+* You should see various png files appear in the current directory
+* Examples of some of the samples in testarraysquare:
+    ClConvolve::convolveImage( boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImage-ints.png", results, 1, boardSize );
+
+    ClConvolve::convolveImages( N, boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImages-ints.png", results, min(100,N), boardSize );
+
+    ClConvolve::convolveImageCubes( N, 1, 1, boardSize, filterSize, &(boards[0][0][0]), &(ofilter[0][0]), &(results[0][0][0]) );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-1plane-1filter.png", results, min(100,N), boardSize );
+
+    ClConvolve::convolveImageCubes( N / 4, 1, 4, boardSize, filterSize, &(boards[0][0][0]), &(filters[0][0][0]), &(results[0][0][0]) );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-1plane-4filter.png", results, min(100,N), boardSize );
+
+    ClConvolve::convolveImageCubes( N / 4, 4, 1, boardSize, filterSize, &(boards[0][0][0]), &(filters[0][0][0]), &(results[0][0][0]) );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-4plane-1filter.png", results, min(100,N), boardSize );
+
+
+Third-party libraries
+=====================
+
+* (OpenCLHelper)[https://github.com/hughperkins/OpenCLHelper]
+* (clew)[https://github.com/martijnberger/clew]
+* libpng++
+
+License
+=======
+
+Mozilla Public License 2.0
+
+
