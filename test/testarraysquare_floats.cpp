@@ -52,13 +52,13 @@ void run( int argc, char *argv[] ) {
     BoardPng::writeBoardsToPng( "ClConvolve-convolveImages-floats-100.png", resultsFloat, min(100,N), boardSize );
 
     ClConvolve::convolveImageCubes( N, 1, 1, boardSize, filterSize, &(boardsFloat[0][0][0]), &(filtersFloat[0][0][0]), &(resultsFloat[0][0][0]) );
-    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-floats-1plane-1filter.png", resultsFloat, min(100,N), boardSize );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-1plane-1filter-floats.png", resultsFloat, min(100,N), boardSize );
 
     ClConvolve::convolveImageCubes( N / 4, 1, 4, boardSize, filterSize, &(boardsFloat[0][0][0]), &(filtersFloat[0][0][0]), &(resultsFloat[0][0][0]) );
-    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-floats-1plane-4filter.png", resultsFloat, min(100,N), boardSize );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-1plane-4filter-floats.png", resultsFloat, min(100,N), boardSize );
 
     ClConvolve::convolveImageCubes( N / 4, 4, 1, boardSize, filterSize, &(boardsFloat[0][0][0]), &(filtersFloat[0][0][0]), &(resultsFloat[0][0][0]) );
-    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-floats-4plane-1filter.png", resultsFloat, min(100,N), boardSize );
+    BoardPng::writeBoardsToPng( "ClConvolve-convolveImageCubes-4plane-1filter-floats.png", resultsFloat, min(100,N), boardSize );
 
     BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
     BoardsHelper::deleteBoards( &filtersFloat, 4, boardSize );
