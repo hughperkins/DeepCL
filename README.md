@@ -132,13 +132,13 @@ Sample/test
 Third-party libraries
 =====================
 
-* (OpenCLHelper)[https://github.com/hughperkins/OpenCLHelper]
-* (clew)[https://github.com/martijnberger/clew]
+* [OpenCLHelper](https://github.com/hughperkins/OpenCLHelper)
+* [clew](https://github.com/martijnberger/clew)
 * libpng++
 
 License
 =======
 
-(Mozilla Public License 2.0)[http://mozilla.org/MPL/2.0/]
+[Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
 
 
