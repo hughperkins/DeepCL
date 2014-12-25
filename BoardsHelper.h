@@ -83,7 +83,7 @@ public:
         return boards;
     }
 
-    static void deleteBoardsFloat( float ****p_boards, int N, int boardSize ) {
+    static void deleteBoards( float ****p_boards, int N, int boardSize ) {
         float ***boards = *p_boards;
         float *contiguous = &(boards[0][0][0] );
         for( int n = 0; n < N; n++ ) {

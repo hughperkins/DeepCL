@@ -50,7 +50,7 @@ public:
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+//        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 
@@ -81,7 +81,7 @@ public:
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+//        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 

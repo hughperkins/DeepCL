@@ -6,10 +6,12 @@
 
 #pragma once
 
+#include "Timer.h"
 #include "OpenCLHelper.h"
 
 class ClConvolve {
 public:
+/*
     // input: 
     // - one single image
     // - one filter
@@ -74,6 +76,8 @@ public:
         delete filterBuffer;
         delete resultsBuffer;
     }
+*/
+
     // input: 
     // - numImages * numInputPlanes 2d input images, imageWidth by imageWidth, square
     // - numFilters * numInputPlanes 2d filter images, filterWidth by filterWidth, square
@@ -82,13 +86,17 @@ public:
     // assumes image is square, and filter is square
     static void convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
            int *images, int *filters, int *results ) {
+        Timer timer;
+        std::cout << "numImageCubes: " << numImages << " numInputPlanes " << numInputPlanes << " numFilters " << numFilters << std::endl;
         OpenCLHelper *cl = new OpenCLHelper(0);
+        timer.timeCheck("initialized opencl");
 
         CLIntWrapper *imagesBuffer = cl->intWrapper( numImages * numInputPlanes * imageWidth * imageWidth, images );
         CLIntWrapper *filterBuffer = cl->intWrapper( numFilters * numInputPlanes * filterWidth * filterWidth, filters );
         CLIntWrapper *resultsBuffer = cl->intWrapper( numImages * numFilters * imageWidth * imageWidth, results );
         imagesBuffer->copyToDevice();
         filterBuffer->copyToDevice();
+        timer.timeCheck("copied data to device");
 
         CLKernel *kernel = 0;
         kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_int" );
@@ -104,6 +112,48 @@ public:
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernel->run_1d( globalSize, workgroupsize );
         resultsBuffer->copyToHost();
+        timer.timeCheck("run kernel, and copied data back to host");
+        delete kernel;  
+        delete cl;
+        delete imagesBuffer;
+        delete filterBuffer;
+        delete resultsBuffer;
+    }
+    // input: 
+    // - numImages * numInputPlanes 2d input images, imageWidth by imageWidth, square
+    // - numFilters * numInputPlanes 2d filter images, filterWidth by filterWidth, square
+    // - numImages * numFilters 2d result images, imageWidth by imageWidth, square
+    // the arrays should be contiguous
+    // assumes image is square, and filter is square
+    static void convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
+           float *images, float *filters, float *results ) {
+        Timer timer;
+        std::cout << "numImageCubes: " << numImages << " numInputPlanes " << numInputPlanes << " numFilters " << numFilters << std::endl;
+        OpenCLHelper *cl = new OpenCLHelper(0);
+        timer.timeCheck("initialized opencl");
+
+        CLFloatWrapper *imagesBuffer = cl->floatWrapper( numImages * numInputPlanes * imageWidth * imageWidth, images );
+        CLFloatWrapper *filterBuffer = cl->floatWrapper( numFilters * numInputPlanes * filterWidth * filterWidth, filters );
+        CLFloatWrapper *resultsBuffer = cl->floatWrapper( numImages * numFilters * imageWidth * imageWidth, results );
+        imagesBuffer->copyToDevice();
+        filterBuffer->copyToDevice();
+        timer.timeCheck("copied data to device");
+
+        CLKernel *kernel = 0;
+        kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float" );
+        kernel->input( 1, &numInputPlanes );
+        kernel->input( 1, &numFilters );
+        kernel->input( 1, &imageWidth );
+        kernel->input( 1, &filterWidth );
+        kernel->input( imagesBuffer );
+        kernel->input( filterBuffer);
+        kernel->output( resultsBuffer );
+        int globalSize = numImages * numFilters * imageWidth * imageWidth;
+        int workgroupsize = cl->getMaxWorkgroupSize();
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+        kernel->run_1d( globalSize, workgroupsize );
+        resultsBuffer->copyToHost();
+        timer.timeCheck("run kernel, and copied data back to host");
         delete kernel;  
         delete cl;
         delete imagesBuffer;

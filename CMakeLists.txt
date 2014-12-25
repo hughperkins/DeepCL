@@ -18,6 +18,8 @@ link_libraries(${PNG_LIBRARY})
 #set( OPENCLHELPER $ENV{HOME}/git/OpenCLHelper)
 add_executable( testarraysquare test/testarraysquare.cpp OpenCLHelper/OpenCLHelper.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
+add_executable( testarraysquare_floats test/testarraysquare_floats.cpp OpenCLHelper/OpenCLHelper.cpp
+   OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
 #add_executable( testopencl test/testopencl.cpp )
 add_executable( testboardshelper test/testboardshelper.cpp )
 

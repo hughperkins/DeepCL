@@ -20,11 +20,11 @@ public:
 	    return (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
    }
 
-   void timeCheck(string label ) {
+   void timeCheck(std::string label ) {
       double thistime = getCount();
       double timemilliseconds = 1000 * ( thistime - last );
       last = thistime;
-      cout << label << " " << timemilliseconds << " ms" << endl;
+      std::cout << label << " " << timemilliseconds << " ms" << std::endl;
    }
 
    double lap() {
