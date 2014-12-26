@@ -19,9 +19,9 @@ public:
     // assumes image is square, and filter is square
     static void convolveImage( int imageWidth, int filterWidth, int *image, int *filter, int *result ) {
         OpenCLHelper *cl = new OpenCLHelper(0);
-        CLIntWrapper *imagesBuffer = cl->intWrapper( imageWidth * imageWidth, image );
-        CLIntWrapper *filterBuffer = cl->intWrapper( filterWidth * filterWidth, filter );
-        CLIntWrapper *resultsBuffer = cl->intWrapper( imageWidth * imageWidth, result );
+        CLIntWrapper *imagesBuffer = cl->wrap( imageWidth * imageWidth, image );
+        CLIntWrapper *filterBuffer = cl->wrap( filterWidth * filterWidth, filter );
+        CLIntWrapper *resultsBuffer = cl->wrap( imageWidth * imageWidth, result );
         imagesBuffer->copyToDevice();
         filterBuffer->copyToDevice();
 
@@ -52,9 +52,9 @@ public:
     static void convolveImages( int N, int imageWidth, int filterWidth, int *images, int *filter, int *results ) {
         OpenCLHelper *cl = new OpenCLHelper(0);
 
-        CLIntWrapper *imagesBuffer = cl->intWrapper( N * imageWidth * imageWidth, images );
-        CLIntWrapper *filterBuffer = cl->intWrapper( filterWidth * filterWidth, filter );
-        CLIntWrapper *resultsBuffer = cl->intWrapper( N * imageWidth * imageWidth, results );
+        CLIntWrapper *imagesBuffer = cl->wrap( N * imageWidth * imageWidth, images );
+        CLIntWrapper *filterBuffer = cl->wrap( filterWidth * filterWidth, filter );
+        CLIntWrapper *resultsBuffer = cl->wrap( N * imageWidth * imageWidth, results );
         imagesBuffer->copyToDevice();
         filterBuffer->copyToDevice();
 
@@ -91,9 +91,9 @@ public:
         OpenCLHelper *cl = new OpenCLHelper(0);
         timer.timeCheck("initialized opencl");
 
-        CLIntWrapper *imagesBuffer = cl->intWrapper( numImages * numInputPlanes * imageWidth * imageWidth, images );
-        CLIntWrapper *filterBuffer = cl->intWrapper( numFilters * numInputPlanes * filterWidth * filterWidth, filters );
-        CLIntWrapper *resultsBuffer = cl->intWrapper( numImages * numFilters * imageWidth * imageWidth, results );
+        CLIntWrapper *imagesBuffer = cl->wrap( numImages * numInputPlanes * imageWidth * imageWidth, images );
+        CLIntWrapper *filterBuffer = cl->wrap( numFilters * numInputPlanes * filterWidth * filterWidth, filters );
+        CLIntWrapper *resultsBuffer = cl->wrap( numImages * numFilters * imageWidth * imageWidth, results );
         imagesBuffer->copyToDevice();
         filterBuffer->copyToDevice();
         timer.timeCheck("copied data to device");
@@ -132,9 +132,9 @@ public:
         OpenCLHelper *cl = new OpenCLHelper(0);
         timer.timeCheck("initialized opencl");
 
-        CLFloatWrapper *imagesBuffer = cl->floatWrapper( numImages * numInputPlanes * imageWidth * imageWidth, images );
-        CLFloatWrapper *filterBuffer = cl->floatWrapper( numFilters * numInputPlanes * filterWidth * filterWidth, filters );
-        CLFloatWrapper *resultsBuffer = cl->floatWrapper( numImages * numFilters * imageWidth * imageWidth, results );
+        CLFloatWrapper *imagesBuffer = cl->wrap( numImages * numInputPlanes * imageWidth * imageWidth, images );
+        CLFloatWrapper *filterBuffer = cl->wrap( numFilters * numInputPlanes * filterWidth * filterWidth, filters );
+        CLFloatWrapper *resultsBuffer = cl->wrap( numImages * numFilters * imageWidth * imageWidth, results );
         imagesBuffer->copyToDevice();
         filterBuffer->copyToDevice();
         timer.timeCheck("copied data to device");

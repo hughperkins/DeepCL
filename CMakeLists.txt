@@ -20,6 +20,8 @@ add_executable( testarraysquare test/testarraysquare.cpp OpenCLHelper/OpenCLHelp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
 add_executable( testarraysquare_floats test/testarraysquare_floats.cpp OpenCLHelper/OpenCLHelper.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
+add_executable( testClConvolve2 test/testClConvolve2.cpp OpenCLHelper/OpenCLHelper.cpp
+   OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
 #add_executable( testopencl test/testopencl.cpp )
 add_executable( testboardshelper test/testboardshelper.cpp )
 

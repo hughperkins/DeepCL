@@ -37,9 +37,7 @@ public:
     }
     static int ***loadImages( string dir, string set, int *p_numImages, int *p_size ) {
         int imagesFilesize = 0;
-        int labelsFilesize = 0;
         unsigned char *imagesData = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
-        unsigned char *labelsData = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
 
         int totalNumImages = readUInt( imagesData, 1 );
         int numRows = readUInt( imagesData, 2 );
@@ -56,8 +54,20 @@ public:
             }
         }
         delete[] imagesData;
-        delete[] labelsData;
         return boards;
+    }
+    static int *loadLabels( string dir, string set, int *p_numImages ) {
+        int labelsFilesize = 0;
+        unsigned char *labelsData = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
+
+        int totalNumImages = readUInt( labelsData, 1 );
+        *p_numImages = totalNumImages;
+        int *labels = new int[*p_numImages];
+        for( int n = 0; n < *p_numImages; n++ ) {
+           labels[n] = (int)labelsData[8 + n];
+        }
+        delete[] labelsData;
+        return labels;
     }
 
 protected:

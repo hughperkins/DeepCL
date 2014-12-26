@@ -6,6 +6,8 @@
 #include <sstream>
 #include <cstring>
 
+namespace ClConvolve {
+
 class BoardHelper {
 public:
     static int **allocateBoard( int boardSize ) {
@@ -94,4 +96,5 @@ public:
     }
 };
 
+}
 
