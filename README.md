@@ -22,7 +22,7 @@ Example:
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->epochMaker()
            ->learningRate(3)->batchSize(4)->numExamples(4)
-           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+           ->inputData(mydata)->expectedOutputs(myExpectedResults)
            ->run();
         cout << "Loss L " << net->calcLoss(expectedOutputs) << endl;
         AccuracyHelper::printAccuracy( numImages, numClasses, trainingLabels, net->getResults() );

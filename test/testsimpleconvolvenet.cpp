@@ -2,29 +2,11 @@
 //#include "ClConvolve.h"
 
 #include <iostream>
-using namespace std;
 
-#include "utils/Timer.h"
+#include "Timer.h"
 #include "NeuralNet.h"
 
-void checkAccuracy( int numImages, int numPlanes, int const*labels, float const*results ) {
-    int correct = 0;
-    for( int n = 0; n < numImages; n++ ) {
-        double maxValue = -100000;
-        int bestIndex = -1;
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            if( results[ n * numPlanes + plane ] > maxValue ) {
-                bestIndex = plane;
-                maxValue = results[ n * numPlanes + plane ];
-            }
-        }
-        cout << "expected: " << labels[n] << " got " << bestIndex << endl;
-        if( bestIndex == labels[n] ) {
-            correct++;
-        }
-    }
-    cout << " accuracy: " << correct << "/" << numImages << endl;
-}
+using namespace std;
 
 int main( int argc, char *argv[] ) {
     Timer timer;
@@ -40,17 +22,18 @@ int main( int argc, char *argv[] ) {
     expectedResults[1] = -1;
     expectedResults[2] = -1;
     expectedResults[3] = 1;
-    NeuralNet *net = new NeuralNet(1, 1 );
-    net->addConvolutional( 2, 3 );
+    NeuralNet *net = NeuralNet::setup->planes(1)->boardSize(1)->instance();
+    net->convolutionalMaker->numFilters(2)->filterSize(2)->insert;
     for( int epoch = 0; epoch < 4; epoch++ ) {
-        net->doEpoch( 1, 2, 2, data, expectedResults );
+        net->epochMaker
+            ->learningRate(1)->batchSize(2)->numExamples(2)
+            ->inputData(2)->expectedResults(expectedResults)
+            ->run();
         cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
         net->print();
-        float const*results = net->layers[1]->getResults();
+        float const*results = net->getResults();
         checkAccuracy( 2, 2, labels, results );
     }
-    float const*results = net->getResults( net->getNumLayers() - 1 );
-
 
     delete net;
 

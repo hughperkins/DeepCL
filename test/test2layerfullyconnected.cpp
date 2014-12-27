@@ -67,11 +67,9 @@ void testXor() {
 void testAndConvolve() {
     cout << "And" << endl;
     LogicalDataCreator ldc;
-//    ldc.applyAndGate();
     ldc.applyAndGate();
-//    NeuralNet *net = new NeuralNet(2, 1 );
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->convolutionalMaker()->filters(2)->filterSize(1)->insert();
+    net->convolutionalMaker()->filters(1)->filterSize(1)->insert();
     for( int epoch = 0; epoch < 5; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
@@ -85,10 +83,10 @@ void testAndConvolve() {
 int main( int argc, char *argv[] ) {
     Timer timer;
    
-    testAnd();
+//    testAnd();
     //testOr();
 //    testXor();
-  //  testAndConvolve();
+    testAndConvolve();
 
 //    BoardPng::writeBoardsToPng( "testneuralnetmnist-1.png", results, min(N, 100), boardSize );
 

@@ -6,7 +6,16 @@
 
 #include "NeuralNet.h"
 
+#include <stdexcept>
+using namespace std;
+
 NeuralNet *NeuralNetMould::instance() {
+    if( _numPlanes == 0 ) {
+        throw runtime_error("Must provide ->planes(planes)");
+    }
+    if( _boardSize == 0 ) {
+        throw runtime_error("Must provide ->boardSize(boardSize)");
+    }
     NeuralNet *net = new NeuralNet( _numPlanes, _boardSize );
     delete this;
     return net;

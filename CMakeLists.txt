@@ -25,7 +25,7 @@ add_executable( test2layerfullyconnected test/test2layerfullyconnected.cpp )
 #set( OPENCLHELPER $ENV{HOME}/git/OpenCLHelper)
 add_executable( testarraysquare test/testarraysquare.cpp )
 add_executable( testarraysquare_floats test/testarraysquare_floats.cpp )
-add_executable( testClConvolve2 test/testClConvolve2.cpp )
+#add_executable( testClConvolve2 test/testClConvolve2.cpp )
 #add_executable( testopencl test/testopencl.cpp )
 add_executable( testboardshelper test/testboardshelper.cpp )
 

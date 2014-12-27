@@ -8,13 +8,28 @@
 
 #include "NeuralNet.h"
 
+#include <stdexcept>
+using namespace std;
+
 Layer *FullyConnectedMaker::insert() {
+    if( _numPlanes == 0 ) {
+        throw runtime_error("Must provide ->planes(planes)");
+    }
+    if( _boardSize == 0 ) {
+        throw runtime_error("Must provide ->boardSize(boardSize)");
+    }
     Layer *layer = net->addFullyConnected( _numPlanes, _boardSize );
     delete this;
     return layer;
 }
 
 Layer *ConvolutionalMaker::insert() {
+    if( _numFilters == 0 ) {
+        throw runtime_error("Must provide ->numFilters(numFilters)");
+    }
+    if( _filterSize == 0 ) {
+        throw runtime_error("Must provide ->filterSize(filterSize)");
+    }
     Layer *layer = net->addConvolutional( _numFilters, _filterSize );
     delete this;
     return layer;
