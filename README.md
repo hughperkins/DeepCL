@@ -3,10 +3,31 @@ ClConvolve
 
 Current status: DRAFT, IN PROGRESS
 
-OpenCL library to run convolutions on stacks of input images, using stacks of filters
+Concept: OpenCL library to run convolutions on stacks of input images, using stacks of filters
 
-API
-===
+Current status:
+* Seems like convolution on its own isnt very self-contained, possibly, so building a more general
+OpenCL neural net library... :-P
+
+Neural Net API
+==============
+
+Example:
+
+    #include "NeuralNet.h"
+    
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->make();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->make();
+    net->print();
+    for( int epoch = 0; epoch < 100; epoch++ ) {
+        net->doEpoch( learningRate, batchSize, numImages, float *trainingData, float *expectedOutputs );
+        cout << "Loss L " << net->calcLoss(expectedOutputs) << endl;
+        AccuracyHelper::printAccuracy( numImages, numClasses, trainingLabels, net->getResults() );
+    }
+    delete net;
+
+Convolution API
+===============
 
 Simply call:
 
@@ -121,9 +142,20 @@ Also available for floats:
 Sample/test
 ===========
 
+*Neural net API*
+
 * Run:
 
-    ./testarraysquare
+    ./test2layerfullyconnected
+
+If you open the test2layerfullyconnected.cpp file, you can see how it works, and in the `main` method, you can choose
+different submethods you can call.
+
+*Convolutions API*
+
+* Run:
+
+    ./testarraysquare [directory containing mnist datafiles]
 
 * You should see various png files appear in the current directory
 * Examples of some of the samples in testarraysquare:
