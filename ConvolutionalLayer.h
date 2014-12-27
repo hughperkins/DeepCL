@@ -14,6 +14,7 @@ class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *cl;
     CLKernel *kernelConvolve;
+    CLKernel *kernelByElementAddInplace;
     CLKernel *kernelTanh;
     const int filterSize;
     const bool padZeros;
@@ -30,7 +31,8 @@ public:
             upstreamNumPlanes( previousLayer->getNumPlanes() ) {
         this->cl = new OpenCLHelper();
 //        if( padZeros ) {
-            this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2_withbias" );
+            this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+            this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_add_inplace" );
             this->kernelTanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
@@ -41,6 +43,7 @@ public:
     }
     virtual ~ConvolutionalLayer() {
         delete[] biasWeights;
+        delete kernelByElementAddInplace;
         delete kernelConvolve;
         delete kernelTanh;
         delete cl;
@@ -143,7 +146,6 @@ public:
         CLWrapper *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
         CLWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
                  weights );
-        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
         CLWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
 
 //        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
@@ -151,7 +153,6 @@ public:
 
         upstreamWrapper->copyToDevice();
         weightsWrapper->copyToDevice();
-        biasWrapper->copyToDevice();
 
         resultsWrapper->createOnDevice();
         
@@ -159,12 +160,16 @@ public:
           ->in( padZeros ? 1 : 0 );
         kernelConvolve->input( upstreamWrapper );
         kernelConvolve->input( weightsWrapper);
-        kernelConvolve->input( biasWrapper );
         kernelConvolve->output( resultsWrapper );
         int globalSize = batchSize * numPlanes * boardSize * boardSize;
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernelConvolve->run_1d( globalSize, workgroupsize );
+
+        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
+        biasWrapper->copyToDevice();
+        kernelByElementAddInplace->input( resultsWrapper)->input( biasWrapper );
+        kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
 
         kernelTanh->input( resultsWrapper );
 //        globalSize = resultsWrapper->size();

@@ -20,8 +20,9 @@ int main( int argc, char *argv[] ) {
     int ***boards = MnistLoader::loadImages( "/norep/Downloads/data/mnist", "train", &N, &boardSize );
     int *labels = MnistLoader::loadLabels( "/norep/Downloads/data/mnist", "train", &N );
     timer.timeCheck("after load images");
-    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( N, boardSize );
+    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( N, boardSize + 1 );
     BoardsHelper::copyBoards( boardsFloat, boards, N, boardSize );
+    boardSize++;
     // normalize mean of each board
     for( int n = 0; n < N; n++ ) {
        float sum = 0;

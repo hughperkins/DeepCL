@@ -107,12 +107,15 @@ public:
     }
 
     static void copyBoards( float ***target, int ***source, int N, int boardSize ) {
-        float *target1d = &(target[0][0][0]);
-        int *source1d = &(source[0][0][0]);
-        const int T = N * boardSize * boardSize;
-        for( int i = 0; i < T; i++ ) {
-            target1d[i] = source1d[i];
+        for( int n = 0; n < N; n++ ) {
+           BoardHelper::copyBoard( target[n], source[n], boardSize );
         }
+//        float *target1d = &(target[0][0][0]);
+//        int *source1d = &(source[0][0][0]);
+//        const int T = N * boardSize * boardSize;
+//        for( int i = 0; i < T; i++ ) {
+//            target1d[i] = source1d[i];
+//        }
     }
 };
 

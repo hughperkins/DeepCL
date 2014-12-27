@@ -2,59 +2,88 @@
 
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
+#include "test/myasserts.h"
 
 using namespace std;
 
-int main( int argc, char *argv[] ) {
-    float *data = new float[8];
-    data[0] = 0;
-    data[1] = 0;
-    data[2] = -0.5;
-    data[3] = 0.5;
-    data[4] = 0;
-    data[5] = 0;
-    data[6] = 0.5;
-    data[7] = -0.5;
+void test1() {
+    int batchSize = 5;
+    int numOutPlanes = 2;
+    int numInPlanes = 1;
+    int boardSize = 3;
+    int filterWidth = 3;
+    int padZeros = 0;
 
-    float *filter1 = new float[4];
-    filter1[0] = 0.5;
-    filter1[1] = 0.5;
-    filter1[2] = 0.5;
-    filter1[3] = 0.5;
+    float data[] = { 0, 0, 0,
+                       0, 0, 0,
+                       0.5f, 0, 0.5f,
 
-    float *bias1 = new float[1];
-    bias1[0] = 0;
+                        0, 0, 0,
+                       0, 0, 0,
+                       0.5f, 0, -0.5f ,
+
+                        0, 0, 0,
+                       0, 0, 0,
+                       0.5f, 0, 0,
+
+                        0, 0, 0,
+                       0, 0, 0,
+                       1, 10, 0,
+
+                        0, 0, 0,
+                       0, 0, 0,
+                       0, 0, 1 
+};
+
+    float filter1[] = { 0, 0, 0,
+                          0, 0, 0,
+                         -0.5f, 0, 0.5f,
+
+                        0, 0, 0,
+                          0, 0, 0,
+                         2.0f, 0.5, 0.5f,
+
+ };
 
     OpenCLHelper cl;
-    float *results = new float[1];
+    float *results = new float[512];
 
-    CLWrapper *dataWrapper = cl.wrap( 8, data );
-    CLWrapper *weightsWrapper = cl.wrap( 4, filter1 );
-    CLWrapper *biasWrapper = cl.wrap( 1, bias1 );
-    CLWrapper *resultsWrapper = cl.wrap( 1, results );
+    CLWrapper *dataWrapper = cl.wrap( batchSize * 9, data );
+    CLWrapper *weightsWrapper = cl.wrap( numOutPlanes * 9, filter1 );
+    CLWrapper *resultsWrapper = cl.wrap( 512, results );
     dataWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
-    biasWrapper->copyToDevice();
 
-    int batchSize = 2;
-    int numPlanes = 1;
-    int boardSize = 2;
-    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2_withbias" );
-    kernel->in( 1 )->in( 1 )->in( 2 )->in( 2 )->in( 0 );
+    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+    kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+       ->in( padZeros );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    kernel->input( biasWrapper );
     kernel->output( resultsWrapper );
-    int globalSize = batchSize * numPlanes * boardSize * boardSize;
+    int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
     int workgroupsize = cl.getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     resultsWrapper->copyToHost();
 
-    for( int i = 0; i < 1; i++ ) {
+    for( int i = 0; i < 20; i++ ) {
         cout << "results[" << i << "]=" << results[i] << endl;
     }
+    assertEquals( 0, results[0] );
+    assertEquals( 1.25f, results[1] );
+    assertEquals( -0.5f, results[2] );
+    assertEquals( 0.75f, results[3] );
+    assertEquals( -0.25f, results[4] );
+    assertEquals( 1, results[5] );
+    assertEquals( -0.5f, results[6] );
+    assertEquals( 7, results[7] );
+    assertEquals( 0.5f, results[8] );
+    assertEquals( 0.5f, results[9] );
+}
 
+int main( int argc, char *argv[] ) {
+    test1();
     return 0;
 }
 

@@ -76,6 +76,16 @@ static void copyBoard( int *const*const dst, int const*const *const src, int boa
     }
 }
 
+static void copyBoard( float *const*const dst, int const*const *const src, int boardSize ) {
+    for( int i = 0; i < boardSize; i++ ) {
+        for( int j = 0; j < boardSize; j++ ) {
+            if( dst[i][j] != src[i][j] ) {
+                dst[i][j] = src[i][j];
+            }
+        }
+    }
+}
+
 static void wipeBoard( int *const*const board, int boardSize ) {
     for( int i = 0; i < boardSize; i++ ) {
         for( int j = 0; j < boardSize; j++ ) {
