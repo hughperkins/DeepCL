@@ -43,46 +43,60 @@ void test1() {
 
 void test2() {
     Timer timer;
-    float *data = new float[8];
-    data[0] = 0;
-    data[1] = 0;
-    data[2] = -0.5;
-    data[3] = 0.5;
-    data[4] = 0;
-    data[5] = 0;
-    data[6] = 0.5;
-    data[7] = -0.5;
-    int *labels = new int[2];
+    float data[] = { 0.5, 0.5, 0.5,
+                    -0.5, 0.5, 0.5,
+                    0.5, 0.5, 0.5,
+    
+                   0.5, 0.5, 0.5,
+                   0.5, -0.5, 0.5,
+                   0.5, 0.5, 0.5,
+
+                    -0.5, -0.5, -0.5,
+                    -0.5, 0.5, -0.5,
+                    -0.5, -0.5, -0.5,
+    
+                   -0.5, -0.5, -0.5,
+                   0.5, -0.5, -0.5,
+                   -0.5, -0.5, -0.5
+ };
+
+    int *labels = new int[4];
     labels[0] = 0;
     labels[1] = 1;
-    float *expectedResults = new float[4];
+    labels[2] = 0;
+    labels[3] = 1;
+    float *expectedResults = new float[8];
     expectedResults[0] = 1;
     expectedResults[1] = -1;
     expectedResults[2] = -1;
     expectedResults[3] = 1;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(2)->instance();
-    net->convolutionalMaker()->numFilters(2)->filterSize(2)->insert();
-    for( int epoch = 0; epoch < 2; epoch++ ) {
+    expectedResults[4] = 1;
+    expectedResults[5] = -1;
+    expectedResults[6] = -1;
+    expectedResults[7] = 1;
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
+    net->convolutionalMaker()->numFilters(2)->filterSize(3)->insert();
+    for( int epoch = 0; epoch < 200; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
-            ->batchSize(2)
-            ->numExamples(2)
+            ->batchSize(4)
+            ->numExamples(4)
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
         cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        net->print();
         float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
+    net->print();
 
     delete net;
 }
 
 int main( int argc, char *argv[] ) {
 
-    test1();
-    //test2();
+    //test1();
+    test2();
 
     return 0;
 }

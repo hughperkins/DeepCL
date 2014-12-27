@@ -215,7 +215,7 @@ public:
     // biasweights: [outPlane]
     //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
     virtual void backPropErrors( float learningRate, float const *errors ) {
-        const bool debug = true;
+        const bool debug = false;
         const int halfFilterSize = filterSize >> 1;
         const int margin = padZeros ? 0 : halfFilterSize;
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
