@@ -96,9 +96,6 @@ public:
                 }
             }
         }
-        std::cout << "biases:" << std::endl;
-        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-        }
      }
      virtual void printOutputs() {
         if( results == 0 ) {
@@ -166,17 +163,14 @@ public:
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernelConvolve->run_1d( globalSize, workgroupsize );
 
-        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
-        biasWrapper->copyToDevice();
-        kernelByElementAddInplace->input( resultsWrapper)->input( biasWrapper );
-        kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
+//        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
+//        biasWrapper->copyToDevice();
+//        kernelByElementAddInplace->input( resultsWrapper)->input( biasWrapper );
+//        kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
 
         kernelTanh->input( resultsWrapper );
-//        globalSize = resultsWrapper->size();
-//        workgroupsize = cl->getMaxWorkgroupSize();
         kernelTanh->run_1d( globalSize, workgroupsize );
         resultsWrapper->copyToHost();
-//        std::cout << "propagate, results: " << results[0] << " " << results[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
 
         delete upstreamWrapper;
         delete weightsWrapper;
@@ -215,13 +209,18 @@ public:
     // biasweights: [outPlane]
     //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
     virtual void backPropErrors( float learningRate, float const *errors ) {
-        const bool debug = false;
+        const bool debug = true;
         const int halfFilterSize = filterSize >> 1;
         const int margin = padZeros ? 0 : halfFilterSize;
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
                 for( int filterRow = 0; filterRow < filterSize; filterRow++ ) {
                     for( int filterCol = 0; filterCol < filterSize; filterCol++ ) {
+                        int weightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
+                        if( filterRow != 1 || filterCol > 1 ) {
+                            weights[weightIndex] = 0;
+                            continue;
+                        }
                         float thiswchange = 0;
                         // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
                         //       aggregate over:  [outRow][outCol][n]
@@ -245,13 +244,12 @@ public:
                                 }
                             }
                         }
-                        int weightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
                         weights[ weightIndex ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
                     }
                 }
             }
         }
-         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
+/*         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             // bias...
             // biasweights: [outPlane]
             //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
@@ -259,7 +257,7 @@ public:
             for( int n = 0; n < batchSize; n++ ) {
                 for( int outRow = 0; outRow < boardSize; outRow++ ) {
                     for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                        float upstreamResult = 1;
+                        float upstreamResult = 0.5;
                         int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                         float actualOutput = results[resultIndex];
                         float activationDerivative = 1 - actualOutput * actualOutput;
@@ -272,7 +270,7 @@ public:
                 }
             }
             biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
-         }
+         }*/
     }
 };
 

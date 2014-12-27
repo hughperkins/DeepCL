@@ -18,13 +18,13 @@ void test1() {
     labels[0] = 0;
     labels[1] = 1;
     float *expectedResults = new float[4];
-    expectedResults[0] = 1;
-    expectedResults[1] = -1;
-    expectedResults[2] = -1;
-    expectedResults[3] = 1;
+    expectedResults[0] = 0.5;
+    expectedResults[1] = -0.5;
+    expectedResults[2] = -0.5;
+    expectedResults[3] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->insert();
-    for( int epoch = 0; epoch < 50; epoch++ ) {
+    for( int epoch = 0; epoch < 100; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(2)
@@ -43,13 +43,13 @@ void test1() {
 
 void test2() {
     Timer timer;
-    float data[] = { 0.5, 0.5, 0.5,
-                    -0.5, 0.5, 0.5,
-                    0.5, 0.5, 0.5,
+    float data[] = { 0, 0, 0,
+                    -0.5, 0.5, 0,
+                    0, 0, 0,
     
-                   0.5, 0.5, 0.5,
-                   0.5, -0.5, 0.5,
-                   0.5, 0.5, 0.5,
+                   0, 0, 0,
+                   0.5, -0.5, 0,
+                   0, 0, 0,
 
                     -0.5, -0.5, -0.5,
                     -0.5, 0.5, -0.5,
@@ -66,27 +66,27 @@ void test2() {
     labels[2] = 0;
     labels[3] = 1;
     float *expectedResults = new float[8];
-    expectedResults[0] = 1;
-    expectedResults[1] = -1;
-    expectedResults[2] = -1;
-    expectedResults[3] = 1;
-    expectedResults[4] = 1;
-    expectedResults[5] = -1;
-    expectedResults[6] = -1;
-    expectedResults[7] = 1;
+    expectedResults[0] = 0.5;
+    expectedResults[1] = -0.5;
+    expectedResults[2] = -0.5;
+    expectedResults[3] = 0.5;
+    expectedResults[4] = 0.5;
+    expectedResults[5] = -0.5;
+    expectedResults[6] = -0.5;
+    expectedResults[7] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->insert();
-    for( int epoch = 0; epoch < 200; epoch++ ) {
+    for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
-            ->batchSize(4)
-            ->numExamples(4)
+            ->batchSize(2)
+            ->numExamples(2)
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
         cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
         float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
     net->print();
 

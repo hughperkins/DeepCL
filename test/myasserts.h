@@ -21,6 +21,12 @@ std::string toString(T val ) { // not terribly efficient, but works...
    myostringstream << val;
    return myostringstream.str();
 }
+void assertEquals( float one, float two ) {
+   if( std::abs( one - two ) > 0.0001 ) {
+      throw std::runtime_error( "assertEquals fail " + toString(one) + " != " + toString(two) );
+   }
+}
+
 template<typename T>
 void assertEquals( T one, T two ) {
     if( one != two ) {
