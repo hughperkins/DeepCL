@@ -236,7 +236,7 @@ void kernel convolve_imagecubes_float_nopadzeros(
         }
         inputPlane++;
     }
-    results[globalId] = 1.7159 * tanh(sum);
+    results[globalId] = sum;
 }
 
 
@@ -286,7 +286,7 @@ void kernel convolve_imagecubes_float2(
         }
         inputPlane++;
     }
-    results[globalId] = 1.7159 * tanh(sum);
+    results[globalId] = sum;
 }
     
 void kernel convolve_imagecubes_float2_withbias( 
@@ -336,6 +336,12 @@ void kernel convolve_imagecubes_float2_withbias(
         inputPlane++;
     }
     sum += biases[filterId];
-    results[globalId] = tanh(sum);
+    results[globalId] = sum;
 }
+
+void kernel byelement_tanh( global float *vector ) {
+    int globalId = get_global_id(0);
+    vector[globalId] = tanh(vector[globalId]);
+}
+
 

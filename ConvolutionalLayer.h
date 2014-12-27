@@ -13,7 +13,8 @@
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *cl;
-    CLKernel *kernel;
+    CLKernel *kernelConvolve;
+    CLKernel *kernelTanh;
     const int filterSize;
     const bool padZeros;
     const int upstreamBoardSize;
@@ -29,7 +30,8 @@ public:
             upstreamNumPlanes( previousLayer->getNumPlanes() ) {
         this->cl = new OpenCLHelper();
 //        if( padZeros ) {
-            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2_withbias" );
+            this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2_withbias" );
+            this->kernelTanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
 //        }
@@ -39,7 +41,8 @@ public:
     }
     virtual ~ConvolutionalLayer() {
         delete[] biasWeights;
-        delete kernel;
+        delete kernelConvolve;
+        delete kernelTanh;
         delete cl;
     }
 // filters are organized like [filterid][plane][row][col]
@@ -152,16 +155,21 @@ public:
 
         resultsWrapper->createOnDevice();
         
-        kernel->in( upstreamNumPlanes )->in( numPlanes )->in( boardSize )->in( filterSize )
+        kernelConvolve->in( upstreamNumPlanes )->in( numPlanes )->in( boardSize )->in( filterSize )
           ->in( padZeros ? 1 : 0 );
-        kernel->input( upstreamWrapper );
-        kernel->input( weightsWrapper);
-        kernel->input( biasWrapper );
-        kernel->output( resultsWrapper );
+        kernelConvolve->input( upstreamWrapper );
+        kernelConvolve->input( weightsWrapper);
+        kernelConvolve->input( biasWrapper );
+        kernelConvolve->output( resultsWrapper );
         int globalSize = batchSize * numPlanes * boardSize * boardSize;
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-        kernel->run_1d( globalSize, workgroupsize );
+        kernelConvolve->run_1d( globalSize, workgroupsize );
+
+        kernelTanh->input( resultsWrapper );
+//        globalSize = resultsWrapper->size();
+//        workgroupsize = cl->getMaxWorkgroupSize();
+        kernelTanh->run_1d( globalSize, workgroupsize );
         resultsWrapper->copyToHost();
 //        std::cout << "propagate, results: " << results[0] << " " << results[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
 
@@ -202,6 +210,7 @@ public:
     // biasweights: [outPlane]
     //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
     virtual void backPropErrors( float learningRate, float const *errors ) {
+        const bool debug = true;
         const int halfFilterSize = filterSize >> 1;
         const int margin = padZeros ? 0 : halfFilterSize;
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
@@ -224,7 +233,7 @@ public:
                                     float thisimagethiswchange = upstreamResult * activationDerivative *
                                     error;
                                     thiswchange += thisimagethiswchange;
-    std::cout << "outPlane=" << outPlane << " inPlane=" << upstreamPlane << " filterpos=" << filterRow << "," << filterCol
+    if(debug)std::cout << "outPlane=" << outPlane << " inPlane=" << upstreamPlane << " filterpos=" << filterRow << "," << filterCol
        << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << error
        << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
        << thisimagethiswchange << std::endl;
@@ -251,7 +260,7 @@ public:
                         float activationDerivative = 1 - actualOutput * actualOutput;
                         float thisimagethiswchange = upstreamResult * errors[resultIndex] * activationDerivative;
                         thiswchange += thisimagethiswchange;
-    std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << errors[resultIndex]
+    if(debug)std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << errors[resultIndex]
        << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
        << thisimagethiswchange << std::endl;
                     }

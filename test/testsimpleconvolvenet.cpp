@@ -43,9 +43,15 @@ void test1() {
 
 void test2() {
     Timer timer;
-    float *data = new float[2];
-    data[0] = 0.5;
-    data[1] = -0.5;
+    float *data = new float[8];
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = -0.5;
+    data[3] = 0.5;
+    data[4] = 0;
+    data[5] = 0;
+    data[6] = 0.5;
+    data[7] = -0.5;
     int *labels = new int[2];
     labels[0] = 0;
     labels[1] = 1;
@@ -54,8 +60,8 @@ void test2() {
     expectedResults[1] = -1;
     expectedResults[2] = -1;
     expectedResults[3] = 1;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
-    net->convolutionalMaker()->numFilters(2)->filterSize(1)->insert();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(2)->instance();
+    net->convolutionalMaker()->numFilters(2)->filterSize(2)->insert();
     for( int epoch = 0; epoch < 2; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
