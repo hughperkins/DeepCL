@@ -123,11 +123,13 @@ To allocate contiguous 2d and 3d arrays:
     BoardsHelper::deleteBoards( int *p_boards, int numBoards, int boardSize );
 
 Use like this:
+
     int ***boards = BoardHelper::allocateBoards( 10, 19 ); // 10 boards, 19 by 19 each
     // &(boards[0][0]) is a contiguous array, of size 10 * 19 * 19
     // or you can use boards[boardIndex][row][col] to access as a 3d array
 
 To clean up at the end:
+
     BoardHelper::deleteBoards( &boards, 10, 19 );
 
 Also available for floats:
@@ -160,7 +162,7 @@ Also available for floats:
 * use to print one or more boards to a png file
 * use like this:
 
-    BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100), boardSize );
+    `BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100), boardSize );`
 
 * where:
 ** first argument is filename to write png to
