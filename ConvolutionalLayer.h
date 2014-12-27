@@ -27,11 +27,11 @@ public:
             upstreamBoardSize( previousLayer->getBoardSize() ),
             upstreamNumPlanes( previousLayer->getNumPlanes() ) {
         this->cl = new OpenCLHelper();
-        if( padZeros ) {
-            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float" );
-        } else {
-            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
-        }
+//        if( padZeros ) {
+            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+//        } else {
+//            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
+//        }
         weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
         randomizeWeights();
     }
@@ -137,7 +137,8 @@ public:
         CLWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
         resultsWrapper->createOnDevice();
         
-        kernel->in( upstreamNumPlanes )->in( numPlanes )->in( boardSize )->in( filterSize );
+        kernel->in( upstreamNumPlanes )->in( numPlanes )->in( boardSize )->in( filterSize )
+          ->in( padZeros ? 1 : 0 );
         kernel->input( upstreamWrapper );
         kernel->input( weightsWrapper);
         kernel->output( resultsWrapper );

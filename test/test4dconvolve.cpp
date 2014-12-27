@@ -70,10 +70,10 @@ void run( string mnistDir, int numPlanes, int numFilters, int numWorkgroupBoards
     float *resultsFloat = new float[N * boardSize * boardSize];
 
     timer.timeCheck("before convolve");
-    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float" );
+    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
     timer.timeCheck("after compile");
     cout << "numplanes " << numPlanes << " numfilters " << numFilters << endl;
-    kernel->in( numPlanes )->in( numFilters )->in(boardSize)->in(filterSize);
+    kernel->in( numPlanes )->in( numFilters )->in(boardSize)->in(filterSize)->in(1);
     kernel->input( N * boardSize * boardSize, &(boardsFloat[0][0][0]) );
     kernel->input( 4 * filterSize * filterSize, &(filtersFloat[0][0][0]) );
     kernel->output( N * boardSize * boardSize, resultsFloat );
@@ -90,11 +90,11 @@ void run( string mnistDir, int numPlanes, int numFilters, int numWorkgroupBoards
     BoardPng::writeBoardsToPng( "test4dconvolve-floats-consolveimagecubes_float.png", resultsFloat, 16, boardSize );
 
     timer.timeCheck("before convolve no zeropadding");
-    kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
+    kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
     timer.timeCheck("after compile no zeropadding");
     int outputBoardSize = ( boardSize - filterSize + 1 );
     cout << "numplanes " << numPlanes << " numfilters " << numFilters << endl;
-    kernel->in( numPlanes )->in( numFilters )->in(boardSize)->in(filterSize);
+    kernel->in( numPlanes )->in( numFilters )->in(boardSize)->in(filterSize)->in(0);
     kernel->input( N * boardSize * boardSize, &(boardsFloat[0][0][0]) );
     kernel->input( 4 * filterSize * filterSize, &(filtersFloat[0][0][0]) );
     kernel->output( N * outputBoardSize * outputBoardSize, resultsFloat );
