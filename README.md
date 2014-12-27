@@ -165,10 +165,10 @@ Also available for floats:
     `BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100), boardSize );`
 
 * where:
-** first argument is filename to write png to
-** second is array of boards, in same format as returned by BoardsHelper::allocateBoards
-** third argument is number of boards to write to png
-** third argument is the length of one side of each board
+  * first argument is filename to write png to
+  * second is array of boards, in same format as returned by BoardsHelper::allocateBoards
+  * third argument is number of boards to write to png
+  * third argument is the length of one side of each board
 
 Sample/test
 ===========
