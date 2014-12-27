@@ -224,7 +224,7 @@ public:
     virtual void backPropErrors( float learningRate, float const *errors ) {
         const bool debug = true;
         const int halfFilterSize = filterSize >> 1;
-        const int margin = padZeros ? 0 : halfFilterSize;
+        const int margin = padZeros ? halfFilterSize : 0;
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
                 for( int filterRow = 0; filterRow < filterSize; filterRow++ ) {
@@ -238,9 +238,9 @@ public:
                         // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
                         //       aggregate over:  [outRow][outCol][n]
                         for( int outRow = 0; outRow < boardSize; outRow++ ) {
-                            int upstreamRow = outRow + margin + filterRow;
+                            int upstreamRow = outRow - margin + filterRow;
                             for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                                int upstreamCol = outCol + margin + filterCol;
+                                int upstreamCol = outCol - margin + filterCol;
                                 for( int n = 0; n < batchSize; n++ ) {
                                     int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                                     float error = errors[resultIndex];
@@ -252,7 +252,7 @@ public:
                                     thiswchange += thisimagethiswchange;
     if(debug)std::cout << "outPlane=" << outPlane << " inPlane=" << upstreamPlane << " filterpos=" << filterRow << "," << filterCol
        << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << error
-       << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
+       << " actualoutput=" << actualOutput << " upstreampos=" << upstreamRow <<"," << upstreamCol << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
        << thisimagethiswchange << std::endl;
                                 }
                             }
