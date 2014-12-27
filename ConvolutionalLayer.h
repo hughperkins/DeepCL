@@ -34,7 +34,7 @@ public:
     }
 // filters are organized like [filterid][plane][row][col]
     void randomizeWeights() {
-        print();
+//        print();
         std::cout << "convolutional layer randomzing weights" << std::endl;
 //        int numPreviousPlanes = previousLayer->getNumPlanes();
 //        int previousBoardSize = previousLayer->getBoardSize();
@@ -50,6 +50,10 @@ public:
     }
     virtual void print() {
         std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << std::endl;
+        printWeights();
+        printOutputs();
+    }
+    virtual void printWeights() {
         std::cout << "  weights: " << std::endl;
 // filters are organized like [filterid][plane][row][col]
         for( int filter = 0; filter < numPlanes; filter++ ) {
@@ -64,6 +68,11 @@ public:
                     std::cout << std::endl;
                 }
             }
+        }
+     }
+     virtual void printOutputs() {
+        if( results == 0 ) {
+            return;
         }
         std::cout << "  outputs: " << std::endl;
 // results are organized like [imageid][filterid][row][col]

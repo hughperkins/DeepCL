@@ -136,15 +136,14 @@ void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global 
     results[globalId] = sum;
 }
 
-void kernel convolve_imagecubes_float( global const int *p_numInputPlanes, global const int *p_numFilters, 
-      global const int *p_boardSize, global const int *p_filterSize,
+// images are organized like [imageId][plane][row][col]
+// filters are organized like [filterid][plane][filterrow][filtercol]
+// results are organized like [imageid][filterid][row][col]
+void kernel convolve_imagecubes_float( const int numInputPlanes, const int numFilters, 
+      const int boardSize, const int filterSize,
       global const float *images, global const float *filters, global float *results ) {
     int globalId = get_global_id(0);
 
-    int numInputPlanes = p_numInputPlanes[0];
-    int numFilters = p_numFilters[0];
-    int boardSize = p_boardSize[0];
-    int filterSize = p_filterSize[0];
     int boardSizeSquared = boardSize * boardSize;
 
     int outputBoard2Id = globalId / boardSizeSquared;
@@ -165,15 +164,14 @@ void kernel convolve_imagecubes_float( global const int *p_numInputPlanes, globa
     int maxm = min( halfFilterSize, boardSize - 1 - row );
     int minn = max( -halfFilterSize, -col );
     int maxn = min( halfFilterSize, boardSize - 1 - col );
-    int plane = 0;
-    while( plane < numInputPlanes ) {
-        int inputBoardOffset = inputBoard3Offset + plane * boardSizeSquared;
-        int filterPlaneOffset = filterOffset + plane * filterSize * filterSize;
+    int inputPlane = 0;
+    while( inputPlane < numInputPlanes ) {
+        int inputBoardOffset = inputBoard3Offset + inputPlane * boardSizeSquared;
         int m = minm;
         while( m <= maxm ) {
             int y = row + m;
             int inputboardrowoffset = inputBoardOffset + y * boardSize;
-            int filterrowoffset = filterPlaneOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
+            int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
             while( n <= maxn ) {
                 int x = col + n;
@@ -182,9 +180,15 @@ void kernel convolve_imagecubes_float( global const int *p_numInputPlanes, globa
             }
             m++;
         }
-        plane++;
+        inputPlane++;
     }
-    results[globalId] = sum;
+//    results[0] = numInputPlanes;
+//    results[1] = plane;
+//    results[2] = globalId > results[2] ? globalId : results[2];
+//    results[3] = 
+//    results[globalId] = numInputPlanes;
+    results[globalId] = 1.7159 * tanh(sum);
+    //results[globalId] = images[globalId];
 }
 
 

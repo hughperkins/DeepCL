@@ -20,6 +20,11 @@ link_libraries(${PNG_LIBRARY})
 
 link_libraries(ClConvolve)
 
+add_custom_target( 
+    clfiles
+    cp ${CMAKE_CURRENT_SOURCE_DIR}/*.cl ${CMAKE_BINARY_DIR}
+)
+
 add_executable( test2layerfullyconnected test/test2layerfullyconnected.cpp )
 
 #set( OPENCLHELPER $ENV{HOME}/git/OpenCLHelper)
@@ -28,5 +33,7 @@ add_executable( testarraysquare_floats test/testarraysquare_floats.cpp )
 #add_executable( testClConvolve2 test/testClConvolve2.cpp )
 #add_executable( testopencl test/testopencl.cpp )
 add_executable( testboardshelper test/testboardshelper.cpp )
+add_executable( testsimpleconvolvenet test/testsimpleconvolvenet.cpp )
 
+add_dependencies( testsimpleconvolvenet clfiles )
 

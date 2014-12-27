@@ -24,7 +24,7 @@ public:
                 correct++;
             }
         }
-        cout << " accuracy: " << correct << "/" << numImages << endl;
+        std::cout << " accuracy: " << correct << "/" << numImages << std::endl;
     }
 };
 

@@ -5,6 +5,7 @@
 
 #include "Timer.h"
 #include "NeuralNet.h"
+#include "AccuracyHelper.h"
 
 using namespace std;
 
@@ -22,17 +23,20 @@ int main( int argc, char *argv[] ) {
     expectedResults[1] = -1;
     expectedResults[2] = -1;
     expectedResults[3] = 1;
-    NeuralNet *net = NeuralNet::setup->planes(1)->boardSize(1)->instance();
-    net->convolutionalMaker->numFilters(2)->filterSize(2)->insert;
-    for( int epoch = 0; epoch < 4; epoch++ ) {
-        net->epochMaker
-            ->learningRate(1)->batchSize(2)->numExamples(2)
-            ->inputData(2)->expectedResults(expectedResults)
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    net->convolutionalMaker()->filters(2)->filterSize(1)->insert();
+    for( int epoch = 0; epoch < 30; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(1)
+            ->batchSize(2)
+            ->numExamples(2)
+            ->inputData(data)
+            ->expectedOutputs(expectedResults)
             ->run();
         cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        net->print();
+        //net->print();
         float const*results = net->getResults();
-        checkAccuracy( 2, 2, labels, results );
+        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
 
     delete net;
