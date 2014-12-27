@@ -16,8 +16,8 @@ Example:
 
     #include "NeuralNet.h"
     
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->make();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->make();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     net->print();
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->doEpoch( learningRate, batchSize, numImages, float *trainingData, float *expectedOutputs );

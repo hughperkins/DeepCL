@@ -14,8 +14,8 @@ void testAnd() {
     LogicalDataCreator ldc;
     ldc.applyAndGate();
 
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->make();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->make();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     net->print();
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->doEpoch( 3, 4, 4, ldc.data, ldc.expectedResults );
@@ -32,8 +32,8 @@ void testOr() {
 //    ldc.applyAndGate();
     ldc.applyOrGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->make();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->make();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     for( int epoch = 0; epoch < 10; epoch++ ) {
         net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
@@ -48,9 +48,9 @@ void testXor() {
     LogicalDataCreator ldc;
     ldc.applyXorGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->make();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->make();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->make();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedResults );
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
@@ -67,8 +67,8 @@ void testAndConvolve() {
 //    ldc.applyAndGate();
     ldc.applyAndGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->make();
-    net->convolutionalMaker()->filters(2)->filterSize(1);
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    net->convolutionalMaker()->filters(2)->filterSize(1)->insert();
     for( int epoch = 0; epoch < 5; epoch++ ) {
         net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedResults );
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;

@@ -50,6 +50,9 @@ public:
 //        layers.push_back(layer);
 //        return layer;
 //    }
+    EpochMaker *epochMaker() {
+         return new EpochMaker(this);
+    }
     Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize ) {
         Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize );
         layers.push_back( layer );

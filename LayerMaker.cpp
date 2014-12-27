@@ -8,13 +8,13 @@
 
 #include "NeuralNet.h"
 
-Layer *FullyConnectedMaker::make() {
+Layer *FullyConnectedMaker::insert() {
     Layer *layer = net->addFullyConnected( _numPlanes, _boardSize );
     delete this;
     return layer;
 }
 
-Layer *ConvolutionalMaker::make() {
+Layer *ConvolutionalMaker::insert() {
     Layer *layer = net->addConvolutional( _numFilters, _filterSize );
     delete this;
     return layer;

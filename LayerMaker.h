@@ -28,7 +28,7 @@ public:
         this->_boardSize = boardSize;
         return this;
     }
-    Layer *make();
+    Layer *insert();
 };
 
 class ConvolutionalMaker {
@@ -48,6 +48,6 @@ public:
         this->_filterSize = filterSize;
         return this;
     }    
-    Layer *make();
+    Layer *insert();
 };
 
