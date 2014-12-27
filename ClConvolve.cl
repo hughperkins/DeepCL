@@ -278,7 +278,7 @@ void kernel convolve_imagecubes_float2(
             int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
             while( n <= maxn ) {
-                int inputCol = outputCol + n + + ( padZeros ? 0 : halfFilterSize );
+                int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
                 sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
                 n++;
             }
