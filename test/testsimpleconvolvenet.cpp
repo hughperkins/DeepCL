@@ -89,7 +89,7 @@ void test2() {
         results = net->getResults();
         AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
-    net->print();
+//    net->print();
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
 
     delete net;
