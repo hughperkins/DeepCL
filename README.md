@@ -1,13 +1,14 @@
 ClConvolve
 ==========
 
-Current status: DRAFT, IN PROGRESS
+OpenCL library to train deep convolutional networks
+- C++
+- OpenCL
+- Deep convolutional
 
-Concept: OpenCL library to run convolutions on stacks of input images, using stacks of filters
-
-Current status:
-* Seems like convolution on its own isnt very self-contained, possibly, so building a more general
-OpenCL neural net library... :-P
+Target usage:
+- 19 x 19 Go boards, eg something similar to (Clark and Storkey)[http://arxiv.org/abs/1412.3409] or (Maddison, Huang, Sutskever and Silver)[http://arxiv.org/abs/1412.6564]
+- Also works on MNIST 28 x 28 boards (but you need to pad them to 29 x 29; the size of the board/image should be an odd number)
 
 Neural Net API
 ==============
@@ -30,8 +31,7 @@ Example, with 1 fully connected layer:
     delete net;
 
 Notes:
-* fully connected layers seem to work ok for me
-* they currently run on the cpu though, which might not be what we want :-)
+* fully connected layers run on cpu for now
 
 For convolutional layer, you can do:
 
@@ -42,30 +42,29 @@ Or:
     net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->padZeros()->insert();
 
 Notes:
-* convolutional layers are currently in development, dont actually work yet
-* the forward-propagation runs on gpu, via opengl
-* backprop is currently on the cpu, not only probably doesnt work yet (eg: no bias added...), but
-doesnt run on gpu yet, which probably isnt what we want :-)
+* convolutional layers forward-prop runs on gpu, via OpenCL
+* back-prop is on cpu for now
 
-Convolution API
-===============
+You can print the network like this:
 
-Simply call:
+    net->print();
 
-    ClConvolve::convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
-           int *images, int *filters, int *results );
+Data format
+===========
 
-Or for floats:
+Input data should be provided in a contiguous array.  "group by" order should be:
 
-    ClConvolve::convolveImageCubes( int numImages, int numInputPlanes, int numFilters, int imageWidth, int filterWidth,
-           float *images, float *filters, float *results );
+* training example id
+* input plane
+* board row
+* board column
 
-- you need to provide the images, filters, and results arrays as contiguous arrays of integers
-- the images array should consist of numImages cubes of images
-  - each cube should have numInputPlanes planes
-    - each plane should have imageWidth * imageWidth values, representing one plane of the input image
-- the filters array should consist of numFilters * numInputPlanes images, each of filterWidth * filterWidth ints
-- the output results array should be able to hold numImages * numFilters * imageWidth * imageWidth ints
+Expected output data should be provided as a contiguous array. "group by" order should be:
+
+* training example id
+* output plane (eg, corresponds to filter id, for convolutional network)
+* output row
+* output column
 
 Pre-requisites
 ==============
@@ -74,6 +73,8 @@ Pre-requisites
 - cmake
 - gcc
 - g++
+- An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+  - tested using beignet, which provides OpenCL 1.2, and CUDA 6.5 driver
 - opencl-headers
 - libpng++
 - make 
@@ -142,6 +143,7 @@ Also available for floats:
     int boardSize;
     int N;
     int ***boards = MnistLoader::loadImages( "../data/mnist", "train", &N, &boardSize );
+    int *labels = MnistLoader::loadLabels( "../data/mnist", "train", &N );
 
 - `boards` now contains `N` boards, of `boardSize` by `boardSize`, loaded from the `"train"` dataset
 - if you want the 'test' dataset, pass in `"t10k"` instead of `"train"`
