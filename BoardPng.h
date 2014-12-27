@@ -15,7 +15,7 @@ public:
         int maxvalue = 0;
         for( int i = 0; i < boardSize; i++ ) {
             for( int j = 0; j < boardSize; j++ ) {
-                maxvalue = max( maxvalue, board[i][j] );
+                maxvalue = std::max( maxvalue, board[i][j] );
             }
         }
         return maxvalue;
@@ -25,7 +25,7 @@ public:
         float maxvalue = 0;
         for( int i = 0; i < boardSize; i++ ) {
             for( int j = 0; j < boardSize; j++ ) {
-                maxvalue = max( maxvalue, board[i][j] );
+                maxvalue = std::max( maxvalue, board[i][j] );
             }
         }
         return maxvalue;
@@ -35,10 +35,19 @@ public:
         float maxvalue = 0;
         for( int i = 0; i < boardSize; i++ ) {
             for( int j = 0; j < boardSize; j++ ) {
-                maxvalue = max( maxvalue, board[i*boardSize + j] );
+                maxvalue = std::max( maxvalue, board[i*boardSize + j] );
             }
         }
         return maxvalue;
+    }
+    static float getBoardMin( float const* board, int boardSize ) {
+        float minvalue = 0;
+        for( int i = 0; i < boardSize; i++ ) {
+            for( int j = 0; j < boardSize; j++ ) {
+                minvalue = std::min( minvalue, board[i*boardSize + j] );
+            }
+        }
+        return minvalue;
     }
 
     static void writeBoardToPng( string filename, int **board, int boardSize ) {
@@ -133,10 +142,12 @@ public:
                 }
 //                cout << "board at x " << x << " y " << y << endl;
                 float const*board = &(boards[boardSize * boardSize * ( x*rows + y ) ]);
-                float maxvalue = max( 1.0f, getBoardMax( board, boardSize ) );
+                float maxValue = getBoardMax( board, boardSize );
+                float minValue = getBoardMin( board, boardSize );
                 for( int i = 0; i < boardSize; i++ ) {
                     for( int j = 0; j < boardSize; j++ ) {
-                       (*image)[x*boardSize + i][y*boardSize + j] = png::rgb_pixel( board[i*boardSize + j] * 255 / maxvalue, board[i * boardSize + j] * 255 / maxvalue, board[i * boardSize + j] * 255 / maxvalue );
+                       float normValue = ( board[i*boardSize + j] + minValue ) * 255.0f / (maxValue - minValue );
+                       (*image)[x*boardSize + i][y*boardSize + j] = png::rgb_pixel( normValue, normValue, normValue );
                     }
                 }
 

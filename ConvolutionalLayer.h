@@ -52,7 +52,8 @@ public:
         print();
     }
     virtual void print() {
-        std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << std::endl;
+        std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
+            " padZeros " << padZeros << " outputBoardSize " << boardSize << std::endl;
         printWeights();
         printOutputs();
     }
@@ -122,10 +123,10 @@ public:
     }
     virtual void propagate() {
 
-        CLWrapper *upstreamWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, previousLayer->getResults() );
+        CLWrapper *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
 //        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
         upstreamWrapper->copyToDevice();
-        CLWrapper *weightsWrapper = cl->wrap( previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize, 
+        CLWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
                  weights );
 //        std::cout << "propagate, weights: " << weights[0] << " " << " size " << previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize << std::endl;
         weightsWrapper->copyToDevice();

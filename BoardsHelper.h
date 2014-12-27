@@ -83,6 +83,13 @@ public:
         return boards;
     }
 
+    static void printBoards( float ***boards, int N, int boardSize ) {
+        for( int n = 0; n < N; n++ ) {
+            std::cout << "board " << n << std::endl;
+            BoardHelper::print( boards[n], boardSize );
+        }
+    }
+
     static void deleteBoards( float ****p_boards, int N, int boardSize ) {
         float ***boards = *p_boards;
         float *contiguous = &(boards[0][0][0] );

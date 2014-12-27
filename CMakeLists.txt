@@ -35,7 +35,9 @@ add_executable( testarraysquare_floats test/testarraysquare_floats.cpp )
 add_executable( testboardshelper test/testboardshelper.cpp )
 add_executable( testsimpleconvolvenet test/testsimpleconvolvenet.cpp )
 add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp )
+add_executable( test4dconvolve test/test4dconvolve.cpp )
 
 add_dependencies( testsimpleconvolvenet clfiles )
 add_dependencies( testneuralnetmnistconvolve clfiles )
+add_dependencies( test4dconvolve clfiles )
 

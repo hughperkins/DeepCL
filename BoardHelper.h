@@ -66,7 +66,7 @@ static void deleteBoard( float ***p_board, int boardSize ) {
    *p_board = 0;
 }
 
-static void copyBoard( int const*const *const src, int *const*const dst, int boardSize ) {
+static void copyBoard( int *const*const dst, int const*const *const src, int boardSize ) {
     for( int i = 0; i < boardSize; i++ ) {
         for( int j = 0; j < boardSize; j++ ) {
             if( dst[i][j] != src[i][j] ) {
@@ -84,17 +84,29 @@ static void wipeBoard( int *const*const board, int boardSize ) {
     }
 }
 
-//static void printInts( int const*const*const board, int boardSize ) {
-//    ostringstream ss;
-//    ss << "\n";
-//    for( int i = 0; i < boardSize; i++ ) {
-//       for( int j = 0; j < boardSize; j++ ) {
-//          ss << board[i][j] << " ";
-//       }
-//       ss << "\n";
-//    }
-//    debug( ss.str() );
-//}
+static void printInts( int const*const*const board, int boardSize ) {
+    std::ostringstream ss;
+    ss << "\n";
+    for( int i = 0; i < boardSize; i++ ) {
+       for( int j = 0; j < boardSize; j++ ) {
+          ss << board[i][j] << " ";
+       }
+       ss << "\n";
+    }
+    std::cout << ss.str() << std::endl;
+}
+
+static void print( float const*const*const board, int boardSize ) {
+    std::ostringstream ss;
+    ss << "\n";
+    for( int i = 0; i < boardSize; i++ ) {
+       for( int j = 0; j < boardSize; j++ ) {
+          ss << board[i][j] << " ";
+       }
+       ss << "\n";
+    }
+    std::cout << ss.str() << std::endl;
+}
 
 //static void printBoard( int const *const *const board, int boardSize ) {
 ///*    int numdigits = 1;
