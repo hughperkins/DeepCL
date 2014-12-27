@@ -43,13 +43,13 @@ void test1() {
 
 void test2() {
     Timer timer;
-    float data[] = { 0, 0, 0,
-                    -0.5, 0.5, 0,
-                    0, 0, 0,
+    float data[] = { 0.5, 0.5, 0.5,
+                    -0.5, 0.5, 0.5,
+                    0.5, 0.5, 0.5,
     
-                   0, 0, 0,
-                   0.5, -0.5, 0,
-                   0, 0, 0,
+                   0.5, 0.5, 0.5,
+                   0.5, -0.5, 0.5,
+                   0.5, 0.5, 0.5,
 
                     -0.5, -0.5, -0.5,
                     -0.5, 0.5, -0.5,
@@ -76,19 +76,21 @@ void test2() {
     expectedResults[7] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->insert();
+    float const*results = 0;
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
-            ->batchSize(2)
-            ->numExamples(2)
+            ->batchSize(4)
+            ->numExamples(4)
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
         cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        results = net->getResults();
+        AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
     net->print();
+    AccuracyHelper::printAccuracy( 4, 2, labels, results );
 
     delete net;
 }

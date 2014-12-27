@@ -230,10 +230,10 @@ public:
                 for( int filterRow = 0; filterRow < filterSize; filterRow++ ) {
                     for( int filterCol = 0; filterCol < filterSize; filterCol++ ) {
                         int weightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
-                        if( filterRow != 1 || filterCol > 1 ) {
-                            weights[weightIndex] = 0;
-                            continue;
-                        }
+//                        if( filterRow != 1 || filterCol > 1 ) {
+//                            weights[weightIndex] = 0;
+//                            continue;
+//                        }
                         float thiswchange = 0;
                         // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
                         //       aggregate over:  [outRow][outCol][n]
