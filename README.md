@@ -180,7 +180,8 @@ Sample/test
   * testsimpleconvolve.cpp      - check OpenCL convolve working, see how to use this
   * testsimpleconvolvenet.cpp   - use 1 layer convolutional network to learn toy 3x3 boards
   * testneuralnetmnist.cpp        - use 1 layer fully connected layer to learn MNIST
-  * testneuralnetmnistconvolve.cpp  - learn 2 mnist images (ok, not very many so far :-)
+  * testneuralnetmnistconvolve.cpp  - learn 1000 mnist training images, then test against 1000 test images (gets
+about 68% test accuracy for now)
 
 Third-party libraries
 =====================
