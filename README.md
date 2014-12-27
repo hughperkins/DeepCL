@@ -12,7 +12,7 @@ OpenCL neural net library... :-P
 Neural Net API
 ==============
 
-Example:
+Example, with 1 fully connected layer:
 
     #include "NeuralNet.h"
     
@@ -28,6 +28,24 @@ Example:
         AccuracyHelper::printAccuracy( numImages, numClasses, trainingLabels, net->getResults() );
     }
     delete net;
+
+Notes:
+* fully connected layers seem to work ok for me
+* they currently run on the cpu though, which might not be what we want :-)
+
+For convolutional layer, you can do:
+
+    net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->insert();
+
+Or:
+
+    net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->padZeros()->insert();
+
+Notes:
+* convolutional layers are currently in development, dont actually work yet
+* the forward-propagation runs on gpu, via opengl
+* backprop is currently on the cpu, not only probably doesnt work yet (eg: no bias added...), but
+doesnt run on gpu yet, which probably isnt what we want :-)
 
 Convolution API
 ===============

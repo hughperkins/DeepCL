@@ -70,14 +70,14 @@ int main( int argc, char *argv[] ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(28)->insert();
     net->print();
-    for( int epoch = 0; epoch < 1; epoch++ ) {
+    for( int epoch = 0; epoch < 100; epoch++ ) {
         net->setBatchSize(2);
         net->propagate(0, 2, &(boardsFloat[0][0][0]) );
-    std::cout << "************* propagate done" << std::endl;
-    net->print();
-        net->backProp( 0.01, expectedOutputs2 );
-    std::cout << "************* backpropdone" << std::endl;
-    net->print();
+//    std::cout << "************* propagate done" << std::endl;
+//    net->print();
+        net->backProp( 0.1, expectedOutputs2 );
+//    std::cout << "************* backpropdone" << std::endl;
+//    net->print();
 //        net->doEpoch( 0.001, numToTrain, numToTrain, &(boardsFloat[0][0][0]), expectedOutputs2 );
         cout << "loss: " << net->calcLoss( expectedOutputs2 ) << endl;
         float const*results = net->getResults();

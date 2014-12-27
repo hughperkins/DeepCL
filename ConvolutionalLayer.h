@@ -27,7 +27,11 @@ public:
             upstreamBoardSize( previousLayer->getBoardSize() ),
             upstreamNumPlanes( previousLayer->getNumPlanes() ) {
         this->cl = new OpenCLHelper();
-        this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float" );
+        if( padZeros ) {
+            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float" );
+        } else {
+            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
+        }
         weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
         randomizeWeights();
     }
