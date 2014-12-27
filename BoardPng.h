@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2013 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -31,6 +31,16 @@ public:
         return maxvalue;
     }
 
+    static float getBoardMax( float const* board, int boardSize ) {
+        float maxvalue = 0;
+        for( int i = 0; i < boardSize; i++ ) {
+            for( int j = 0; j < boardSize; j++ ) {
+                maxvalue = max( maxvalue, board[i*boardSize + j] );
+            }
+        }
+        return maxvalue;
+    }
+
     static void writeBoardToPng( string filename, int **board, int boardSize ) {
         int maxvalue = getBoardMax( board, boardSize );
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize, boardSize );
@@ -50,7 +60,7 @@ public:
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-//        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 
@@ -81,7 +91,7 @@ public:
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-//        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 
@@ -104,5 +114,37 @@ public:
         remove( filename.c_str() );
         image->write( filename );
         delete image;
-    }};
+    }
+
+    static void writeBoardsToPng( string filename, float const*boards, int numBoards, int boardSize ) {
+        int cols = sqrt( numBoards );
+        if( cols * cols < numBoards ) {
+            cols++;
+        }
+        int rows = ( numBoards + cols - 1 ) / cols;
+        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+        png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
+
+
+        for( int x = 0; x < cols; x++ ) {
+           for( int y = 0; y < rows; y++ ) {
+                if( x * rows + y >= numBoards ) {
+                    continue;
+                }
+//                cout << "board at x " << x << " y " << y << endl;
+                float const*board = &(boards[boardSize * boardSize * ( x*rows + y ) ]);
+                float maxvalue = max( 1.0f, getBoardMax( board, boardSize ) );
+                for( int i = 0; i < boardSize; i++ ) {
+                    for( int j = 0; j < boardSize; j++ ) {
+                       (*image)[x*boardSize + i][y*boardSize + j] = png::rgb_pixel( board[i*boardSize + j] * 255 / maxvalue, board[i * boardSize + j] * 255 / maxvalue, board[i * boardSize + j] * 255 / maxvalue );
+                    }
+                }
+
+            }
+         }
+        remove( filename.c_str() );
+        image->write( filename );
+        delete image;
+    }
+};
 

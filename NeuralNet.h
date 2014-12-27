@@ -59,8 +59,8 @@ public:
         layers.push_back( layer );
         return layer;
     }
-    Layer *addConvolutional( int numFilters, int filterSize ) {
-        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize );
+    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros ) {
+        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros );
         layers.push_back( layer );
         return layer;
     }

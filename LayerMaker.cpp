@@ -30,7 +30,7 @@ Layer *ConvolutionalMaker::insert() {
     if( _filterSize == 0 ) {
         throw runtime_error("Must provide ->filterSize(filterSize)");
     }
-    Layer *layer = net->addConvolutional( _numFilters, _filterSize );
+    Layer *layer = net->addConvolutional( _numFilters, _filterSize, _padZeros );
     delete this;
     return layer;
 }

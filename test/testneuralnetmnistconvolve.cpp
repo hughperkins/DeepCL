@@ -7,8 +7,9 @@ using namespace std;
 #include "BoardHelper.h"
 #include "MnistLoader.h"
 #include "BoardPng.h"
-#include "utils/Timer.h"
+#include "Timer.h"
 #include "NeuralNet.h"
+#include "test/AccuracyHelper.h"
 
 int main( int argc, char *argv[] ) {
     Timer timer;
@@ -66,13 +67,11 @@ int main( int argc, char *argv[] ) {
     }
 
     int numToTrain = 2;
-    NeuralNet *net = new NeuralNet(1, boardSize );
-//    net->addFullyConnected( 10 );
-    net->addConvolutional(2, 3);
-    net->addFullyConnected( 2 );
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+    net->convolutionalMaker()->numFilters(2)->filterSize(28)->insert();
     net->print();
     for( int epoch = 0; epoch < 1; epoch++ ) {
-        net->setBatchSize( 2 );
+        net->setBatchSize(2);
         net->propagate(0, 2, &(boardsFloat[0][0][0]) );
     std::cout << "************* propagate done" << std::endl;
     net->print();
@@ -80,16 +79,16 @@ int main( int argc, char *argv[] ) {
     std::cout << "************* backpropdone" << std::endl;
     net->print();
 //        net->doEpoch( 0.001, numToTrain, numToTrain, &(boardsFloat[0][0][0]), expectedOutputs2 );
-        cout << "loss: " << net->layers[2]->calcLoss( expectedOutputs2 ) << endl;
-        float const*results = net->layers[2]->getResults();
-        checkAccuracy( numToTrain, 2, labels2, results );
+        cout << "loss: " << net->calcLoss( expectedOutputs2 ) << endl;
+        float const*results = net->getResults();
+        AccuracyHelper::printAccuracy( numToTrain, 2, labels2, results );
     }
     float const*results = net->getResults( net->getNumLayers() - 1 );
 
 //    BoardPng::writeBoardsToPng( "testneuralnetmnist-output.png", net->layers[1]->results, 4, boardSize );
-    BoardPng::writeBoardsToPng( "testneuralnetmnist-output0.png", net->layers[0]->results, 2, boardSize );
-    BoardPng::writeBoardsToPng( "testneuralnetmnist-output1.png", net->layers[1]->results, 4, boardSize );
-    BoardPng::writeBoardsToPng( "testneuralnetmnist-weights1.png", net->layers[2]->weights, 4, boardSize );
+    BoardPng::writeBoardsToPng( "testneuralnetmnistconvolve-output0.png", net->layers[0]->results, 2, boardSize );
+    BoardPng::writeBoardsToPng( "testneuralnetmnistconvolve-output1.png", net->layers[1]->results, 4, boardSize );
+    BoardPng::writeBoardsToPng( "testneuralnetmnistconvolve-weights1.png", net->layers[1]->weights, 4, boardSize );
 
     delete net;
     delete[] expectedOutputs;

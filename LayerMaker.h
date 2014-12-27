@@ -9,6 +9,8 @@
 //#include "NeuralNet.h"
 #include "Layer.h"
 
+#include <cstring>
+
 class NeuralNet;
 
 class FullyConnectedMaker {
@@ -35,17 +37,23 @@ class ConvolutionalMaker {
     NeuralNet *net;
     int _numFilters;
     int _filterSize;
+    bool _padZeros;
 public:
-    ConvolutionalMaker( NeuralNet *net ) 
-         : net(net) {
+    ConvolutionalMaker( NeuralNet *net ) {
+        memset( this, 0, sizeof( ConvolutionalMaker ) );
+        this->net = net;
         std::cout << "ConvolutionalMaker()" << std::endl;
     }
-    ConvolutionalMaker *filters(int numFilters) {
+    ConvolutionalMaker *numFilters(int numFilters) {
         this->_numFilters = numFilters;
         return this;
     }    
     ConvolutionalMaker *filterSize(int filterSize) {
         this->_filterSize = filterSize;
+        return this;
+    }    
+    ConvolutionalMaker *padZeros() {
+        this->_padZeros = true;
         return this;
     }    
     Layer *insert();

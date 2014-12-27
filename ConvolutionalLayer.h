@@ -15,12 +15,15 @@ public:
     OpenCLHelper *cl;
     CLKernel *kernel;
     const int filterSize;
+    const bool padZeros;
     const int upstreamBoardSize;
     const int upstreamNumPlanes;
 
-    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize ) :
-            Layer( previousLayer, numFilters, previousLayer->getBoardSize() ),
+    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros ) :
+            Layer( previousLayer, numFilters, 
+                padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1 ),
             filterSize( filterSize ),
+            padZeros( padZeros ),
             upstreamBoardSize( previousLayer->getBoardSize() ),
             upstreamNumPlanes( previousLayer->getNumPlanes() ) {
         this->cl = new OpenCLHelper();
@@ -60,12 +63,18 @@ public:
            std::cout << "    filter " << filter << std::endl;
            for( int plane = 0; plane < upstreamNumPlanes; plane++ ) {
                if( upstreamNumPlanes > 1 ) std::cout << "    plane " << plane << std::endl;
-                for( int i = 0; i < filterSize; i++ ) {
+                for( int i = 0; i < std::min(5,filterSize); i++ ) {
                     std::cout << "      ";
-                    for( int j = 0; j < filterSize; j++ ) {
+                    for( int j = 0; j < std::min(5,filterSize); j++ ) {
                        std::cout << getWeight( filter, plane, i, j ) << " ";
                     }
+                    if( filterSize > 5 ) {
+                       std::cout << " ...";
+                    }
                     std::cout << std::endl;
+                }
+                if( filterSize > 5 ) {
+                   std::cout << " ..." << std::endl;
                 }
             }
         }
