@@ -71,7 +71,9 @@ public:
         std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
             " padZeros " << padZeros << " outputBoardSize " << boardSize << std::endl;
         printWeights();
-        printOutputs();
+        if( results != 0 ) {
+            printOutputs();
+        }
     }
     virtual void printWeights() {
         std::cout << "  weights: " << std::endl;

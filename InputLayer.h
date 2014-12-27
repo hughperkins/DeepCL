@@ -14,6 +14,9 @@ public:
           Layer( 0, numPlanes, boardSize ) {
     }
     virtual void print() {
+        if( results == 0 ) {
+             return;
+        }
         for( int n = 0; n < batchSize; n++ ) {
             std::cout << "InputLayer n " << n << ":" << std::endl;
             for( int plane = 0; plane < numPlanes; plane++ ) {
