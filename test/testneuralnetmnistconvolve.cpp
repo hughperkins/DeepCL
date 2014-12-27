@@ -68,14 +68,21 @@ int main( int argc, char *argv[] ) {
 
     int numToTrain = 2;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(2)->filterSize(28)->insert();
+    net->convolutionalMaker()->numFilters(2)->filterSize(boardSize)->insert();
     net->print();
-    for( int epoch = 0; epoch < 100; epoch++ ) {
-        net->setBatchSize(2);
-        net->propagate(0, 2, &(boardsFloat[0][0][0]) );
-//    std::cout << "************* propagate done" << std::endl;
-//    net->print();
-        net->backProp( 0.1, expectedOutputs2 );
+    for( int epoch = 0; epoch < 40; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(0.1)
+            ->batchSize(2)
+            ->numExamples(2)
+            ->inputData(&(boardsFloat[0][0][0]))
+            ->expectedOutputs(expectedOutputs2)
+            ->run();
+//        net->setBatchSize(2);
+//        net->propagate(0, 2, &(boardsFloat[0][0][0]) );
+////    std::cout << "************* propagate done" << std::endl;
+////    net->print();
+//        net->backProp( 0.001, expectedOutputs2 );
 //    std::cout << "************* backpropdone" << std::endl;
 //    net->print();
 //        net->doEpoch( 0.001, numToTrain, numToTrain, &(boardsFloat[0][0][0]), expectedOutputs2 );

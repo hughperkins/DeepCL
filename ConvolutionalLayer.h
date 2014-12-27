@@ -18,6 +18,7 @@ public:
     const bool padZeros;
     const int upstreamBoardSize;
     const int upstreamNumPlanes;
+    float *biasWeights;
 
     ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros ) :
             Layer( previousLayer, numFilters, 
@@ -28,14 +29,16 @@ public:
             upstreamNumPlanes( previousLayer->getNumPlanes() ) {
         this->cl = new OpenCLHelper();
 //        if( padZeros ) {
-            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2_withbias" );
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
 //        }
+        biasWeights = new float[numPlanes];
         weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
         randomizeWeights();
     }
     virtual ~ConvolutionalLayer() {
+        delete[] biasWeights;
         delete kernel;
         delete cl;
     }
@@ -53,6 +56,9 @@ public:
         for( int i = 0; i < numThisLayerWeights; i++ ) {
             weights[i] = generateWeight( fanin );
         }
+        for( int i = 0; i < numPlanes; i++ ) {
+            biasWeights[i] = generateWeight( fanin );
+        }
         print();
     }
     virtual void print() {
@@ -66,6 +72,7 @@ public:
 // filters are organized like [filterid][plane][row][col]
         for( int filter = 0; filter < numPlanes; filter++ ) {
            std::cout << "    filter " << filter << std::endl;
+           std::cout << "       bias=" << biasWeights[filter] << std::endl;            
            for( int plane = 0; plane < upstreamNumPlanes; plane++ ) {
                if( upstreamNumPlanes > 1 ) std::cout << "    plane " << plane << std::endl;
                 for( int i = 0; i < std::min(5,filterSize); i++ ) {
@@ -82,6 +89,9 @@ public:
                    std::cout << " ..." << std::endl;
                 }
             }
+        }
+        std::cout << "biases:" << std::endl;
+        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
         }
      }
      virtual void printOutputs() {
@@ -128,19 +138,25 @@ public:
     virtual void propagate() {
 
         CLWrapper *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
-//        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
-        upstreamWrapper->copyToDevice();
         CLWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
                  weights );
-//        std::cout << "propagate, weights: " << weights[0] << " " << " size " << previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize << std::endl;
-        weightsWrapper->copyToDevice();
+        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
         CLWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
+
+//        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
+//        std::cout << "propagate, weights: " << weights[0] << " " << " size " << previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize << std::endl;
+
+        upstreamWrapper->copyToDevice();
+        weightsWrapper->copyToDevice();
+        biasWrapper->copyToDevice();
+
         resultsWrapper->createOnDevice();
         
         kernel->in( upstreamNumPlanes )->in( numPlanes )->in( boardSize )->in( filterSize )
           ->in( padZeros ? 1 : 0 );
         kernel->input( upstreamWrapper );
         kernel->input( weightsWrapper);
+        kernel->input( biasWrapper );
         kernel->output( resultsWrapper );
         int globalSize = batchSize * numPlanes * boardSize * boardSize;
         int workgroupsize = cl->getMaxWorkgroupSize();
@@ -156,11 +172,14 @@ public:
     // images are organized like [imageId][plane][boardrow][boardcol]
     // filters are organized like [filterid][plane][filterrow][filtercol]
     // results are organized like [imageid][filterid][boardrow][boardcol]
-    inline int getWeightIndex( int filter, int plane, int filterrow, int filtercol ) const {
-        return ( ( filter * upstreamNumPlanes + plane ) * filterSize + filterrow ) * filterSize + filtercol;
+    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
+        return ( ( outPlane * upstreamNumPlanes 
+             + inPlane ) * filterSize 
+             + filterrow ) * filterSize
+             + filtercol;
     }
-    inline float getWeight( int filter, int plane, int filterrow, int filtercol ) const {
-        return weights[getWeightIndex( filter, plane, filterrow, filtercol ) ];
+    inline float getWeight( int outPlane, int inPlane, int filterrow, int filtercol ) const {
+        return weights[getWeightIndex( outPlane, inPlane, filterrow, filtercol ) ];
     }
     virtual void backPropExpected( float learningRate, float const *expected ) {
         float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
@@ -178,32 +197,68 @@ public:
         backPropErrors( learningRate, errors );
         delete[] errors;
     }
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    // biasweights: [outPlane]
+    //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
     virtual void backPropErrors( float learningRate, float const *errors ) {
-       for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-          for( int filterRow = 0; filterRow < filterSize; filterRow++ ) {
-             for( int filterCol = 0; filterCol < filterSize; filterCol++ ) {
-                for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
-                    float thiswchange = 0;
-                    for( int n = 0; n < batchSize; n++ ) {
-                        for( int boardRow = 0; boardRow < boardSize; boardRow++ ) {
-                            for( int boardCol = 0; boardCol < boardSize; boardCol++ ) {
-                                int resultOffset = getResultIndex( n, outPlane, boardRow, boardCol );
-                                float error = errors[resultOffset];
-                                float actualOutput = results[resultOffset];
-                                float activationDerivative = 1 - actualOutput * actualOutput;
-                                float upstreamResult = previousLayer->getResult( n, upstreamPlane, boardRow, boardCol );
-                                float thisimagethiswchange = upstreamResult * activationDerivative *
+        const int halfFilterSize = filterSize >> 1;
+        const int margin = padZeros ? 0 : halfFilterSize;
+        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
+            for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
+                for( int filterRow = 0; filterRow < filterSize; filterRow++ ) {
+                    for( int filterCol = 0; filterCol < filterSize; filterCol++ ) {
+                        float thiswchange = 0;
+                        // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+                        //       aggregate over:  [outRow][outCol][n]
+                        for( int outRow = 0; outRow < boardSize; outRow++ ) {
+                            int upstreamRow = outRow + margin + filterRow;
+                            for( int outCol = 0; outCol < boardSize; outCol++ ) {
+                                int upstreamCol = outCol + margin + filterCol;
+                                for( int n = 0; n < batchSize; n++ ) {
+                                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+                                    float error = errors[resultIndex];
+                                    float actualOutput = results[resultIndex];
+                                    float activationDerivative = 1 - actualOutput * actualOutput;
+                                    float upstreamResult = previousLayer->getResult( n, upstreamPlane, upstreamRow, upstreamCol );
+                                    float thisimagethiswchange = upstreamResult * activationDerivative *
                                     error;
-                                thiswchange += thisimagethiswchange;
+                                    thiswchange += thisimagethiswchange;
+    std::cout << "outPlane=" << outPlane << " inPlane=" << upstreamPlane << " filterpos=" << filterRow << "," << filterCol
+       << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << error
+       << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
+       << thisimagethiswchange << std::endl;
+                                }
                             }
                         }
+                        int weightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
+                        weights[ weightIndex ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
                     }
-                    int weightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
-                    weights[ weightIndex ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
-                 }
-              }
-           }
+                }
+            }
         }
+         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
+            // bias...
+            // biasweights: [outPlane]
+            //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
+            float thiswchange = 0;
+            for( int n = 0; n < batchSize; n++ ) {
+                for( int outRow = 0; outRow < boardSize; outRow++ ) {
+                    for( int outCol = 0; outCol < boardSize; outCol++ ) {
+                        float upstreamResult = 1;
+                        int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+                        float actualOutput = results[resultIndex];
+                        float activationDerivative = 1 - actualOutput * actualOutput;
+                        float thisimagethiswchange = upstreamResult * errors[resultIndex] * activationDerivative;
+                        thiswchange += thisimagethiswchange;
+    std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << errors[resultIndex]
+       << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
+       << thisimagethiswchange << std::endl;
+                    }
+                }
+            }
+            biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+         }
     }
 };
 

@@ -289,3 +289,53 @@ void kernel convolve_imagecubes_float2(
     results[globalId] = 1.7159 * tanh(sum);
 }
     
+void kernel convolve_imagecubes_float2_withbias( 
+      const int numInputPlanes, const int numFilters, 
+      const int inputBoardSize, const int filterSize, const int padZeros,
+      global const float *images, global const float *filters, global const float *biases, global float *results ) {
+    int globalId = get_global_id(0);
+
+    int inputBoardSizeSquared = inputBoardSize * inputBoardSize;
+    int outputBoardSize = padZeros ? inputBoardSize : inputBoardSize - filterSize + 1;
+    int outputBoardSizeSquared = outputBoardSize * outputBoardSize;
+
+    int outputBoard2Id = globalId / outputBoardSizeSquared;
+    int filterId = outputBoard2Id % numFilters;
+    int inputBoard3Id = outputBoard2Id / numFilters;
+
+    int filterOffset = filterId * filterSize * filterSize;
+    int inputBoard3Offset = inputBoard3Id * numInputPlanes * inputBoardSizeSquared;
+
+    // intraboard coords
+    int localid = globalId % outputBoardSizeSquared;
+    int outputRow = localid / outputBoardSize;
+    int outputCol = localid % outputBoardSize;
+
+    int halfFilterSize = filterSize >> 1;
+    float sum = 0;
+    int minm = padZeros ? max( -halfFilterSize, -outputRow ) : -halfFilterSize;
+    int maxm = padZeros ? min( halfFilterSize, outputBoardSize - 1 - outputRow ) : halfFilterSize;
+    int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;
+    int maxn = padZeros ? min( halfFilterSize, outputBoardSize - 1 - outputCol ) : halfFilterSize;
+    int inputPlane = 0;
+    while( inputPlane < numInputPlanes ) {
+        int inputBoardOffset = inputBoard3Offset + inputPlane * inputBoardSizeSquared;
+        int m = minm;
+        while( m <= maxm ) {
+            int inputRow = outputRow + m + ( padZeros ? 0 : halfFilterSize );
+            int inputboardrowoffset = inputBoardOffset + inputRow * inputBoardSize;
+            int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
+            int n = minn;
+            while( n <= maxn ) {
+                int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
+                sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
+                n++;
+            }
+            m++;
+        }
+        inputPlane++;
+    }
+    sum += biases[filterId];
+    results[globalId] = tanh(sum);
+}
+
