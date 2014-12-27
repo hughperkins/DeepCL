@@ -16,11 +16,14 @@ Example:
 
     #include "NeuralNet.h"
     
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     net->print();
     for( int epoch = 0; epoch < 100; epoch++ ) {
-        net->doEpoch( learningRate, batchSize, numImages, float *trainingData, float *expectedOutputs );
+        net->epochMaker()
+           ->learningRate(3)->batchSize(4)->numExamples(4)
+           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+           ->run();
         cout << "Loss L " << net->calcLoss(expectedOutputs) << endl;
         AccuracyHelper::printAccuracy( numImages, numClasses, trainingLabels, net->getResults() );
     }

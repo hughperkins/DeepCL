@@ -22,7 +22,7 @@ public:
         this->_boardSize = boardSize;
         return this;
     }
-    NeuralNet *new();
+    NeuralNet *instance();
 };
 
 

@@ -17,6 +17,7 @@
 #include "ConvolutionalLayer.h"
 #include "NeuralNetMould.h"
 #include "LayerMaker.h"
+#include "EpochMaker.h"
 
 class NeuralNet {
 public:

@@ -6,7 +6,7 @@
 
 #include "NeuralNet.h"
 
-NeuralNet *NeuralNetMould::new() {
+NeuralNet *NeuralNetMould::instance() {
     NeuralNet *net = new NeuralNet( _numPlanes, _boardSize );
     delete this;
     return net;

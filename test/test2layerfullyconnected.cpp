@@ -14,11 +14,14 @@ void testAnd() {
     LogicalDataCreator ldc;
     ldc.applyAndGate();
 
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     net->print();
     for( int epoch = 0; epoch < 100; epoch++ ) {
-        net->doEpoch( 3, 4, 4, ldc.data, ldc.expectedResults );
+        net->epochMaker()
+           ->learningRate(3)->batchSize(4)->numExamples(4)
+           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+           ->run();
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
         AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
 //        net->printWeights();
@@ -32,7 +35,7 @@ void testOr() {
 //    ldc.applyAndGate();
     ldc.applyOrGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     for( int epoch = 0; epoch < 10; epoch++ ) {
         net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
@@ -48,7 +51,7 @@ void testXor() {
     LogicalDataCreator ldc;
     ldc.applyXorGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
     for( int epoch = 0; epoch < 100; epoch++ ) {
@@ -67,10 +70,11 @@ void testAndConvolve() {
 //    ldc.applyAndGate();
     ldc.applyAndGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->new();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->convolutionalMaker()->filters(2)->filterSize(1)->insert();
     for( int epoch = 0; epoch < 5; epoch++ ) {
-        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedResults );
+        net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+           ->expectedOutputs(ldc.expectedResults)->run();
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
         AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
 //        net->printWeights();
