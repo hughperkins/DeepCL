@@ -140,10 +140,17 @@ public:
     }
     virtual void propagate() {
 
-        CLWrapper *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
-        CLWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
+        CLFloatWrapperConst *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
+        CLFloatWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
                  weights );
-        CLWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
+        CLFloatWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
+
+        for( int i = 0; i < upstreamWrapper->size(); i++ ) {
+            std::cout << "upstreamWrapper[" << i << "]=" << upstreamWrapper->get(i) << std::endl;
+        }
+        for( int i = 0; i < weightsWrapper->size(); i++ ) {
+            std::cout << "weightsWrapper[" << i << "]=" << weightsWrapper->get(i) << std::endl;
+        }
 
 //        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
 //        std::cout << "propagate, weights: " << weights[0] << " " << " size " << previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize << std::endl;
@@ -151,9 +158,9 @@ public:
         upstreamWrapper->copyToDevice();
         weightsWrapper->copyToDevice();
 
-        resultsWrapper->createOnDevice();
+//        resultsWrapper->createOnDevice();
         
-        kernelConvolve->in( upstreamNumPlanes )->in( numPlanes )->in( boardSize )->in( filterSize )
+        kernelConvolve->in( upstreamNumPlanes )->in( numPlanes )->in( upstreamBoardSize )->in( filterSize )
           ->in( padZeros ? 1 : 0 );
         kernelConvolve->input( upstreamWrapper );
         kernelConvolve->input( weightsWrapper);
@@ -162,15 +169,21 @@ public:
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernelConvolve->run_1d( globalSize, workgroupsize );
+        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
+           << " filtersize " << filterSize << " padzeros " << padZeros << " globalSize " << globalSize << std::endl;
 
 //        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
 //        biasWrapper->copyToDevice();
 //        kernelByElementAddInplace->input( resultsWrapper)->input( biasWrapper );
 //        kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
 
-        kernelTanh->input( resultsWrapper );
+        kernelTanh->inout( resultsWrapper );
         kernelTanh->run_1d( globalSize, workgroupsize );
         resultsWrapper->copyToHost();
+
+        for( int i = 0; i < resultsWrapper->size(); i++ ) {
+            std::cout << "results[" << i << "]=" << results[i] << std::endl;
+        }
 
         delete upstreamWrapper;
         delete weightsWrapper;
