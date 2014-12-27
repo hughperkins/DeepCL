@@ -13,6 +13,8 @@ Target usage:
 Neural Net API
 ==============
 
+*Basic fully connected layers*
+
 Example, with 1 fully connected layer:
 
     #include "NeuralNet.h"
@@ -33,6 +35,8 @@ Example, with 1 fully connected layer:
 Notes:
 * fully connected layers run on cpu for now
 
+*Convolutional layers*
+
 For convolutional layer, you can do:
 
     net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->insert();
@@ -44,6 +48,8 @@ Or:
 Notes:
 * convolutional layers forward-prop runs on gpu, via OpenCL
 * back-prop is on cpu for now
+
+*General*
 
 You can print the network like this:
 
