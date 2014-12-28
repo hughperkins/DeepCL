@@ -42,6 +42,11 @@ public:
         this->_biased = _biased;
         return this;
     }    
+    FullyConnectedMaker *linear() {
+        delete this->_activationFunction;
+        this->_activationFunction = new LinearActivation();
+        return this;
+    }
     FullyConnectedMaker *tanh() {
         delete this->_activationFunction;
         this->_activationFunction = new TanhActivation();
@@ -97,6 +102,11 @@ public:
     ConvolutionalMaker *relu() {
         delete this->_activationFunction;
         this->_activationFunction = new ReluActivation();
+        return this;
+    }
+    ConvolutionalMaker *linear() {
+        delete this->_activationFunction;
+        this->_activationFunction = new LinearActivation();
         return this;
     }
     Layer *insert();

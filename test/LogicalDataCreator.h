@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "ActivationFunction.h"
+
 class LogicalDataCreator {
 public:
     int index = 0;
@@ -16,14 +18,16 @@ public:
     const int numInputPlanes;
     const int numOutputPlanes;
     const int boardSize;
-    LogicalDataCreator() :
+    activation fn;
+    LogicalDataCreator( ActivationFunction *activationFunction ) :
             data(new float[8]),
             labels(new int[4]),
             expectedResults(new float[8]),
             index(0),
             numInputPlanes(2),
             numOutputPlanes(2),
-            boardSize(1) {
+            boardSize(1),
+            activation( activationFunction ) {
     }
     ~LogicalDataCreator() {
         delete[] data;
@@ -34,8 +38,8 @@ public:
         data[ index * 2 ] = one ? 0.5 : -0.5;
         data[ index * 2 + 1 ] = two ? 0.5 : -0.5;
         labels[index] = result ? 1 : 0;
-        expectedResults[index*2] = result ? -0.5 : +0.5;
-        expectedResults[index*2+1] = result ? +0.5 : -0.5;
+        expectedResults[index*2] = result ? fn->getFalse() : fn->getTrue();
+        expectedResults[index*2+1] = result ? fn->getTrue() : fn->getFalse();
         index++;
         N++;
     }

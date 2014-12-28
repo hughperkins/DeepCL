@@ -13,14 +13,18 @@ public:
         for( int n = 0; n < numImages; n++ ) {
             double maxValue = -100000;
             int bestIndex = -1;
+            int bestCount = 0;
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 if( results[ n * numPlanes + plane ] > maxValue ) {
                     bestIndex = plane;
                     maxValue = results[ n * numPlanes + plane ];
+                   bestCount = 1;
+                } else if ( results[ n * numPlanes + plane ] == maxValue ) {
+                   bestCount++;
                 }
             }
 //            cout << "expected: " << labels[n] << " got " << bestIndex << endl;
-            if( bestIndex == labels[n] ) {
+            if( bestIndex == labels[n] && bestCount == 1 ) {
                 correct++;
             }
         }

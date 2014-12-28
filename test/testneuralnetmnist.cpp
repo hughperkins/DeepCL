@@ -47,9 +47,9 @@ int main( int argc, char *argv[] ) {
     for( int n = 0; n < N; n++ ) {
        int thislabel = labels[n];
        for( int i = 0; i < 10; i++ ) {
-          expectedOutputs[n*10+i] = -1;
+          expectedOutputs[n*10+i] = 0.2;
        }
-       expectedOutputs[n*10+thislabel] = +1;
+       expectedOutputs[n*10+thislabel] = +0.8;
     }
 
     int *labels2 = new int[4];
@@ -68,10 +68,10 @@ int main( int argc, char *argv[] ) {
 
     int numToTrain = 10000;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize( boardSize )->instance();
-    net->fullyConnectedMaker()->planes(10)->boardSize(1)->insert();
+    net->fullyConnectedMaker()->planes(10)->boardSize(1)->biased()->relu()->insert();
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->epochMaker()
-           ->learningRate(0.1)->batchSize(numToTrain)->numExamples(numToTrain)
+           ->learningRate(0.04)->batchSize(numToTrain)->numExamples(numToTrain)
            ->inputData(&(boardsFloat[0][0][0]))->expectedOutputs(expectedOutputs)
            ->run();
         cout << "loss: " << net->calcLoss( expectedOutputs ) << endl;
