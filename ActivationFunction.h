@@ -16,6 +16,7 @@ public:
     virtual std::string getKernelFunction() const { throw std::runtime_error("getKernelFunction not implemented"); };
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
     virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
+    virtual int getDerivType() const { throw std::runtime_error("getDerivType not implemented"); } 
 };
 
 class TanhActivation : public ActivationFunction {
@@ -34,6 +35,9 @@ public:
     }
     virtual float getFalse() const {
         return -0.5;
+    }
+    virtual int getDerivType() const { 
+        return 1;
     }
 };
 
@@ -72,6 +76,9 @@ public:
     }
     virtual float getFalse() const {
         return 0.2;
+    }
+    virtual int getDerivType() const { 
+        return 0;
     }
 };
 

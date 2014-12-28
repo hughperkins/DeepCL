@@ -316,62 +316,8 @@ void kernel convolve_imagecubes_float2(
 // eg 32 * 32 * 5 * 5 = 25600 ...
 // then we are aggregating over [outRow][outCol][n]
 //      eg 19 * 19 * 128 = 46208
-void kernel backprop_floats_relu( 
-        const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
-         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
-    int globalId = get_global_id(0);
-
-    int filterSizeSquared = filterSize * filterSize;
-
-    int IntraFilterOffset = globalId / filterSizeSquared;
-    int filterCol = IntraFilterOffset % filterSize;
-    int filterRow = IntraFilterOffset / filterSize;
-
-    int filter2Id = globalId / filterSizeSquared;
-    int upstreamPlane = filter2Id % upstreamNumPlanes;
-    int outPlane = filter2Id / upstreamNumPlanes;
-
-    const int halfFilterSize = filterSize >> 1;
-    const int margin = padZeros ? halfFilterSize : 0;
-    float thiswchange = 0;
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
-    //       aggregate over:  [outRow][outCol][n]
-    int outRow = 0;
-    while( outRow < outBoardSize ) {
-        int upstreamRow = outRow - margin + filterRow;
-        int outCol = 0;
-        while( outCol < outBoardSize ) {
-            int upstreamCol = outCol - margin + filterCol;
-            int n = 0;
-            while( n < batchSize ) {
-                int resultIndex = ( ( n * numPlanes 
-                          + outPlane ) * outBoardSize
-                          + outRow ) * outBoardSize
-                          + outCol;
-                float error = errors[resultIndex];
-                float actualOutput = results[resultIndex];
-                float activationDerivative = actualOutput > 0 ? actualOutput : 0;
-                int upstreamDataIndex = ( ( n * upstreamNumPlanes 
-                                 + upstreamPlane ) * upstreamBoardSize
-                                 + upstreamRow ) * upstreamBoardSize
-                                 + upstreamCol;
-                float upstreamResult = images[upstreamDataIndex];
-                float thisimagethiswchange = upstreamResult * activationDerivative *
-                    error;
-                thiswchange += thisimagethiswchange;
-                n++;
-            }
-            outCol++;
-        }
-        outRow++;
-    }
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
-    //       aggregate over:  [outRow][outCol][n]
-    weightChanges[ globalId ] = - thiswchange;
-}
-
-void kernel backprop_floats_tanh( const float learningRateMultiplier,
+// derivtype: 0=relu 1=tanh
+void kernel backprop_floats_tanh( const int derivtype, const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
@@ -406,7 +352,9 @@ void kernel backprop_floats_tanh( const float learningRateMultiplier,
                           + outCol;
                 float error = errors[resultIndex];
                 float actualOutput = results[resultIndex];
-                float activationDerivative = 1 - actualOutput * actualOutput;
+//                float activationDerivative = 1 - actualOutput * actualOutput;
+                float activationDerivative = derivtype ?  1 - actualOutput * actualOutput : 
+                    ( actualOutput > 0 ? actualOutput : 0 );
                 int upstreamDataIndex = ( ( n * upstreamNumPlanes 
                                  + upstreamPlane ) * upstreamBoardSize
                                  + upstreamRow ) * upstreamBoardSize

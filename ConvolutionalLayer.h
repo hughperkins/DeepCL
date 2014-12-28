@@ -265,34 +265,35 @@ public:
         const int numWeights = upstreamNumPlanes * numPlanes * filterSize * filterSize;
         float *weightChanges = new float[ numWeights ];
         float *biasWeightChanges = new float[numPlanes];
-        backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
+//        backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
+        backPropGpu( learningRate, errors, weightChanges );
+//        doWeightsBackProp( learningRate, errors, weightChanges );
+        doBiasBackprop( learningRate, errors, biasWeightChanges );
+        calcErrorsForUpstream( errors, errorsForUpstream );
 
         float *weightChanges2 = new float[ numWeights ];
         float *biasWeightChanges2 = new float[numPlanes];
         float *errorsForUpstream2 = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
 
-//        doWeightsBackProp( learningRate, errors, weightChanges2 );
-        backPropGpu( learningRate, errors, weightChanges2 );
-        for( int i = 0; i < numWeights; i++ ) {
-             float weight2 = weightChanges2[i];
-             if( abs(weightChanges[i] - weight2) / weight2 > 0.000001f ) {
-                 std::cout << "mismatch weight " << i << " " << weightChanges[i] << " != " << weight2 << std::endl;
-             }
-        }
+//        backPropGpu( learningRate, errors, weightChanges2 );
+//        for( int i = 0; i < numWeights; i++ ) {
+//             float weight2 = weightChanges2[i];
+//             if( abs(weightChanges[i] - weight2) / weight2 > 0.000001f ) {
+//                 std::cout << "mismatch weight " << i << " " << weightChanges[i] << " != " << weight2 << std::endl;
+//             }
+//        }
 
-        doBiasBackprop( learningRate, errors, biasWeightChanges2 );
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-             if( abs( biasWeightChanges[plane] - biasWeightChanges2[plane] ) / biasWeightChanges[plane] > 0.000001 ) {
-                  std::cout << "mismatch weight " << plane << " " << biasWeightChanges[plane] << " != " << biasWeightChanges2[plane] << std::endl;
-             }
-        }
+//        for( int plane = 0; plane < numPlanes; plane++ ) {
+//             if( abs( biasWeightChanges[plane] - biasWeightChanges2[plane] ) / biasWeightChanges[plane] > 0.000001 ) {
+//                  std::cout << "mismatch weight " << plane << " " << biasWeightChanges[plane] << " != " << biasWeightChanges2[plane] << std::endl;
+//             }
+//        }
 
-        calcErrorsForUpstream( errors, errorsForUpstream2 );
-        for( int i = 0; i < batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize; i++ ) {
-             if( abs(errorsForUpstream2[i] - errorsForUpstream2[i]) / errorsForUpstream[i] > 0.000001f ) {
-                 std::cout << "mismatch errorsForUpstream2 " << i << " " << errorsForUpstream[i] << " != " << errorsForUpstream2[i] << std::endl;
-             }
-        }
+//        for( int i = 0; i < batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize; i++ ) {
+//             if( abs(errorsForUpstream2[i] - errorsForUpstream2[i]) / errorsForUpstream[i] > 0.000001f ) {
+//                 std::cout << "mismatch errorsForUpstream2 " << i << " " << errorsForUpstream[i] << " != " << errorsForUpstream2[i] << std::endl;
+//             }
+//        }
        
         for( int i = 0; i < numWeights; i++ ) {
              weights[i] += weightChanges[i];
@@ -320,6 +321,7 @@ public:
         resultsWrapper->copyToDevice();
         errorsWrapper->copyToDevice();
         kernelBackPropWeights
+           ->in(activationFunction->getDerivType() )
            ->in(learningMultiplier)
            ->in( batchSize )->in( upstreamNumPlanes )->in(numPlanes)
            ->in( upstreamBoardSize )->in( filterSize )->in( boardSize )->in( padZeros ? 1 : 0 )
