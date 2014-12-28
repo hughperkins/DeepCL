@@ -120,17 +120,23 @@ void go(Config config) {
             ->expectedOutputs(expectedOutputs)
             ->run();
         cout << "loss: " << net->calcLoss( expectedOutputs ) << endl;
-        float const*results = net->propagate( config.numTrain, config.batchSize, &(boardsFloat[0][0][0]) );
+        float const*results = net->getResults();
+//        float const*results = net->propagate( config.numTrain, config.batchSize, &(boardsFloat[0][0][0]) );
         AccuracyHelper::printAccuracy( config.numTrain, 10, labels, results );
-        delete[] results;
     }
     //float const*results = net->getResults( net->getNumLayers() - 1 );
 
-    float const*resultsTest = net->propagate( config.numTrain, config.batchSize, &(boardsTest[0][0][0]) );
-//    net->getResults();
-    cout << "test:" << endl;
-    AccuracyHelper::printAccuracy( config.numTest, 10, labelsTest, resultsTest );
-    delete[] resultsTest;
+    int numBatches = config.numTest / config.batchSize;
+    int totalNumber = 0;
+    int totalNumRight = 0;
+    for( int batch = 0; batch < numBatches; batch++ ) {
+        int batchStart = batch * config.batchSize;
+        net->propagate( config.numTrain, config.batchSize, &(boardsTest[batchStart][0][0]) );
+        float const*resultsTest = net->getResults();
+        totalNumber += config.batchSize;
+        totalNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labelsTest[batchStart]), resultsTest );
+    }
+    cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
 
     delete net;
 
