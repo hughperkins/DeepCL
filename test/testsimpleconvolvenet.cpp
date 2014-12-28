@@ -204,6 +204,63 @@ void test4_relu() {
     delete net;
 }
 
+void test5_linear() {
+    Timer timer;
+    float data[] = { 0.5, 0.5, 0.5,
+                    -0.5, 0.5, 0.5,
+                    0.5, 0.5, 0.5,
+    
+                   0.5, 0.5, 0.5,
+                   0.5, -0.5, 0.5,
+                   0.5, 0.5, 0.5,
+
+                    -0.5, -0.5, -0.5,
+                    -0.5, 0.5, -0.5,
+                    -0.5, -0.5, -0.5,
+    
+                   -0.5, -0.5, -0.5,
+                   0.5, -0.5, -0.5,
+                   -0.5, -0.5, -0.5
+ };
+
+    int *labels = new int[4];
+    labels[0] = 0;
+    labels[1] = 1;
+    labels[2] = 0;
+    labels[3] = 1;
+    float *expectedResults = new float[8];
+    expectedResults[0] = 1;
+    expectedResults[1] = 0;
+    expectedResults[2] = 0;
+    expectedResults[3] = 1;
+    expectedResults[4] = 1;
+    expectedResults[5] = 0;
+    expectedResults[6] = 0;
+    expectedResults[7] = 1;
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
+    net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->linear()->insert();
+    float const*results = 0;
+    for( int epoch = 0; epoch < 20; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(1)
+            ->batchSize(4)
+            ->numExamples(4)
+            ->inputData(data)
+            ->expectedOutputs(expectedResults)
+            ->run();
+        results = net->getResults();
+        AccuracyHelper::printAccuracy( 4, 2, labels, results );
+    }
+    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    AccuracyHelper::printAccuracy( 4, 2, labels, results );
+    int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << 4 << endl;
+    assertEquals( numCorrect, 4 );
+
+    delete net;
+}
+
 int main( int argc, char *argv[] ) {
     int testNum = -1;
     if( argc == 2 ) {
@@ -223,6 +280,7 @@ int main( int argc, char *argv[] ) {
     if( testNum == -1 || testNum == 2 ) test2();
     if( testNum == -1 || testNum == 3 ) test3_relu();
     if( testNum == -1 || testNum == 4 ) test4_relu();
+    if( testNum == -1 || testNum == 5 ) test5_linear();
 
     return 0;
 }

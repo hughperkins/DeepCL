@@ -42,7 +42,11 @@ public:
 //        if( padZeros ) {
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
             this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_add_inplace" );
-            this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
+            if( activationFunction->getKernelFunction() != "" ) {
+                this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
+            } else {
+                this->kernelActivation = 0;
+            }
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
 //        }
@@ -198,8 +202,11 @@ public:
             kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
         }
 
-        kernelActivation->inout( resultsWrapper );
-        kernelActivation->run_1d( globalSize, workgroupsize );
+        if( kernelActivation != 0 ) {
+            kernelActivation->inout( resultsWrapper );
+            kernelActivation->run_1d( globalSize, workgroupsize );
+        }
+
         resultsWrapper->copyToHost();
 
         delete upstreamWrapper;
