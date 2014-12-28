@@ -34,7 +34,7 @@ public:
         randomizeWeights( fanIn, biasWeights, numOutputs );
     }
     // weights like [upstreamPlane][upstreamRow][upstreamCol][outputPlane][outputrow][outputcol]
-    inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) {
+    inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
         int index = ( ( ( ( prevPlane ) * upstreamBoardSize
                        + prevRow ) * upstreamBoardSize
                        + prevCol ) * numPlanes
@@ -43,25 +43,25 @@ public:
                        + outputCol;
         return index;
     }
-    inline float getWeight( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) {
+    inline float getWeight( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
         return weights[getWeightIndex( prevPlane, prevRow, prevCol, outputPlane, outputRow, outputCol )];
     }
-    inline int getBiasWeightIndex( int outputPlane, int outputRow, int outputCol ) {
+    inline int getBiasWeightIndex( int outputPlane, int outputRow, int outputCol ) const {
         int index = (outputPlane * boardSize 
                        + outputRow ) * boardSize
                        + outputCol;
         return index;
     }
-    inline float getBiasWeight( int outputPlane, int outputRow, int outputCol ) {
+    inline float getBiasWeight( int outputPlane, int outputRow, int outputCol ) const {
         return biasWeights[getBiasWeightIndex( outputPlane, outputRow, outputCol ) ];
     }
-    virtual void print() {
+    virtual void print() const {
         std::cout << "FullyConnectedLayer" << std::endl;
         std::cout << "  numoutputneurons " << numPlanes << std::endl;
         printWeights();
-        printResults();
+        printOutput();
     }
-    virtual void printWeights() {
+    virtual void printWeights() const {
         std::cout << "  weights: " << std::endl;
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             for( int outRow = 0; outRow < boardSize; outRow++ ) {
@@ -89,7 +89,7 @@ public:
             }
         }
     }
-    virtual void printResults() {
+    virtual void printOutput() const {
         if( results == 0 ) {
              std::cout << "no results yet" << std::endl;
         } else {

@@ -15,7 +15,7 @@ class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *cl;
     CLKernel *kernelConvolve;
-    CLKernel *kernelByElementAddInplace;
+    CLKernel *kernelApplyBias;
     CLKernel *kernelActivation;
 
     const int filterSize;
@@ -41,7 +41,7 @@ public:
             this->cl = new OpenCLHelper();
 //        if( padZeros ) {
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
-            this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_apply_bias" );
+            this->kernelApplyBias = cl->buildKernel( "ClConvolve.cl", "apply_bias" );
             if( activationFunction->getKernelFunction() != "" ) {
                 this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
             } else {
@@ -56,7 +56,7 @@ public:
     }
     virtual ~ConvolutionalLayer() {
         delete[] biasWeights;
-        delete kernelByElementAddInplace;
+        delete kernelApplyBias;
         delete kernelConvolve;
         delete kernelActivation;
         delete cl;
@@ -80,15 +80,15 @@ public:
         }
         print();
     }
-    virtual void print() {
+    virtual void print() const {
         std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
             " padZeros " << padZeros << " biased " << biased << " outputBoardSize " << boardSize << std::endl;
         printWeights();
         if( results != 0 ) {
-            printOutputs();
+            printOutput();
         }
     }
-    virtual void printWeights() {
+    virtual void printWeights() const {
         std::cout << "  weights: " << std::endl;
 // filters are organized like [filterid][plane][row][col]
         for( int filter = 0; filter < numPlanes; filter++ ) {
@@ -114,7 +114,7 @@ public:
             }
         }
      }
-     virtual void printOutputs() {
+     virtual void printOutput() const {
         if( results == 0 ) {
             return;
         }
@@ -198,8 +198,14 @@ public:
         if( biased ) {
             CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
             biasWrapper->copyToDevice();
-            kernelByElementAddInplace->inout( resultsWrapper)->input( biasWrapper );
-            kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
+            // need to apply bias per filter, which means for each board output by that filter
+            // need to pass in the size of each of these boards
+            kernelApplyBias
+                  ->in( numPlanes )
+                  ->in( filterSize * filterSize )
+                  ->inout( resultsWrapper)
+                  ->input( biasWrapper );
+            kernelApplyBias->run_1d( globalSize, workgroupsize );
         }
 
         if( kernelActivation != 0 ) {
@@ -296,7 +302,7 @@ public:
                 for( int n = 0; n < batchSize; n++ ) {
                     for( int outRow = 0; outRow < boardSize; outRow++ ) {
                         for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                            float upstreamResult = 0.5;
+                            float upstreamResult = 1;
                             int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                             float actualOutput = results[resultIndex];
                             float activationDerivative = activationFunction->calcDerivative( actualOutput );
@@ -311,6 +317,49 @@ public:
                 biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
              }
          }
+
+        // handle lower layer...
+        // errors for upstream look like [n][inPlane][inRow][inCol]
+        // need to aggregate over: [outPlane][outRow][outCol] (?)
+        // need to backprop errors along each possible weight
+        // each upstream feeds to:
+        //    - each of our filters (so numPlanes filters)
+        //    - each of our outpoint points (so boardSize * boardSize)
+        // for our own backprop, we updated weights for:
+        //      [outPlane][inPlane][filterRow][filtercol]
+        //    aggregating over: [n][outRow][outCol]
+        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
+        // errors are provider per [n][inPlane][inRow][inCol]
+        for( int n = 0; n < batchSize; n++ ) {
+            for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
+                for( int upstreamRow = 0; upstreamRow < upstreamBoardSize; upstreamRow++ ) {
+                    for( int upstreamCol = 0; upstreamCol < upstreamBoardSize; upstreamCol++ ) {
+                        float sumWeightTimesOutError = 0;
+                        // aggregate over [outPlane][outRow][outCol]
+                        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
+                            for( int outRow = 0; outRow < boardSize; outRow++ ) {
+                                // need to derive filterRow and filterCol, given outRow and outCol
+                                int filterRow = upstreamRow + margin - outRow;
+                                for( int outCol = 0; outCol < boardSize; outCol++ ) {
+                                   // need to derive filterRow and filterCol, given outRow and outCol
+                                    int filterCol = upstreamCol + margin - outCol;
+                                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+                                    float thisError = errors[resultIndex];
+                                    int thisWeightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
+                                    float thisWeight = weights[thisWeightIndex];
+                                    float thisWeightTimesError = thisWeight * thisError;
+                                    sumWeightTimesOutError += thisWeightTimesError;
+                                }
+                            }
+                        }
+                        int upstreamResultIndex = previousLayer->getResultIndex( n, upstreamPlane, upstreamRow, upstreamCol );
+                        errorsForUpstream[upstreamResultIndex] = sumWeightTimesOutError;
+                    }
+                }
+            }
+        }
+        previousLayer->backPropErrors(learningRate, errorsForUpstream);
+        delete[] errorsForUpstream;
     }
 };
 

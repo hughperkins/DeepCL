@@ -25,6 +25,11 @@ add_custom_target(
     cp ${CMAKE_CURRENT_SOURCE_DIR}/*.cl ${CMAKE_BINARY_DIR}
 )
 
+add_custom_target(
+    git-submodule-update
+    git submodule update --init --recursive
+)
+
 add_executable( testlogicaloperators test/testlogicaloperators.cpp )
 
 #set( OPENCLHELPER $ENV{HOME}/git/OpenCLHelper)
@@ -44,4 +49,6 @@ add_dependencies( testsimpleconvolve clfiles )
 add_dependencies( testsimpleconvolvenet clfiles )
 add_dependencies( testneuralnetmnistconvolve clfiles )
 add_dependencies( test4dconvolve clfiles )
+
+add_dependencies( ClConvolve git-submodule-update )
 

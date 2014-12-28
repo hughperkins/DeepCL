@@ -67,7 +67,7 @@ public:
     inline float getResult( int n, int plane, int row, int col ) const {
         return results[getResultIndex( n, plane,row,col)];
     }
-    inline int getResultsSizePerExample() {
+    inline int getResultsSizePerExample() const {
         return numPlanes * boardSize * boardSize;
     }
     int getNumPlanes() const {
@@ -79,7 +79,7 @@ public:
     virtual void propagate() {
         throw std::runtime_error("propagate not implemented for this layer type");
     }
-    virtual void print() { 
+    virtual void print() const { 
 //        std::cout << "print() not implemented for this layer type" << std:: endl; 
         printWeights();
         if( results != 0 ) {
@@ -88,10 +88,10 @@ public:
             std::cout << "No results yet " << std::endl;
         }
     }
-    virtual void printWeights() { 
+    virtual void printWeights() const { 
         std::cout << "printWeights() not implemented for this layer type" << std:: endl; 
     }
-    virtual void printOutput() { 
+    virtual void printOutput() const { 
         std::cout << "printOutpu() not implemented for this layer type" << std:: endl; 
     }
     static inline float generateWeight( int fanin ) {

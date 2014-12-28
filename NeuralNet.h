@@ -144,6 +144,14 @@ public:
             i++;
         }
     }
+    void printOutput() {
+        int i = 0; 
+        for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
+            std::cout << "layer " << i << ":" << std::endl;
+            (*it)->printOutput();
+            i++;
+        }
+    }
 };
 
 

@@ -14,7 +14,7 @@ public:
     InputLayer( int numPlanes, int boardSize ) :
           Layer( 0, numPlanes, boardSize, 0 ) {
     }
-    virtual void print() {
+    virtual void printOutput() const {
         if( results == 0 ) {
              return;
         }
@@ -38,6 +38,9 @@ public:
                 if( boardSize > 5 ) std::cout << " ... " << std::endl;
             }
         }
+    }
+    virtual void print() const {
+        printOutput();
     }
     void in( float const*images ) {
 //        std::cout << "InputLayer::in()" << std::endl;

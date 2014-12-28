@@ -315,9 +315,15 @@ void kernel byelement_add_inplace( global float *target, global const float *src
     target[globalId] += src[globalId];
 }
 
-void kernel byelement_apply_bias( global float *target, global const float *src ) {
+// results are organized like [imageid][filterid][row][col]
+// bias si applied per filterId
+// need to know:
+//  - how many filters
+//  - filterSizeSquared
+void kernel apply_bias( const int numFilters, const int filterSizeSquared, global float *target, global const float *biasWeights ) {
     int globalId = get_global_id(0);
-    target[globalId] += 0.5f * src[globalId];
+    int filterId = ( globalId / filterSizeSquared ) % numFilters;
+    target[globalId] += biasWeights[filterId];
 }
 
 void kernel byelement_mult_inplace( global float *target, const float scalar ) {
