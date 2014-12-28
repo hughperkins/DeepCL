@@ -64,6 +64,7 @@ public:
             for( int outRow = 0; outRow < boardSize; outRow++ ) {
                 for( int outCol = 0; outCol < boardSize; outCol++ ) {
                     std::cout << "    outPlane " << outPlane << " outrow " << outRow << " outCol " << outCol << std::endl;
+                    std::cout << "    bias: " << getBiasWeight( outPlane, outRow, outCol ) << std::endl;
                     for( int inPlane = 0; inPlane < previousLayer->getNumPlanes(); inPlane++ ) {
                         if( previousLayer->getNumPlanes() > 1 ) std::cout << "    inPlane " << inPlane << std::endl;
                         for( int i = 0; i < std::min( 5, previousLayer->getBoardSize() ); i++ ) {
