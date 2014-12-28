@@ -25,7 +25,7 @@ add_custom_target(
     cp ${CMAKE_CURRENT_SOURCE_DIR}/*.cl ${CMAKE_BINARY_DIR}
 )
 
-add_executable( test2layerfullyconnected test/test2layerfullyconnected.cpp )
+add_executable( testlogicaloperators test/testlogicaloperators.cpp )
 
 #set( OPENCLHELPER $ENV{HOME}/git/OpenCLHelper)
 add_executable( testarraysquare test/testarraysquare.cpp )

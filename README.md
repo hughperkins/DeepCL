@@ -188,7 +188,7 @@ Sample/test
 *Neural net API*
 
 * There are various samples in the [test](test) subdirectory.  The following are currently the most relevant:
-  * `test2layerfullyconnected.cpp`  - use fully connected 2 layers, to learn and/or/xor
+  * `testlogicaloperators.cpp`  - use 1 or 2-layer fully-connected network, or 1 or 2-layer convolutional network, to learn and/or/xor
   * `testsimpleconvolve.cpp`      - check OpenCL convolve working, see how to use this
   * `testsimpleconvolvenet.cpp`   - use 1 layer convolutional network to learn toy 3x3 boards
   * `testneuralnetmnist.cpp`        - use 1 layer fully connected layer to learn MNIST
