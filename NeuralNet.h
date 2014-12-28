@@ -70,15 +70,18 @@ public:
             (*it)->setBatchSize( batchSize );
         }
     }
-    void doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
+    float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
+        float loss = 0;
         for( int batch = 0; batch < numBatches; batch++ ) {
             int batchStart = batch * batchSize;
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;
             learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+            loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
         }
+        return loss;
     }
 //    float *propagate( int N, int batchSize, float const*images) {
 //        float *results = new float[N];

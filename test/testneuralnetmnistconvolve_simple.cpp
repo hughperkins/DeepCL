@@ -70,13 +70,11 @@ class Config {
 public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
-    string testSet = "t10k";
-    int numTrain = 1000;
-    int numTest = 1000;
-    int batchSize = 100;
+    int numTrain = 2;
+    int batchSize = 2;
     int numEpochs = 20;
-    float learningRate = 0.1f;
-    int biased = 1;
+    float learningRate = 1;
+    int biased = 0;
     Config() {
     }
 };
@@ -97,22 +95,29 @@ void go(Config config) {
     getStats( boardsFloat, N, boardSize, &mean, &thismax );
     normalize( boardsFloat, N, boardSize, mean, thismax );
 
-    int Ntest;
-    float ***boardsTest = 0;
-    int *labelsTest = 0;
-    float *expectedOutputsTest = 0;
-    loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
-    normalize( boardsTest, Ntest, boardSize, mean, thismax );
-
     timer.timeCheck("after load images");
 
     int numToTrain = config.numTrain;
     int batchSize = config.batchSize;
+    int numCategories = 10;
+    if( numToTrain < 10 ) {
+        numCategories = numToTrain;
+        for( int n = 0; n < numToTrain; n++ ) {
+           int thislabel = n;
+           labels[n] = n;
+           for( int i = 0; i < numCategories; i++ ) {
+              expectedOutputs[n*numCategories+i] = -0.5;
+           }
+           expectedOutputs[n*numCategories+thislabel] = +0.5;
+        }
+    }
+
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased)->insert();
+    net->convolutionalMaker()->numFilters(numCategories)->filterSize(boardSize)->tanh()->biased(config.biased)->insert();
     net->print();
+    float loss = 0;
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
-        float loss = net->epochMaker()
+        loss = net->epochMaker()
             ->learningRate(config.learningRate)
             ->batchSize(batchSize)
             ->numExamples(numToTrain)
@@ -121,37 +126,18 @@ void go(Config config) {
             ->run();
         cout << "loss: " << loss << endl;
         int trainNumRight = 0;
-        for( int batch = 0; batch < numToTrain / batchSize; batch++ ) {
-            int batchStart = batch * batchSize;
-            net->propagate( &(boardsFloat[batchStart][0][0]) );
-            float const*results = net->getResults();
-            trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labels[batchStart]), results );
-        }
+        float const*results = net->getResults();
+        trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, numCategories, &(labels[0]), results );
         cout << "train: " << trainNumRight << "/" << numToTrain << endl;
-        cout << "test:" << endl;
-        net->propagate( &(boardsTest[0][0][0]) );
-        float const*resultsTest = net->getResults();
-        AccuracyHelper::printAccuracy( config.batchSize, 10, labelsTest, resultsTest );
     }
-    //float const*results = net->getResults( net->getNumLayers() - 1 );
-
-    int numBatches = config.numTest / config.batchSize;
-    int totalNumber = 0;
-    int totalNumRight = 0;
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int batchStart = batch * config.batchSize;
-        net->propagate( &(boardsTest[batchStart][0][0]) );
-        float const*resultsTest = net->getResults();
-        totalNumber += config.batchSize;
-        totalNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labelsTest[batchStart]), resultsTest );
-    }
-    cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
+        net->print();
+        cout << "loss: " << loss << endl;
+        int trainNumRight = 0;
+        float const*results = net->getResults();
+        trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, numCategories, &(labels[0]), results );
+        cout << "train: " << trainNumRight << "/" << numToTrain << endl;
 
     delete net;
-
-    delete[] expectedOutputsTest;
-    delete[] labelsTest;
-    BoardsHelper::deleteBoards( &boardsTest, Ntest, boardSize );
 
     delete[] expectedOutputs;
     delete[] labels;
@@ -165,9 +151,7 @@ int main( int argc, char *argv[] ) {
         cout << "Possible key=value pairs:" << endl;
         cout << "    datadir=[data directory] (" << config.dataDir << ")" << endl;
         cout << "    trainset=[train|t10k|other set name] (" << config.trainSet << ")" << endl;
-        cout << "    testset=[train|t10k|other set name] (" << config.testSet << ")" << endl;
         cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
-        cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
         cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
@@ -183,9 +167,7 @@ int main( int argc, char *argv[] ) {
            string value = splitkeyval[1];
            if( key == "datadir" ) config.dataDir = value;
            if( key == "trainset" ) config.trainSet = value;
-           if( key == "testset" ) config.testSet = value;
            if( key == "numtrain" ) config.numTrain = atoi(value);
-           if( key == "numtest" ) config.numTest = atoi(value);
            if( key == "batchsize" ) config.batchSize = atoi(value);
            if( key == "numepochs" ) config.numEpochs = atoi(value);
            if( key == "biased" ) config.biased = atoi(value);

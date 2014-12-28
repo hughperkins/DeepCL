@@ -5,8 +5,8 @@
 #include <stdexcept>
 using namespace std;
 
-void EpochMaker::run() {
-    net->doEpoch( _learningRate, _batchSize, _numExamples, _inputData, _expectedOutputs );
+float EpochMaker::run() {
+    return net->doEpoch( _learningRate, _batchSize, _numExamples, _inputData, _expectedOutputs );
 }
 
 
