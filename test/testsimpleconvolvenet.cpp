@@ -6,6 +6,7 @@
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
+#include "test/asserts.h"
 
 using namespace std;
 
@@ -32,14 +33,19 @@ void test1() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        net->print();
+//        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+//        net->print();
         float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
-    net->print();
+//    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
+
+    int numCorrect = AccuracyHelper::calcNumRight( 2, 2, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << 2 << endl;
+    assertEquals( numCorrect, 2 );
 
     delete net;
 }
@@ -88,12 +94,15 @@ void test2() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
         results = net->getResults();
         AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
-    net->print();
+//    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
+    int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << 4 << endl;
+    assertEquals( numCorrect, 4 );
 
     delete net;
 }
@@ -103,6 +112,14 @@ int main( int argc, char *argv[] ) {
     if( argc == 2 ) {
         testNum = atoi( argv[1] );
     }
+
+    if( testNum == -1 ) {
+        for( int i = 0; i < 10; i++ ) {
+            test1();
+            test2();
+        }
+    }
+
     if( testNum == -1 || testNum == 1 ) test1();
     if( testNum == -1 || testNum == 2 ) test2();
 
