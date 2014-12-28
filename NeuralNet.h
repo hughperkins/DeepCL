@@ -59,8 +59,8 @@ public:
         layers.push_back( layer );
         return layer;
     }
-    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros ) {
-        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros );
+    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros = true, bool biased = true ) {
+        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros, biased );
         layers.push_back( layer );
         return layer;
     }
@@ -72,16 +72,34 @@ public:
     void doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
+        std::cout << "numbatches " << numBatches << " batchsize " << batchSize << std::endl;
         for( int batch = 0; batch < numBatches; batch++ ) {
-//            std::cout << " batch " << batch << std::endl;
             int batchStart = batch * batchSize;
             int batchEndExcl = std::min( numImages, (batch + 1 ) * batchSize );
-            learnBatch( learningRate, batchStart, batchEndExcl, images, expectedResults );
+            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
+//            learnBatch( learningRate, batchStart, batchEndExcl, images, expectedResults );
+//            learnBatch( learningRate, &(images[batchStart]), &(expectedResults[batchStart]) );
+            learnBatch( learningRate, images, expectedResults );
         }
     }
-    void propagate( int batchStart, int batchEndExcl, float const*images) {
+    float *propagate( int N, int batchSize, float const*images) {
+        float *results = new float[N];
+        int numBatches = N / batchSize;
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            int batchStart = batch * batchSize;
+            int batchEndExcl = std::min( N, (batch + 1 ) * batchSize );
+            propagateBatch( &(images[batchStart]) );
+            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
+                float const *netResults = getResults();
+            for( int i = 0; i < batchSize; i++ ) {
+                results[batchStart + i ] = netResults[i];
+            }
+        }
+        return results;
+    }
+    void propagateBatch( float const*images) {
         // forward...
-        dynamic_cast<InputLayer *>(layers[0])->in( batchStart, batchEndExcl, images );
+        dynamic_cast<InputLayer *>(layers[0])->in( images );
         for( int layerId = 1; layerId < layers.size(); layerId++ ) {
             layers[layerId]->propagate();
         }
@@ -90,12 +108,12 @@ public:
         // backward...
         layers[layers.size() - 1]->backPropExpected( learningRate, expectedResults );
     }
-    void learnBatch( float learningRate, int batchStart, int batchEndExcl, float const*images, float const *expectedResults ) {
+    void learnBatch( float learningRate, float const*images, float const *expectedResults ) {
         Timer timer;
-        propagate( batchStart, batchEndExcl, images);
-        timer.timeCheck("propagate");
+        propagateBatch( images);
+//        timer.timeCheck("propagate");
         backProp(learningRate, expectedResults );
-        timer.timeCheck("backProp");
+//        timer.timeCheck("backProp");
     }
     int getNumLayers() {
         return layers.size();

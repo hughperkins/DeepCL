@@ -38,11 +38,11 @@ public:
             }
         }
     }
-    void in( int batchStart, int batchEnd, float const*images ) {
+    void in( float const*images ) {
 //        std::cout << "InputLayer::in()" << std::endl;
         this->results = (float*)images;
-        this->batchStart = batchStart;
-        this->batchEnd = batchEnd;
+//        this->batchStart = batchStart;
+//        this->batchEnd = batchEnd;
 //        print();
     }
     virtual ~InputLayer() {

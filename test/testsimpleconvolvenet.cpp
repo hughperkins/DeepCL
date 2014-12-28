@@ -23,7 +23,7 @@ void test1() {
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
-    net->convolutionalMaker()->numFilters(2)->filterSize(1)->insert();
+    net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
@@ -37,6 +37,9 @@ void test1() {
         float const*results = net->getResults();
         AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
+    net->print();
+    float const*results = net->getResults();
+    AccuracyHelper::printAccuracy( 2, 2, labels, results );
 
     delete net;
 }
@@ -75,7 +78,7 @@ void test2() {
     expectedResults[6] = -0.5;
     expectedResults[7] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
-    net->convolutionalMaker()->numFilters(2)->filterSize(3)->insert();
+    net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->insert();
     float const*results = 0;
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
@@ -89,7 +92,7 @@ void test2() {
         results = net->getResults();
         AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
-//    net->print();
+    net->print();
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
 
     delete net;

@@ -49,6 +49,10 @@ Notes:
 * convolutional layers forward-prop runs on gpu, via OpenCL
 * back-prop is on cpu for now
 
+Options:
+* add `->padZeros()` to pad the input board with zeros, so the output board and input board are the same size
+* add `->biased()` to add per-filter biases
+
 *General*
 
 You can print the network like this:
@@ -180,8 +184,8 @@ Sample/test
   * testsimpleconvolve.cpp      - check OpenCL convolve working, see how to use this
   * testsimpleconvolvenet.cpp   - use 1 layer convolutional network to learn toy 3x3 boards
   * testneuralnetmnist.cpp        - use 1 layer fully connected layer to learn MNIST
-  * testneuralnetmnistconvolve.cpp  - learn 1000 mnist training images, then test against 1000 test images (gets
-about 68% test accuracy for now)
+  * testneuralnetmnistconvolve.cpp  - learn 1000 mnist training images, using a single convolutional layer, then test against 1000 test images (gets
+about 68% test accuracy for now, using a single layer)
 
 Third-party libraries
 =====================

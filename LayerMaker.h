@@ -38,6 +38,7 @@ class ConvolutionalMaker {
     int _numFilters;
     int _filterSize;
     bool _padZeros;
+    bool _biased;
 public:
     ConvolutionalMaker( NeuralNet *net ) {
         memset( this, 0, sizeof( ConvolutionalMaker ) );
@@ -54,6 +55,14 @@ public:
     }    
     ConvolutionalMaker *padZeros() {
         this->_padZeros = true;
+        return this;
+    }    
+    ConvolutionalMaker *biased() {
+        this->_biased = true;
+        return this;
+    }    
+    ConvolutionalMaker *biased(int _biased) {
+        this->_biased = _biased;
         return this;
     }    
     Layer *insert();

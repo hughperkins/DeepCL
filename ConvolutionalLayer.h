@@ -21,14 +21,16 @@ public:
     const int upstreamBoardSize;
     const int upstreamNumPlanes;
     float *biasWeights;
+    const bool biased;
 
-    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros ) :
+    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros = true, bool biased = true ) :
             Layer( previousLayer, numFilters, 
                 padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1 ),
             filterSize( filterSize ),
             padZeros( padZeros ),
             upstreamBoardSize( previousLayer->getBoardSize() ),
-            upstreamNumPlanes( previousLayer->getNumPlanes() ) {
+            upstreamNumPlanes( previousLayer->getNumPlanes() ),
+            biased(biased) {
         this->cl = new OpenCLHelper();
 //        if( padZeros ) {
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
@@ -69,7 +71,7 @@ public:
     }
     virtual void print() {
         std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
-            " padZeros " << padZeros << " outputBoardSize " << boardSize << std::endl;
+            " padZeros " << padZeros << " biased " << biased << " outputBoardSize " << boardSize << std::endl;
         printWeights();
         if( results != 0 ) {
             printOutputs();
@@ -80,7 +82,9 @@ public:
 // filters are organized like [filterid][plane][row][col]
         for( int filter = 0; filter < numPlanes; filter++ ) {
            std::cout << "    filter " << filter << std::endl;
-           std::cout << "       bias=" << biasWeights[filter] << std::endl;            
+           if( biased ) {
+               std::cout << "       bias=" << biasWeights[filter] << std::endl;            
+           }
            for( int plane = 0; plane < upstreamNumPlanes; plane++ ) {
                if( upstreamNumPlanes > 1 ) std::cout << "    plane " << plane << std::endl;
                 for( int i = 0; i < std::min(5,filterSize); i++ ) {
@@ -174,10 +178,12 @@ public:
 //        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
 //           << " filtersize " << filterSize << " padzeros " << padZeros << " globalSize " << globalSize << std::endl;
 
-        CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
-        biasWrapper->copyToDevice();
-        kernelByElementAddInplace->inout( resultsWrapper)->input( biasWrapper );
-        kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
+        if( biased ) {
+            CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
+            biasWrapper->copyToDevice();
+            kernelByElementAddInplace->inout( resultsWrapper)->input( biasWrapper );
+            kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
+        }
 
         kernelTanh->inout( resultsWrapper );
         kernelTanh->run_1d( globalSize, workgroupsize );
@@ -264,27 +270,29 @@ public:
                 }
             }
         }
-         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-            // bias...
-            // biasweights: [outPlane]
-            //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
-            float thiswchange = 0;
-            for( int n = 0; n < batchSize; n++ ) {
-                for( int outRow = 0; outRow < boardSize; outRow++ ) {
-                    for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                        float upstreamResult = 0.5;
-                        int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
-                        float actualOutput = results[resultIndex];
-                        float activationDerivative = 1 - actualOutput * actualOutput;
-                        float thisimagethiswchange = upstreamResult * errors[resultIndex] * activationDerivative;
-                        thiswchange += thisimagethiswchange;
-    if(debug)std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << errors[resultIndex]
-       << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
-       << thisimagethiswchange << std::endl;
+        if( biased ) {
+             for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
+                // bias...
+                // biasweights: [outPlane]
+                //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
+                float thiswchange = 0;
+                for( int n = 0; n < batchSize; n++ ) {
+                    for( int outRow = 0; outRow < boardSize; outRow++ ) {
+                        for( int outCol = 0; outCol < boardSize; outCol++ ) {
+                            float upstreamResult = 0.5;
+                            int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+                            float actualOutput = results[resultIndex];
+                            float activationDerivative = 1 - actualOutput * actualOutput;
+                            float thisimagethiswchange = upstreamResult * errors[resultIndex] * activationDerivative;
+                            thiswchange += thisimagethiswchange;
+        if(debug)std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << errors[resultIndex]
+           << " actualoutput=" << actualOutput << " upstreamResult=" << upstreamResult << " thisimagethiswchange="
+           << thisimagethiswchange << std::endl;
+                        }
                     }
                 }
-            }
-            biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+                biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+             }
          }
     }
 };

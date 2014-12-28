@@ -10,6 +10,7 @@ using namespace std;
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "test/AccuracyHelper.h"
+#include "stringhelper.h"
 
 void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {
     int boardSize;
@@ -65,7 +66,22 @@ void normalize( float ***boards, int N, int boardSize, double mean, double thism
     }
 }
 
-int main( int argc, char *argv[] ) {
+class Config {
+public:
+    string dataDir = "/norep/Downloads/data/mnist";
+    string trainSet = "train";
+    string testSet = "t10k";
+    int numTrain = 10;
+    int numTest = 10;
+    int batchSize = numTrain;
+    int numEpochs = 20;
+    float learningRate = 1;
+    int biased = 0;
+    Config() {
+    }
+};
+
+void go(Config config) {
     Timer timer;
 
     int boardSize;
@@ -74,7 +90,7 @@ int main( int argc, char *argv[] ) {
     float ***boardsFloat = 0;
     int *labels = 0;
     float *expectedOutputs = 0;
-    loadMnist( "/norep/Downloads/data/mnist", "train", &N, &boardSize, &boardsFloat, &labels, &expectedOutputs );
+    loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs );
 
     float mean;
     float thismax;
@@ -85,33 +101,36 @@ int main( int argc, char *argv[] ) {
     float ***boardsTest = 0;
     int *labelsTest = 0;
     float *expectedOutputsTest = 0;
-    loadMnist( "/norep/Downloads/data/mnist", "t10k", &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
+    loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
     normalize( boardsTest, Ntest, boardSize, mean, thismax );
 
     timer.timeCheck("after load images");
 
-    int numToTrain = 1000;
+    int numToTrain = config.numTrain;
+    int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->insert();
+    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->biased(config.biased)->insert();
     net->print();
-    for( int epoch = 0; epoch < 20; epoch++ ) {
+    for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.1)
-            ->batchSize(numToTrain)
+            ->learningRate(config.learningRate)
+            ->batchSize(batchSize)
             ->numExamples(numToTrain)
             ->inputData(&(boardsFloat[0][0][0]))
             ->expectedOutputs(expectedOutputs)
             ->run();
         cout << "loss: " << net->calcLoss( expectedOutputs ) << endl;
-        float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( numToTrain, 10, labels, results );
+        float const*results = net->propagate( config.numTrain, config.batchSize, &(boardsFloat[0][0][0]) );
+        AccuracyHelper::printAccuracy( config.numTrain, 10, labels, results );
+        delete[] results;
     }
-    float const*results = net->getResults( net->getNumLayers() - 1 );
+    //float const*results = net->getResults( net->getNumLayers() - 1 );
 
-    net->propagate( 0, numToTrain, &(boardsTest[0][0][0]) );
-    float const*resultsTest = net->getResults();
+    float const*resultsTest = net->propagate( config.numTrain, config.batchSize, &(boardsTest[0][0][0]) );
+//    net->getResults();
     cout << "test:" << endl;
-    AccuracyHelper::printAccuracy( numToTrain, 10, labelsTest, resultsTest );
+    AccuracyHelper::printAccuracy( config.numTest, 10, labelsTest, resultsTest );
+    delete[] resultsTest;
 
     delete net;
 
@@ -122,9 +141,43 @@ int main( int argc, char *argv[] ) {
     delete[] expectedOutputs;
     delete[] labels;
     BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
-
-    return 0;
 }
 
+int main( int argc, char *argv[] ) {
+    Config config;
+    if( argc == 2 && ( string(argv[1]) == "--help" || string(argv[1]) == "--?" || string(argv[1]) == "-?" || string(argv[1]) == "-h" ) ) {
+        cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
+        cout << "Possible key=value pairs:" << endl;
+        cout << "    datadir=[data directory] (" << config.dataDir << ")" << endl;
+        cout << "    trainset=[train|t10k|other set name] (" << config.trainSet << ")" << endl;
+        cout << "    testset=[train|t10k|other set name] (" << config.testSet << ")" << endl;
+        cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
+        cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
+        cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
+        cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
+        cout << "    biased=[0|1] (" << config.biased << ")" << endl;
+        cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
+    } 
+    for( int i = 1; i < argc; i++ ) {
+       vector<string> splitkeyval = split( argv[i], "=" );
+       if( splitkeyval.size() != 2 ) {
+          cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
+          exit(1);
+       } else {
+           string key = splitkeyval[0];
+           string value = splitkeyval[1];
+           if( key == "datadir" ) config.dataDir = value;
+           if( key == "trainset" ) config.trainSet = value;
+           if( key == "testset" ) config.testSet = value;
+           if( key == "numtrain" ) config.numTrain = atoi(value);
+           if( key == "numtest" ) config.numTest = atoi(value);
+           if( key == "batchsize" ) config.batchSize = atoi(value);
+           if( key == "numepochs" ) config.numEpochs = atoi(value);
+           if( key == "biased" ) config.biased = atoi(value);
+           if( key == "learningrate" ) config.learningRate = atof(value);
+       }
+    }
+    go( config );
+}
 
 
