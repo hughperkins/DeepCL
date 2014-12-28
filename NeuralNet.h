@@ -55,8 +55,8 @@ public:
     EpochMaker *epochMaker() {
          return new EpochMaker(this);
     }
-    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize, ActivationFunction *fn ) {
-        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize, fn );
+    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize, bool biased, ActivationFunction *fn ) {
+        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize, biased, fn );
         layers.push_back( layer );
         return layer;
     }

@@ -18,6 +18,7 @@ class FullyConnectedMaker {
     NeuralNet *net;
     int _numPlanes;
     int _boardSize;
+    int _biased;
     ActivationFunction *_activationFunction;
 public:
     FullyConnectedMaker( NeuralNet *net ) :
@@ -33,6 +34,14 @@ public:
         this->_boardSize = boardSize;
         return this;
     }
+    FullyConnectedMaker *biased() {
+        this->_biased = true;
+        return this;
+    }    
+    FullyConnectedMaker *biased(int _biased) {
+        this->_biased = _biased;
+        return this;
+    }    
     FullyConnectedMaker *tanh() {
         delete this->_activationFunction;
         this->_activationFunction = new TanhActivation();

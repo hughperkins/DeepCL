@@ -15,11 +15,13 @@ public:
     const int upstreamNumPlanes;
     const int upstreamBoardSize;
     float *biasWeights;
-    FullyConnectedLayer( Layer *previousLayer, int numOutputPlanes, int newBoardSize, ActivationFunction *activationFunction ) :
+    const bool biased;
+    FullyConnectedLayer( Layer *previousLayer, int numOutputPlanes, int newBoardSize, bool biased, ActivationFunction *activationFunction ) :
 //            previousLayer( previousLayer ),
             Layer( previousLayer, numOutputPlanes, newBoardSize, activationFunction),
             upstreamNumPlanes( previousLayer->getNumPlanes() ),
-            upstreamBoardSize( previousLayer->getBoardSize() ) {
+            upstreamBoardSize( previousLayer->getBoardSize() ),
+            biased( biased ) {
         int numPreviousPlanes = previousLayer->getNumPlanes();
         int previousBoardSize = previousLayer->getBoardSize();
         int numOutputs = (numOutputPlanes * newBoardSize * newBoardSize);
@@ -65,7 +67,7 @@ public:
             for( int outRow = 0; outRow < boardSize; outRow++ ) {
                 for( int outCol = 0; outCol < boardSize; outCol++ ) {
                     std::cout << "    outPlane " << outPlane << " outrow " << outRow << " outCol " << outCol << std::endl;
-                    std::cout << "    bias: " << getBiasWeight( outPlane, outRow, outCol ) << std::endl;
+                    if( biased ) std::cout << "    bias: " << getBiasWeight( outPlane, outRow, outCol ) << std::endl;
                     for( int inPlane = 0; inPlane < previousLayer->getNumPlanes(); inPlane++ ) {
                         if( previousLayer->getNumPlanes() > 1 ) std::cout << "    inPlane " << inPlane << std::endl;
                         for( int i = 0; i < std::min( 5, previousLayer->getBoardSize() ); i++ ) {
@@ -143,7 +145,9 @@ public:
                                 }
                             }
                         }
-                        sum += getBiasWeight( outPlane, outRow, outCol );
+                        if( biased ) {
+                            sum += 0.5 * getBiasWeight( outPlane, outRow, outCol );
+                        }
                         int resultIndex = getResultIndex( imageId, outPlane, outRow, outCol );
         //                results[numPlanes * imageId + out] = activationFn( sum );
                         results[resultIndex] = activationFunction->calc( sum );
@@ -195,10 +199,10 @@ public:
                         }
                     }
                    // handle bias...
-                   {
+                   if( biased ) {
                        float thiswchange = 0;
                        for( int n = 0; n < batchSize; n++ ) {
-                            float upstreamResult = 1;
+                            float upstreamResult = 0.5;
                             int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                             float actualOutput = results[resultIndex];
                             float activationDerivative = activationFunction->calcDerivative( actualOutput );

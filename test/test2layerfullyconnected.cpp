@@ -16,7 +16,30 @@ void testAnd() {
     ldc.applyAndGate();
 
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
+    net->print();
+    for( int epoch = 0; epoch < 10; epoch++ ) {
+        net->epochMaker()
+           ->learningRate(3)->batchSize(4)->numExamples(4)
+           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+           ->run();
+        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//        net->printWeights();
+    }
+    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+    assertEquals( numCorrect, ldc.N );
+    delete net;
+}
+
+void testAndRelu() {
+    cout << "And" << endl;
+    LogicalDataCreator ldc;
+    ldc.applyAndGate();
+
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->relu()->biased()->insert();
     net->print();
     for( int epoch = 0; epoch < 10; epoch++ ) {
         net->epochMaker()
@@ -40,7 +63,7 @@ void testOr() {
     ldc.applyOrGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
     for( int epoch = 0; epoch < 10; epoch++ ) {
         net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
@@ -56,8 +79,8 @@ void testXor() {
     ldc.applyXorGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
     for( int epoch = 0; epoch < 100000; epoch++ ) {
         net->doEpoch( 0.1, 4, 4, ldc.data, ldc.expectedResults );
 //        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
@@ -167,6 +190,7 @@ int main( int argc, char *argv[] ) {
     if( testNum == 5 ) testAndConvolveBiased();
     if( testNum == 6 ) testOrConvolve();
     if( testNum == 7 ) testXorConvolve();
+    if( testNum == 8 ) testAndRelu();
     
 //    BoardPng::writeBoardsToPng( "testneuralnetmnist-1.png", results, min(N, 100), boardSize );
 

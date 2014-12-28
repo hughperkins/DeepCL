@@ -18,7 +18,7 @@ Layer *FullyConnectedMaker::insert() {
     if( _boardSize == 0 ) {
         throw runtime_error("Must provide ->boardSize(boardSize)");
     }
-    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _activationFunction );
+    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _biased, _activationFunction );
     delete this;
     return layer;
 }

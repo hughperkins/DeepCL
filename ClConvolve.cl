@@ -315,6 +315,11 @@ void kernel byelement_add_inplace( global float *target, global const float *src
     target[globalId] += src[globalId];
 }
 
+void kernel byelement_mult_inplace( global float *target, const float scalar ) {
+    int globalId = get_global_id(0);
+    target[globalId] += src[globalId] * scalar;
+}
+
 void kernel byelement_tanh( global float *vector ) {
     int globalId = get_global_id(0);
     vector[globalId] = tanh(vector[globalId]);
