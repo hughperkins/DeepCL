@@ -32,6 +32,7 @@ for( int epoch = 0; epoch < 100; epoch++ ) {
 }
 delete net;
 ```
+
 Notes:
 * fully connected layers run on cpu for now
 
@@ -51,9 +52,12 @@ Notes:
 
 Options:
 * add `->padZeros()` to pad the input board with zeros, so the output board and input board are the same size
-* add `->biased()` to add per-filter biases
 
 *General*
+
+Options:
+* add `->biased()` to add per-filter biases
+* add `->relu()` to switch to Relu activation (default is Tanh)
 
 You can print the network like this:
 ```
