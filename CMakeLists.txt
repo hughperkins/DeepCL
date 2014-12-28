@@ -37,6 +37,7 @@ add_executable( testsimpleconvolvenet test/testsimpleconvolvenet.cpp )
 add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )
 add_executable( test4dconvolve test/test4dconvolve.cpp )
 add_executable( testsimpleconvolve test/testsimpleconvolve.cpp )
+add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp )
 
 add_dependencies( testsimpleconvolve clfiles )
 add_dependencies( testsimpleconvolvenet clfiles )

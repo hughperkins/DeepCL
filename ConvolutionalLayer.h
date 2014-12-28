@@ -24,14 +24,17 @@ public:
     const bool biased;
 
     ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros = true, bool biased = true ) :
-            Layer( previousLayer, numFilters, 
-                padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1 ),
-            filterSize( filterSize ),
-            padZeros( padZeros ),
-            upstreamBoardSize( previousLayer->getBoardSize() ),
-            upstreamNumPlanes( previousLayer->getNumPlanes() ),
-            biased(biased) {
-        this->cl = new OpenCLHelper();
+                Layer( previousLayer, numFilters, 
+                    padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1 ),
+                filterSize( filterSize ),
+                padZeros( padZeros ),
+                upstreamBoardSize( previousLayer->getBoardSize() ),
+                upstreamNumPlanes( previousLayer->getNumPlanes() ),
+                biased(biased) {
+            if( filterSize % 2 == 0 ) {
+                throw std::runtime_error("filter size must be an odd number");
+            }
+            this->cl = new OpenCLHelper();
 //        if( padZeros ) {
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
             this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_add_inplace" );
@@ -179,6 +182,11 @@ public:
 //        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
 //           << " filtersize " << filterSize << " padzeros " << padZeros << " globalSize " << globalSize << std::endl;
 
+//        resultsWrapper->copyToHost();
+//        for( int i = 0; i < resultsWrapper->size(); i++ ) {
+//            std::cout << "results[" << i << "]=" << results[i] << std::endl;
+//        }
+
         if( biased ) {
             CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
             biasWrapper->copyToDevice();
@@ -189,10 +197,6 @@ public:
         kernelTanh->inout( resultsWrapper );
         kernelTanh->run_1d( globalSize, workgroupsize );
         resultsWrapper->copyToHost();
-
-//        for( int i = 0; i < resultsWrapper->size(); i++ ) {
-//            std::cout << "results[" << i << "]=" << results[i] << std::endl;
-//        }
 
         delete upstreamWrapper;
         delete weightsWrapper;

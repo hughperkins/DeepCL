@@ -239,6 +239,9 @@ void kernel convolve_imagecubes_float_nopadzeros(
     results[globalId] = sum;
 }
     
+// images are organized like [imageId][plane][row][col]
+// filters are organized like [filterid][inplane][filterrow][filtercol]
+// results are organized like [imageid][filterid][row][col]
 void kernel convolve_imagecubes_float2( 
       const int numInputPlanes, const int numFilters, 
       const int inputBoardSize, const int filterSize, const int padZeros,
@@ -248,13 +251,14 @@ void kernel convolve_imagecubes_float2(
     int inputBoardSizeSquared = inputBoardSize * inputBoardSize;
     int outputBoardSize = padZeros ? inputBoardSize : inputBoardSize - filterSize + 1;
     int outputBoardSizeSquared = outputBoardSize * outputBoardSize;
+    int filterSizeSquared = filterSize * filterSize;
 
     int outputBoard2Id = globalId / outputBoardSizeSquared;
+    int exampleId = outputBoard2Id / numFilters;
     int filterId = outputBoard2Id % numFilters;
-    int inputBoard3Id = outputBoard2Id / numFilters;
 
-    int filterOffset = filterId * filterSize * filterSize;
-    int inputBoard3Offset = inputBoard3Id * numInputPlanes * inputBoardSizeSquared;
+    int inputCubeOffset = exampleId * numInputPlanes * inputBoardSizeSquared;
+    int filterCubeOffset = filterId * numInputPlanes * filterSizeSquared;
 
     // intraboard coords
     int localid = globalId % outputBoardSizeSquared;
@@ -268,27 +272,42 @@ void kernel convolve_imagecubes_float2(
     int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;
     int maxn = padZeros ? min( halfFilterSize, outputBoardSize - 1 - outputCol ) : halfFilterSize;
     int inputPlane = 0;
+    float probe = 0;
     while( inputPlane < numInputPlanes ) {
-        int inputBoardOffset = inputBoard3Offset + inputPlane * inputBoardSizeSquared;
+        int inputBoardOffset = inputCubeOffset + inputPlane * inputBoardSizeSquared;
+        int filterBoardOffset = filterCubeOffset + inputPlane * filterSizeSquared;
         int m = minm;
         while( m <= maxm ) {
             int inputRow = outputRow + m + ( padZeros ? 0 : halfFilterSize );
             int inputboardrowoffset = inputBoardOffset + inputRow * inputBoardSize;
-            int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
+            int filterrowoffset = filterBoardOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
             while( n <= maxn ) {
                 int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
                 sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
+                //probe += 10000 * pown(100, inputPlane) *( inputboardrowoffset + inputCol );
+//                probe += pown(100, inputPlane) *( images[inputboardrowoffset + inputCol] );
+                //probe += pown(100, inputPlane) *( filterrowoffset + n );
+             //   probe += pown(1000, inputPlane) *( floor(filters[ filterrowoffset + n ]*100)/100 );
+
 //                sum = filters[filterrowoffset + n];
                 //sum = filterrowoffset;
                 n++;
             }
             m++;
         }
+//        probe += pown(100, inputPlane ) * filterBoardOffset;
         inputPlane++;
     }
+//     probe = exampleId * 100 + filterCubeOffset;
+
 //    sum += biases[filterId];
     results[globalId] = sum;
+//    results[0] = 1234.0;
+     //results[globalId] = probe;
+    // images are organized like [imageId][plane][row][col]
+    // filters are organized like [filterid][inplane][filterrow][filtercol]
+    // results are organized like [imageid][filterid][row][col]
 }
 
 void kernel byelement_add_inplace( global float *target, global const float *src ) {

@@ -34,8 +34,8 @@ public:
         data[ index * 2 ] = one ? 0.5 : -0.5;
         data[ index * 2 + 1 ] = two ? 0.5 : -0.5;
         labels[index] = result ? 1 : 0;
-        expectedResults[index*2] = result ? -1 : +1;
-        expectedResults[index*2+1] = result ? +1 : -1;
+        expectedResults[index*2] = result ? -0.5 : +0.5;
+        expectedResults[index*2+1] = result ? +0.5 : -0.5;
         index++;
         N++;
     }

@@ -72,14 +72,11 @@ public:
     void doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
-//        std::cout << "numbatches " << numBatches << " batchsize " << batchSize << std::endl;
         for( int batch = 0; batch < numBatches; batch++ ) {
             int batchStart = batch * batchSize;
-//            int batchEndExcl = std::min( numImages, (batch + 1 ) * batchSize );
-//            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
-//            learnBatch( learningRate, batchStart, batchEndExcl, images, expectedResults );
+//            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
+//             " resultssizeperex " << getResultsSizePerExample() << std::endl;
             learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
-//            learnBatch( learningRate, images, expectedResults );
         }
     }
 //    float *propagate( int N, int batchSize, float const*images) {
