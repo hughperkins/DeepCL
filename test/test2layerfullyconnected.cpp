@@ -63,14 +63,13 @@ void testXor() {
     delete net;
 }
 
-
 void testAndConvolve() {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->convolutionalMaker()->filters(1)->filterSize(1)->insert();
-    for( int epoch = 0; epoch < 5; epoch++ ) {
+    net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
+    for( int epoch = 0; epoch < 10; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
         cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;

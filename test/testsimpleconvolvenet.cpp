@@ -99,9 +99,12 @@ void test2() {
 }
 
 int main( int argc, char *argv[] ) {
-
-    //test1();
-    test2();
+    int testNum = -1;
+    if( argc == 2 ) {
+        testNum = atoi( argv[1] );
+    }
+    if( testNum == -1 || testNum == 1 ) test1();
+    if( testNum == -1 || testNum == 2 ) test2();
 
     return 0;
 }
