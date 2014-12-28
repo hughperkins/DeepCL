@@ -203,21 +203,22 @@ void testXorConvolve() {
                      -1, 1,
                      1, -1,
                      1, 1 };
-    float layer1weights[] = {  // going to preset these, and at least show the network is stable, and gives the correct
-         -1,-1,                      // result...
-         1, 1,
+    float layer1weights[] = {  // going to preset these, to near an optimal solution,
+                              //  and at least show the network is stable, and gives the correct
+         -0.4,-0.55,                      // result...
+         0.52, 0.53,
     };
     float layer1bias[] = {
-       0,
-       0
+       0.1,
+       -0.1
     };
     float layer2weights[] = {
-        1, 1,
-        -1, -1
+        1.1, 0.9,
+        -0.8, -1.2
     };
     float layer2bias[] = {
-       0,
-       100
+       0.1,
+       1.1
     };
     float expectedResults[] = {
         1, 0,
@@ -248,12 +249,12 @@ void testXorConvolve() {
     net->setBatchSize(4);
     net->propagate( data );
 //    net->print();
-    for( int epoch = 0; epoch < 0; epoch++ ) {
+    for( int epoch = 0; epoch < 50; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
            ->expectedOutputs(expectedResults)->run();
         cout << "Loss L " << net->calcLoss(expectedResults) << endl;
     }
-    net->printOutput();
+    net->print();
     cout << "Loss L " << net->calcLoss(expectedResults) << endl;
     AccuracyHelper::printAccuracy( numExamples, 2, labels, net->getResults() );
     delete net;
