@@ -310,6 +310,10 @@ void kernel convolve_imagecubes_float2(
     // results are organized like [imageid][filterid][row][col]
 }
 
+void kernel backprop_floats( ) {
+    int globalId = get_global_id(0);
+}
+
 void kernel byelement_add_inplace( global float *target, global const float *src ) {
     int globalId = get_global_id(0);
     target[globalId] += src[globalId];

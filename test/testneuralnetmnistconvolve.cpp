@@ -71,7 +71,7 @@ public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 60000;
+    int numTrain = 1000;
     int numTest = 1000;
     int batchSize = 100;
     int numEpochs = 100;

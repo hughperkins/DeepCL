@@ -234,6 +234,7 @@ public:
         return weights[getWeightIndex( outPlane, inPlane, filterrow, filtercol ) ];
     }
     virtual void backPropExpected( float learningRate, float const *expected ) {
+//        Timer timer;
         float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
         // matrix per-element subtraction...
         for( int n = 0; n < batchSize; n++ ) {
@@ -246,14 +247,34 @@ public:
                 } 
             }
         }
+//        timer.timeCheck("expected->errors done");
         backPropErrors( learningRate, errors );
         delete[] errors;
     }
+
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
     // biasweights: [outPlane]
     //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
+
     virtual void backPropErrors( float learningRate, float const *errors ) {
+        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
+        const int numWeights = upstreamNumPlanes * numPlanes * filterSize * filterSize;
+        float *weightChanges = new float[ numWeights ];
+        float *biasWeightChanges = new float[numPlanes];
+        backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
+        for( int i = 0; i < numWeights; i++ ) {
+             weights[i] += weightChanges[i];
+        }
+        for( int plane = 0; plane < numPlanes; plane++ ) {
+            biasWeights[plane] += biasWeightChanges[plane];
+        }
+        previousLayer->backPropErrors(learningRate, errorsForUpstream);
+        delete[] errorsForUpstream;
+    }
+
+    virtual void backPropErrors1( float learningRate, float const *errors, float *weightChanges, 
+             float *biasWeightChanges, float *errorsForUpstream ) {
         const bool debug = false;
         const int halfFilterSize = filterSize >> 1;
         const int margin = padZeros ? halfFilterSize : 0;
@@ -290,7 +311,8 @@ public:
                                 }
                             }
                         }
-                        weights[ weightIndex ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+//                        weights[ weightIndex ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+                        weightChanges[ weightIndex ] = - learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
                     }
                 }
             }
@@ -316,7 +338,8 @@ public:
                         }
                     }
                 }
-                biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+//                biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
+                biasWeightChanges[ outPlane ] = - learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
              }
          }
 
@@ -330,7 +353,6 @@ public:
         // for our own backprop, we updated weights for:
         //      [outPlane][inPlane][filterRow][filtercol]
         //    aggregating over: [n][outRow][outCol]
-        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
         // errors are provider per [n][inPlane][inRow][inCol]
         for( int n = 0; n < batchSize; n++ ) {
             for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
@@ -360,8 +382,6 @@ public:
                 }
             }
         }
-        previousLayer->backPropErrors(learningRate, errorsForUpstream);
-        delete[] errorsForUpstream;
     }
 };
 
