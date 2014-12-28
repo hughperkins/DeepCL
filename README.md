@@ -119,6 +119,22 @@ You will need:
 
 ClConvolve.cl should be in the current working directory at the time that you call into any clconvolve methods.
 
+Sample/test
+===========
+
+*Neural net API*
+
+* There are various samples in the [test](test) subdirectory.  The following are currently the most relevant:
+  * `testlogicaloperators.cpp`  - use 1 or 2-layer fully-connected network, or 1 or 2-layer convolutional network, to learn and/or/xor
+  * `testsimpleconvolve.cpp`      - check OpenCL convolve working, see how to use this
+  * `testsimpleconvolvenet.cpp`   - use 1 layer convolutional network to learn toy 3x3 boards
+  * `testneuralnetmnist.cpp`        - use 1 layer fully connected layer to learn MNIST
+  * `testneuralnetmnistconvolve.cpp`  - learn mnist training images, using a single convolutional layer, then check against test set.  You can run it as follows, to get 82.3% test accuracy:
+```
+./testneuralnetmnistconvolve numtrain=10000 numtest=1000 batchsize=100 learningrate=0.1 biased=1 numepochs=20
+```
+... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
+
 Helper methods
 ==============
 
@@ -181,22 +197,6 @@ BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100)
   * second is array of boards, in same format as returned by BoardsHelper::allocateBoards
   * third argument is number of boards to write to png
   * third argument is the length of one side of each board
-
-Sample/test
-===========
-
-*Neural net API*
-
-* There are various samples in the [test](test) subdirectory.  The following are currently the most relevant:
-  * `testlogicaloperators.cpp`  - use 1 or 2-layer fully-connected network, or 1 or 2-layer convolutional network, to learn and/or/xor
-  * `testsimpleconvolve.cpp`      - check OpenCL convolve working, see how to use this
-  * `testsimpleconvolvenet.cpp`   - use 1 layer convolutional network to learn toy 3x3 boards
-  * `testneuralnetmnist.cpp`        - use 1 layer fully connected layer to learn MNIST
-  * `testneuralnetmnistconvolve.cpp`  - learn mnist training images, using a single convolutional layer, then check against test set.  You can run it as follows, to get 82.3% test accuracy:
-```
-./testneuralnetmnistconvolve numtrain=10000 numtest=1000 batchsize=100 learningrate=0.1 biased=1 numepochs=20
-```
-... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
 
 Third-party libraries
 =====================
