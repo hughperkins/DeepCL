@@ -50,14 +50,18 @@ Notes:
 * convolutional layers forward-prop runs on gpu, via OpenCL
 * back-prop is on cpu for now
 
-Options:
+Convolution layer options:
 * add `->padZeros()` to pad the input board with zeros, so the output board and input board are the same size
 
 *General*
 
-Options:
-* add `->biased()` to add per-filter biases
-* add `->relu()` to switch to Relu activation (default is Tanh)
+Options for layer creation, for any layer type:
+* add `->biased()` to add turn on bias
+* add `->biased(0)` to turn off bias (default)
+* add `->biased(1)` to turn on bias (same as `->biased()`)
+* add `->tanh()` to switch to Tanh activation (default, but maybe it is clear to state it explicitly in your code?)
+* add `->relu()` to switch to Relu activation
+* add `->linear()` to switch to linear activation
 
 You can print the network like this:
 ```
