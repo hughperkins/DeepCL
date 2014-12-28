@@ -59,6 +59,9 @@ public:
     inline float getResult( int n, int plane, int row, int col ) const {
         return results[getResultIndex( n, plane,row,col)];
     }
+    inline int getResultsSizePerExample() {
+        return numPlanes * boardSize * boardSize;
+    }
     int getNumPlanes() const {
         return numPlanes;
     }

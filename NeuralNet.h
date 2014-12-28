@@ -72,32 +72,32 @@ public:
     void doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
-        std::cout << "numbatches " << numBatches << " batchsize " << batchSize << std::endl;
+//        std::cout << "numbatches " << numBatches << " batchsize " << batchSize << std::endl;
         for( int batch = 0; batch < numBatches; batch++ ) {
             int batchStart = batch * batchSize;
-            int batchEndExcl = std::min( numImages, (batch + 1 ) * batchSize );
-            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
+//            int batchEndExcl = std::min( numImages, (batch + 1 ) * batchSize );
+//            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
 //            learnBatch( learningRate, batchStart, batchEndExcl, images, expectedResults );
-//            learnBatch( learningRate, &(images[batchStart]), &(expectedResults[batchStart]) );
-            learnBatch( learningRate, images, expectedResults );
+            learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+//            learnBatch( learningRate, images, expectedResults );
         }
     }
-    float *propagate( int N, int batchSize, float const*images) {
-        float *results = new float[N];
-        int numBatches = N / batchSize;
-        for( int batch = 0; batch < numBatches; batch++ ) {
-            int batchStart = batch * batchSize;
-            int batchEndExcl = std::min( N, (batch + 1 ) * batchSize );
-            propagateBatch( &(images[batchStart]) );
-            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
-                float const *netResults = getResults();
-            for( int i = 0; i < batchSize; i++ ) {
-                results[batchStart + i ] = netResults[i];
-            }
-        }
-        return results;
-    }
-    void propagateBatch( float const*images) {
+//    float *propagate( int N, int batchSize, float const*images) {
+//        float *results = new float[N];
+//        int numBatches = N / batchSize;
+//        for( int batch = 0; batch < numBatches; batch++ ) {
+//            int batchStart = batch * batchSize;
+//            int batchEndExcl = std::min( N, (batch + 1 ) * batchSize );
+//            propagateBatch( &(images[batchStart]) );
+//            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
+//                float const *netResults = getResults();
+//            for( int i = 0; i < batchSize; i++ ) {
+//                results[batchStart + i ] = netResults[i];
+//            }
+//        }
+//        return results;
+//    }
+    void propagate( float const*images) {
         // forward...
         dynamic_cast<InputLayer *>(layers[0])->in( images );
         for( int layerId = 1; layerId < layers.size(); layerId++ ) {
@@ -110,7 +110,7 @@ public:
     }
     void learnBatch( float learningRate, float const*images, float const *expectedResults ) {
         Timer timer;
-        propagateBatch( images);
+        propagate( images);
 //        timer.timeCheck("propagate");
         backProp(learningRate, expectedResults );
 //        timer.timeCheck("backProp");
@@ -120,6 +120,12 @@ public:
     }
     float const *getResults( int layer ) const {
         return layers[layer]->getResults();
+    }
+    int getInputSizePerExample() const {
+        return layers[ 0 ]->getResultsSizePerExample();
+    }
+    int getResultsSizePerExample() const {
+        return layers[ layers.size() - 1 ]->getResultsSizePerExample();
     }
     float const *getResults() const {
         return getResults( layers.size() - 1 );

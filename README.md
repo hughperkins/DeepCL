@@ -184,8 +184,11 @@ Sample/test
   * testsimpleconvolve.cpp      - check OpenCL convolve working, see how to use this
   * testsimpleconvolvenet.cpp   - use 1 layer convolutional network to learn toy 3x3 boards
   * testneuralnetmnist.cpp        - use 1 layer fully connected layer to learn MNIST
-  * testneuralnetmnistconvolve.cpp  - learn 1000 mnist training images, using a single convolutional layer, then test against 1000 test images (gets
-about 68% test accuracy for now, using a single layer)
+  * testneuralnetmnistconvolve.cpp  - learn mnist training images, using a single convolutional layer, then check against test set.  You can run it as follows, to get 82.3% test accuracy:
+
+    ./testneuralnetmnistconvolve numtrain=10000 numtest=1000 batchsize=100 learningrate=0.1 biased=1 numepochs=20
+
+... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
 
 Third-party libraries
 =====================

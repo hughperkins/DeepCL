@@ -48,7 +48,7 @@ public:
     virtual ~InputLayer() {
     }
     virtual void setBatchSize( int batchSize ) {
-        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
+//        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
         this->batchSize = batchSize;
     }
     virtual void propagate() {

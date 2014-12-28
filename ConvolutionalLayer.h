@@ -135,7 +135,7 @@ public:
         }
     }
     virtual void setBatchSize( int batchSize ) {
-        std::cout << "convolutionallayer setting batchsize " << batchSize << std::endl;
+//        std::cout << "convolutionallayer setting batchsize " << batchSize << std::endl;
         if( results != 0 ) {
 //            std::cout << "deleting results array " << std::endl;
             delete[] results;
