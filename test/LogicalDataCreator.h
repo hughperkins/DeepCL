@@ -18,8 +18,8 @@ public:
     const int numInputPlanes;
     const int numOutputPlanes;
     const int boardSize;
-    activation fn;
-    LogicalDataCreator( ActivationFunction *activationFunction ) :
+    ActivationFunction *fn;
+    LogicalDataCreator( ActivationFunction *activationFunction = new TanhActivation() ) :
             data(new float[8]),
             labels(new int[4]),
             expectedResults(new float[8]),
@@ -27,7 +27,7 @@ public:
             numInputPlanes(2),
             numOutputPlanes(2),
             boardSize(1),
-            activation( activationFunction ) {
+            fn( activationFunction ) {
     }
     ~LogicalDataCreator() {
         delete[] data;

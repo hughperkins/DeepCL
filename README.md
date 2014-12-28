@@ -56,12 +56,12 @@ Convolution layer options:
 *General*
 
 Options for layer creation, for any layer type:
-* add `->biased()` to add turn on bias
-* add `->biased(0)` to turn off bias (default)
-* add `->biased(1)` to turn on bias (same as `->biased()`)
-* add `->tanh()` to switch to Tanh activation (default, but maybe it is clear to state it explicitly in your code?)
-* add `->relu()` to switch to Relu activation
-* add `->linear()` to switch to linear activation
+* add `->biased()` turn on bias
+* add `->biased(1)` turn on bias (same as `->biased()`)
+* add `->biased(0)` turn off bias (default)
+* add `->linear()` choose linear activation
+* add `->relu()` choose Relu activation
+* add `->tanh()` choose Tanh activation (current default, but defaults can change...)
 
 You can print the network like this:
 ```
@@ -105,7 +105,7 @@ To build
     mkdir build
     cd build
     cmake ..
-    make ClConvolve
+    make
 
 Note:
 * dont forget the `--recursive`, when you clone, else when you build it will complain about OpenCLHelper missing
