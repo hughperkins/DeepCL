@@ -71,10 +71,10 @@ public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 1000;
+    int numTrain = 60000;
     int numTest = 1000;
     int batchSize = 100;
-    int numEpochs = 20;
+    int numEpochs = 100;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -121,12 +121,14 @@ void go(Config config) {
             ->run();
         cout << "loss: " << loss << endl;
         int trainNumRight = 0;
+        timer.timeCheck("after epoch");
         for( int batch = 0; batch < numToTrain / batchSize; batch++ ) {
             int batchStart = batch * batchSize;
             net->propagate( &(boardsFloat[batchStart][0][0]) );
             float const*results = net->getResults();
             trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labels[batchStart]), results );
         }
+        timer.timeCheck("after calc accuracy");
         cout << "train: " << trainNumRight << "/" << numToTrain << endl;
         cout << "test:" << endl;
         net->propagate( &(boardsTest[0][0][0]) );
