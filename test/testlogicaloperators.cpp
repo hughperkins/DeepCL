@@ -35,7 +35,7 @@ void testAnd() {
 
 void testAndRelu() {
     cout << "And" << endl;
-    LogicalDataCreator ldc;
+    LogicalDataCreator ldc( new ReluActivation() );
     ldc.applyAndGate();
 
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
@@ -50,6 +50,31 @@ void testAndRelu() {
         AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
 //        net->printWeights();
     }
+    net->print();
+    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+    assertEquals( numCorrect, ldc.N );
+    delete net;
+}
+
+void testAndLinear() {
+    cout << "And" << endl;
+    LogicalDataCreator ldc( new ReluActivation() );
+    ldc.applyAndGate();
+
+    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->linear()->biased()->insert();
+    net->print();
+    for( int epoch = 0; epoch < 10; epoch++ ) {
+        net->epochMaker()
+           ->learningRate(3)->batchSize(4)->numExamples(4)
+           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+           ->run();
+        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//        net->printWeights();
+    }
+    net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
@@ -191,6 +216,7 @@ int main( int argc, char *argv[] ) {
     if( testNum == 6 ) testOrConvolve();
     if( testNum == 7 ) testXorConvolve();
     if( testNum == 8 ) testAndRelu();
+    if( testNum == 9 ) testAndLinear();
     
 //    BoardPng::writeBoardsToPng( "testneuralnetmnist-1.png", results, min(N, 100), boardSize );
 

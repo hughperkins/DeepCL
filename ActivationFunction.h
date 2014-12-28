@@ -14,8 +14,8 @@ public:
     virtual float calc( float value ) const { throw std::runtime_error("calc not implemented"); };
     virtual float calcDerivative( float output ) const { throw std::runtime_error("calcDerivative not implemented"); };
     virtual std::string getKernelFunction() const { throw std::runtime_error("getKernelFunction not implemented"); };
-    virtual float getFalse() {  throw std::runtime_error("getFalse not implemented"); } 
-    virtual float getTrue() {  throw std::runtime_error("getTrue not implemented"); } 
+    virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
+    virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
 };
 
 class TanhActivation : public ActivationFunction {
