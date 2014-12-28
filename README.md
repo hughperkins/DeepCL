@@ -179,15 +179,13 @@ Sample/test
 
 *Neural net API*
 
-* There are various samples in the `test` subdirectory.  The following are currently the most relevant:
-  * test2layerfullyconnected.cpp  - use fully connected 2 layers, to learn and/or/xor
-  * testsimpleconvolve.cpp      - check OpenCL convolve working, see how to use this
-  * testsimpleconvolvenet.cpp   - use 1 layer convolutional network to learn toy 3x3 boards
-  * testneuralnetmnist.cpp        - use 1 layer fully connected layer to learn MNIST
-  * testneuralnetmnistconvolve.cpp  - learn mnist training images, using a single convolutional layer, then check against test set.  You can run it as follows, to get 82.3% test accuracy:
-
-    ./testneuralnetmnistconvolve numtrain=10000 numtest=1000 batchsize=100 learningrate=0.1 biased=1 numepochs=20
-
+* There are various samples in the [test](test) subdirectory.  The following are currently the most relevant:
+  * `test2layerfullyconnected.cpp`  - use fully connected 2 layers, to learn and/or/xor
+  * `testsimpleconvolve.cpp`      - check OpenCL convolve working, see how to use this
+  * `testsimpleconvolvenet.cpp`   - use 1 layer convolutional network to learn toy 3x3 boards
+  * `testneuralnetmnist.cpp`        - use 1 layer fully connected layer to learn MNIST
+  * `testneuralnetmnistconvolve.cpp`  - learn mnist training images, using a single convolutional layer, then check against test set.  You can run it as follows, to get 82.3% test accuracy:
+    `./testneuralnetmnistconvolve numtrain=10000 numtest=1000 batchsize=100 learningrate=0.1 biased=1 numepochs=20`
 ... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
 
 Third-party libraries
