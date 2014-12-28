@@ -196,11 +196,13 @@ public:
 //        }
 
         if( biased ) {
+//            std::cout << "applying bias..." << std::endl;
             CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
             biasWrapper->copyToDevice();
             // need to apply bias per filter, which means for each board output by that filter
             // need to pass in the size of each of these boards
             kernelApplyBias
+//                  ->in( 1 )
                   ->in( numPlanes )
                   ->in( filterSize * filterSize )
                   ->inout( resultsWrapper)

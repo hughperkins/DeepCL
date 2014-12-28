@@ -36,6 +36,6 @@ public:
         this->_expectedOutputs = expectedOutputs;
         return this;
     }
-    void run();
+    float run();
 };
 
