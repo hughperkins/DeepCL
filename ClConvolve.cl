@@ -371,7 +371,7 @@ void kernel backprop_floats_relu(
     weightChanges[ globalId ] = - thiswchange;
 }
 
-void kernel backprop_floats_tanh( 
+void kernel backprop_floats_tanh( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
@@ -423,7 +423,7 @@ void kernel backprop_floats_tanh(
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    weightChanges[ globalId ] = - thiswchange;
+    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
 }
 
 void kernel byelement_add_inplace( global float *target, global const float *src ) {
