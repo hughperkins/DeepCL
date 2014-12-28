@@ -9,25 +9,7 @@ using namespace std;
 #include "BoardPng.h"
 #include "Timer.h"
 #include "NeuralNet.h"
-
-void checkAccuracy( int numImages, int numNeurons, int const*labels, float const*results ) {
-    int correct = 0;
-    for( int n = 0; n < numImages; n++ ) {
-        double maxValue = -100000;
-        int bestIndex = -1;
-        for( int i = 0; i < numNeurons; i++ ) {
-            if( results[ n * numNeurons + i ] > maxValue ) {
-                bestIndex = i;
-                maxValue = results[ n * numNeurons + i ];
-            }
-        }
-//        cout << "expected: " << labels[n] << " got " << bestIndex << endl;
-        if( bestIndex == labels[n] ) {
-            correct++;
-        }
-    }
-    cout << " accuracy: " << correct << "/" << numImages << endl;
-}
+#include "AccuracyHelper.h"
 
 int main( int argc, char *argv[] ) {
     Timer timer;
@@ -94,7 +76,7 @@ int main( int argc, char *argv[] ) {
            ->run();
         cout << "loss: " << net->calcLoss( expectedOutputs ) << endl;
         float const*results = net->getResults();
-        checkAccuracy( numToTrain, 10, labels, results );
+        AccuracyHelper::printAccuracy( numToTrain, 10, labels, results );
     }
     float const*results = net->getResults( net->getNumLayers() - 1 );
 
