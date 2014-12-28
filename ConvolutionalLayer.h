@@ -9,13 +9,15 @@
 #include "Layer.h"
 #include "OpenCLHelper.h"
 //#include "ClConvolve2.h"
+#include "ActivationFunction.h"
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *cl;
     CLKernel *kernelConvolve;
     CLKernel *kernelByElementAddInplace;
-    CLKernel *kernelTanh;
+    CLKernel *kernelActivation;
+
     const int filterSize;
     const bool padZeros;
     const int upstreamBoardSize;
@@ -23,9 +25,11 @@ public:
     float *biasWeights;
     const bool biased;
 
-    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros = true, bool biased = true ) :
+    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros, bool biased, 
+            ActivationFunction *activationFunction ) :
                 Layer( previousLayer, numFilters, 
-                    padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1 ),
+                    padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1,
+                    activationFunction ),
                 filterSize( filterSize ),
                 padZeros( padZeros ),
                 upstreamBoardSize( previousLayer->getBoardSize() ),
@@ -38,7 +42,7 @@ public:
 //        if( padZeros ) {
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
             this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_add_inplace" );
-            this->kernelTanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
+            this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
 //        }
@@ -50,7 +54,7 @@ public:
         delete[] biasWeights;
         delete kernelByElementAddInplace;
         delete kernelConvolve;
-        delete kernelTanh;
+        delete kernelActivation;
         delete cl;
     }
 // filters are organized like [filterid][plane][row][col]
@@ -194,8 +198,8 @@ public:
             kernelByElementAddInplace->run_1d( globalSize, workgroupsize );
         }
 
-        kernelTanh->inout( resultsWrapper );
-        kernelTanh->run_1d( globalSize, workgroupsize );
+        kernelActivation->inout( resultsWrapper );
+        kernelActivation->run_1d( globalSize, workgroupsize );
         resultsWrapper->copyToHost();
 
         delete upstreamWrapper;
@@ -258,7 +262,8 @@ public:
                                     int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                                     float error = errors[resultIndex];
                                     float actualOutput = results[resultIndex];
-                                    float activationDerivative = 1 - actualOutput * actualOutput;
+                                    float activationDerivative = activationFunction->calcDerivative( actualOutput );
+//                                    float activationDerivative = 1 - actualOutput * actualOutput;
                                     float upstreamResult = previousLayer->getResult( n, upstreamPlane, upstreamRow, upstreamCol );
                                     float thisimagethiswchange = upstreamResult * activationDerivative *
                                     error;
@@ -287,7 +292,7 @@ public:
                             float upstreamResult = 0.5;
                             int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                             float actualOutput = results[resultIndex];
-                            float activationDerivative = 1 - actualOutput * actualOutput;
+                            float activationDerivative = activationFunction->calcDerivative( actualOutput );
                             float thisimagethiswchange = upstreamResult * errors[resultIndex] * activationDerivative;
                             thiswchange += thisimagethiswchange;
         if(debug)std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << "," << outCol << " n=" << n << " resindex " << resultIndex << " error=" << errors[resultIndex]

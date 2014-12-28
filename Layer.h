@@ -11,12 +11,13 @@
 #include <iostream>
 
 #include "MyRandom.h"
+#include "ActivationFunction.h"
 
 class Layer {
 public:
     int batchSize;
-    int batchStart;
-    int batchEnd;
+//    int batchStart;
+//    int batchEnd;
 
     Layer *previousLayer;
     float *results;
@@ -24,12 +25,16 @@ public:
     float *weights;
     const int numPlanes;
     const int boardSize;
-    Layer( Layer *previousLayer, int numPlanes, int boardSize) :
+
+    const ActivationFunction *activationFunction;
+
+    Layer( Layer *previousLayer, int numPlanes, int boardSize, ActivationFunction *activationFunction ) :
          previousLayer( previousLayer ),
          numPlanes( numPlanes),
          boardSize( boardSize ),
          results(0),
          weights(0),
+         activationFunction( activationFunction ),
          weOwnResults(false) {
     }
     virtual ~Layer() {
@@ -41,11 +46,14 @@ public:
 //             std::cout << "Layer, deleting weights array " << std::endl;
             delete[] weights;
         }
+        if( activationFunction != 0 ) {
+            delete activationFunction;
+        }
     }
-    inline float activationFn( float value ) {
-        //return 1.7159 * tanh( value );
-        return tanh( value );
-    }
+//    inline float activationFn( float value ) {
+//        //return 1.7159 * tanh( value );
+//        return tanh( value );
+//    }
     virtual void setBatchSize( int batchSize ) { // used to set up internal buffers and stuff
         throw std::runtime_error("setBatchsize not implemetned for this layer type");
     }

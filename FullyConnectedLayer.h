@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Layer.h"
+#include "ActivationFunction.h"
 
 class FullyConnectedLayer : public Layer {
 public:
@@ -14,9 +15,9 @@ public:
     const int upstreamNumPlanes;
     const int upstreamBoardSize;
     float *biasWeights;
-    FullyConnectedLayer( Layer *previousLayer, int numOutputPlanes, int newBoardSize ) :
+    FullyConnectedLayer( Layer *previousLayer, int numOutputPlanes, int newBoardSize, ActivationFunction *activationFunction ) :
 //            previousLayer( previousLayer ),
-            Layer( previousLayer, numOutputPlanes, newBoardSize),
+            Layer( previousLayer, numOutputPlanes, newBoardSize, activationFunction),
             upstreamNumPlanes( previousLayer->getNumPlanes() ),
             upstreamBoardSize( previousLayer->getBoardSize() ) {
         int numPreviousPlanes = previousLayer->getNumPlanes();
@@ -145,7 +146,7 @@ public:
                         sum += getBiasWeight( outPlane, outRow, outCol );
                         int resultIndex = getResultIndex( imageId, outPlane, outRow, outCol );
         //                results[numPlanes * imageId + out] = activationFn( sum );
-                        results[resultIndex] = activationFn( sum );
+                        results[resultIndex] = activationFunction->calc( sum );
         //                std::cout << "n " << imageId << " out " << out << " sum " << sum << " after actfn " << results[resultIndex] << std::endl;
                      }
                 }
@@ -182,7 +183,7 @@ public:
                                     float upstreamResult = previousLayer->getResult( n, upstreamPlane, upstreamRow, upstreamCol );
                                     int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                                     float actualOutput = results[resultIndex];
-                                    float activationDerivative = 1 - actualOutput * actualOutput;
+                                    float activationDerivative = activationFunction->calcDerivative( actualOutput );
                                     float error = errors[resultIndex];
                                     float thisimagethiswchange = upstreamResult * activationDerivative * error;
                                     thiswchange += thisimagethiswchange;
@@ -200,7 +201,7 @@ public:
                             float upstreamResult = 1;
                             int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
                             float actualOutput = results[resultIndex];
-                            float activationDerivative = 1 - actualOutput * actualOutput;
+                            float activationDerivative = activationFunction->calcDerivative( actualOutput );
                             float thisimagethiswchange = upstreamResult * errors[resultIndex] * activationDerivative;
                             thiswchange += thisimagethiswchange;
                        }

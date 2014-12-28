@@ -18,7 +18,7 @@ Layer *FullyConnectedMaker::insert() {
     if( _boardSize == 0 ) {
         throw runtime_error("Must provide ->boardSize(boardSize)");
     }
-    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize );
+    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _activationFunction );
     delete this;
     return layer;
 }
@@ -30,7 +30,8 @@ Layer *ConvolutionalMaker::insert() {
     if( _filterSize == 0 ) {
         throw runtime_error("Must provide ->filterSize(filterSize)");
     }
-    Layer *layer = net->addConvolutional( _numFilters, _filterSize, _padZeros, _biased );
+//    cout << _activationFunction.getKernelFunction();
+    Layer *layer = net->addConvolutional( _numFilters, _filterSize, _padZeros, _biased, _activationFunction );
     delete this;
     return layer;
 }

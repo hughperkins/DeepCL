@@ -320,4 +320,8 @@ void kernel byelement_tanh( global float *vector ) {
     vector[globalId] = tanh(vector[globalId]);
 }
 
+void kernel byelement_relu( global float *vector ) {
+    int globalId = get_global_id(0);
+    vector[globalId] = vector[globalId] > 0 ? vector[globalId] : 0;
+}
 

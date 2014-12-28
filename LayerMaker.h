@@ -6,10 +6,11 @@
 
 #pragma once
 
+#include <cstring>
+
 //#include "NeuralNet.h"
 #include "Layer.h"
-
-#include <cstring>
+#include "ActivationFunction.h"
 
 class NeuralNet;
 
@@ -17,9 +18,11 @@ class FullyConnectedMaker {
     NeuralNet *net;
     int _numPlanes;
     int _boardSize;
+    ActivationFunction *_activationFunction;
 public:
     FullyConnectedMaker( NeuralNet *net ) :
         net(net) {
+        _activationFunction = new TanhActivation();
         std::cout << "FullyConnectedMaker()" << std::endl;
     }
     FullyConnectedMaker *planes(int numPlanes) {
@@ -28,6 +31,16 @@ public:
     }    
     FullyConnectedMaker *boardSize(int boardSize) {
         this->_boardSize = boardSize;
+        return this;
+    }
+    FullyConnectedMaker *tanh() {
+        delete this->_activationFunction;
+        this->_activationFunction = new TanhActivation();
+        return this;
+    }
+    FullyConnectedMaker *relu() {
+        delete this->_activationFunction;
+        this->_activationFunction = new ReluActivation();
         return this;
     }
     Layer *insert();
@@ -39,10 +52,12 @@ class ConvolutionalMaker {
     int _filterSize;
     bool _padZeros;
     bool _biased;
+    ActivationFunction *_activationFunction;
 public:
     ConvolutionalMaker( NeuralNet *net ) {
         memset( this, 0, sizeof( ConvolutionalMaker ) );
         this->net = net;
+        _activationFunction = new TanhActivation();
         std::cout << "ConvolutionalMaker()" << std::endl;
     }
     ConvolutionalMaker *numFilters(int numFilters) {
@@ -65,6 +80,16 @@ public:
         this->_biased = _biased;
         return this;
     }    
+    ConvolutionalMaker *tanh() {
+        delete this->_activationFunction;
+        this->_activationFunction = new TanhActivation();
+        return this;
+    }
+    ConvolutionalMaker *relu() {
+        delete this->_activationFunction;
+        this->_activationFunction = new ReluActivation();
+        return this;
+    }
     Layer *insert();
 };
 

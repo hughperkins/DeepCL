@@ -7,11 +7,12 @@
 #pragma once
 
 #include "Layer.h"
+#include "ActivationFunction.h"
 
 class InputLayer : public Layer {
 public:
     InputLayer( int numPlanes, int boardSize ) :
-          Layer( 0, numPlanes, boardSize ) {
+          Layer( 0, numPlanes, boardSize, 0 ) {
     }
     virtual void print() {
         if( results == 0 ) {

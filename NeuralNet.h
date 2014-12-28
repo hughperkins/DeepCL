@@ -18,6 +18,7 @@
 #include "NeuralNetMould.h"
 #include "LayerMaker.h"
 #include "EpochMaker.h"
+#include "ActivationFunction.h"
 
 class NeuralNet {
 public:
@@ -54,13 +55,13 @@ public:
     EpochMaker *epochMaker() {
          return new EpochMaker(this);
     }
-    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize ) {
-        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize );
+    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize, ActivationFunction *fn ) {
+        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize, fn );
         layers.push_back( layer );
         return layer;
     }
-    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros = true, bool biased = true ) {
-        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros, biased );
+    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros, bool biased, ActivationFunction *fn ) {
+        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros, biased, fn );
         layers.push_back( layer );
         return layer;
     }
