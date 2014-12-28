@@ -187,7 +187,7 @@ void kernel convolve_imagecubes_float(
         inputPlane++;
     }
 
-    results[globalId] = 1.7159 * tanh(sum);
+    results[globalId] = sum;
 }
 
 void kernel convolve_imagecubes_float_nopadzeros( 
@@ -313,6 +313,11 @@ void kernel convolve_imagecubes_float2(
 void kernel byelement_add_inplace( global float *target, global const float *src ) {
     int globalId = get_global_id(0);
     target[globalId] += src[globalId];
+}
+
+void kernel byelement_apply_bias( global float *target, global const float *src ) {
+    int globalId = get_global_id(0);
+    target[globalId] += 0.5f * src[globalId];
 }
 
 void kernel byelement_mult_inplace( global float *target, const float scalar ) {

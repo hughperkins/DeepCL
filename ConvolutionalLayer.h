@@ -41,7 +41,7 @@ public:
             this->cl = new OpenCLHelper();
 //        if( padZeros ) {
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
-            this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_add_inplace" );
+            this->kernelByElementAddInplace = cl->buildKernel( "ClConvolve.cl", "byelement_apply_bias" );
             if( activationFunction->getKernelFunction() != "" ) {
                 this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
             } else {
