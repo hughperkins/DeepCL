@@ -17,6 +17,7 @@ public:
     CLKernel *kernelConvolve;
     CLKernel *kernelApplyBias;
     CLKernel *kernelActivation;
+    CLKernel *kernelBackPropWeights;
 
     const int filterSize;
     const bool padZeros;
@@ -47,6 +48,7 @@ public:
             } else {
                 this->kernelActivation = 0;
             }
+            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh" );
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
 //        }
@@ -56,6 +58,7 @@ public:
     }
     virtual ~ConvolutionalLayer() {
         delete[] biasWeights;
+        delete kernelBackPropWeights;
         delete kernelApplyBias;
         delete kernelConvolve;
         delete kernelActivation;
@@ -263,6 +266,27 @@ public:
         float *weightChanges = new float[ numWeights ];
         float *biasWeightChanges = new float[numPlanes];
         backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
+
+        float *weightChanges2 = new float[ numWeights ];
+        float *biasWeightChanges2 = new float[numPlanes];
+
+        backPropGpu( learningRate, errors, weightChanges2 );
+        for( int i = 0; i < numWeights; i++ ) {
+             float weight2 = weightChanges2[i] * learningRate / batchSize / sqrt( boardSize * boardSize );
+             if( weightChanges[i] != weight2 ) {
+                 std::cout << "mismatch weight " << i << " " << weightChanges[i] << " != " << weight2 << std::endl;
+             }
+        }
+
+//        backPropErrors1( learningRate, errors, weightChanges2, biasWeightChanges2, errorsForUpstream );
+/*
+/*
+        for( int plane = 0; plane < numPlanes; plane++ ) {
+             if( biasWeightChanges[plane] != biasWeightChanges2[plane] ) {
+                  std::cout << "mismatch weight " << plane << " " << biasWeightChanges[plane] << " != " << biasWeightChanges2[plane] << std::endl;
+             }
+        }
+*/
         for( int i = 0; i < numWeights; i++ ) {
              weights[i] += weightChanges[i];
         }
@@ -273,8 +297,37 @@ public:
         delete[] errorsForUpstream;
     }
 
+    void backPropGpu( float learningRate, float const*errors, float *weightChanges ) {
+        Timer timer;
+        //void kernel backprop_floats_relu( 
+        //        const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
+        //         const int filterSize, const int outBoardSize, const int padZeros, 
+        //         global const float *images, global const float *errors, global float *weightChanges ) {
+
+        CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSizePerExample() * batchSize, previousLayer->getResults() );
+        CLWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
+        CLWrapper *errorsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, errors );
+        CLWrapper *weightChangesWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, weightChanges );
+        imagesWrapper->copyToDevice();
+        resultsWrapper->copyToDevice();
+        errorsWrapper->copyToDevice();
+        kernelBackPropWeights->in( batchSize )->in( upstreamNumPlanes )->in(numPlanes)
+           ->in( upstreamBoardSize )->in( filterSize )->in( boardSize )->in( padZeros ? 1 : 0 )
+           ->in( imagesWrapper )
+           ->in(resultsWrapper)
+           ->in( errorsWrapper )
+           ->out( weightChangesWrapper );
+        int globalSize = upstreamNumPlanes * numPlanes * filterSize * filterSize;
+        int workgroupsize = cl->getMaxWorkgroupSize();
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+        kernelBackPropWeights->run_1d(globalSize, workgroupsize);
+        weightChangesWrapper->copyToHost();
+        timer.timeCheck("backPropGpu");
+    }
+
     virtual void backPropErrors1( float learningRate, float const *errors, float *weightChanges, 
              float *biasWeightChanges, float *errorsForUpstream ) {
+        Timer timer;
         const bool debug = false;
         const int halfFilterSize = filterSize >> 1;
         const int margin = padZeros ? halfFilterSize : 0;
@@ -317,6 +370,7 @@ public:
                 }
             }
         }
+        timer.timeCheck("did backprop to ourselves");
         if( biased ) {
              for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
                 // bias...
@@ -341,6 +395,7 @@ public:
 //                biasWeights[ outPlane ] -= learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
                 biasWeightChanges[ outPlane ] = - learningRate * thiswchange / batchSize / sqrt( boardSize * boardSize );
              }
+            timer.timeCheck("did bias backprop");   
          }
 
         // handle lower layer...
@@ -382,6 +437,8 @@ public:
                 }
             }
         }
+        timer.timeCheck("calced errors for upstream");   
     }
+
 };
 

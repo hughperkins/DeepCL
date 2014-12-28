@@ -242,6 +242,7 @@ void kernel convolve_imagecubes_float_nopadzeros(
 // images are organized like [imageId][plane][row][col]
 // filters are organized like [filterid][inplane][filterrow][filtercol]
 // results are organized like [imageid][filterid][row][col]
+// global id is organized like results, ie: [imageid][filterid][row][col]
 void kernel convolve_imagecubes_float2( 
       const int numInputPlanes, const int numFilters, 
       const int inputBoardSize, const int filterSize, const int padZeros,
@@ -305,13 +306,124 @@ void kernel convolve_imagecubes_float2(
     results[globalId] = sum;
 //    results[0] = 1234.0;
      //results[globalId] = probe;
-    // images are organized like [imageId][plane][row][col]
-    // filters are organized like [filterid][inplane][filterrow][filtercol]
-    // results are organized like [imageid][filterid][row][col]
 }
 
-void kernel backprop_floats( ) {
+// images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
+// filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600
+// results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000
+//                  if w updates are per image,then 25600*128 = 3.3 million
+// globalid is for: [outPlane][upstreamPlane][filterRow][filterCol]
+// eg 32 * 32 * 5 * 5 = 25600 ...
+// then we are aggregating over [outRow][outCol][n]
+//      eg 19 * 19 * 128 = 46208
+void kernel backprop_floats_relu( 
+        const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
+         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
     int globalId = get_global_id(0);
+
+    int filterSizeSquared = filterSize * filterSize;
+
+    int IntraFilterOffset = globalId / filterSizeSquared;
+    int filterCol = IntraFilterOffset % filterSize;
+    int filterRow = IntraFilterOffset / filterSize;
+
+    int filter2Id = globalId / filterSizeSquared;
+    int upstreamPlane = filter2Id % upstreamNumPlanes;
+    int outPlane = filter2Id / upstreamNumPlanes;
+
+    const int halfFilterSize = filterSize >> 1;
+    const int margin = padZeros ? halfFilterSize : 0;
+    float thiswchange = 0;
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    int outRow = 0;
+    while( outRow < outBoardSize ) {
+        int upstreamRow = outRow - margin + filterRow;
+        int outCol = 0;
+        while( outCol < outBoardSize ) {
+            int upstreamCol = outCol - margin + filterCol;
+            int n = 0;
+            while( n < batchSize ) {
+                int resultIndex = ( ( n * numPlanes 
+                          + outPlane ) * outBoardSize
+                          + outRow ) * outBoardSize
+                          + outCol;
+                float error = errors[resultIndex];
+                float actualOutput = results[resultIndex];
+                float activationDerivative = actualOutput > 0 ? actualOutput : 0;
+                int upstreamDataIndex = ( ( n * upstreamNumPlanes 
+                                 + upstreamPlane ) * upstreamBoardSize
+                                 + upstreamRow ) * upstreamBoardSize
+                                 + upstreamCol;
+                float upstreamResult = images[upstreamDataIndex];
+                float thisimagethiswchange = upstreamResult * activationDerivative *
+                    error;
+                thiswchange += thisimagethiswchange;
+                n++;
+            }
+            outCol++;
+        }
+        outRow++;
+    }
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    weightChanges[ globalId ] = - thiswchange;
+}
+
+void kernel backprop_floats_tanh( 
+        const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
+         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
+    int globalId = get_global_id(0);
+
+    int filterSizeSquared = filterSize * filterSize;
+
+    int IntraFilterOffset = globalId % filterSizeSquared;
+    int filterRow = IntraFilterOffset / filterSize;
+    int filterCol = IntraFilterOffset % filterSize;
+
+    int filter2Id = globalId / filterSizeSquared;
+    int outPlane = filter2Id / upstreamNumPlanes;
+    int upstreamPlane = filter2Id % upstreamNumPlanes;
+
+    const int halfFilterSize = filterSize >> 1;
+    const int margin = padZeros ? halfFilterSize : 0;
+    float thiswchange = 0;
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    int outRow = 0;
+    while( outRow < outBoardSize ) {
+        int upstreamRow = outRow - margin + filterRow;
+        int outCol = 0;
+        while( outCol < outBoardSize ) {
+            int upstreamCol = outCol - margin + filterCol;
+            int n = 0;
+            while( n < batchSize ) {
+                int resultIndex = ( ( n * numPlanes 
+                          + outPlane ) * outBoardSize
+                          + outRow ) * outBoardSize
+                          + outCol;
+                float error = errors[resultIndex];
+                float actualOutput = results[resultIndex];
+                float activationDerivative = 1 - actualOutput * actualOutput;
+                int upstreamDataIndex = ( ( n * upstreamNumPlanes 
+                                 + upstreamPlane ) * upstreamBoardSize
+                                 + upstreamRow ) * upstreamBoardSize
+                                 + upstreamCol;
+                float upstreamResult = images[upstreamDataIndex];
+                float thisimagethiswchange = upstreamResult * activationDerivative *
+                    error;
+                thiswchange += thisimagethiswchange;
+                n++;
+            }
+            outCol++;
+        }
+        outRow++;
+    }
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    weightChanges[ globalId ] = - thiswchange;
 }
 
 void kernel byelement_add_inplace( global float *target, global const float *src ) {
@@ -344,4 +456,5 @@ void kernel byelement_relu( global float *vector ) {
     int globalId = get_global_id(0);
     vector[globalId] = vector[globalId] > 0 ? vector[globalId] : 0;
 }
+
 
