@@ -7,7 +7,7 @@ using namespace std;
 #include "BoardHelper.h"
 #include "MnistLoader.h"
 #include "BoardPng.h"
-#include "utils/Timer.h"
+#include "Timer.h"
 #include "NeuralNet.h"
 
 void checkAccuracy( int numImages, int numNeurons, int const*labels, float const*results ) {
@@ -85,19 +85,22 @@ int main( int argc, char *argv[] ) {
     }
 
     int numToTrain = 10000;
-    NeuralNet *net = new NeuralNet(1, boardSize );
-    net->addFullyConnected( 10, 1 );
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize( boardSize )->instance();
+    net->fullyConnectedMaker()->planes(10)->boardSize(1)->insert();
     for( int epoch = 0; epoch < 100; epoch++ ) {
-        net->doEpoch( 0.1, numToTrain, numToTrain, &(boardsFloat[0][0][0]), expectedOutputs );
-        cout << "loss: " << net->layers[1]->calcLoss( expectedOutputs ) << endl;
-        float const*results = net->layers[1]->getResults();
+        net->epochMaker()
+           ->learningRate(0.1)->batchSize(numToTrain)->numExamples(numToTrain)
+           ->inputData(&(boardsFloat[0][0][0]))->expectedOutputs(expectedOutputs)
+           ->run();
+        cout << "loss: " << net->calcLoss( expectedOutputs ) << endl;
+        float const*results = net->getResults();
         checkAccuracy( numToTrain, 10, labels, results );
     }
     float const*results = net->getResults( net->getNumLayers() - 1 );
 
 //    BoardPng::writeBoardsToPng( "testneuralnetmnist-output.png", net->layers[1]->results, 4, boardSize );
-    BoardPng::writeBoardsToPng( "testneuralnetmnist-input.png", net->layers[0]->results, 4, boardSize );
-    BoardPng::writeBoardsToPng( "testneuralnetmnist-weights.png", net->layers[1]->weights, 16, boardSize );
+//    BoardPng::writeBoardsToPng( "testneuralnetmnist-input.png", net->layers[0]->results, 4, boardSize );
+//    BoardPng::writeBoardsToPng( "testneuralnetmnist-weights.png", net->layers[1]->weights, 16, boardSize );
 
     delete net;
     delete[] expectedOutputs;
