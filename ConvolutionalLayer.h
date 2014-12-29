@@ -36,19 +36,30 @@ public:
                 upstreamBoardSize( previousLayer->getBoardSize() ),
                 upstreamNumPlanes( previousLayer->getNumPlanes() ),
                 biased(biased) {
+           std::cout << "convolutionallayer v0.2" << std::endl;
             if( filterSize % 2 == 0 ) {
                 throw std::runtime_error("filter size must be an odd number");
             }
+           std::cout << "1" << std::endl;
             this->cl = new OpenCLHelper();
 //        if( padZeros ) {
+           std::cout << "1" << std::endl;
             this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+           std::cout << "1" << std::endl;
             this->kernelApplyBias = cl->buildKernel( "ClConvolve.cl", "apply_bias" );
+           std::cout << "1" << std::endl;
             if( activationFunction->getKernelFunction() != "" ) {
                 this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
             } else {
                 this->kernelActivation = 0;
             }
-            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh" );
+//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "-D            std::cout << "1" << std::endl;
+//ACTIVATIONFUNCTION(output) 1 - output * output
+           std::cout << "building kernel..." << std::endl;
+//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "-D " + activationFunction->getDefineName() );
+            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "-D ACTIVATION_FUNCTION(output)=(" + activationFunction->getDerivativeMacro() + ")\n" );
+           std::cout << " ... built" << std::endl;
+//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "" );
 //        } else {
 //            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
 //        }

@@ -17,6 +17,8 @@ public:
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
     virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
     virtual int getDerivType() const { throw std::runtime_error("getDerivType not implemented"); } 
+    virtual std::string getDefineName() const { throw std::runtime_error("getDefineName not implemented"); } 
+    virtual std::string getDerivativeMacro() const { throw std::runtime_error("getDerivativeMacro not implemented"); } 
 };
 
 class TanhActivation : public ActivationFunction {
@@ -39,6 +41,12 @@ public:
     virtual int getDerivType() const { 
         return 1;
     }
+    virtual std::string getDefineName() const {
+        return "TANH";
+    } 
+    virtual std::string getDerivativeMacro() const {
+        return "1-output*output";
+    } 
 };
 
 class LinearActivation : public ActivationFunction {
@@ -58,6 +66,12 @@ public:
     virtual float getFalse() const {
         return -0.5;
     }
+    virtual std::string getDefineName() const {
+        return "LINEAR";
+    } 
+    virtual std::string getDerivativeMacro() const {
+        return "output";
+    } 
 };
 
 class ReluActivation : public ActivationFunction {
@@ -80,6 +94,12 @@ public:
     virtual int getDerivType() const { 
         return 0;
     }
+    virtual std::string getDefineName() const {
+        return "RELU";
+    } 
+    virtual std::string getDerivativeMacro() const {
+        return "output>0?output:0";
+    } 
 };
 
 
