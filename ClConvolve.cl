@@ -308,29 +308,9 @@ void kernel convolve_imagecubes_float2(
      //results[globalId] = probe;
 }
 
-//                #ifdef TANH
-//                   float activationDerivative = 1 - actualOutput * actualOutput;
-//                #elif defined RELU
-//                   float activationDerivative = actualOutput > 0 ? actualOutput : 0;
-//                #elif defined LINEAR
-//                   float activationDerivative = actualOutput;
-//                #else
-//                   float activationDerivative = 0;
-//                #endif
-
 #ifndef ACTIVATION_FUNCTION
    #define ACTIVATION_FUNCTION(actualOutput) 0    
 #endif
-
-//#ifdef TANH
-//   #define ACTIVATION_FUNCTION(actualOutput) 1 - actualOutput * actualOutput
-//#elif defined RELU
-//   #define ACTIVATION_FUNCTION(actualOutput) actualOutput > 0 ? actualOutput : 0
-//#elif defined LINEAR
-//   #define ACTIVATION_FUNCTION(actualOutput) actualOutput
-//#else
-//   #define ACTIVATION_FUNCTION(actualOutput) 0
-//#endif
 
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
 // filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600
@@ -341,7 +321,7 @@ void kernel convolve_imagecubes_float2(
 // then we are aggregating over [outRow][outCol][n]
 //      eg 19 * 19 * 128 = 46208
 // derivtype: 0=relu 1=tanh
-void kernel backprop_floats_tanh( const int derivtype, const float learningRateMultiplier,
+void kernel backprop_floats( const int derivtype, const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
@@ -376,18 +356,6 @@ void kernel backprop_floats_tanh( const int derivtype, const float learningRateM
                           + outCol;
                 float error = errors[resultIndex];
                 float actualOutput = results[resultIndex];
-//                float activationDerivative = 1 - actualOutput * actualOutput;
-//                float activationDerivative = derivtype ?  1 - actualOutput * actualOutput : 
-
-//                #ifdef TANH
-//                   float activationDerivative = 1 - actualOutput * actualOutput;
-//                #elif defined RELU
-//                   float activationDerivative = actualOutput > 0 ? actualOutput : 0;
-//                #elif defined LINEAR
-//                   float activationDerivative = actualOutput;
-//                #else
-//                   float activationDerivative = 0;
-//                #endif
                 float activationDerivative = ACTIVATION_FUNCTION( actualOutput);
                 int upstreamDataIndex = ( ( n * upstreamNumPlanes 
                                  + upstreamPlane ) * upstreamBoardSize

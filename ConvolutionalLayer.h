@@ -53,16 +53,7 @@ public:
             } else {
                 this->kernelActivation = 0;
             }
-//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "-D            std::cout << "1" << std::endl;
-//ACTIVATIONFUNCTION(output) 1 - output * output
-           std::cout << "building kernel..." << std::endl;
-//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "-D " + activationFunction->getDefineName() );
-            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "-D ACTIVATION_FUNCTION(output)=(" + activationFunction->getDerivativeMacro() + ")\n" );
-           std::cout << " ... built" << std::endl;
-//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats_tanh", "" );
-//        } else {
-//            this->kernel = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float_nopadzeros" );
-//        }
+            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", "-D ACTIVATION_FUNCTION(output)=(" + activationFunction->getDerivativeMacro() + ")\n" );
         biasWeights = new float[numPlanes];
         weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
         randomizeWeights();
