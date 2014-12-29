@@ -61,6 +61,7 @@ public:
         unsigned char *labelsData = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
 
         int totalNumImages = readUInt( labelsData, 1 );
+        cout << "set " << set << " num labels " << totalNumImages << endl;
         *p_numImages = totalNumImages;
         int *labels = new int[*p_numImages];
         for( int n = 0; n < *p_numImages; n++ ) {

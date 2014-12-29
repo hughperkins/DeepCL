@@ -71,9 +71,9 @@ public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 1000;
-    int numTest = 1000;
-    int batchSize = 100;
+    int numTrain = 4000;
+    int numTest = 4000;
+    int batchSize = 4000;
     int numEpochs = 100;
     float learningRate = 0.1f;
     int biased = 1;
@@ -119,7 +119,7 @@ void go(Config config) {
             ->inputData(&(boardsFloat[0][0][0]))
             ->expectedOutputs(expectedOutputs)
             ->run();
-        cout << "loss: " << loss << endl;
+        cout << "       loss L: " << loss << endl;
         int trainNumRight = 0;
         timer.timeCheck("after epoch");
         for( int batch = 0; batch < numToTrain / batchSize; batch++ ) {
@@ -134,6 +134,19 @@ void go(Config config) {
         net->propagate( &(boardsTest[0][0][0]) );
         float const*resultsTest = net->getResults();
         AccuracyHelper::printAccuracy( config.batchSize, 10, labelsTest, resultsTest );
+        AccuracyHelper::printAccuracy( config.batchSize / 10, 10, labelsTest, resultsTest );
+
+        int testNumRight = 0;
+        for( int batch = 0; batch < config.numTest / batchSize; batch++ ) {
+            int batchStart = batch * batchSize;
+            net->propagate( &(boardsTest[batchStart][0][0]) );
+            resultsTest = net->getResults();
+            int thisnumright = AccuracyHelper::calcNumRight( config.batchSize, 10, &(labelsTest[batchStart]), resultsTest );
+            cout << "test batch " << batch << " numtest " << config.numTest << " numright " << thisnumright << "/" << batchSize << endl;
+            testNumRight += thisnumright;
+        }
+        timer.timeCheck("after calc test accuracy");
+        cout << "test: " << testNumRight << "/" << config.numTest << endl;
     }
     //float const*results = net->getResults( net->getNumLayers() - 1 );
 

@@ -53,7 +53,8 @@ public:
             } else {
                 this->kernelActivation = 0;
             }
-            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", "-D ACTIVATION_FUNCTION(output)=(" + activationFunction->getDerivativeMacro() + ")\n" );
+//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", "-D ACTIVATION_FUNCTION(output)=(" + activationFunction->getDerivativeMacro() + ")\n" );
+            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", "-D " + activationFunction->getDefineName() );
         biasWeights = new float[numPlanes];
         weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
         randomizeWeights();
@@ -162,12 +163,12 @@ public:
         weOwnResults = true;
     }
     virtual void propagate() {
-
+//        Timer timer;
         CLFloatWrapperConst *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
         CLFloatWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
                  weights );
         CLFloatWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
-
+//        timer.timeCheck("    propagate, created wrappers");
 //        for( int i = 0; i < upstreamWrapper->size(); i++ ) {
 //            std::cout << "upstreamWrapper[" << i << "]=" << upstreamWrapper->get(i) << std::endl;
 //        }
@@ -180,6 +181,7 @@ public:
 
         upstreamWrapper->copyToDevice();
         weightsWrapper->copyToDevice();
+//        timer.timeCheck("    propagate, copied to device");
 
 //        resultsWrapper->createOnDevice();
         
@@ -191,7 +193,9 @@ public:
         int globalSize = batchSize * numPlanes * boardSize * boardSize;
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+//        timer.timeCheck("    propagate, passed in inputs");
         kernelConvolve->run_1d( globalSize, workgroupsize );
+//        timer.timeCheck("    propagate, after run");
 //        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
 //           << " filtersize " << filterSize << " padzeros " << padZeros << " globalSize " << globalSize << std::endl;
 
@@ -213,14 +217,17 @@ public:
                   ->inout( resultsWrapper)
                   ->input( biasWrapper );
             kernelApplyBias->run_1d( globalSize, workgroupsize );
+//            timer.timeCheck("    propagate, after run bias");
         }
 
         if( kernelActivation != 0 ) {
             kernelActivation->inout( resultsWrapper );
             kernelActivation->run_1d( globalSize, workgroupsize );
+//            timer.timeCheck("    propagate, after apply activation");
         }
 
         resultsWrapper->copyToHost();
+//        timer.timeCheck("    propagate, after copy to host");
 
         delete upstreamWrapper;
         delete weightsWrapper;

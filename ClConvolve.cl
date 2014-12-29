@@ -238,7 +238,7 @@ void kernel convolve_imagecubes_float_nopadzeros(
     }
     results[globalId] = sum;
 }
-    
+
 // images are organized like [imageId][plane][row][col]
 // filters are organized like [filterid][inplane][filterrow][filtercol]
 // results are organized like [imageid][filterid][row][col]
@@ -308,10 +308,15 @@ void kernel convolve_imagecubes_float2(
      //results[globalId] = probe;
 }
 
-#ifndef ACTIVATION_FUNCTION
-   #define ACTIVATION_FUNCTION(actualOutput) 0    
+#ifdef TANH
+    #define ACTIVATION_FUNCTION(output) 1 - output * output
+#elif defined RELU
+    #define ACTIVATION_FUNCTION(output) output > 0 ? output : 0
+#elif defined LINEAR
+    #define ACTIVATION_FUNCTION(output) output
 #endif
-
+    
+#ifdef ACTIVATION_FUNCTION // protect against if activation_function not defined
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
 // filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600
 // results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000
@@ -375,6 +380,7 @@ void kernel backprop_floats( const int derivtype, const float learningRateMultip
     //       aggregate over:  [outRow][outCol][n]
     weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
 }
+#endif
 
 void kernel byelement_add_inplace( global float *target, global const float *src ) {
     int globalId = get_global_id(0);
