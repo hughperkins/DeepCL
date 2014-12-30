@@ -79,10 +79,10 @@ public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 4000;
-    int numTest = 4000;
-    int batchSize = 1000;
-    int numEpochs = 10;
+    int numTrain = 60000;
+    int numTest = 10000;
+    int batchSize = 4000;
+    int numEpochs = 15;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -167,42 +167,14 @@ void go(Config config) {
         cout << "       loss L: " << loss << endl;
         int trainNumRight = 0;
         timer.timeCheck("after epoch");
-//        for( int batch = 0; batch < numToTrain / batchSize; batch++ ) {
-//            int batchStart = batch * batchSize;
-//            net->propagate( &(boardsFloat[batchStart][0][0]) );
-//            float const*results = net->getResults();
-//            trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labels[batchStart]), results );
-//        }
-//        timer.timeCheck("after calc accuracy");
-//        cout << "train: " << trainNumRight << "/" << numToTrain << endl;
-//        cout << "test:" << endl;
-//        net->propagate( &(boardsTest[0][0][0]) );
-//        float const*resultsTest = net->getResults();
-//        AccuracyHelper::printAccuracy( config.batchSize, 10, labelsTest, resultsTest );
-//        AccuracyHelper::printAccuracy( config.batchSize / 10, 10, labelsTest, resultsTest );
-
-//        BoardPng::writeBoardsToPng( "testsample.png", boardsTest, 4000, boardSize );
-//        for( int j = 0; j < 4000; j+=500 ) {
-//            for( int i = 0; i < 10; i++ ) {
-//                cout << (i+j) << " " << labelsTest[i+j] << " ";
-//            }
-//            cout << endl;
-//        }
-
         printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
-        printAccuracy( "test2", net, boardsTest, labelsTest, batchSize, config.numTest );
-//        printAccuracy( "test + 1000", net, &(boardsTest[1000]), &(labelsTest[1000]), batchSize, config.numTest );
-        printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
-//        printAccuracy( "train + 4000", net, &(boardsFloat[4000]), &(labels[4000]), batchSize, config.numTest );
+//        printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
         timer.timeCheck("after tests");
     }
     //float const*results = net->getResults( net->getNumLayers() - 1 );
 
     printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
-    printAccuracy( "test2", net, boardsTest, labelsTest, batchSize, config.numTest );
-//        printAccuracy( "test + 1000", net, &(boardsTest[1000]), &(labelsTest[1000]), batchSize, config.numTest );
-    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
-//        printAccuracy( "train + 4000", net, &(boardsFloat[4000]), &(labels[4000]), batchSize, config.numTest );
+//    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
     timer.timeCheck("after tests");
 
     int numBatches = config.numTest / config.batchSize;
