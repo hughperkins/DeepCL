@@ -33,8 +33,8 @@ public:
         file.close();
     }
 
-    static bool exists( const string filepath ) {
-       ifstream testifstream(filepath.c_str() );
+    static bool exists( const std::string filepath ) {
+       std::ifstream testifstream(filepath.c_str() );
        bool exists = testifstream.good();
        testifstream.close();
        return exists;

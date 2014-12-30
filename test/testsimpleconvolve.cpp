@@ -145,10 +145,10 @@ void test2() {
 //        for( int i = 0; i < 20; i++ ) {
 //            cout << "results[" << i << "]=" << results[i] << endl;
 //        }
-        assertEquals( -0.202616f, results[0] );
-        assertEquals( 0.143989f, results[1] );
-        assertEquals( 0.202616f, results[2] );
-        assertEquals( -0.143989f, results[3] );
+        assertEquals( -0.202616f, results[0], 0.0001 );
+        assertEquals( 0.143989f, results[1], 0.0001 );
+        assertEquals( 0.202616f, results[2], 0.0001 );
+        assertEquals( -0.143989f, results[3], 0.0001 );
     }
     cout << "test2 ok" << endl;
 }
@@ -208,7 +208,7 @@ void test3() {
    for( int i = 0; i < 8; i++ ) {
       cout << " checking result " << i << endl;
         cout << "results[" << i << "]=" << results[i] << endl;
-      assertEquals( expectedResults[i], results[i]);
+      assertEquals( expectedResults[i], results[i], 0.0001);
    }
 }
 
