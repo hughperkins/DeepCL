@@ -4,6 +4,21 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+// expected defines:
+// one of: [ TANH | RELU | LINEAR ]
+// BIASED (or not)
+
+#ifdef TANH
+    #define ACTIVATION_FUNCTION(output) tanh(output)
+    #define ACTIVATION_DERIV(output) 1 - output * output
+#elif defined RELU
+    #define ACTIVATION_FUNCTION(output) output> 0 ? output : 0
+    #define ACTIVATION_DERIV(output) output > 0 ? 1 : 0
+#elif defined LINEAR
+    #define ACTIVATION_FUNCTION(output) output
+    #define ACTIVATION_DERIV(output) 1
+#endif
+    
 void kernel convolve_ints( global const int *p_boardSize, global const int *p_filterSize,
       global const int *image, global const int *filter, global int *result ) {
     int id = get_global_id(0);
@@ -243,10 +258,15 @@ void kernel convolve_imagecubes_float_nopadzeros(
 // filters are organized like [filterid][inplane][filterrow][filtercol]
 // results are organized like [imageid][filterid][row][col]
 // global id is organized like results, ie: [imageid][filterid][row][col]
+#ifdef ACTIVATION_FUNCTION // protect against not defined
 void kernel convolve_imagecubes_float2( 
       const int numInputPlanes, const int numFilters, 
       const int inputBoardSize, const int filterSize, const int padZeros,
-      global const float *images, global const float *filters, global float *results ) {
+      global const float *images, global const float *filters, 
+#ifdef BIASED
+global const float*biases, 
+#endif
+    global float *results ) {
     int globalId = get_global_id(0);
 
     int inputBoardSizeSquared = inputBoardSize * inputBoardSize;
@@ -302,21 +322,15 @@ void kernel convolve_imagecubes_float2(
     }
 //     probe = exampleId * 100 + filterCubeOffset;
 
-//    sum += biases[filterId];
-    results[globalId] = sum;
+#ifdef BIASED
+    sum += biases[filterId];
+#endif
+    results[globalId] = ACTIVATION_FUNCTION(sum);
 //    results[0] = 1234.0;
      //results[globalId] = probe;
 }
-
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) 1 - output * output
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) output > 0 ? output : 0
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) output
 #endif
-    
-#ifdef ACTIVATION_FUNCTION // protect against if activation_function not defined
+
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
 // filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600
 // results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000
@@ -326,7 +340,8 @@ void kernel convolve_imagecubes_float2(
 // then we are aggregating over [outRow][outCol][n]
 //      eg 19 * 19 * 128 = 46208
 // derivtype: 0=relu 1=tanh
-void kernel backprop_floats( const int derivtype, const float learningRateMultiplier,
+#ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
@@ -361,7 +376,7 @@ void kernel backprop_floats( const int derivtype, const float learningRateMultip
                           + outCol;
                 float error = errors[resultIndex];
                 float actualOutput = results[resultIndex];
-                float activationDerivative = ACTIVATION_FUNCTION( actualOutput);
+                float activationDerivative = ACTIVATION_DERIV( actualOutput);
                 int upstreamDataIndex = ( ( n * upstreamNumPlanes 
                                  + upstreamPlane ) * upstreamBoardSize
                                  + upstreamRow ) * upstreamBoardSize
@@ -382,35 +397,35 @@ void kernel backprop_floats( const int derivtype, const float learningRateMultip
 }
 #endif
 
-void kernel byelement_add_inplace( global float *target, global const float *src ) {
-    int globalId = get_global_id(0);
-    target[globalId] += src[globalId];
-}
+//void kernel byelement_add_inplace( global float *target, global const float *src ) {
+//    int globalId = get_global_id(0);
+//    target[globalId] += src[globalId];
+//}
 
 // results are organized like [imageid][filterid][row][col]
 // bias si applied per filterId
 // need to know:
 //  - how many filters
 //  - filterSizeSquared
-void kernel apply_bias( const int numFilters, const int filterSizeSquared, global float *target, global const float *biasWeights ) {
-    int globalId = get_global_id(0);
-    int filterId = ( globalId / filterSizeSquared ) % numFilters;
-    target[globalId] += biasWeights[filterId];
-}
+//void kernel apply_bias( const int numFilters, const int filterSizeSquared, global float *target, global const float *biasWeights ) {
+//    int globalId = get_global_id(0);
+//    int filterId = ( globalId / filterSizeSquared ) % numFilters;
+//    target[globalId] += biasWeights[filterId];
+//}
 
-void kernel byelement_mult_inplace( global float *target, const float scalar ) {
-    int globalId = get_global_id(0);
-    target[globalId] *= scalar;
-}
+//void kernel byelement_mult_inplace( global float *target, const float scalar ) {
+//    int globalId = get_global_id(0);
+//    target[globalId] *= scalar;
+//}
 
-void kernel byelement_tanh( global float *vector ) {
-    int globalId = get_global_id(0);
-    vector[globalId] = tanh(vector[globalId]);
-}
+//void kernel byelement_tanh( global float *vector ) {
+//    int globalId = get_global_id(0);
+//    vector[globalId] = tanh(vector[globalId]);
+//}
 
-void kernel byelement_relu( global float *vector ) {
-    int globalId = get_global_id(0);
-    vector[globalId] = vector[globalId] > 0 ? vector[globalId] : 0;
-}
+//void kernel byelement_relu( global float *vector ) {
+//    int globalId = get_global_id(0);
+//    vector[globalId] = vector[globalId] > 0 ? vector[globalId] : 0;
+//}
 
 

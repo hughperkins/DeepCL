@@ -56,7 +56,7 @@ void test1() {
     dataWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
 
-    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
     kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
        ->in( padZeros );
     kernel->input( dataWrapper );
@@ -122,8 +122,8 @@ void test2() {
     dataWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
 
-    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
-    CLKernel *tanh = cl.buildKernel( "ClConvolve.cl", "byelement_tanh" );
+    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D TANH" );
+//    CLKernel *tanh = cl.buildKernel( "ClConvolve.cl", "byelement_tanh" );
 
     for( int it = 0; it < 100; it ++ ) {
         convolve->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
@@ -136,9 +136,6 @@ void test2() {
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
         convolve->run_1d( globalSize, workgroupsize );
-
-        tanh->inout( resultsWrapper );
-        tanh->run_1d( globalSize, workgroupsize );
 
         resultsWrapper->copyToHost();
 
@@ -176,7 +173,7 @@ void test3() {
     dataWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
 
-    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
+    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
     convolve->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
        ->in( padZeros );
     convolve->input( dataWrapper );

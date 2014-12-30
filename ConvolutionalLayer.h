@@ -15,8 +15,8 @@ class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *cl;
     CLKernel *kernelConvolve;
-    CLKernel *kernelApplyBias;
-    CLKernel *kernelActivation;
+//    CLKernel *kernelApplyBias;
+//    CLKernel *kernelActivation;
     CLKernel *kernelBackPropWeights;
 
     const int filterSize;
@@ -40,21 +40,13 @@ public:
             if( filterSize % 2 == 0 ) {
                 throw std::runtime_error("filter size must be an odd number");
             }
-           std::cout << "1" << std::endl;
             this->cl = new OpenCLHelper();
-//        if( padZeros ) {
-           std::cout << "1" << std::endl;
-            this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2" );
-           std::cout << "1" << std::endl;
-            this->kernelApplyBias = cl->buildKernel( "ClConvolve.cl", "apply_bias" );
-           std::cout << "1" << std::endl;
-            if( activationFunction->getKernelFunction() != "" ) {
-                this->kernelActivation = cl->buildKernel( "ClConvolve.cl", activationFunction->getKernelFunction() );
-            } else {
-                this->kernelActivation = 0;
+            std::string options = "-D " + activationFunction->getDefineName();
+            if( biased ) {
+                  options += " -D BIASED";
             }
-//            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", "-D ACTIVATION_FUNCTION(output)=(" + activationFunction->getDerivativeMacro() + ")\n" );
-            kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", "-D " + activationFunction->getDefineName() );
+            this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
+            this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
         biasWeights = new float[numPlanes];
         weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
         randomizeWeights();
@@ -62,9 +54,7 @@ public:
     virtual ~ConvolutionalLayer() {
         delete[] biasWeights;
         delete kernelBackPropWeights;
-        delete kernelApplyBias;
         delete kernelConvolve;
-        delete kernelActivation;
         delete cl;
     }
 // filters are organized like [filterid][plane][row][col]
@@ -164,9 +154,6 @@ public:
     }
     virtual void propagate() {
 //        Timer timer;
-        CLFloatWrapperConst *upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
-        CLFloatWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
-        CLFloatWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
 //        timer.timeCheck("    propagate, created wrappers");
 //        for( int i = 0; i < upstreamWrapper->size(); i++ ) {
 //            std::cout << "upstreamWrapper[" << i << "]=" << upstreamWrapper->get(i) << std::endl;
@@ -178,9 +165,19 @@ public:
 //        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
 //        std::cout << "propagate, weights: " << weights[0] << " " << " size " << previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize << std::endl;
 
+        CLFloatWrapperConst *upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
+        CLFloatWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
+        CLFloatWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
+
         upstreamWrapper->copyToDevice();
         weightsWrapper->copyToDevice();
 //        timer.timeCheck("    propagate, copied to device");
+
+        CLFloatWrapper *biasWeightsWrapper = 0;
+        if( biased ) {
+            biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
+            biasWeightsWrapper->copyToDevice();
+        }
 
 //        resultsWrapper->createOnDevice();
         
@@ -188,6 +185,9 @@ public:
           ->in( padZeros ? 1 : 0 );
         kernelConvolve->input( upstreamWrapper );
         kernelConvolve->input( weightsWrapper);
+        if( biased ) {
+            kernelConvolve->input( biasWeightsWrapper);
+        }
         kernelConvolve->output( resultsWrapper );
         int globalSize = getResultsSize();
 //        std::cout << "requested globalsize: " << globalSize << std::endl;
@@ -206,34 +206,15 @@ public:
 //            std::cout << "results[" << i << "]=" << results[i] << std::endl;
 //        }
 
-        if( biased ) {
-//            std::cout << "applying bias..." << std::endl;
-            CLWrapper *biasWrapper = cl->wrap( numPlanes, biasWeights );
-            biasWrapper->copyToDevice();
-            // need to apply bias per filter, which means for each board output by that filter
-            // need to pass in the size of each of these boards
-            kernelApplyBias
-//                  ->in( 1 )
-                  ->in( numPlanes )
-                  ->in( filterSize * filterSize )
-                  ->inout( resultsWrapper)
-                  ->input( biasWrapper );
-            kernelApplyBias->run_1d( globalSize, workgroupsize );
-//            timer.timeCheck("    propagate, after run bias");
-        }
-
-        if( kernelActivation != 0 ) {
-            kernelActivation->inout( resultsWrapper );
-            kernelActivation->run_1d( globalSize, workgroupsize );
-//            timer.timeCheck("    propagate, after apply activation");
-        }
-
         resultsWrapper->copyToHost();
 //        timer.timeCheck("    propagate, after copy to host");
 
         delete upstreamWrapper;
         delete weightsWrapper;
         delete resultsWrapper;
+        if( biased ) {
+            delete biasWeightsWrapper;
+        }
     }
     virtual int getWeightsSize() const {
         return numPlanes * upstreamNumPlanes * filterSize * filterSize;
@@ -338,7 +319,6 @@ public:
         resultsWrapper->copyToDevice();
         errorsWrapper->copyToDevice();
         kernelBackPropWeights
-           ->in(activationFunction->getDerivType() )
            ->in(learningMultiplier)
            ->in( batchSize )->in( upstreamNumPlanes )->in(numPlanes)
            ->in( upstreamBoardSize )->in( filterSize )->in( boardSize )->in( padZeros ? 1 : 0 )
