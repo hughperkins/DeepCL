@@ -21,5 +21,23 @@ public:
         file.close();
         return (unsigned char *)data;
     }
+
+    static void writeBinary( std::string filepath, unsigned char*data, int filesize ) {
+        std::ofstream file( filepath.c_str(), std::ios::out | std::ios::binary );
+        if(!file.is_open()) {
+             throw std::runtime_error("cannot open file " + filepath );
+        }
+        if( !file.write( (char *)data, filesize ) ) {
+            throw std::runtime_error("failed to write to " + filepath );
+        }
+        file.close();
+    }
+
+    static bool exists( const string filepath ) {
+       ifstream testifstream(filepath.c_str() );
+       bool exists = testifstream.good();
+       testifstream.close();
+       return exists;
+    }
 };
 

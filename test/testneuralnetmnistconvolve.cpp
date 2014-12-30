@@ -11,25 +11,33 @@ using namespace std;
 #include "NeuralNet.h"
 #include "test/AccuracyHelper.h"
 #include "stringhelper.h"
+#include "FileHelper.h"
 
 void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {
     int boardSize;
-    int N;
+    int Nboards;
+    int Nlabels;
     // images
-    int ***boards = MnistLoader::loadImages( mnistDir, setName, &N, &boardSize );
-    int *labels = MnistLoader::loadLabels( mnistDir, setName, &N );
-    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( N, boardSize + 1 );
-    BoardsHelper::copyBoards( boardsFloat, boards, N, boardSize );
-    BoardsHelper::deleteBoards( &boards, N, boardSize );
+    int ***boards = MnistLoader::loadImages( mnistDir, setName, &Nboards, &boardSize );
+    int *labels = MnistLoader::loadLabels( mnistDir, setName, &Nlabels );
+    if( Nboards != Nlabels ) {
+         throw runtime_error("mismatch between number of boards, and number of labels " + toString(Nboards ) + " vs " +
+             toString(Nlabels ) );
+    }
+    cout << "loaded " << Nboards << " boards.  " << endl;
+//    MnistLoader::shuffle( boards, labels, Nboards, boardSize );
+    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( Nboards, boardSize + 1 );
+    BoardsHelper::copyBoards( boardsFloat, boards, Nboards, boardSize );
+    BoardsHelper::deleteBoards( &boards, Nboards, boardSize );
     *p_images = boardsFloat;
     *p_labels = labels;
    
     *p_boardSize = boardSize + 1;
-    *p_N = N;
+    *p_N = Nboards;
 
     // expected results
-    *p_expectedOutputs = new float[10 * N];
-    for( int n = 0; n < N; n++ ) {
+    *p_expectedOutputs = new float[10 * Nboards];
+    for( int n = 0; n < Nlabels; n++ ) {
        int thislabel = labels[n];
        for( int i = 0; i < 10; i++ ) {
           (*p_expectedOutputs)[n*10+i] = -0.5;
@@ -73,44 +81,81 @@ public:
     string testSet = "t10k";
     int numTrain = 4000;
     int numTest = 4000;
-    int batchSize = 4000;
-    int numEpochs = 100;
+    int batchSize = 1000;
+    int numEpochs = 10;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
     }
 };
 
+void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
+    int testNumRight = 0;
+    for( int batch = 0; batch < N / batchSize; batch++ ) {
+        int batchStart = batch * batchSize;
+        net->propagate( &(boards[batchStart][0][0]) );
+        float const*results = net->getResults();
+        int thisnumright = AccuracyHelper::calcNumRight( batchSize, 10, &(labels[batchStart]), results );
+//        cout << name << " batch " << batch << ": numright " << thisnumright << "/" << batchSize << endl;
+        testNumRight += thisnumright;
+    }
+//    cout << "boards interval: " << ( &(boards[1][0][0]) - &(boards[0][0][0])) << endl;
+//    cout << "labels interval: " << ( &(labels[1]) - &(labels[0])) << endl;
+    cout << name << " overall: " << testNumRight << "/" << N << endl;
+}
+
 void go(Config config) {
     Timer timer;
 
     int boardSize;
-    int N;
 
     float ***boardsFloat = 0;
     int *labels = 0;
     float *expectedOutputs = 0;
-    loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs );
 
-    float mean;
-    float thismax;
-    getStats( boardsFloat, N, boardSize, &mean, &thismax );
-    normalize( boardsFloat, N, boardSize, mean, thismax );
-
-    int Ntest;
     float ***boardsTest = 0;
     int *labelsTest = 0;
     float *expectedOutputsTest = 0;
-    loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
-    normalize( boardsTest, Ntest, boardSize, mean, thismax );
+    {
+        int N;
+        loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs );
 
+        int Ntest;
+        loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
+
+    }
+
+    float mean;
+    float thismax;
+//    getStats( boardsFloat, config.numTrain, boardSize, &mean, &thismax );
+    mean = 33;
+    thismax = 255;
+    cout << " board stats mean " << mean << " max " << thismax << " boardSize " << boardSize << endl;
+    normalize( boardsFloat, config.numTrain, boardSize, mean, thismax );
+    normalize( boardsTest, config.numTest, boardSize, mean, thismax );
     timer.timeCheck("after load images");
 
     int numToTrain = config.numTrain;
-    int batchSize = config.batchSize;
+    const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
     net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased)->insert();
-    net->print();
+
+//    if( FileHelper::exists("weights.dat" ) ){
+//        int fileSize;
+//        unsigned char * data = FileHelper::readBinary( "weights.dat", &fileSize );
+//        cout << "read data from file "  << fileSize << " bytes" << endl;
+//        for( int i = 0; i < net->layers[1]->getWeightsSize(); i++ ) {
+//            net->layers[1]->weights[i] = reinterpret_cast<float *>(data)[i];
+//        }
+//        delete [] data;
+//        data = FileHelper::readBinary( "biasweights.dat", &fileSize );
+//        cout << "read data from file "  << fileSize << " bytes" << endl;
+//        for( int i = 0; i < net->layers[1]->getBiasWeightsSize(); i++ ) {
+//            dynamic_cast<ConvolutionalLayer*>(net->layers[1])->biasWeights[i] = reinterpret_cast<float *>(data)[i];
+//        }
+//    }
+//    net->setBatchSize(batchSize);
+//    net->print();
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
         float loss = net->epochMaker()
             ->learningRate(config.learningRate)
@@ -122,33 +167,43 @@ void go(Config config) {
         cout << "       loss L: " << loss << endl;
         int trainNumRight = 0;
         timer.timeCheck("after epoch");
-        for( int batch = 0; batch < numToTrain / batchSize; batch++ ) {
-            int batchStart = batch * batchSize;
-            net->propagate( &(boardsFloat[batchStart][0][0]) );
-            float const*results = net->getResults();
-            trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labels[batchStart]), results );
-        }
-        timer.timeCheck("after calc accuracy");
-        cout << "train: " << trainNumRight << "/" << numToTrain << endl;
-        cout << "test:" << endl;
-        net->propagate( &(boardsTest[0][0][0]) );
-        float const*resultsTest = net->getResults();
-        AccuracyHelper::printAccuracy( config.batchSize, 10, labelsTest, resultsTest );
-        AccuracyHelper::printAccuracy( config.batchSize / 10, 10, labelsTest, resultsTest );
+//        for( int batch = 0; batch < numToTrain / batchSize; batch++ ) {
+//            int batchStart = batch * batchSize;
+//            net->propagate( &(boardsFloat[batchStart][0][0]) );
+//            float const*results = net->getResults();
+//            trainNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labels[batchStart]), results );
+//        }
+//        timer.timeCheck("after calc accuracy");
+//        cout << "train: " << trainNumRight << "/" << numToTrain << endl;
+//        cout << "test:" << endl;
+//        net->propagate( &(boardsTest[0][0][0]) );
+//        float const*resultsTest = net->getResults();
+//        AccuracyHelper::printAccuracy( config.batchSize, 10, labelsTest, resultsTest );
+//        AccuracyHelper::printAccuracy( config.batchSize / 10, 10, labelsTest, resultsTest );
 
-        int testNumRight = 0;
-        for( int batch = 0; batch < config.numTest / batchSize; batch++ ) {
-            int batchStart = batch * batchSize;
-            net->propagate( &(boardsTest[batchStart][0][0]) );
-            resultsTest = net->getResults();
-            int thisnumright = AccuracyHelper::calcNumRight( config.batchSize, 10, &(labelsTest[batchStart]), resultsTest );
-            cout << "test batch " << batch << " numtest " << config.numTest << " numright " << thisnumright << "/" << batchSize << endl;
-            testNumRight += thisnumright;
-        }
-        timer.timeCheck("after calc test accuracy");
-        cout << "test: " << testNumRight << "/" << config.numTest << endl;
+//        BoardPng::writeBoardsToPng( "testsample.png", boardsTest, 4000, boardSize );
+//        for( int j = 0; j < 4000; j+=500 ) {
+//            for( int i = 0; i < 10; i++ ) {
+//                cout << (i+j) << " " << labelsTest[i+j] << " ";
+//            }
+//            cout << endl;
+//        }
+
+        printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
+        printAccuracy( "test2", net, boardsTest, labelsTest, batchSize, config.numTest );
+//        printAccuracy( "test + 1000", net, &(boardsTest[1000]), &(labelsTest[1000]), batchSize, config.numTest );
+        printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
+//        printAccuracy( "train + 4000", net, &(boardsFloat[4000]), &(labels[4000]), batchSize, config.numTest );
+        timer.timeCheck("after tests");
     }
     //float const*results = net->getResults( net->getNumLayers() - 1 );
+
+    printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
+    printAccuracy( "test2", net, boardsTest, labelsTest, batchSize, config.numTest );
+//        printAccuracy( "test + 1000", net, &(boardsTest[1000]), &(labelsTest[1000]), batchSize, config.numTest );
+    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
+//        printAccuracy( "train + 4000", net, &(boardsFloat[4000]), &(labels[4000]), batchSize, config.numTest );
+    timer.timeCheck("after tests");
 
     int numBatches = config.numTest / config.batchSize;
     int totalNumber = 0;
@@ -162,15 +217,23 @@ void go(Config config) {
     }
     cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
 
+//    if( config.numEpochs >= 10 ) {
+//        FileHelper::writeBinary( "weights.dat", reinterpret_cast<unsigned char *>(net->layers[1]->weights), 
+//            net->layers[1]->getWeightsSize() * sizeof(float) );
+//        cout << "wrote weights to file " << endl;
+//        FileHelper::writeBinary( "biasweights.dat", reinterpret_cast<unsigned char *>(dynamic_cast<ConvolutionalLayer*>(net->layers[1])->biasWeights), 
+//            dynamic_cast<ConvolutionalLayer*>(net->layers[1])->getBiasWeightsSize() * sizeof(float) );
+//    }
+
     delete net;
 
     delete[] expectedOutputsTest;
     delete[] labelsTest;
-    BoardsHelper::deleteBoards( &boardsTest, Ntest, boardSize );
+//    BoardsHelper::deleteBoards( &boardsTest, Ntest, boardSize );
 
     delete[] expectedOutputs;
     delete[] labels;
-    BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
+//    BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
 }
 
 int main( int argc, char *argv[] ) {

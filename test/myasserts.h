@@ -21,8 +21,9 @@ std::string toString(T val ) { // not terribly efficient, but works...
    myostringstream << val;
    return myostringstream.str();
 }
-void assertEquals( float one, float two ) {
-   if( std::abs( one - two ) > 0.0001 ) {
+void assertEquals( float one, float two, float tolerance ) {
+   float absdiff = one - two > 0 ? one - two : two - one;
+   if( absdiff > tolerance ) {
       throw std::runtime_error( "assertEquals fail " + toString(one) + " != " + toString(two) );
    }
 }
@@ -39,5 +40,9 @@ void assertEquals( float one, int two ) {
 }
 void assertEquals( int one, float two ) {
    assertEquals( (float)one, two );
+}
+
+void assertEquals( int one, int two ) {
+   assertEquals<int>( one, two );
 }
 

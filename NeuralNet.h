@@ -100,10 +100,12 @@ public:
 //    }
     void propagate( float const*images) {
         // forward...
+//        Timer timer;
         dynamic_cast<InputLayer *>(layers[0])->in( images );
         for( int layerId = 1; layerId < layers.size(); layerId++ ) {
             layers[layerId]->propagate();
         }
+//        timer.timeCheck("propagate time");
     }
     void backProp(float learningRate,float const *expectedResults) {
         // backward...

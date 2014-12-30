@@ -159,15 +159,14 @@ public:
         }
         this->batchSize = batchSize;
 //        std::cout << "allocating results size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
-        results = new float[batchSize * numPlanes * boardSize * boardSize];
+        results = new float[getResultsSize()];
         weOwnResults = true;
     }
     virtual void propagate() {
 //        Timer timer;
-        CLFloatWrapperConst *upstreamWrapper = cl->wrap( batchSize * numPlanes * upstreamBoardSize * upstreamBoardSize, previousLayer->getResults() );
-        CLFloatWrapper *weightsWrapper = cl->wrap( upstreamNumPlanes * numPlanes * filterSize * filterSize, 
-                 weights );
-        CLFloatWrapper *resultsWrapper = cl->wrap( batchSize * numPlanes * boardSize * boardSize, results );
+        CLFloatWrapperConst *upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
+        CLFloatWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
+        CLFloatWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
 //        timer.timeCheck("    propagate, created wrappers");
 //        for( int i = 0; i < upstreamWrapper->size(); i++ ) {
 //            std::cout << "upstreamWrapper[" << i << "]=" << upstreamWrapper->get(i) << std::endl;
@@ -190,10 +189,13 @@ public:
         kernelConvolve->input( upstreamWrapper );
         kernelConvolve->input( weightsWrapper);
         kernelConvolve->output( resultsWrapper );
-        int globalSize = batchSize * numPlanes * boardSize * boardSize;
+        int globalSize = getResultsSize();
+//        std::cout << "requested globalsize: " << globalSize << std::endl;
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //        timer.timeCheck("    propagate, passed in inputs");
+//        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
+//           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
         kernelConvolve->run_1d( globalSize, workgroupsize );
 //        timer.timeCheck("    propagate, after run");
 //        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
@@ -232,6 +234,12 @@ public:
         delete upstreamWrapper;
         delete weightsWrapper;
         delete resultsWrapper;
+    }
+    virtual int getWeightsSize() const {
+        return numPlanes * upstreamNumPlanes * filterSize * filterSize;
+    }
+    virtual int getBiasWeightsSize() const {
+        return numPlanes;
     }
     // images are organized like [imageId][plane][boardrow][boardcol]
     // filters are organized like [filterid][plane][filterrow][filtercol]

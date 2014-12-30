@@ -67,6 +67,10 @@ public:
     inline float getResult( int n, int plane, int row, int col ) const {
         return results[getResultIndex( n, plane,row,col)];
     }
+    virtual int getResultsSize() const {
+//        throw std::runtime_error("getResultsSize not implemented for this layer type");
+         return numPlanes * boardSize * boardSize * batchSize;
+    }
     inline int getResultsSizePerExample() const {
         return numPlanes * boardSize * boardSize;
     }
@@ -106,6 +110,12 @@ public:
     }
     virtual void backPropErrors( float learningRate, float const *errors ) {
         throw std::runtime_error("backproperrors not implemented for this layertype");
+    }
+    virtual int getWeightsSize() const {
+        throw std::runtime_error("getWeightsSize not implemented for this layertype");
+    }
+    virtual int getBiasWeightsSize() const {
+        throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
     }
     float calcLoss( float const *expected ) {
         float E = 0;
