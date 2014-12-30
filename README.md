@@ -48,7 +48,7 @@ net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->padZeros()->insert();
 ```
 Notes:
 * convolutional layers forward-prop runs on gpu, via OpenCL
-* back-prop is on -cpu for now- gpu too now :-)
+* back-prop is on gpu too now :-)
 
 Convolution layer options:
 * add `->padZeros()` to pad the input board with zeros, so the output board and input board are the same size
