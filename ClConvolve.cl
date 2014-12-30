@@ -397,6 +397,65 @@ void kernel backprop_floats( const float learningRateMultiplier,
 }
 #endif
 
+// handle lower layer...
+// errors for upstream look like [n][inPlane][inRow][inCol]
+// need to aggregate over: [outPlane][outRow][outCol] (?)
+// need to backprop errors along each possible weight
+// each upstream feeds to:
+//    - each of our filters (so numPlanes filters)
+//    - each of our outpoint points (so boardSize * boardSize)
+// for our own backprop, we updated weights for:
+//      [outPlane][inPlane][filterRow][filtercol]
+//    aggregating over: [n][outRow][outCol]
+// errors are provider per [n][inPlane][inRow][inCol]
+// globalid is structured as: [n][upstreamPlane][upstreamRow][upstreamCol]
+void kernel calcErrorsForUpstream( 
+        const int upstreamNumPlanes, const int upstreamBoardSize, const int filterSize, 
+        const int outNumPlanes, const int outBoardSize,
+        const int padZeros,
+        global const float *weights, global const float *errors, global float *errorsForUpstream ) {
+    int globalId = get_global_id(0);
+    const int halfFilterSize = filterSize >> 1;
+    const int margin = padZeros ? halfFilterSize : 0;
+
+    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
+    const int upstreamBoard2dId = globalId / upstreamBoardSizeSquared;
+
+    const int intraBoardOffset = globalId % upstreamBoardSizeSquared;
+    const int upstreamRow = intraBoardOffset / upstreamBoardSize;
+    const int upstreamCol = intraBoardOffset % upstreamBoardSize;
+
+    const int upstreamPlane = upstreamBoard2dId % upstreamNumPlanes;
+    const int n = upstreamBoard2dId / upstreamNumPlanes;
+
+    float sumWeightTimesOutError = 0;
+    // aggregate over [outPlane][outRow][outCol]
+    for( int outPlane = 0; outPlane < outNumPlanes; outPlane++ ) {
+        for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
+            // need to derive filterRow and filterCol, given outRow and outCol
+            int filterRow = upstreamRow + margin - outRow;
+            for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
+               // need to derive filterRow and filterCol, given outRow and outCol
+                int filterCol = upstreamCol + margin - outCol;
+                int resultIndex = ( ( n * outNumPlanes 
+                          + outPlane ) * outBoardSize
+                          + outRow ) * outBoardSize
+                          + outCol;
+                float thisError = errors[resultIndex];
+                int thisWeightIndex = ( ( outPlane * upstreamNumPlanes
+                                    + upstreamPlane ) * filterSize
+                                    + filterRow ) * filterSize
+                                    + filterCol;
+                float thisWeight = weights[thisWeightIndex];
+                float thisWeightTimesError = thisWeight * thisError;
+                sumWeightTimesOutError += thisWeightTimesError;
+            }
+        }
+    }
+    errorsForUpstream[globalId] = sumWeightTimesOutError;
+}
+
+
 //void kernel byelement_add_inplace( global float *target, global const float *src ) {
 //    int globalId = get_global_id(0);
 //    target[globalId] += src[globalId];
