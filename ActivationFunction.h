@@ -8,6 +8,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <cmath>
 
 class ActivationFunction {
 public:

@@ -24,8 +24,10 @@ class NeuralNet {
 public:
     std::vector< Layer *> layers;
     NeuralNet( int numPlanes, int boardSize ) {
-        InputLayer *inputLayer = new InputLayer( numPlanes, boardSize );
-        layers.push_back( inputLayer );
+        InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
+        maker->insert();
+//        InputLayer *inputLayer = new InputLayer( numPlanes, boardSize );
+//        layers.push_back( inputLayer );
     }
     ~NeuralNet() {
         for( int i = 0; i < layers.size(); i++ ) {
@@ -42,6 +44,19 @@ public:
     ConvolutionalMaker *convolutionalMaker() {
         return new ConvolutionalMaker( this );
     }
+    void initWeights( int layerIndex, float *weights ) {
+        layers[layerIndex]->initWeights( weights );
+    }
+    void printWeightsAsCode() {
+        for( int layer = 1; layer < layers.size(); layer++ ) {
+            layers[layer]->printWeightsAsCode();
+        }
+    }
+    void printBiasWeightsAsCode() {
+        for( int layer = 1; layer < layers.size(); layer++ ) {
+            layers[layer]->printBiasWeightsAsCode();
+        }
+    }
     float calcLoss(float const *expectedValues ) {
         return layers[layers.size()-1]->calcLoss( expectedValues );
     }
@@ -55,22 +70,38 @@ public:
     EpochMaker *epochMaker() {
          return new EpochMaker(this);
     }
-    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize, bool biased, ActivationFunction *fn ) {
-        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize, biased, fn );
+    Layer *addLayer( LayerMaker *maker ) {
+        Layer *previousLayer = 0;
+        if( layers.size() > 0 ) {
+            previousLayer = layers[ layers.size() - 1 ];
+        }
+        std::cout << "1" << std::endl;
+        maker->setPreviousLayer( previousLayer );
+        std::cout << "1" << std::endl;
+        Layer *layer = maker->instance();
+        std::cout << "1" << std::endl;
+//        layers.push_back( maker->instance() );
         layers.push_back( layer );
+        std::cout << "1" << std::endl;
         return layer;
     }
-    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros, bool biased, ActivationFunction *fn ) {
-        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros, biased, fn );
-        layers.push_back( layer );
-        return layer;
-    }
+//    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize, bool biased, ActivationFunction *fn ) {
+//        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize, biased, fn );
+//        layers.push_back( layer );
+//        return layer;
+//    }
+//    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros, bool biased, ActivationFunction *fn ) {
+//        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros, biased, fn );
+//        layers.push_back( layer );
+//        return layer;
+//    }
     void setBatchSize( int batchSize ) {
         for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
             (*it)->setBatchSize( batchSize );
         }
     }
     float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
+        Timer timer;
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
         float loss = 0;
@@ -81,6 +112,7 @@ public:
             learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
             loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
         }
+        timer.timeCheck("epoch time");
         return loss;
     }
 //    float *propagate( int N, int batchSize, float const*images) {
@@ -112,11 +144,11 @@ public:
         layers[layers.size() - 1]->backPropExpected( learningRate, expectedResults );
     }
     void learnBatch( float learningRate, float const*images, float const *expectedResults ) {
-//        Timer timer;
+        Timer timer;
         propagate( images);
-//        timer.timeCheck("propagate");
+        timer.timeCheck("propagate");
         backProp(learningRate, expectedResults );
-//        timer.timeCheck("backProp");
+        timer.timeCheck("backProp");
     }
     int getNumLayers() {
         return layers.size();

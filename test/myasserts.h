@@ -42,6 +42,12 @@ void assertEquals( int one, float two ) {
    assertEquals( (float)one, two );
 }
 
+void assertLessThan( float expected, float actual ) {
+    if( expected <= actual ) {
+        throw std::runtime_error( "assertLessThan fail expected max " + toString(expected) + " but was " + toString(actual) );
+    }
+}
+
 void assertEquals( int one, int two ) {
    assertEquals<int>( one, two );
 }

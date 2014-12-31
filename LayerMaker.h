@@ -7,24 +7,69 @@
 #pragma once
 
 #include <cstring>
+#include <iostream>
 
 //#include "NeuralNet.h"
-#include "Layer.h"
+//#include "Layer.h"
 #include "ActivationFunction.h"
 
 class NeuralNet;
+class Layer;
 
-class FullyConnectedMaker {
+class LayerMaker {
+public:
+    Layer *previousLayer;
     NeuralNet *net;
-    int _numPlanes;
-    int _boardSize;
     int _biased;
     ActivationFunction *_activationFunction;
+    virtual int getBoardSize() const = 0;
+    virtual int getNumPlanes() const = 0;
+    LayerMaker( NeuralNet *net ) :
+        net( net ),
+        _activationFunction( new TanhActivation() ) {
+    }
+    void setPreviousLayer( Layer *previousLayer ) {
+        this->previousLayer = previousLayer;
+    }
+    virtual Layer *insert() = 0;
+    virtual Layer *instance() const = 0;
+};
+
+class InputLayerMaker : public LayerMaker {
 public:
+    int _numPlanes;
+    int _boardSize;
+    InputLayerMaker( NeuralNet *net, int numPlanes, int boardSize ) :
+            LayerMaker( net ),
+            _numPlanes(numPlanes),
+            _boardSize(boardSize) {
+    }
+    virtual int getBoardSize() const {
+        return _boardSize;
+    }
+    virtual int getNumPlanes() const {
+        return _numPlanes;
+    }
+    virtual Layer *instance() const;
+    virtual Layer *insert();
+};
+
+class FullyConnectedMaker : public LayerMaker {
+public:
+    int _numPlanes;
+    int _boardSize;
     FullyConnectedMaker( NeuralNet *net ) :
-        net(net) {
-        _activationFunction = new TanhActivation();
+        LayerMaker(net),
+        _numPlanes(0),
+        _boardSize(0) {
+//        _activationFunction = new TanhActivation();
         std::cout << "FullyConnectedMaker()" << std::endl;
+    }
+    virtual int getBoardSize() const {
+        return _boardSize;
+    }
+    virtual int getNumPlanes() const {
+        return _numPlanes;
     }
     FullyConnectedMaker *planes(int numPlanes) {
         this->_numPlanes = numPlanes;
@@ -57,22 +102,25 @@ public:
         this->_activationFunction = new ReluActivation();
         return this;
     }
-    Layer *insert();
+    virtual Layer *insert();
+    virtual Layer *instance() const;
 };
 
-class ConvolutionalMaker {
-    NeuralNet *net;
+class ConvolutionalMaker : public LayerMaker {
+public:
     int _numFilters;
     int _filterSize;
     bool _padZeros;
-    bool _biased;
-    ActivationFunction *_activationFunction;
-public:
-    ConvolutionalMaker( NeuralNet *net ) {
-        memset( this, 0, sizeof( ConvolutionalMaker ) );
-        this->net = net;
-        _activationFunction = new TanhActivation();
+    ConvolutionalMaker( NeuralNet *net ) :
+            LayerMaker( net ),
+            _numFilters(0),
+            _filterSize(0),
+            _padZeros(false) {
         std::cout << "ConvolutionalMaker()" << std::endl;
+    }
+    virtual int getBoardSize() const;
+    virtual int getNumPlanes() const {
+        return _numFilters;
     }
     ConvolutionalMaker *numFilters(int numFilters) {
         this->_numFilters = numFilters;
@@ -109,6 +157,7 @@ public:
         this->_activationFunction = new LinearActivation();
         return this;
     }
-    Layer *insert();
+    virtual Layer *insert();
+    virtual Layer *instance() const;
 };
 

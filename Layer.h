@@ -12,39 +12,63 @@
 
 #include "MyRandom.h"
 #include "ActivationFunction.h"
+#include "LayerMaker.h"
 
 class Layer {
 public:
-    int batchSize;
 //    int batchStart;
 //    int batchEnd;
 
     Layer *previousLayer;
-    float *results;
-    bool weOwnResults;
-    float *weights;
     const int numPlanes;
     const int boardSize;
+    float *results;
+    float *weights;
+    float *biasWeights;
+    const bool biased;
+    ActivationFunction const *const activationFunction;
+    const int upstreamBoardSize;
+    const int upstreamNumPlanes;
+    const int layerIndex;
+    bool weOwnResults;
 
-    const ActivationFunction *activationFunction;
+    int batchSize;
 
-    Layer( Layer *previousLayer, int numPlanes, int boardSize, ActivationFunction *activationFunction ) :
-         previousLayer( previousLayer ),
-         numPlanes( numPlanes),
-         boardSize( boardSize ),
-         results(0),
-         weights(0),
-         activationFunction( activationFunction ),
-         weOwnResults(false) {
+    Layer( Layer *previousLayer, LayerMaker const*maker ) :
+        previousLayer( previousLayer ),
+        numPlanes( maker->getNumPlanes() ),
+        boardSize( maker->getBoardSize() ),
+        results(0),
+        weights(0),
+        biasWeights(0),
+        biased(maker->_biased),
+        activationFunction( maker->_activationFunction ),
+        upstreamBoardSize( previousLayer == 0 ? 0 : previousLayer->boardSize ),
+        upstreamNumPlanes( previousLayer == 0 ? 0 : previousLayer->numPlanes ),
+        layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
+        weOwnResults(false) {
     }
+
+//    Layer( Layer *previousLayer, int numPlanes, int boardSize, ActivationFunction *activationFunction ) :
+//         previousLayer( previousLayer ),
+//         numPlanes( numPlanes),
+//         boardSize( boardSize ),
+//         results(0),
+//         weights(0),
+//         upstreamBoardSize( previousLayer == 0 ? 0 : previousLayer->boardSize )
+//         layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
+//         activationFunction( activationFunction ),
+//         weOwnResults(false) {
+//    }
     virtual ~Layer() {
         if( results != 0 && weOwnResults ) {
-//             std::cout << "Layer, deleting results array " << std::endl;
              delete[] results;
         }
         if( weights != 0 ) {
-//             std::cout << "Layer, deleting weights array " << std::endl;
             delete[] weights;
+        }
+        if( biasWeights != 0 ) {
+            delete[] biasWeights;
         }
         if( activationFunction != 0 ) {
             delete activationFunction;
@@ -91,6 +115,34 @@ public:
         } else {
             std::cout << "No results yet " << std::endl;
         }
+    }
+    void initWeights( float*weights ) {
+        int numWeights = getWeightsSize();
+        for( int i = 0; i < numWeights; i++ ) {
+            this->weights[i] = weights[i];
+        }
+    }
+    virtual void printWeightsAsCode() const {
+        std::cout << "float weights" << layerIndex << "[] = {";
+        const int numWeights = getWeightsSize();
+        for( int i = 0; i < numWeights; i++ ) {
+            std::cout << weights[i];
+            if( i < numWeights - 1 ) std::cout << ", ";
+            if( i > 0 && i % 20 == 0 ) std::cout << std::endl;
+        }
+        std::cout << "};" << std::endl;
+//        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
+    }
+    virtual void printBiasWeightsAsCode() const {
+        std::cout << "float biasweights" << layerIndex << "[] = {";
+        const int numBiasWeights = getBiasWeightsSize();
+        for( int i = 0; i < numBiasWeights; i++ ) {
+            std::cout << biasWeights[i];
+            if( i < numBiasWeights - 1 ) std::cout << ", ";
+            if( i > 0 && i % 20 == 0 ) std::cout << std::endl;
+        }
+        std::cout << "};" << std::endl;
+//        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
     }
     virtual void printWeights() const { 
         std::cout << "printWeights() not implemented for this layer type" << std:: endl; 

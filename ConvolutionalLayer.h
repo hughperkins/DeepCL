@@ -10,33 +10,22 @@
 #include "OpenCLHelper.h"
 //#include "ClConvolve2.h"
 #include "ActivationFunction.h"
+#include "LayerMaker.h"
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *cl;
     CLKernel *kernelConvolve;
-//    CLKernel *kernelApplyBias;
-//    CLKernel *kernelActivation;
     CLKernel *kernelBackPropWeights;
     CLKernel *kernelBackpropErrors;
 
     const int filterSize;
     const bool padZeros;
-    const int upstreamBoardSize;
-    const int upstreamNumPlanes;
-    float *biasWeights;
-    const bool biased;
 
-    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros, bool biased, 
-            ActivationFunction *activationFunction ) :
-                Layer( previousLayer, numFilters, 
-                    padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1,
-                    activationFunction ),
-                filterSize( filterSize ),
-                padZeros( padZeros ),
-                upstreamBoardSize( previousLayer->getBoardSize() ),
-                upstreamNumPlanes( previousLayer->getNumPlanes() ),
-                biased(biased) {
+    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
+            Layer( previousLayer, maker ),
+            filterSize( maker->_filterSize ),
+            padZeros( maker->_padZeros ) {
         std::cout << "convolutionallayer v0.2" << std::endl;
         if( filterSize % 2 == 0 ) {
             throw std::runtime_error("filter size must be an odd number");
@@ -49,12 +38,39 @@ public:
         this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
         this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
         this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
-        biasWeights = new float[numPlanes];
-        weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
+        biasWeights = new float[ getBiasWeightsSize() ];
+        weights = new float[ getWeightsSize() ];
         randomizeWeights();
     }
+
+//    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros, bool biased, 
+//            ActivationFunction *activationFunction ) :
+//                Layer( previousLayer, numFilters, 
+//                    padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1,
+//                    activationFunction ),
+//                filterSize( filterSize ),
+//                padZeros( padZeros ),
+//                upstreamBoardSize( previousLayer->getBoardSize() ),
+//                upstreamNumPlanes( previousLayer->getNumPlanes() ),
+//                biased(biased) {
+//        std::cout << "convolutionallayer v0.2" << std::endl;
+//        if( filterSize % 2 == 0 ) {
+//            throw std::runtime_error("filter size must be an odd number");
+//        }
+//        this->cl = new OpenCLHelper();
+//        std::string options = "-D " + activationFunction->getDefineName();
+//        if( biased ) {
+//             options += " -D BIASED";
+//        }
+//        this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
+//        this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
+//        this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
+//        biasWeights = new float[numPlanes];
+//        weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
+//        randomizeWeights();
+//    }
     virtual ~ConvolutionalLayer() {
-        delete[] biasWeights;
+//        delete[] biasWeights;
         delete kernelBackPropWeights;
         delete kernelConvolve;
         delete kernelBackpropErrors;
@@ -90,13 +106,13 @@ public:
     virtual void printWeights() const {
         std::cout << "  weights: " << std::endl;
 // filters are organized like [filterid][plane][row][col]
-        for( int filter = 0; filter < numPlanes; filter++ ) {
+        for( int filter = 0; filter < std::min( 5, numPlanes ); filter++ ) {
            std::cout << "    filter " << filter << std::endl;
            if( biased ) {
                std::cout << "       bias=" << biasWeights[filter] << std::endl;            
            }
-           for( int plane = 0; plane < upstreamNumPlanes; plane++ ) {
-               if( upstreamNumPlanes > 1 ) std::cout << "    plane " << plane << std::endl;
+           for( int plane = 0; plane < std::min(5,upstreamNumPlanes); plane++ ) {
+               if( upstreamNumPlanes > 1 ) std::cout << "    inplane " << plane << std::endl;
                 for( int i = 0; i < std::min(5,filterSize); i++ ) {
                     std::cout << "      ";
                     for( int j = 0; j < std::min(5,filterSize); j++ ) {
@@ -111,7 +127,9 @@ public:
                    std::cout << " ..." << std::endl;
                 }
             }
+            if( upstreamNumPlanes > 5 ) std::cout << " ... other inplanes ... " << std::endl;
         }
+        if( numPlanes > 5 ) std::cout << " ... other filters ... " << std::endl;
      }
      virtual void printOutput() const {
         if( results == 0 ) {
@@ -119,9 +137,9 @@ public:
         }
         std::cout << "  outputs: " << std::endl;
 // results are organized like [imageid][filterid][row][col]
-        for( int n = 0; n < batchSize; n++ ) {
+        for( int n = 0; n < std::min( 5, batchSize ); n++ ) {
             std::cout << "    n: " << n << std::endl;
-            for( int plane = 0; plane < numPlanes; plane++ ) {
+            for( int plane = 0; plane < std::min(5,numPlanes); plane++ ) {
                 if( numPlanes > 1 ) std::cout << "      plane " << plane << std::endl;
                 if( boardSize == 1 ) {
                      std::cout << "        " << getResult(n, plane, 0, 0 ) << std::endl;
@@ -141,7 +159,9 @@ public:
                     }
                     if( boardSize > 5 ) std::cout << " ... " << std::endl;
                 }
+                if( numPlanes > 5 ) std::cout << " ... other planes ... " << std::endl;
             }
+            if( batchSize > 5 ) std::cout << " ... other n ... " << std::endl;
         }
     }
     virtual void setBatchSize( int batchSize ) {

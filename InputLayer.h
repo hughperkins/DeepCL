@@ -11,16 +11,19 @@
 
 class InputLayer : public Layer {
 public:
-    InputLayer( int numPlanes, int boardSize ) :
-          Layer( 0, numPlanes, boardSize, 0 ) {
+//    InputLayer( int numPlanes, int boardSize ) :
+//          Layer( 0, numPlanes, boardSize, 0 ) {
+//    }
+    InputLayer( Layer *previousLayer, InputLayerMaker const*maker ) :
+           Layer( previousLayer, maker ) {
     }
     virtual void printOutput() const {
         if( results == 0 ) {
              return;
         }
-        for( int n = 0; n < batchSize; n++ ) {
+        for( int n = 0; n < std::min(5,batchSize); n++ ) {
             std::cout << "InputLayer n " << n << ":" << std::endl;
-            for( int plane = 0; plane < numPlanes; plane++ ) {
+            for( int plane = 0; plane < std::min( 5, numPlanes); plane++ ) {
                 if( numPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
                 for( int i = 0; i < std::min(5,boardSize); i++ ) {
                     std::cout << "      ";
@@ -37,7 +40,9 @@ public:
                 }
                 if( boardSize > 5 ) std::cout << " ... " << std::endl;
             }
+            if( numPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
         }
+        if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
     }
     virtual void print() const {
         printOutput();

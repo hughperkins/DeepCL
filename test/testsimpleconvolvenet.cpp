@@ -6,7 +6,7 @@
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
-#include "test/asserts.h"
+#include "test/myasserts.h"
 
 using namespace std;
 
@@ -23,9 +23,11 @@ void test1() {
     expectedResults[1] = -0.5;
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
+//    float weights1[] = {0.697427, -1.22697};
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
-    for( int epoch = 0; epoch < 100; epoch++ ) {
+//    net->initWeights(1, weights1 );
+    for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(2)
@@ -33,19 +35,23 @@ void test1() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-//        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+        net->printWeightsAsCode();
+        net->printBiasWeightsAsCode();
+        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
 //        net->print();
         float const*results = net->getResults();
-//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
 //    net->print();
-    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
 
     int numCorrect = AccuracyHelper::calcNumRight( 2, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 2 << endl;
     assertEquals( numCorrect, 2 );
+    assertLessThan( 0.2, loss );
 
     delete net;
 }
@@ -86,7 +92,7 @@ void test2() {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->insert();
     float const*results = 0;
-    for( int epoch = 0; epoch < 20; epoch++ ) {
+    for( int epoch = 0; epoch < 4; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(4)
@@ -304,25 +310,30 @@ void test6_point_2layer() {
 
 int main( int argc, char *argv[] ) {
     int testNum = -1;
-    if( argc == 2 ) {
+    int numIts = 10;
+    if( argc >= 2 ) {
         testNum = atoi( argv[1] );
+        numIts = 1;
+    }
+    if( argc >= 3  ){
+        numIts = atoi(argv[2] );
     }
 
-    if( testNum == -1 ) {
-        for( int i = 0; i < 10; i++ ) {
+    for( int it = 0; it < numIts; it++ ) {
+        if( testNum == -1 ) {
             test1();
             test2();
 //            test3_relu();
 //            test4_relu();
         }
-    }
 
-    if( testNum == -1 || testNum == 1 ) test1();
-    if( testNum == -1 || testNum == 2 ) test2();
-    if( testNum == -1 || testNum == 3 ) test3_relu();
-    if( testNum == -1 || testNum == 4 ) test4_relu();
-    if( testNum == -1 || testNum == 5 ) test5_linear();
-    if( testNum == -1 || testNum == 6 ) test6_point_2layer();
+        if( testNum == 1 ) test1();
+        if( testNum == 2 ) test2();
+        if( testNum == 3 ) test3_relu();
+        if( testNum == 4 ) test4_relu();
+        if( testNum == 5 ) test5_linear();
+        if( testNum == 6 ) test6_point_2layer();
+    }
 
     return 0;
 }
