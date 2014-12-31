@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for exe in testboardshelper testMnistLoader testfilehelper testlogicaloperators testsimpleconvolve; do {
+for exe in testboardshelper testMnistLoader testfilehelper testsimpleconvolve unittests; do {
     echo ./${exe}:
     eval ./${exe}
     if [[ $? != 0 ]]; then {
