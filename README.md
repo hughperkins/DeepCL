@@ -151,7 +151,7 @@ is correct, could just be by random chance
 * I think that what we really want to show is not that we always reach the global minimum, but that:
   * the network is correctly stable in the global minimum, and
   * if we move the network away from the global minimum slightly, it will converge, correctly, on this global minimum
-* Therefore, my current plan is to run each network once or twice, till it finds a global minimum, then record the
+* Therefore, the current plan is to run each network once or twice, till it finds a global minimum, then record the
 weights from 15-20 iterations higher up, which we've seen converge on the global solution
 * Then, for our unit tests, we simply re-use these same weights, and check that the loss after 15-20 iterations is
 better than for example 0.0001 (for toy problems)
