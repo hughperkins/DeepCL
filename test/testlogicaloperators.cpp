@@ -316,7 +316,7 @@ TEST( logicaloperators, FullyConnected_1layer_biased_linear_And ) {
 
     delete net;
 }
-
+/*
 int _main( int argc, char *argv[] ) {
     Timer timer;
 
@@ -361,5 +361,5 @@ int _main( int argc, char *argv[] ) {
 
     return 0;
 }
-
+*/
 

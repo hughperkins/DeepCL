@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "gtest/gtest.h"
+
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
@@ -10,7 +12,7 @@
 
 using namespace std;
 
-void test1() {
+TEST( simpleconvnet, test1 ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -39,10 +41,12 @@ void test1() {
             ->run();
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-//        net->print();
-        float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        if( epoch % 10 == 0 ) {
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    //        net->print();
+            float const*results = net->getResults();
+            AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        }
     }
 //    net->print();
 
@@ -59,7 +63,7 @@ void test1() {
     delete net;
 }
 
-void test2() {
+TEST( simpleconvnet, test2 ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -109,11 +113,13 @@ void test2() {
             ->run();
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        results = net->getResults();
-        AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        if( epoch % 5 == 0 ) {
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+            results = net->getResults();
+            AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        }
     }
-    net->print();
+//    net->print();
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
@@ -125,7 +131,7 @@ void test2() {
     delete net;
 }
 
-void test3_relu() {
+TEST( simpleconvnet, test3_relu ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -151,14 +157,16 @@ void test3_relu() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-//        net->print();
-//        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
-        float const*results = net->getResults();
-        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        if( epoch % 5 == 0 ) {
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    //        net->print();
+    //        net->printWeightsAsCode();
+    //        net->printBiasWeightsAsCode();
+            float const*results = net->getResults();
+            AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        }
     }
-    net->print();
+//    net->print();
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
 
@@ -173,7 +181,7 @@ void test3_relu() {
     delete net;
 }
 
-void test4_relu() {
+TEST( simpleconvnet, test4_relu ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -220,13 +228,15 @@ void test4_relu() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-        results = net->getResults();
-//        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        if( epoch % 5 == 0 ) {
+            results = net->getResults();
+    //        net->printWeightsAsCode();
+    //        net->printBiasWeightsAsCode();
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+            AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        }
     }
-    net->print();
+//    net->print();
     cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
     int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
@@ -240,7 +250,7 @@ void test4_relu() {
     delete net;
 }
 
-void test5_linear() {
+TEST( simpleconvnet, test5_linear ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -289,11 +299,13 @@ void test5_linear() {
             ->run();
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-        results = net->getResults();
-        AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        if( epoch % 5 == 0 ) {
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+            results = net->getResults();
+            AccuracyHelper::printAccuracy( 4, 2, labels, results );
+        }
     }
-    net->print();
+//    net->print();
     cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
     int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
@@ -307,7 +319,7 @@ void test5_linear() {
     delete net;
 }
 
-void test6_point_2layer() {
+TEST( simpleconvnet, test6_point_2layer ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -336,7 +348,7 @@ void test6_point_2layer() {
         float const*results = net->getResults();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
-    net->print();
+//    net->print();
     cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
@@ -352,7 +364,8 @@ void test6_point_2layer() {
     delete net;
 }
 
-int main( int argc, char *argv[] ) {
+/*
+int _main( int argc, char *argv[] ) {
     int testNum = -1;
     int numIts = 10;
     if( argc >= 2 ) {
@@ -364,25 +377,25 @@ int main( int argc, char *argv[] ) {
     }
 
     if( testNum == -1 ) {
-        test1();
-        test2();
-        test3_relu();
-        test4_relu();
-        test5_linear();
-        test6_point_2layer();
+//        test1();
+//        test2();
+//        test3_relu();
+//        test4_relu();
+//        test5_linear();
+//        test6_point_2layer();
     }
 
     for( int it = 0; it < numIts; it++ ) {
 //            test4_relu();
-        if( testNum == 1 ) test1();
-        if( testNum == 2 ) test2();
-        if( testNum == 3 ) test3_relu();
-        if( testNum == 4 ) test4_relu();
-        if( testNum == 5 ) test5_linear();
-        if( testNum == 6 ) test6_point_2layer();
+//        if( testNum == 1 ) test1();
+//        if( testNum == 2 ) test2();
+//        if( testNum == 3 ) test3_relu();
+//        if( testNum == 4 ) test4_relu();
+//        if( testNum == 5 ) test5_linear();
+//        if( testNum == 6 ) test6_point_2layer();
     }
 
     return 0;
 }
-
+*/
 

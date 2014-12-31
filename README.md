@@ -165,6 +165,11 @@ Technical
 
 * Started to prototype using googletest for unit-tests
 * Dont need to install anything: it's included in the `thirdparty` directory, and added to the build automatically
+* To run the unit tests:
+```
+make unittests
+./unittests
+```
 
 Helper methods
 ==============
