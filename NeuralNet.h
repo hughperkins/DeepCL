@@ -80,7 +80,6 @@ public:
         std::cout << "1" << std::endl;
         Layer *layer = maker->instance();
         std::cout << "1" << std::endl;
-//        layers.push_back( maker->instance() );
         layers.push_back( layer );
         std::cout << "1" << std::endl;
         return layer;

@@ -49,7 +49,7 @@ Layer *ConvolutionalMaker::insert() {
     std::cout << "insert()" << std::endl;
     Layer *layer = net->addLayer( this );
     std::cout << "insert() after net->addLayer" << std::endl;
-    layer->print();
+ //   layer->print();
     std::cout << "insert() after layer->print" << std::endl;
 //    Layer *layer = net->addConvolutional( _numFilters, _filterSize, _padZeros, _biased, _activationFunction );
     delete this;

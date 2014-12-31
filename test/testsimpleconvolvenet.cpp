@@ -43,6 +43,7 @@ void test1() {
         AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
 //    net->print();
+
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
     float const*results = net->getResults();
