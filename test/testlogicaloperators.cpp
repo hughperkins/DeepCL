@@ -158,7 +158,7 @@ void testAndLinear() {
     delete net;
 }
 
-void testAndConvolveNoBias() {
+void test4_AndConvolveNoBias() {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
@@ -177,40 +177,50 @@ void testAndConvolveNoBias() {
     delete net;
 }
 
-void testAndConvolveBiased() {
+void test5_AndConvolveBiased() {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(1)->insert();
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(4)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+        net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
-        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
 //        net->printWeights();
     }
-        net->print();
+//        net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
+
+    float loss = net->calcLoss(ldc.expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.4, loss );
+
     delete net;
 }
 
-void testOrConvolve() {
+void test6_OrConvolve() {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(1)->insert();
-    for( int epoch = 0; epoch < 100; epoch++ ) {
+    for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
-        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+//        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
 //        net->printWeights();
     }
-        net->print();
+//        net->print();
         AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+
+    float loss = net->calcLoss(ldc.expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.4, loss );
+
     delete net;
 }
 
@@ -318,17 +328,17 @@ int main( int argc, char *argv[] ) {
                 test1_And();
                 test2_Or();
                 test3_Xor();
-                testAndConvolveBiased();
-            //    testOrConvolve();
+                test5_AndConvolveBiased();
+                test6_OrConvolve();
 //            }
         }   
 
         if( testNum == 1 ) test1_And();
         if( testNum == 2 ) test2_Or();
         if( testNum == 3 ) test3_Xor();
-        if( testNum == 4 ) testAndConvolveNoBias();
-        if( testNum == 5 ) testAndConvolveBiased();
-        if( testNum == 6 ) testOrConvolve();
+        if( testNum == 4 ) test4_AndConvolveNoBias();
+        if( testNum == 5 ) test5_AndConvolveBiased();
+        if( testNum == 6 ) test6_OrConvolve();
         if( testNum == 7 ) testXorConvolve();
         if( testNum == 8 ) testAndRelu();
         if( testNum == 9 ) testAndLinear();
