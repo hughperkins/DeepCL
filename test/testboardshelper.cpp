@@ -1,13 +1,16 @@
 #include <iostream>
 
+#include "gtest/gtest.h"
+
 #include "BoardsHelper.h"
 #include "MnistLoader.h"
 #include "BoardPng.h"
 
 using namespace std;
 
-int main( int argc, char *argv[] ) {
+//int main( int argc, char *argv[] ) {
 //    MemoryChecker memoryChecker;
+TEST( testboardshelper, boardshelper ) {
     int ***boards = BoardsHelper::allocateBoards( 5, 11 );
     BoardsHelper::deleteBoards( &boards, 5, 11 );
 
@@ -29,6 +32,6 @@ int main( int argc, char *argv[] ) {
 
     BoardsHelper::deleteBoards( &results, N, boardSize );
     BoardsHelper::deleteBoards( &boards, N, boardSize );
-    return 0;
+//    return 0;
 }
 

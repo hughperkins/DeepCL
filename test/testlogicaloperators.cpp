@@ -12,7 +12,7 @@ using namespace std;
 #include "LogicalDataCreator.h"
 #include "test/myasserts.h"
 
-TEST( logicaloperators, FullyConnected_Biased_Tanh_And_1layer ) {
+TEST( testlogicaloperators, FullyConnected_Biased_Tanh_And_1layer ) {
 //    cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
@@ -43,7 +43,7 @@ TEST( logicaloperators, FullyConnected_Biased_Tanh_And_1layer ) {
     delete net;
 }
 
-TEST( logicaloperators, FullyConnected_1layer_biased_tanh_Or ) {
+TEST( testlogicaloperators, FullyConnected_1layer_biased_tanh_Or ) {
     cout << "Or" << endl;
     LogicalDataCreator ldc;
 //    ldc.applyAndGate();
@@ -71,7 +71,7 @@ TEST( logicaloperators, FullyConnected_1layer_biased_tanh_Or ) {
     delete net;
 }
 
-TEST( logicaloperators, FullyConnected_2layer_Xor ) {
+TEST( testlogicaloperators, FullyConnected_2layer_Xor ) {
 //    cout << "Xor" << endl;
     LogicalDataCreator ldc;
     ldc.applyXorGate();
@@ -115,7 +115,7 @@ TEST( logicaloperators, FullyConnected_2layer_Xor ) {
     delete net;
 }
 
-TEST( logicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
+TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
@@ -134,7 +134,7 @@ TEST( logicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     delete net;
 }
 
-TEST( logicaloperators, Convolve_1layer_biased_And ) {
+TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
@@ -158,7 +158,7 @@ TEST( logicaloperators, Convolve_1layer_biased_And ) {
     delete net;
 }
 
-TEST( logicaloperators, Convolve_1layerbiased_Or ) {
+TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
@@ -194,7 +194,7 @@ TEST( logicaloperators, Convolve_1layerbiased_Or ) {
 //      weights = plane0*(-1) + plane1*(-1)
 //      plane1=1 "planes both -1 or planes both 1"
 //      weights = plane0*(1) + plane1*(1)
-TEST( logicaloperators, Convolve_2layers_relu_Xor ) {
+TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     cout << "Xor, convolve" << endl;
 //    LogicalDataCreator ldc(new TanhActivation());
 //    ldc.applyXorGate();
@@ -262,7 +262,7 @@ TEST( logicaloperators, Convolve_2layers_relu_Xor ) {
     delete net;
 }
 
-TEST( logicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
+TEST( testlogicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc( new ReluActivation() );
     ldc.applyAndGate();
@@ -287,7 +287,7 @@ TEST( logicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
 
 }
 
-TEST( logicaloperators, FullyConnected_1layer_biased_linear_And ) {
+TEST( testlogicaloperators, FullyConnected_1layer_biased_linear_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc( new ReluActivation() );
     ldc.applyAndGate();

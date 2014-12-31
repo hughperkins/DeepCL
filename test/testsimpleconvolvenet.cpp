@@ -12,7 +12,7 @@
 
 using namespace std;
 
-TEST( simpleconvnet, test1 ) {
+TEST( testsimpleconvolvenet, test1 ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -63,7 +63,7 @@ TEST( simpleconvnet, test1 ) {
     delete net;
 }
 
-TEST( simpleconvnet, test2 ) {
+TEST( testsimpleconvolvenet, test2 ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -131,7 +131,7 @@ TEST( simpleconvnet, test2 ) {
     delete net;
 }
 
-TEST( simpleconvnet, test3_relu ) {
+TEST( testsimpleconvolvenet, test3_relu ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -181,7 +181,7 @@ TEST( simpleconvnet, test3_relu ) {
     delete net;
 }
 
-TEST( simpleconvnet, test4_relu ) {
+TEST( testsimpleconvolvenet, test4_relu ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -250,7 +250,7 @@ TEST( simpleconvnet, test4_relu ) {
     delete net;
 }
 
-TEST( simpleconvnet, test5_linear ) {
+TEST( testsimpleconvolvenet, test5_linear ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -319,7 +319,7 @@ TEST( simpleconvnet, test5_linear ) {
     delete net;
 }
 
-TEST( simpleconvnet, test6_point_2layer ) {
+TEST( testsimpleconvolvenet, test6_point_2layer ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;

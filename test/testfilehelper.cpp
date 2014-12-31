@@ -1,10 +1,13 @@
 #include <iostream>
 using namespace std;
 
+#include "gtest/gtest.h"
+
 #include "FileHelper.h"
 #include "test/myasserts.h"
 
-int main( int argc, char *argv[] ) {
+//int main( int argc, char *argv[] ) {
+TEST( testfilehelper, testfilehelper ) {
     int N = 100000;
     float *somefloats = new float[N];
     for( int i = 0; i < N; i++ ) {
@@ -21,6 +24,6 @@ int main( int argc, char *argv[] ) {
     for( int i = 0; i < N; i++ ) {
         assertEquals( somefloats[i], newfloats[i], 0.0001 );
     }  
-    return 0;
+//    return 0;
 }
 

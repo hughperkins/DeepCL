@@ -6,9 +6,11 @@
 #include <iostream>
 #include <iomanip>
 
+#include "gtest/gtest.h"
+
 using namespace std;
 
-void test1() {
+TEST( testsimpleconvolve, test1 ) {
     int batchSize = 5;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -69,9 +71,9 @@ void test1() {
     kernel->run_1d( globalSize, workgroupsize );
     resultsWrapper->copyToHost();
 
-    for( int i = 0; i < 20; i++ ) {
-        cout << "results[" << i << "]=" << results[i] << endl;
-    }
+//    for( int i = 0; i < 20; i++ ) {
+//        cout << "results[" << i << "]=" << results[i] << endl;
+//    }
     assertEquals( 0, results[0] );
     assertEquals( 1.25f, results[1] );
     assertEquals( -0.5f, results[2] );
@@ -85,7 +87,7 @@ void test1() {
         cout << "test1 ok" << endl;
 }
 
-void test2() {
+TEST( testsimpleconvolve, test2 ) {
     int batchSize = 2;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -150,7 +152,7 @@ void test2() {
     cout << "test2 ok" << endl;
 }
 
-void test3() {
+TEST( testsimpleconvolve, test3 ) {
     int batchSize = 4;
     int numInPlanes = 2;
     int numOutPlanes = 2;
@@ -185,10 +187,10 @@ void test3() {
     convolve->run_1d( globalSize, workgroupsize );
 
     resultsWrapper->copyToHost();
-    for( int i = 0; i < 20; i++ ) {
-        cout << "results[" << fixed << setprecision(4   ) << i << "]=" << results[i] << endl;
-    }
-    cout << setprecision(4) << endl;
+//    for( int i = 0; i < 20; i++ ) {
+//        cout << "results[" << fixed << setprecision(4   ) << i << "]=" << results[i] << endl;
+//    }
+//    cout << setprecision(4) << endl;
 
     float expectedResults[] = {0.2*0.1+0.3*0.2,
                                0.5*0.1+0.7*0.2,
@@ -203,20 +205,20 @@ void test3() {
                                0.5*0.7+0.7*0.8
   };
    for( int i = 0; i < 8; i++ ) {
-      cout << " checking result " << i << endl;
-        cout << "results[" << i << "]=" << results[i] << endl;
+//      cout << " checking result " << i << endl;
+//        cout << "results[" << i << "]=" << results[i] << endl;
       assertEquals( expectedResults[i], results[i], 0.0001);
    }
 }
 
-int main( int argc, char *argv[] ) {
-    int testNum = -1;
-    if( argc == 2 ) {
-        testNum = atoi(argv[1]);
-    }
-    if( testNum == -1 || testNum == 1 ) test1();
-    if( testNum == -1 || testNum == 2 ) test2();
-    if( testNum == -1 || testNum == 3 ) test3();
-    return 0;
-}
+//int main( int argc, char *argv[] ) {
+//    int testNum = -1;
+//    if( argc == 2 ) {
+//        testNum = atoi(argv[1]);
+//    }
+//    if( testNum == -1 || testNum == 1 ) test1();
+//    if( testNum == -1 || testNum == 2 ) test2();
+//    if( testNum == -1 || testNum == 3 ) test3();
+//    return 0;
+//}
 
