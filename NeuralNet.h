@@ -126,11 +126,11 @@ public:
         layers[layers.size() - 1]->backPropExpected( learningRate, expectedResults );
     }
     void learnBatch( float learningRate, float const*images, float const *expectedResults ) {
-        Timer timer;
+//        Timer timer;
         propagate( images);
-        timer.timeCheck("propagate");
+//        timer.timeCheck("propagate");
         backProp(learningRate, expectedResults );
-        timer.timeCheck("backProp");
+//        timer.timeCheck("backProp");
     }
     int getNumLayers() {
         return layers.size();

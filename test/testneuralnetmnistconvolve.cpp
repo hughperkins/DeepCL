@@ -79,10 +79,10 @@ public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 100;
-    int numTest = 100;
-    int batchSize = 100;
-    int numEpochs = 1;
+    int numTrain = 60000;
+    int numTest = 10000;
+    int batchSize = 1000;
+    int numEpochs = 5;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -138,7 +138,7 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->padZeros()->biased()->insert();
+//    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->padZeros()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased)->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){
@@ -168,7 +168,7 @@ void go(Config config) {
         cout << "       loss L: " << loss << endl;
         int trainNumRight = 0;
         timer.timeCheck("after epoch");
-        net->print();
+//        net->print();
         printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
         printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
         timer.timeCheck("after tests");

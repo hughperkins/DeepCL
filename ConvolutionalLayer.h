@@ -50,18 +50,15 @@ public:
     }
 // filters are organized like [filterid][plane][row][col]
     void randomizeWeights() {
-        std::cout << "convolutional layer randomzing weights" << std::endl;
+//        std::cout << "convolutional layer randomzing weights" << std::endl;
         int fanin = upstreamNumPlanes * filterSize * filterSize;
-        int numThisLayerWeights = numPlanes * upstreamNumPlanes * filterSize * filterSize;
-        std::cout << " numplanes " << numPlanes << " upstreamNumPlanes " << upstreamNumPlanes << 
-            " filtersize " << filterSize << " numthislayerweights " << numThisLayerWeights << std::endl;
+        const int numThisLayerWeights = getWeightsSize();
         for( int i = 0; i < numThisLayerWeights; i++ ) {
             weights[i] = generateWeight( fanin );
         }
         for( int i = 0; i < numPlanes; i++ ) {
             biasWeights[i] = generateWeight( fanin );
         }
-        print();
     }
     virtual void print() const {
         std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
