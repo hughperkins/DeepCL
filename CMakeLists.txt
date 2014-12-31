@@ -30,7 +30,7 @@ add_custom_target(
     git submodule update --init --recursive
 )
 
-add_executable( testlogicaloperators test/testlogicaloperators.cpp )
+#add_executable( testlogicaloperators test/testlogicaloperators.cpp )
 
 #set( OPENCLHELPER $ENV{HOME}/git/OpenCLHelper)
 add_executable( testarraysquare test/testarraysquare.cpp )
@@ -55,4 +55,14 @@ add_dependencies( testneuralnetmnistconvolve clfiles )
 add_dependencies( test4dconvolve clfiles )
 
 add_dependencies( ClConvolve git-submodule-update )
+
+link_libraries(pthread)
+
+add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
+
+add_executable( testlogicaloperators test/testlogicaloperators.cpp thirdparty/gtest/gtest_main.cc )
+
+target_link_libraries( testlogicaloperators gtest )
+target_include_directories( testlogicaloperators PRIVATE thirdparty/gtest )
+
 

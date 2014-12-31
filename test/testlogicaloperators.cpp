@@ -4,30 +4,34 @@
 #include <iostream>
 using namespace std;
 
+#include "gtest/gtest.h"
+
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "LogicalDataCreator.h"
 #include "test/myasserts.h"
 
-void test1_And() {
-    cout << "And" << endl;
+TEST( logicaloperators, FullyConnected_Biased_Tanh_And_1layer ) {
+//    cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
 
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
-    net->print();
+//    net->print();
     for( int epoch = 0; epoch < 100; epoch++ ) {
         net->epochMaker()
            ->learningRate(1)->batchSize(4)->numExamples(4)
            ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
            ->run();
-        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        if( epoch % 20 == 0 ) {
+            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        }
 //        net->printWeights();
     }
-    net->print();
+//    net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
@@ -39,18 +43,20 @@ void test1_And() {
     delete net;
 }
 
-void test2_Or() {
+TEST( logicaloperators, FullyConnected_1layer_biased_tanh_Or ) {
     cout << "Or" << endl;
     LogicalDataCreator ldc;
 //    ldc.applyAndGate();
     ldc.applyOrGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
+    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
     for( int epoch = 0; epoch < 10; epoch++ ) {
         net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
-        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        if( epoch % 5 == 0 ) {
+            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        }
 //        net->printWeights();
     }
 
@@ -65,8 +71,8 @@ void test2_Or() {
     delete net;
 }
 
-void test3_Xor() {
-    cout << "Xor" << endl;
+TEST( logicaloperators, FullyConnected_2layer_Xor ) {
+//    cout << "Xor" << endl;
     LogicalDataCreator ldc;
     ldc.applyXorGate();
 //    NeuralNet *net = new NeuralNet(2, 1 );
@@ -84,7 +90,7 @@ void test3_Xor() {
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
 
-        if( epoch % 20 == 0 ) {
+        if( epoch % 50 == 0 ) {
             float loss = net->calcLoss(ldc.expectedResults);
             cout << "loss, E, " << loss << endl;
         }
@@ -109,7 +115,7 @@ void test3_Xor() {
     delete net;
 }
 
-void test4_AndConvolveNoBias() {
+TEST( logicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
@@ -128,7 +134,7 @@ void test4_AndConvolveNoBias() {
     delete net;
 }
 
-void test5_AndConvolveBiased() {
+TEST( logicaloperators, Convolve_1layer_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
@@ -152,7 +158,7 @@ void test5_AndConvolveBiased() {
     delete net;
 }
 
-void test6_OrConvolve() {
+TEST( logicaloperators, Convolve_1layerbiased_Or ) {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
@@ -188,7 +194,7 @@ void test6_OrConvolve() {
 //      weights = plane0*(-1) + plane1*(-1)
 //      plane1=1 "planes both -1 or planes both 1"
 //      weights = plane0*(1) + plane1*(1)
-void test7_XorConvolve() {
+TEST( logicaloperators, Convolve_2layers_relu_Xor ) {
     cout << "Xor, convolve" << endl;
 //    LogicalDataCreator ldc(new TanhActivation());
 //    ldc.applyXorGate();
@@ -256,7 +262,7 @@ void test7_XorConvolve() {
     delete net;
 }
 
-void test8_AndRelu() {
+TEST( logicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc( new ReluActivation() );
     ldc.applyAndGate();
@@ -281,7 +287,7 @@ void test8_AndRelu() {
 
 }
 
-void test9_AndLinear() {
+TEST( logicaloperators, FullyConnected_1layer_biased_linear_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc( new ReluActivation() );
     ldc.applyAndGate();
@@ -311,7 +317,7 @@ void test9_AndLinear() {
     delete net;
 }
 
-int main( int argc, char *argv[] ) {
+int _main( int argc, char *argv[] ) {
     Timer timer;
 
    int testNum = -1;
@@ -329,25 +335,25 @@ int main( int argc, char *argv[] ) {
     for( int it = 0; it < numIts; it++ ) {
         if( testNum == -1 ) {
 //            for( int i = 0; i < 10; i++ ) {
-                test1_And();
-                test2_Or();
-                test3_Xor();
-                test5_AndConvolveBiased();
-                test6_OrConvolve();
-                test7_XorConvolve();
-                test9_AndLinear();
+//                test1_And();
+//                test2_Or();
+//                test3_Xor();
+//                test5_AndConvolveBiased();
+//                test6_OrConvolve();
+//                test7_XorConvolve();
+//                test9_AndLinear();
 //            }
         }   
 
-        if( testNum == 1 ) test1_And();
-        if( testNum == 2 ) test2_Or();
-        if( testNum == 3 ) test3_Xor();
-        if( testNum == 4 ) test4_AndConvolveNoBias();
-        if( testNum == 5 ) test5_AndConvolveBiased();
-        if( testNum == 6 ) test6_OrConvolve();
-        if( testNum == 7 ) test7_XorConvolve();
-        if( testNum == 8 ) test8_AndRelu();
-        if( testNum == 9 ) test9_AndLinear();
+  //      if( testNum == 1 ) test1_And();
+//        if( testNum == 2 ) test2_Or();
+//        if( testNum == 3 ) test3_Xor();
+//        if( testNum == 4 ) test4_AndConvolveNoBias();
+//        if( testNum == 5 ) test5_AndConvolveBiased();
+//        if( testNum == 6 ) test6_OrConvolve();
+//        if( testNum == 7 ) test7_XorConvolve();
+//        if( testNum == 8 ) test8_AndRelu();
+//        if( testNum == 9 ) test9_AndLinear();
     }
     
 //    BoardPng::writeBoardsToPng( "testneuralnetmnist-1.png", results, min(N, 100), boardSize );
