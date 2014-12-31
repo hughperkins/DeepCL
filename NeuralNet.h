@@ -83,7 +83,7 @@ public:
         }
     }
     float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
-        Timer timer;
+//        Timer timer;
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
         float loss = 0;
@@ -94,7 +94,7 @@ public:
             learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
             loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
         }
-        timer.timeCheck("epoch time");
+//        timer.timeCheck("epoch time");
         return loss;
     }
 //    float *propagate( int N, int batchSize, float const*images) {
