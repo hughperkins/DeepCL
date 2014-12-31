@@ -138,6 +138,9 @@ Sample/test
 Testing, checking for correctness
 =================================
 
+Concepts
+--------
+
 * This is a challenge, with neural nets, because:
   * training is stochastic
   * there are many local minima
@@ -156,6 +159,12 @@ weights from 15-20 iterations higher up, which we've seen converge on the global
 * Then, for our unit tests, we simply re-use these same weights, and check that the loss after 15-20 iterations is
 better than for example 0.0001 (for toy problems)
 * Result: repeatable, fast, unit tests
+
+Technical
+---------
+
+* Started to prototype using googletest for unit-tests
+* Dont need to install anything: it's included in the `thirdparty` directory, and added to the build automatically
 
 Helper methods
 ==============
