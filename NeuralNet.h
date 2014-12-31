@@ -26,8 +26,6 @@ public:
     NeuralNet( int numPlanes, int boardSize ) {
         InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
         maker->insert();
-//        InputLayer *inputLayer = new InputLayer( numPlanes, boardSize );
-//        layers.push_back( inputLayer );
     }
     ~NeuralNet() {
         for( int i = 0; i < layers.size(); i++ ) {
@@ -35,7 +33,6 @@ public:
         }
     }
     static NeuralNetMould *maker() {
-//        NeuralNetMould neuralNetMould;
         return new NeuralNetMould();
     }
     FullyConnectedMaker *fullyConnectedMaker() {
@@ -67,13 +64,6 @@ public:
     float calcLoss(float const *expectedValues ) {
         return layers[layers.size()-1]->calcLoss( expectedValues );
     }
-//    Layer *insertLayer( Layer *layer ) {
-//        if( layers.size() > 0 ) {
-//            layer->parent = layers[layers.size() - 1];
-//        } 
-//        layers.push_back(layer);
-//        return layer;
-//    }
     EpochMaker *epochMaker() {
          return new EpochMaker(this);
     }
@@ -82,25 +72,11 @@ public:
         if( layers.size() > 0 ) {
             previousLayer = layers[ layers.size() - 1 ];
         }
-        std::cout << "1" << std::endl;
         maker->setPreviousLayer( previousLayer );
-        std::cout << "1" << std::endl;
         Layer *layer = maker->instance();
-        std::cout << "1" << std::endl;
         layers.push_back( layer );
-        std::cout << "1" << std::endl;
         return layer;
     }
-//    Layer *addFullyConnected( int numOutputPlanes, int outputBoardSize, bool biased, ActivationFunction *fn ) {
-//        Layer *layer = new FullyConnectedLayer(layers[layers.size() - 1], numOutputPlanes, outputBoardSize, biased, fn );
-//        layers.push_back( layer );
-//        return layer;
-//    }
-//    Layer *addConvolutional( int numFilters, int filterSize, bool padZeros, bool biased, ActivationFunction *fn ) {
-//        Layer *layer = new ConvolutionalLayer(layers[layers.size() - 1], numFilters, filterSize, padZeros, biased, fn );
-//        layers.push_back( layer );
-//        return layer;
-//    }
     void setBatchSize( int batchSize ) {
         for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
             (*it)->setBatchSize( batchSize );

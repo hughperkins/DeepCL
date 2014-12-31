@@ -43,15 +43,7 @@ Layer *ConvolutionalMaker::insert() {
     if( _filterSize == 0 ) {
         throw runtime_error("Must provide ->filterSize(filterSize)");
     }
-//    cout << _activationFunction.getKernelFunction();
-//    Layer *previousLayer = net->layers[ net->layers.size() - 1 ];
-//    Layer *layer = net->addLayer( new ConvolutionalLayer( previousLayer, this ) );
-    std::cout << "insert()" << std::endl;
     Layer *layer = net->addLayer( this );
-    std::cout << "insert() after net->addLayer" << std::endl;
- //   layer->print();
-    std::cout << "insert() after layer->print" << std::endl;
-//    Layer *layer = net->addConvolutional( _numFilters, _filterSize, _padZeros, _biased, _activationFunction );
     delete this;
     return layer;
 }
@@ -62,7 +54,6 @@ Layer *FullyConnectedMaker::instance() const {
 }
 
 Layer *ConvolutionalMaker::instance() const {
-    std::cout << "ConvolutionalMaker::instance()" << std::endl;
     Layer *layer = new ConvolutionalLayer( previousLayer, this );
     return layer;
 }
@@ -73,13 +64,10 @@ Layer *InputLayerMaker::instance() const {
 }
 
 int ConvolutionalMaker::getBoardSize() const {
-    std::cout << "getBoardSize" << std::endl;
     if( previousLayer == 0 ) {
         throw std::runtime_error("convolutional network must be attached to a parent layer");
     }
-    std::cout << "getBoardSize 2" << std::endl;
     int boardSize = _padZeros ? previousLayer->boardSize : previousLayer->boardSize - _filterSize + 1;
-    std::cout << "getBoardSize 3 result " << boardSize << std::endl;
     return boardSize;
 }
 

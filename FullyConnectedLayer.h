@@ -11,43 +11,16 @@
 
 class FullyConnectedLayer : public Layer {
 public:
-//    int batchSize;
-//    const int upstreamNumPlanes;
-//    const int upstreamBoardSize;
-//    float *biasWeights;
-//    const bool biased;
 
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker ) :
             Layer( previousLayer, maker ) {
-//        int numPreviousPlanes = previousLayer->getNumPlanes();
-//        int previousBoardSize = previousLayer->getBoardSize();
-//        int numOutputs = getResultsSize();
         int fanIn = ( upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize );
-//        int numThisLayerWeights = fanIn * numOutputs;
         weights = new float[ getWeightsSize() ];
         biasWeights = new float[ getBiasWeightsSize() ];
-//        results = 0;
         randomizeWeights( fanIn, weights, getWeightsSize() );
         randomizeWeights( fanIn, biasWeights, getBiasWeightsSize() );
     }
 
-//    FullyConnectedLayer( Layer *previousLayer, int numOutputPlanes, int newBoardSize, bool biased, ActivationFunction *activationFunction ) :
-////            previousLayer( previousLayer ),
-//            Layer( previousLayer, numOutputPlanes, newBoardSize, activationFunction),
-//            upstreamNumPlanes( previousLayer->getNumPlanes() ),
-//            upstreamBoardSize( previousLayer->getBoardSize() ),
-//            biased( biased ) {
-//        int numPreviousPlanes = previousLayer->getNumPlanes();
-//        int previousBoardSize = previousLayer->getBoardSize();
-//        int numOutputs = (numOutputPlanes * newBoardSize * newBoardSize);
-//        int fanIn = ( numPreviousPlanes * previousBoardSize * previousBoardSize );
-//        int numThisLayerWeights = fanIn * numOutputs;
-//        weights = new float[ numThisLayerWeights ];
-//        biasWeights = new float[ numOutputs ];
-//        results = 0;
-//        randomizeWeights( fanIn, weights, numThisLayerWeights );
-//        randomizeWeights( fanIn, biasWeights, numOutputs );
-//    }
     // weights like [upstreamPlane][upstreamRow][upstreamCol][outputPlane][outputrow][outputcol]
     inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
         int index = ( ( ( ( prevPlane ) * upstreamBoardSize

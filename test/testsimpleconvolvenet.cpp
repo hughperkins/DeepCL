@@ -159,8 +159,6 @@ void test3_relu() {
         AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
     net->print();
-    float loss = net->calcLoss(expectedResults);
-    cout << "loss, E, " << loss << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
 
@@ -168,6 +166,8 @@ void test3_relu() {
     cout << "accuracy: " << numCorrect << "/" << 2 << endl;
     assertEquals( numCorrect, 2 );
 
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
     assertLessThan( 0.001, loss );
 
     delete net;
@@ -209,6 +209,9 @@ void test4_relu() {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->relu()->insert();
     float const*results = 0;
+    float weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
+    float biasWeights1[] = {0.0418723, 0.158733};
+    net->initWeights( 1, weights1, biasWeights1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
@@ -218,6 +221,9 @@ void test4_relu() {
             ->expectedOutputs(expectedResults)
             ->run();
         results = net->getResults();
+//        net->printWeightsAsCode();
+//        net->printBiasWeightsAsCode();
+        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
         AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
     net->print();
@@ -226,6 +232,10 @@ void test4_relu() {
     int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 4 << endl;
     assertEquals( numCorrect, 4 );
+
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.000001, loss );
 
     delete net;
 }
@@ -266,6 +276,9 @@ void test5_linear() {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->linear()->insert();
     float const*results = 0;
+    float weights1[] = {0.715867, -0.428623, -0.281465, -0.736675, -0.224507, 0.335028, -0.384762, -0.213304, 0.679177, -0.170055, 0.335075, -0.572057, -0.175718, -0.410962, -0.175277, 0.536131, -0.0568329, -0.00297278};
+    float biasWeights1[] = {0.5, 0.5};
+    net->initWeights( 1, weights1, biasWeights1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
@@ -274,6 +287,9 @@ void test5_linear() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
+//        net->printWeightsAsCode();
+//        net->printBiasWeightsAsCode();
+        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
         results = net->getResults();
         AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
@@ -283,6 +299,10 @@ void test5_linear() {
     int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 4 << endl;
     assertEquals( numCorrect, 4 );
+
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.00001, loss );
 
     delete net;
 }
@@ -303,7 +323,7 @@ void test6_point_2layer() {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->insert();
-    for( int epoch = 0; epoch < 100; epoch++ ) {
+    for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(2)
@@ -325,6 +345,10 @@ void test6_point_2layer() {
     cout << "accuracy: " << numCorrect << "/" << 2 << endl;
     assertEquals( numCorrect, 2 );
 
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.0001, loss );
+
     delete net;
 }
 
@@ -343,6 +367,9 @@ int main( int argc, char *argv[] ) {
         test1();
         test2();
         test3_relu();
+        test4_relu();
+        test5_linear();
+        test6_point_2layer();
     }
 
     for( int it = 0; it < numIts; it++ ) {

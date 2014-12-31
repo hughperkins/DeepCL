@@ -26,7 +26,6 @@ public:
             Layer( previousLayer, maker ),
             filterSize( maker->_filterSize ),
             padZeros( maker->_padZeros ) {
-        std::cout << "convolutionallayer v0.2" << std::endl;
         if( filterSize % 2 == 0 ) {
             throw std::runtime_error("filter size must be an odd number");
         }
@@ -43,34 +42,7 @@ public:
         randomizeWeights();
     }
 
-//    ConvolutionalLayer( Layer *previousLayer, int numFilters, int filterSize, bool padZeros, bool biased, 
-//            ActivationFunction *activationFunction ) :
-//                Layer( previousLayer, numFilters, 
-//                    padZeros ? previousLayer->getBoardSize() : previousLayer->getBoardSize() - filterSize + 1,
-//                    activationFunction ),
-//                filterSize( filterSize ),
-//                padZeros( padZeros ),
-//                upstreamBoardSize( previousLayer->getBoardSize() ),
-//                upstreamNumPlanes( previousLayer->getNumPlanes() ),
-//                biased(biased) {
-//        std::cout << "convolutionallayer v0.2" << std::endl;
-//        if( filterSize % 2 == 0 ) {
-//            throw std::runtime_error("filter size must be an odd number");
-//        }
-//        this->cl = new OpenCLHelper();
-//        std::string options = "-D " + activationFunction->getDefineName();
-//        if( biased ) {
-//             options += " -D BIASED";
-//        }
-//        this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
-//        this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
-//        this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
-//        biasWeights = new float[numPlanes];
-//        weights = new float[ previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize ];
-//        randomizeWeights();
-//    }
     virtual ~ConvolutionalLayer() {
-//        delete[] biasWeights;
         delete kernelBackPropWeights;
         delete kernelConvolve;
         delete kernelBackpropErrors;
@@ -78,11 +50,7 @@ public:
     }
 // filters are organized like [filterid][plane][row][col]
     void randomizeWeights() {
-//        print();
         std::cout << "convolutional layer randomzing weights" << std::endl;
-//        int numPreviousPlanes = previousLayer->getNumPlanes();
-//        int previousBoardSize = previousLayer->getBoardSize();
-//        int fanin = numPreviousPlanes * numThisLayerWeights;
         int fanin = upstreamNumPlanes * filterSize * filterSize;
         int numThisLayerWeights = numPlanes * upstreamNumPlanes * filterSize * filterSize;
         std::cout << " numplanes " << numPlanes << " upstreamNumPlanes " << upstreamNumPlanes << 
@@ -148,11 +116,6 @@ public:
                         std::cout << "      ";
                         for( int j = 0; j < std::min(5,boardSize); j++ ) {
                             std::cout << getResult( n, plane, i, j ) << " ";
-    //results[
-    //                            n * numPlanes * boardSize*boardSize +
-    //                            plane*boardSize*boardSize +
-    //                            i * boardSize +
-    //                            j ] << " ";
                         }
                         if( boardSize > 5 ) std::cout << " ... ";
                         std::cout << std::endl;
@@ -165,13 +128,10 @@ public:
         }
     }
     virtual void setBatchSize( int batchSize ) {
-//        std::cout << "convolutionallayer setting batchsize " << batchSize << std::endl;
         if( results != 0 ) {
-//            std::cout << "deleting results array " << std::endl;
             delete[] results;
         }
         this->batchSize = batchSize;
-//        std::cout << "allocating results size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
         results = new float[getResultsSize()];
         weOwnResults = true;
     }

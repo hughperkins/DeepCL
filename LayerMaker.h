@@ -62,8 +62,6 @@ public:
         LayerMaker(net),
         _numPlanes(0),
         _boardSize(0) {
-//        _activationFunction = new TanhActivation();
-        std::cout << "FullyConnectedMaker()" << std::endl;
     }
     virtual int getBoardSize() const {
         return _boardSize;
@@ -116,7 +114,6 @@ public:
             _numFilters(0),
             _filterSize(0),
             _padZeros(false) {
-        std::cout << "ConvolutionalMaker()" << std::endl;
     }
     virtual int getBoardSize() const;
     virtual int getNumPlanes() const {
