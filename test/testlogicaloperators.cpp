@@ -315,7 +315,7 @@ int main( int argc, char *argv[] ) {
     Timer timer;
 
    int testNum = -1;
-    int numIts = 10;
+    int numIts = 3;
 
     if( argc >= 2 ) {
         testNum = atoi( argv[1] );
