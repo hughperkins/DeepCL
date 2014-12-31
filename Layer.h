@@ -122,6 +122,12 @@ public:
             this->weights[i] = weights[i];
         }
     }
+    void initBiasWeights( float*biasWeights ) {
+        int numBiasWeights = getBiasWeightsSize();
+        for( int i = 0; i < numBiasWeights; i++ ) {
+            this->biasWeights[i] = biasWeights[i];
+        }
+    }
     virtual void printWeightsAsCode() const {
         std::cout << "float weights" << layerIndex << "[] = {";
         const int numWeights = getWeightsSize();
@@ -134,7 +140,7 @@ public:
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
     }
     virtual void printBiasWeightsAsCode() const {
-        std::cout << "float biasweights" << layerIndex << "[] = {";
+        std::cout << "float biasWeights" << layerIndex << "[] = {";
         const int numBiasWeights = getBiasWeightsSize();
         for( int i = 0; i < numBiasWeights; i++ ) {
             std::cout << biasWeights[i];

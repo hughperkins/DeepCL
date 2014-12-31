@@ -44,8 +44,15 @@ public:
     ConvolutionalMaker *convolutionalMaker() {
         return new ConvolutionalMaker( this );
     }
+    void initWeights( int layerIndex, float *weights, float *biasWeights ) {
+        initWeights( layerIndex, weights );
+        initBiasWeights( layerIndex, biasWeights );
+    }
     void initWeights( int layerIndex, float *weights ) {
         layers[layerIndex]->initWeights( weights );
+    }
+    void initBiasWeights( int layerIndex, float *weights ) {
+        layers[layerIndex]->initBiasWeights( weights );
     }
     void printWeightsAsCode() {
         for( int layer = 1; layer < layers.size(); layer++ ) {

@@ -135,6 +135,28 @@ Sample/test
 ```
 ... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
 
+Testing, checking for correctness
+=================================
+
+* This is a challenge, with neural nets, because:
+  * training is stochastic
+  * there are many local minima
+* So, if you run a net once, you might get a MSE loss of 0.000001, and a perfect accuracy, but if you run it 10 times, 
+it might fail horribly on one run, with a much higher MSE, and a non-perfect score.  Even for toy problems, like 'and'
+or 'or' gates
+* One could run each test a hundred times, and check that at least 90% of them pass, but this would be slow, and would
+still fail sometimes
+* One could run many times, and check that at least once, there is perfect accuracy, but this doesnt show that learning
+is correct, could just be by random chance
+* I think that what we really want to show is not that we always reach the global minimum, but that:
+  * the network is correctly stable in the global minimum, and
+  * if we move the network away from the global minimum slightly, it will converge, correctly, on this global minimum
+* Therefore, my current plan is to run each network once or twice, till it finds a global minimum, then record the
+weights from 15-20 iterations higher up, which we've seen converge on the global solution
+* Then, for our unit tests, we simply re-use these same weights, and check that the loss after 15-20 iterations is
+better than for example 0.0001 (for toy problems)
+* Result: repeatable, fast, unit tests
+
 Helper methods
 ==============
 

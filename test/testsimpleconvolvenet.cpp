@@ -23,11 +23,13 @@ void test1() {
     expectedResults[1] = -0.5;
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
-//    float weights1[] = {0.697427, -1.22697};
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
-//    net->initWeights(1, weights1 );
-    for( int epoch = 0; epoch < 20; epoch++ ) {
+    float weights1[] = {0.382147, -1.77522};
+    float biasweights1[] = {-1.00181, 0.891056};
+    net->initWeights(1, weights1);
+    net->initBiasWeights(1, biasweights1);
+    for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(2)
@@ -35,8 +37,8 @@ void test1() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-        net->printWeightsAsCode();
-        net->printBiasWeightsAsCode();
+//        net->printWeightsAsCode();
+//        net->printBiasWeightsAsCode();
         cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
 //        net->print();
         float const*results = net->getResults();
@@ -52,7 +54,7 @@ void test1() {
     int numCorrect = AccuracyHelper::calcNumRight( 2, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 2 << endl;
     assertEquals( numCorrect, 2 );
-    assertLessThan( 0.2, loss );
+    assertLessThan( 0.01, loss );
 
     delete net;
 }
@@ -92,8 +94,12 @@ void test2() {
     expectedResults[7] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->insert();
+    float weights1[] = {-0.171115, 0.28369, 0.201354, -0.496124, 0.391512, 0.120458, 0.396952, -0.1356, -0.319595, 0.251043, 0.318859, 0.220892, -0.480651, -0.51708, 0.2173, 0.365935, 0.304687, -0.712624};
+    float biasWeights1[] = {0.375101, 0.00130748};
+    net->initWeights(1, weights1);
+    net->initBiasWeights(1, biasWeights1 );
     float const*results = 0;
-    for( int epoch = 0; epoch < 4; epoch++ ) {
+    for( int epoch = 0; epoch < 15; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(4)
@@ -101,15 +107,20 @@ void test2() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
+//        net->printWeightsAsCode();
+//        net->printBiasWeightsAsCode();
+        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
         results = net->getResults();
         AccuracyHelper::printAccuracy( 4, 2, labels, results );
     }
     net->print();
-    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
     AccuracyHelper::printAccuracy( 4, 2, labels, results );
     int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 4 << endl;
     assertEquals( numCorrect, 4 );
+    assertLessThan( 0.0001, loss );
 
     delete net;
 }
@@ -129,7 +140,10 @@ void test3_relu() {
     expectedResults[3] = 1;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->relu()->insert();
-    for( int epoch = 0; epoch < 100; epoch++ ) {
+    float weights1[] = {-0.380177, -1.5738};
+    float biasWeights1[] = {0.5, 0.0606055};
+    net->initWeights( 1, weights1, biasWeights1 );
+    for( int epoch = 0; epoch < 15; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(2)
@@ -137,19 +151,24 @@ void test3_relu() {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-//        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
 //        net->print();
+//        net->printWeightsAsCode();
+//        net->printBiasWeightsAsCode();
         float const*results = net->getResults();
-//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
     net->print();
-    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
 
     int numCorrect = AccuracyHelper::calcNumRight( 2, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 2 << endl;
     assertEquals( numCorrect, 2 );
+
+    assertLessThan( 0.001, loss );
 
     delete net;
 }
@@ -320,14 +339,14 @@ int main( int argc, char *argv[] ) {
         numIts = atoi(argv[2] );
     }
 
-    for( int it = 0; it < numIts; it++ ) {
-        if( testNum == -1 ) {
-            test1();
-            test2();
-//            test3_relu();
-//            test4_relu();
-        }
+    if( testNum == -1 ) {
+        test1();
+        test2();
+        test3_relu();
+    }
 
+    for( int it = 0; it < numIts; it++ ) {
+//            test4_relu();
         if( testNum == 1 ) test1();
         if( testNum == 2 ) test2();
         if( testNum == 3 ) test3_relu();
