@@ -67,6 +67,12 @@ public:
                        + outputCol;
         return index;
     }
+    virtual int getWeightsSize() const {
+        return upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize * numPlanes * boardSize * boardSize;
+    }
+    virtual int getBiasWeightsSize() const {
+        return numPlanes * boardSize * boardSize;
+    }
     inline float getBiasWeight( int outputPlane, int outputRow, int outputCol ) const {
         return biasWeights[getBiasWeightIndex( outputPlane, outputRow, outputCol ) ];
     }
