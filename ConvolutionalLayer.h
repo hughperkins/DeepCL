@@ -11,10 +11,11 @@
 //#include "ClConvolve2.h"
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
+#include "Timer.h"
 
 class ConvolutionalLayer : public Layer {
 public:
-    OpenCLHelper *cl;
+    OpenCLHelper *const cl; // NOT owned by us
     CLKernel *kernelConvolve;
     CLKernel *kernelBackPropWeights;
     CLKernel *kernelBackpropErrors;
@@ -22,31 +23,34 @@ public:
     const int filterSize;
     const bool padZeros;
 
-    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
-            Layer( previousLayer, maker ),
-            filterSize( maker->_filterSize ),
-            padZeros( maker->_padZeros ) {
-//        if( filterSize % 2 == 0 ) {
-//            throw std::runtime_error("filter size must be an odd number");
+    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
+
+//    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
+//            Layer( previousLayer, maker ),
+//            filterSize( maker->_filterSize ),
+//            padZeros( maker->_padZeros ),
+//            cl( maker->net->getCl() ) {
+////        if( filterSize % 2 == 0 ) {
+////            throw std::runtime_error("filter size must be an odd number");
+////        }
+////        this->cl = new OpenCLHelper();
+//        std::string options = "-D " + activationFunction->getDefineName();
+//        if( biased ) {
+//             options += " -D BIASED";
 //        }
-        this->cl = new OpenCLHelper();
-        std::string options = "-D " + activationFunction->getDefineName();
-        if( biased ) {
-             options += " -D BIASED";
-        }
-        this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
-        this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
-        this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
-        biasWeights = new float[ getBiasWeightsSize() ];
-        weights = new float[ getWeightsSize() ];
-        randomizeWeights();
-    }
+//        this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
+//        this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
+//        this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
+//        biasWeights = new float[ getBiasWeightsSize() ];
+//        weights = new float[ getWeightsSize() ];
+//        randomizeWeights();
+//    }
 
     virtual ~ConvolutionalLayer() {
         delete kernelBackPropWeights;
         delete kernelConvolve;
         delete kernelBackpropErrors;
-        delete cl;
+//        delete cl;
     }
 // filters are organized like [filterid][plane][row][col]
     void randomizeWeights() {

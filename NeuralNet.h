@@ -23,7 +23,9 @@
 class NeuralNet {
 public:
     std::vector< Layer *> layers;
+    OpenCLHelper *cl;
     NeuralNet( int numPlanes, int boardSize ) {
+        cl = new OpenCLHelper();
         InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
         maker->insert();
     }
@@ -31,6 +33,10 @@ public:
         for( int i = 0; i < layers.size(); i++ ) {
             delete layers[i];
         }
+        delete cl;
+    }
+    OpenCLHelper *getCl() {
+        return cl;
     }
     static NeuralNetMould *maker() {
         return new NeuralNetMould();
