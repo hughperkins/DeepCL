@@ -21,6 +21,14 @@ public:
         }
     }
     void _dump() {
+        double totalTimings = 0;
+        for( std::map< std::string, float >::iterator it = timeByState.begin(); it != timeByState.end(); it++ ) {
+//            std::cout << "   " << it->first << ": " << it->second << std::endl;
+            totalTimings += it->second;
+        }
+        if( totalTimings < 800 ) {
+            return;
+        }
         std::cout << "StatefulTimer readings:" << std::endl;
         for( std::map< std::string, float >::iterator it = timeByState.begin(); it != timeByState.end(); it++ ) {
             std::cout << "   " << it->first << ": " << it->second << std::endl;
