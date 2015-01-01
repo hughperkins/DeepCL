@@ -79,9 +79,9 @@ public:
     string dataDir = "/norep/Downloads/data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 60000;
-    int numTest = 1000;
-    int batchSize = 500;
+    int numTrain = 12800*4;
+    int numTest = 1280;
+    int batchSize = 128;
     int numEpochs = 100;
     float learningRate = 0.1f;
     int biased = 1;
@@ -101,7 +101,7 @@ void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, i
     }
 //    cout << "boards interval: " << ( &(boards[1][0][0]) - &(boards[0][0][0])) << endl;
 //    cout << "labels interval: " << ( &(labels[1]) - &(labels[0])) << endl;
-    cout << name << " overall: " << testNumRight << "/" << N << endl;
+    cout << name << " overall: " << testNumRight << "/" << N << " " << ( testNumRight * 100.0f / N ) << "%" << endl;
 }
 
 void go(Config config) {
@@ -138,8 +138,8 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(1)->filterSize(3)->tanh()->biased()->insert();
-    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-2)->tanh()->biased(config.biased)->insert();
+    net->convolutionalMaker()->numFilters(18)->filterSize(5)->tanh()->biased()->insert();
+    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){
 //        int fileSize;

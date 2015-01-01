@@ -46,7 +46,7 @@ public:
                 correct++;
             }
         }
-        std::cout << " accuracy: " << correct << "/" << numImages << std::endl;
+        std::cout << " accuracy: " << correct << "/" << numImages << " " << ((float)correct * 100.0f / numImages ) << "%" << std::endl;
     }
 };
 
