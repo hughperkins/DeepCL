@@ -49,6 +49,8 @@ public:
         weOwnResults(false) {
     }
 
+    virtual bool needErrorsBackprop() = 0;
+
 //    Layer( Layer *previousLayer, int numPlanes, int boardSize, ActivationFunction *activationFunction ) :
 //         previousLayer( previousLayer ),
 //         numPlanes( numPlanes),

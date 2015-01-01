@@ -21,6 +21,10 @@ public:
         randomizeWeights( fanIn, biasWeights, getBiasWeightsSize() );
     }
 
+    virtual bool needErrorsBackprop() {
+        return true;
+    }
+
     // weights like [upstreamPlane][upstreamRow][upstreamCol][outputPlane][outputrow][outputcol]
     inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
         int index = ( ( ( ( prevPlane ) * upstreamBoardSize

@@ -79,10 +79,10 @@ public:
     string dataDir = "../data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 1280;
-    int numTest = 1280;
+    int numTrain = 12800 * 4;
+    int numTest = 1280*4;
     int batchSize = 128;
-    int numEpochs = 2;
+    int numEpochs = 20;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -138,7 +138,7 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(18)->filterSize(5)->tanh()->biased()->insert();
+    net->convolutionalMaker()->numFilters(14)->filterSize(5)->tanh()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){

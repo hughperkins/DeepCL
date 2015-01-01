@@ -56,6 +56,9 @@ public:
     }
     virtual ~InputLayer() {
     }
+    virtual bool needErrorsBackprop() {
+        return false;
+    }
     virtual void setBatchSize( int batchSize ) {
 //        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
         this->batchSize = batchSize;

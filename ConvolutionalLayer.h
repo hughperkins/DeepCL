@@ -251,7 +251,6 @@ public:
 
     virtual void backPropErrors( float learningRate, float const *errors ) {
 //        Timer timer;
-        float *errorsForUpstream = new float[previousLayer->getResultsSize()];
         float *weightChanges = new float[ getWeightsSize() ];
         float *biasWeightChanges = new float[getBiasWeightsSize()];
 //        backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
@@ -272,8 +271,6 @@ public:
 //        calcErrorsForUpstream( errors, errorsForUpstream2 );
 //        timer.timeCheck("calcerrorsforupstream cpu");
 
-        calcErrorsForUpstreamGpu( errors, errorsForUpstream );
-        StatefulTimer::instance()->timeCheck("    calced errors for upstream, layer " + toString( layerIndex ) );
 //        timer.timeCheck("calcerrorsforupstream gpu");
 
 //        backPropGpu( learningRate, errors, weightChanges2 );
@@ -295,6 +292,14 @@ public:
 //                 std::cout << "mismatch errorsForUpstream2 " << i << " " << errorsForUpstream[i] << " != " << errorsForUpstream2[i] << std::endl;
 //             }
 //        }
+
+        if( previousLayer->needErrorsBackprop() ) {
+            float *errorsForUpstream = new float[previousLayer->getResultsSize()];
+            calcErrorsForUpstreamGpu( errors, errorsForUpstream );
+            StatefulTimer::instance()->timeCheck("    calced errors for upstream, layer " + toString( layerIndex ) );
+            previousLayer->backPropErrors(learningRate, errorsForUpstream);
+            delete[] errorsForUpstream;
+        }
        
         const int numWeights = getWeightsSize();
         for( int i = 0; i < numWeights; i++ ) {
@@ -303,8 +308,6 @@ public:
         for( int plane = 0; plane < numPlanes; plane++ ) {
             biasWeights[plane] += biasWeightChanges[plane];
         }
-        previousLayer->backPropErrors(learningRate, errorsForUpstream);
-        delete[] errorsForUpstream;
         delete[] weightChanges;
         delete[] biasWeightChanges;
     }
@@ -342,6 +345,10 @@ public:
         delete resultsWrapper;
         delete errorsWrapper;
         delete weightChangesWrapper;
+    }
+
+    virtual bool needErrorsBackprop() {
+        return true;
     }
 
     void calcErrorsForUpstreamGpu(  float const *errors, float *errorsForUpstream  ) {

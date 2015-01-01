@@ -450,21 +450,21 @@ TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
     net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(4)->biased()->insert();
-    net->print();
+//    net->print();
     for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
-            ->learningRate(1)
+            ->learningRate(0.1)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+        if( epoch % 100 == 0 ) cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
 //        net->print();
-        float const*results = net->getResults();
+//        float const*results = net->getResults();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
-    net->print();
+//    net->print();
     cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( N, numOutPlanes, labels, results );
