@@ -50,7 +50,7 @@ TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
     weightsWrapper->copyToDevice();
 
     CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+    kernel->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
        ->in( padZeros );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
@@ -149,7 +149,7 @@ TEST( testsimpleconvolve, boardsize2_padzeros ) {
     weightsWrapper->copyToDevice();
 
     CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+    kernel->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
        ->in( padZeros );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
@@ -227,7 +227,7 @@ TEST( testsimpleconvolve, boardsize3 ) {
     weightsWrapper->copyToDevice();
 
     CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+    kernel->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
        ->in( padZeros );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
@@ -296,7 +296,7 @@ TEST( testsimpleconvolve, test2 ) {
 //    CLKernel *tanh = cl.buildKernel( "ClConvolve.cl", "byelement_tanh" );
 
     for( int it = 0; it < 100; it ++ ) {
-        convolve->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
            ->in( padZeros );
         convolve->input( dataWrapper );
         convolve->input( weightsWrapper);
@@ -344,7 +344,7 @@ TEST( testsimpleconvolve, test3 ) {
     weightsWrapper->copyToDevice();
 
     CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    convolve->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
+    convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
        ->in( padZeros );
     convolve->input( dataWrapper );
     convolve->input( weightsWrapper);
@@ -407,7 +407,7 @@ TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_1 ) {
     biasWeightsWrapper->copyToDevice();
 
     CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D TANH -D BIASED" );
-    convolve->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
+    convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
        ->in( padZeros );
     convolve->input( dataWrapper );
     convolve->input( weightsWrapper);
@@ -449,7 +449,7 @@ TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_2 ) {
     biasWeightsWrapper->copyToDevice();
 
     CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D TANH -D BIASED" );
-    convolve->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
+    convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
        ->in( padZeros );
     convolve->input( dataWrapper );
     convolve->input( weightsWrapper);

@@ -259,7 +259,7 @@ void kernel convolve_imagecubes_float_nopadzeros(
 // results are organized like [imageid][filterid][row][col]
 // global id is organized like results, ie: [imageid][filterid][row][col]
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-void kernel convolve_imagecubes_float2( 
+void kernel convolve_imagecubes_float2( const int numExamples,
       const int numInputPlanes, const int numFilters, 
       const int inputBoardSize, const int filterSize, const int padZeros,
       global const float *images, global const float *filters, 
@@ -279,6 +279,10 @@ global const float*biases,
     int outputBoard2Id = globalId / outputBoardSizeSquared;
     int exampleId = outputBoard2Id / numFilters;
     int filterId = outputBoard2Id % numFilters;
+
+    if( exampleId >= numExamples ) {
+        return;
+    }
 
     int inputCubeOffset = exampleId * numInputPlanes * inputBoardSizeSquared;
     int filterCubeOffset = filterId * numInputPlanes * filterSizeSquared;

@@ -170,7 +170,7 @@ public:
 
 //        resultsWrapper->createOnDevice();
         
-        kernelConvolve->in( upstreamNumPlanes )->in( numPlanes )->in( upstreamBoardSize )->in( filterSize )
+        kernelConvolve->in(batchSize)->in( upstreamNumPlanes )->in( numPlanes )->in( upstreamBoardSize )->in( filterSize )
           ->in( padZeros ? 1 : 0 );
         kernelConvolve->input( upstreamWrapper );
         kernelConvolve->input( weightsWrapper);
