@@ -379,6 +379,48 @@ TEST( testsimpleconvolve, test3 ) {
    }
 }
 
+TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer ) {
+    int batchSize = 128;
+    int numInPlanes = 1;
+    int numOutPlanes = 14;
+    int inBoardSize = 28;
+    int outBoardSize = 24;
+    int filterSize = 5;
+    int padZeros = 0;
+
+    int inputSize = batchSize * numInPlanes * inBoardSize * inBoardSize;
+    int resultsSize = batchSize * numOutPlanes * outBoardSize * outBoardSize;
+    int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
+    int biasWeightsSize = numOutPlanes;
+    float *inputs = new float[ inputSize ];
+    float *filters = new float[weightsSize ];
+    float *biasFilters = new float[biasWeightsSize];
+    float *results = new float[resultsSize];;
+    
+    OpenCLHelper cl;
+    CLWrapper *dataWrapper = cl.wrap( inputSize, inputs );
+    CLWrapper *weightsWrapper = cl.wrap( weightsSize, filters );
+    CLWrapper *biasWeightsWrapper = cl.wrap( biasWeightsSize, biasFilters );
+    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
+    dataWrapper->copyToDevice();
+    weightsWrapper->copyToDevice();
+    biasWeightsWrapper->copyToDevice();
+
+    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D TANH -D BIASED" );
+    convolve->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
+       ->in( padZeros );
+    convolve->input( dataWrapper );
+    convolve->input( weightsWrapper);
+    convolve->input( biasWeightsWrapper);
+    convolve->output( resultsWrapper );
+    int globalSize = resultsSize;
+    int workgroupsize = cl.getMaxWorkgroupSize();
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    convolve->run_1d( globalSize, workgroupsize );
+
+    resultsWrapper->copyToHost();
+}
+
 //int main( int argc, char *argv[] ) {
 //    int testNum = -1;
 //    if( argc == 2 ) {
