@@ -682,7 +682,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n6 ) {
 TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     Timer timer;
     int boardSize = 5;
-    int N = 6;
+    int N = 18;
     int numInPlanes = 1;
     int numOutPlanes = 3;
     float data[] = {
@@ -799,7 +799,9 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     for( int i = 0; i < inputSize; i++ ) {
         data[i] -= 0.5f;
     }
-    int labels[] = { 0, 1, 2, 0, 1, 2 };
+    int labels[] = { 0, 1, 2, 0, 1, 2,
+                    0, 1, 2, 0, 1, 2,
+                    0, 1, 2, 0, 1, 2 };
     int resultsSize = numOutPlanes * N;
     float *expectedResults = new float[resultsSize];
     for( int n = 0; n < N; n++ ) {
@@ -812,7 +814,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
 //    net->print();
-    for( int epoch = 0; epoch < 1000; epoch++ ) {
+    for( int epoch = 0; epoch < 3000; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.1)
             ->batchSize(N)
