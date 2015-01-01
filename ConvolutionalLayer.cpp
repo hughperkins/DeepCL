@@ -1,5 +1,6 @@
 #include "ConvolutionalLayer.h"
 #include "NeuralNet.h"
+#include "stringhelper.h"
 
 ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
         Layer( previousLayer, maker ),
@@ -10,6 +11,10 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
 //            throw std::runtime_error("filter size must be an odd number");
 //        }
 //        this->cl = new OpenCLHelper();
+    if( filterSize > upstreamBoardSize ) {
+            throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( filterSize) +
+                " > " + toString(upstreamBoardSize) );
+    }
     std::string options = "-D " + activationFunction->getDefineName();
     if( biased ) {
          options += " -D BIASED";
