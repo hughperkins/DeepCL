@@ -11,7 +11,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O2")
 
 add_library( ClConvolve SHARED ClConvolve.h OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp NeuralNetMould.cpp
    EpochMaker.cpp ConvolutionalLayer.cpp
-   OpenCLHelper/CLKernel.cpp OpenCLHelper/clew/src/clew.c )
+   OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
 
