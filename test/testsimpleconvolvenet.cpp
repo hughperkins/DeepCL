@@ -12,7 +12,7 @@
 
 using namespace std;
 
-TEST( testsimpleconvolvenet, test1 ) {
+TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_tanh ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -63,7 +63,7 @@ TEST( testsimpleconvolvenet, test1 ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, test2 ) {
+TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_tanh ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -131,7 +131,7 @@ TEST( testsimpleconvolvenet, test2 ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, test3_relu ) {
+TEST( testsimpleconvolvenet, boardsize1_2planes_filtersize1_relu ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -181,7 +181,7 @@ TEST( testsimpleconvolvenet, test3_relu ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, test4_relu ) {
+TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_relu ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -250,7 +250,7 @@ TEST( testsimpleconvolvenet, test4_relu ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, test5_linear ) {
+TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_linear ) {
     Timer timer;
     float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
@@ -319,7 +319,7 @@ TEST( testsimpleconvolvenet, test5_linear ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, test6_point_2layer ) {
+TEST( testsimpleconvolvenet, boardsize1_n2_2layers_unbiased ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5;
@@ -364,38 +364,118 @@ TEST( testsimpleconvolvenet, test6_point_2layer ) {
     delete net;
 }
 
-/*
-int _main( int argc, char *argv[] ) {
-    int testNum = -1;
-    int numIts = 10;
-    if( argc >= 2 ) {
-        testNum = atoi( argv[1] );
-        numIts = 1;
+TEST( testsimpleconvolvenet, boardsize1_n2_2layers_biased ) {
+    Timer timer;
+    float *data = new float[2];
+    data[0] = 0.5;
+    data[1] = -0.5;
+    int *labels = new int[2];
+    labels[0] = 0;
+    labels[1] = 1;
+    float *expectedResults = new float[4];
+    expectedResults[0] = 0.5;
+    expectedResults[1] = -0.5;
+    expectedResults[2] = -0.5;
+    expectedResults[3] = 0.5;
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
+    net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
+    for( int epoch = 0; epoch < 30; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(1)
+            ->batchSize(2)
+            ->numExamples(2)
+            ->inputData(data)
+            ->expectedOutputs(expectedResults)
+            ->run();
+//        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+//        net->print();
+        float const*results = net->getResults();
+//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
-    if( argc >= 3  ){
-        numIts = atoi(argv[2] );
-    }
+//    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float const*results = net->getResults();
+    AccuracyHelper::printAccuracy( 2, 2, labels, results );
 
-    if( testNum == -1 ) {
-//        test1();
-//        test2();
-//        test3_relu();
-//        test4_relu();
-//        test5_linear();
-//        test6_point_2layer();
-    }
+    int numCorrect = AccuracyHelper::calcNumRight( 2, 2, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << 2 << endl;
+    assertEquals( numCorrect, 2 );
 
-    for( int it = 0; it < numIts; it++ ) {
-//            test4_relu();
-//        if( testNum == 1 ) test1();
-//        if( testNum == 2 ) test2();
-//        if( testNum == 3 ) test3_relu();
-//        if( testNum == 4 ) test4_relu();
-//        if( testNum == 5 ) test5_linear();
-//        if( testNum == 6 ) test6_point_2layer();
-    }
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.0001, loss );
 
-    return 0;
+    delete net;
 }
-*/
+
+TEST( DISABLED_testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_2_2_biased ) {
+    Timer timer;
+    int boardSize = 5;
+    int N = 3;
+    int numInPlanes = 1;
+    int numOutPlanes = 3;
+    float data[] = {
+                    1,0,1,0,1,
+                    0,1,0,1,0,
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+                    1,0,1,0,1,
+
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+};
+    int inputSize = boardSize * boardSize * numInPlanes * N;
+    for( int i = 0; i < inputSize; i++ ) {
+        data[i] -= 0.5f;
+    }
+    int labels[] = { 0, 1, 2 };
+    int resultsSize = numOutPlanes * N;
+    float *expectedResults = new float[resultsSize];
+    for( int n = 0; n < N; n++ ) {
+        for( int plane = 0; plane < numOutPlanes; plane++ ) {
+            expectedResults[ n * numOutPlanes + plane] = -0.5;
+        }
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+    }
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
+    net->convolutionalMaker()->numFilters(3)->filterSize(1)->biased()->insert();
+    for( int epoch = 0; epoch < 30; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(1)
+            ->batchSize(N)
+            ->numExamples(N)
+            ->inputData(data)
+            ->expectedOutputs(expectedResults)
+            ->run();
+//        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+//        net->print();
+        float const*results = net->getResults();
+//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+    }
+//    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float const*results = net->getResults();
+    AccuracyHelper::printAccuracy( 2, 2, labels, results );
+
+    int numCorrect = AccuracyHelper::calcNumRight( N, numOutPlanes, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << 2 << endl;
+    assertEquals( numCorrect, 2 );
+
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.0001, loss );
+
+    delete net;
+}
 

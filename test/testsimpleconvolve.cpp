@@ -10,7 +10,175 @@
 
 using namespace std;
 
-TEST( testsimpleconvolve, test1 ) {
+TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
+    int batchSize = 2;
+    int numOutPlanes = 2;
+    int numInPlanes = 1;
+    int boardSize = 2;
+    int filterWidth = 2;
+    int padZeros = 0;
+
+    float data[] = { 0, 0, 
+                      0.5f, 0.5f,
+
+                        13, 17,
+                       -19, 2.3f,
+};
+
+    float filter1[] = { 0, 0,
+                        -0.5f, 0.5f,
+
+                        0.2f, 0.3f, 
+                         0.7f, -1.1f,
+
+ };
+    int resultSize = 4;
+    float expectedResults[] = {
+        -0.5f * 0.5f + 0.5f * 0.5f,
+        0.7f * 0.5f -1.1f * 0.5f,
+        (-0.5f) * (-19) + 0.5f * 2.3f,
+        0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
+    };
+
+    OpenCLHelper cl;
+    float *results = new float[512];
+
+    CLWrapper *dataWrapper = cl.wrap( batchSize * 9, data );
+    CLWrapper *weightsWrapper = cl.wrap( numOutPlanes * 9, filter1 );
+    CLWrapper *resultsWrapper = cl.wrap( 512, results );
+    dataWrapper->copyToDevice();
+    weightsWrapper->copyToDevice();
+
+    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
+    kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+       ->in( padZeros );
+    kernel->input( dataWrapper );
+    kernel->input( weightsWrapper);
+    kernel->output( resultsWrapper );
+    int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
+    int workgroupsize = cl.getMaxWorkgroupSize();
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+    kernel->run_1d( globalSize, workgroupsize );
+    resultsWrapper->copyToHost();
+
+    for( int result = 0; result < 4; result++ ) {
+        cout << "results[" << result << "]=" << results[result] << endl;
+    }
+
+    for( int result = 0; result < resultSize; result++ ) {
+        ASSERT_EQ( expectedResults[result], results[result] );
+    }
+}
+
+TEST( testsimpleconvolve, boardsize2_padzeros ) {
+    int batchSize = 2;
+    int numOutPlanes = 2;
+    int numInPlanes = 1;
+    int boardSize = 2;
+    int filterWidth = 2;
+    int padZeros = 1;
+
+    float data[] = { 0, 0, 
+                      0.5f, 0.3f,
+
+                        13, 17,
+                       -19, 2.3f,
+};
+
+    float filter1[] = { 0, 0,
+                        -0.5f, 0.4f,
+
+                        0.2f, 0.3f, 
+                         0.7f, -1.1f,
+
+ };
+    int resultSize = (boardSize + 1) * (boardSize + 1) * batchSize * numOutPlanes;
+    float *expectedResults = new float[resultSize];
+    for( int i = 0; i < resultSize; i++ ) {
+        expectedResults[i] = -9999; // means havent provided an expectedresult.
+    }
+
+    expectedResults[0] = 0; expectedResults[1] = 0; expectedResults[2] = 0;
+
+    expectedResults[3] = 0.5f*0.4f;
+    expectedResults[4] = 0.5f*(-0.5f)+0.4f*(0.3f);
+    expectedResults[5] = 0.3 * (-0.5f); 
+
+    expectedResults[6] = 0; expectedResults[7] = 0; expectedResults[8] = 0;
+
+    expectedResults[9] = 0; expectedResults[10] = 0; expectedResults[11] = 0;
+    expectedResults[12] =(-1.1f)*0.5;
+    expectedResults[13] = 0.7f * 0.5f + (-1.1f) * 0.3f;
+    expectedResults[14] = 0.7f * 0.3f;
+
+    // plane 2, filter 2 ...
+    expectedResults[27] = (-1.1f*13);
+    expectedResults[28] = 0.7f * 13 + (-1.1f)*17;
+    expectedResults[29] = 0.7f*17;
+    expectedResults[35] = 0.2f* 2.3f;
+
+//    expectedResults[] = 0;
+//    expectedResults[5] = 0;
+//    expectedResults[6] = 0.3f * 0.5f;
+//    expectedResults[7] = 0.2f * 0.5f;
+
+//    expectedResults[8] = 13 * 0.5f;
+//    expectedResults[9] = 17 * (-0.5f);
+//    expectedResults[10] = (-19) * 0;
+//    expectedResults[11] = 2.3f * 0;
+// 
+//    expectedResults[12] = 13 * (-1.1f);
+//    expectedResults[13] = 17 * 0.7f;
+//    expectedResults[14] = (-19) * 0.3f;
+//    expectedResults[15] = 2.3f * 0.2f;
+
+//        -0.5f * 0.5f + 0.5f * 0.5f,
+//        0.7f * 0.5f -1.1f * 0.5f,
+//        (-0.5f) * (-19) + 0.5f * 2.3f,
+//        0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
+//    };
+
+    OpenCLHelper cl;
+    float *results = new float[2048];
+
+    CLWrapper *dataWrapper = cl.wrap( 8, data );
+    CLWrapper *weightsWrapper = cl.wrap( 8, filter1 );
+    CLWrapper *resultsWrapper = cl.wrap( 2048, results );
+    dataWrapper->copyToDevice();
+    weightsWrapper->copyToDevice();
+
+    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
+    kernel->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+       ->in( padZeros );
+    kernel->input( dataWrapper );
+    kernel->input( weightsWrapper);
+    kernel->output( resultsWrapper );
+    int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
+    int workgroupsize = cl.getMaxWorkgroupSize();
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+    kernel->run_1d( globalSize, workgroupsize );
+    resultsWrapper->copyToHost();
+
+    for( int result = 1024; result < 1024 + 4; result++ ) {
+        cout << "results[" << result << "]=" << results[result] << endl;
+    }
+
+//    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, results[0] );
+//    ASSERT_EQ( 0.7f * 0.5f -1.1f * 0.5f, results[1] );
+//    ASSERT_EQ( (-0.5f) * (-19) + 0.5f * 2.3f, results[2] );
+//    ASSERT_EQ( 0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f , results[3] );
+
+    for( int result = 0; result < resultSize; result++ ) {
+        if( expectedResults[result] != -9999 ) {
+            cout << " checking result[" << result << "]=" << results[result] << " expecting: " << expectedResults[result] << endl;
+            ASSERT_EQ( expectedResults[result], results[result] );
+        }
+    }
+}
+
+TEST( testsimpleconvolve, boardsize3 ) {
     int batchSize = 5;
     int numOutPlanes = 2;
     int numInPlanes = 1;

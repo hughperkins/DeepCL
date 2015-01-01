@@ -269,8 +269,10 @@ global const float*biases,
     global float *results ) {
     int globalId = get_global_id(0);
 
+    const int evenPadding = filterSize % 2 == 0 ? 1 : 0;
+
     int inputBoardSizeSquared = inputBoardSize * inputBoardSize;
-    int outputBoardSize = padZeros ? inputBoardSize : inputBoardSize - filterSize + 1;
+    int outputBoardSize = padZeros ? inputBoardSize + evenPadding : inputBoardSize - filterSize + 1;
     int outputBoardSizeSquared = outputBoardSize * outputBoardSize;
     int filterSizeSquared = filterSize * filterSize;
 
@@ -288,12 +290,58 @@ global const float*biases,
 
     int halfFilterSize = filterSize >> 1;
     float sum = 0;
+    // for odd, boardsize and filtersize 3, padZeros = 0:
+    // output is a single square
+    // m and n should vary between -1,0,1
+    // for even, boardsize and filtersize 2, padzeros = 0
+    // output is a single square, which we can position at topleft or bottomrigth
+    // lets position it in bottomright
+    // then m and n should vary as -1,0
+    //
+    // for even, boardsize and filtersize 2, padzeros = 1
+    // output is 2 by 2
+    // well... if it is even:
+    // - if we are not padding zeros, then we simply move our filter around the board somehow
+    // - if we are padding zeros, then we conceptually pad the bottom and right edge of the board with zeros by 1
+    // filtersize remains the same
+    //      m will vary as -1,0,1
+    //       outputrow is fixed by globalid
+    //       inputrow should be unchanged...
+    // padzeros = 0:
+    //  x x .  . . .
+    //  x x .  . x x
+    //  . . .  . x x
+    // when filtersize even:
+    //    new boardsize = oldboardsize - filtersize + 1
+    // when filtersize odd:
+    //    x x x .
+    //    x x x .
+    //    x x x .
+    //    . . . .
+    //    new boardsize = oldboardsize - filtersize + 1
+    // padzeros = 1:
+    // x x
+    // x x . .   x x .    . . .     . . .
+    //   . . .   x x .    . x x     . . .
+    //   . . .   . . .    . x x     . . x x
+    // outrow=0 outrow=1  outrow=2      x x
+    // outcol=0 outcol=1  outcol=2    outrow=3
+    //                                outcol=3
+    // when filtersize is even, and padzeros, boardsize grows by 1 each time...
+    //    boardsize = oldboardsize + 1
+    // when filtersize is odd
+    //  x x x 
+    //  x x x .   x x x    . . .
+    //  x x x .   x x x    . x x x
+    //    . . .   x x x    . x x x
+    //                       x x x
+    //  boardsize = oldboardsize
     int minm = padZeros ? max( -halfFilterSize, -outputRow ) : -halfFilterSize;
-    int maxm = padZeros ? min( halfFilterSize, outputBoardSize - 1 - outputRow ) : halfFilterSize;
+    int maxm = padZeros ? min( halfFilterSize - evenPadding, outputBoardSize - 1 - outputRow  - evenPadding) : halfFilterSize - evenPadding;
     int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;
-    int maxn = padZeros ? min( halfFilterSize, outputBoardSize - 1 - outputCol ) : halfFilterSize;
+    int maxn = padZeros ? min( halfFilterSize - evenPadding, outputBoardSize - 1 - outputCol - evenPadding) : halfFilterSize - evenPadding;
     int inputPlane = 0;
-    float probe = 0;
+//    float probe = 0;
     while( inputPlane < numInputPlanes ) {
         int inputBoardOffset = inputCubeOffset + inputPlane * inputBoardSizeSquared;
         int filterBoardOffset = filterCubeOffset + inputPlane * filterSizeSquared;
@@ -306,8 +354,8 @@ global const float*biases,
             while( n <= maxn ) {
                 int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
                 sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
-                //probe += 10000 * pown(100, inputPlane) *( inputboardrowoffset + inputCol );
-//                probe += pown(100, inputPlane) *( images[inputboardrowoffset + inputCol] );
+//                probe += 10000 * pown(100, inputPlane) *( inputboardrowoffset + inputCol );
+            //    probe += pown(100, inputPlane) *( images[inputboardrowoffset + inputCol] );
                 //probe += pown(100, inputPlane) *( filterrowoffset + n );
              //   probe += pown(1000, inputPlane) *( floor(filters[ filterrowoffset + n ]*100)/100 );
 
@@ -327,7 +375,9 @@ global const float*biases,
 #endif
     results[globalId] = ACTIVATION_FUNCTION(sum);
 //    results[0] = 1234.0;
-     //results[globalId] = probe;
+//     results[1024+globalId] = maxn;
+//     results[1] = maxMm;
+//     results[2] = minm;
 }
 #endif
 
@@ -454,37 +504,4 @@ void kernel calcErrorsForUpstream(
     }
     errorsForUpstream[globalId] = sumWeightTimesOutError;
 }
-
-
-//void kernel byelement_add_inplace( global float *target, global const float *src ) {
-//    int globalId = get_global_id(0);
-//    target[globalId] += src[globalId];
-//}
-
-// results are organized like [imageid][filterid][row][col]
-// bias si applied per filterId
-// need to know:
-//  - how many filters
-//  - filterSizeSquared
-//void kernel apply_bias( const int numFilters, const int filterSizeSquared, global float *target, global const float *biasWeights ) {
-//    int globalId = get_global_id(0);
-//    int filterId = ( globalId / filterSizeSquared ) % numFilters;
-//    target[globalId] += biasWeights[filterId];
-//}
-
-//void kernel byelement_mult_inplace( global float *target, const float scalar ) {
-//    int globalId = get_global_id(0);
-//    target[globalId] *= scalar;
-//}
-
-//void kernel byelement_tanh( global float *vector ) {
-//    int globalId = get_global_id(0);
-//    vector[globalId] = tanh(vector[globalId]);
-//}
-
-//void kernel byelement_relu( global float *vector ) {
-//    int globalId = get_global_id(0);
-//    vector[globalId] = vector[globalId] > 0 ? vector[globalId] : 0;
-//}
-
 

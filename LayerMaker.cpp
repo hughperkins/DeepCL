@@ -67,7 +67,8 @@ int ConvolutionalMaker::getBoardSize() const {
     if( previousLayer == 0 ) {
         throw std::runtime_error("convolutional network must be attached to a parent layer");
     }
-    int boardSize = _padZeros ? previousLayer->boardSize : previousLayer->boardSize - _filterSize + 1;
+    int evenPadding = _filterSize % 2 == 0 ? 1 : 0;
+    int boardSize = _padZeros ? previousLayer->boardSize + evenPadding : previousLayer->boardSize - _filterSize + 1;
     return boardSize;
 }
 

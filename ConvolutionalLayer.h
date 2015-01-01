@@ -26,9 +26,9 @@ public:
             Layer( previousLayer, maker ),
             filterSize( maker->_filterSize ),
             padZeros( maker->_padZeros ) {
-        if( filterSize % 2 == 0 ) {
-            throw std::runtime_error("filter size must be an odd number");
-        }
+//        if( filterSize % 2 == 0 ) {
+//            throw std::runtime_error("filter size must be an odd number");
+//        }
         this->cl = new OpenCLHelper();
         std::string options = "-D " + activationFunction->getDefineName();
         if( biased ) {

@@ -25,13 +25,13 @@ void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, flo
     }
     cout << "loaded " << Nboards << " boards.  " << endl;
 //    MnistLoader::shuffle( boards, labels, Nboards, boardSize );
-    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( Nboards, boardSize + 1 );
+    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( Nboards, boardSize );
     BoardsHelper::copyBoards( boardsFloat, boards, Nboards, boardSize );
     BoardsHelper::deleteBoards( &boards, Nboards, boardSize );
     *p_images = boardsFloat;
     *p_labels = labels;
    
-    *p_boardSize = boardSize + 1;
+    *p_boardSize = boardSize;
     *p_N = Nboards;
 
     // expected results

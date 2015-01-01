@@ -8,7 +8,7 @@ OpenCL library to train deep convolutional networks
 
 Target usage:
 - 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
-- Also works on MNIST 28 x 28 boards (but you need to pad them to 29 x 29; the size of the board/image should be an odd number)
+- Also works on MNIST 28 x 28 boards
 
 Neural Net API
 ==============
