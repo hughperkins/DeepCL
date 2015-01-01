@@ -17,8 +17,8 @@ int main( int argc, char *argv[] ) {
     int boardSize;
     int N;
     // images
-    int ***boards = MnistLoader::loadImages( "/norep/Downloads/data/mnist", "train", &N, &boardSize );
-    int *labels = MnistLoader::loadLabels( "/norep/Downloads/data/mnist", "train", &N );
+    int ***boards = MnistLoader::loadImages( "../data/mnist", "train", &N, &boardSize );
+    int *labels = MnistLoader::loadLabels( "../data/mnist", "train", &N );
     timer.timeCheck("after load images");
     float ***boardsFloat = BoardsHelper::allocateBoardsFloats( N, boardSize );
     BoardsHelper::copyBoards( boardsFloat, boards, N, boardSize );

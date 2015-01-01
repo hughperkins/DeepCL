@@ -80,7 +80,7 @@ public:
     string testSet = "t10k";
     int numTrain = 60000;
     int numTest = 10000;
-    int batchSize = 1000;
+    int batchSize = 512;
     int numEpochs = 2;
     float learningRate = 0.1f;
     int biased = 1;

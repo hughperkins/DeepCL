@@ -76,7 +76,7 @@ void normalize( float ***boards, int N, int boardSize, double mean, double thism
 
 class Config {
 public:
-    string dataDir = "/norep/Downloads/data/mnist";
+    string dataDir = "../data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
     int numTrain = 12800*4;

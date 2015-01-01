@@ -17,7 +17,7 @@ TEST( testboardshelper, boardshelper ) {
 //    int N = 1000;
     int N;
     int boardSize;
-    boards = MnistLoader::loadImages( "/norep/Downloads/data/mnist", "train", &N, &boardSize );
+    boards = MnistLoader::loadImages( "../data/mnist", "train", &N, &boardSize );
     int ***results = BoardsHelper::allocateBoards( N, boardSize );
 
     int *boards_1d = &(boards[0][0][0]);

@@ -135,6 +135,19 @@ Sample/test
 ```
 ... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
 
+You will need the mnist data.  On linux, from the `build` directory, you can download it as follows:
+```
+cd ../data
+mkdir mnist
+cd mnist
+wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+gunzip *.gz
+cd ../../build
+```
+
 Testing, checking for correctness
 =================================
 
