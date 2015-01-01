@@ -12,6 +12,8 @@
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
 #include "Timer.h"
+#include "StatefulTimer.h"
+#include "stringhelper.h"
 
 class ConvolutionalLayer : public Layer {
 public:
@@ -137,6 +139,8 @@ public:
         weOwnResults = true;
     }
     virtual void propagate() {
+//        static StatefulTimer statefulTimer;
+        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
 //        Timer timer;
 //        timer.timeCheck("    propagate, created wrappers");
 //        for( int i = 0; i < upstreamWrapper->size(); i++ ) {
@@ -162,6 +166,7 @@ public:
             biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
             biasWeightsWrapper->copyToDevice();
         }
+        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", copied to device");
 
 //        resultsWrapper->createOnDevice();
         
@@ -181,6 +186,7 @@ public:
 //        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
 //           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
         kernelConvolve->run_1d( globalSize, workgroupsize );
+        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after kernel enqueue");
 //        timer.timeCheck("    propagate, after run");
 //        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
 //           << " filtersize " << filterSize << " padzeros " << padZeros << " globalSize " << globalSize << std::endl;
@@ -191,6 +197,7 @@ public:
 //        }
 
         resultsWrapper->copyToHost();
+        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after copy to host");
 //        timer.timeCheck("    propagate, after copy to host");
 
         delete upstreamWrapper;
@@ -248,10 +255,13 @@ public:
         float *weightChanges = new float[ getWeightsSize() ];
         float *biasWeightChanges = new float[getBiasWeightsSize()];
 //        backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
+        StatefulTimer::instance()->timeCheck("    start backprop, layer " + toString( layerIndex ) );
         backPropGpu( learningRate, errors, weightChanges );
+        StatefulTimer::instance()->timeCheck("    done weight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("backpropgpu");
 //        doWeightsBackProp( learningRate, errors, weightChanges );
         doBiasBackprop( learningRate, errors, biasWeightChanges );
+        StatefulTimer::instance()->timeCheck("    done biasweight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("biasbackprop cpu");
 
 //        float *weightChanges2 = new float[ numWeights ];
@@ -263,6 +273,7 @@ public:
 //        timer.timeCheck("calcerrorsforupstream cpu");
 
         calcErrorsForUpstreamGpu( errors, errorsForUpstream );
+        StatefulTimer::instance()->timeCheck("    calced errors for upstream, layer " + toString( layerIndex ) );
 //        timer.timeCheck("calcerrorsforupstream gpu");
 
 //        backPropGpu( learningRate, errors, weightChanges2 );
@@ -338,7 +349,9 @@ public:
         CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
         CLWrapper *errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
         weightsWrapper->copyToDevice();
+        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, copied weights to device, layer " + toString( layerIndex ) );
         errorsWrapper->copyToDevice();
+        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, copied errors to device, layer " + toString( layerIndex ) );
         kernelBackpropErrors
             ->in( upstreamNumPlanes )->in( upstreamBoardSize )->in( filterSize )
             ->in( numPlanes )->in( boardSize )
@@ -351,7 +364,10 @@ public:
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernelBackpropErrors->run_1d(globalSize, workgroupsize);
 
+        cl->finish();
+        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, finished kernel, layer " + toString( layerIndex ) );
         errorsForUpstreamWrapper->copyToHost();
+        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, copied results to host, layer " + toString( layerIndex ) );
         delete errorsForUpstreamWrapper;
         delete errorsWrapper;
         delete weightsWrapper;

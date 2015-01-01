@@ -79,10 +79,10 @@ public:
     string dataDir = "../data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 12800*4;
+    int numTrain = 1280;
     int numTest = 1280;
     int batchSize = 128;
-    int numEpochs = 100;
+    int numEpochs = 2;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {

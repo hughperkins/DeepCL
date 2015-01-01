@@ -19,6 +19,7 @@
 #include "LayerMaker.h"
 #include "EpochMaker.h"
 #include "ActivationFunction.h"
+#include "StatefulTimer.h"
 
 class NeuralNet {
 public:
@@ -100,6 +101,7 @@ public:
             learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
             loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
         }
+        StatefulTimer::dump();
 //        timer.timeCheck("epoch time");
         return loss;
     }

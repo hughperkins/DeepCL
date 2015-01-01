@@ -14,13 +14,14 @@
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
+#include "stringhelper.h"
 
-template<typename T>
-std::string toString(T val ) { // not terribly efficient, but works...
-   std::ostringstream myostringstream;
-   myostringstream << val;
-   return myostringstream.str();
-}
+//template<typename T>
+//std::string toString(T val ) { // not terribly efficient, but works...
+//   std::ostringstream myostringstream;
+//   myostringstream << val;
+//   return myostringstream.str();
+//}
 void assertEquals( float one, float two, float tolerance );
 template<typename T>
 void assertEquals( T one, T two ) {
