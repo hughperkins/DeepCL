@@ -173,7 +173,7 @@ TEST( testsimpleconvolve, boardsize2_padzeros ) {
     for( int result = 0; result < resultSize; result++ ) {
         if( expectedResults[result] != -9999 ) {
             cout << " checking result[" << result << "]=" << results[result] << " expecting: " << expectedResults[result] << endl;
-            ASSERT_EQ( expectedResults[result], results[result] );
+            ASSERT_FLOAT_EQ( expectedResults[result], results[result] );
         }
     }
 }
