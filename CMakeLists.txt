@@ -50,14 +50,14 @@ add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
 
 add_dependencies( ClConvolve git-submodule-update )
 
-link_libraries(pthread)
-
 add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
+target_link_libraries( gtest pthread)
 
 #add_executable( testsimpleconvolvenet test/testsimpleconvolvenet.cpp thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 #add_executable( testlogicaloperators test/testlogicaloperators.cpp thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 
-add_executable( unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp test/testboardshelper.cpp test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
+add_executable( unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp test/testboardshelper.cpp test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
+thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 
 #target_link_libraries( testsimpleconvolvenet gtest )
 #target_link_libraries( testlogicaloperators gtest )
