@@ -409,7 +409,7 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_biased ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_2_2_biased_n3 ) {
+TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     Timer timer;
     int boardSize = 5;
     int N = 3;
@@ -480,7 +480,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_2_2_biased_n3 ) {
     delete net;
 }
 
-TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_2_2_biased_n6 ) {
+TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     Timer timer;
     int boardSize = 5;
     int N = 6;
@@ -582,6 +582,265 @@ float biasWeights2[] = {0.232961, 0.141537, 0.159074};
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.00001, loss );
+
+    delete net;
+}
+
+TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n6 ) {
+    Timer timer;
+    int boardSize = 5;
+    int N = 6;
+    int numInPlanes = 1;
+    int numOutPlanes = 3;
+    float data[] = {
+                    1,0,1,0,1,
+                    0,1,0,1,0,
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+                    1,0,1,0,1,
+
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+
+                    0,1,0,1,0,
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+};
+    int inputSize = boardSize * boardSize * numInPlanes * N;
+    for( int i = 0; i < inputSize; i++ ) {
+        data[i] -= 0.5f;
+    }
+    int labels[] = { 0, 1, 2, 0, 1, 2 };
+    int resultsSize = numOutPlanes * N;
+    float *expectedResults = new float[resultsSize];
+    for( int n = 0; n < N; n++ ) {
+        for( int plane = 0; plane < numOutPlanes; plane++ ) {
+            expectedResults[ n * numOutPlanes + plane] = -0.5;
+        }
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+    }
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
+    net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
+//    net->print();
+    for( int epoch = 0; epoch < 500; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(0.1)
+            ->batchSize(N)
+            ->numExamples(N)
+            ->inputData(data)
+            ->expectedOutputs(expectedResults)
+            ->run();
+        if( epoch % 100 == 0 ) {
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+//        net->print();
+//           net->printWeightsAsCode();
+//            net->printBiasWeightsAsCode();
+        }
+//        float const*results = net->getResults();
+//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+    }
+    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float const*results = net->getResults();
+    AccuracyHelper::printAccuracy( N, numOutPlanes, labels, results );
+
+    int numCorrect = AccuracyHelper::calcNumRight( N, numOutPlanes, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << N << endl;
+    assertEquals( numCorrect, N );
+
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.1, loss );
+
+    delete net;
+}
+
+TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
+    Timer timer;
+    int boardSize = 5;
+    int N = 6;
+    int numInPlanes = 1;
+    int numOutPlanes = 3;
+    float data[] = {
+                    1,0,1,0,1,
+                    0,1,0,1,0,
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+                    1,0,1,0,1,
+//1
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+//2
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+//3
+                    0,1,0,1,0,
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+                    1,0,1,0,1,
+                    0,1,0,1,0,    
+//4
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+//5
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+//6
+                    1,0,1,0,1,
+                    0,1,0,1,0,
+                    1,0,1,0,1,
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+//7
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    1,0,1,0,1,
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+//8
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+//9
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+                    0,0,0,1,0,    
+                    0,0,1,0,1,
+                    0,0,0,1,0,    
+//10
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+                    0,1,0,1,0,
+//11
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+                    0,0,0,0,0,
+                    1,1,1,1,1,
+                    0,0,0,0,0,
+
+//12
+                    0,0,1,0,1,
+                    0,0,0,1,0,
+                    0,0,1,0,1,
+                    0,0,0,1,0,    
+                    0,0,1,0,1,
+//13
+                    0,0,1,0,1,
+                    0,0,1,0,1,
+                    0,0,1,0,1,
+                    0,0,1,0,1,
+                    0,0,1,0,1,
+//14
+                    0,0,1,1,1,
+                    0,0,0,0,0,
+                    0,0,1,1,1,
+                    0,0,0,0,0,
+                    0,0,1,1,1,
+//15
+                    0,1,0,0,0,
+                    1,0,1,0,0,
+                    0,1,0,0,0,    
+                    1,0,1,0,0,
+                    0,1,0,0,0,    
+//16
+                    0,1,0,0,0,
+                    0,1,0,0,0,
+                    0,1,0,0,0,
+                    0,1,0,0,0,
+                    0,1,0,0,0,
+//17
+                    0,0,0,0,0,
+                    1,1,1,0,0,
+                    0,0,0,0,0,
+                    1,1,1,0,0,
+                    0,0,0,0,0,
+};
+    int inputSize = boardSize * boardSize * numInPlanes * N;
+    for( int i = 0; i < inputSize; i++ ) {
+        data[i] -= 0.5f;
+    }
+    int labels[] = { 0, 1, 2, 0, 1, 2 };
+    int resultsSize = numOutPlanes * N;
+    float *expectedResults = new float[resultsSize];
+    for( int n = 0; n < N; n++ ) {
+        for( int plane = 0; plane < numOutPlanes; plane++ ) {
+            expectedResults[ n * numOutPlanes + plane] = -0.5;
+        }
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+    }
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
+    net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
+//    net->print();
+    for( int epoch = 0; epoch < 1000; epoch++ ) {
+        net->epochMaker()
+            ->learningRate(0.1)
+            ->batchSize(N)
+            ->numExamples(N)
+            ->inputData(data)
+            ->expectedOutputs(expectedResults)
+            ->run();
+        if( epoch % 100 == 0 ) {
+            cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+//        net->print();
+//           net->printWeightsAsCode();
+//            net->printBiasWeightsAsCode();
+        }
+//        float const*results = net->getResults();
+//        AccuracyHelper::printAccuracy( 2, 2, labels, results );
+    }
+    net->print();
+    cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+    float const*results = net->getResults();
+    AccuracyHelper::printAccuracy( N, numOutPlanes, labels, results );
+
+    int numCorrect = AccuracyHelper::calcNumRight( N, numOutPlanes, labels, net->getResults() );
+    cout << "accuracy: " << numCorrect << "/" << N << endl;
+    assertEquals( numCorrect, N );
+
+    float loss = net->calcLoss(expectedResults);
+    cout << "loss, E, " << loss << endl;
+    assertLessThan( 0.1, loss );
 
     delete net;
 }
