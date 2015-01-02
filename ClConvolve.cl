@@ -498,8 +498,8 @@ void kernel backprop_floats_2(
     const int n = outPlane2dId / gNumOutPlanes;
     const int outPlane = outPlane2dId % gNumOutPlanes;
 
-    const int upstreamRow = localId / gUpstreamBoardSize;
-    const int upstreamCol = localId % gUpstreamBoardSize;
+    const int outRow = localId / gOutBoardSize;
+    const int outCol = localId % gOutBoardSize;
 
     // each localid corresponds to one [upstreamRow][upstreamCol] combination
     // we assume that:
@@ -521,9 +521,11 @@ void kernel backprop_floats_2(
 
     // now we loop over the filter, and the output board...
     for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
-        int outRow = upstreamRow + gMargin - filterRow;
+//        int outRow = upstreamRow + gMargin - filterRow;
+        int upstreamRow = outRow - gMargin + filterRow;
         for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
-            int outCol = upstreamCol + gMargin - filterCol;
+            int upstreamCol = outCol - gMargin + filterCol;
+//            int outCol = upstreamCol + gMargin - filterCol;
 //            float thiswchange = 0;
             int resultIndex = outRow * gOutBoardSize + outCol;
             float error = _errorBoard[resultIndex];
@@ -532,30 +534,34 @@ void kernel backprop_floats_2(
             int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
             float upstreamResult = _upstreamBoard[upstreamDataIndex];
             float thisimagethiswchange = upstreamResult * activationDerivative * error;
-            _weightReduceArea[localId] = localId < gUpstreamBoardSizeSquared ? thisimagethiswchange : 0;
-/*
-            barrier(CLK_LOCAL_MEM_FENCE);
-            for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
-//                float other = _weightReduceArea[ localId + offset ];
-//                float mine = _weightReduceArea[ localId ];
-                if( localId < offset ) {
-                    _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
-                }
-                barrier(CLK_LOCAL_MEM_FENCE);
+            if( localId < gOutBoardSizeSquared ) {
+                _weightReduceArea[localId] = thisimagethiswchange;
             }
+
+//            barrier(CLK_LOCAL_MEM_FENCE);
+//            for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
+////                float other = _weightReduceArea[ localId + offset ];
+////                float mine = _weightReduceArea[ localId ];
+//                if( localId < offset ) {
+//                    _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
+//                }
+                barrier(CLK_LOCAL_MEM_FENCE);
+//            }
             if( localId == 0 ) { // maybe can remove this if? leave for now, so fewer bugs :-)
                 _weightChanges[filterRow * gFilterSize + filterCol] = _weightReduceArea[0];
             }
-//            flothiswchange += thisimagethiswchange;
-//            _weightChanges*/
+////            flothiswchange += thisimagethiswchange;
+////            _weightChanges
         }
     }
+    barrier(CLK_LOCAL_MEM_FENCE);
     // oh, we have to reduce again, over n and stuff...
     // let's test with a single example and upplane and filter first :-)
     // so, we just copy it in for now :-)
     if( localId < gFilterSizeSquared ) {
-//        weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
-        weightChangesGlobal[globalId] = - learningRateMultiplier * _weightReduceArea[localId];
+//        weightChangesGlobal[globalId] = gMargin;
+        weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
+//        weightChangesGlobal[localId] = - learningRateMultiplier * _weightReduceArea[localId];
     }   
 //    weightChangesGlobal[globalId] = resultsGlobal[localId];
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
