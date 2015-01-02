@@ -417,14 +417,14 @@ void kernel backprop_floats( const float learningRateMultiplier,
     float thiswchange = 0;
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    int outRow = 0;
-    while( outRow < outBoardSize ) {
-        int upstreamRow = outRow - margin + filterRow;
-        int outCol = 0;
-        while( outCol < outBoardSize ) {
-            int upstreamCol = outCol - margin + filterCol;
-            int n = 0;
-            while( n < batchSize ) {
+    int n = 0;
+    while( n < batchSize ) {
+        int outRow = 0;
+        while( outRow < outBoardSize ) {
+            int upstreamRow = outRow - margin + filterRow;
+            int outCol = 0;
+            while( outCol < outBoardSize ) {
+                int upstreamCol = outCol - margin + filterCol;
                 int resultIndex = ( ( n * numPlanes 
                           + outPlane ) * outBoardSize
                           + outRow ) * outBoardSize
@@ -440,11 +440,11 @@ void kernel backprop_floats( const float learningRateMultiplier,
                 float thisimagethiswchange = upstreamResult * activationDerivative *
                     error;
                 thiswchange += thisimagethiswchange;
-                n++;
+                outCol++;
             }
-            outCol++;
+            outRow++;
         }
-        outRow++;
+        n++;
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
