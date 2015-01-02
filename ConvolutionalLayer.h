@@ -388,7 +388,10 @@ public:
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernelBackPropWeights->run_1d(globalSize, workgroupsize);
+
         weightChangesWrapper->copyToHost();
+//        cl->finish();
+
 //        timer.timeCheck("backPropGpu");
         delete imagesWrapper;
         delete resultsWrapper;

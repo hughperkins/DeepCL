@@ -390,11 +390,23 @@ global const float*biases,
 // results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000 = 6MB, or 46KB per image,
 //                                                            
 //                  if w updates are per image,then 25600*128 = 3.3 million
-// globalid is for: [outPlane][upstreamPlane][filterRow][filterCol]
 // eg 32 * 32 * 5 * 5 = 25600 ...
 // then we are aggregating over [outRow][outCol][n]
 //      eg 19 * 19 * 128 = 46208
 // derivtype: 0=relu 1=tanh
+// outboards(eg 128x32x28x28), errors (eg 128x28x28), upstreamboards (eg 128x32x28x28) => weightchanges (eg 32x32x28x28)
+// if break for per-example, per-filter:
+// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+//             784 3k         784 3k                 25088 100k                800 3k
+// if break for per-filter:
+// outboard(eg 128x28x28), error (128x28x28), upstreamboard(128x32x28x28) => weightchanges(32x32x5x5)
+//                350k           350k                 12.8MB                   100k
+// if break for per-example:
+// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+//                3k             3k                 100k                       3k
+//    note that weightchanges will need to be summed over 128 input boards
+//
+// globalid is for: [outPlane][upstreamPlane][filterRow][filterCol]
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
@@ -417,13 +429,10 @@ void kernel backprop_floats( const float learningRateMultiplier,
     float thiswchange = 0;
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    int n = 0;
-    while( n < batchSize ) {
-        int outRow = 0;
-        while( outRow < outBoardSize ) {
+    for( int n = 0; n < batchSize; n++ ) {
+        for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
             int upstreamRow = outRow - margin + filterRow;
-            int outCol = 0;
-            while( outCol < outBoardSize ) {
+            for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
                 int upstreamCol = outCol - margin + filterCol;
                 int resultIndex = ( ( n * numPlanes 
                           + outPlane ) * outBoardSize
@@ -440,15 +449,71 @@ void kernel backprop_floats( const float learningRateMultiplier,
                 float thisimagethiswchange = upstreamResult * activationDerivative *
                     error;
                 thiswchange += thisimagethiswchange;
-                outCol++;
             }
-            outRow++;
         }
-        n++;
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
     weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
+}
+#endif
+
+// if break for per-example, per-filter:
+// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+//             784 3k         784 3k                 25088 100k                800 3k
+// if break for per-example, per-filter, per-upstream:
+// outboard(eg 28x28), error (28x28), upstreamboard(28x28) => weightchanges(5x5)
+//             784 3k         784 3k                 784 3k                 25
+// n * outplane = 128 * 32 = 4096   , then loop over: [upstreamrow][upstreamcol]
+// in this version, globalid is structured as: [n][outPlane][upstreamPlane]
+// w is [upstreamPlane][filterRow][filterCol]
+#ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+void kernel backprop_floats_2( const float learningRateMultiplier,
+        const int batchSize, const int upstreamNumPlanes, const int numOutPlanes, 
+         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
+    const int globalId = get_global_id(0);
+
+    const int filterSizeSquared = filterSize * filterSize;
+    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
+
+    const int upstreamPlane = globalId % upstreamNumPlanes;
+    const int outPlane2dId = globalId / upstreamNumPlanes;
+    const int n = outPlane2dId / numOutPlanes;
+    const int outPlaneId = outPlane2dId % numOutPlanes;
+
+    const int halfFilterSize = filterSize >> 1;
+    const int margin = padZeros ? halfFilterSize : 0;
+/*
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    for( int n = 0; n < batchSize; n++ ) {
+        for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
+            int upstreamRow = outRow - margin + filterRow;
+            for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
+                int upstreamCol = outCol - margin + filterCol;
+                int resultIndex = ( ( n * numPlanes 
+                          + outPlane ) * outBoardSize
+                          + outRow ) * outBoardSize
+                          + outCol;
+                float error = errors[resultIndex];
+                float actualOutput = results[resultIndex];
+                float activationDerivative = ACTIVATION_DERIV( actualOutput);
+                int upstreamDataIndex = ( ( n * upstreamNumPlanes 
+                                 + upstreamPlane ) * upstreamBoardSize
+                                 + upstreamRow ) * upstreamBoardSize
+                                 + upstreamCol;
+                float upstreamResult = images[upstreamDataIndex];
+                float thisimagethiswchange = upstreamResult * activationDerivative *
+                    error;
+                thiswchange += thisimagethiswchange;
+            }
+        }
+    }
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
+*/
 }
 #endif
 

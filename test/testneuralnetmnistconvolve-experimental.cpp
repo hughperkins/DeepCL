@@ -79,7 +79,7 @@ public:
     string dataDir = "../data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 12800 * 4;
+    int numTrain = 12800 * 1;
     int numTest = 1280*4;
     int batchSize = 128;
     int numEpochs = 20;
@@ -157,6 +157,8 @@ void go(Config config) {
 //    }
 //    net->setBatchSize(batchSize);
 //    net->print();
+    timer.timeCheck("before learning start");
+    StatefulTimer::timeCheck("START");
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
         float loss = net->epochMaker()
             ->learningRate(config.learningRate)
