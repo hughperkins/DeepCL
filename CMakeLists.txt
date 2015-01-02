@@ -46,6 +46,7 @@ add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
 target_link_libraries( gtest pthread)
 
 add_executable( unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp test/testboardshelper.cpp test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
+test/testbackprop.cpp
 thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 
 target_link_libraries( unittests gtest )

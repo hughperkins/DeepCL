@@ -20,13 +20,13 @@ public:
             std::cout << "   " << it->first << ": " << it->second << std::endl;
         }
     }
-    void _dump() {
+    void _dump(bool force = false) {
         double totalTimings = 0;
         for( std::map< std::string, float >::iterator it = timeByState.begin(); it != timeByState.end(); it++ ) {
 //            std::cout << "   " << it->first << ": " << it->second << std::endl;
             totalTimings += it->second;
         }
-        if( totalTimings < 800 ) {
+        if( !force && totalTimings < 800 ) {
             return;
         }
         std::cout << "StatefulTimer readings:" << std::endl;
@@ -35,8 +35,8 @@ public:
         }
         timeByState.clear();
     }
-    static void dump() {
-        instance()->_dump();
+    static void dump(bool force = false) {
+        instance()->_dump(force);
     }
     static void timeCheck( std::string state ) {
         instance()->_timeCheck( state );

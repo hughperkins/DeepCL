@@ -386,8 +386,9 @@ global const float*biases,
 #endif
 
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
-// filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600
-// results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000
+// filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600 = 100k bytes, or 3.2KB per filter
+// results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000 = 6MB, or 46KB per image,
+//                                                            
 //                  if w updates are per image,then 25600*128 = 3.3 million
 // globalid is for: [outPlane][upstreamPlane][filterRow][filterCol]
 // eg 32 * 32 * 5 * 5 = 25600 ...

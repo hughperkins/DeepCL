@@ -255,11 +255,11 @@ public:
         float *biasWeightChanges = new float[getBiasWeightsSize()];
 //        backPropErrors1( learningRate, errors, weightChanges, biasWeightChanges, errorsForUpstream );
         StatefulTimer::instance()->timeCheck("    start backprop, layer " + toString( layerIndex ) );
-        backPropGpu( learningRate, errors, weightChanges );
+        backPropWeightsGpu( learningRate, errors, weightChanges );
         StatefulTimer::instance()->timeCheck("    done weight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("backpropgpu");
 //        doWeightsBackProp( learningRate, errors, weightChanges );
-        doBiasBackprop( learningRate, errors, biasWeightChanges );
+        doBiasBackpropCpu( learningRate, errors, biasWeightChanges );
         StatefulTimer::instance()->timeCheck("    done biasweight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("biasbackprop cpu");
 
@@ -268,7 +268,7 @@ public:
 //        float *errorsForUpstream2 = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
 //        timer.timeCheck("allocate arrays");
 
-//        calcErrorsForUpstream( errors, errorsForUpstream2 );
+//        calcErrorsForUpstreamCpu( errors, errorsForUpstream2 );
 //        timer.timeCheck("calcerrorsforupstream cpu");
 
 //        timer.timeCheck("calcerrorsforupstream gpu");
@@ -312,7 +312,7 @@ public:
         delete[] biasWeightChanges;
     }
 
-    void backPropGpu( float learningRate, float const*errors, float *weightChanges ) {
+    void backPropWeightsGpu( float learningRate, float const*errors, float *weightChanges ) {
 //        Timer timer;
         //void kernel backprop_floats_relu( 
         //        const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
@@ -380,7 +380,7 @@ public:
         delete weightsWrapper;
     }
 
-    void calcErrorsForUpstream( float const *errors, float *errorsForUpstream ) {
+    void calcErrorsForUpstreamCpu( float const *errors, float *errorsForUpstream ) {
 //        Timer timer;
         const int halfFilterSize = filterSize >> 1;
         const int margin = padZeros ? halfFilterSize : 0;
@@ -474,7 +474,7 @@ public:
         timer.timeCheck("did backprop to ourselves v2");
     }
 
-    void doBiasBackprop(float learningRate, float const *errors, float *biasWeightChanges ) {
+    void doBiasBackpropCpu(float learningRate, float const *errors, float *biasWeightChanges ) {
 //        Timer timer;
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         const bool debug = false;
