@@ -973,11 +973,11 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
     options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
     std::cout << "using kernel options: [" + options + "]" << std::endl;
 
-    float data[] = { 3.0f, 13,  5, 8,3,
-                    17,    19, -3, 2,1,
+    float data[] = { 3.0f, 13,  5, 8, 3,
+                    17,    19, -3, 2, 1,
                     2,     -4,  7, 0, -2,
-                    0,     6,   8, 9,4,
-                     1,   3,5,3,8 };
+                    0,     6,   8, 9, 4,
+                     1,   3,    5, 3, 8 };
 //    float weights[] = { 5.0f };
     float errors[] = { 7.0f, 2,-1,
                         0, -3,1,
@@ -988,8 +988,8 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
     float *weightChanges = new float[max(4,20)];
 
     float expectedResults[] = { -(3*7+13*2-1*5+0*17-3*19-1*3+2*2+1*4+0*7), -999, -999 , // 10
-                                -999, -999, -999,
-                                -999, -999, -999 };          //           -22
+                                -999, -(19*7-3*2-2*1+  0-3*7+0*1   +2*6-1*8+0), -999,
+                                -999, -999, -(7*7+0+2*1   +0-3*9+1*4   +5*2-1*3+0) };          //           -22
 
     OpenCLHelper cl;
     CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
