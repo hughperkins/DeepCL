@@ -514,7 +514,7 @@ void kernel backprop_floats_2(
         _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
         _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
     }
-    if( localId < gFilterSizeSquared ) {
+    if( localId < workgroupSize ) {
         _weightChanges[localId] = 0;
     }
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -538,15 +538,17 @@ void kernel backprop_floats_2(
                 _weightReduceArea[localId] = thisimagethiswchange;
             }
 
-//            barrier(CLK_LOCAL_MEM_FENCE);
-//            for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
+            barrier(CLK_LOCAL_MEM_FENCE);
+            for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
 ////                float other = _weightReduceArea[ localId + offset ];
 ////                float mine = _weightReduceArea[ localId ];
+//                bool shouldCopy = localId < offset && localId < gFilterSizeSquared;
 //                if( localId < offset ) {
-//                    _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
-//                }
+                if( localId + offset < gFilterSizeSquared ) {
+                    _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
+                }
                 barrier(CLK_LOCAL_MEM_FENCE);
-//            }
+            }
             if( localId == 0 ) { // maybe can remove this if? leave for now, so fewer bugs :-)
                 _weightChanges[filterRow * gFilterSize + filterCol] = _weightReduceArea[0];
             }
