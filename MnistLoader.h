@@ -19,8 +19,10 @@ public:
     static int **loadImage( string dir, string set, int idx, int *p_size ) {
         int imagesFilesize = 0;
         int labelsFilesize = 0;
-        unsigned char *imagesData = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
-        unsigned char *labelsData = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
+        char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
+        char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
+        unsigned char *imagesData = reinterpret_cast< unsigned char *>(imagesDataSigned);
+        unsigned char *labelsData = reinterpret_cast< unsigned char *>(labelsDataSigned);
 
         int numImages = readUInt( imagesData, 1 );
         int numRows = readUInt( imagesData, 2 );
@@ -34,14 +36,14 @@ public:
                 board[i][j] = (int)imagesData[idx * numRows * numCols + i * numCols + j];
             }
         }
-        delete[] imagesData;
-        delete[] labelsData;
+        delete[] imagesDataSigned;
+        delete[] labelsDataSigned;
         return board;
     }
     static int ***loadImages( string dir, string set, int *p_numImages, int *p_size ) {
         int imagesFilesize = 0;
-        unsigned char *imagesData = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
-
+        char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
+        unsigned char *imagesData = reinterpret_cast<unsigned char *>(imagesDataSigned);
         int totalNumImages = readUInt( imagesData, 1 );
         int numRows = readUInt( imagesData, 2 );
         int numCols = readUInt( imagesData, 3 );
@@ -57,13 +59,13 @@ public:
                 }
             }
         }
-        delete[] imagesData;
+        delete[] imagesDataSigned;
         return boards;
     }
     static int *loadLabels( string dir, string set, int *p_numImages ) {
         int labelsFilesize = 0;
-        unsigned char *labelsData = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
-
+        char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
+        unsigned char *labelsData = reinterpret_cast<unsigned char *>(labelsDataSigned);
         int totalNumImages = readUInt( labelsData, 1 );
       //  *p_numImages = min(100,totalNumImages);
         *p_numImages = totalNumImages;
@@ -72,7 +74,7 @@ public:
         for( int n = 0; n < *p_numImages; n++ ) {
            labels[n] = (int)labelsData[8 + n];
         }
-        delete[] labelsData;
+        delete[] labelsDataSigned;
         return labels;
     }
 
@@ -111,7 +113,7 @@ public:
         BoardHelper::deleteBoard( &tempBoard, boardSize );
     }
 
-    static unsigned int readUInt( unsigned char *data, int location ) {
+    static int readUInt( unsigned char *data, int location ) {
         unsigned int value = 0;
         for( int i = 0; i < 4; i++ ) {
             int thisbyte = data[location*4+i];
@@ -121,9 +123,9 @@ public:
         return value;
     }
 
-    static void writeUInt( unsigned char *data, int location, unsigned int value ) {
+    static void writeUInt( unsigned char *data, int location, int value ) {
         for( int i = 0; i < 4; i++ ) {
-            data[location*4+i] = (unsigned char)((value >> ((3-i)*8))&255);
+            data[location*4+i] = ((value >> ((3-i)*8))&255);
         }
     }
 };

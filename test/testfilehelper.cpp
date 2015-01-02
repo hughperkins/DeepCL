@@ -6,7 +6,6 @@ using namespace std;
 #include "FileHelper.h"
 #include "test/myasserts.h"
 
-//int main( int argc, char *argv[] ) {
 TEST( testfilehelper, testfilehelper ) {
     int N = 100000;
     float *somefloats = new float[N];
@@ -16,7 +15,7 @@ TEST( testfilehelper, testfilehelper ) {
     FileHelper::writeBinary("foo.dat", reinterpret_cast<unsigned char*>(somefloats), N * sizeof(float) );
     float *newfloats = new float[N];
     int bytesread = 0;
-    unsigned char *dataread = FileHelper::readBinary("foo.dat", &bytesread );
+    char *dataread = FileHelper::readBinary("foo.dat", &bytesread );
     for( int i = 0; i < N; i++ ) {
         newfloats[i] = reinterpret_cast<float*>(dataread)[i];
     }
@@ -24,6 +23,5 @@ TEST( testfilehelper, testfilehelper ) {
     for( int i = 0; i < N; i++ ) {
         assertEquals( somefloats[i], newfloats[i], 0.0001 );
     }  
-//    return 0;
 }
 

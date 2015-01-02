@@ -13,6 +13,7 @@
 #include "MyRandom.h"
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
+#include "stringhelper.h"
 
 class Layer {
 public:
@@ -166,10 +167,10 @@ public:
         return result;
     }
     virtual void backPropExpected( float learningRate, float const *expected ) {
-        throw std::runtime_error("backPropExpected not implemented for this layertype");
+        throw std::runtime_error("backPropExpected not implemented for this layertype, layerindex " + toString(layerIndex ) );
     }
     virtual void backPropErrors( float learningRate, float const *errors ) {
-        throw std::runtime_error("backproperrors not implemented for this layertype");
+        throw std::runtime_error("backproperrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
     }
     virtual int getWeightsSize() const {
         throw std::runtime_error("getWeightsSize not implemented for this layertype");

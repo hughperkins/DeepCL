@@ -6,6 +6,10 @@
 using namespace std;
 
 int main( int argc, char *argv[] ) {
+    if( argc != 5 ) {
+        cout << "Usage: " << argv[0] << " [mnistdir] [setname] [startindex] [num images]" << endl;
+        return -1;
+    }
     string mnistDir = argv[1];
     string setName = argv[2];
     int startIndex = atoi(argv[3]);

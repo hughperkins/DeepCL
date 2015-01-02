@@ -5,6 +5,7 @@
 #include <random>
 
 #include "gtest/gtest.h"
+#include "test/gtest_supp.h"
 
 #include "ConvolutionalLayer.h"
 #include "NeuralNet.h"
@@ -24,35 +25,55 @@ TEST( testbackprop, main ) {
     net->setBatchSize(128);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
-    int inputSize = net->layers[0]->getResultsSize();
-    float *input = new float[inputSize];
-    for( int i = 0; i < inputSize; i++ ) {
-        input[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+
+    int upstreamResultsSize = net->layers[0]->getResultsSize();
+    float *upstreamResults = new float[upstreamResultsSize];
+    for( int i = 0; i < upstreamResultsSize; i++ ) {
+        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(input);
-//    net->propagate( input );
-    StatefulTimer::timeCheck("after forward-propagate");
-    int resultsSize = layer1->getResultsSize();
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+
     int weightsSize = layer1->getWeightsSize();
-    float *errors = new float[resultsSize];
+    float *weights = new float[weightsSize];
+    for( int i = 0; i < weightsSize; i++ ) {
+        weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+    net->initWeights( 1, weights );
+
     float *weightChanges = new float[weightsSize];
+
+    int resultsSize = layer1->getResultsSize();
+    float *errors = new float[resultsSize];
     for( int i = 0; i < resultsSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+
+//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 20; i++ ) {
         StatefulTimer::timeCheck("before backprop");
         layer1->backPropWeightsGpu( 0.1f, errors, weightChanges );
+//        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
+//        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
         random.seed(0);
 //        for( int sample = 0; sample < 10; sample++ ) {
 //            int index = random() % weightsSize;
 //            cout << "weightChanges[" << index << "]=" << weightChanges[index] << endl;
 //        }
-        ASSERT_NEAR(-2.78677e-05,  weightChanges[33], 2.7e-5f * 0.001 );
-        ASSERT_NEAR( -2.49555e-05,  weightChanges[144], 2.5e-5f * 0.001 );
-        ASSERT_NEAR( -4.7395e-06,  weightChanges[339], 5e-6f * 0.001 );
+//        EXPECT_FLOAT_NEAR(3.81361e-05,  weightChanges[33], 0.01f );
+//        EXPECT_FLOAT_NEAR( -2.09972e-05,  weightChanges[144], 0.01f );
+//        EXPECT_FLOAT_NEAR( 1.44103e-05,  weightChanges[339], 0.01f );
+        EXPECT_NEAR(3.81361e-05,  weightChanges[33], 0.0000001f );
+        EXPECT_NEAR( -2.09972e-05,  weightChanges[144], 0.0000001f );
+        EXPECT_NEAR( 1.44103e-05,  weightChanges[339], 0.00000001f );
     }
     StatefulTimer::dump(true);
-    cout << "end" << endl;
+//    cout << "end" << endl;
+    delete[] errors;
+    delete[]weightChanges;
+    delete[]weights;
+    delete[] upstreamResults;
 }
     

@@ -13,22 +13,22 @@ add_library( ClConvolve SHARED ClConvolve.h OpenCLHelper/OpenCLHelper.cpp LayerM
    EpochMaker.cpp ConvolutionalLayer.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
-file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
+add_custom_command( 
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/OpenCLHelper.cpp ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/CLKernel.cpp
+    COMMAND git submodule update --init --recursive
+)
+add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
+add_dependencies( ClConvolve git_submodules_update )
 
 find_package(PNG)
 link_libraries(${PNG_LIBRARY})
 
 link_libraries(ClConvolve)
 
-add_custom_target( 
-    clfiles
-    cp ${CMAKE_CURRENT_SOURCE_DIR}/*.cl ${CMAKE_BINARY_DIR}
-)
-
-add_custom_target(
-    git-submodule-update
-    git submodule update --init --recursive
-)
+#add_custom_target(
+#    git-submodule-update
+#    git submodule update --init --recursive
+#)
 
 add_executable( testarraysquare test/testarraysquare.cpp )
 add_executable( testarraysquare_floats test/testarraysquare_floats.cpp )
@@ -40,7 +40,7 @@ add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp 
 add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve-experimental test/testneuralnetmnistconvolve-experimental.cpp stringhelper.cpp )
 
-add_dependencies( ClConvolve git-submodule-update )
+#add_dependencies( ClConvolve git-submodule-update )
 
 add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
 target_link_libraries( gtest pthread)
@@ -52,8 +52,15 @@ thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
-add_dependencies( unittests clfiles )
-add_dependencies( testneuralnetmnistconvolve clfiles )
-add_dependencies( test4dconvolve clfiles )
+file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
+
+add_custom_target( 
+    clfiles
+    cp ${CMAKE_CURRENT_SOURCE_DIR}/*.cl ${CMAKE_BINARY_DIR}
+)
+
+add_dependencies( ClConvolve clfiles )
+#add_dependencies( testneuralnetmnistconvolve clfiles )
+#add_dependencies( test4dconvolve clfiles )
 
 

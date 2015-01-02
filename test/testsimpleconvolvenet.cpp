@@ -380,6 +380,12 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_biased ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
+float weights1[] = {1.12739, 1.21476};
+float weights2[] = {-0.352846, 0.534554, -1.13343, -0.191175};
+float biasWeights1[] = {0.971267, 1.42629};
+float biasWeights2[] = {-0.071288, 0.443919};
+    net->initWeights(1, weights1, biasWeights1 );
+    net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
@@ -388,9 +394,13 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_biased ) {
             ->inputData(data)
             ->expectedOutputs(expectedResults)
             ->run();
-//        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+        if( epoch % 5 == 0 ) {
+//           net->printWeightsAsCode();
+//            net->printBiasWeightsAsCode();
+        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
+        }
 //        net->print();
-        float const*results = net->getResults();
+//        float const*results = net->getResults();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
 //    net->print();
@@ -451,7 +461,7 @@ TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(4)->biased()->insert();
 //    net->print();
-    for( int epoch = 0; epoch < 300; epoch++ ) {
+    for( int epoch = 0; epoch < 1000; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.1)
             ->batchSize(N)
@@ -646,7 +656,18 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
 //    net->print();
-    for( int epoch = 0; epoch < 500; epoch++ ) {
+float weights1[] = {-0.171255, 0.374466, -0.224289, -0.196481, 0.162787, 0.418841, 0.230909, 0.23731, -0.244594, -0.469993, 0.221895, -0.0145731, 0.163359, 0.276707, -0.533498, -0.376532, 0.275129, -0.298299, -0.162541, -0.497442, 0.0331104, 
+0.140816, 0.339377, -0.466528, -0.260578, -0.373026, -0.0151962};
+float weights2[] = {0.11266, 0.199489, 0.193306, -0.0574513, 0.266716, -0.271093, 0.0622974, 0.276959, 0.234103, -0.0329131, 0.111828, 0.255213, 0.0546736, -0.14267, -0.195783, 0.140402, -0.225388, 0.143696, 0.00776717, -0.216402, 0.13755, 
+-0.0404622, 0.321655, -0.218655, -0.140874, 0.0361279, 0.227149, -0.0224601, -0.0438027, 0.0945921, 0.264248, -0.212632, 0.125262, 0.303234, 0.265334, 0.0165108, -0.119786, 0.0967013, -0.316602, 0.0735333, -0.298583, 
+-0.131285, 0.158645, 0.0816884, 0.0191159, 0.233569, -0.0288674, 0.166787, 0.0839494, -0.232928, 0.32289, 0.259277, 0.28396, 0.0585126, 0.0419515, -0.315813, 0.32489, -0.208887, -0.157422, 0.223066, 0.235666, 
+-0.286893, -0.00949466, -0.0232266, 0.000597281, -0.28573, 0.23746, -0.12194, 0.211189, 0.114797, 0.334012, 0.195305, 0.0269026, 0.191523, -0.0801473, 0.323508, 0.214993, -0.0651319, 0.268872, -0.270865, 0.0842015
+};
+float biasWeights1[] = {0.224118, -0.246188, -0.22282};
+float biasWeights2[] = {-0.0863176, -0.227985, -0.147554};
+    net->initWeights(1, weights1, biasWeights1 );
+    net->initWeights(2, weights2, biasWeights2 );
+    for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.1)
             ->batchSize(N)
@@ -663,7 +684,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n6 ) {
 //        float const*results = net->getResults();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
-    net->print();
+//    net->print();
     cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( N, numOutPlanes, labels, results );
