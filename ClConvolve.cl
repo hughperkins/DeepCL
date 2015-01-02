@@ -533,6 +533,7 @@ void kernel backprop_floats_2(
             float upstreamResult = _upstreamBoard[upstreamDataIndex];
             float thisimagethiswchange = upstreamResult * activationDerivative * error;
             _weightReduceArea[localId] = localId < gUpstreamBoardSizeSquared ? thisimagethiswchange : 0;
+/*
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
 //                float other = _weightReduceArea[ localId + offset ];
@@ -546,16 +547,16 @@ void kernel backprop_floats_2(
                 _weightChanges[filterRow * gFilterSize + filterCol] = _weightReduceArea[0];
             }
 //            flothiswchange += thisimagethiswchange;
-//            _weightChanges
+//            _weightChanges*/
         }
     }
     // oh, we have to reduce again, over n and stuff...
     // let's test with a single example and upplane and filter first :-)
     // so, we just copy it in for now :-)
     if( localId < gFilterSizeSquared ) {
-        weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
+//        weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
+        weightChangesGlobal[globalId] = - learningRateMultiplier * _weightReduceArea[localId];
     }   
-//    weightChangesGlobal[globalId] = _resultBoard[localId];
 //    weightChangesGlobal[globalId] = resultsGlobal[localId];
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
