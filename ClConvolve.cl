@@ -514,7 +514,7 @@ void kernel backprop_floats_2(
         _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
         _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
     }
-    if( localId < workgroupSize ) {
+    if( localId < gOutBoardSizeSquared ) {
         _weightChanges[localId] = 0;
     }
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -539,7 +539,7 @@ void kernel backprop_floats_2(
             }
 
             barrier(CLK_LOCAL_MEM_FENCE);
-            for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
+            for( int offset = workgroupSize >> 1; offset > 0; offset >>= 1 ) {
 ////                float other = _weightReduceArea[ localId + offset ];
 ////                float mine = _weightReduceArea[ localId ];
 //                bool shouldCopy = localId < offset && localId < gFilterSizeSquared;
