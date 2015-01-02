@@ -412,6 +412,12 @@ public:
 //         global const float *resultsGlobal, global const float *errorsGlobal,
 //         global float *weightChangesGlobal ) {
 
+        int globalSize = getWeightsSize();
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+        int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+        std::cout << " workgroupsize " << workgroupsize << " globalsize " << globalSize << std::endl;
+
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
         CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
@@ -435,12 +441,8 @@ public:
             ->localFloats( boardSizeSquared )
             ->localFloats( boardSizeSquared )
             ->localFloats( filterSizeSquared )
-            ->localFloats( upstreamBoardSizeSquared );
+            ->localFloats( workgroupsize );
 
-        int globalSize = getWeightsSize();
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-        int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         kernelBackPropWeights2->run_1d(globalSize, workgroupsize);
 
         weightChangesWrapper->copyToHost();

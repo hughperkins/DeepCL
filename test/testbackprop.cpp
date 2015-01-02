@@ -182,17 +182,17 @@ TEST( testbackprop, board19_1plane_1filter ) {
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
-//        random.seed(0);
-//        for( int sample = 0; sample < 10; sample++ ) {
-//            int index = random() % weightsSize;
+        random.seed(0);
+        for( int sample = 0; sample < 10; sample++ ) {
+            int index = random() % weightsSize;
 //            cout << "weightChanges[" << index << "]=" << weightChanges[index] << endl;
-//        }
+        }
 //        if( false ) {
-            EXPECT_NEAR(-1.27681e-05,  weightChanges[44], 0.0000001f );
-            EXPECT_NEAR( -6.73702e-06,  weightChanges[239], 0.0000001f );
-            EXPECT_NEAR( -3.82719e-05,  weightChanges[533], 0.00000001f );
-            EXPECT_NEAR( 9.76768e-06,  weightChanges[160], 0.00000001f );
-            EXPECT_NEAR( -1.12927e-05,  weightChanges[163], 0.00000001f );
+            EXPECT_NEAR(-8.80638e-06,  weightChanges[19], 0.0000001f );
+            EXPECT_NEAR( -1.43798e-05,  weightChanges[14], 0.0000001f );
+            EXPECT_NEAR( 0.000190677,  weightChanges[8], 0.00000001f );
+            EXPECT_NEAR( -4.81357e-05,  weightChanges[10], 0.00000001f );
+            EXPECT_NEAR( 0.000189767,  weightChanges[13], 0.00000001f );
 //        }
     }
     StatefulTimer::dump(true);

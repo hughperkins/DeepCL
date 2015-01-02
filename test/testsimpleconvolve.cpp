@@ -598,8 +598,8 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize2 ) {
 //                        5, 12 };
     float *weightChanges = new float[max(4,20)];
 
-    float expectedResults[] = { -3 * 7, - 13 * 2, // -21, -26
-                                 -17*4,-19*4 };   // -68, -76
+    float expectedResults[] = { -3 * 7 - 13 * 2 // -191
+                                 -17*4 -19*4 };   // 
 
     OpenCLHelper cl;
     CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );

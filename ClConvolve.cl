@@ -544,7 +544,7 @@ void kernel backprop_floats_2(
 ////                float mine = _weightReduceArea[ localId ];
 //                bool shouldCopy = localId < offset && localId < gFilterSizeSquared;
 //                if( localId < offset ) {
-                if( localId + offset < gFilterSizeSquared ) {
+                if( localId + offset < gOutBoardSizeSquared ) {
                     _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
                 }
                 barrier(CLK_LOCAL_MEM_FENCE);
