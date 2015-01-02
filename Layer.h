@@ -33,12 +33,16 @@ public:
     const int layerIndex;
     bool weOwnResults;
 
+    const int boardSizeSquared;
+    const int upstreamBoardSizeSquared;
+
     int batchSize;
 
     Layer( Layer *previousLayer, LayerMaker const*maker ) :
         previousLayer( previousLayer ),
         numPlanes( maker->getNumPlanes() ),
         boardSize( maker->getBoardSize() ),
+        boardSizeSquared( boardSize * boardSize ),
         results(0),
         weights(0),
         biasWeights(0),
@@ -46,6 +50,7 @@ public:
         activationFunction( maker->_activationFunction ),
         upstreamBoardSize( previousLayer == 0 ? 0 : previousLayer->boardSize ),
         upstreamNumPlanes( previousLayer == 0 ? 0 : previousLayer->numPlanes ),
+        upstreamBoardSizeSquared( upstreamBoardSize * upstreamBoardSize ),
         layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
         weOwnResults(false) {
     }

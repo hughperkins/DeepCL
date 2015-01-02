@@ -407,6 +407,7 @@ global const float*biases,
 //    note that weightchanges will need to be summed over 128 input boards
 //
 // globalid is for: [outPlane][upstreamPlane][filterRow][filterCol]
+// per-thread looping over [n][outRow][outCol]
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
@@ -465,55 +466,100 @@ void kernel backprop_floats( const float learningRateMultiplier,
 // outboard(eg 28x28), error (28x28), upstreamboard(28x28) => weightchanges(5x5)
 //             784 3k         784 3k                 784 3k                 25
 // n * outplane = 128 * 32 = 4096   , then loop over: [upstreamrow][upstreamcol]
-// in this version, globalid is structured as: [n][outPlane][upstreamPlane]
-// w is [upstreamPlane][filterRow][filterCol]
+// in this version, globalid is structured as: [n][outPlane][upstreamPlane][upstreamRow][upstreamCol]
+//                  localid is structured as [upstreamRow][upstreamCol]
+//                   can each thread should loop over .... : [filterRow][filterCol]
+//        (outRow/outCol are locked to upstreamRow/upstreamCol)
+// w is [filterRow][filterCol]
+// this assumes that filterSizeSquared will fit into one workgroup
+//  - which is true for Go-boards, but not for MNIST :-P
+//      - so we will test with cropped MNIST images, 19x19, same as go boards :-)
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-void kernel backprop_floats_2( const float learningRateMultiplier,
-        const int batchSize, const int upstreamNumPlanes, const int numOutPlanes, 
-         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
+void kernel backprop_floats_2( 
+    const float learningRateMultiplier, const int batchSize, 
+     global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
+     global float *weightChangesGlobal,
+    local float *_upstreamBoard, local float *_resultBoard, local float *_errorBoard, 
+    local float *_weightChanges, local float *_weightReduceArea ) {
+
+        // required (minimum...) sizes for local arrays:
+        // upstreamboard: upstreamBoardSizeSquared
+        // resultboard: outBoardSizeSquared
+        // errorBoard: outBoardSizeSquaread
+        // weightChanges: filterSizeSquared
+        // weightReduceArea: upstreamBoardSizeSquared, or workflowSize, to be decided :-)
     const int globalId = get_global_id(0);
+    const int localId = get_local_id(0);
+    const int workgroupSize = get_local_size(0);
 
-    const int filterSizeSquared = filterSize * filterSize;
-    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
+    const int upstreamBoard2dId = globalId / gUpstreamBoardSizeSquared;
+    const int upstreamPlane = upstreamBoard2dId % gUpstreamNumPlanes;
+    const int outPlane2dId = upstreamBoard2dId / gUpstreamNumPlanes;
+    const int n = outPlane2dId / gNumOutPlanes;
+    const int outPlane = outPlane2dId % gNumOutPlanes;
 
-    const int upstreamPlane = globalId % upstreamNumPlanes;
-    const int outPlane2dId = globalId / upstreamNumPlanes;
-    const int n = outPlane2dId / numOutPlanes;
-    const int outPlaneId = outPlane2dId % numOutPlanes;
+    const int upstreamRow = localId / gUpstreamBoardSize;
+    const int upstreamCol = localId % gUpstreamBoardSize;
 
-    const int halfFilterSize = filterSize >> 1;
-    const int margin = padZeros ? halfFilterSize : 0;
-/*
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
-    //       aggregate over:  [outRow][outCol][n]
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
-            int upstreamRow = outRow - margin + filterRow;
-            for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
-                int upstreamCol = outCol - margin + filterCol;
-                int resultIndex = ( ( n * numPlanes 
-                          + outPlane ) * outBoardSize
-                          + outRow ) * outBoardSize
-                          + outCol;
-                float error = errors[resultIndex];
-                float actualOutput = results[resultIndex];
-                float activationDerivative = ACTIVATION_DERIV( actualOutput);
-                int upstreamDataIndex = ( ( n * upstreamNumPlanes 
-                                 + upstreamPlane ) * upstreamBoardSize
-                                 + upstreamRow ) * upstreamBoardSize
-                                 + upstreamCol;
-                float upstreamResult = images[upstreamDataIndex];
-                float thisimagethiswchange = upstreamResult * activationDerivative *
-                    error;
-                thiswchange += thisimagethiswchange;
+    // each localid corresponds to one [upstreamRow][upstreamCol] combination
+    // we assume that:
+    // filterSize <= upstreamBoardSize (reasonable... :-) )
+    // outBoardSize <= upstreamBoardSize (true... unless we have a filter with even size, and padZeros = true )
+    const int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+    if( localId < gUpstreamBoardSizeSquared ) {
+        _upstreamBoard[localId] = upstreamBoardsGlobal[upstreamBoardGlobalOffset + localId];
+    }
+    int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
+    if( localId < gOutBoardSizeSquared ) {
+        _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
+        _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
+    }
+    if( localId < gFilterSizeSquared ) {
+        _weightChanges[localId] = 0;
+    }
+    barrier(CLK_LOCAL_MEM_FENCE);
+
+    // now we loop over the filter, and the output board...
+    for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
+        int outRow = upstreamRow + gMargin - filterRow;
+        for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
+            int outCol = upstreamCol + gMargin - filterCol;
+//            float thiswchange = 0;
+            int resultIndex = outRow * gOutBoardSize + outCol;
+            float error = _errorBoard[resultIndex];
+            float actualOutput = _resultBoard[resultIndex];
+            float activationDerivative = ACTIVATION_DERIV( actualOutput);
+            int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
+            float upstreamResult = _upstreamBoard[upstreamDataIndex];
+            float thisimagethiswchange = upstreamResult * activationDerivative * error;
+            _weightReduceArea[localId] = localId < gUpstreamBoardSizeSquared ? thisimagethiswchange : 0;
+            barrier(CLK_LOCAL_MEM_FENCE);
+            for( int offset = workgroupSize / 2; offset > 0; offset >>= 1 ) {
+//                float other = _weightReduceArea[ localId + offset ];
+//                float mine = _weightReduceArea[ localId ];
+                if( localId < offset ) {
+                    _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
+                }
+                barrier(CLK_LOCAL_MEM_FENCE);
             }
+            if( localId == 0 ) { // maybe can remove this if? leave for now, so fewer bugs :-)
+                _weightChanges[filterRow * gFilterSize + filterCol] = _weightReduceArea[0];
+            }
+//            flothiswchange += thisimagethiswchange;
+//            _weightChanges
         }
     }
+    // oh, we have to reduce again, over n and stuff...
+    // let's test with a single example and upplane and filter first :-)
+    // so, we just copy it in for now :-)
+    if( localId < gFilterSizeSquared ) {
+        weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
+    }   
+//    weightChangesGlobal[globalId] = _resultBoard[localId];
+//    weightChangesGlobal[globalId] = resultsGlobal[localId];
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
-*/
+//    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
 }
 #endif
 
