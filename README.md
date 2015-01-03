@@ -34,14 +34,14 @@ Eg:
 net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 ```
 
-* Again, you can change the number of filters in the name, and their size.  If you want, you can use any of the following options:
+* You can change the number of filters, and their size.  If you want, you can use any of the following options:
   * `->padZeros()`: pad the input board with zeros, so the output board is same size as the input
-  * add `->biased()` turn on bias
-  * add `->biased(1)` same as `->biased()`
-  * add `->biased(0)` turn off bias (default)
-  * add `->linear()` choose linear activation
-  * add `->relu()` choose Relu activation
-  * add `->tanh()` choose Tanh activation (current default, but defaults can change...)
+  * `->biased()` turn on bias
+  * `->biased(1)` same as `->biased()`
+  * `->biased(0)` turn off bias (default)
+  * `->linear()` choose linear activation
+  * `->relu()` choose Relu activation
+  * `->tanh()` choose Tanh activation (current default, but defaults can change...)
 * convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
 *Fully connected layers*
@@ -158,8 +158,8 @@ net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->bias
 * Network details:
   * The first layer is a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is using Relu
   * The second layer looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
-  * There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](https://github.com/hughperkins/ClConvolve/blob/master/test/testneuralnetmnistconvolve-experimental.cpp)
-* You can build and run it as follows:
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](https://github.com/hughperkins/ClConvolve/blob/master/test/testneuralnetmnistconvolve-experimental.cpp)
+  * You can build and run it as follows:
 ```
 make testneuralnetconvolve-experimental
 ./testneuralnetconvolve-experimental numfilters=32
