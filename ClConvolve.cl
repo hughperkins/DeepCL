@@ -843,8 +843,8 @@ void kernel backprop_floats_withscratch(
         for( int i = 0; i < numLoopsForResults; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutBoardSizeSquared ) {
-                _resultBoard[thisOffset ] = results[resultBoardGlobalOffset + thisOffset];
-                _errorBoard[thisOffset ] = errors[resultBoardGlobalOffset + thisOffset];
+                _resultBoard[thisOffset ] = ( ACTIVATION_DERIV( results[resultBoardGlobalOffset + thisOffset] ) )
+                    * errors[resultBoardGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -853,13 +853,10 @@ void kernel backprop_floats_withscratch(
             for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
                 int upstreamCol = outCol - gMargin + filterCol;
                 int resultIndex = outRow * gOutBoardSize + outCol;
-                float error = _errorBoard[resultIndex];
-                float actualOutput = _resultBoard[resultIndex];
-                float activationDerivative = ACTIVATION_DERIV( actualOutput);
+                float activationDerivative = _resultBoard[resultIndex];
                 int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
                 float upstreamResult = _imageBoard[upstreamDataIndex];
-                float thisimagethiswchange = upstreamResult * activationDerivative *
-                    error;
+                float thisimagethiswchange = upstreamResult * activationDerivative;
                 thiswchange += thisimagethiswchange;
             }
         }
