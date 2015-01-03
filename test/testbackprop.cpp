@@ -127,7 +127,7 @@ TEST( testbackprop, board19 ) {
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 40; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu3( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpu4( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
