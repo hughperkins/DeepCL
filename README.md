@@ -134,7 +134,8 @@ Sample/test
 
 How to check for correctness, and speed?  Perhaps the easiest way is to train against MNIST
 * First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
-```cd ../data
+```
+cd ../data
 mkdir mnist
 cd mnist
 wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
