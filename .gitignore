@@ -31,3 +31,7 @@ build/
 
 data/mnist
 
+# vi
+*.swp
+
+
