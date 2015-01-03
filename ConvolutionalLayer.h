@@ -617,7 +617,7 @@ public:
         return true;
     }
 
-    void calcErrorsForUpstreamGpu(  float const *errors, float *errorsForUpstream  ) {
+    void calcErrorsForUpstreamGpu(  float const *const errors, float *const errorsForUpstream  ) {
         CLWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
         CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
         CLWrapper *errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
