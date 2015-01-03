@@ -507,6 +507,7 @@ void kernel backprop_floats_2(
     // filterSize <= upstreamBoardSize (reasonable... :-) )
     // outBoardSize <= upstreamBoardSize (true... unless we have a filter with even size, and padZeros = true )
     const int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+
     if( localId < gUpstreamBoardSizeSquared ) {
         _upstreamBoard[localId] = upstreamBoardsGlobal[upstreamBoardGlobalOffset + localId];
     }
@@ -563,8 +564,9 @@ void kernel backprop_floats_2(
         weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
     }
 
-//    if( localId < gFilterSizeSquared ) {
-//        weightChangesGlobal[ globalId ] = _weightReduceArea[globalId];
+//    if( localId < gUpstreamBoardSizeSquared ) {
+//        weightChangesGlobal[ globalId ] = upstreamBoardsGlobal[globalId];
+//        weightChangesGlobal[ globalId ] = _errorBoard[globalId];
 //    }
 //    weightChangesGlobal[globalId] = resultsGlobal[localId];
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
