@@ -11,11 +11,11 @@ TEST(testgtestsupp, main ) {
 
 //    AssertFoo( 1.315f, one );
 //    AssertFoo( 1.317f, one );
-    EXPECT_PRED2( floatsNear, 1.314f, one );
-    EXPECT_PRED2( floatsNear, 1.315f, one );
-    EXPECT_PRED2( floatsNear, 1.318f, one );
-    EXPECT_PRED2( floatsNear, 1.328f, one );
-    EXPECT_PRED2( floatsNear, 1.428f, one );
+//    EXPECT_PRED2( floatsNear, 1.314f, one );
+//    EXPECT_PRED2( floatsNear, 1.315f, one );
+//    EXPECT_PRED2( floatsNear, 1.318f, one );
+//    EXPECT_PRED2( floatsNear, 1.328f, one );
+//    EXPECT_PRED2( floatsNear, 1.428f, one );
 
     EXPECT_PRED_FORMAT2( AssertFloatsNear, 1.3141f, one );
     EXPECT_PRED_FORMAT2( AssertFloatsNear, 1.314f, one );
