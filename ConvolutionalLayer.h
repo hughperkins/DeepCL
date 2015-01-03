@@ -399,7 +399,7 @@ public:
         int numWorkgroups = upstreamNumPlanes * numPlanes;
         int globalSize = workgroupsize * numWorkgroups;
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-        std::cout << " backpropgpuwithscratch, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
+//        std::cout << " backpropgpuwithscratch, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
 
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
