@@ -249,6 +249,57 @@ TEST( testbackprop, board19_1plane_1filter_batchsize128 ) {
     delete[] upstreamResults;
 }
 
+TEST( testbackprop, board19_1plane_2filter_batchsize128 ) {
+    mt19937 random;
+    random.seed(0); // so always gives same results
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+    net->convolutionalMaker()->numFilters(2)->filterSize(5)->tanh()->biased()->insert();
+//    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
+    net->setBatchSize(128);
+    StatefulTimer::timeCheck("start");
+    ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
+
+    int upstreamResultsSize = net->layers[0]->getResultsSize();
+    float *upstreamResults = new float[upstreamResultsSize];
+    for( int i = 0; i < upstreamResultsSize; i++ ) {
+        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+
+    int weightsSize = layer1->getWeightsSize();
+    float *weightChanges = new float[weightsSize];
+
+    int resultsSize = layer1->getResultsSize();
+    float *errors = new float[resultsSize];
+    for( int i = 0; i < resultsSize; i++ ) {
+        errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+
+    for( int i = 0 ; i < 1; i++ ) {
+        StatefulTimer::timeCheck("before backprop");
+        layer1->backPropWeightsGpu3( 0.1f, errors, weightChanges );
+        StatefulTimer::timeCheck("after backprop");
+
+        printSamples( weightsSize, weightChanges );
+
+        EXPECT_FLOAT_NEAR( 3.31051e-05, weightChanges[44] );
+        EXPECT_FLOAT_NEAR( 1.59785e-05, weightChanges[39] );
+        EXPECT_FLOAT_NEAR( 9.45172e-06, weightChanges[33] );
+        EXPECT_FLOAT_NEAR( 4.63717e-06, weightChanges[10] );
+        EXPECT_FLOAT_NEAR( 2.23327e-05, weightChanges[13] );
+
+
+
+    }
+    StatefulTimer::dump(true);
+
+    delete[] errors;
+    delete[]weightChanges;
+//    delete[]weights;
+    delete[] upstreamResults;
+}
+
 TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5 ) {
     mt19937 random;
     random.seed(0); // so always gives same results

@@ -626,8 +626,8 @@ void kernel backprop_floats_3(
     const int workgroupSize = get_local_size(0);
     const int workgroupId = get_group_id(0);
 
-    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
     const int outPlane = workgroupId / gUpstreamNumPlanes;
+    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
 
     const int outRow = localId / gOutBoardSize;
     const int outCol = localId % gOutBoardSize;
@@ -693,7 +693,7 @@ void kernel backprop_floats_3(
     // each thread copies one element
     // so need a fence :-)
     barrier(CLK_LOCAL_MEM_FENCE);
-    const int weightBoardGlobalOffset = outPlane * gUpstreamNumPlanes + upstreamPlane;
+    const int weightBoardGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;
     if( localId < gFilterSizeSquared ) {
         weightChangesGlobal[weightBoardGlobalOffset + localId ] = - learningRateMultiplier * _weightChanges[ localId ];
     }
