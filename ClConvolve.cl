@@ -475,6 +475,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
 //  - which is true for Go-boards, but not for MNIST :-P
 //      - so we will test with cropped MNIST images, 19x19, same as go boards :-)
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+#ifdef gOutBoardSize // for previous tests that dont define it
 void kernel backprop_floats_2( 
     const float learningRateMultiplier, const int batchSize, 
      global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
@@ -513,9 +514,7 @@ void kernel backprop_floats_2(
     if( localId < gOutBoardSizeSquared ) {
         _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
         _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
-    }
-    if( localId < gOutBoardSizeSquared ) {
-        _weightChanges[localId] = 0;
+        _weightReduceArea[localId] = 0;
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -570,6 +569,7 @@ void kernel backprop_floats_2(
     //       aggregate over:  [outRow][outCol][n]
 //    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
 }
+#endif
 #endif
 
 // handle lower layer...

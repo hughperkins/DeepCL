@@ -48,9 +48,12 @@ target_link_libraries( gtest pthread)
 add_executable( unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp test/testboardshelper.cpp test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
 test/testbackprop.cpp
 thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
-
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
+
+add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
+target_link_libraries( testgtestsupp gtest )
+target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
 
