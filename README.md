@@ -59,7 +59,6 @@ Train the net
 -------------
 
 ```
-net->print();
 for( int epoch = 0; epoch < 12; epoch++ ) {
     net->epochMaker()
        ->learningRate(0.1)->batchSize(128)->numExamples(60000)
