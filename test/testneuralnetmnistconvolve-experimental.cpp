@@ -84,6 +84,8 @@ public:
     int batchSize = 128;
     int numEpochs = 20;
     int numFilters = 16;
+    int numLayers = 1;
+    int filterSize = 5;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -140,8 +142,11 @@ void go(Config config) {
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
 //    net->convolutionalMaker()->numFilters(32)->filterSize(5)->rel()->biased()->insert();
-    net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
+    for( int i = 0; i < config.numLayers; i++ ) {
+//        cout << "adding convolutional layer" << endl;
+        net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->insert();
+    }
+    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->boardSize)->tanh()->biased(config.biased)->insert();
 //    net->fullyConnectedMaker()->planes(10)->boardSize(1)->tanh()->biased(config.biased)->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){
@@ -227,7 +232,9 @@ int main( int argc, char *argv[] ) {
         cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
         cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
+        cout << "    numlayers=[number convolutional layers] (" << config.numLayers << ")" << endl;
         cout << "    numfilters=[number filters] (" << config.numFilters << ")" << endl;
+        cout << "    filtersize=[filter size] (" << config.filterSize << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     } 
@@ -248,6 +255,8 @@ int main( int argc, char *argv[] ) {
            if( key == "numepochs" ) config.numEpochs = atoi(value);
            if( key == "biased" ) config.biased = atoi(value);
            if( key == "numfilters" ) config.numFilters = atoi(value);
+           if( key == "numlayers" ) config.numLayers = atoi(value);
+           if( key == "filtersize" ) config.filterSize = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
        }
     }

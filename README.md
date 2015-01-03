@@ -107,15 +107,18 @@ Pre-requisites
 To build
 ========
 
-    git clone --recursive https://github.com/hughperkins/ClConvolve.git
-    cd ClConvolve
-    mkdir build
-    cd build
-    cmake ..
-    make
+```
+git clone --recursive https://github.com/hughperkins/ClConvolve.git
+cd ClConvolve
+mkdir build
+cd build
+cmake ..
+make
+```
 
 Note:
 * dont forget the `--recursive`, when you clone, else when you build it will complain about OpenCLHelper missing
+* you might need to play around with commands such as `git submodule update` occasionally, to pull down new OpenCLHelper updates
 
 Linking
 =======
@@ -129,22 +132,9 @@ ClConvolve.cl should be in the current working directory at the time that you ca
 Sample/test
 ===========
 
-*Neural net API*
-
-* There are various samples in the [test](test) subdirectory.  The following are currently the most relevant:
-  * `testlogicaloperators.cpp`  - use 1 or 2-layer fully-connected network, or 1 or 2-layer convolutional network, to learn and/or/xor
-  * `testsimpleconvolve.cpp`      - check OpenCL convolve working, see how to use this
-  * `testsimpleconvolvenet.cpp`   - use 1 layer convolutional network to learn toy 3x3 boards
-  * `testneuralnetmnist.cpp`        - use 1 layer fully connected layer to learn MNIST
-  * `testneuralnetmnistconvolve.cpp`  - learn mnist training images, using a single convolutional layer, then check against test set.  You can run it as follows, to get 82.3% test accuracy:
-```
-./testneuralnetmnistconvolve numtrain=10000 numtest=1000 batchsize=100 learningrate=0.1 biased=1 numepochs=20
-```
-... or you can experiment with the parameters.  Note that numtrain and numtest must be exact multiples of the batchsize
-
-You will need the mnist data.  On linux, from the `build` directory, you can download it as follows:
-```
-cd ../data
+How to check for correctness, and speed?  Perhaps the easiest way is to train against MNIST
+* First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
+```cd ../data
 mkdir mnist
 cd mnist
 wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
@@ -154,14 +144,30 @@ wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
 gunzip *.gz
 cd ../../build
 ```
+* Then, you can train against MNIST using a 2-layer net created as follows:
+```
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
+```
+* The first layer is a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is using Relu
+* The second layer looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](https://github.com/hughperkins/ClConvolve/blob/master/test/testneuralnetmnistconvolve-experimental.cpp)
+* You can build and run it as follows:
+```
+make testneuralnetconvolve-experimental
+./testneuralnetconvolve-experimental numfilters=32
+```
+* For me, after 12 epochs, the test accuracy was 97.3%, which seems somewhat plausibly correct, compared to other implementations [MNIST database](http://yann.lecun.com/exdb/mnist/)
+* Each epoch took 33 seconds, on an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, for 6 minutes total training.
 
-Testing, checking for correctness
-=================================
+Unit-testing
+============
 
 Concepts
 --------
 
-* This is a challenge, with neural nets, because:
+* Unit-testing is a challenge, with neural nets, because:
   * training is stochastic
   * there are many local minima
 * So, if you run a net once, you might get a MSE loss of 0.000001, and a perfect accuracy, but if you run it 10 times, 
@@ -180,15 +186,23 @@ weights from 15-20 iterations higher up, which we've seen converge on the global
 better than for example 0.0001 (for toy problems)
 * Result: repeatable, fast, unit tests
 
-Technical
----------
+Unit-testing implementation
+---------------------------
 
-* Started to prototype using googletest for unit-tests
+* Using googletest, which:
+  * compiles quickly (cf Boost test)
+  * gives awesome colored output
+  * lets you choose which tests to run using `--gtest_filter=` option
 * Dont need to install anything: it's included in the `thirdparty` directory, and added to the build automatically
 * To run the unit tests:
 ```
 make unittests
 ./unittests
+```
+* To run just the unittests for eg `testbackprop`, do:
+```
+make unittests
+./unittests --gtest_filter=testbackprop.*
 ```
 
 Helper methods
