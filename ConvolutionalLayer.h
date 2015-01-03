@@ -635,6 +635,7 @@ public:
         int globalSize = previousLayer->getResultsSize();
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+//        std::cout << "calcerrorsforupstreamgpu workgroupsize " << workgroupsize << " globalsize " << globalSize << std::endl;
         kernelBackpropErrors->run_1d(globalSize, workgroupsize);
 
         cl->finish();
@@ -671,15 +672,19 @@ public:
                             for( int outRow = 0; outRow < boardSize; outRow++ ) {
                                 // need to derive filterRow and filterCol, given outRow and outCol
                                 int filterRow = upstreamRow + margin - outRow;
-                                for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                                   // need to derive filterRow and filterCol, given outRow and outCol
-                                    int filterCol = upstreamCol + margin - outCol;
-                                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
-                                    float thisError = errors[resultIndex];
-                                    int thisWeightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
-                                    float thisWeight = weights[thisWeightIndex];
-                                    float thisWeightTimesError = thisWeight * thisError;
-                                    sumWeightTimesOutError += thisWeightTimesError;
+                                if( filterRow >= 0 && filterRow < filterSize ) {
+                                    for( int outCol = 0; outCol < boardSize; outCol++ ) {
+                                       // need to derive filterRow and filterCol, given outRow and outCol
+                                        int filterCol = upstreamCol + margin - outCol;
+                                        if( filterCol >= 0 && filterCol < filterSize ) {
+                                            int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+                                            float thisError = errors[resultIndex];
+                                            int thisWeightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
+                                            float thisWeight = weights[thisWeightIndex];
+                                            float thisWeightTimesError = thisWeight * thisError;
+                                            sumWeightTimesOutError += thisWeightTimesError;
+                                        }
+                                    }
                                 }
                             }
                         }
