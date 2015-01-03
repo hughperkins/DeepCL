@@ -477,7 +477,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 #ifdef gOutBoardSize // for previous tests that dont define it
 void kernel backprop_floats_2( 
-    const float learningRateMultiplier, const int batchSize, 
+    const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
      global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
      global float *weightChangesGlobal,
     local float *_upstreamBoard, local float *_resultBoard, local float *_errorBoard, 
@@ -539,7 +539,7 @@ void kernel backprop_floats_2(
             }
 
             barrier(CLK_LOCAL_MEM_FENCE);
-            for( int offset = workgroupSize >> 1; offset > 0; offset >>= 1 ) {
+            for( int offset = workgroupsizenextpower2 >> 1; offset > 0; offset >>= 1 ) {
 ////                float other = _weightReduceArea[ localId + offset ];
 ////                float mine = _weightReduceArea[ localId ];
 //                bool shouldCopy = localId < offset && localId < gFilterSizeSquared;

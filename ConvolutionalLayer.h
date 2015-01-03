@@ -372,7 +372,6 @@ public:
         //         global const float *images, global const float *errors, global float *weightChanges ) {
 
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-        std::cout << "learningMultiplier: " << learningMultiplier << std::endl;
         CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
         CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
         CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
@@ -420,7 +419,6 @@ public:
         std::cout << " workgroupsize " << workgroupsize << " globalsize " << globalSize << std::endl;
 
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-        std::cout << "learningMultiplier: " << learningMultiplier << std::endl;
         CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
         CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
         CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
@@ -431,6 +429,7 @@ public:
         kernelBackPropWeights2
            ->in(learningMultiplier)
            ->in( batchSize )
+            ->in( cl->getNextPower2( workgroupsize ) )
 //->in( upstreamNumPlanes )->in(numPlanes)
 //           ->in( upstreamBoardSize )->in( filterSize )->in( boardSize )->in( padZeros ? 1 : 0 )
 

@@ -10,6 +10,8 @@
 
 using namespace std;
 
+#include "test/gtest_supp.h"
+
 TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
     int batchSize = 2;
     int numOutPlanes = 2;
@@ -510,6 +512,12 @@ TEST( testsimpleconvolve, backprop_weights_2 ) {
     OpenCLHelper cl;
     CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
     
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
     CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
     CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
@@ -520,6 +528,7 @@ TEST( testsimpleconvolve, backprop_weights_2 ) {
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -530,11 +539,6 @@ TEST( testsimpleconvolve, backprop_weights_2 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -620,6 +624,7 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize2 ) {
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -706,9 +711,18 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize3_filtersize3 ) {
     imagesWrapper->copyToDevice();
     resultsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -719,12 +733,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize3_filtersize3 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -803,9 +811,18 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize4_filtersize3 ) {
     imagesWrapper->copyToDevice();
     resultsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -816,12 +833,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize4_filtersize3 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -901,9 +912,18 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize4_filtersize3_relu
     imagesWrapper->copyToDevice();
     resultsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -914,12 +934,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize4_filtersize3_relu
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -1000,9 +1014,18 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
     imagesWrapper->copyToDevice();
     resultsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -1013,12 +1036,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -1110,9 +1127,17 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize3_filtersize1 ) {
     resultsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
 
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
 
        ->in( imagesWrapper )
        ->in(resultsWrapper)
@@ -1125,12 +1150,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize3_filtersize1 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -1207,6 +1226,13 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize16_filtersize1 ) {
     OpenCLHelper cl;
     CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
     
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
     CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
     CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
@@ -1217,6 +1243,7 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize16_filtersize1 ) {
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -1227,12 +1254,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize16_filtersize1 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -1308,6 +1329,13 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1 ) {
 
     OpenCLHelper cl;
     CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     
     CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
     CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
@@ -1319,6 +1347,7 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1 ) {
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( cl.getNextPower2( workgroupsize ) )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -1329,12 +1358,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1 ) {
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -1419,9 +1442,21 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1_mor
     imagesWrapper->copyToDevice();
     resultsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+//    int getNextPower2
+    int workgroupsizepower2 = cl.getNextPower2( workgroupsize );
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << " workgroupsizepower2 "
+        << workgroupsizepower2 << endl;
+
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
+        ->in( workgroupsizepower2 )
        ->in( imagesWrapper )
        ->in(resultsWrapper)
        ->in( errorsWrapper )
@@ -1432,12 +1467,6 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1_mor
         ->localFloats( filterSizeSquared )
         ->localFloats( upstreamBoardSizeSquared );
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
 
     weightChangesWrapper->copyToHost();    
@@ -1445,9 +1474,9 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1_mor
         cout << "weightchanges[" << i << "]=" << weightChanges[i] << endl;
     }
     for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weightChanges[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weightChanges[i] );
+        if( expectedResults[i] != -999 ) {
+//            cout << "mismatch for i " << i << endl;
+            ASSERT_FLOAT_NEAR( expectedResults[i], weightChanges[i] );
         }
     }
 
