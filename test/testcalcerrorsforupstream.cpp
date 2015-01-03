@@ -53,7 +53,7 @@ TEST( testcalcerrorsforupstream, board28 ) {
     float *errorsForUpstream = new float[upstreamResultsSize];
 
     Timer timer;
-    layer->calcErrorsForUpstreamCpu( errors, errorsForUpstream );
+    layer->calcErrorsForUpstreamGpu( errors, errorsForUpstream );
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", upstreamResultsSize, errorsForUpstream );

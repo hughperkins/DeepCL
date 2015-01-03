@@ -971,31 +971,30 @@ void kernel calcErrorsForUpstream(
     const int upstreamPlane = upstreamBoard2dId % upstreamNumPlanes;
     const int n = upstreamBoard2dId / upstreamNumPlanes;
 
+    const int minFilterRow = max( 0, upstreamRow + margin - (outBoardSize - 1) );
+    const int maxFilterRow = min( filterSize - 1, upstreamRow + margin );
+    const int minFilterCol = max( 0, upstreamCol + margin - (outBoardSize -1) );
+    const int maxFilterCol = min( filterSize - 1, upstreamCol + margin );
+
     float sumWeightTimesOutError = 0;
     // aggregate over [outPlane][outRow][outCol]
     for( int outPlane = 0; outPlane < outNumPlanes; outPlane++ ) {
-        for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
-            // need to derive filterRow and filterCol, given outRow and outCol
-            int filterRow = upstreamRow + margin - outRow;
-            for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
-               // need to derive filterRow and filterCol, given outRow and outCol
-                int filterCol = upstreamCol + margin - outCol;
-                bool evaluate = filterRow >= 0 && filterRow < filterSize && filterCol >= 0
-                                && filterCol < filterSize;
-                if( evaluate ) {
-                    int resultIndex = ( ( n * outNumPlanes 
-                              + outPlane ) * outBoardSize
-                              + outRow ) * outBoardSize
-                              + outCol;
-                    float thisError = errors[resultIndex];
-                    int thisWeightIndex = ( ( outPlane * upstreamNumPlanes
-                                        + upstreamPlane ) * filterSize
-                                        + filterRow ) * filterSize
-                                        + filterCol;
-                    float thisWeight = weights[thisWeightIndex];
-                    float thisWeightTimesError = thisWeight * thisError;
-                    sumWeightTimesOutError += thisWeightTimesError;
-                }
+        for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
+            int outRow = upstreamRow + margin - filterRow;
+            for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
+                int outCol = upstreamCol + margin - filterCol;
+                int resultIndex = ( ( n * outNumPlanes 
+                          + outPlane ) * outBoardSize
+                          + outRow ) * outBoardSize
+                          + outCol;
+                float thisError = errors[resultIndex];
+                int thisWeightIndex = ( ( outPlane * upstreamNumPlanes
+                                    + upstreamPlane ) * filterSize
+                                    + filterRow ) * filterSize
+                                    + filterCol;
+                float thisWeight = weights[thisWeightIndex];
+                float thisWeightTimesError = thisWeight * thisError;
+                sumWeightTimesOutError += thisWeightTimesError;
             }
         }
     }
