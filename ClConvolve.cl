@@ -258,6 +258,11 @@ void kernel convolve_imagecubes_float_nopadzeros(
 // filters are organized like [filterid][inplane][filterrow][filtercol]
 // results are organized like [imageid][filterid][row][col]
 // global id is organized like results, ie: [imageid][filterid][row][col]
+// - no local memory used currently
+// - each thread:
+//     - loads a whole board
+//     - loads a whole filter
+//     - writes one output
 #ifdef ACTIVATION_FUNCTION // protect against not defined
 void kernel convolve_imagecubes_float2( const int numExamples,
       const int numInputPlanes, const int numFilters, 
@@ -459,21 +464,6 @@ void kernel backprop_floats( const float learningRateMultiplier,
 }
 #endif
 
-// if break for per-example, per-filter:
-// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
-//             784 3k         784 3k                 25088 100k                800 3k
-// if break for per-example, per-filter, per-upstream:
-// outboard(eg 28x28), error (28x28), upstreamboard(28x28) => weightchanges(5x5)
-//             784 3k         784 3k                 784 3k                 25
-// n * outplane = 128 * 32 = 4096   , then loop over: [upstreamrow][upstreamcol]
-// in this version, globalid is structured as: [n][outPlane][upstreamPlane][upstreamRow][upstreamCol]
-//                  localid is structured as [upstreamRow][upstreamCol]
-//                   can each thread should loop over .... : [filterRow][filterCol]
-//        (outRow/outCol are locked to upstreamRow/upstreamCol)
-// w is [filterRow][filterCol]
-// this assumes that filterSizeSquared will fit into one workgroup
-//  - which is true for Go-boards, but not for MNIST :-P
-//      - so we will test with cropped MNIST images, 19x19, same as go boards :-)
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 #ifdef gOutBoardSize // for previous tests that dont define it
 void kernel backprop_floats_2( 
@@ -540,10 +530,6 @@ void kernel backprop_floats_2(
 
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int offset = workgroupsizenextpower2 >> 1; offset > 0; offset >>= 1 ) {
-////                float other = _weightReduceArea[ localId + offset ];
-////                float mine = _weightReduceArea[ localId ];
-//                bool shouldCopy = localId < offset && localId < gFilterSizeSquared;
-//                if( localId < offset ) {
                 if( localId + offset < gOutBoardSizeSquared ) {
                     _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
                 }
@@ -552,8 +538,6 @@ void kernel backprop_floats_2(
             if( localId == 0 ) { // maybe can remove this if? leave for now, so fewer bugs :-)
                 _weightChanges[filterRow * gFilterSize + filterCol] = _weightReduceArea[0];
             }
-////            flothiswchange += thisimagethiswchange;
-////            _weightChanges
         }
     }
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -572,6 +556,147 @@ void kernel backprop_floats_2(
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
 //    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
+}
+#endif
+#endif
+
+// need about ~50 workgroups
+// eg: - one per n => 128 groups, each one loads:
+//                               one cube of input boards (46k :-O )
+//                               one cube of output boards (each output cube is 46k too...)
+//                               same errors (46k...)
+//                               (need to reduce over n)
+//     - one per filter => 32 groups, each one loads:
+//                               each cube of input boards (eg, sequentially) (each cube is 46k...)
+//                               each of its own output planes (eg, sequentially)
+//                               each of its own error planes (eg, sequentially)
+//                               (no extra-workgroup reduction needed, for boardsize < 19)
+//     - one per filter, per upstream => 32*32 = 784 groups. each one loads:
+//                               one plane from each cube of boards (eg, sequentially) (1.5k per plane)
+//                               one plane from each example output (eg, sequentially) (1.5k per plane)
+//                               one plane from each example error (eg, sequentially) (1.5k per plane)
+//                               each workgroup will have one thread per board position, ie 384 threads
+//                               each thread will iterate over the 25 filter positions
+//                               after iterating over all n,
+//                                   each workgroup will then give a single w update, 5x5 = 100 bytes
+//                                    => written to global memory somewhere
+//                               and there will be 784 workgroups to reduce over....
+//                                   ... but they will be reduced in blocks of 32, giving a cube of 32 filter board
+//                                        updates
+//                               (and then need to reduce over upstream boards)
+
+// if break for per-example, per-filter:
+// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+//             784 3k         784 3k                 25088 100k                800 3k
+// if break for per-example, per-filter, per-upstream:
+// outboard(eg 28x28), error (28x28), upstreamboard(28x28) => weightchanges(5x5)
+//             784 3k         784 3k                 784 3k                 25
+// n * outplane = 128 * 32 = 4096   , then loop over: [upstreamrow][upstreamcol]
+// in this version, workgroups are [outPlane][upstreamPlane]
+//                  localid is structured as [upstreamRow][upstreamCol]
+//                  globalid is structured as: [outPlane][upstreamPlane]:[upstreamRow][upstreamCol]
+//                          each thread should loop over: [n]
+//               (and then we will need to reduce each block of 32 filters)
+//        (outRow/outCol are locked to upstreamRow/upstreamCol)
+// w is [filterRow][filterCol]
+// this assumes that filterSizeSquared will fit into one workgroup
+//  - which is true for Go-boards, but not for MNIST :-P
+//      - so we will test with cropped MNIST images, 19x19, same as go boards :-)
+//
+// weightChangesGlobal contains one plane from each of the 784 workgroups
+// organized as: [outPlane][upstreamPlan]:[filterRow][filterCol] (colon marks gap between
+//                       the coordinates per workgroup, and intra-workgroup coordinates )
+#ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+#ifdef gOutBoardSize // for previous tests that dont define it
+void kernel backprop_floats_3( 
+    const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
+     global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
+     global float *weightChangesGlobal,
+    local float *_upstreamBoard, local float *_resultBoard, local float *_errorBoard, 
+    local float *_weightChanges, local float *_weightReduceArea ) {
+
+        // required (minimum...) sizes for local arrays:
+        // upstreamboard: upstreamBoardSizeSquared
+        // resultboard: outBoardSizeSquared
+        // errorBoard: outBoardSizeSquaread
+        // weightChanges: filterSizeSquared
+        // weightReduceArea: upstreamBoardSizeSquared, or workflowSize, to be decided :-)
+    const int globalId = get_global_id(0);
+    const int localId = get_local_id(0);
+    const int workgroupSize = get_local_size(0);
+    const int workgroupId = get_group_id(0);
+
+    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
+    const int outPlane = workgroupId / gUpstreamNumPlanes;
+
+    const int outRow = localId / gOutBoardSize;
+    const int outCol = localId % gOutBoardSize;
+
+    // wipe _weightChanges first
+    // dont need a barrier, just use the barrier from loading the other planes from global memory
+    if( localId < gFilterSizeSquared ) {
+        _weightChanges[localId] = 0;
+    }
+
+    for( int n = 0; n < batchSize; n++ ) {
+        // each localid corresponds to one [upstreamRow][upstreamCol] combination
+        // we assume that:
+        // filterSize <= upstreamBoardSize (reasonable... :-) )
+        // outBoardSize <= upstreamBoardSize (true... unless we have a filter with even size, and padZeros = true )
+        const int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        if( localId < gUpstreamBoardSizeSquared ) {
+            _upstreamBoard[localId] = upstreamBoardsGlobal[upstreamBoardGlobalOffset + localId];
+        }
+        const int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
+        if( localId < gOutBoardSizeSquared ) {
+            _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
+            _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
+            _weightReduceArea[localId] = 0; // note: can probably remove this
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);  // loaded one upstreamboard, one error plane, one output plane :-)
+
+        // now we loop over the filter, and the output board...
+        for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
+    //        int outRow = upstreamRow + gMargin - filterRow;
+            int upstreamRow = outRow - gMargin + filterRow;
+            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
+                int upstreamCol = outCol - gMargin + filterCol;
+    //            int outCol = upstreamCol + gMargin - filterCol;
+    //            float thiswchange = 0;
+                int resultIndex = outRow * gOutBoardSize + outCol;
+                float error = _errorBoard[resultIndex];
+                float actualOutput = _resultBoard[resultIndex];
+                float activationDerivative = ACTIVATION_DERIV( actualOutput);
+                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
+                float upstreamResult = _upstreamBoard[upstreamDataIndex];
+                float thisimagethiswchange = upstreamResult * activationDerivative * error;
+                if( localId < gOutBoardSizeSquared ) {
+                    _weightReduceArea[localId] = thisimagethiswchange;
+                }
+
+                barrier(CLK_LOCAL_MEM_FENCE);
+                for( int offset = workgroupsizenextpower2 >> 1; offset > 0; offset >>= 1 ) {
+                    if( localId + offset < gOutBoardSizeSquared ) {  // cos we're reducing over each position
+                                                                     // in the output board, which this workgroup
+                                                 // has one thread for each position for
+                        _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
+                    }
+                    barrier(CLK_LOCAL_MEM_FENCE);
+                }
+                if( localId == 0 ) {
+                    _weightChanges[filterRow * gFilterSize + filterCol] += _weightReduceArea[0];
+                }
+            }
+        }
+    }
+    // now copy our local weightchanges to global memroy
+    // each thread copies one element
+    // so need a fence :-)
+    barrier(CLK_LOCAL_MEM_FENCE);
+    const int weightBoardGlobalOffset = outPlane * gUpstreamNumPlanes + upstreamPlane;
+    if( localId < gFilterSizeSquared ) {
+        weightChangesGlobal[weightBoardGlobalOffset + localId ] = - learningRateMultiplier * _weightChanges[ localId ];
+    }
 }
 #endif
 #endif
