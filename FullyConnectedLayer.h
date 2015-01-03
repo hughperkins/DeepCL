@@ -8,12 +8,17 @@
 
 #include "Layer.h"
 #include "ActivationFunction.h"
+#include "StatefulTimer.h"
 
 class FullyConnectedLayer : public Layer {
 public:
 
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker ) :
             Layer( previousLayer, maker ) {
+        std::cout << "WARNING: FullyConnectedLayer runs on CPU, and is  slllooowwww :-)" << std::endl;
+        std::cout << "You'd better use a ConvolutionalLayer, and just make the filter size the same as " << std::endl;
+        std::cout << "the upstream board size.  Use 'numFilters' to specify the number of output planes." << std::endl;
+        std::cout << "ConvolutionalLayer will run significantly faster, since it runs on the GPU :-)" << std:endl;
         int fanIn = ( upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize );
         weights = new float[ getWeightsSize() ];
         biasWeights = new float[ getBiasWeightsSize() ];
@@ -127,6 +132,7 @@ public:
         weOwnResults = true;
     }
     virtual void propagate() {
+        StatefulTimer::timeCheck("start fullyconnected propagate");
         for( int imageId = 0; imageId < batchSize; imageId++ ) {
             for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
                 for( int outRow = 0; outRow < boardSize; outRow++ ) {
@@ -153,6 +159,7 @@ public:
                 }
             }
         }
+        StatefulTimer::timeCheck("end fullyconnected propagate");
     }
     // results structured like [imageid][outputplane][outputrow][outputcol]
     virtual void backPropExpected( float learningRate, float const *expected ) {
@@ -173,6 +180,7 @@ public:
         delete[] errors;
     }
     virtual void backPropErrors( float learningRate, float const *errors ) {
+        StatefulTimer::timeCheck("start fullyconnected backproperrors");
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             for( int outRow = 0; outRow < boardSize; outRow++ ) {
                 for( int outCol = 0; outCol < boardSize; outCol++ ) {
@@ -212,6 +220,7 @@ public:
                 }
             }
         }
+        StatefulTimer::timeCheck("end fullyconnected backprop errors, start errors for upstream");
         float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
         for( int n = 0; n < batchSize; n++ ) {
             for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
@@ -237,6 +246,7 @@ public:
                 }
             }
         }
+        StatefulTimer::timeCheck("fully connected calc errors for usptream done");
         previousLayer->backPropErrors(learningRate, errorsForUpstream);
         delete[] errorsForUpstream;
     }

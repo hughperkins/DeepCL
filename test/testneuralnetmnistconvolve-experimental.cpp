@@ -79,10 +79,11 @@ public:
     string dataDir = "../data/mnist";
     string trainSet = "train";
     string testSet = "t10k";
-    int numTrain = 12800 * 1;
-    int numTest = 1280*4;
+    int numTrain = 60000;
+    int numTest = 10000;
     int batchSize = 128;
     int numEpochs = 20;
+    int numFilters = 16;
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -138,8 +139,10 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(14)->filterSize(5)->tanh()->biased()->insert();
+//    net->convolutionalMaker()->numFilters(32)->filterSize(5)->rel()->biased()->insert();
+    net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
+//    net->fullyConnectedMaker()->planes(10)->boardSize(1)->tanh()->biased(config.biased)->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){
 //        int fileSize;
@@ -169,7 +172,7 @@ void go(Config config) {
             ->run();
         cout << "       loss L: " << loss << endl;
         int trainNumRight = 0;
-        timer.timeCheck("after epoch");
+        timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
         printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
         printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
@@ -224,6 +227,7 @@ int main( int argc, char *argv[] ) {
         cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
         cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
+        cout << "    numfilters=[number filters] (" << config.numFilters << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     } 
@@ -243,6 +247,7 @@ int main( int argc, char *argv[] ) {
            if( key == "batchsize" ) config.batchSize = atoi(value);
            if( key == "numepochs" ) config.numEpochs = atoi(value);
            if( key == "biased" ) config.biased = atoi(value);
+           if( key == "numfilters" ) config.numFilters = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
        }
     }
