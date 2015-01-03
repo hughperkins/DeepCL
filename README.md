@@ -53,12 +53,7 @@ delete net;
 Notes:
 * fully connected layers run on cpu for now
 * For now, recommend to use a Convolutional Layer, and set the filter size to be identical to the output
-size of the previous layer
-  * For backprop, this will be reasonably fast, since the GPU threads will be assigned to each cell in the
-filter, which could be eg 19 by 19, or 28 by 28, which is 361 or 784, which is quite a good size
-  * For forward propagation, the number of GPU threads used will be equal to the total size of the result cubes, eg
-if you have 10 result planes of 1 square, there will only be 10 GPU threads, which wont run very quickly
-    * For Clark and Storkey and so on, shouldnt be a problem, since output is Go-board sized, ie 19x19, ie 351 GPU threads, which is about how many we want.
+size of the previous layer, and don't activate `padZeros`.
 
 *General*
 
