@@ -1351,3 +1351,106 @@ TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1 ) {
     delete kernel;
 }
 
+TEST( testsimpleconvolve, backprop_weights_2_upstreamboardsize17_filtersize1_moredata ) {
+    const int batchSize = 1;
+    const int upstreamBoardSize = 17;
+    const int boardSize = 17;
+    const int filterSize = 1;
+    const int upstreamNumPlanes = 1;
+    const int numPlanes = 1;
+    const int filterSizeSquared = filterSize * filterSize;
+    const int boardSizeSquared = boardSize * boardSize;
+    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
+    const int resultsSize = boardSizeSquared * numPlanes * batchSize;
+    const int filtersSize = filterSizeSquared * numPlanes;
+    const int upstreamResultsSize = upstreamBoardSizeSquared * upstreamNumPlanes * batchSize;
+    const int weightsSize = upstreamNumPlanes * numPlanes * filterSizeSquared;
+    const int padZeros = 0;
+    const int biased = 0;
+
+    const float learningMultiplier = 1;
+
+    std::string options = " -D LINEAR";
+    if( biased ) {
+         options += " -D BIASED";
+    }
+    options += " -D gUpstreamBoardSize=" + toString(upstreamBoardSize);
+    options += " -D gUpstreamBoardSizeSquared=" + toString(upstreamBoardSizeSquared);
+    options += " -D gFilterSize=" + toString(filterSize);
+    options += " -D gFilterSizeSquared=" + toString(filterSizeSquared);
+    options += " -D gOutBoardSize=" + toString(boardSize);
+    options += " -D gOutBoardSizeSquared=" + toString(boardSizeSquared);
+    options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
+    options += " -D gNumOutPlanes=" + toString(numPlanes);
+    options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
+    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
+    options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
+    std::cout << "using kernel options: [" + options + "]" << std::endl;
+
+    float *data = new float[ upstreamBoardSizeSquared ];
+    memset( data, 0, sizeof(float) * upstreamBoardSizeSquared );
+    for( int i = 0; i < upstreamBoardSizeSquared; i++ ) {
+        data[i] = ( ( 1 + i ) % 20 ) / 5.3f;
+    }
+
+    float *errors = new float[ boardSizeSquared ];
+    memset( errors, 0, sizeof(float) * boardSizeSquared );
+    for( int i = 0; i < boardSizeSquared; i++ ) {
+        errors[i] = ( ( 2 + i ) % 17 ) / 4.2f;
+    }
+
+    float *results = new float[resultsSize];
+    float *weightChanges = new float[max(4,20)];
+
+    float expectedResults[1];
+    expectedResults[0] = 0;
+    for ( int i = 0; i < upstreamBoardSizeSquared; i++ ) {
+        expectedResults[0] += - data[i] * errors[i];
+    }
+    cout << "expectedresult: " << expectedResults[0] << endl;
+
+    OpenCLHelper cl;
+    CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
+    
+    CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
+    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
+    CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
+    CLWrapper *weightChangesWrapper = cl.wrap( max(weightsSize,20), weightChanges );
+    imagesWrapper->copyToDevice();
+    resultsWrapper->copyToDevice();
+    errorsWrapper->copyToDevice();
+    kernel
+       ->in(learningMultiplier)
+       ->in( batchSize )
+       ->in( imagesWrapper )
+       ->in(resultsWrapper)
+       ->in( errorsWrapper )
+       ->out( weightChangesWrapper )
+        ->localFloats( upstreamBoardSizeSquared )
+        ->localFloats( boardSizeSquared )
+        ->localFloats( boardSizeSquared )
+        ->localFloats( filterSizeSquared )
+        ->localFloats( upstreamBoardSizeSquared );
+
+    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+    cout << " ideal globalsize: " << globalSize << endl;
+    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
+    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+    kernel->run_1d(globalSize, workgroupsize);
+
+    weightChangesWrapper->copyToHost();    
+    for( int i = 0; i < 20; i++ ) {
+        cout << "weightchanges[" << i << "]=" << weightChanges[i] << endl;
+    }
+    for( int i = 0; i < weightsSize; i++ ) {
+        if( expectedResults[i] != -999 && expectedResults[i] != weightChanges[i] ) {
+            cout << "mismatch for i " << i << endl;
+            EXPECT_EQ( expectedResults[i], weightChanges[i] );
+        }
+    }
+
+    delete kernel;
+}
+
