@@ -13,62 +13,71 @@ Target usage:
 Neural Net API
 ==============
 
+*Create a net
+-------------
+
+```
+#include "ClConvolve.h"
+
+NeuralNet *net = NeuralNet::maker()->planes(10)->boardSize(19)->instance();
+```
+
+* You can change the number of input planes, and the board size.
+
+Add some layers
+---------------
+
 *Convolutional layers*
 
-For convolutional layer, you can do:
+Eg:
 ```
-net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->insert();
+net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 ```
-Or:
-```
-net->ConvolutionalMaker()->numFilters(2)->filterSize(5)->padZeros()->insert();
-```
-Notes:
-* convolutional layers forward-prop runs on gpu, via OpenCL
-* back-prop is on gpu too now :-)
 
-Convolution layer options:
-* add `->padZeros()` to pad the input board with zeros, so the output board and input board are the same size
+* Again, you can change the number of filters in the name, and their size.  If you want, you can use any of the following options:
+  * `->padZeros()`: pad the input board with zeros, so the output board is same size as the input
+  * add `->biased()` turn on bias
+  * add `->biased(1)` same as `->biased()`
+  * add `->biased(0)` turn off bias (default)
+  * add `->linear()` choose linear activation
+  * add `->relu()` choose Relu activation
+  * add `->tanh()` choose Tanh activation (current default, but defaults can change...)
+* convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
-*Basic fully connected layers*
+*Fully connected layers*
 
-Example, with 1 fully connected layer:
+eg:
 ```
-#include "NeuralNet.h"
+net->fullyConnectedMaker()->planes(10)->boardSize(1)->insert();
+```
 
-NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-net->fullyConnectedMaker()->planes(2)->boardSize(1)->insert();
+* fully connected layers run on cpu for now
+* For now, recommend to use a Convolutional Layer, and set the filter size to be identical to the output
+size of the previous layer, and without `padZeros` activated.
+
+Train the net
+-------------
+
+```
 net->print();
-for( int epoch = 0; epoch < 100; epoch++ ) {
+for( int epoch = 0; epoch < 12; epoch++ ) {
     net->epochMaker()
-       ->learningRate(3)->batchSize(4)->numExamples(4)
+       ->learningRate(0.1)->batchSize(128)->numExamples(60000)
        ->inputData(mydata)->expectedOutputs(myExpectedResults)
        ->run();
     cout << "Loss L " << net->calcLoss(expectedOutputs) << endl;
     AccuracyHelper::printAccuracy( numImages, numClasses, trainingLabels, net->getResults() );
 }
-delete net;
 ```
 
-Notes:
-* fully connected layers run on cpu for now
-* For now, recommend to use a Convolutional Layer, and set the filter size to be identical to the output
-size of the previous layer, and don't activate `padZeros`.
-
-*General*
-
-Options for layer creation, for any layer type:
-* add `->biased()` turn on bias
-* add `->biased(1)` turn on bias (same as `->biased()`)
-* add `->biased(0)` turn off bias (default)
-* add `->linear()` choose linear activation
-* add `->relu()` choose Relu activation
-* add `->tanh()` choose Tanh activation (current default, but defaults can change...)
+Print the net
+-------------
 
 You can print the network like this:
 ```
 net->print();
 ```
+
 Data format
 ===========
 
