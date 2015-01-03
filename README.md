@@ -13,7 +13,7 @@ Target usage:
 Neural Net API
 ==============
 
-*Create a net
+Create a net
 -------------
 
 ```
@@ -155,6 +155,7 @@ NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance()
 net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
 ```
+* Network details:
   * The first layer is a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is using Relu
   * The second layer looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
   * There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](https://github.com/hughperkins/ClConvolve/blob/master/test/testneuralnetmnistconvolve-experimental.cpp)
