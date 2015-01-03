@@ -9,7 +9,7 @@ link_libraries(dl)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O2")
 
-add_library( ClConvolve SHARED ClConvolve.h OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp NeuralNetMould.cpp
+add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp NeuralNetMould.cpp
    EpochMaker.cpp ConvolutionalLayer.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
@@ -30,8 +30,6 @@ link_libraries(ClConvolve)
 #    git submodule update --init --recursive
 #)
 
-add_executable( testarraysquare test/testarraysquare.cpp )
-add_executable( testarraysquare_floats test/testarraysquare_floats.cpp )
 add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve_simple test/testneuralnetmnistconvolve_simple.cpp stringhelper.cpp )
