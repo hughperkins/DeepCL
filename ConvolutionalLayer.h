@@ -23,6 +23,7 @@ public:
     CLKernel *kernelBackPropWeights2;
     CLKernel *kernelBackPropWeights3;
     CLKernel *kernelBackPropWeights4;
+    CLKernel *kernelBackPropWeightsWithScratch;
     CLKernel *kernelBackpropErrors;
 
     const int filterSize;
@@ -36,6 +37,7 @@ public:
         delete kernelBackPropWeights2;
         delete kernelBackPropWeights3;
         delete kernelBackPropWeights4;
+        delete kernelBackPropWeightsWithScratch;
         delete kernelConvolve;
         delete kernelBackpropErrors;
 //        delete cl;
@@ -375,6 +377,47 @@ public:
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
         std::cout << " backpropgpu, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
         kernelBackPropWeights->run_1d(globalSize, workgroupsize);
+
+        weightChangesWrapper->copyToHost();
+//        cl->finish();
+
+//        timer.timeCheck("backPropGpu");
+        delete imagesWrapper;
+        delete resultsWrapper;
+        delete errorsWrapper;
+        delete weightChangesWrapper;
+    }
+
+    void backPropWeightsGpuWithScratch( float learningRate, float const*errors, float *weightChanges ) {
+//        Timer timer;
+//        int globalSize = getWeightsSize();
+        int workgroupsize = filterSizeSquared;
+        int numWorkgroups = upstreamNumPlanes * numPlanes;
+        int globalSize = workgroupsize * numWorkgroups;
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+        std::cout << " backpropgpuwithscratch, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
+
+        const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
+        CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
+        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
+        CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
+        imagesWrapper->copyToDevice();
+        resultsWrapper->copyToDevice();
+        errorsWrapper->copyToDevice();
+        kernelBackPropWeightsWithScratch
+           ->in(learningMultiplier)
+           ->in( batchSize )
+           
+            ->in( imagesWrapper )
+           ->in(resultsWrapper)
+           ->in( errorsWrapper )
+           ->out( weightChangesWrapper )
+
+            ->localFloats( upstreamBoardSizeSquared )
+            ->localFloats( boardSizeSquared )
+            ->localFloats( boardSizeSquared );
+        kernelBackPropWeightsWithScratch->run_1d(globalSize, workgroupsize);
 
         weightChangesWrapper->copyToHost();
 //        cl->finish();

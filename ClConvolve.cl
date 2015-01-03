@@ -804,6 +804,74 @@ void kernel backprop_floats_4(
 #endif
 #endif
 
+// globalid is for: [outPlane][upstreamPlane]:[filterRow][filterCol]
+//   workgroup is [filterRow][filterCol]
+// per-thread looping over [n][outRow][outCol]
+#ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+void kernel backprop_floats_withscratch( 
+        const float learningRateMultiplier, const int batchSize, 
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges,
+        local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
+ ) {
+    const int globalId = get_global_id(0);
+    const int localId = get_local_id(0);
+    const int workgroupId = get_group_id(0);
+    const int workgroupSize = get_local_size(0);
+
+    const int filterRow = localId / gFilterSize;
+    const int filterCol = localId % gFilterSize;
+
+    const int outPlane = workgroupId / gUpstreamNumPlanes;
+    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
+
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    float thiswchange = 0;
+    for( int n = 0; n < batchSize; n++ ) {
+        int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        // need to fetch the board, but it's bigger than us, so will need to loop...
+        int numLoopsForUpstream = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForUpstream; i++ ) {
+            int thisOffset = i * workgroupSize + localId;
+            if( thisOffset < gUpstreamBoardSizeSquared ) {
+                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+            }
+        }
+        int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
+        int numLoopsForResults = ( gOutBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForResults; i++ ) {
+            int thisOffset = i * workgroupSize + localId;
+            if( thisOffset < gOutBoardSizeSquared ) {
+                _resultBoard[thisOffset ] = results[resultBoardGlobalOffset + thisOffset];
+                _errorBoard[thisOffset ] = errors[resultBoardGlobalOffset + thisOffset];
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+            int upstreamRow = outRow - gMargin + filterRow;
+            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+                int upstreamCol = outCol - gMargin + filterCol;
+                int resultIndex = outRow * gOutBoardSize + outCol;
+                float error = _errorBoard[resultIndex];
+                float actualOutput = _resultBoard[resultIndex];
+                float activationDerivative = ACTIVATION_DERIV( actualOutput);
+                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
+                float upstreamResult = _imageBoard[upstreamDataIndex];
+                float thisimagethiswchange = upstreamResult * activationDerivative *
+                    error;
+                thiswchange += thisimagethiswchange;
+            }
+        }
+    }
+    if( localId < gFilterSizeSquared ) {
+        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = - learningRateMultiplier * thiswchange;
+//        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
+    }
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+}
+#endif
+
 // handle lower layer...
 // errors for upstream look like [n][inPlane][inRow][inCol]
 // need to aggregate over: [outPlane][outRow][outCol] (?)
