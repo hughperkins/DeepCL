@@ -18,7 +18,7 @@ public:
         std::cout << "WARNING: FullyConnectedLayer runs on CPU, and is  slllooowwww :-)" << std::endl;
         std::cout << "You'd better use a ConvolutionalLayer, and just make the filter size the same as " << std::endl;
         std::cout << "the upstream board size.  Use 'numFilters' to specify the number of output planes." << std::endl;
-        std::cout << "ConvolutionalLayer will run significantly faster, since it runs on the GPU :-)" << std:endl;
+        std::cout << "ConvolutionalLayer will run significantly faster, since it runs on the GPU :-)" << std::endl;
         int fanIn = ( upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize );
         weights = new float[ getWeightsSize() ];
         biasWeights = new float[ getBiasWeightsSize() ];
