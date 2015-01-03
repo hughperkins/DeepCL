@@ -808,6 +808,7 @@ void kernel backprop_floats_4(
 //   workgroup is [filterRow][filterCol]
 // per-thread looping over [n][outRow][outCol]
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+#ifdef gOutBoardSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges,
@@ -870,6 +871,7 @@ void kernel backprop_floats_withscratch(
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
 }
+#endif
 #endif
 
 // handle lower layer...

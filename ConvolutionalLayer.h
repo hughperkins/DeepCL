@@ -375,7 +375,7 @@ public:
         int globalSize = getWeightsSize();
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-        std::cout << " backpropgpu, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
+//        std::cout << " backpropgpu, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
         kernelBackPropWeights->run_1d(globalSize, workgroupsize);
 
         weightChangesWrapper->copyToHost();
