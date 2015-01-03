@@ -560,10 +560,12 @@ void kernel backprop_floats_2(
     // let's test with a single example and upplane and filter first :-)
     // so, we just copy it in for now :-)
     if( localId < gFilterSizeSquared ) {
-//        weightChangesGlobal[globalId] = gMargin;
         weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
-//        weightChangesGlobal[localId] = - learningRateMultiplier * _weightReduceArea[localId];
-    }   
+    }
+
+//    if( localId < gFilterSizeSquared ) {
+//        weightChangesGlobal[ globalId ] = _weightReduceArea[globalId];
+//    }
 //    weightChangesGlobal[globalId] = resultsGlobal[localId];
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
