@@ -669,22 +669,20 @@ public:
                         float sumWeightTimesOutError = 0;
                         // aggregate over [outPlane][outRow][outCol]
                         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-                            for( int outRow = 0; outRow < boardSize; outRow++ ) {
-                                // need to derive filterRow and filterCol, given outRow and outCol
-                                int filterRow = upstreamRow + margin - outRow;
-                                if( filterRow >= 0 && filterRow < filterSize ) {
-                                    for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                                       // need to derive filterRow and filterCol, given outRow and outCol
-                                        int filterCol = upstreamCol + margin - outCol;
-                                        if( filterCol >= 0 && filterCol < filterSize ) {
-                                            int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
-                                            float thisError = errors[resultIndex];
-                                            int thisWeightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
-                                            float thisWeight = weights[thisWeightIndex];
-                                            float thisWeightTimesError = thisWeight * thisError;
-                                            sumWeightTimesOutError += thisWeightTimesError;
-                                        }
-                                    }
+                            int minFilterRow = std::max( 0, upstreamRow + margin - (boardSize - 1) );
+                            int maxFilterRow = std::min( filterSize - 1, upstreamRow + margin );
+                            for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
+                                int outRow = upstreamRow + margin - filterRow;
+                                int minFilterCol = std::max( 0, upstreamCol + margin - (boardSize -1) );
+                                int maxFilterCol = std::min( filterSize - 1, upstreamCol + margin );
+                                for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
+                                    int outCol = upstreamCol + margin - filterCol;
+                                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+                                    float thisError = errors[resultIndex];
+                                    int thisWeightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
+                                    float thisWeight = weights[thisWeightIndex];
+                                    float thisWeightTimesError = thisWeight * thisError;
+                                    sumWeightTimesOutError += thisWeightTimesError;
                                 }
                             }
                         }

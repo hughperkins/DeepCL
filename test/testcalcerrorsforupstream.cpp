@@ -18,7 +18,7 @@ using namespace std;
 //    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased(config.biased)->insert();
-TEST( testcalcerrorsforupstream, one ) {
+TEST( testcalcerrorsforupstream, board28 ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
@@ -53,7 +53,7 @@ TEST( testcalcerrorsforupstream, one ) {
     float *errorsForUpstream = new float[upstreamResultsSize];
 
     Timer timer;
-    layer->calcErrorsForUpstreamGpu( errors, errorsForUpstream );
+    layer->calcErrorsForUpstreamCpu( errors, errorsForUpstream );
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", upstreamResultsSize, errorsForUpstream );
