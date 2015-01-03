@@ -244,7 +244,11 @@ public:
         float *biasWeightChanges = new float[getBiasWeightsSize()];
 
         StatefulTimer::instance()->timeCheck("    start backprop, layer " + toString( layerIndex ) );
-        backPropWeightsGpu( learningRate, errors, weightChanges );
+        if( filterSize <= 19 ) {
+            backPropWeightsGpuWithScratch( learningRate, errors, weightChanges );
+        } else {
+            backPropWeightsGpu( learningRate, errors, weightChanges );
+        }
 //        backPropWeightsCpu( learningRate, errors, weightChanges );
         StatefulTimer::instance()->timeCheck("    done weight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("backpropgpu");
