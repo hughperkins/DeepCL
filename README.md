@@ -196,7 +196,7 @@ Unit-testing implementation
 ---------------------------
 
 * Using googletest, which:
-  * compiles quickly (cf Boost test)
+  * compiles quickly
   * gives awesome colored output
   * lets you choose which tests to run using `--gtest_filter=` option
 * Dont need to install anything: it's included in the `thirdparty` directory, and added to the build automatically
