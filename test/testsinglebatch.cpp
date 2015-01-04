@@ -121,6 +121,8 @@ EXPECT_FLOAT_NEAR( 0.0170709, layer1errors[2270837] );
 
 cout << endl;
 
+layer1->backPropErrors( learningRate, layer1errors, 0 );
+
     net->backProp( learningRate, expectedResults );
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
@@ -134,35 +136,33 @@ cout << endl;
         Sampler::printSamples( "biasWeights", biasWeightsSize, (float*)biasWeights, 3 );        
     }
 
-dynamic_cast<ConvolutionalLayer*>(net->layers[3])->weightsWrapper->copyToHost();
 weights = net->layers[3]->weights;
-EXPECT_FLOAT_NEAR( -0.0683787, weights[16044] );
-EXPECT_FLOAT_NEAR( 0.0297281, weights[72239] );
-EXPECT_FLOAT_NEAR( -0.0748054, weights[98933] );
+EXPECT_FLOAT_NEAR( -0.0679266, weights[16044] );
+EXPECT_FLOAT_NEAR( 0.0284175, weights[72239] );
+EXPECT_FLOAT_NEAR( -0.0749269, weights[98933] );
 float *biasWeights = net->layers[3]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0729806, biasWeights[4] );
-EXPECT_FLOAT_NEAR( -0.0621146, biasWeights[9] );
-EXPECT_FLOAT_NEAR( -0.0397368, biasWeights[3] );
-dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToHost();
+EXPECT_FLOAT_NEAR( -0.0605856, biasWeights[4] );
+EXPECT_FLOAT_NEAR( -0.0663593, biasWeights[9] );
+EXPECT_FLOAT_NEAR( -0.0573801, biasWeights[3] );
 weights = net->layers[2]->weights;
-EXPECT_FLOAT_NEAR( 0.0501235, weights[16044] );
-EXPECT_FLOAT_NEAR( 0.0982721, weights[21039] );
-EXPECT_FLOAT_NEAR( -0.0942265, weights[22133] );
+EXPECT_FLOAT_NEAR( 0.0507008, weights[16044] );
+EXPECT_FLOAT_NEAR( 0.0982873, weights[21039] );
+EXPECT_FLOAT_NEAR( -0.094224, weights[22133] );
 biasWeights = net->layers[2]->biasWeights;
 EXPECT_FLOAT_NEAR( -0.0552651, biasWeights[12] );
-EXPECT_FLOAT_NEAR( -0.0572661, biasWeights[15] );
-EXPECT_FLOAT_NEAR( -0.0277963, biasWeights[21] );
+EXPECT_FLOAT_NEAR( -0.0571462, biasWeights[15] );
+EXPECT_FLOAT_NEAR( -0.0304532, biasWeights[21] );
 weights = net->layers[1]->weights;
-EXPECT_FLOAT_NEAR( -0.022328, weights[44] );
-EXPECT_FLOAT_NEAR( -0.065826, weights[239] );
-EXPECT_FLOAT_NEAR( -0.0419509, weights[533] );
+EXPECT_FLOAT_NEAR( -0.0223737, weights[44] );
+EXPECT_FLOAT_NEAR( -0.0658144, weights[239] );
+EXPECT_FLOAT_NEAR( -0.0419252, weights[533] );
 biasWeights = net->layers[1]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0563379, biasWeights[12] );
-EXPECT_FLOAT_NEAR( -0.0601005, biasWeights[15] );
-EXPECT_FLOAT_NEAR( 0.00422995, biasWeights[21] );
+EXPECT_FLOAT_NEAR( -0.0563513, biasWeights[12] );
+EXPECT_FLOAT_NEAR( -0.0601025, biasWeights[15] );
+EXPECT_FLOAT_NEAR( 0.000941529, biasWeights[21] );
 
     Timer timer;
-    for( int i = 0; i < 4; i++ ) {
+    for( int i = 0; i < 3; i++ ) {
         net->learnBatch( learningRate, inputData, expectedResults );
     }
     timer.timeCheck("batch time");
@@ -171,11 +171,11 @@ EXPECT_FLOAT_NEAR( 0.00422995, biasWeights[21] );
     results = (float*)(net->getResults());
     Sampler::printSamples( "net->getResults()", resultsSize, (float*)results );
 
-EXPECT_FLOAT_NEAR( -0.121662, net->getResults()[684] );
-EXPECT_FLOAT_NEAR( 0.0783329, net->getResults()[559] );
-EXPECT_FLOAT_NEAR( -0.0549671, net->getResults()[373] );
-EXPECT_FLOAT_NEAR( 0.0715649, net->getResults()[960] );
-EXPECT_FLOAT_NEAR( -0.00818501, net->getResults()[323] );
+EXPECT_FLOAT_NEAR( -0.15081, net->getResults()[684] );
+EXPECT_FLOAT_NEAR( -0.0236106, net->getResults()[559] );
+EXPECT_FLOAT_NEAR( -0.0585419, net->getResults()[373] );
+EXPECT_FLOAT_NEAR( 0.168737, net->getResults()[960] );
+EXPECT_FLOAT_NEAR( -0.00845184, net->getResults()[323] );
 
     delete[] expectedResults;
     delete[] inputData;
