@@ -39,6 +39,7 @@ TEST( testsinglebatch, main ) {
     Timer timer;
     net->learnBatch( learningRate, inputData, expectedResults );
     timer.timeCheck("batch time");
+    StatefulTimer::dump(true);
 
     Sampler::printSamples( "expectedResults", resultsSize, expectedResults );
 
