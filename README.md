@@ -163,7 +163,7 @@ net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->bias
 make testneuralnetconvolve-experimental
 ./testneuralnetconvolve-experimental numfilters=32
 ```
-* For me, after 12 epochs, the test accuracy was 97.3%, which seems somewhat plausibly correct, compared to other implementations [MNIST database](http://yann.lecun.com/exdb/mnist/)
+* For me, after 12 epochs, the test accuracy was 97.2% +/-0.1%, which seems somewhat plausibly correct, compared to other implementations [MNIST database](http://yann.lecun.com/exdb/mnist/)
   * Each epoch took 20 seconds, on an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, for 4 minutes total training.
 
 Unit-testing
