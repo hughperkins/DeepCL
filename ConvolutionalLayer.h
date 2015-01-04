@@ -266,15 +266,19 @@ public:
 
         CLWrapper *imagesWrapper = 0;
         if( previousLayer->hasResultsWrapper() ) {
+            std::cout << "layer " << layerIndex << " getting results from upstream as wrapper" << std::endl;
             imagesWrapper = previousLayer->getResultsWrapper();
         } else {
+            std::cout << "layer " << layerIndex << " getting results from upstream as raw array" << std::endl;
             imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
             imagesWrapper->copyToDevice();
         }
 
         if( filterSize <= 19 ) {
+            std::cout << "layer " << layerIndex << " filter smaller than 19, using scratch" << std::endl;
             backPropWeightsGpuWithScratch( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
         } else {
+            std::cout << "layer " << layerIndex << " filter 19 or more, not using scratch scratch" << std::endl;
             backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
         }
         StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
@@ -409,7 +413,7 @@ public:
 
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
-        imagesWrapper->copyToDevice();
+//        imagesWrapper->copyToDevice();
         errorsWrapper->copyToDevice();
         kernelBackPropWeightsWithScratch
            ->in(learningMultiplier)

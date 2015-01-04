@@ -180,6 +180,8 @@ EXPECT_FLOAT_NEAR( 0.549084, net->getResults()[684] );
 EXPECT_FLOAT_NEAR( -0.00702396, net->getResults()[559] );
 EXPECT_FLOAT_NEAR( -0.775789, net->getResults()[373] );
 
+//net->layers[1]->getResults();
+
 net->backProp( learningRate, expectedResults );
 
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {

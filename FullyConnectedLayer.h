@@ -162,7 +162,7 @@ public:
         StatefulTimer::timeCheck("end fullyconnected propagate");
     }
     // results structured like [imageid][outputplane][outputrow][outputcol]
-    virtual void backPropExpected( float learningRate, float const *expected, float *errors ) {
+    virtual void calcErrors( float const *expected, float *errors ) {
       //  backPropOld( learningRate, expected );
 //        float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
         // matrix per-element subtraction...
