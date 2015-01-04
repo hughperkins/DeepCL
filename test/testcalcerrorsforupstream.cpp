@@ -51,9 +51,10 @@ TEST( testcalcerrorsforupstream, board28 ) {
         layer->weights[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
     float *errorsForUpstream = new float[upstreamResultsSize];
+    layer->weightsWrapper->copyToDevice();
 
     Timer timer;
-    layer->calcErrorsForUpstreamGpu( errors, errorsForUpstream );
+    layer->calcErrorsForUpstreamGpu( layer->weightsWrapper, errors, errorsForUpstream );
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", upstreamResultsSize, errorsForUpstream );
@@ -101,10 +102,11 @@ TEST( testcalcerrorsforupstream, board19 ) { // make it work for a board19 first
     for( int i = 0; i < weightsSize; i++ ) {
         layer->weights[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
+    layer->weightsWrapper->copyToDevice();
     float *errorsForUpstream = new float[upstreamResultsSize];
 
     Timer timer;
-    layer->calcErrorsForUpstreamGpu( errors, errorsForUpstream );
+    layer->calcErrorsForUpstreamGpu( layer->weightsWrapper, errors, errorsForUpstream );
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", upstreamResultsSize, errorsForUpstream );

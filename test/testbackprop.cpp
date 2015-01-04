@@ -43,13 +43,6 @@ TEST( testbackprop, main ) {
     dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
 
     int weightsSize = layer1->getWeightsSize();
-    float *weights = new float[weightsSize];
-    for( int i = 0; i < weightsSize; i++ ) {
-        weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-    }
-    net->initWeights( 1, weights );
-
-    float *weightChanges = new float[weightsSize];
 
     int resultsSize = layer1->getResultsSize();
     float *errors = new float[resultsSize];
@@ -60,29 +53,26 @@ TEST( testbackprop, main ) {
 
 //    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
 //         " weightsSize " << weightsSize << endl;
-    for( int i = 0 ; i < 40; i++ ) {
+    for( int i = 0 ; i < 1; i++ ) {
+        memset( layer1->weights, 0, sizeof(float) * weightsSize );
+        layer1->weightsWrapper->copyToDevice();
+
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, layer1->weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
-        random.seed(0);
-//        for( int sample = 0; sample < 10; sample++ ) {
-//            int index = random() % weightsSize;
-//            cout << "weightChanges[" << index << "]=" << weightChanges[index] << endl;
-//        }
-//        EXPECT_FLOAT_NEAR(3.81361e-05,  weightChanges[33], 0.01f );
-//        EXPECT_FLOAT_NEAR( -2.09972e-05,  weightChanges[144], 0.01f );
-//        EXPECT_FLOAT_NEAR( 1.44103e-05,  weightChanges[339], 0.01f );
-        EXPECT_FLOAT_NEAR(3.81361e-05,  weightChanges[33] );
-        EXPECT_FLOAT_NEAR( -2.09972e-05,  weightChanges[144] );
-        EXPECT_FLOAT_NEAR( 1.44103e-05,  weightChanges[339] );
+        layer1->weightsWrapper->copyToHost();
+
+        EXPECT_FLOAT_NEAR(-3.28283e-05,  layer1->weights[33] );
+        EXPECT_FLOAT_NEAR( -1.15271e-05,  layer1->weights[144] );
+        EXPECT_FLOAT_NEAR( -9.22672e-06,  layer1->weights[339] );
     }
     StatefulTimer::dump(true);
 //    cout << "end" << endl;
     delete[] errors;
-    delete[]weightChanges;
-    delete[]weights;
+//    delete[]weightChanges;
+//    delete[]weights;
     delete[] upstreamResults;
 }
     
@@ -108,7 +98,10 @@ TEST( testbackprop, board19 ) {
     dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
 
     int weightsSize = layer1->getWeightsSize();
-    float *weightChanges = new float[weightsSize];
+    float *weights = new float[weightsSize];
+    CLWrapper *weightsWrapper = net->cl->wrap( weightsSize, weights );
+    memset( weights, 0, sizeof(float) * weightsSize );
+    weightsWrapper->copyToDevice();
 
     int resultsSize = layer1->getResultsSize();
     float *errors = new float[resultsSize];
@@ -119,26 +112,29 @@ TEST( testbackprop, board19 ) {
 
 //    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
 //         " weightsSize " << weightsSize << endl;
-    for( int i = 0 ; i < 40; i++ ) {
+    for( int i = 0 ; i < 3; i++ ) {
+        memset( weights, 0, sizeof(float) * weightsSize );
+        weightsWrapper->copyToDevice();
+
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
 
 //        printSamples( weightsSize, weightChanges );
-
-        EXPECT_FLOAT_NEAR( -1.35891e-05, weightChanges[44] );
-        EXPECT_FLOAT_NEAR( 1.86079e-05, weightChanges[239] );
-        EXPECT_FLOAT_NEAR( -8.72368e-06, weightChanges[533] );
-        EXPECT_FLOAT_NEAR( -3.20888e-05, weightChanges[160] );
-        EXPECT_FLOAT_NEAR( 9.92044e-06, weightChanges[163] );
+        weightsWrapper->copyToHost();
+        EXPECT_FLOAT_NEAR( -1.35891e-05, weights[44] );
+        EXPECT_FLOAT_NEAR( 1.86079e-05, weights[239] );
+        EXPECT_FLOAT_NEAR( -8.72368e-06, weights[533] );
+        EXPECT_FLOAT_NEAR( -3.20888e-05, weights[160] );
+        EXPECT_FLOAT_NEAR( 9.92044e-06, weights[163] );
 
     }
     StatefulTimer::dump(true);
 //    cout << "end" << endl;
     delete[] errors;
-    delete[]weightChanges;
+//    delete[]weightChanges;
 //    delete[]weights;
     delete[] upstreamResults;
 }
@@ -161,7 +157,10 @@ TEST( testbackprop, board19_1plane_1filter ) {
     dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
 
     int weightsSize = layer1->getWeightsSize();
-    float *weightChanges = new float[weightsSize];
+    float *weights = new float[weightsSize];
+    memset( weights, 0, sizeof(float) * weightsSize );
+    CLWrapper *weightsWrapper = net->cl->wrap( weightsSize, weights );
+    weightsWrapper->copyToDevice();
 
     int resultsSize = layer1->getResultsSize();
     float *errors = new float[resultsSize];
@@ -172,30 +171,31 @@ TEST( testbackprop, board19_1plane_1filter ) {
 
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightsWrapper );
         StatefulTimer::timeCheck("after backprop");
 
+        weightsWrapper->copyToHost();
         for( int i = 0; i < 15; i++ ) {
-            cout << "weightChanges[" << i << "]=" << weightChanges[i] << endl;
+            cout << "weightChanges[" << i << "]=" << weights[i] << endl;
         }
 
-        printSamples( weightsSize, weightChanges );
+        printSamples( weightsSize, weights );
 
-        EXPECT_FLOAT_NEAR( -4.62887e-05, weightChanges[19] );
-        EXPECT_FLOAT_NEAR( 0.000642478, weightChanges[14] );
-        EXPECT_FLOAT_NEAR( 0.000225103, weightChanges[8] );
-        EXPECT_FLOAT_NEAR( 0.000378945, weightChanges[10] );
-        EXPECT_FLOAT_NEAR( 2.41975e-05, weightChanges[13] );
+        EXPECT_FLOAT_NEAR( -4.62887e-05, weights[19] );
+        EXPECT_FLOAT_NEAR( 0.000642478, weights[14] );
+        EXPECT_FLOAT_NEAR( 0.000225103, weights[8] );
+        EXPECT_FLOAT_NEAR( 0.000378945, weights[10] );
+        EXPECT_FLOAT_NEAR( 2.41975e-05, weights[13] );
 
     }
     StatefulTimer::dump(true);
 
     delete[] errors;
-    delete[]weightChanges;
+//    delete[]weightChanges;
 //    delete[]weights;
     delete[] upstreamResults;
 }
-
+/*
 TEST( testbackprop, board19_1plane_1filter_batchsize128 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
@@ -1009,4 +1009,5 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize19_filtersize5_tanh )
     delete[] upstreamResults;
 }
 
+*/
 

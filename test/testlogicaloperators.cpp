@@ -316,50 +316,5 @@ TEST( testlogicaloperators, FullyConnected_1layer_biased_linear_And ) {
 
     delete net;
 }
-/*
-int _main( int argc, char *argv[] ) {
-    Timer timer;
 
-   int testNum = -1;
-    int numIts = 3;
-
-    if( argc >= 2 ) {
-        testNum = atoi( argv[1] );
-        numIts = 1;
-    }
-
-    if( argc >= 3  ){
-        numIts = atoi(argv[2] );
-    }
-
-    for( int it = 0; it < numIts; it++ ) {
-        if( testNum == -1 ) {
-//            for( int i = 0; i < 10; i++ ) {
-//                test1_And();
-//                test2_Or();
-//                test3_Xor();
-//                test5_AndConvolveBiased();
-//                test6_OrConvolve();
-//                test7_XorConvolve();
-//                test9_AndLinear();
-//            }
-        }   
-
-  //      if( testNum == 1 ) test1_And();
-//        if( testNum == 2 ) test2_Or();
-//        if( testNum == 3 ) test3_Xor();
-//        if( testNum == 4 ) test4_AndConvolveNoBias();
-//        if( testNum == 5 ) test5_AndConvolveBiased();
-//        if( testNum == 6 ) test6_OrConvolve();
-//        if( testNum == 7 ) test7_XorConvolve();
-//        if( testNum == 8 ) test8_AndRelu();
-//        if( testNum == 9 ) test9_AndLinear();
-    }
-    
-//    BoardPng::writeBoardsToPng( "testneuralnetmnist-1.png", results, min(N, 100), boardSize );
-
-
-    return 0;
-}
-*/
 

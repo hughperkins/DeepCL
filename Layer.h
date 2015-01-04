@@ -124,13 +124,13 @@ public:
             std::cout << "No results yet " << std::endl;
         }
     }
-    void initWeights( float*weights ) {
+    virtual void initWeights( float*weights ) {
         int numWeights = getWeightsSize();
         for( int i = 0; i < numWeights; i++ ) {
             this->weights[i] = weights[i];
         }
     }
-    void initBiasWeights( float*biasWeights ) {
+    virtual void initBiasWeights( float*biasWeights ) {
         int numBiasWeights = getBiasWeightsSize();
         for( int i = 0; i < numBiasWeights; i++ ) {
             this->biasWeights[i] = biasWeights[i];

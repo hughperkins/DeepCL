@@ -7,6 +7,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         filterSize( maker->_filterSize ),
         filterSizeSquared( filterSize * filterSize ),
         padZeros( maker->_padZeros ),
+        weightsWrapper( 0 ),
         cl( maker->net->getCl() ) {
         if( padZeros && filterSize % 2 == 0 ) {
             throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
@@ -51,6 +52,8 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     weights = new float[ getWeightsSize() ];
 //    std::cout << " convolutional layer " << layerIndex << " allocating weights size " << getWeightsSize() << std::endl;
     randomizeWeights();
+    weightsWrapper = cl->wrap( getWeightsSize(), weights );
+    weightsWrapper->copyToDevice();
 }
 
 

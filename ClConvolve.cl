@@ -417,7 +417,7 @@ global const float*biases,
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
+         global const float *images, global const float *results, global const float *errors, global float *weights ) {
     int globalId = get_global_id(0);
 
     int filterSizeSquared = filterSize * filterSize;
@@ -460,13 +460,13 @@ void kernel backprop_floats( const float learningRateMultiplier,
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
+    weights[ globalId ] += - learningRateMultiplier * thiswchange;
 }
 #endif
 
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 #ifdef gOutBoardSize // for previous tests that dont define it
-void kernel backprop_floats_2( 
+/*void kernel backprop_floats_2( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
      global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
      global float *weightChangesGlobal,
@@ -557,6 +557,7 @@ void kernel backprop_floats_2(
     //       aggregate over:  [outRow][outCol][n]
 //    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
 }
+*/
 #endif
 #endif
 
@@ -608,6 +609,7 @@ void kernel backprop_floats_2(
 //                       the coordinates per workgroup, and intra-workgroup coordinates )
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 #ifdef gOutBoardSize // for previous tests that dont define it
+/*
 void kernel backprop_floats_3( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
      global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
@@ -698,6 +700,7 @@ void kernel backprop_floats_3(
         weightChangesGlobal[weightBoardGlobalOffset + localId ] = - learningRateMultiplier * _weightChanges[ localId ];
     }
 }
+*/
 #endif
 #endif
 
@@ -706,6 +709,7 @@ void kernel backprop_floats_3(
 // 32 workgroups, one per filter
 // globalId: [outPlane]:[upstreamRow][upstreamCol]
 //   each thread needs to loop over: [n][upstreamPlane][filterRow][filterCol]
+/*
 void kernel backprop_floats_4( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
      global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
@@ -801,6 +805,7 @@ void kernel backprop_floats_4(
         }
     }
 }
+*/
 #endif
 #endif
 
@@ -811,7 +816,7 @@ void kernel backprop_floats_4(
 #ifdef gOutBoardSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *results, global const float *errors, global float *weightChanges,
+         global const float *images, global const float *results, global const float *errors, global float *weights,
         local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
  ) {
     const int globalId = get_global_id(0);
@@ -862,7 +867,7 @@ void kernel backprop_floats_withscratch(
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = - learningRateMultiplier * thiswchange;
+        weights[ workgroupId * gFilterSizeSquared + localId ] += - learningRateMultiplier * thiswchange;
 //        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
