@@ -20,11 +20,12 @@ public:
     OpenCLHelper *const cl; // NOT owned by us
     CLKernel *kernelConvolve;
     CLKernel *kernelBackPropWeights;
-    CLKernel *kernelBackPropWeights2;
-    CLKernel *kernelBackPropWeights3;
-    CLKernel *kernelBackPropWeights4;
+//    CLKernel *kernelBackPropWeights2;
+//    CLKernel *kernelBackPropWeights3;
+//    CLKernel *kernelBackPropWeights4;
     CLKernel *kernelBackPropWeightsWithScratch;
     CLKernel *kernelBackpropErrors;
+    CLKernel *kernelBackpropBiasWeights;
 
     const int filterSize;
     const int filterSizeSquared;
@@ -34,12 +35,13 @@ public:
 
     virtual ~ConvolutionalLayer() {
         delete kernelBackPropWeights;
-        delete kernelBackPropWeights2;
-        delete kernelBackPropWeights3;
-        delete kernelBackPropWeights4;
+//        delete kernelBackPropWeights2;
+//        delete kernelBackPropWeights3;
+//        delete kernelBackPropWeights4;
         delete kernelBackPropWeightsWithScratch;
         delete kernelConvolve;
         delete kernelBackpropErrors;
+        delete kernelBackpropBiasWeights;
 //        delete cl;
     }
 // filters are organized like [filterid][plane][row][col]
@@ -252,7 +254,7 @@ public:
 //        backPropWeightsCpu( learningRate, errors, weightChanges );
         StatefulTimer::instance()->timeCheck("    done weight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("backpropgpu");
-        doBiasBackpropCpu( learningRate, errors, biasWeightChanges );
+        doBiasBackpropCpu( learningRate, results, errors, biasWeightChanges );
         StatefulTimer::instance()->timeCheck("    done biasweight backprop, layer " + toString( layerIndex ) );
 //        timer.timeCheck("biasbackprop cpu");
 
@@ -432,7 +434,7 @@ public:
         delete errorsWrapper;
         delete weightChangesWrapper;
     }
-
+/*
     void backPropWeightsGpu2( float learningRate, float const*errors, float *weightChanges ) {
         // soooo.... going to feed in same data as before, but structure workgroups differently...
 
@@ -486,7 +488,8 @@ public:
         delete errorsWrapper;
         delete weightChangesWrapper;
     }
-
+*/
+/*
     void backPropWeightsGpu3( const float learningRate, float const*const errors, float *const weightChanges ) {
         // each workgroup is dimensioned to be big enough to loop over the usptream Board
         // round to nearest 32, which about fills an average compute unit (16 or 32)
@@ -549,7 +552,8 @@ public:
         delete errorsWrapper;
         delete weightChangesWrapper;
     }
-
+*/
+/*
     void backPropWeightsGpu4( const float learningRate, float const*const errors, float *const weightChanges ) {
         // each workgroup is dimensioned to be big enough to loop over the usptream Board
         // round to nearest 32, which about fills an average compute unit (16 or 32)
@@ -612,7 +616,7 @@ public:
         delete errorsWrapper;
         delete weightChangesWrapper;
     }
-
+*/
     virtual bool needErrorsBackprop() {
         return true;
     }
@@ -695,13 +699,14 @@ public:
 //        timer.timeCheck("calced errors for upstream");   
     }
 
-    void doBiasBackpropCpu(float learningRate, float const *errors, float *biasWeightChanges ) {
+    void doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges ) {
 //        Timer timer;
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         const bool debug = false;
         if( !biased ) {
              return;
          }
+        StatefulTimer::instance()->timeCheck("doBiasBackpropCpu start, layer " + toString( layerIndex ) );
          for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             // bias...
             // biasweights: [outPlane]
@@ -725,6 +730,35 @@ public:
             biasWeightChanges[ outPlane ] = - learningMultiplier * thiswchange;
          }
 //        timer.timeCheck("did bias backprop");   
+        StatefulTimer::instance()->timeCheck("doBiasBackpropCpu end, layer " + toString( layerIndex ) );
+    }
+
+    void doBiasBackpropGpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges ) {
+//        Timer timer;
+        const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
+        if( !biased ) {
+             return;
+        }
+        StatefulTimer::instance()->timeCheck("doBiasBackpropGpu start, layer " + toString( layerIndex ) );
+        int globalSize = numPlanes;
+        int workgroupsize = cl->getMaxWorkgroupSize();
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+
+        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
+        CLWrapper *biasWeightChangesWrapper = cl->wrap( numPlanes, biasWeightChanges );
+        resultsWrapper->copyToDevice();
+        errorsWrapper->copyToDevice();
+
+        kernelBackpropBiasWeights->in( learningMultiplier )->in( batchSize )
+            ->in( resultsWrapper )->in( errorsWrapper )->out( biasWeightChangesWrapper );
+        kernelBackpropBiasWeights->run_1d(globalSize, workgroupsize);
+        biasWeightChangesWrapper->copyToHost();
+
+        delete biasWeightChangesWrapper;
+        delete resultsWrapper;
+        delete errorsWrapper;
+        StatefulTimer::instance()->timeCheck("doBiasBackpropCpu end, layer " + toString( layerIndex ) );
     }
 };
 

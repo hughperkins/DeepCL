@@ -74,6 +74,12 @@ public:
     EpochMaker *epochMaker() {
          return new EpochMaker(this);
     }
+    InputLayer *getFirstLayer() {
+        return dynamic_cast<InputLayer*>( layers[0] );
+    }
+    Layer *getLastLayer() {
+        return layers[layers.size() - 1];
+    }
     Layer *addLayer( LayerMaker *maker ) {
         Layer *previousLayer = 0;
         if( layers.size() > 0 ) {

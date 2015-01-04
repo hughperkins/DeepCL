@@ -225,7 +225,7 @@ TEST( testbackprop, board19_1plane_1filter_batchsize128 ) {
 
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu3( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
         StatefulTimer::timeCheck("after backprop");
 
         printSamples( weightsSize, weightChanges );
@@ -275,7 +275,7 @@ TEST( testbackprop, board19_1plane_2filter_batchsize128 ) {
 
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu3( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
         StatefulTimer::timeCheck("after backprop");
 
         printSamples( weightsSize, weightChanges );
@@ -333,7 +333,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5 ) {
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -392,7 +392,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5_tanh ) {
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -451,7 +451,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize7_filtersize5 ) {
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -510,7 +510,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize11_filtersize5_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -569,7 +569,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize15_filtersize5_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -629,7 +629,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize16_filtersize5_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 
@@ -687,7 +687,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize5_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 
@@ -748,7 +748,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize3_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 
@@ -809,7 +809,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 
@@ -866,7 +866,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_linear
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 
@@ -931,7 +931,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_linear
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu3( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 
@@ -988,7 +988,7 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize19_filtersize5_tanh )
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpu2( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightChanges );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
 

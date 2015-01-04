@@ -36,16 +36,17 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
     options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
     options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
-    std::cout << "using kernel options: [" + options + "]" << std::endl;
+//    std::cout << "using kernel options: [" + options + "]" << std::endl;
 
 //    options += " -D WORKGROUPSIZE 
     this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
     this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
-    this->kernelBackPropWeights2 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_2", options );
-    this->kernelBackPropWeights3 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_3", options );
-    this->kernelBackPropWeights4 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_4", options );
+//    this->kernelBackPropWeights2 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_2", options );
+//    this->kernelBackPropWeights3 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_3", options );
+//    this->kernelBackPropWeights4 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_4", options );
     this->kernelBackPropWeightsWithScratch = cl->buildKernel( "ClConvolve.cl", "backprop_floats_withscratch", options );
     this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
+    this->kernelBackpropBiasWeights = cl->buildKernel( "ClConvolve.cl", "doBiasBackprop", options );
     biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
 //    std::cout << " convolutional layer " << layerIndex << " allocating weights size " << getWeightsSize() << std::endl;

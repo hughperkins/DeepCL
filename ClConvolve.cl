@@ -9,14 +9,14 @@
 // BIASED (or not)
 
 #ifdef TANH
-    #define ACTIVATION_FUNCTION(output) tanh(output)
-    #define ACTIVATION_DERIV(output) 1 - output * output
+    #define ACTIVATION_FUNCTION(output) (tanh(output))
+    #define ACTIVATION_DERIV(output) (1 - output * output)
 #elif defined RELU
-    #define ACTIVATION_FUNCTION(output) output> 0 ? output : 0
-    #define ACTIVATION_DERIV(output) output > 0 ? 1 : 0
+    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
+    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)
 #elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) output
-    #define ACTIVATION_DERIV(output) 1
+    #define ACTIVATION_FUNCTION(output) (output)
+    #define ACTIVATION_DERIV(output) (1)
 #endif
     
 void kernel convolve_ints( global const int *p_boardSize, global const int *p_filterSize,
@@ -1126,6 +1126,39 @@ void kernel convolve_errorcubes_float(
         inputPlane++;
     }
     results[globalId] = sum;*/
+}
+#endif
+
+// doesnt have to be fast, just has to be on gpu is only requirement really...
+// make globalid be [outplane]
+// and localid is also [outplane]
+// so, one workgroup, internally structured as [outplane] (unless there are >512 outplanes....)
+#ifdef gOutBoardSize // for previous tests that dont define it
+kernel void doBiasBackprop( const float learningMultiplier, const int batchSize,
+    global float const *results, global float const *errors, global float *biasWeightChanges ) {
+    const int globalId = get_local_id(0);
+    
+    const int outPlane = globalId;
+
+    // bias...
+    // biasweights: [outPlane]
+    //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
+    float thiswchange = 0;
+    for( int n = 0; n < batchSize; n++ ) {
+        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+                int resultIndex = ( ( n * gNumOutPlanes 
+                          + outPlane ) * gOutBoardSize
+                          + outRow ) * gOutBoardSize
+                          + outCol;
+                float thisimagethiswchange = errors[resultIndex] * ACTIVATION_DERIV( results[resultIndex] );
+                thiswchange += thisimagethiswchange;
+            }
+        }
+    }
+    if( globalId < gNumOutPlanes ) {
+        biasWeightChanges[ globalId ] = - learningMultiplier * thiswchange;
+    }
 }
 #endif
 
