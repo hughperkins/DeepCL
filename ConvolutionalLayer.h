@@ -26,6 +26,7 @@ public:
     CLKernel *kernelBackPropWeightsWithScratch;
     CLKernel *kernelBackpropErrors;
     CLKernel *kernelBackpropBiasWeights;
+    CLKernel *kernelAddInPlace;
 
     const int filterSize;
     const int filterSizeSquared;
@@ -54,6 +55,7 @@ public:
         delete kernelConvolve;
         delete kernelBackpropErrors;
         delete kernelBackpropBiasWeights;
+        delete kernelAddInPlace;
 //        delete cl;
     }
     virtual void initWeights( float*weights ) {
@@ -288,9 +290,7 @@ public:
 //            delete[] errorsForUpstream;
         }
 
-    // XXX IMPORTANT NEED TO IMPLEMENT THIS
-        std::cout << "WARNING NEED TO IMPLEMENT UPDATEWIEHGTS GPU, AND RUN IT!!!!!" << std::endl;
-        //updateWeightsGpu( weightsWrapper, weightChangesWrapper );
+        updateWeightsGpu( weightChangesWrapper, weightsWrapper );
 
         const int numWeights = getWeightsSize();
 //        for( int i = 0; i < numWeights; i++ ) {
@@ -306,6 +306,19 @@ public:
         if( !previousLayer->hasResultsWrapper() ) {
             delete imagesWrapper;
         }
+        delete weightChangesWrapper;
+        delete[] weightChanges;
+    }
+
+    void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper ) {
+        int globalSize = getWeightsSize();
+        int workgroupsize = std::min( getWeightsSize(), cl->getMaxWorkgroupSize() );
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+        kernelAddInPlace->in( getWeightsSize() )
+            ->in( weightChangesWrapper )
+            ->in (weightsWrapper)
+            ->run_1d( globalSize, workgroupsize );
+        cl->finish();
     }
 
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights ) {

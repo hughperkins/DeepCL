@@ -1167,3 +1167,11 @@ kernel void doBiasBackprop( const float learningMultiplier, const int batchSize,
 }
 #endif
 
+kernel void add_in_place( const int N, global const float*in, global float*target ) {
+    int globalId = get_global_id(0);
+    if( globalId < N ) {
+        target[globalId] += in[globalId];
+    }
+}
+
+

@@ -51,6 +51,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     this->kernelBackPropWeightsWithScratch = cl->buildKernel( "ClConvolve.cl", "backprop_floats_withscratch", options );
     this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
     this->kernelBackpropBiasWeights = cl->buildKernel( "ClConvolve.cl", "doBiasBackprop", options );
+    this->kernelAddInPlace = cl->buildKernel( "ClConvolve.cl", "add_in_place", options );
     biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
 //    std::cout << " convolutional layer " << layerIndex << " allocating weights size " << getWeightsSize() << std::endl;

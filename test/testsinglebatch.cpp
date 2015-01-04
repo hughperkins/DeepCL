@@ -136,6 +136,7 @@ layer1->backPropErrors( learningRate, layer1errors, 0 );
         Sampler::printSamples( "biasWeights", biasWeightsSize, (float*)biasWeights, 3 );        
     }
 
+layer3->weightsWrapper->copyToHost();
 weights = net->layers[3]->weights;
 EXPECT_FLOAT_NEAR( -0.0679266, weights[16044] );
 EXPECT_FLOAT_NEAR( 0.0284175, weights[72239] );
@@ -144,6 +145,7 @@ float *biasWeights = net->layers[3]->biasWeights;
 EXPECT_FLOAT_NEAR( -0.0605856, biasWeights[4] );
 EXPECT_FLOAT_NEAR( -0.0663593, biasWeights[9] );
 EXPECT_FLOAT_NEAR( -0.0573801, biasWeights[3] );
+layer2->weightsWrapper->copyToHost();
 weights = net->layers[2]->weights;
 EXPECT_FLOAT_NEAR( 0.0507008, weights[16044] );
 EXPECT_FLOAT_NEAR( 0.0982873, weights[21039] );
@@ -152,6 +154,7 @@ biasWeights = net->layers[2]->biasWeights;
 EXPECT_FLOAT_NEAR( -0.0552651, biasWeights[12] );
 EXPECT_FLOAT_NEAR( -0.0571462, biasWeights[15] );
 EXPECT_FLOAT_NEAR( -0.0304532, biasWeights[21] );
+layer1->weightsWrapper->copyToHost();
 weights = net->layers[1]->weights;
 EXPECT_FLOAT_NEAR( -0.0223737, weights[44] );
 EXPECT_FLOAT_NEAR( -0.0658144, weights[239] );
