@@ -164,7 +164,7 @@ make testneuralnetconvolve-experimental
 ./testneuralnetconvolve-experimental numfilters=32
 ```
 * For me, after 12 epochs, the test accuracy was 97.3%, which seems somewhat plausibly correct, compared to other implementations [MNIST database](http://yann.lecun.com/exdb/mnist/)
-  * Each epoch took 33 seconds, on an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, for 6 minutes total training.
+  * Each epoch took 20 seconds, on an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, for 4 minutes total training.
 
 Unit-testing
 ============
