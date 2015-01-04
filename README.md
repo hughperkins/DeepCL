@@ -102,7 +102,7 @@ Pre-requisites
 - gcc
 - g++
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
-  - tested using beignet, which provides OpenCL 1.2, and CUDA 6.5 driver
+  - tested using beignet, which provides OpenCL 1.2; and on CUDA 6.5 driver, which provides OpenCL 1.1
 - opencl-headers
 - libpng++
 - make 
