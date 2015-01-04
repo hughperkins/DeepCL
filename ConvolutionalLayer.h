@@ -255,10 +255,10 @@ public:
 
     virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) {
 //        Timer timer;
-//        float *weightChanges = new float[ getWeightsSize() ];
+        float *weightChanges = new float[ getWeightsSize() ];
         float *biasWeightChanges = new float[getBiasWeightsSize()];
 
-//        CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
+        CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
 
         StatefulTimer::instance()->timeCheck("backproperrors(): start backprop, layer " + toString( layerIndex ) );
 
@@ -271,9 +271,9 @@ public:
         }
 
         if( filterSize <= 19 ) {
-            backPropWeightsGpuWithScratch( learningRate, imagesWrapper, resultsWrapper, errors, weightsWrapper );
+            backPropWeightsGpuWithScratch( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
         } else {
-            backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errors, weightsWrapper );
+            backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
         }
         StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
         doBiasBackpropGpu( learningRate, resultsWrapper, errors, biasWeightChanges );
@@ -287,6 +287,10 @@ public:
 //            previousLayer->backPropErrors(learningRate, errorsForUpstream);
 //            delete[] errorsForUpstream;
         }
+
+    // XXX IMPORTANT NEED TO IMPLEMENT THIS
+        std::cout << "WARNING NEED TO IMPLEMENT UPDATEWIEHGTS GPU, AND RUN IT!!!!!" << std::endl;
+        //updateWeightsGpu( weightsWrapper, weightChangesWrapper );
 
         const int numWeights = getWeightsSize();
 //        for( int i = 0; i < numWeights; i++ ) {
@@ -354,7 +358,7 @@ public:
         StatefulTimer::instance()->timeCheck(" backpropweightscpu end, layer " + toString( layerIndex ) );
     }
 
-    void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightsWrapper ) {
+    void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper ) {
         StatefulTimer::instance()->timeCheck(" backpropweightsGpu start, layer " + toString( layerIndex ) );
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
@@ -366,7 +370,7 @@ public:
            ->in( imagesWrapper )
            ->in(resultsWrapper)
            ->in( errorsWrapper )
-           ->inout( weightsWrapper );
+           ->out( weightChangesWrapper );
         int globalSize = getWeightsSize();
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
@@ -380,7 +384,7 @@ public:
         StatefulTimer::instance()->timeCheck(" backpropweightsGpu end, layer " + toString( layerIndex ) );
     }
 
-    void backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightsWrapper ) {
+    void backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper ) {
 //        Timer timer;
         StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch start, layer " + toString( layerIndex ) );
 //        int globalSize = getWeightsSize();
@@ -401,7 +405,7 @@ public:
             ->in( imagesWrapper )
            ->in(resultsWrapper)
            ->in( errorsWrapper )
-           ->inout( weightsWrapper )
+           ->out( weightChangesWrapper )
 
             ->localFloats( upstreamBoardSizeSquared )
             ->localFloats( boardSizeSquared )

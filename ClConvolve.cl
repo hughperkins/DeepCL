@@ -417,7 +417,7 @@ global const float*biases,
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-         global const float *images, global const float *results, global const float *errors, global float *weights ) {
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
     int globalId = get_global_id(0);
 
     int filterSizeSquared = filterSize * filterSize;
@@ -460,7 +460,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    weights[ globalId ] += - learningRateMultiplier * thiswchange;
+    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
 }
 #endif
 
@@ -816,7 +816,7 @@ void kernel backprop_floats_4(
 #ifdef gOutBoardSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *results, global const float *errors, global float *weights,
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges,
         local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
  ) {
     const int globalId = get_global_id(0);
@@ -867,7 +867,7 @@ void kernel backprop_floats_withscratch(
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weights[ workgroupId * gFilterSizeSquared + localId ] += - learningRateMultiplier * thiswchange;
+        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = - learningRateMultiplier * thiswchange;
 //        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
