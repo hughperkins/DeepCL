@@ -24,6 +24,7 @@ public:
 //    CLKernel *kernelBackPropWeights3;
 //    CLKernel *kernelBackPropWeights4;
     CLKernel *kernelBackPropWeightsWithScratch;
+    CLKernel *kernelBackPropWeightsWithScratchAndBias;
     CLKernel *kernelBackpropErrors;
     CLKernel *kernelBackpropBiasWeights;
     CLKernel *kernelAddInPlace;
@@ -56,6 +57,7 @@ public:
         delete kernelBackpropErrors;
         delete kernelBackpropBiasWeights;
         delete kernelAddInPlace;
+        delete kernelBackPropWeightsWithScratchAndBias;
 //        delete cl;
     }
     virtual void initWeights( float*weights ) {
@@ -431,6 +433,40 @@ public:
         delete errorsWrapper;
 //        delete weightChangesWrapper;
         StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch end, layer " + toString( layerIndex ) );
+    }
+
+    void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper, float *biasWeightChanges ) {
+        StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratchAndBias start, layer " + toString( layerIndex ) );
+        int workgroupsize = filterSizeSquared;
+        int numWorkgroups = upstreamNumPlanes * numPlanes;
+        int globalSize = workgroupsize * numWorkgroups;
+        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+
+        const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
+        CLWrapper *biasWeightChangesWrapper = cl->wrap( numPlanes, biasWeightChanges );
+        errorsWrapper->copyToDevice();
+        kernelBackPropWeightsWithScratchAndBias
+           ->in(learningMultiplier)
+           ->in( batchSize )
+           
+            ->in( imagesWrapper )
+           ->in(resultsWrapper)
+           ->in( errorsWrapper )
+           ->out( weightChangesWrapper )
+            ->out( biasWeightChangesWrapper )
+
+            ->localFloats( upstreamBoardSizeSquared )
+            ->localFloats( boardSizeSquared )
+            ->localFloats( boardSizeSquared );
+        kernelBackPropWeightsWithScratchAndBias->run_1d(globalSize, workgroupsize);
+
+        cl->finish();
+        biasWeightChangesWrapper->copyToHost();
+
+        delete errorsWrapper;
+        delete biasWeightChangesWrapper;
+        StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratchAndBias end, layer " + toString( layerIndex ) );
     }
 /*
     void backPropWeightsGpu2( float learningRate, float const*errors, float *weightChanges ) {

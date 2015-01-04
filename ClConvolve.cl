@@ -810,7 +810,7 @@ void kernel backprop_floats_4(
 #endif
 
 // globalid is for: [outPlane][upstreamPlane]:[filterRow][filterCol]
-//   workgroup is [filterRow][filterCol]
+//   workgroup is over [filterRow][filterCol]
 // per-thread looping over [n][outRow][outCol]
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 #ifdef gOutBoardSize // for previous tests that dont define it
@@ -875,6 +875,96 @@ void kernel backprop_floats_withscratch(
 }
 #endif
 #endif
+
+// biasWeightChanges is: [outplane] (only upstreamplane=0 workgroups need to write it)
+#ifdef ACTIVATION_DERIV // protect against if activation_function not defined
+#ifdef gOutBoardSize // for previous tests that dont define it
+void kernel backprop_floats_withscratch_dobias( 
+        const float learningRateMultiplier, const int batchSize, 
+         global const float *images, global const float *results, global const float *errors, global float *weightChanges, global float *biasWeightChanges,
+        local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
+ ) {
+    const int globalId = get_global_id(0);
+    const int localId = get_local_id(0);
+    const int workgroupId = get_group_id(0);
+    const int workgroupSize = get_local_size(0);
+
+    const int filterRow = localId / gFilterSize;
+    const int filterCol = localId % gFilterSize;
+
+    const int outPlane = workgroupId / gUpstreamNumPlanes;
+    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
+
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+    float thiswchange = 0;
+    float thisbiaschange = 0;
+    for( int n = 0; n < batchSize; n++ ) {
+        int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        // need to fetch the board, but it's bigger than us, so will need to loop...
+        int numLoopsForUpstream = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForUpstream; i++ ) {
+            int thisOffset = i * workgroupSize + localId;
+            if( thisOffset < gUpstreamBoardSizeSquared ) {
+                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+            }
+        }
+        int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
+        int numLoopsForResults = ( gOutBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForResults; i++ ) {
+            int thisOffset = i * workgroupSize + localId;
+            if( thisOffset < gOutBoardSizeSquared ) {
+                _resultBoard[thisOffset ] = ( ACTIVATION_DERIV( results[resultBoardGlobalOffset + thisOffset] ) )
+                    * errors[resultBoardGlobalOffset + thisOffset];
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+            int upstreamRow = outRow - gMargin + filterRow;
+            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+                int upstreamCol = outCol - gMargin + filterCol;
+                int resultIndex = outRow * gOutBoardSize + outCol;
+                float activationDerivative = _resultBoard[resultIndex];
+                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
+                float upstreamResult = _imageBoard[upstreamDataIndex];
+                float thisimagethiswchange = upstreamResult * activationDerivative;
+                thiswchange += thisimagethiswchange;
+                thisbiaschange += activationDerivative;
+            }
+        }
+    }
+    if( localId < gFilterSizeSquared ) {
+        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = - learningRateMultiplier * thiswchange;
+//        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
+    }
+    bool writeBias = upstreamPlane == 0 && localId == 0;
+    if( writeBias ) {
+        biasWeightChanges[outPlane] = thisbiaschange;
+    }
+    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    //       aggregate over:  [outRow][outCol][n]
+}
+#endif
+#endif
+
+/*
+    const int outPlane = globalId;
+    float thiswchange = 0;
+    for( int n = 0; n < batchSize; n++ ) {
+        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+                int resultIndex = ( ( n * gNumOutPlanes 
+                          + outPlane ) * gOutBoardSize
+                          + outRow ) * gOutBoardSize
+                          + outCol;
+                float thisimagethiswchange = errors[resultIndex] * ACTIVATION_DERIV( results[resultIndex] );
+                thiswchange += thisimagethiswchange;
+            }
+        }
+    }
+    biasWeightChanges[ globalId ] = - learningMultiplier * thiswchange;
+*/
+
 
 // globalid is for: [outPlane][upstreamPlane][some filterids]:[some filterids][filterRow][filterCol]
 //   workgroup is [a filterid][filterRow][filterCol]
