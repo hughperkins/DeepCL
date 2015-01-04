@@ -135,9 +135,23 @@ public:
         }
 //        timer.timeCheck("propagate time");
     }
-    void backProp(float learningRate,float const *expectedResults) {
+    void backProp(float learningRate, float const *expectedResults) {
         // backward...
-        layers[layers.size() - 1]->backPropExpected( learningRate, expectedResults );
+        Layer *lastLayer = getLastLayer();
+        float *errors = new float[ lastLayer->getResultsSize() ];
+        lastLayer->calcErrors( expectedResults, errors );
+
+        float *errorsForNextLayer = 0;
+        for( int layerIdx = layers.size() - 1; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
+            if( layerIdx > 1 ) {
+                errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
+            }
+            layers[layerIdx]->backPropErrors( learningRate, errors, errorsForNextLayer );
+            delete[] errors;
+            errors = 0;
+            errors = errorsForNextLayer;
+            errorsForNextLayer = 0;
+        }
     }
     void learnBatch( float learningRate, float const*images, float const *expectedResults ) {
 //        Timer timer;

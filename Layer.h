@@ -14,6 +14,7 @@
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
 #include "stringhelper.h"
+#include "OpenCLHelper.h"
 
 class Layer {
 public:
@@ -89,7 +90,13 @@ public:
     virtual void setBatchSize( int batchSize ) { // used to set up internal buffers and stuff
         throw std::runtime_error("setBatchsize not implemetned for this layer type");
     }
-    inline float const* getResults() const {
+    virtual bool hasResultsWrapper() const {
+        return false;
+    }
+    virtual CLWrapper *getResultsWrapper() {
+        throw std::runtime_error("getResultsWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
+    }
+    virtual float * getResults() {
         return results;
     };
     // results structured like [imageid][outputplane][outputrow][outputcol]
@@ -174,7 +181,7 @@ public:
     virtual void backPropExpected( float learningRate, float const *expected ) {
         throw std::runtime_error("backPropExpected not implemented for this layertype, layerindex " + toString(layerIndex ) );
     }
-    virtual void backPropErrors( float learningRate, float const *errors ) {
+    virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) {
         throw std::runtime_error("backproperrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
     }
     virtual int getWeightsSize() const {
@@ -183,8 +190,12 @@ public:
     virtual int getBiasWeightsSize() const {
         throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
     }
+    virtual void calcErrors( float const *expected, float *errors ) {
+        throw std::runtime_error("calcErrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
+    }
     float calcLoss( float const *expected ) {
         float E = 0;
+        getResults();
         // this is matrix subtraction, then element-wise square, then aggregation
         for( int imageId = 0; imageId < batchSize; imageId++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {

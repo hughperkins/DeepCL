@@ -6,6 +6,7 @@
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
+#include "test/Sampler.h"
 
 #include "ConvolutionalLayer.h"
 #include "NeuralNet.h"
@@ -50,6 +51,9 @@ TEST( testbackprop, main ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+    layer1->resultsWrapper->copyToDevice();
+    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
+    imagesWrapper->copyToDevice();
 
 //    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
 //         " weightsSize " << weightsSize << endl;
@@ -58,11 +62,13 @@ TEST( testbackprop, main ) {
         layer1->weightsWrapper->copyToDevice();
 
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, layer1->weightsWrapper );
-//        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errors, layer1->weightsWrapper );
+//        layer1->backPropWeightsCpu( 0.1f, errors, layer1->weights );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
         layer1->weightsWrapper->copyToHost();
+
+        Sampler::printSamples( "layer1->weights", weightsSize, layer1->weights );
 
         EXPECT_FLOAT_NEAR(-3.28283e-05,  layer1->weights[33] );
         EXPECT_FLOAT_NEAR( -1.15271e-05,  layer1->weights[144] );
@@ -71,6 +77,7 @@ TEST( testbackprop, main ) {
     StatefulTimer::dump(true);
 //    cout << "end" << endl;
     delete[] errors;
+    delete imagesWrapper;
 //    delete[]weightChanges;
 //    delete[]weights;
     delete[] upstreamResults;
@@ -109,6 +116,9 @@ TEST( testbackprop, board19 ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+    layer1->resultsWrapper->copyToDevice();
+    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
+    imagesWrapper->copyToDevice();
 
 //    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
 //         " weightsSize " << weightsSize << endl;
@@ -117,7 +127,7 @@ TEST( testbackprop, board19 ) {
         weightsWrapper->copyToDevice();
 
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errors, weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -168,10 +178,13 @@ TEST( testbackprop, board19_1plane_1filter ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+    layer1->resultsWrapper->copyToDevice();
+    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
+    imagesWrapper->copyToDevice();
 
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, errors, weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errors, weightsWrapper );
         StatefulTimer::timeCheck("after backprop");
 
         weightsWrapper->copyToHost();

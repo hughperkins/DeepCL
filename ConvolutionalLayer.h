@@ -32,6 +32,10 @@ public:
     const bool padZeros;
 
     CLWrapper *weightsWrapper;
+    CLWrapper *resultsWrapper;
+
+    bool resultsCopiedToHost;
+//    bool weightsCopiedToHost;
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
 
@@ -42,6 +46,9 @@ public:
 //        delete kernelBackPropWeights4;
         if( weightsWrapper != 0 ) {
             delete weightsWrapper;
+        }
+        if( resultsWrapper != 0 ) {
+            delete resultsWrapper;
         }
         delete kernelBackPropWeightsWithScratch;
         delete kernelConvolve;
@@ -65,6 +72,12 @@ public:
         for( int i = 0; i < numPlanes; i++ ) {
             biasWeights[i] = generateWeight( fanin );
         }
+    }
+    virtual bool hasResultsWrapper() const {
+        return true;
+    }
+    virtual CLWrapper *getResultsWrapper() {
+        return resultsWrapper;
     }
     virtual void print() const {
         std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
@@ -136,30 +149,23 @@ public:
         }
         this->batchSize = batchSize;
         results = new float[getResultsSize()];
+        resultsWrapper = cl->wrap( getResultsSize(), results );
 //        std::cout << " layer " << layerIndex << " allocating results size " << getResultsSize() << std::endl;
         weOwnResults = true;
     }
     virtual void propagate() {
-//        static StatefulTimer statefulTimer;
         StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
-//        Timer timer;
-//        timer.timeCheck("    propagate, created wrappers");
-//        for( int i = 0; i < upstreamWrapper->size(); i++ ) {
-//            std::cout << "upstreamWrapper[" << i << "]=" << upstreamWrapper->get(i) << std::endl;
-//        }
-//        for( int i = 0; i < weightsWrapper->size(); i++ ) {
-//            std::cout << "weightsWrapper[" << i << "]=" << weightsWrapper->get(i) << std::endl;
-//        }
 
-//        std::cout << "propagate, previous result: " << previousLayer->getResults()[0] << " " << previousLayer->getResults()[1] << " size " << batchSize * numPlanes * boardSize * boardSize << std::endl;
-//        std::cout << "propagate, weights: " << weights[0] << " " << " size " << previousLayer->getNumPlanes() * numPlanes * filterSize * filterSize << std::endl;
+        CLWrapper *upstreamWrapper = 0;
+        if( previousLayer->hasResultsWrapper() ) {
+//            std::cout << "layer " << previousLayer->layerIndex << " has resultsWrapper" << std::endl;
+            upstreamWrapper = previousLayer->getResultsWrapper();
+        } else {
+//            std::cout << "layer " << previousLayer->layerIndex << " has no resultsWrapper" << std::endl;
+            upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), (float *)previousLayer->getResults() );
+            upstreamWrapper->copyToDevice();
+        }
 
-        CLFloatWrapperConst *upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
-//        CLFloatWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
-        CLFloatWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
-
-        upstreamWrapper->copyToDevice();
-//        weightsWrapper->copyToDevice();
 //        timer.timeCheck("    propagate, copied to device");
 
         CLFloatWrapper *biasWeightsWrapper = 0;
@@ -168,9 +174,6 @@ public:
             biasWeightsWrapper->copyToDevice();
         }
         StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", copied to device");
-
-//        resultsWrapper->createOnDevice();
-        
         kernelConvolve->in(batchSize)->in( upstreamNumPlanes )->in( numPlanes )->in( upstreamBoardSize )->in( filterSize )
           ->in( padZeros ? 1 : 0 );
         kernelConvolve->input( upstreamWrapper );
@@ -187,28 +190,27 @@ public:
 //        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
 //           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
         kernelConvolve->run_1d( globalSize, workgroupsize );
-        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after kernel enqueue");
-//        timer.timeCheck("    propagate, after run");
-//        std::cout << "batchsize " << batchSize << " inplanes " << upstreamNumPlanes << " outplanes " << numPlanes << " boardsize " << boardSize 
-//           << " filtersize " << filterSize << " padzeros " << padZeros << " globalSize " << globalSize << std::endl;
-
-//        resultsWrapper->copyToHost();
-//        for( int i = 0; i < resultsWrapper->size(); i++ ) {
-//            std::cout << "results[" << i << "]=" << results[i] << std::endl;
-//        }
-
         cl->finish();
-        resultsWrapper->copyToHost();
-        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after copy to host");
-//        timer.timeCheck("    propagate, after copy to host");
+//        resultsWrapper->copyToHost();
+        StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after clFinish");
+        // if we are the last layer, then copy results to host
 
-        delete upstreamWrapper;
-//        delete weightsWrapper;
-        delete resultsWrapper;
+        if( !previousLayer->hasResultsWrapper() ) {
+            delete upstreamWrapper;
+        }
         if( biased ) {
             delete biasWeightsWrapper;
         }
+        resultsCopiedToHost = false;
     }
+    virtual float * getResults() {
+        if( !resultsCopiedToHost ) {
+//            std::cout << "layer " << layerIndex << " copying results to host " << std::endl;
+            resultsWrapper->copyToHost();
+            resultsCopiedToHost = true;
+        }
+        return results;
+    };
     virtual int getWeightsSize() const {
         return numPlanes * upstreamNumPlanes * filterSize * filterSize;
     }
@@ -227,9 +229,9 @@ public:
     inline float getWeight( int outPlane, int inPlane, int filterrow, int filtercol ) const {
         return weights[getWeightIndex( outPlane, inPlane, filterrow, filtercol ) ];
     }
-    virtual void backPropExpected( float learningRate, float const *expected ) {
+    virtual void calcErrors( float const *expected, float *errors ) {
 //        Timer timer;
-        float *errors = new float[ getResultsSize() ];
+        getResults();
         // matrix per-element subtraction...
         for( int n = 0; n < batchSize; n++ ) {
             for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
@@ -242,8 +244,8 @@ public:
             }
         }
 //        timer.timeCheck("expected->errors done");
-        backPropErrors( learningRate, errors );
-        delete[] errors;
+//        backPropErrors( learningRate, errors );
+//        delete[] errors;
     }
 
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
@@ -251,7 +253,7 @@ public:
     // biasweights: [outPlane]
     //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
 
-    virtual void backPropErrors( float learningRate, float const *errors ) {
+    virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) {
 //        Timer timer;
 //        float *weightChanges = new float[ getWeightsSize() ];
         float *biasWeightChanges = new float[getBiasWeightsSize()];
@@ -259,21 +261,31 @@ public:
 //        CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
 
         StatefulTimer::instance()->timeCheck("backproperrors(): start backprop, layer " + toString( layerIndex ) );
-        if( filterSize <= 19 ) {
-            backPropWeightsGpuWithScratch( learningRate, errors, weightsWrapper );
+
+        CLWrapper *imagesWrapper = 0;
+        if( previousLayer->hasResultsWrapper() ) {
+            imagesWrapper = previousLayer->getResultsWrapper();
         } else {
-            backPropWeightsGpu( learningRate, errors, weightsWrapper );
+            imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
+            imagesWrapper->copyToDevice();
+        }
+
+        if( filterSize <= 19 ) {
+            backPropWeightsGpuWithScratch( learningRate, imagesWrapper, resultsWrapper, errors, weightsWrapper );
+        } else {
+            backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errors, weightsWrapper );
         }
         StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
-        doBiasBackpropCpu( learningRate, results, errors, biasWeightChanges );
+        doBiasBackpropGpu( learningRate, resultsWrapper, errors, biasWeightChanges );
         StatefulTimer::instance()->timeCheck("backproperrors(): done biasweight backprop, layer " + toString( layerIndex ) );
 
-        if( previousLayer->needErrorsBackprop() ) {
-            float *errorsForUpstream = new float[previousLayer->getResultsSize()];
+//        if( previousLayer->needErrorsBackprop() ) {
+        if( errorsForUpstream != 0 ) {
+//            float *errorsForUpstream = new float[previousLayer->getResultsSize()];
             calcErrorsForUpstreamGpu( weightsWrapper, errors, errorsForUpstream );
             StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
-            previousLayer->backPropErrors(learningRate, errorsForUpstream);
-            delete[] errorsForUpstream;
+//            previousLayer->backPropErrors(learningRate, errorsForUpstream);
+//            delete[] errorsForUpstream;
         }
 
         const int numWeights = getWeightsSize();
@@ -287,6 +299,9 @@ public:
 //        delete weightChangesWrapper;
 //        delete[] weightChanges;
         delete[] biasWeightChanges;
+        if( !previousLayer->hasResultsWrapper() ) {
+            delete imagesWrapper;
+        }
     }
 
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights ) {
@@ -339,21 +354,10 @@ public:
         StatefulTimer::instance()->timeCheck(" backpropweightscpu end, layer " + toString( layerIndex ) );
     }
 
-    void backPropWeightsGpu( float learningRate, float const*errors, CLWrapper *weightsWrapper ) {
+    void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightsWrapper ) {
         StatefulTimer::instance()->timeCheck(" backpropweightsGpu start, layer " + toString( layerIndex ) );
-//        Timer timer;
-        //void kernel backprop_floats_relu( 
-        //        const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
-        //         const int filterSize, const int outBoardSize, const int padZeros, 
-        //         global const float *images, global const float *errors, global float *weightChanges ) {
-
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-        CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
-        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
-        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
-//        CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
-        imagesWrapper->copyToDevice();
-        resultsWrapper->copyToDevice();
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
         errorsWrapper->copyToDevice();
         kernelBackPropWeights
            ->in(learningMultiplier)
@@ -369,18 +373,14 @@ public:
 //        std::cout << " backpropgpu, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
         kernelBackPropWeights->run_1d(globalSize, workgroupsize);
 
-//        weightChangesWrapper->copyToHost();
         cl->finish();
 
 //        timer.timeCheck("backPropGpu");
-        delete imagesWrapper;
-        delete resultsWrapper;
         delete errorsWrapper;
         StatefulTimer::instance()->timeCheck(" backpropweightsGpu end, layer " + toString( layerIndex ) );
-//        delete weightChangesWrapper;
     }
 
-    void backPropWeightsGpuWithScratch( float learningRate, float const*errors, CLWrapper *weightsWrapper ) {
+    void backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightsWrapper ) {
 //        Timer timer;
         StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch start, layer " + toString( layerIndex ) );
 //        int globalSize = getWeightsSize();
@@ -391,12 +391,8 @@ public:
 //        std::cout << " backpropgpuwithscratch, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
 
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-        CLWrapper *imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
-        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
-        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
-//        CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
         imagesWrapper->copyToDevice();
-        resultsWrapper->copyToDevice();
         errorsWrapper->copyToDevice();
         kernelBackPropWeightsWithScratch
            ->in(learningMultiplier)
@@ -412,12 +408,9 @@ public:
             ->localFloats( boardSizeSquared );
         kernelBackPropWeightsWithScratch->run_1d(globalSize, workgroupsize);
 
-//        weightChangesWrapper->copyToHost();
         cl->finish();
 
 //        timer.timeCheck("backPropGpu");
-        delete imagesWrapper;
-        delete resultsWrapper;
         delete errorsWrapper;
 //        delete weightChangesWrapper;
         StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch end, layer " + toString( layerIndex ) );
@@ -612,7 +605,7 @@ public:
     void calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, float const *const errors, float *const errorsForUpstream ) {
 //        CLWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
         StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamGpu start, layer " + toString( layerIndex ) );
-        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
         CLWrapper *errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
 //        weightsWrapper->copyToDevice();
         errorsWrapper->copyToDevice();
@@ -630,8 +623,9 @@ public:
         kernelBackpropErrors->run_1d(globalSize, workgroupsize);
 
         cl->finish();
-//        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, finished kernel, layer " + toString( layerIndex ) );
         errorsForUpstreamWrapper->copyToHost();
+
+//        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, finished kernel, layer " + toString( layerIndex ) );
 //        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, copied results to host, layer " + toString( layerIndex ) );
         delete errorsForUpstreamWrapper;
         delete errorsWrapper;
@@ -723,7 +717,7 @@ public:
         StatefulTimer::instance()->timeCheck("doBiasBackpropCpu end, layer " + toString( layerIndex ) );
     }
 
-    void doBiasBackpropGpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges ) {
+    void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, float const *errors, float *biasWeightChanges ) {
 //        Timer timer;
         const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
         if( !biased ) {
@@ -734,10 +728,10 @@ public:
         int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
-        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
-        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), errors );
+//        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
+        CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
         CLWrapper *biasWeightChangesWrapper = cl->wrap( numPlanes, biasWeightChanges );
-        resultsWrapper->copyToDevice();
+//        resultsWrapper->copyToDevice();
         errorsWrapper->copyToDevice();
 
         kernelBackpropBiasWeights->in( learningMultiplier )->in( batchSize )
@@ -747,7 +741,7 @@ public:
         biasWeightChangesWrapper->copyToHost();
 
         delete biasWeightChangesWrapper;
-        delete resultsWrapper;
+//        delete resultsWrapper;
         delete errorsWrapper;
         StatefulTimer::instance()->timeCheck("doBiasBackpropGpu end, layer " + toString( layerIndex ) );
     }

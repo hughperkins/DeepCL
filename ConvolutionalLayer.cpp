@@ -8,6 +8,9 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         filterSizeSquared( filterSize * filterSize ),
         padZeros( maker->_padZeros ),
         weightsWrapper( 0 ),
+        resultsWrapper( 0 ),
+        resultsCopiedToHost( false ),
+//        weightsCopiedToHost( false ),
         cl( maker->net->getCl() ) {
         if( padZeros && filterSize % 2 == 0 ) {
             throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");

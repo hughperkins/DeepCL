@@ -162,9 +162,9 @@ public:
         StatefulTimer::timeCheck("end fullyconnected propagate");
     }
     // results structured like [imageid][outputplane][outputrow][outputcol]
-    virtual void backPropExpected( float learningRate, float const *expected ) {
+    virtual void backPropExpected( float learningRate, float const *expected, float *errors ) {
       //  backPropOld( learningRate, expected );
-        float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
+//        float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
         // matrix per-element subtraction...
         for( int n = 0; n < batchSize; n++ ) {
             for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
@@ -176,10 +176,10 @@ public:
                 } 
             }
         }
-        backPropErrors( learningRate, errors );
-        delete[] errors;
+//        backPropErrors( learningRate, errors );
+//        delete[] errors;
     }
-    virtual void backPropErrors( float learningRate, float const *errors ) {
+    virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) {
         StatefulTimer::timeCheck("start fullyconnected backproperrors");
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             for( int outRow = 0; outRow < boardSize; outRow++ ) {
@@ -221,7 +221,8 @@ public:
             }
         }
         StatefulTimer::timeCheck("end fullyconnected backprop errors, start errors for upstream");
-        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
+        if( errorsForUpstream != 0 ) {
+//        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
         for( int n = 0; n < batchSize; n++ ) {
             for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
                 for( int upstreamRow = 0; upstreamRow < upstreamBoardSize; upstreamRow++ ) {
@@ -246,9 +247,10 @@ public:
                 }
             }
         }
+        }
         StatefulTimer::timeCheck("fully connected calc errors for usptream done");
-        previousLayer->backPropErrors(learningRate, errorsForUpstream);
-        delete[] errorsForUpstream;
+//        previousLayer->backPropErrors(learningRate, errorsForUpstream);
+//        delete[] errorsForUpstream;
     }
 };
 

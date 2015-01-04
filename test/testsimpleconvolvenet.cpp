@@ -384,9 +384,9 @@ float weights1[] = {1.12739, 1.21476};
 float weights2[] = {-0.352846, 0.534554, -1.13343, -0.191175};
 float biasWeights1[] = {0.971267, 1.42629};
 float biasWeights2[] = {-0.071288, 0.443919};
-    net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(2, weights2, biasWeights2 );
-    for( int epoch = 0; epoch < 30; epoch++ ) {
+//    net->initWeights(1, weights1, biasWeights1 );
+//    net->initWeights(2, weights2, biasWeights2 );
+    for( int epoch = 0; epoch < 3000; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
             ->batchSize(2)
@@ -404,6 +404,9 @@ float biasWeights2[] = {-0.071288, 0.443919};
 //        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
 //    net->print();
+
+    StatefulTimer::dump(true);
+
     cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     float const*results = net->getResults();
     AccuracyHelper::printAccuracy( 2, 2, labels, results );
