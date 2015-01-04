@@ -37,7 +37,9 @@ TEST( testsinglebatch, main ) {
     }
 
     Timer timer;
-    net->learnBatch( learningRate, inputData, expectedResults );
+    for( int i = 0; i < 5; i++ ) {
+        net->learnBatch( learningRate, inputData, expectedResults );
+    }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
 
