@@ -742,7 +742,7 @@ public:
         }
         StatefulTimer::instance()->timeCheck("doBiasBackpropGpu start, layer " + toString( layerIndex ) );
         int globalSize = numPlanes;
-        int workgroupsize = cl->getMaxWorkgroupSize();
+        int workgroupsize = std::min( numPlanes, cl->getMaxWorkgroupSize() );
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
 //        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
