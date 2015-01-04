@@ -939,7 +939,7 @@ void kernel backprop_floats_withscratch_dobias(
     }
     bool writeBias = upstreamPlane == 0 && localId == 0;
     if( writeBias ) {
-        biasWeightChanges[outPlane] = thisbiaschange;
+        biasWeightChanges[outPlane] = - learningRateMultiplier * thisbiaschange;
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]

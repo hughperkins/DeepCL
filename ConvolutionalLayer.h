@@ -274,36 +274,31 @@ public:
             imagesWrapper->copyToDevice();
         }
 
+        bool implicitlyCalcedBiasWeight = false;
         if( filterSize <= 19 ) {
-            backPropWeightsGpuWithScratch( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
+            backPropWeightsGpuWithScratchAndBias( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper, biasWeightChanges );
+            implicitlyCalcedBiasWeight = true;
         } else {
             backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
         }
         StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
-        doBiasBackpropGpu( learningRate, resultsWrapper, errors, biasWeightChanges );
+        if( !implicitlyCalcedBiasWeight ) {
+            doBiasBackpropGpu( learningRate, resultsWrapper, errors, biasWeightChanges );
         StatefulTimer::instance()->timeCheck("backproperrors(): done biasweight backprop, layer " + toString( layerIndex ) );
+        }
 
-//        if( previousLayer->needErrorsBackprop() ) {
         if( errorsForUpstream != 0 ) {
-//            float *errorsForUpstream = new float[previousLayer->getResultsSize()];
             calcErrorsForUpstreamGpu( weightsWrapper, errors, errorsForUpstream );
             StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
-//            previousLayer->backPropErrors(learningRate, errorsForUpstream);
-//            delete[] errorsForUpstream;
         }
 
         updateWeightsGpu( weightChangesWrapper, weightsWrapper );
 
         const int numWeights = getWeightsSize();
-//        for( int i = 0; i < numWeights; i++ ) {
-//             weights[i] += weightChanges[i];
-//        }
         for( int plane = 0; plane < numPlanes; plane++ ) {
             biasWeights[plane] += biasWeightChanges[plane];
         }
 
-//        delete weightChangesWrapper;
-//        delete[] weightChanges;
         delete[] biasWeightChanges;
         if( !previousLayer->hasResultsWrapper() ) {
             delete imagesWrapper;
