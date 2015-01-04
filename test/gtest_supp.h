@@ -6,7 +6,7 @@ inline ::testing::AssertionResult AssertFloatsNear( const char *expr_one, const 
     float diff = one - two;
     float absdiff = diff > 0 ? diff : - diff;
     float absone = one > 0 ? one : -one;
-    if( absdiff <= absone * 0.0001f ) {
+    if( absdiff <= absone * 0.00001f ) {
         return ::testing::AssertionSuccess();
     }
     std::string onestr = toString(one);
