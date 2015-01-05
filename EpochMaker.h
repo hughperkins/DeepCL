@@ -37,5 +37,6 @@ public:
         return this;
     }
     float run();
+    float runWithCalcTrainingAccuracy(int *trainingLabels, int *p_numRight);
 };
 

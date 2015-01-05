@@ -9,6 +9,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         padZeros( maker->_padZeros ),
         weightsWrapper( 0 ),
         resultsWrapper( 0 ),
+        allocatedSpaceNumExamples( 0 ),
         resultsCopiedToHost( false ),
 //        weightsCopiedToHost( false ),
         cl( maker->net->getCl() ) {

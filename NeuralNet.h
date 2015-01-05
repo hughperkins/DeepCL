@@ -20,6 +20,7 @@
 #include "EpochMaker.h"
 #include "ActivationFunction.h"
 #include "StatefulTimer.h"
+#include "AccuracyHelper.h"
 
 class NeuralNet {
 public:
@@ -100,14 +101,54 @@ public:
         setBatchSize( batchSize );
         int numBatches = numImages / batchSize;
         float loss = 0;
+        int total = 0;
         for( int batch = 0; batch < numBatches; batch++ ) {
             int batchStart = batch * batchSize;
+            int thisBatchSize = batchSize;
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
+                                                             // so last batch size is: 2 = 5 - 3
+                setBatchSize( thisBatchSize );
+            }
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;
             learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
             loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
         }
-        StatefulTimer::dump();
+//        StatefulTimer::dump();
+//        timer.timeCheck("epoch time");
+        return loss;
+    }
+    float doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
+//        Timer timer;
+        setBatchSize( batchSize );
+        int numBatches = ( numImages + batchSize - 1 ) / batchSize;
+        std::cout << "numBatches: " << numBatches << std::endl;
+        float loss = 0;
+        int numRight = 0;
+        int total = 0;
+        if( getLastLayer()->boardSize != 1 ) {
+            throw std::runtime_error("Last layer should have board size of 1, and number of planes equal number of categories, if you want to measure training accuracy");
+        }
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            int batchStart = batch * batchSize;
+            int thisBatchSize = batchSize;
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
+                                                             // so last batch size is: 2 = 5 - 3
+                setBatchSize( thisBatchSize );
+            }
+//            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
+//             " resultssizeperex " << getResultsSizePerExample() << std::endl;
+            learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+            StatefulTimer::timeCheck("after batch forward-backward prop");
+            numRight += AccuracyHelper::calcNumRight( thisBatchSize, getLastLayer()->numPlanes, &(labels[batchStart]), getResults() );
+            StatefulTimer::timeCheck("after batch calc training num right");
+            loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
+            StatefulTimer::timeCheck("after batch calc loss");
+        }
+        *p_totalCorrect = numRight;
+//        StatefulTimer::dump();
 //        timer.timeCheck("epoch time");
         return loss;
     }

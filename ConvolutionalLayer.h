@@ -36,6 +36,8 @@ public:
     CLWrapper *weightsWrapper;
     CLWrapper *resultsWrapper;
 
+    int allocatedSpaceNumExamples;
+
     bool resultsCopiedToHost;
 //    bool weightsCopiedToHost;
 
@@ -148,14 +150,22 @@ public:
         }
     }
     virtual void setBatchSize( int batchSize ) {
+        if( batchSize <= allocatedSpaceNumExamples ) {
+            this->batchSize = batchSize;
+            return;
+        }
         if( results != 0 ) {
             delete[] results;
+        }
+        if( resultsWrapper != 0 ) {
+            delete resultsWrapper;
         }
         this->batchSize = batchSize;
         results = new float[getResultsSize()];
         resultsWrapper = cl->wrap( getResultsSize(), results );
 //        std::cout << " layer " << layerIndex << " allocating results size " << getResultsSize() << std::endl;
         weOwnResults = true;
+        this->allocatedSpaceNumExamples = batchSize;
     }
     virtual void propagate() {
         StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
@@ -293,6 +303,7 @@ public:
         }
 
         updateWeightsGpu( weightChangesWrapper, weightsWrapper );
+            StatefulTimer::instance()->timeCheck("backproperrors(): updated weights, layer " + toString( layerIndex ) );
 
         const int numWeights = getWeightsSize();
         for( int plane = 0; plane < numPlanes; plane++ ) {

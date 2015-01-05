@@ -9,7 +9,7 @@ using namespace std;
 #include "BoardPng.h"
 #include "Timer.h"
 #include "NeuralNet.h"
-#include "test/AccuracyHelper.h"
+#include "AccuracyHelper.h"
 #include "stringhelper.h"
 #include "FileHelper.h"
 
@@ -94,11 +94,18 @@ public:
 
 void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
     int testNumRight = 0;
-    for( int batch = 0; batch < N / batchSize; batch++ ) {
+    net->setBatchSize( batchSize );
+    int numBatches = (N + batchSize - 1 ) / batchSize;
+    for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;
+        int thisBatchSize = batchSize;
+        if( batch == numBatches - 1 ) {
+            thisBatchSize = N - batchStart;
+            net->setBatchSize( thisBatchSize );
+        }
         net->propagate( &(boards[batchStart][0][0]) );
         float const*results = net->getResults();
-        int thisnumright = AccuracyHelper::calcNumRight( batchSize, 10, &(labels[batchStart]), results );
+        int thisnumright = AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labels[batchStart]), results );
 //        cout << name << " batch " << batch << ": numright " << thisnumright << "/" << batchSize << endl;
         testNumRight += thisnumright;
     }
@@ -168,18 +175,21 @@ void go(Config config) {
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
+        int trainNumRight = 0;
         float loss = net->epochMaker()
             ->learningRate(config.learningRate)
             ->batchSize(batchSize)
             ->numExamples(numToTrain)
             ->inputData(&(boardsFloat[0][0][0]))
             ->expectedOutputs(expectedOutputs)
-            ->run();
+            ->runWithCalcTrainingAccuracy(labels, &trainNumRight );
+        StatefulTimer::dump(true);
         cout << "       loss L: " << loss << endl;
-        int trainNumRight = 0;
+//        int trainNumRight = 0;
         timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
-        printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
+        std::cout << "train accuracy: " << trainNumRight << "/" << numToTrain << " " << (trainNumRight * 100.0f/ numToTrain) << "%" << std::endl;
+        //printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
         printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
         timer.timeCheck("after tests");
     }
@@ -189,15 +199,21 @@ void go(Config config) {
 //    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
     timer.timeCheck("after tests");
 
-    int numBatches = config.numTest / config.batchSize;
+    int numTestBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
     int totalNumber = 0;
     int totalNumRight = 0;
-    for( int batch = 0; batch < numBatches; batch++ ) {
+    net->setBatchSize( config.batchSize );
+    for( int batch = 0; batch < numTestBatches; batch++ ) {
         int batchStart = batch * config.batchSize;
+        int thisBatchSize = config.batchSize;
+        if( batch == numTestBatches - 1 ) {
+            thisBatchSize = config.numTest - batchStart;
+            net->setBatchSize( thisBatchSize );
+        }
         net->propagate( &(boardsTest[batchStart][0][0]) );
         float const*resultsTest = net->getResults();
-        totalNumber += config.batchSize;
-        totalNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labelsTest[batchStart]), resultsTest );
+        totalNumber += thisBatchSize;
+        totalNumRight += AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labelsTest[batchStart]), resultsTest );
     }
     cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
 
