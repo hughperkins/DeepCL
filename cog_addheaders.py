@@ -31,16 +31,20 @@ def add():
     f = open( cppfile, 'r')
     line = f.readline()
     cog.outl('')
+    is_static = False
+    is_virtual = False
     while( line != '' ):
        # cog.outl(line)
        if( line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ):
            fnheader = line.replace( classname + '::', '' )
            fnheader = fnheader.replace( '{', '' )
            fnheader = fnheader.replace( ':', '' )
-           is_virtual = fnheader.find("[virtual]") >= 0
+           if fnheader.find("[virtual]") >= 0:
+               is_virtual = True
            fnheader = fnheader.replace( '// [virtual]', '' ).strip()
            fnheader = fnheader.replace( '//[virtual]', '' ).strip()
-           is_static = fnheader.find("[static]") >= 0
+           if fnheader.find("[static]") >= 0:
+              is_static = True
            fnheader = fnheader.replace( '// [static]', '' ).strip()
            fnheader = fnheader.replace( '//[static]', '' ).strip()
            fnheader = fnheader.strip().replace( ')', ');' )
@@ -51,6 +55,13 @@ def add():
            if is_virtual:
                cog.out( "virtual " )
            cog.outl( fnheader );
+       elif( line.strip().replace(' ', '') == '//[static]' ):
+           is_static = True
+       elif( line.strip().replace(' ', '') == '//[virtual]' ):
+           is_virtual = True
+       elif( line.find('}') >= 0 ):
+           is_virtual = False
+           is_static = False
        line = f.readline()
     f.close()
     cog.outl('')

@@ -19,17 +19,6 @@ Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     weOwnResults(false) {
 }
 
-//    Layer( Layer *previousLayer, int numPlanes, int boardSize, ActivationFunction *activationFunction ) :
-//         previousLayer( previousLayer ),
-//         numPlanes( numPlanes),
-//         boardSize( boardSize ),
-//         results(0),
-//         weights(0),
-//         upstreamBoardSize( previousLayer == 0 ? 0 : previousLayer->boardSize )
-//         layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
-//         activationFunction( activationFunction ),
-//         weOwnResults(false) {
-//    }
 Layer::~Layer() { // [virtual]
     if( results != 0 && weOwnResults ) {
          delete[] results;
