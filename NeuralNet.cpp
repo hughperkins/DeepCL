@@ -40,7 +40,8 @@ NeuralNet::~NeuralNet() {
 OpenCLHelper *NeuralNet::getCl() {
     return cl;
 }
-NeuralNetMould *NeuralNet::maker() { // [static]
+// [static]
+NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
 FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
