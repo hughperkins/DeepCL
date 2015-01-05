@@ -13,6 +13,9 @@
 *.dylib
 *.dll
 
+# python compiled modules
+*.pyc
+
 # Fortran module files
 *.mod
 
@@ -33,5 +36,4 @@ data/mnist
 
 # vi
 *.swp
-
 
