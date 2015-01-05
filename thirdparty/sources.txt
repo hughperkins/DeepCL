@@ -1,0 +1,8 @@
+Sources:
+
+    gtest: https://googletest.googlecode.com/files/gtest-1.7.0.zip
+
+    cogapp: forked from https://bitbucket.org/ned/cog , at https://bitbucket.org/hughperkins/cog-standalone Fork justifications:
+      - added 'q' option, so only shows changed files
+      - can run standalone, ie you dont have to run 'setup.py' on it before using it
+

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+OPTION(PYTHON_AVAILABLE "Python is on the PATH. Used to update header files, using cogapp." OFF)
+OPTION(PNG_AVAILABLE "libpng++ is available. Just used by some testing utilities, not used by main ClConvolve library." OFF)
 
 include_directories( . )
 include_directories( OpenCLHelper )
@@ -20,32 +22,48 @@ add_custom_command(
 add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
 add_dependencies( ClConvolve git_submodules_update )
 
+if( PNG_AVAILABLE)
 find_package(PNG)
 link_libraries(${PNG_LIBRARY})
+endif(PNG_AVAILABLE)
 
 link_libraries(ClConvolve)
+
+if(PYTHON_AVAILABLE)
+    add_custom_target( 
+        cog
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -r ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+    )
+    add_dependencies( ClConvolve cog )
+endif(PYTHON_AVAILABLE)
 
 #add_custom_target(
 #    git-submodule-update
 #    git submodule update --init --recursive
 #)
 
+set( UNITTEST_SOURCES unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp
+ test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
+test/testbackprop.cpp test/testcalcerrorsforupstream.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
+test/testbackpropweights2.cpp )
+
 add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve_simple test/testneuralnetmnistconvolve_simple.cpp stringhelper.cpp )
-add_executable( test4dconvolve test/test4dconvolve.cpp )
 add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp )
-add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve-experimental test/testneuralnetmnistconvolve-experimental.cpp stringhelper.cpp )
+if( PNG_AVAILABLE)
+    add_executable( test4dconvolve test/test4dconvolve.cpp )
+    add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
+    set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testboardshelper.cpp )
+endif(PNG_AVAILABLE)
 
 #add_dependencies( ClConvolve git-submodule-update )
 
 add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
 target_link_libraries( gtest pthread)
 
-add_executable( unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp test/testboardshelper.cpp test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
-test/testbackprop.cpp test/testcalcerrorsforupstream.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
-test/testbackpropweights2.cpp 
+add_executable( ${UNITTEST_SOURCES}
 thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
@@ -62,6 +80,7 @@ add_custom_target(
 )
 
 add_dependencies( ClConvolve clfiles )
+
 #add_dependencies( testneuralnetmnistconvolve clfiles )
 #add_dependencies( test4dconvolve clfiles )
 

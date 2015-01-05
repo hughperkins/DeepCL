@@ -210,6 +210,16 @@ make unittests
 ./unittests --gtest_filter=testbackprop.*
 ```
 
+Development notes
+=================
+
+- if you want to modify things, please feel free to fork this repository, tweak things, and send a pull request
+- note that the headers are generated using [cogapp](http://nedbatchelder.com/code/cog/)  . You don't need this to
+build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
+cmake configuration, then header file declarations will be generated for you automatically when you build :-)
+  - make a method `virtual` by adding `// [virtual]` after the method header, in the .cpp file
+  - make a method `static` by adding `// [static]` after the method header, in the .cpp file
+
 Helper methods
 ==============
 
