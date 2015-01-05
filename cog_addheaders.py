@@ -27,7 +27,7 @@ def add():
     infilename = splitinfile[ len(splitinfile) - 1 ]
     classname = infilename.replace('.h','')
     cog.outl( '// classname: ' + classname )
-    cog.outl( '// cppfile: ' + cppfile )
+    cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
     f = open( cppfile, 'r')
     line = f.readline()
     cog.outl('')

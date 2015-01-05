@@ -60,7 +60,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // classname: ConvolutionalLayer
-    // cppfile: /home/user/git/ClConvolve/ConvolutionalLayer.cpp
+    // cppfile: ConvolutionalLayer.cpp
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     virtual ~ConvolutionalLayer();

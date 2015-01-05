@@ -30,7 +30,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // classname: NeuralNet
-    // cppfile: /home/user/git/ClConvolve/NeuralNet.cpp
+    // cppfile: NeuralNet.cpp
 
     NeuralNet( int numPlanes, int boardSize );
     ~NeuralNet();
