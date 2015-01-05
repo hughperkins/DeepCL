@@ -4,9 +4,14 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <stdexcept>
+
+#include "Layer.h"
+
 #include "NeuralNet.h"
 
-#include <stdexcept>
+#include "NeuralNetMould.h"
+
 using namespace std;
 
 NeuralNet *NeuralNetMould::instance() {

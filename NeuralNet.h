@@ -6,241 +6,63 @@
 
 #pragma once
 
-#include <stdexcept>
 #include <vector>
-#include <random>
 
-#include "Timer.h"
 #include "Layer.h"
+#include "NeuralNetMould.h"
+#include "EpochMaker.h"
+#include "ConvolutionalLayer.h"
 #include "InputLayer.h"
 #include "FullyConnectedLayer.h"
-#include "ConvolutionalLayer.h"
-#include "NeuralNetMould.h"
-#include "LayerMaker.h"
-#include "EpochMaker.h"
-#include "ActivationFunction.h"
-#include "StatefulTimer.h"
-#include "AccuracyHelper.h"
+
+class OpenCLHelper;
+class FullyConnectedMaker;
+class ConvolutionalMaker;
+class LayerMaker;
 
 class NeuralNet {
 public:
     std::vector< Layer *> layers;
     OpenCLHelper *cl;
-    NeuralNet( int numPlanes, int boardSize ) {
-        cl = new OpenCLHelper();
-        InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
-        maker->insert();
-    }
-    ~NeuralNet() {
-        for( int i = 0; i < layers.size(); i++ ) {
-            delete layers[i];
-        }
-        delete cl;
-    }
-    OpenCLHelper *getCl() {
-        return cl;
-    }
-    static NeuralNetMould *maker() {
-        return new NeuralNetMould();
-    }
-    FullyConnectedMaker *fullyConnectedMaker() {
-        return new FullyConnectedMaker( this );
-    }
-    ConvolutionalMaker *convolutionalMaker() {
-        return new ConvolutionalMaker( this );
-    }
-    void initWeights( int layerIndex, float *weights, float *biasWeights ) {
-        initWeights( layerIndex, weights );
-        initBiasWeights( layerIndex, biasWeights );
-    }
-    void initWeights( int layerIndex, float *weights ) {
-        layers[layerIndex]->initWeights( weights );
-    }
-    void initBiasWeights( int layerIndex, float *weights ) {
-        layers[layerIndex]->initBiasWeights( weights );
-    }
-    void printWeightsAsCode() {
-        for( int layer = 1; layer < layers.size(); layer++ ) {
-            layers[layer]->printWeightsAsCode();
-        }
-    }
-    void printBiasWeightsAsCode() {
-        for( int layer = 1; layer < layers.size(); layer++ ) {
-            layers[layer]->printBiasWeightsAsCode();
-        }
-    }
-    float calcLoss(float const *expectedValues ) {
-        return layers[layers.size()-1]->calcLoss( expectedValues );
-    }
-    EpochMaker *epochMaker() {
-         return new EpochMaker(this);
-    }
-    InputLayer *getFirstLayer() {
-        return dynamic_cast<InputLayer*>( layers[0] );
-    }
-    Layer *getLastLayer() {
-        return layers[layers.size() - 1];
-    }
-    Layer *addLayer( LayerMaker *maker ) {
-        Layer *previousLayer = 0;
-        if( layers.size() > 0 ) {
-            previousLayer = layers[ layers.size() - 1 ];
-        }
-        maker->setPreviousLayer( previousLayer );
-        Layer *layer = maker->instance();
-        layers.push_back( layer );
-        return layer;
-    }
-    void setBatchSize( int batchSize ) {
-        for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
-            (*it)->setBatchSize( batchSize );
-        }
-    }
-    float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
-//        Timer timer;
-        setBatchSize( batchSize );
-        int numBatches = numImages / batchSize;
-        float loss = 0;
-        int total = 0;
-        for( int batch = 0; batch < numBatches; batch++ ) {
-            int batchStart = batch * batchSize;
-            int thisBatchSize = batchSize;
-            if( batch == numBatches - 1 ) {
-                thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
-                                                             // so last batch size is: 2 = 5 - 3
-                setBatchSize( thisBatchSize );
-            }
-//            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
-//             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-            learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
-            loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
-        }
-//        StatefulTimer::dump();
-//        timer.timeCheck("epoch time");
-        return loss;
-    }
-    float doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
-//        Timer timer;
-        setBatchSize( batchSize );
-        int numBatches = ( numImages + batchSize - 1 ) / batchSize;
-        std::cout << "numBatches: " << numBatches << std::endl;
-        float loss = 0;
-        int numRight = 0;
-        int total = 0;
-        if( getLastLayer()->boardSize != 1 ) {
-            throw std::runtime_error("Last layer should have board size of 1, and number of planes equal number of categories, if you want to measure training accuracy");
-        }
-        for( int batch = 0; batch < numBatches; batch++ ) {
-            int batchStart = batch * batchSize;
-            int thisBatchSize = batchSize;
-            if( batch == numBatches - 1 ) {
-                thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
-                                                             // so last batch size is: 2 = 5 - 3
-                setBatchSize( thisBatchSize );
-            }
-//            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
-//             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-            learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
-            StatefulTimer::timeCheck("after batch forward-backward prop");
-            numRight += AccuracyHelper::calcNumRight( thisBatchSize, getLastLayer()->numPlanes, &(labels[batchStart]), getResults() );
-            StatefulTimer::timeCheck("after batch calc training num right");
-            loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
-            StatefulTimer::timeCheck("after batch calc loss");
-        }
-        *p_totalCorrect = numRight;
-//        StatefulTimer::dump();
-//        timer.timeCheck("epoch time");
-        return loss;
-    }
-//    float *propagate( int N, int batchSize, float const*images) {
-//        float *results = new float[N];
-//        int numBatches = N / batchSize;
-//        for( int batch = 0; batch < numBatches; batch++ ) {
-//            int batchStart = batch * batchSize;
-//            int batchEndExcl = std::min( N, (batch + 1 ) * batchSize );
-//            propagateBatch( &(images[batchStart]) );
-//            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
-//                float const *netResults = getResults();
-//            for( int i = 0; i < batchSize; i++ ) {
-//                results[batchStart + i ] = netResults[i];
-//            }
-//        }
-//        return results;
-//    }
-    void propagate( float const*images) {
-        // forward...
-//        Timer timer;
-        dynamic_cast<InputLayer *>(layers[0])->in( images );
-        for( int layerId = 1; layerId < layers.size(); layerId++ ) {
-            layers[layerId]->propagate();
-        }
-//        timer.timeCheck("propagate time");
-    }
-    void backProp(float learningRate, float const *expectedResults) {
-        // backward...
-        Layer *lastLayer = getLastLayer();
-        float *errors = new float[ lastLayer->getResultsSize() ];
-        lastLayer->calcErrors( expectedResults, errors );
 
-        float *errorsForNextLayer = 0;
-        for( int layerIdx = layers.size() - 1; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
-            if( layerIdx > 1 ) {
-                errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
-            }
-            layers[layerIdx]->backPropErrors( learningRate, errors, errorsForNextLayer );
-            delete[] errors;
-            errors = 0;
-            errors = errorsForNextLayer;
-            errorsForNextLayer = 0;
-        }
-    }
-    void learnBatch( float learningRate, float const*images, float const *expectedResults ) {
-//        Timer timer;
-        propagate( images);
-//        timer.timeCheck("propagate");
-        backProp(learningRate, expectedResults );
-//        timer.timeCheck("backProp");
-    }
-    int getNumLayers() {
-        return layers.size();
-    }
-    float const *getResults( int layer ) const {
-        return layers[layer]->getResults();
-    }
-    int getInputSizePerExample() const {
-        return layers[ 0 ]->getResultsSizePerExample();
-    }
-    int getResultsSizePerExample() const {
-        return layers[ layers.size() - 1 ]->getResultsSizePerExample();
-    }
-    float const *getResults() const {
-        return getResults( layers.size() - 1 );
-    }
-    void print() {
-        int i = 0; 
-        for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-            std::cout << "layer " << i << ":" << std::endl;
-            (*it)->print();
-            i++;
-        }
-    }
-    void printWeights() {
-        int i = 0; 
-        for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-            std::cout << "layer " << i << ":" << std::endl;
-            (*it)->printWeights();
-            i++;
-        }
-    }
-    void printOutput() {
-        int i = 0; 
-        for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-            std::cout << "layer " << i << ":" << std::endl;
-            (*it)->printOutput();
-            i++;
-        }
-    }
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.add()
+    // ]]]
+    // classname: NeuralNet
+    // cppfile: /home/user/git/ClConvolve/NeuralNet.cpp
+
+    NeuralNet( int numPlanes, int boardSize );
+    ~NeuralNet();
+    OpenCLHelper *getCl();
+    static NeuralNetMould *maker();
+    FullyConnectedMaker *fullyConnectedMaker();
+    ConvolutionalMaker *convolutionalMaker();
+    void initWeights( int layerIndex, float *weights, float *biasWeights );
+    void initWeights( int layerIndex, float *weights );
+    void initBiasWeights( int layerIndex, float *weights );
+    void printWeightsAsCode();
+    void printBiasWeightsAsCode();
+    float calcLoss(float const *expectedValues );
+    EpochMaker *epochMaker();
+    InputLayer *getFirstLayer();
+    Layer *getLastLayer();
+    Layer *addLayer( LayerMaker *maker );
+    void setBatchSize( int batchSize );
+    float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults );
+    float doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect );
+    void propagate( float const*images);
+    void backProp(float learningRate, float const *expectedResults);
+    void learnBatch( float learningRate, float const*images, float const *expectedResults );
+    int getNumLayers();
+    float const *getResults( int layer ) const;
+    int getInputSizePerExample() const;
+    int getResultsSizePerExample() const;
+    float const *getResults() const;
+    void print();
+    void printWeights();
+    void printOutput();
+
+    // [[[end]]]
 };
-
-
 

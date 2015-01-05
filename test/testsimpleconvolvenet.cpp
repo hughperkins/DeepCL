@@ -9,6 +9,7 @@
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "test/myasserts.h"
+#include "StatefulTimer.h"
 
 using namespace std;
 

@@ -2,7 +2,6 @@
 //#include "ClConvolve.h"
 
 #include <iostream>
-using namespace std;
 
 #include "BoardHelper.h"
 #include "MnistLoader.h"
@@ -12,6 +11,9 @@ using namespace std;
 #include "AccuracyHelper.h"
 #include "stringhelper.h"
 #include "FileHelper.h"
+#include "StatefulTimer.h"
+
+using namespace std;
 
 void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {
     int boardSize;

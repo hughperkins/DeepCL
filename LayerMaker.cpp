@@ -4,11 +4,15 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <stdexcept>
+
 #include "LayerMaker.h"
 
 #include "NeuralNet.h"
+#include "FullyConnectedLayer.h"
+#include "ConvolutionalLayer.h"
+#include "InputLayer.h"
 
-#include <stdexcept>
 using namespace std;
 
 Layer *FullyConnectedMaker::insert() {
