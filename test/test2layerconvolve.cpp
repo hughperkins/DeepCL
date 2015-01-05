@@ -9,7 +9,7 @@ using namespace std;
 #include "BoardPng.h"
 #include "Timer.h"
 #include "NeuralNet.h"
-#include "test/AccuracyHelper.h"
+#include "AccuracyHelper.h"
 #include "stringhelper.h"
 
 void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {

@@ -8,7 +8,7 @@ using namespace std;
 #include "BoardPng.h"
 #include "Timer.h"
 #include "NeuralNet.h"
-#include "test/AccuracyHelper.h"
+#include "AccuracyHelper.h"
 #include "stringhelper.h"
 #include "FileHelper.h"
 
