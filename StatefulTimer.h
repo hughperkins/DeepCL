@@ -38,7 +38,9 @@ public:
         }
         std::cout << "StatefulTimer readings:" << std::endl;
         for( std::map< std::string, float >::iterator it = timeByState.begin(); it != timeByState.end(); it++ ) {
-            std::cout << "   " << it->first << ": " << it->second << std::endl;
+            if( it->second > 0 ) {
+                std::cout << "   " << it->first << ": " << it->second << std::endl;
+            }
         }
         timeByState.clear();
     }
