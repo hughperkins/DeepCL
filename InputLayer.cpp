@@ -2,15 +2,16 @@
 
 using namespace std;
 
+#undef VIRTUAL
+#define VIRTUAL 
+
 InputLayer::InputLayer( Layer *previousLayer, InputLayerMaker const*maker ) :
        Layer( previousLayer, maker ) {
 }
-// [virtual]
-float *InputLayer::getResults() {
+VIRTUAL float *InputLayer::getResults() {
     return results;
 }
-// [virtual]
-void InputLayer::printOutput() const {
+VIRTUAL void InputLayer::printOutput() const {
     if( results == 0 ) {
          return;
     }
@@ -37,8 +38,7 @@ void InputLayer::printOutput() const {
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
-// [virtual]
-void InputLayer::print() const {
+VIRTUAL void InputLayer::print() const {
     printOutput();
 }
 void InputLayer::in( float const*images ) {
@@ -48,22 +48,17 @@ void InputLayer::in( float const*images ) {
 //        this->batchEnd = batchEnd;
 //        print();
 }
-// [virtual]
-InputLayer::~InputLayer() {
+VIRTUAL InputLayer::~InputLayer() {
 }
-// [virtual]
-bool InputLayer::needErrorsBackprop() {
+VIRTUAL bool InputLayer::needErrorsBackprop() {
     return false;
 }
-// [virtual]
-void InputLayer::setBatchSize( int batchSize ) {
+VIRTUAL void InputLayer::setBatchSize( int batchSize ) {
 //        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
     this->batchSize = batchSize;
 }
-// [virtual]
-void InputLayer::propagate() {
+VIRTUAL void InputLayer::propagate() {
 }
-// [virtual]
-void InputLayer::backPropErrors( float learningRate, float const *errors ) {
+VIRTUAL void InputLayer::backPropErrors( float learningRate, float const *errors ) {
 }
 

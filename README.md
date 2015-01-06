@@ -216,8 +216,6 @@ Development notes
 - note that the headers are generated using [cogapp](http://nedbatchelder.com/code/cog/)  . You don't need this to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
 cmake configuration, then header file declarations will be generated for you automatically when you build :-)
-  - make a method `virtual` by adding `// [virtual]` just before the method, in the .cpp file
-  - make a method `static` by adding `// [static]` just before the method, in the .cpp file
 
 Helper methods
 ==============

@@ -9,6 +9,8 @@
 #include "Layer.h"
 #include "ActivationFunction.h"
 
+#define VIRTUAL virtual
+
 class InputLayer : public Layer {
 public:
 
@@ -20,15 +22,15 @@ public:
     // cppfile: InputLayer.cpp
 
     InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
-    virtual float *getResults();
-    virtual void printOutput() const;
-    virtual void print() const;
+    VIRTUAL float *getResults();
+    VIRTUAL void printOutput() const;
+    VIRTUAL void print() const;
     void in( float const*images );
-    virtual ~InputLayer();
-    virtual bool needErrorsBackprop();
-    virtual void setBatchSize( int batchSize );
-    virtual void propagate();
-    virtual void backPropErrors( float learningRate, float const *errors );
+    VIRTUAL ~InputLayer();
+    VIRTUAL bool needErrorsBackprop();
+    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void propagate();
+    VIRTUAL void backPropErrors( float learningRate, float const *errors );
 
     // [[[end]]]
 };

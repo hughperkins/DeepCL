@@ -20,6 +20,9 @@ class FullyConnectedMaker;
 class ConvolutionalMaker;
 class LayerMaker;
 
+#define VIRTUAL virtual
+#define STATIC static
+
 class NeuralNet {
 public:
     std::vector< Layer *> layers;
@@ -35,7 +38,7 @@ public:
     NeuralNet( int numPlanes, int boardSize );
     ~NeuralNet();
     OpenCLHelper *getCl();
-    static NeuralNetMould *maker();
+    STATIC NeuralNetMould *maker();
     FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
     void initWeights( int layerIndex, float *weights, float *biasWeights );

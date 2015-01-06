@@ -2,6 +2,9 @@
 
 using namespace std;
 
+#undef VIRTUAL
+#define VIRTUAL 
+
 FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker ) :
         Layer( previousLayer, maker ),
         errorsForUpstream(0),
@@ -16,31 +19,25 @@ FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMa
     randomizeWeights( fanIn, weights, getWeightsSize() );
     randomizeWeights( fanIn, biasWeights, getBiasWeightsSize() );
 }
-// [virtual]
-float *FullyConnectedLayer::getResults() {
+VIRTUAL float *FullyConnectedLayer::getResults() {
     return results;
 }
-// [virtual]
-bool FullyConnectedLayer::needErrorsBackprop() {
+VIRTUAL bool FullyConnectedLayer::needErrorsBackprop() {
     return true;
 }
-// [virtual]
-int FullyConnectedLayer::getWeightsSize() const {
+VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
     return upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize * numPlanes * boardSize * boardSize;
 }
-// [virtual]
-int FullyConnectedLayer::getBiasWeightsSize() const {
+VIRTUAL int FullyConnectedLayer::getBiasWeightsSize() const {
     return numPlanes * boardSize * boardSize;
 }
-// [virtual]
-void FullyConnectedLayer::print() const {
+VIRTUAL void FullyConnectedLayer::print() const {
     std::cout << "FullyConnectedLayer" << std::endl;
     std::cout << "  numoutputneurons " << numPlanes << std::endl;
     printWeights();
     printOutput();
 }
-// [virtual]
-void FullyConnectedLayer::printWeights() const {
+VIRTUAL void FullyConnectedLayer::printWeights() const {
     std::cout << "  weights: " << std::endl;
     for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
         for( int outRow = 0; outRow < boardSize; outRow++ ) {
@@ -68,8 +65,7 @@ void FullyConnectedLayer::printWeights() const {
         }
     }
 }
-// [virtual]
-void FullyConnectedLayer::printOutput() const {
+VIRTUAL void FullyConnectedLayer::printOutput() const {
     if( results == 0 ) {
          std::cout << "no results yet" << std::endl;
     } else {
@@ -94,19 +90,16 @@ void FullyConnectedLayer::randomizeWeights(int fanIn, float *weights, int numWei
     }
 //        print();
 }
-// [virtual]
-FullyConnectedLayer::~FullyConnectedLayer() {
+VIRTUAL FullyConnectedLayer::~FullyConnectedLayer() {
 //        if( results != 0 ) {
 //            delete[] results;
 //        }
 //        delete[] weights;
 }
-// [virtual]
-float *FullyConnectedLayer::getErrorsForUpstream() {
+VIRTUAL float *FullyConnectedLayer::getErrorsForUpstream() {
     return errorsForUpstream;
 }
-// [virtual]
-void FullyConnectedLayer::setBatchSize( int batchSize ) {
+VIRTUAL void FullyConnectedLayer::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;
         return;
@@ -125,8 +118,7 @@ void FullyConnectedLayer::setBatchSize( int batchSize ) {
     weOwnResults = true;
     allocatedSize = batchSize;
 }
-// [virtual]
-void FullyConnectedLayer::propagate() {
+VIRTUAL void FullyConnectedLayer::propagate() {
     StatefulTimer::timeCheck("start fullyconnected propagate");
     for( int imageId = 0; imageId < batchSize; imageId++ ) {
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
@@ -157,8 +149,7 @@ void FullyConnectedLayer::propagate() {
     StatefulTimer::timeCheck("end fullyconnected propagate");
 }
 // results structured like [imageid][outputplane][outputrow][outputcol]
-// [virtual]
-void FullyConnectedLayer::calcErrors( float const *expected, float *errors ) {
+VIRTUAL void FullyConnectedLayer::calcErrors( float const *expected, float *errors ) {
   //  backPropOld( learningRate, expected );
 //        float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
     // matrix per-element subtraction...
@@ -175,8 +166,7 @@ void FullyConnectedLayer::calcErrors( float const *expected, float *errors ) {
 //        backPropErrors( learningRate, errors );
 //        delete[] errors;
 }
-// [virtual]
-void FullyConnectedLayer::backPropErrors( float learningRate ) {
+VIRTUAL void FullyConnectedLayer::backPropErrors( float learningRate ) {
     float *errors = nextLayer->getErrorsForUpstream();
     StatefulTimer::timeCheck("start fullyconnected backproperrors");
     for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {

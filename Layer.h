@@ -16,6 +16,8 @@
 #include "stringhelper.h"
 #include "OpenCLHelper.h"
 
+#define VIRTUAL virtual
+
 class Layer {
 public:
 //    int batchStart;
@@ -70,27 +72,27 @@ public:
 
     Layer( Layer *previousLayer, LayerMaker const*maker );
     Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker );
-    virtual ~Layer();
-    virtual void setBatchSize( int batchSize );
-    virtual bool providesErrorsWrapper() const;
-    virtual float *getErrorsForUpstream();
-    virtual CLWrapper *getErrorsForUpstreamWrapper();
-    virtual bool hasResultsWrapper() const;
-    virtual CLWrapper *getResultsWrapper();
-    virtual int getResultsSize() const;
+    VIRTUAL ~Layer();
+    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL bool providesErrorsWrapper() const;
+    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool hasResultsWrapper() const;
+    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL int getResultsSize() const;
     int getNumPlanes() const;
     int getBoardSize() const;
-    virtual void propagate();
-    virtual void print() const;
-    virtual void initWeights( float*weights );
-    virtual void initBiasWeights( float*biasWeights );
-    virtual void printWeightsAsCode() const;
-    virtual void printBiasWeightsAsCode() const;
-    virtual void printWeights() const;
-    virtual void printOutput() const;
-    virtual void backPropErrors( float learningRate );
-    virtual int getWeightsSize() const;
-    virtual int getBiasWeightsSize() const;
+    VIRTUAL void propagate();
+    VIRTUAL void print() const;
+    VIRTUAL void initWeights( float*weights );
+    VIRTUAL void initBiasWeights( float*biasWeights );
+    VIRTUAL void printWeightsAsCode() const;
+    VIRTUAL void printBiasWeightsAsCode() const;
+    VIRTUAL void printWeights() const;
+    VIRTUAL void printOutput() const;
+    VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL int getWeightsSize() const;
+    VIRTUAL int getBiasWeightsSize() const;
     float calcLoss( float const *expected );
 
     // [[[end]]]

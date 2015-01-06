@@ -10,6 +10,9 @@
 
 using namespace std;
 
+#undef VIRTUAL
+#define VIRTUAL 
+
 ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
         Layer( previousLayer, maker ),
         filterSize( maker->_filterSize ),
@@ -76,8 +79,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     weightsWrapper->copyToDevice();
 }
 
-// [virtual]
-ConvolutionalLayer::~ConvolutionalLayer() {
+VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete kernelBackPropWeights;
 //        delete kernelBackPropWeights2;
 //        delete kernelBackPropWeights3;
@@ -108,8 +110,7 @@ ConvolutionalLayer::~ConvolutionalLayer() {
     delete kernelBackPropWeightsWithScratchAndBias;
 //        delete cl;
 }
-// [virtual]
-float *ConvolutionalLayer::getErrorsForUpstream() {
+VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
     if( !errorsForUpstreamCopiedToHost ) {
         std::cout << "copying errorsForUpstream to host, from GPU" << std::endl;
         errorsForUpstreamWrapper->copyToHost();
@@ -117,16 +118,13 @@ float *ConvolutionalLayer::getErrorsForUpstream() {
     }
     return errorsForUpstream;
 }
-// [virtual]
-bool ConvolutionalLayer::providesErrorsWrapper() const {
+VIRTUAL bool ConvolutionalLayer::providesErrorsWrapper() const {
     return true;
 }
-// [virtual]
-CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
+VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
     return errorsForUpstreamWrapper;
 }
-// [virtual]
-void ConvolutionalLayer::initWeights( float*weights ) {
+VIRTUAL void ConvolutionalLayer::initWeights( float*weights ) {
     Layer::initWeights( weights );
     weightsWrapper->copyToDevice();
 }
@@ -143,16 +141,13 @@ void ConvolutionalLayer::randomizeWeights() {
         biasWeights[i] = generateWeight( fanin );
     }
 }
-// [virtual]
-bool ConvolutionalLayer::hasResultsWrapper() const {
+VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
     return true;
 }
-// [virtual]
-CLWrapper *ConvolutionalLayer::getResultsWrapper() {
+VIRTUAL CLWrapper *ConvolutionalLayer::getResultsWrapper() {
     return resultsWrapper;
 }
-// [virtual]
-void ConvolutionalLayer::print() const {
+VIRTUAL void ConvolutionalLayer::print() const {
     std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
         " padZeros " << padZeros << " biased " << biased << " outputBoardSize " << boardSize << std::endl;
     printWeights();
@@ -160,8 +155,7 @@ void ConvolutionalLayer::print() const {
         printOutput();
     }
 }
-// [virtual]
-void ConvolutionalLayer::printWeights() const {
+VIRTUAL void ConvolutionalLayer::printWeights() const {
     std::cout << "  weights: " << std::endl;
 // filters are organized like [filterid][plane][row][col]
     for( int filter = 0; filter < std::min( 5, numPlanes ); filter++ ) {
@@ -189,7 +183,7 @@ void ConvolutionalLayer::printWeights() const {
     }
     if( numPlanes > 5 ) std::cout << " ... other filters ... " << std::endl;
  }
- void ConvolutionalLayer::printOutput() const { // [virtual]
+VIRTUAL void ConvolutionalLayer::printOutput() const { 
     if( results == 0 ) {
         return;
     }
@@ -217,8 +211,7 @@ void ConvolutionalLayer::printWeights() const {
         if( batchSize > 5 ) std::cout << " ... other n ... " << std::endl;
     }
 }
-// [virtual]
-void ConvolutionalLayer::setBatchSize( int batchSize ) {
+VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSpaceNumExamples ) {
         this->batchSize = batchSize;
         return;
@@ -246,8 +239,7 @@ void ConvolutionalLayer::setBatchSize( int batchSize ) {
     }
     this->allocatedSpaceNumExamples = batchSize;
 }
-// [virtual]
-void ConvolutionalLayer::propagate() {
+VIRTUAL void ConvolutionalLayer::propagate() {
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
 
     CLWrapper *upstreamWrapper = 0;
@@ -297,8 +289,7 @@ void ConvolutionalLayer::propagate() {
     }
     resultsCopiedToHost = false;
 }
-// [virtual]
-float * ConvolutionalLayer::getResults() {
+VIRTUAL float * ConvolutionalLayer::getResults() {
     if( !resultsCopiedToHost ) {
 //            std::cout << "layer " << layerIndex << " copying results to host " << std::endl;
         resultsWrapper->copyToHost();
@@ -306,16 +297,13 @@ float * ConvolutionalLayer::getResults() {
     }
     return results;
 };
-// [virtual]
-int ConvolutionalLayer::getWeightsSize() const {
+VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
     return numPlanes * upstreamNumPlanes * filterSize * filterSize;
 }
-// [virtual]
-int ConvolutionalLayer::getBiasWeightsSize() const {
+VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
     return numPlanes;
 }
-//// [virtual]
-//float *getErrors() {
+//VIRTUAL //float *getErrors() {
 //    if( !errorsOnHost ) {
 //        errorsWrapper.copyToHost();
 //        errorsOnHost = true;
@@ -328,8 +316,7 @@ int ConvolutionalLayer::getBiasWeightsSize() const {
 // biasweights: [outPlane]
 //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
 
-// [virtual]
-void ConvolutionalLayer::backPropErrors( float learningRate ) {
+VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
 //        Timer timer;
     float *weightChanges = new float[ getWeightsSize() ];
     float *biasWeightChanges = new float[getBiasWeightsSize()];
@@ -733,8 +720,7 @@ void backPropWeightsGpu4( const float learningRate, float const*const errors, fl
 }
 */
 
-//// [virtual]
-//bool ConvolutionalLayer::needErrorsBackprop() {
+//VIRTUAL //bool ConvolutionalLayer::needErrorsBackprop() {
 //    return true;
 //}
 

@@ -2,6 +2,9 @@
 
 using namespace std;
 
+#undef VIRTUAL
+#define VIRTUAL 
+
 Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     previousLayer( previousLayer ),
     nextLayer( 0 ),
@@ -43,8 +46,7 @@ Layer::Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker ) :
         this->results = previousLayer->results;
     }
 }
-// [virtual]
-Layer::~Layer() {
+VIRTUAL Layer::~Layer() {
     if( results != 0 && weOwnResults ) {
          delete[] results;
     }
@@ -63,33 +65,25 @@ Layer::~Layer() {
 //        return tanh( value );
 //    }
 // used to set up internal buffers and stuff
-// [virtual]
-void Layer::setBatchSize( int batchSize ) {
+VIRTUAL void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");
 }
-// [virtual]
-bool Layer::providesErrorsWrapper() const {
+VIRTUAL bool Layer::providesErrorsWrapper() const {
     return false;
 }
-// [virtual]
-float *Layer::getErrorsForUpstream() {
+VIRTUAL float *Layer::getErrorsForUpstream() {
     throw std::runtime_error("getErrorsForUpstream not implemented for this layer type, layer " + toString(layerIndex) );
 }
-// [virtual]
-CLWrapper *Layer::getErrorsForUpstreamWrapper() {
+VIRTUAL CLWrapper *Layer::getErrorsForUpstreamWrapper() {
     throw std::runtime_error("getErrorsForUpstreamWrapper not implemented for this layer type, layer " + toString(layerIndex) );
 }
-// [virtual]
-bool Layer::hasResultsWrapper() const {
+VIRTUAL bool Layer::hasResultsWrapper() const {
     return false;
 }
-// [virtual]
-CLWrapper *Layer::getResultsWrapper() {
+VIRTUAL CLWrapper *Layer::getResultsWrapper() {
     throw std::runtime_error("getResultsWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-// [virtual]
-int Layer::getResultsSize() const {
-//        throw std::runtime_error("getResultsSize not implemented for this layer type");
+VIRTUAL int Layer::getResultsSize() const {
      return numPlanes * boardSize * boardSize * batchSize;
 }
 int Layer::getNumPlanes() const {
@@ -98,13 +92,10 @@ int Layer::getNumPlanes() const {
 int Layer::getBoardSize() const {
     return boardSize;
 }
-// [virtual]
-void Layer::propagate() {
+VIRTUAL void Layer::propagate() {
     throw std::runtime_error("propagate not implemented for this layer type");
 }
-// [virtual]
-void Layer::print() const {
-//        std::cout << "print() not implemented for this layer type" << std:: endl; 
+VIRTUAL void Layer::print() const {
     printWeights();
     if( results != 0 ) {
         printOutput();
@@ -112,22 +103,19 @@ void Layer::print() const {
         std::cout << "No results yet " << std::endl;
     }
 }
-// [virtual]
-void Layer::initWeights( float*weights ) {
+VIRTUAL void Layer::initWeights( float*weights ) {
     int numWeights = getWeightsSize();
     for( int i = 0; i < numWeights; i++ ) {
         this->weights[i] = weights[i];
     }
 }
-// [virtual]
-void Layer::initBiasWeights( float*biasWeights ) {
+VIRTUAL void Layer::initBiasWeights( float*biasWeights ) {
     int numBiasWeights = getBiasWeightsSize();
     for( int i = 0; i < numBiasWeights; i++ ) {
         this->biasWeights[i] = biasWeights[i];
     }
 }
-// [virtual]
-void Layer::printWeightsAsCode() const {
+VIRTUAL void Layer::printWeightsAsCode() const {
     std::cout << "float weights" << layerIndex << "[] = {";
     const int numWeights = getWeightsSize();
     for( int i = 0; i < numWeights; i++ ) {
@@ -138,8 +126,7 @@ void Layer::printWeightsAsCode() const {
     std::cout << "};" << std::endl;
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
 }
-// [virtual]
-void Layer::printBiasWeightsAsCode() const {
+VIRTUAL void Layer::printBiasWeightsAsCode() const {
     std::cout << "float biasWeights" << layerIndex << "[] = {";
     const int numBiasWeights = getBiasWeightsSize();
     for( int i = 0; i < numBiasWeights; i++ ) {
@@ -150,34 +137,21 @@ void Layer::printBiasWeightsAsCode() const {
     std::cout << "};" << std::endl;
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
 }
-// [virtual]
-void Layer::printWeights() const {
+VIRTUAL void Layer::printWeights() const {
     std::cout << "printWeights() not implemented for this layer type" << std:: endl; 
 }
-// [virtual]
-void Layer::printOutput() const {
+VIRTUAL void Layer::printOutput() const {
     std::cout << "printOutpu() not implemented for this layer type" << std:: endl; 
 }
-//// [virtual]
-//void Layer::backPropExpected( float learningRate, float const *expected ) {
-//    throw std::runtime_error("backPropExpected not implemented for this layertype, layerindex " + toString(layerIndex ) );
-//}
-// [virtual]
-void Layer::backPropErrors( float learningRate ) {
+VIRTUAL void Layer::backPropErrors( float learningRate ) {
     throw std::runtime_error("backproperrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
-// [virtual]
-int Layer::getWeightsSize() const {
+VIRTUAL int Layer::getWeightsSize() const {
     throw std::runtime_error("getWeightsSize not implemented for this layertype");
 }
-// [virtual]
-int Layer::getBiasWeightsSize() const {
+VIRTUAL int Layer::getBiasWeightsSize() const {
     throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
 }
-//// [virtual]
-//void Layer::calcErrors( float const *expected, float *errors ) {
-//    throw std::runtime_error("calcErrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
-//}
 float Layer::calcLoss( float const *expected ) {
     float E = 0;
     getResults();
@@ -192,9 +166,6 @@ float Layer::calcLoss( float const *expected ) {
                     float diff = expectedOutput - actualOutput;
                     float squarederror = diff * diff;
                     E += squarederror;
-//                        std::cout << " image " << imageId << " outplane " << plane << " i " << outRow << " j " << outCol <<
-//                           " expected " << expectedOutput << " actual " << actualOutput << " squarederror " << squarederror
-//                            << std::endl;
                 }
             }
         }            

@@ -10,6 +10,8 @@
 #include "ActivationFunction.h"
 #include "StatefulTimer.h"
 
+#define VIRTUAL virtual
+
 class FullyConnectedLayer : public Layer {
 public:
     float *errorsForUpstream;
@@ -46,20 +48,20 @@ public:
     // cppfile: FullyConnectedLayer.cpp
 
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker );
-    virtual float *getResults();
-    virtual bool needErrorsBackprop();
-    virtual int getWeightsSize() const;
-    virtual int getBiasWeightsSize() const;
-    virtual void print() const;
-    virtual void printWeights() const;
-    virtual void printOutput() const;
+    VIRTUAL float *getResults();
+    VIRTUAL bool needErrorsBackprop();
+    VIRTUAL int getWeightsSize() const;
+    VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL void print() const;
+    VIRTUAL void printWeights() const;
+    VIRTUAL void printOutput() const;
     void randomizeWeights(int fanIn, float *weights, int numWeights );
-    virtual ~FullyConnectedLayer();
-    virtual float *getErrorsForUpstream();
-    virtual void setBatchSize( int batchSize );
-    virtual void propagate();
-    virtual void calcErrors( float const *expected, float *errors );
-    virtual void backPropErrors( float learningRate );
+    VIRTUAL ~FullyConnectedLayer();
+    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void propagate();
+    VIRTUAL void calcErrors( float const *expected, float *errors );
+    VIRTUAL void backPropErrors( float learningRate );
 
     // [[[end]]]
 };

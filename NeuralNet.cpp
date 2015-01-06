@@ -26,6 +26,11 @@ using namespace std;
 
 //static std::mt19937 random;
 
+#undef VIRTUAL
+#define VIRTUAL
+#undef STATIC
+#define STATIC
+
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
     cl = new OpenCLHelper();
     InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
@@ -40,8 +45,7 @@ NeuralNet::~NeuralNet() {
 OpenCLHelper *NeuralNet::getCl() {
     return cl;
 }
-// [static]
-NeuralNetMould *NeuralNet::maker() {
+STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
 FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {

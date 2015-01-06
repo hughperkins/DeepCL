@@ -15,6 +15,8 @@
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
+#define VIRTUAL virtual
+
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
@@ -70,23 +72,23 @@ public:
     // cppfile: ConvolutionalLayer.cpp
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
-    virtual ~ConvolutionalLayer();
-    virtual float *getErrorsForUpstream();
-    virtual bool providesErrorsWrapper() const;
-    virtual CLWrapper *getErrorsForUpstreamWrapper();
-    virtual void initWeights( float*weights );
+    VIRTUAL ~ConvolutionalLayer();
+    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL bool providesErrorsWrapper() const;
+    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL void initWeights( float*weights );
     void randomizeWeights();
-    virtual bool hasResultsWrapper() const;
-    virtual CLWrapper *getResultsWrapper();
-    virtual void print() const;
-    virtual void printWeights() const;
-    virtual void printOutput() const;
-    virtual void setBatchSize( int batchSize );
-    virtual void propagate();
-    virtual float * getResults();
-    virtual int getWeightsSize() const;
-    virtual int getBiasWeightsSize() const;
-    virtual void backPropErrors( float learningRate );
+    VIRTUAL bool hasResultsWrapper() const;
+    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL void print() const;
+    VIRTUAL void printWeights() const;
+    VIRTUAL void printOutput() const;
+    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void propagate();
+    VIRTUAL float * getResults();
+    VIRTUAL int getWeightsSize() const;
+    VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL void backPropErrors( float learningRate );
     void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper );
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
     void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
