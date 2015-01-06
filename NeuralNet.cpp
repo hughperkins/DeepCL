@@ -104,7 +104,7 @@ float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, floa
     getLastLayer()->nextLayer = expectedValuesLayer;
     layers.push_back( expectedValuesLayer );
     setBatchSize( batchSize );
-    int numBatches = numImages / batchSize;
+    int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     float loss = 0;
     int total = 0;
     for( int batch = 0; batch < numBatches; batch++ ) {
@@ -149,7 +149,6 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
             thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
                                                          // so last batch size is: 2 = 5 - 3
             setBatchSize( thisBatchSize );
-            expectedValuesLayer->setBatchSize(batchSize);
         }
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;

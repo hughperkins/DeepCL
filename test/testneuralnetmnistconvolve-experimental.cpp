@@ -184,6 +184,7 @@ void go(Config config) {
             ->numExamples(numToTrain)
             ->inputData(&(boardsFloat[0][0][0]))
             ->expectedOutputs(expectedOutputs)
+            //->run();
             ->runWithCalcTrainingAccuracy(labels, &trainNumRight );
         StatefulTimer::dump(true);
         cout << "       loss L: " << loss << endl;
