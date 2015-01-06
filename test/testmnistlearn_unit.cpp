@@ -98,7 +98,7 @@ void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, i
         int thisBatchSize = batchSize;
         if( batch == numBatches - 1 ) {
             thisBatchSize = N - batchStart;
-            net->setBatchSize(batchSize);
+            net->setBatchSize(thisBatchSize);
         }
         net->propagate( &(boards[batchStart][0][0]) );
         float const*results = net->getResults();
@@ -197,7 +197,7 @@ void go(Config config) {
         }
         net->propagate( &(boardsTest[batchStart][0][0]) );
         float const*resultsTest = net->getResults();
-        totalNumber += config.batchSize;
+        totalNumber += thisBatchSize;
         totalNumRight += AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labelsTest[batchStart]), resultsTest );
     }
     if( totalNumber > 0 ) cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
