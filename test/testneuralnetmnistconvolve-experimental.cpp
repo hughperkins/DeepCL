@@ -88,6 +88,8 @@ public:
     int numFilters = 16;
     int numLayers = 1;
     int filterSize = 5;
+    int restartable = 0;
+    string restartableFilename = "weights.dat";
     float learningRate = 0.1f;
     int biased = 1;
     Config() {
@@ -256,6 +258,8 @@ int main( int argc, char *argv[] ) {
         cout << "    filtersize=[filter size] (" << config.filterSize << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
+        cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
+        cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
     } 
     for( int i = 1; i < argc; i++ ) {
        vector<string> splitkeyval = split( argv[i], "=" );
@@ -277,6 +281,8 @@ int main( int argc, char *argv[] ) {
            if( key == "numlayers" ) config.numLayers = atoi(value);
            if( key == "filtersize" ) config.filterSize = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
+           if( key == "restartable" ) config.restartable = atoi(value);
+           if( key == "restartableFilename" ) config.restartableFilename = value;
        }
     }
     go( config );
