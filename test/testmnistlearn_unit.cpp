@@ -184,15 +184,21 @@ void go(Config config) {
 //    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
     timer.timeCheck("after tests");
 
-    int numBatches = config.numTest / config.batchSize;
+    int numBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
     int totalNumber = 0;
     int totalNumRight = 0;
+    net->setBatchSize( config.batchSize );
     for( int batch = 0; batch < numBatches && config.numTest > 0; batch++ ) {
         int batchStart = batch * config.batchSize;
+        int thisBatchSize = config.batchSize;
+        if( batch == numBatches - 1 ) {
+            thisBatchSize = config.numTest - batchStart;
+            net->setBatchSize( thisBatchSize );
+        }
         net->propagate( &(boardsTest[batchStart][0][0]) );
         float const*resultsTest = net->getResults();
         totalNumber += config.batchSize;
-        totalNumRight += AccuracyHelper::calcNumRight( config.batchSize, 10, &(labelsTest[batchStart]), resultsTest );
+        totalNumRight += AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labelsTest[batchStart]), resultsTest );
     }
     if( totalNumber > 0 ) cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
 
