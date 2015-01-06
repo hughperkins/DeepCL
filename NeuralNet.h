@@ -52,8 +52,8 @@ public:
     float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults );
     float doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect );
     void propagate( float const*images);
-    void backProp( int batchSize, float learningRate, float const *expectedResults);
-    void learnBatch( int batchSize, float learningRate, float const*images, float const *expectedResults );
+    void backProp( float learningRate, float const *expectedResults);
+    void learnBatch( float learningRate, float const*images, float const *expectedResults );
     int getNumLayers();
     float const *getResults( int layer ) const;
     int getInputSizePerExample() const;

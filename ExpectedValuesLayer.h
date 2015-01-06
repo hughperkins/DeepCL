@@ -14,12 +14,11 @@ class ExpectedValuesLayer : public Layer {
 public:
     float *errors;
     int allocatedSize;
-    int batchSize;
+
     ExpectedValuesLayer(Layer *previousLayer, ExpectedValuesLayerMaker const*maker) :
         Layer(previousLayer, maker),
         allocatedSize(0),
-        errors(0),
-        batchSize(0) {
+        errors(0) {
 //        std::cout << "ExpectedValuesLayer()" << std::endl;
     }
     virtual ~ExpectedValuesLayer() {
@@ -39,6 +38,12 @@ public:
     }
     virtual float *getErrorsForUpstream() {
         return errors;
+    }
+    virtual float *getResults() {
+        this->results = previousLayer->getResults();
+        return results;
+    }
+    virtual void propagate() {
     }
     virtual void setBatchSize( int batchSize ) {
         if( batchSize <= allocatedSize ) {

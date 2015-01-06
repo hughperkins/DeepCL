@@ -225,27 +225,15 @@ void ConvolutionalLayer::setBatchSize( int batchSize ) {
     }
     if( results != 0 ) {
         delete[] results;
-        results = 0;
-    }
-//    if( errors != 0 ) {
-//        delete[] errors;
-//        errors = 0;
-//    }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
-        errorsForUpstream = 0;
     }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
-        resultsWrapper = 0;
     }
-//    if( errorsWrapper != 0 ) {
-//        delete errorsWrapper;
-//        errorsWrapper = 0;
-//    }
+    if( errorsForUpstream != 0 ) {
+        delete[] errorsForUpstream;
+    }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
-        errorsForUpstreamWrapper = 0;
     }
     this->batchSize = batchSize;
     results = new float[getResultsSize()];
@@ -341,7 +329,7 @@ int ConvolutionalLayer::getBiasWeightsSize() const {
 //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
 
 // [virtual]
-void ConvolutionalLayer::backPropErrors( float learningRate, Layer *nextLayer ) {
+void ConvolutionalLayer::backPropErrors( float learningRate ) {
 //        Timer timer;
     float *weightChanges = new float[ getWeightsSize() ];
     float *biasWeightChanges = new float[getBiasWeightsSize()];

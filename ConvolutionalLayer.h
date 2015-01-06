@@ -86,7 +86,7 @@ public:
     virtual float * getResults();
     virtual int getWeightsSize() const;
     virtual int getBiasWeightsSize() const;
-    virtual void backPropErrors( float learningRate, Layer *nextLayer );
+    virtual void backPropErrors( float learningRate );
     void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper );
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
     void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );

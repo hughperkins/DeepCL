@@ -99,6 +99,10 @@ void NeuralNet::setBatchSize( int batchSize ) {
 }
 float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
 //        Timer timer;
+    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
+//    expectedValuesLayer->setBatchSize(batchSize);
+    getLastLayer()->nextLayer = expectedValuesLayer;
+    layers.push_back( expectedValuesLayer );
     setBatchSize( batchSize );
     int numBatches = numImages / batchSize;
     float loss = 0;
@@ -113,15 +117,22 @@ float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, floa
         }
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-        learnBatch( batchSize, learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+        learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
         loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
     }
 //        StatefulTimer::dump();
 //        timer.timeCheck("epoch time");
+    layers.erase( layers.end() - 1 );
+    getLastLayer()->nextLayer = 0;
+    delete expectedValuesLayer;
     return loss;
 }
 float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
 //        Timer timer;
+    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
+//    expectedValuesLayer->setBatchSize(batchSize);
+    getLastLayer()->nextLayer = expectedValuesLayer;
+    layers.push_back( expectedValuesLayer );
     setBatchSize( batchSize );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     std::cout << "numBatches: " << numBatches << std::endl;
@@ -138,10 +149,11 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
             thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
                                                          // so last batch size is: 2 = 5 - 3
             setBatchSize( thisBatchSize );
+            expectedValuesLayer->setBatchSize(batchSize);
         }
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-        learnBatch( batchSize, learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+        learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
         StatefulTimer::timeCheck("after batch forward-backward prop");
         numRight += AccuracyHelper::calcNumRight( thisBatchSize, getLastLayer()->numPlanes, &(labels[batchStart]), getResults() );
         StatefulTimer::timeCheck("after batch calc training num right");
@@ -151,6 +163,9 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
     *p_totalCorrect = numRight;
 //        StatefulTimer::dump();
 //        timer.timeCheck("epoch time");
+    layers.erase( layers.end() - 1 );
+    getLastLayer()->nextLayer = 0;
+    delete expectedValuesLayer;
     return loss;
 }
 //    float *propagate( int N, int batchSize, float const*images) {
@@ -177,35 +192,28 @@ void NeuralNet::propagate( float const*images) {
     }
 //        timer.timeCheck("propagate time");
 }
-void NeuralNet::backProp( int batchSize, float learningRate, float const *expectedResults) {
+void NeuralNet::backProp( float learningRate, float const *expectedResults) {
     // backward...
-    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
-    expectedValuesLayer->setBatchSize(batchSize);
 //    Layer *lastLayer = getLastLayer();
 //    float *errors = new float[ lastLayer->getResultsSize() ];
-    expectedValuesLayer->calcErrors( expectedResults );
+    dynamic_cast<ExpectedValuesLayer*>(getLastLayer())->calcErrors( expectedResults );
 //    float *errorsForNextLayer = 0;
-    for( int layerIdx = layers.size() - 1; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
+    for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
 //        if( layerIdx > 1 ) {
 //            errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
 //        }
-        if( layerIdx == layers.size() - 1 ) {
-            layers[layerIdx]->backPropErrors( learningRate, expectedValuesLayer );
-        } else {
-            layers[layerIdx]->backPropErrors( learningRate, layers[layerIdx+1] );
-        }
+        layers[layerIdx]->backPropErrors( learningRate );
 //        delete[] errors;
 //        errors = 0;
 //        errors = errorsForNextLayer;
 //        errorsForNextLayer = 0;
     }
-    delete expectedValuesLayer;
 }
-void NeuralNet::learnBatch( int batchSize, float learningRate, float const*images, float const *expectedResults ) {
+void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
 //        Timer timer;
     propagate( images);
 //        timer.timeCheck("propagate");
-    backProp(batchSize, learningRate, expectedResults );
+    backProp( learningRate, expectedResults );
 //        timer.timeCheck("backProp");
 }
 int NeuralNet::getNumLayers() {

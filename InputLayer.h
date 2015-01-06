@@ -11,61 +11,25 @@
 
 class InputLayer : public Layer {
 public:
-//    InputLayer( int numPlanes, int boardSize ) :
-//          Layer( 0, numPlanes, boardSize, 0 ) {
-//    }
-    InputLayer( Layer *previousLayer, InputLayerMaker const*maker ) :
-           Layer( previousLayer, maker ) {
-    }
-    virtual void printOutput() const {
-        if( results == 0 ) {
-             return;
-        }
-        for( int n = 0; n < std::min(5,batchSize); n++ ) {
-            std::cout << "InputLayer n " << n << ":" << std::endl;
-            for( int plane = 0; plane < std::min( 5, numPlanes); plane++ ) {
-                if( numPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
-                for( int i = 0; i < std::min(5,boardSize); i++ ) {
-                    std::cout << "      ";
-                    for( int j = 0; j < std::min(5,boardSize); j++ ) {
-                        std::cout << getResult( n, plane, i, j ) << " ";
-//results[
-//                            n * numPlanes * boardSize*boardSize +
-//                            plane*boardSize*boardSize +
-//                            i * boardSize +
-//                            j ] << " ";
-                    }
-                    if( boardSize > 5 ) std::cout << " ... ";
-                    std::cout << std::endl;
-                }
-                if( boardSize > 5 ) std::cout << " ... " << std::endl;
-            }
-            if( numPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
-        }
-        if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
-    }
-    virtual void print() const {
-        printOutput();
-    }
-    void in( float const*images ) {
-//        std::cout << "InputLayer::in()" << std::endl;
-        this->results = (float*)images;
-//        this->batchStart = batchStart;
-//        this->batchEnd = batchEnd;
-//        print();
-    }
-    virtual ~InputLayer() {
-    }
-    virtual bool needErrorsBackprop() {
-        return false;
-    }
-    virtual void setBatchSize( int batchSize ) {
-//        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
-        this->batchSize = batchSize;
-    }
-    virtual void propagate() {
-    }
-    virtual void backPropErrors( float learningRate, float const *errors ) {
-    }
+
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.add()
+    // ]]]
+    // classname: InputLayer
+    // cppfile: InputLayer.cpp
+
+    InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
+    virtual float *getResults();
+    virtual void printOutput() const;
+    virtual void print() const;
+    void in( float const*images );
+    virtual ~InputLayer();
+    virtual bool needErrorsBackprop();
+    virtual void setBatchSize( int batchSize );
+    virtual void propagate();
+    virtual void backPropErrors( float learningRate, float const *errors );
+
+    // [[[end]]]
 };
 

@@ -22,7 +22,7 @@ public:
 //    int batchEnd;
 
     Layer *previousLayer;
-//    Layer *nextLayer;
+    Layer *nextLayer;
     const int numPlanes;
     const int boardSize;
     float *results;
@@ -59,6 +59,7 @@ public:
         float result = rangesize * ( uniformrand - 0.5 );
         return result;
     }
+    virtual float * getResults() = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -76,7 +77,6 @@ public:
     virtual CLWrapper *getErrorsForUpstreamWrapper();
     virtual bool hasResultsWrapper() const;
     virtual CLWrapper *getResultsWrapper();
-    virtual float * getResults();
     virtual int getResultsSize() const;
     int getNumPlanes() const;
     int getBoardSize() const;
@@ -88,7 +88,7 @@ public:
     virtual void printBiasWeightsAsCode() const;
     virtual void printWeights() const;
     virtual void printOutput() const;
-    virtual void backPropErrors( float learningRate, Layer *nextLayer );
+    virtual void backPropErrors( float learningRate );
     virtual int getWeightsSize() const;
     virtual int getBiasWeightsSize() const;
     float calcLoss( float const *expected );

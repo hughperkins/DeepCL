@@ -4,7 +4,7 @@ using namespace std;
 
 Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     previousLayer( previousLayer ),
-//    nextLayer( 0 ),
+    nextLayer( 0 ),
     numPlanes( maker->getNumPlanes() ),
     boardSize( maker->getBoardSize() ),
     boardSizeSquared( boardSize * boardSize ),
@@ -18,11 +18,13 @@ Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     upstreamBoardSizeSquared( upstreamBoardSize * upstreamBoardSize ),
     layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
     weOwnResults(false) {
-//    previousLayer->nextLayer = this;
+    if( previousLayer != 0 ) {
+        previousLayer->nextLayer = this;
+    }
 }
 Layer::Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker ) :
         previousLayer( previousLayer ),
-//        nextLayer(0),
+        nextLayer(0),
         numPlanes( previousLayer->numPlanes ),
         boardSize( previousLayer->boardSize ),
         boardSizeSquared( previousLayer->boardSizeSquared ),
@@ -36,7 +38,10 @@ Layer::Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker ) :
         upstreamBoardSizeSquared( previousLayer->boardSizeSquared ),
         layerIndex( previousLayer->layerIndex + 1 ),
         weOwnResults(false) {
-//    previousLayer->nextLayer = this;
+    if( previousLayer != 0 ) {
+        previousLayer->nextLayer = this;
+        this->results = previousLayer->results;
+    }
 }
 // [virtual]
 Layer::~Layer() {
@@ -82,10 +87,6 @@ bool Layer::hasResultsWrapper() const {
 CLWrapper *Layer::getResultsWrapper() {
     throw std::runtime_error("getResultsWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-// [virtual]
-float * Layer::getResults() {
-    return results;
-};
 // [virtual]
 int Layer::getResultsSize() const {
 //        throw std::runtime_error("getResultsSize not implemented for this layer type");
@@ -162,7 +163,7 @@ void Layer::printOutput() const {
 //    throw std::runtime_error("backPropExpected not implemented for this layertype, layerindex " + toString(layerIndex ) );
 //}
 // [virtual]
-void Layer::backPropErrors( float learningRate, Layer *nextLayer ) {
+void Layer::backPropErrors( float learningRate ) {
     throw std::runtime_error("backproperrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
 // [virtual]

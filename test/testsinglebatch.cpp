@@ -97,7 +97,8 @@ cout << endl;
 
 ConvolutionalLayer *layer2 = dynamic_cast<ConvolutionalLayer*>( net->layers[2] );
 int layer2ResultsSize = layer2->getResultsSize();
-layer3->backPropErrors( learningRate, expectedValuesLayer );
+layer3->nextLayer = expectedValuesLayer;
+layer3->backPropErrors( learningRate );
 float *layer2errors = layer3->getErrorsForUpstream();
 Sampler::printSamples( "layer2errors", layer2ResultsSize, layer2errors );
 
@@ -115,7 +116,8 @@ cout << endl;
 
 ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer*>( net->layers[1] );
 int layer1ResultsSize = layer1->getResultsSize();
-layer2->backPropErrors( learningRate, layer3 );
+layer2->nextLayer = layer3;
+layer2->backPropErrors( learningRate );
 float *layer1errors = layer2->getErrorsForUpstream();
 Sampler::printSamples( "layer1errors", layer1ResultsSize, layer1errors );
 
@@ -125,9 +127,11 @@ EXPECT_FLOAT_NEAR( 0.0170709, layer1errors[2270837] );
 
 cout << endl;
 
-layer1->backPropErrors( learningRate, layer2 );
+layer1->nextLayer = layer2;
+layer1->backPropErrors( learningRate );
 
-    net->backProp( batchSize, learningRate, expectedResults );
+net->layers.push_back( expectedValuesLayer );
+    net->backProp( learningRate, expectedResults );
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
         weights = layer->weights;
@@ -186,7 +190,7 @@ EXPECT_FLOAT_NEAR( -0.775789, net->getResults()[373] );
 
 //net->layers[1]->getResults();
 
-net->backProp( batchSize, learningRate, expectedResults );
+net->backProp( learningRate, expectedResults );
 
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
@@ -231,7 +235,7 @@ EXPECT_FLOAT_NEAR( 0.0122473, biasWeights[21] );
 
     Timer timer;
     for( int i = 0; i < 2; i++ ) {
-        net->learnBatch( batchSize, learningRate, inputData, expectedResults );
+        net->learnBatch( learningRate, inputData, expectedResults );
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
@@ -258,6 +262,9 @@ TEST( testsinglebatch, perf ) {
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
+    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
+    net->getLastLayer()->nextLayer = expectedValuesLayer;
+    net->layers.push_back( expectedValuesLayer );
     net->setBatchSize(batchSize);
 
     mt19937 random;
@@ -288,7 +295,7 @@ TEST( testsinglebatch, perf ) {
 
     Timer timer;
     for( int i = 0; i < 5; i++ ) {
-        net->learnBatch( batchSize, learningRate, inputData, expectedResults );
+        net->learnBatch( learningRate, inputData, expectedResults );
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
