@@ -35,10 +35,17 @@ public:
 
     CLWrapper *weightsWrapper;
     CLWrapper *resultsWrapper;
+//    CLWrapper *errorsWrapper;
+    CLWrapper *errorsForUpstreamWrapper;
 
     int allocatedSpaceNumExamples;
 
+//    float *errors;
+    float *errorsForUpstream;
+
     bool resultsCopiedToHost;
+//    bool errorsCopiedToHost;
+    bool errorsForUpstreamCopiedToHost;
 //    bool weightsCopiedToHost;
 
 //    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
@@ -64,6 +71,9 @@ public:
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     virtual ~ConvolutionalLayer();
+    virtual float *getErrorsForUpstream();
+    virtual bool providesErrorsWrapper() const;
+    virtual CLWrapper *getErrorsForUpstreamWrapper();
     virtual void initWeights( float*weights );
     void randomizeWeights();
     virtual bool hasResultsWrapper() const;
@@ -76,18 +86,16 @@ public:
     virtual float * getResults();
     virtual int getWeightsSize() const;
     virtual int getBiasWeightsSize() const;
-    virtual void calcErrors( float const *expected, float *errors );
-    virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream );
+    virtual void backPropErrors( float learningRate, Layer *nextLayer );
     void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper );
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
-    void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper );
-    void backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper );
-    void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper, float *biasWeightChanges );
-    virtual bool needErrorsBackprop();
-    void calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, float const *const errors, float *const errorsForUpstream );
+    void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
+    void backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
+    void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges );
+    void calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper );
     void calcErrorsForUpstreamCpu( float const *const weights, float const *const errors, float *errorsForUpstream );
     void doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges );
-    void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, float const *errors, float *biasWeightChanges );
+    void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, float *biasWeightChanges );
 
     // [[[end]]]
 };

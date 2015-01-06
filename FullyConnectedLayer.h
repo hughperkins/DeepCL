@@ -12,9 +12,13 @@
 
 class FullyConnectedLayer : public Layer {
 public:
+    float *errorsForUpstream;
+    bool allocatedSize;
 
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker ) :
-            Layer( previousLayer, maker ) {
+            Layer( previousLayer, maker ),
+            errorsForUpstream(0),
+            allocatedSize(0) {
         std::cout << "WARNING: FullyConnectedLayer runs on CPU, and is  slllooowwww :-)" << std::endl;
         std::cout << "You'd better use a ConvolutionalLayer, and just make the filter size the same as " << std::endl;
         std::cout << "the upstream board size.  Use 'numFilters' to specify the number of output planes." << std::endl;
@@ -29,7 +33,6 @@ public:
     virtual bool needErrorsBackprop() {
         return true;
     }
-
     // weights like [upstreamPlane][upstreamRow][upstreamCol][outputPlane][outputrow][outputcol]
     inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
         int index = ( ( ( ( prevPlane ) * upstreamBoardSize
@@ -123,13 +126,27 @@ public:
 //        }
 //        delete[] weights;
     }
+    virtual float *getErrorsForUpstream() {
+        return errorsForUpstream;
+    }
     virtual void setBatchSize( int batchSize ) {
+        if( batchSize <= allocatedSize ) {
+            this->batchSize = batchSize;
+            return;
+        }
         if( results != 0 ) {
             delete[] results;
         }
+        if( errorsForUpstream != 0 ) { 
+            delete[] errorsForUpstream;
+        }
         this->batchSize = batchSize;
         results = new float[numPlanes * batchSize];
+        if( layerIndex > 1 ) {
+            errorsForUpstream = new float[ previousLayer->getResultsSize() ];
+        }
         weOwnResults = true;
+        allocatedSize = batchSize;
     }
     virtual void propagate() {
         StatefulTimer::timeCheck("start fullyconnected propagate");
@@ -179,7 +196,8 @@ public:
 //        backPropErrors( learningRate, errors );
 //        delete[] errors;
     }
-    virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) {
+    virtual void backPropErrors( float learningRate, Layer *nextLayer ) {
+        float *errors = nextLayer->getErrorsForUpstream();
         StatefulTimer::timeCheck("start fullyconnected backproperrors");
         for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
             for( int outRow = 0; outRow < boardSize; outRow++ ) {
@@ -221,7 +239,7 @@ public:
             }
         }
         StatefulTimer::timeCheck("end fullyconnected backprop errors, start errors for upstream");
-        if( errorsForUpstream != 0 ) {
+        if( layerIndex > 1 ) {
 //        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
         for( int n = 0; n < batchSize; n++ ) {
             for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {

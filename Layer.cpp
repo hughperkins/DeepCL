@@ -4,6 +4,7 @@ using namespace std;
 
 Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     previousLayer( previousLayer ),
+//    nextLayer( 0 ),
     numPlanes( maker->getNumPlanes() ),
     boardSize( maker->getBoardSize() ),
     boardSizeSquared( boardSize * boardSize ),
@@ -17,9 +18,28 @@ Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     upstreamBoardSizeSquared( upstreamBoardSize * upstreamBoardSize ),
     layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
     weOwnResults(false) {
+//    previousLayer->nextLayer = this;
 }
-
-Layer::~Layer() { // [virtual]
+Layer::Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker ) :
+        previousLayer( previousLayer ),
+//        nextLayer(0),
+        numPlanes( previousLayer->numPlanes ),
+        boardSize( previousLayer->boardSize ),
+        boardSizeSquared( previousLayer->boardSizeSquared ),
+        results(0),
+        weights(0),
+        biasWeights(0),
+        biased(false),
+        activationFunction(0),
+        upstreamBoardSize(previousLayer->boardSize),
+        upstreamNumPlanes( previousLayer->numPlanes),
+        upstreamBoardSizeSquared( previousLayer->boardSizeSquared ),
+        layerIndex( previousLayer->layerIndex + 1 ),
+        weOwnResults(false) {
+//    previousLayer->nextLayer = this;
+}
+// [virtual]
+Layer::~Layer() {
     if( results != 0 && weOwnResults ) {
          delete[] results;
     }
@@ -38,19 +58,36 @@ Layer::~Layer() { // [virtual]
 //        return tanh( value );
 //    }
 // used to set up internal buffers and stuff
-void Layer::setBatchSize( int batchSize ) {  // [virtual]
+// [virtual]
+void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");
 }
-bool Layer::hasResultsWrapper() const { // [virtual]
+// [virtual]
+bool Layer::providesErrorsWrapper() const {
     return false;
 }
-CLWrapper *Layer::getResultsWrapper() { // [virtual]
+// [virtual]
+float *Layer::getErrorsForUpstream() {
+    throw std::runtime_error("getErrorsForUpstream not implemented for this layer type, layer " + toString(layerIndex) );
+}
+// [virtual]
+CLWrapper *Layer::getErrorsForUpstreamWrapper() {
+    throw std::runtime_error("getErrorsForUpstreamWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+}
+// [virtual]
+bool Layer::hasResultsWrapper() const {
+    return false;
+}
+// [virtual]
+CLWrapper *Layer::getResultsWrapper() {
     throw std::runtime_error("getResultsWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-float * Layer::getResults() { // [virtual]
+// [virtual]
+float * Layer::getResults() {
     return results;
 };
-int Layer::getResultsSize() const { // [virtual]
+// [virtual]
+int Layer::getResultsSize() const {
 //        throw std::runtime_error("getResultsSize not implemented for this layer type");
      return numPlanes * boardSize * boardSize * batchSize;
 }
@@ -60,10 +97,12 @@ int Layer::getNumPlanes() const {
 int Layer::getBoardSize() const {
     return boardSize;
 }
-void Layer::propagate() { // [virtual]
+// [virtual]
+void Layer::propagate() {
     throw std::runtime_error("propagate not implemented for this layer type");
 }
-void Layer::print() const {  // [virtual]
+// [virtual]
+void Layer::print() const {
 //        std::cout << "print() not implemented for this layer type" << std:: endl; 
     printWeights();
     if( results != 0 ) {
@@ -72,19 +111,22 @@ void Layer::print() const {  // [virtual]
         std::cout << "No results yet " << std::endl;
     }
 }
-void Layer::initWeights( float*weights ) { // [virtual]
+// [virtual]
+void Layer::initWeights( float*weights ) {
     int numWeights = getWeightsSize();
     for( int i = 0; i < numWeights; i++ ) {
         this->weights[i] = weights[i];
     }
 }
-void Layer::initBiasWeights( float*biasWeights ) { // [virtual]
+// [virtual]
+void Layer::initBiasWeights( float*biasWeights ) {
     int numBiasWeights = getBiasWeightsSize();
     for( int i = 0; i < numBiasWeights; i++ ) {
         this->biasWeights[i] = biasWeights[i];
     }
 }
-void Layer::printWeightsAsCode() const { // [virtual]
+// [virtual]
+void Layer::printWeightsAsCode() const {
     std::cout << "float weights" << layerIndex << "[] = {";
     const int numWeights = getWeightsSize();
     for( int i = 0; i < numWeights; i++ ) {
@@ -95,7 +137,8 @@ void Layer::printWeightsAsCode() const { // [virtual]
     std::cout << "};" << std::endl;
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
 }
-void Layer::printBiasWeightsAsCode() const { // [virtual]
+// [virtual]
+void Layer::printBiasWeightsAsCode() const {
     std::cout << "float biasWeights" << layerIndex << "[] = {";
     const int numBiasWeights = getBiasWeightsSize();
     for( int i = 0; i < numBiasWeights; i++ ) {
@@ -106,27 +149,34 @@ void Layer::printBiasWeightsAsCode() const { // [virtual]
     std::cout << "};" << std::endl;
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
 }
-void Layer::printWeights() const {  // [virtual]
+// [virtual]
+void Layer::printWeights() const {
     std::cout << "printWeights() not implemented for this layer type" << std:: endl; 
 }
-void Layer::printOutput() const {  // [virtual]
+// [virtual]
+void Layer::printOutput() const {
     std::cout << "printOutpu() not implemented for this layer type" << std:: endl; 
 }
-void Layer::backPropExpected( float learningRate, float const *expected ) { // [virtual]
-    throw std::runtime_error("backPropExpected not implemented for this layertype, layerindex " + toString(layerIndex ) );
-}
-void Layer::backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) { // [virtual]
+//// [virtual]
+//void Layer::backPropExpected( float learningRate, float const *expected ) {
+//    throw std::runtime_error("backPropExpected not implemented for this layertype, layerindex " + toString(layerIndex ) );
+//}
+// [virtual]
+void Layer::backPropErrors( float learningRate, Layer *nextLayer ) {
     throw std::runtime_error("backproperrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
-int Layer::getWeightsSize() const { // [virtual]
+// [virtual]
+int Layer::getWeightsSize() const {
     throw std::runtime_error("getWeightsSize not implemented for this layertype");
 }
-int Layer::getBiasWeightsSize() const { // [virtual]
+// [virtual]
+int Layer::getBiasWeightsSize() const {
     throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
 }
-void Layer::calcErrors( float const *expected, float *errors ) { // [virtual]
-    throw std::runtime_error("calcErrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
-}
+//// [virtual]
+//void Layer::calcErrors( float const *expected, float *errors ) {
+//    throw std::runtime_error("calcErrors not implemented for this layertype, layerindex " + toString(layerIndex ) );
+//}
 float Layer::calcLoss( float const *expected ) {
     float E = 0;
     getResults();

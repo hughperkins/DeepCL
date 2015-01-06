@@ -4,6 +4,7 @@
 #include <random>
 
 #include "NeuralNet.h"
+#include "ExpectedValuesLayer.h"
 
 #include "gtest/gtest.h"
 
@@ -79,27 +80,30 @@ EXPECT_FLOAT_NEAR( 0.0310387, weights[72239] );
 EXPECT_FLOAT_NEAR( -0.0746839, weights[98933] );
 
 cout << "=============== backprop ..." << endl;
-float *errors = new float[100000];
+//float *errors = new float[100000];
 ConvolutionalLayer *layer3 = dynamic_cast<ConvolutionalLayer*>( net->layers[3] );
-layer3->calcErrors( expectedResults, errors );
+ExpectedValuesLayer *expectedValuesLayer = (new ExpectedValuesLayerMaker(net, net->layers[3]))->instance();
+expectedValuesLayer->setBatchSize(batchSize);
+expectedValuesLayer->calcErrors( expectedResults );
 int layer3ResultsSize = layer3->getResultsSize();
-Sampler::printSamples( "errors", layer3ResultsSize, errors, 3 );        
+float *layer3errors = expectedValuesLayer->errors;
+Sampler::printSamples( "layer3errors", layer3ResultsSize, layer3errors, 3 );        
 
-EXPECT_FLOAT_NEAR( -0.296495, errors[684] );
-EXPECT_FLOAT_NEAR( 0.214934, errors[559] );
-EXPECT_FLOAT_NEAR( 0.1246, errors[373] );
+EXPECT_FLOAT_NEAR( -0.296495, layer3errors[684] );
+EXPECT_FLOAT_NEAR( 0.214934, layer3errors[559] );
+EXPECT_FLOAT_NEAR( 0.1246, layer3errors[373] );
 
 cout << endl;
 
 ConvolutionalLayer *layer2 = dynamic_cast<ConvolutionalLayer*>( net->layers[2] );
 int layer2ResultsSize = layer2->getResultsSize();
-float *layer2errors = new float[ layer2ResultsSize ];
-layer3->backPropErrors( learningRate, errors, layer2errors );
+layer3->backPropErrors( learningRate, expectedValuesLayer );
+float *layer2errors = layer3->getErrorsForUpstream();
 Sampler::printSamples( "layer2errors", layer2ResultsSize, layer2errors );
 
-EXPECT_FLOAT_NEAR( -0.296495, errors[684] );
-EXPECT_FLOAT_NEAR( 0.214934, errors[559] );
-EXPECT_FLOAT_NEAR( 0.1246, errors[373] );
+//EXPECT_FLOAT_NEAR( -0.296495, layer2errors[684] );
+//EXPECT_FLOAT_NEAR( 0.214934, layer2errors[559] );
+//EXPECT_FLOAT_NEAR( 0.1246, layer2errors[373] );
 
 EXPECT_FLOAT_NEAR( 0.00070503, layer2errors[1116844] );
 EXPECT_FLOAT_NEAR( 0.0220331, layer2errors[174639] );
@@ -111,8 +115,8 @@ cout << endl;
 
 ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer*>( net->layers[1] );
 int layer1ResultsSize = layer1->getResultsSize();
-float *layer1errors = new float[ layer1ResultsSize ];
-layer2->backPropErrors( learningRate, layer2errors, layer1errors );
+layer2->backPropErrors( learningRate, layer3 );
+float *layer1errors = layer2->getErrorsForUpstream();
 Sampler::printSamples( "layer1errors", layer1ResultsSize, layer1errors );
 
 EXPECT_FLOAT_NEAR( -0.0137842, layer1errors[199340] );
@@ -121,9 +125,9 @@ EXPECT_FLOAT_NEAR( 0.0170709, layer1errors[2270837] );
 
 cout << endl;
 
-layer1->backPropErrors( learningRate, layer1errors, 0 );
+layer1->backPropErrors( learningRate, layer2 );
 
-    net->backProp( learningRate, expectedResults );
+    net->backProp( batchSize, learningRate, expectedResults );
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
         weights = layer->weights;
@@ -182,7 +186,7 @@ EXPECT_FLOAT_NEAR( -0.775789, net->getResults()[373] );
 
 //net->layers[1]->getResults();
 
-net->backProp( learningRate, expectedResults );
+net->backProp( batchSize, learningRate, expectedResults );
 
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
@@ -227,7 +231,7 @@ EXPECT_FLOAT_NEAR( 0.0122473, biasWeights[21] );
 
     Timer timer;
     for( int i = 0; i < 2; i++ ) {
-        net->learnBatch( learningRate, inputData, expectedResults );
+        net->learnBatch( batchSize, learningRate, inputData, expectedResults );
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
@@ -284,7 +288,7 @@ TEST( testsinglebatch, perf ) {
 
     Timer timer;
     for( int i = 0; i < 5; i++ ) {
-        net->learnBatch( learningRate, inputData, expectedResults );
+        net->learnBatch( batchSize, learningRate, inputData, expectedResults );
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);

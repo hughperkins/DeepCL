@@ -47,16 +47,20 @@ TEST( testcalcerrorsforupstream, board28 ) {
     for( int i = 0; i < resultsSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
+    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    errorsWrapper->copyToDevice();
     for( int i = 0; i < weightsSize; i++ ) {
         layer->weights[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
     float *errorsForUpstream = new float[upstreamResultsSize];
+    CLWrapper *errorsForUpstreamWrapper = net->cl->wrap( upstreamResultsSize, errorsForUpstream );
     layer->weightsWrapper->copyToDevice();
 
     Timer timer;
-    layer->calcErrorsForUpstreamGpu( layer->weightsWrapper, errors, errorsForUpstream );
+    layer->calcErrorsForUpstreamGpu( layer->weightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
     timer.timeCheck("after calcing errors");
 
+    errorsForUpstreamWrapper->copyToHost();
     Sampler::printSamples( "errorsForUpstream", upstreamResultsSize, errorsForUpstream );
 
     EXPECT_FLOAT_NEAR( -3.58157, errorsForUpstream[199340] );
@@ -65,7 +69,9 @@ TEST( testcalcerrorsforupstream, board28 ) {
     EXPECT_FLOAT_NEAR( 2.36841, errorsForUpstream[2215104] );
     EXPECT_FLOAT_NEAR( -12.2059, errorsForUpstream[701251] );
 
+    delete errorsForUpstreamWrapper;
     delete[] errorsForUpstream;
+    delete errorsWrapper;
     delete[] errors;
     delete net;    
 }
@@ -99,16 +105,20 @@ TEST( testcalcerrorsforupstream, board19 ) { // make it work for a board19 first
     for( int i = 0; i < resultsSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
+    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    errorsWrapper->copyToDevice();
     for( int i = 0; i < weightsSize; i++ ) {
         layer->weights[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
     layer->weightsWrapper->copyToDevice();
     float *errorsForUpstream = new float[upstreamResultsSize];
+    CLWrapper *errorsForUpstreamWrapper = net->cl->wrap( upstreamResultsSize, errorsForUpstream );
 
     Timer timer;
-    layer->calcErrorsForUpstreamGpu( layer->weightsWrapper, errors, errorsForUpstream );
+    layer->calcErrorsForUpstreamGpu( layer->weightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
     timer.timeCheck("after calcing errors");
 
+    errorsForUpstreamWrapper->copyToHost();
     Sampler::printSamples( "errorsForUpstream", upstreamResultsSize, errorsForUpstream );
 
     EXPECT_FLOAT_NEAR( -6.64657, errorsForUpstream[158380] );
@@ -117,7 +127,9 @@ TEST( testcalcerrorsforupstream, board19 ) { // make it work for a board19 first
     EXPECT_FLOAT_NEAR( -2.0853, errorsForUpstream[429248] );
     EXPECT_FLOAT_NEAR( 4.28357, errorsForUpstream[1200963] );
 
+    delete errorsForUpstreamWrapper;
     delete[] errorsForUpstream;
+    delete errorsWrapper;
     delete[] errors;
     delete net;    
 }

@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
-OPTION(PYTHON_AVAILABLE "Python is on the PATH. Used to update header files, using cogapp." OFF)
-OPTION(PNG_AVAILABLE "libpng++ is available. Just used by some testing utilities, not used by main ClConvolve library." OFF)
+OPTION(PYTHON_AVAILABLE "Developers only." OFF)
+OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
 
 include_directories( . )
 include_directories( OpenCLHelper )

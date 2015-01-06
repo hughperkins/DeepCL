@@ -12,8 +12,13 @@
 #include "FullyConnectedLayer.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
+#include "ExpectedValuesLayer.h"
 
 using namespace std;
+
+//Layer *ExpectedValuesMaker::insert() {
+//    throw std::runtime_error("insert not implemetned for ExpectedValuesMaker");
+//}
 
 Layer *FullyConnectedMaker::insert() {
     if( _numPlanes == 0 ) {
@@ -48,6 +53,12 @@ Layer *ConvolutionalMaker::insert() {
         throw runtime_error("Must provide ->filterSize(filterSize)");
     }
     Layer *layer = net->addLayer( this );
+    delete this;
+    return layer;
+}
+
+ExpectedValuesLayer *ExpectedValuesLayerMaker::instance() const {
+    ExpectedValuesLayer *layer = new ExpectedValuesLayer( previousLayer, this );
     delete this;
     return layer;
 }

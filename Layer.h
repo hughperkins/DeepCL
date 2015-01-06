@@ -22,6 +22,7 @@ public:
 //    int batchEnd;
 
     Layer *previousLayer;
+//    Layer *nextLayer;
     const int numPlanes;
     const int boardSize;
     float *results;
@@ -39,7 +40,7 @@ public:
 
     int batchSize;
 
-    virtual bool needErrorsBackprop() = 0;
+//    virtual bool needErrorsBackprop() = 0;
 
     // results structured like [imageid][outputplane][outputrow][outputcol]
     inline int getResultIndex( int n, int plane, int row, int col ) const {
@@ -67,8 +68,12 @@ public:
     // cppfile: Layer.cpp
 
     Layer( Layer *previousLayer, LayerMaker const*maker );
+    Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker );
     virtual ~Layer();
     virtual void setBatchSize( int batchSize );
+    virtual bool providesErrorsWrapper() const;
+    virtual float *getErrorsForUpstream();
+    virtual CLWrapper *getErrorsForUpstreamWrapper();
     virtual bool hasResultsWrapper() const;
     virtual CLWrapper *getResultsWrapper();
     virtual float * getResults();
@@ -83,11 +88,9 @@ public:
     virtual void printBiasWeightsAsCode() const;
     virtual void printWeights() const;
     virtual void printOutput() const;
-    virtual void backPropExpected( float learningRate, float const *expected );
-    virtual void backPropErrors( float learningRate, float const *errors, float *errorsForUpstream );
+    virtual void backPropErrors( float learningRate, Layer *nextLayer );
     virtual int getWeightsSize() const;
     virtual int getBiasWeightsSize() const;
-    virtual void calcErrors( float const *expected, float *errors );
     float calcLoss( float const *expected );
 
     // [[[end]]]

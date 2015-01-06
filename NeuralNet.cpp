@@ -18,7 +18,7 @@
 #include "InputLayer.h"
 #include "FullyConnectedLayer.h"
 #include "EpochMaker.h"
-
+#include "ExpectedValuesLayer.h"
 
 #include "NeuralNet.h"
 
@@ -113,7 +113,7 @@ float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, floa
         }
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-        learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+        learnBatch( batchSize, learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
         loss += calcLoss( &(expectedResults[batchStart*getResultsSizePerExample()]) );
     }
 //        StatefulTimer::dump();
@@ -141,7 +141,7 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
         }
 //            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
 //             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-        learnBatch( learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
+        learnBatch( batchSize, learningRate, &(images[batchStart*getInputSizePerExample()]), &(expectedResults[batchStart*getResultsSizePerExample()]) );
         StatefulTimer::timeCheck("after batch forward-backward prop");
         numRight += AccuracyHelper::calcNumRight( thisBatchSize, getLastLayer()->numPlanes, &(labels[batchStart]), getResults() );
         StatefulTimer::timeCheck("after batch calc training num right");
@@ -177,29 +177,35 @@ void NeuralNet::propagate( float const*images) {
     }
 //        timer.timeCheck("propagate time");
 }
-void NeuralNet::backProp(float learningRate, float const *expectedResults) {
+void NeuralNet::backProp( int batchSize, float learningRate, float const *expectedResults) {
     // backward...
-    Layer *lastLayer = getLastLayer();
-    float *errors = new float[ lastLayer->getResultsSize() ];
-    lastLayer->calcErrors( expectedResults, errors );
-
-    float *errorsForNextLayer = 0;
+    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
+    expectedValuesLayer->setBatchSize(batchSize);
+//    Layer *lastLayer = getLastLayer();
+//    float *errors = new float[ lastLayer->getResultsSize() ];
+    expectedValuesLayer->calcErrors( expectedResults );
+//    float *errorsForNextLayer = 0;
     for( int layerIdx = layers.size() - 1; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
-        if( layerIdx > 1 ) {
-            errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
+//        if( layerIdx > 1 ) {
+//            errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
+//        }
+        if( layerIdx == layers.size() - 1 ) {
+            layers[layerIdx]->backPropErrors( learningRate, expectedValuesLayer );
+        } else {
+            layers[layerIdx]->backPropErrors( learningRate, layers[layerIdx+1] );
         }
-        layers[layerIdx]->backPropErrors( learningRate, errors, errorsForNextLayer );
-        delete[] errors;
-        errors = 0;
-        errors = errorsForNextLayer;
-        errorsForNextLayer = 0;
+//        delete[] errors;
+//        errors = 0;
+//        errors = errorsForNextLayer;
+//        errorsForNextLayer = 0;
     }
+    delete expectedValuesLayer;
 }
-void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
+void NeuralNet::learnBatch( int batchSize, float learningRate, float const*images, float const *expectedResults ) {
 //        Timer timer;
     propagate( images);
 //        timer.timeCheck("propagate");
-    backProp(learningRate, expectedResults );
+    backProp(batchSize, learningRate, expectedResults );
 //        timer.timeCheck("backProp");
 }
 int NeuralNet::getNumLayers() {

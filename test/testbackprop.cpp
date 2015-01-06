@@ -51,6 +51,8 @@ TEST( testbackprop, main ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    errorsWrapper->copyToDevice();
     layer1->resultsWrapper->copyToDevice();
     CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
     imagesWrapper->copyToDevice();
@@ -62,7 +64,7 @@ TEST( testbackprop, main ) {
         layer1->weightsWrapper->copyToDevice();
 
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errors, layer1->weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errorsWrapper, layer1->weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, layer1->weights );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -77,6 +79,7 @@ TEST( testbackprop, main ) {
     StatefulTimer::dump(true);
 //    cout << "end" << endl;
     delete[] errors;
+    delete errorsWrapper;
     delete imagesWrapper;
 //    delete[]weightChanges;
 //    delete[]weights;
@@ -116,6 +119,8 @@ TEST( testbackprop, board19 ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    errorsWrapper->copyToDevice();
     layer1->resultsWrapper->copyToDevice();
     CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
     imagesWrapper->copyToDevice();
@@ -127,7 +132,7 @@ TEST( testbackprop, board19 ) {
         weightsWrapper->copyToDevice();
 
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errors, weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errorsWrapper, weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -143,6 +148,7 @@ TEST( testbackprop, board19 ) {
     }
     StatefulTimer::dump(true);
 //    cout << "end" << endl;
+    delete errorsWrapper;
     delete[] errors;
 //    delete[]weightChanges;
 //    delete[]weights;
@@ -178,13 +184,15 @@ TEST( testbackprop, board19_1plane_1filter ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
+    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    errorsWrapper->copyToDevice();
     layer1->resultsWrapper->copyToDevice();
     CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
     imagesWrapper->copyToDevice();
 
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errors, weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errorsWrapper, weightsWrapper );
         StatefulTimer::timeCheck("after backprop");
 
         weightsWrapper->copyToHost();
@@ -204,6 +212,7 @@ TEST( testbackprop, board19_1plane_1filter ) {
     StatefulTimer::dump(true);
 
     delete[] errors;
+    delete errorsWrapper;
 //    delete[]weightChanges;
 //    delete[]weights;
     delete[] upstreamResults;

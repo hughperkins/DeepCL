@@ -8,6 +8,8 @@
 #include "NeuralNet.h"
 #include "stringhelper.h"
 
+using namespace std;
+
 ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
         Layer( previousLayer, maker ),
         filterSize( maker->_filterSize ),
@@ -15,8 +17,14 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         padZeros( maker->_padZeros ),
         weightsWrapper( 0 ),
         resultsWrapper( 0 ),
+//        errorsWrapper( 0 ),
+        errorsForUpstreamWrapper( 0 ),
+//        errors( 0 ),
+        errorsForUpstream( 0 ),
         allocatedSpaceNumExamples( 0 ),
         resultsCopiedToHost( false ),
+//        errorsCopiedToHost( false ),
+        errorsForUpstreamCopiedToHost( false ),
 //        weightsCopiedToHost( false ),
         cl( maker->net->getCl() ) {
         if( padZeros && filterSize % 2 == 0 ) {
@@ -80,6 +88,18 @@ ConvolutionalLayer::~ConvolutionalLayer() {
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
+//    if( errorsWrapper != 0 ) {
+//        delete errorsWrapper;
+//    }
+//    if( errors != 0 ) {
+//        delete[] errors;
+//    }
+    if( errorsForUpstreamWrapper != 0 ) {
+        delete errorsForUpstreamWrapper;
+    }
+    if( errorsForUpstream != 0 ) {
+        delete[] errorsForUpstream;
+    }
     delete kernelBackPropWeightsWithScratch;
     delete kernelConvolve;
     delete kernelBackpropErrors;
@@ -87,6 +107,23 @@ ConvolutionalLayer::~ConvolutionalLayer() {
     delete kernelAddInPlace;
     delete kernelBackPropWeightsWithScratchAndBias;
 //        delete cl;
+}
+// [virtual]
+float *ConvolutionalLayer::getErrorsForUpstream() {
+    if( !errorsForUpstreamCopiedToHost ) {
+        std::cout << "copying errorsForUpstream to host, from GPU" << std::endl;
+        errorsForUpstreamWrapper->copyToHost();
+        errorsForUpstreamCopiedToHost = true;
+    }
+    return errorsForUpstream;
+}
+// [virtual]
+bool ConvolutionalLayer::providesErrorsWrapper() const {
+    return true;
+}
+// [virtual]
+CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
+    return errorsForUpstreamWrapper;
 }
 // [virtual]
 void ConvolutionalLayer::initWeights( float*weights ) {
@@ -188,15 +225,37 @@ void ConvolutionalLayer::setBatchSize( int batchSize ) {
     }
     if( results != 0 ) {
         delete[] results;
+        results = 0;
+    }
+//    if( errors != 0 ) {
+//        delete[] errors;
+//        errors = 0;
+//    }
+    if( errorsForUpstream != 0 ) {
+        delete[] errorsForUpstream;
+        errorsForUpstream = 0;
     }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
+        resultsWrapper = 0;
+    }
+//    if( errorsWrapper != 0 ) {
+//        delete errorsWrapper;
+//        errorsWrapper = 0;
+//    }
+    if( errorsForUpstreamWrapper != 0 ) {
+        delete errorsForUpstreamWrapper;
+        errorsForUpstreamWrapper = 0;
     }
     this->batchSize = batchSize;
     results = new float[getResultsSize()];
     resultsWrapper = cl->wrap( getResultsSize(), results );
 //        std::cout << " layer " << layerIndex << " allocating results size " << getResultsSize() << std::endl;
     weOwnResults = true;
+    if( layerIndex > 1 ) {
+        errorsForUpstream = new float[ previousLayer->getResultsSize() ];
+        errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
+    }
     this->allocatedSpaceNumExamples = batchSize;
 }
 // [virtual]
@@ -267,25 +326,14 @@ int ConvolutionalLayer::getWeightsSize() const {
 int ConvolutionalLayer::getBiasWeightsSize() const {
     return numPlanes;
 }
-// [virtual]
-void ConvolutionalLayer::calcErrors( float const *expected, float *errors ) {
-//        Timer timer;
-    getResults();
-    // matrix per-element subtraction...
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-            for( int outRow = 0; outRow < boardSize; outRow++ ) {
-                for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
-                    errors[ resultIndex ] = results[resultIndex] - expected[resultIndex];
-                }
-            } 
-        }
-    }
-//        timer.timeCheck("expected->errors done");
-//        backPropErrors( learningRate, errors );
-//        delete[] errors;
-}
+//// [virtual]
+//float *getErrors() {
+//    if( !errorsOnHost ) {
+//        errorsWrapper.copyToHost();
+//        errorsOnHost = true;
+//    }
+//    return errors;
+//}
 
 // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
 //       aggregate over:  [outRow][outCol][n]
@@ -293,7 +341,7 @@ void ConvolutionalLayer::calcErrors( float const *expected, float *errors ) {
 //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
 
 // [virtual]
-void ConvolutionalLayer::backPropErrors( float learningRate, float const *errors, float *errorsForUpstream ) {
+void ConvolutionalLayer::backPropErrors( float learningRate, Layer *nextLayer ) {
 //        Timer timer;
     float *weightChanges = new float[ getWeightsSize() ];
     float *biasWeightChanges = new float[getBiasWeightsSize()];
@@ -310,21 +358,31 @@ void ConvolutionalLayer::backPropErrors( float learningRate, float const *errors
         imagesWrapper->copyToDevice();
     }
 
+    CLWrapper *errorsWrapper = 0;
+    bool weOwnErrorsWrapper = false;
+    if( nextLayer->providesErrorsWrapper() ) {
+        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    } else {
+        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
+        errorsWrapper->copyToDevice();
+        weOwnErrorsWrapper = true;
+    }
+
     bool implicitlyCalcedBiasWeight = false;
     if( filterSize <= 19 ) {
-        backPropWeightsGpuWithScratchAndBias( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper, biasWeightChanges );
+        backPropWeightsGpuWithScratchAndBias( learningRate, imagesWrapper, resultsWrapper, errorsWrapper, weightChangesWrapper, biasWeightChanges );
         implicitlyCalcedBiasWeight = true;
     } else {
-        backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errors, weightChangesWrapper );
+        backPropWeightsGpu( learningRate, imagesWrapper, resultsWrapper, errorsWrapper, weightChangesWrapper );
     }
     StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
     if( !implicitlyCalcedBiasWeight ) {
-        doBiasBackpropGpu( learningRate, resultsWrapper, errors, biasWeightChanges );
+        doBiasBackpropGpu( learningRate, resultsWrapper, errorsWrapper, biasWeightChanges );
     StatefulTimer::instance()->timeCheck("backproperrors(): done biasweight backprop, layer " + toString( layerIndex ) );
     }
 
-    if( errorsForUpstream != 0 ) {
-        calcErrorsForUpstreamGpu( weightsWrapper, errors, errorsForUpstream );
+    if( layerIndex > 1 ) {
+        calcErrorsForUpstreamGpu( weightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
     }
 
@@ -342,6 +400,9 @@ void ConvolutionalLayer::backPropErrors( float learningRate, float const *errors
     }
     delete weightChangesWrapper;
     delete[] weightChanges;
+    if( weOwnErrorsWrapper ) {
+        delete errorsWrapper;
+    }
 }
 
 void ConvolutionalLayer::updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper ) {
@@ -405,11 +466,11 @@ void ConvolutionalLayer::backPropWeightsCpu( float learningRate, float const *er
     StatefulTimer::instance()->timeCheck(" backpropweightscpu end, layer " + toString( layerIndex ) );
 }
 
-void ConvolutionalLayer::backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper ) {
+void ConvolutionalLayer::backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper ) {
     StatefulTimer::instance()->timeCheck(" backpropweightsGpu start, layer " + toString( layerIndex ) );
     const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
-    errorsWrapper->copyToDevice();
+//    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
+//    errorsWrapper->copyToDevice();
     kernelBackPropWeights
        ->in(learningMultiplier)
        ->in( batchSize )->in( upstreamNumPlanes )->in(numPlanes)
@@ -427,11 +488,11 @@ void ConvolutionalLayer::backPropWeightsGpu( float learningRate, CLWrapper *imag
     cl->finish();
 
 //        timer.timeCheck("backPropGpu");
-    delete errorsWrapper;
+//    delete errorsWrapper;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpu end, layer " + toString( layerIndex ) );
 }
 
-void ConvolutionalLayer::backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper ) {
+void ConvolutionalLayer::backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper ) {
 //        Timer timer;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch start, layer " + toString( layerIndex ) );
 //        int globalSize = getWeightsSize();
@@ -442,9 +503,9 @@ void ConvolutionalLayer::backPropWeightsGpuWithScratch( float learningRate, CLWr
 //        std::cout << " backpropgpuwithscratch, globalsize " << globalSize << " workgroupsize " << workgroupsize << std::endl;
 
     const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
+//    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
 //        imagesWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
+//    errorsWrapper->copyToDevice();
     kernelBackPropWeightsWithScratch
        ->in(learningMultiplier)
        ->in( batchSize )
@@ -462,12 +523,12 @@ void ConvolutionalLayer::backPropWeightsGpuWithScratch( float learningRate, CLWr
     cl->finish();
 
 //        timer.timeCheck("backPropGpu");
-    delete errorsWrapper;
+//    delete errorsWrapper;
 //        delete weightChangesWrapper;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch end, layer " + toString( layerIndex ) );
 }
 
-void ConvolutionalLayer::backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, float const*errors, CLWrapper *weightChangesWrapper, float *biasWeightChanges ) {
+void ConvolutionalLayer::backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges ) {
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratchAndBias start, layer " + toString( layerIndex ) );
     int workgroupsize = filterSizeSquared;
     int numWorkgroups = upstreamNumPlanes * numPlanes;
@@ -475,9 +536,9 @@ void ConvolutionalLayer::backPropWeightsGpuWithScratchAndBias( float learningRat
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
     const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
+//    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
     CLWrapper *biasWeightChangesWrapper = cl->wrap( numPlanes, biasWeightChanges );
-    errorsWrapper->copyToDevice();
+//    errorsWrapper->copyToDevice();
     kernelBackPropWeightsWithScratchAndBias
        ->in(learningMultiplier)
        ->in( batchSize )
@@ -496,7 +557,7 @@ void ConvolutionalLayer::backPropWeightsGpuWithScratchAndBias( float learningRat
     cl->finish();
     biasWeightChangesWrapper->copyToHost();
 
-    delete errorsWrapper;
+//    delete errorsWrapper;
     delete biasWeightChangesWrapper;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratchAndBias end, layer " + toString( layerIndex ) );
 }
@@ -684,18 +745,18 @@ void backPropWeightsGpu4( const float learningRate, float const*const errors, fl
 }
 */
 
-// [virtual]
-bool ConvolutionalLayer::needErrorsBackprop() {
-    return true;
-}
+//// [virtual]
+//bool ConvolutionalLayer::needErrorsBackprop() {
+//    return true;
+//}
 
-void ConvolutionalLayer::calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, float const *const errors, float *const errorsForUpstream ) {
+void ConvolutionalLayer::calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
 //        CLWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
     StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamGpu start, layer " + toString( layerIndex ) );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
+//    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
+//    CLWrapper *errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
 //        weightsWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
+//    errorsWrapper->copyToDevice();
     kernelBackpropErrors
         ->in( upstreamNumPlanes )->in( upstreamBoardSize )->in( filterSize )
         ->in( numPlanes )->in( boardSize )
@@ -710,12 +771,12 @@ void ConvolutionalLayer::calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, fl
     kernelBackpropErrors->run_1d(globalSize, workgroupsize);
 
     cl->finish();
-    errorsForUpstreamWrapper->copyToHost();
+//    errorsForUpstreamWrapper->copyToHost();
 
 //        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, finished kernel, layer " + toString( layerIndex ) );
 //        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, copied results to host, layer " + toString( layerIndex ) );
-    delete errorsForUpstreamWrapper;
-    delete errorsWrapper;
+//    delete errorsForUpstreamWrapper;
+//    delete errorsWrapper;
 //        delete weightsWrapper;
     StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamGpu end, layer " + toString( layerIndex ) );
 }
@@ -804,7 +865,7 @@ if(debug)std::cout << "bias outPlane=" << outPlane << " outpos=" << outRow << ",
     StatefulTimer::instance()->timeCheck("doBiasBackpropCpu end, layer " + toString( layerIndex ) );
 }
 
-void ConvolutionalLayer::doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, float const *errors, float *biasWeightChanges ) {
+void ConvolutionalLayer::doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, float *biasWeightChanges ) {
 //        Timer timer;
     const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
     if( !biased ) {
@@ -816,10 +877,10 @@ void ConvolutionalLayer::doBiasBackpropGpu(float learningRate, CLWrapper *result
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
 //        CLWrapper *resultsWrapper = cl->wrap( getResultsSize(), results );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
+//    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
     CLWrapper *biasWeightChangesWrapper = cl->wrap( numPlanes, biasWeightChanges );
 //        resultsWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
+//    errorsWrapper->copyToDevice();
 
     kernelBackpropBiasWeights->in( learningMultiplier )->in( batchSize )
         ->in( resultsWrapper )->in( errorsWrapper )->out( biasWeightChangesWrapper );
@@ -829,7 +890,7 @@ void ConvolutionalLayer::doBiasBackpropGpu(float learningRate, CLWrapper *result
 
     delete biasWeightChangesWrapper;
 //        delete resultsWrapper;
-    delete errorsWrapper;
+//    delete errorsWrapper;
     StatefulTimer::instance()->timeCheck("doBiasBackpropGpu end, layer " + toString( layerIndex ) );
 }
 

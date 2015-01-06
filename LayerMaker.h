@@ -16,6 +16,8 @@
 class NeuralNet;
 class Layer;
 
+class ExpectedValuesLayer;
+
 class LayerMaker {
 public:
     Layer *previousLayer;
@@ -52,6 +54,18 @@ public:
     }
     virtual Layer *instance() const;
     virtual Layer *insert();
+};
+
+class ExpectedValuesLayerMaker {
+public:
+    NeuralNet *net;
+    Layer *previousLayer;
+    ExpectedValuesLayerMaker( NeuralNet *net, Layer *previousLayer ) :
+        net( net ),
+        previousLayer( previousLayer ) {
+    }
+    virtual ExpectedValuesLayer *instance() const;
+//    virtual Layer *insert();
 };
 
 class FullyConnectedMaker : public LayerMaker {
