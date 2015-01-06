@@ -91,11 +91,18 @@ public:
 void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
     if( N == 0 ) { return; }
     int testNumRight = 0;
-    for( int batch = 0; batch < N / batchSize; batch++ ) {
+    int numBatches = ( N + batchSize - 1 ) /batchSize;
+    net->setBatchSize(batchSize);
+    for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;
+        int thisBatchSize = batchSize;
+        if( batch == numBatches - 1 ) {
+            thisBatchSize = N - batchStart;
+            net->setBatchSize(batchSize);
+        }
         net->propagate( &(boards[batchStart][0][0]) );
         float const*results = net->getResults();
-        int thisnumright = AccuracyHelper::calcNumRight( batchSize, 10, &(labels[batchStart]), results );
+        int thisnumright = AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labels[batchStart]), results );
 //        cout << name << " batch " << batch << ": numright " << thisnumright << "/" << batchSize << endl;
         testNumRight += thisnumright;
     }
