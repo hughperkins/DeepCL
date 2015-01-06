@@ -213,9 +213,10 @@ Development notes
 =================
 
 - if you want to modify things, please feel free to fork this repository, tweak things, and send a pull request
-- note that the headers are generated using [cogapp](http://nedbatchelder.com/code/cog/)  . You don't need this to
+- note that declarations in the header files are generated automatically.  [cogapp](http://nedbatchelder.com/code/cog/) generator provides
+the framework, and `cog_addheaders.py` is a specific generator for header file declarations. You don't need this to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
-cmake configuration, then header file declarations will be generated for you automatically when you build :-)
+cmake configuration, then header file declarations will be updated for you automatically :-)
 
 Helper methods
 ==============
