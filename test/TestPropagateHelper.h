@@ -17,16 +17,17 @@ inline int square( int value ) {
 
 class TestPropagateHelper {
 public:
-//    static void propagate( 
-//        int batchSize,
-//        int inputBoardSize, float *inputData,
-//        int filterSize, float *filterData,
-//        int outputBoardSize, float *outputData,
-//        bool padZeros
-//    ) {
-////        OpenCLHelper cl;
-////        propagate1( batchSize, inputBoardSize, inputData, filterSize, filterData, outputBoardSize, outputData, padZeros );
-//    }
+    static float * propagate( int batchSize, 
+                int inputPlanes, int inputBoardSize, 
+                int numFilters, int filterSize, 
+                int *p_outputBoardSize,
+                bool padZeros, bool biased,
+                float *inputData, float *filters, float *biases, ActivationFunction *fn ) {
+        return propagate1( batchSize,
+            inputPlanes, inputBoardSize, numFilters, filterSize, p_outputBoardSize, 
+            padZeros, biased,
+            inputData, filters, biases, fn );
+    }
     static float * propagate1( int batchSize, 
                 int inputPlanes, int inputBoardSize, 
                 int numFilters, int filterSize, 
@@ -35,7 +36,7 @@ public:
                 float *inputData, float *filters, float *biases, ActivationFunction *fn ) {
         OpenCLHelper *cl = new OpenCLHelper();
 
-        int inputDataSize = batchSize * square( inputBoardSize );
+        int inputDataSize = batchSize * inputPlanes * square( inputBoardSize );
         CLWrapper *dataWrapper = cl->wrap( inputDataSize, inputData );
         dataWrapper->copyToDevice();
 
