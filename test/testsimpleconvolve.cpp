@@ -42,7 +42,7 @@ TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
         0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
     };
     int outputBoardSize = 0;
-    float *results = TestPropagateHelper::propagate1( 
+    float *results = TestPropagateHelper::propagate( 
         batchSize, 
         numInPlanes, boardSize, 
         numOutPlanes, filterWidth,
@@ -124,7 +124,7 @@ TEST( testsimpleconvolve, boardsize2_padzeros ) {
 //    };
 
     int outputBoardSize = 0;
-    float *results = TestPropagateHelper::propagate1( 
+    float *results = TestPropagateHelper::propagate( 
         batchSize, 
         numInPlanes, boardSize, 
         numOutPlanes, filterWidth,
@@ -185,7 +185,7 @@ TEST( testsimpleconvolve, boardsize3 ) {
  };
 
     int outputBoardSize = 0;
-    float *results = TestPropagateHelper::propagate1( 
+    float *results = TestPropagateHelper::propagate( 
         batchSize, 
         numInPlanes, boardSize, 
         numOutPlanes, filterWidth,
@@ -287,7 +287,7 @@ TEST( testsimpleconvolve, test3 ) {
                      0.5,0.7};
 
     int outputBoardSize = 0;
-    float *results = TestPropagateHelper::propagate1( 
+    float *results = TestPropagateHelper::propagate( 
         batchSize, 
         numInPlanes, inBoardSize, 
         numOutPlanes, filterSize,
@@ -332,7 +332,7 @@ TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_1 ) {
     float *biasFilters = new float[biasWeightsSize];
 
     int outputBoardSize = 0;
-    float *results = TestPropagateHelper::propagate1( 
+    float *results = TestPropagateHelper::propagate( 
         batchSize, 
         numInPlanes, inBoardSize, 
         numOutPlanes, filterSize,
@@ -359,7 +359,7 @@ TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_2 ) {
     float *biasFilters = new float[biasWeightsSize];
     
     int outputBoardSize = 0;
-    float *results = TestPropagateHelper::propagate1( 
+    float *results = TestPropagateHelper::propagate( 
         batchSize, 
         numInPlanes, inBoardSize, 
         numOutPlanes, filterSize,

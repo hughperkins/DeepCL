@@ -71,6 +71,8 @@ EXPECT_FLOAT_NEAR( -0.232493, results[684] );
 EXPECT_FLOAT_NEAR( 0.179215, results[559] );
 EXPECT_FLOAT_NEAR( 0.14498, results[373] );
 
+StatefulTimer::dump(true);
+
 float *weights = net->layers[3]->weights;
 int weightsSize = net->layers[3]->getWeightsSize();
 Sampler::printSamples( "weights", weightsSize, (float*)weights, 3 );        

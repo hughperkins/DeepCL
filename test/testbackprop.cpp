@@ -26,7 +26,7 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
 //    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
 //    net->convolutionalMaker()->numFilters(14)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(24)->tanh()->biased(config.biased)->insert();
-TEST( testbackprop, main ) {
+/*TEST( testbackprop, main ) {
     mt19937 random;
     random.seed(0); // so always gives same results
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
@@ -85,12 +85,12 @@ TEST( testbackprop, main ) {
 //    delete[]weights;
     delete[] upstreamResults;
 }
-    
+ */   
 // this will test layer 1 backprop in a network like:
 //    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
 //    net->convolutionalMaker()->numFilters(32)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased(config.biased)->insert();
-TEST( testbackprop, board19 ) {
+/*TEST( testbackprop, board19 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
@@ -154,7 +154,8 @@ TEST( testbackprop, board19 ) {
 //    delete[]weights;
     delete[] upstreamResults;
 }
-
+*/
+/*
 TEST( testbackprop, board19_1plane_1filter ) {
     mt19937 random;
     random.seed(0); // so always gives same results
@@ -217,6 +218,7 @@ TEST( testbackprop, board19_1plane_1filter ) {
 //    delete[]weights;
     delete[] upstreamResults;
 }
+*/
 /*
 TEST( testbackprop, board19_1plane_1filter_batchsize128 ) {
     mt19937 random;

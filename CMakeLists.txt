@@ -45,7 +45,7 @@ endif(PYTHON_AVAILABLE)
 set( UNITTEST_SOURCES unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp
  test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
 test/testbackprop.cpp test/testcalcerrorsforupstream.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
-test/testbackpropweights2.cpp )
+test/testbackpropweights2.cpp test/testsimpleconvolve3.cpp )
 
 #add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
 #add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )

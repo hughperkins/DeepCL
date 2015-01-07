@@ -21,11 +21,12 @@ class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
     CLKernel *kernelConvolve;
+    CLKernel *kernelConvolve2;
     CLKernel *kernelBackPropWeights;
 //    CLKernel *kernelBackPropWeights2;
 //    CLKernel *kernelBackPropWeights3;
 //    CLKernel *kernelBackPropWeights4;
-    CLKernel *kernelBackPropWeightsWithScratch;
+//    CLKernel *kernelBackPropWeightsWithScratch;
     CLKernel *kernelBackPropWeightsWithScratchAndBias;
     CLKernel *kernelBackpropErrors;
     CLKernel *kernelBackpropBiasWeights;
@@ -85,6 +86,8 @@ public:
     VIRTUAL void printOutput() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
+    VIRTUAL void propagate1();
+    VIRTUAL void propagate2();
     VIRTUAL float * getResults();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
@@ -92,7 +95,6 @@ public:
     void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper );
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
     void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
-    void backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
     void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges );
     void calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper );
     void calcErrorsForUpstreamCpu( float const *const weights, float const *const errors, float *errorsForUpstream );

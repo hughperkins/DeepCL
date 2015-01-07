@@ -62,11 +62,12 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
 
 //    options += " -D WORKGROUPSIZE 
     this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
+    this->kernelConvolve2 = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float3", options );
     this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
 //    this->kernelBackPropWeights2 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_2", options );
 //    this->kernelBackPropWeights3 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_3", options );
 //    this->kernelBackPropWeights4 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_4", options );
-    this->kernelBackPropWeightsWithScratch = cl->buildKernel( "ClConvolve.cl", "backprop_floats_withscratch", options );
+//    this->kernelBackPropWeightsWithScratch = cl->buildKernel( "ClConvolve.cl", "backprop_floats_withscratch", options );
     this->kernelBackpropErrors = cl->buildKernel( "ClConvolve.cl", "calcErrorsForUpstream", options );
     this->kernelBackpropBiasWeights = cl->buildKernel( "ClConvolve.cl", "doBiasBackprop", options );
     this->kernelAddInPlace = cl->buildKernel( "ClConvolve.cl", "add_in_place", options );
@@ -102,8 +103,9 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( errorsForUpstream != 0 ) {
         delete[] errorsForUpstream;
     }
-    delete kernelBackPropWeightsWithScratch;
+//    delete kernelBackPropWeightsWithScratch;
     delete kernelConvolve;
+    delete kernelConvolve2;
     delete kernelBackpropErrors;
     delete kernelBackpropBiasWeights;
     delete kernelAddInPlace;
@@ -240,6 +242,13 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     this->allocatedSpaceNumExamples = batchSize;
 }
 VIRTUAL void ConvolutionalLayer::propagate() {
+    if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
+        propagate2();
+    } else {
+        propagate1();
+    }
+}
+VIRTUAL void ConvolutionalLayer::propagate1() {
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
 
     CLWrapper *upstreamWrapper = 0;
@@ -279,6 +288,56 @@ VIRTUAL void ConvolutionalLayer::propagate() {
     cl->finish();
 //        resultsWrapper->copyToHost();
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after clFinish");
+    // if we are the last layer, then copy results to host
+
+    if( !previousLayer->hasResultsWrapper() ) {
+        delete upstreamWrapper;
+    }
+    if( biased ) {
+        delete biasWeightsWrapper;
+    }
+    resultsCopiedToHost = false;
+}
+VIRTUAL void ConvolutionalLayer::propagate2() {
+    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ", START");
+
+    CLWrapper *upstreamWrapper = 0;
+    if( previousLayer->hasResultsWrapper() ) {
+        upstreamWrapper = previousLayer->getResultsWrapper();
+    } else {
+        upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), (float *)previousLayer->getResults() );
+        upstreamWrapper->copyToDevice();
+    }
+
+    CLFloatWrapper *biasWeightsWrapper = 0;
+    if( biased ) {
+        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
+        biasWeightsWrapper->copyToDevice();
+    }
+    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ", copied to device");
+
+    kernelConvolve2->in(batchSize);
+    kernelConvolve2->input( upstreamWrapper );
+    kernelConvolve2->input( weightsWrapper);
+    if( biased ) {
+        kernelConvolve2->input( biasWeightsWrapper);
+    }
+    kernelConvolve2->output( resultsWrapper );
+    kernelConvolve2->localFloats(upstreamBoardSizeSquared)
+                    ->localFloats(upstreamNumPlanes * filterSizeSquared );
+    int numWorkgroups = numPlanes;
+    int workgroupSize = std::min( boardSizeSquared, cl->getMaxWorkgroupSize() );
+    int globalSize = numWorkgroups * workgroupSize;
+//    std::cout << "requested globalsize: " << globalSize << std::endl;
+ //   int workgroupsize = cl->getMaxWorkgroupSize();
+   // globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+//        timer.timeCheck("    propagate, passed in inputs");
+//        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
+//           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
+    kernelConvolve2->run_1d( globalSize, workgroupSize );
+    cl->finish();
+//        resultsWrapper->copyToHost();
+    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ",  after clFinish");
     // if we are the last layer, then copy results to host
 
     if( !previousLayer->hasResultsWrapper() ) {
@@ -344,7 +403,7 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     }
 
     bool implicitlyCalcedBiasWeight = false;
-    if( filterSize <= 19 ) {
+    if( filterSizeSquared <= cl->getMaxWorkgroupSize() ) {
         backPropWeightsGpuWithScratchAndBias( learningRate, imagesWrapper, resultsWrapper, errorsWrapper, weightChangesWrapper, biasWeightChanges );
         implicitlyCalcedBiasWeight = true;
     } else {
@@ -466,7 +525,7 @@ void ConvolutionalLayer::backPropWeightsGpu( float learningRate, CLWrapper *imag
 //    delete errorsWrapper;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpu end, layer " + toString( layerIndex ) );
 }
-
+/*
 void ConvolutionalLayer::backPropWeightsGpuWithScratch( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper ) {
 //        Timer timer;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch start, layer " + toString( layerIndex ) );
@@ -502,7 +561,7 @@ void ConvolutionalLayer::backPropWeightsGpuWithScratch( float learningRate, CLWr
 //        delete weightChangesWrapper;
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratch end, layer " + toString( layerIndex ) );
 }
-
+*/
 void ConvolutionalLayer::backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges ) {
     StatefulTimer::instance()->timeCheck(" backpropweightsGpuWithScratchAndBias start, layer " + toString( layerIndex ) );
     int workgroupsize = filterSizeSquared;
