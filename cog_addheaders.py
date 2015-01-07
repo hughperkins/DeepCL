@@ -29,18 +29,24 @@ def add():
     cog.outl( '// classname: ' + classname )
     cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
     f = open( cppfile, 'r')
+    in_multiline_comment = False
     line = f.readline()
     cog.outl('')
     while( line != '' ):
        # cog.outl(line)
-       if( line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ):
-           fnheader = line.replace( classname + '::', '' )
-           fnheader = fnheader.replace( '{', '' )
-           fnheader = fnheader.replace( ':', '' )
-           fnheader = fnheader.strip().replace( ')', ');' )
-           fnheader = fnheader.strip().replace( ';const', 'const;' )
-           fnheader = fnheader.strip().replace( '; const', ' const;' )
-           cog.outl( fnheader );
+       if( line.strip().find("/*") == 0 ):
+           in_multiline_comment = True
+       if( line.strip().find("*/") == 0 ):
+           in_multiline_comment = False
+       if not in_multiline_comment:
+           if( line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ):
+               fnheader = line.replace( classname + '::', '' )
+               fnheader = fnheader.replace( '{', '' )
+               fnheader = fnheader.replace( ':', '' )
+               fnheader = fnheader.strip().replace( ')', ');' )
+               fnheader = fnheader.strip().replace( ';const', 'const;' )
+               fnheader = fnheader.strip().replace( '; const', ' const;' )
+               cog.outl( fnheader );
        line = f.readline()
     f.close()
     cog.outl('')
