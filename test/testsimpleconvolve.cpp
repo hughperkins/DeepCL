@@ -3,6 +3,8 @@
 #include "NeuralNet.h"
 #include "test/myasserts.h"
 
+#include "test/TestPropagateHelper.h"
+
 #include <iostream>
 #include <iomanip>
 
@@ -26,13 +28,11 @@ TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
                         13, 17,
                        -19, 2.3f,
 };
-
     float filter1[] = { 0, 0,
                         -0.5f, 0.5f,
 
                         0.2f, 0.3f, 
                          0.7f, -1.1f,
-
  };
     int resultSize = 4;
     float expectedResults[] = {
@@ -41,36 +41,18 @@ TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
         (-0.5f) * (-19) + 0.5f * 2.3f,
         0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
     };
-
-    OpenCLHelper cl;
-    float *results = new float[512];
-
-    CLWrapper *dataWrapper = cl.wrap( batchSize * 9, data );
-    CLWrapper *weightsWrapper = cl.wrap( numOutPlanes * 9, filter1 );
-    CLWrapper *resultsWrapper = cl.wrap( 512, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
-
-    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    kernel->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
-       ->in( padZeros );
-    kernel->input( dataWrapper );
-    kernel->input( weightsWrapper);
-    kernel->output( resultsWrapper );
-    int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
-    int workgroupsize = cl.getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-    kernel->run_1d( globalSize, workgroupsize );
-    resultsWrapper->copyToHost();
-
-    for( int result = 0; result < 4; result++ ) {
-        cout << "results[" << result << "]=" << results[result] << endl;
-    }
-
+    int outputBoardSize = 0;
+    float *results = TestPropagateHelper::propagate1( 
+        batchSize, 
+        numInPlanes, boardSize, 
+        numOutPlanes, filterWidth,
+        &outputBoardSize,
+        padZeros == 1, false,
+        data, filter1, 0, new LinearActivation() );        
     for( int result = 0; result < resultSize; result++ ) {
         ASSERT_EQ( expectedResults[result], results[result] );
     }
+    delete[] results;
 }
 
 TEST( testsimpleconvolve, boardsize2_padzeros ) {
@@ -141,31 +123,14 @@ TEST( testsimpleconvolve, boardsize2_padzeros ) {
 //        0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
 //    };
 
-    OpenCLHelper cl;
-    float *results = new float[2048];
-
-    CLWrapper *dataWrapper = cl.wrap( 8, data );
-    CLWrapper *weightsWrapper = cl.wrap( 8, filter1 );
-    CLWrapper *resultsWrapper = cl.wrap( 2048, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
-
-    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    kernel->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
-       ->in( padZeros );
-    kernel->input( dataWrapper );
-    kernel->input( weightsWrapper);
-    kernel->output( resultsWrapper );
-    int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
-    int workgroupsize = cl.getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-    kernel->run_1d( globalSize, workgroupsize );
-    resultsWrapper->copyToHost();
-
-    for( int result = 1024; result < 1024 + 4; result++ ) {
-        cout << "results[" << result << "]=" << results[result] << endl;
-    }
+    int outputBoardSize = 0;
+    float *results = TestPropagateHelper::propagate1( 
+        batchSize, 
+        numInPlanes, boardSize, 
+        numOutPlanes, filterWidth,
+        &outputBoardSize,
+        padZeros == 1, false,
+        data, filter1, 0, new LinearActivation() );        
 
 //    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, results[0] );
 //    ASSERT_EQ( 0.7f * 0.5f -1.1f * 0.5f, results[1] );
@@ -219,31 +184,15 @@ TEST( testsimpleconvolve, boardsize3 ) {
 
  };
 
-    OpenCLHelper cl;
-    float *results = new float[512];
+    int outputBoardSize = 0;
+    float *results = TestPropagateHelper::propagate1( 
+        batchSize, 
+        numInPlanes, boardSize, 
+        numOutPlanes, filterWidth,
+        &outputBoardSize,
+        padZeros == 1, false,
+        data, filter1, 0, new LinearActivation() );        
 
-    CLWrapper *dataWrapper = cl.wrap( batchSize * 9, data );
-    CLWrapper *weightsWrapper = cl.wrap( numOutPlanes * 9, filter1 );
-    CLWrapper *resultsWrapper = cl.wrap( 512, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
-
-    CLKernel *kernel = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    kernel->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
-       ->in( padZeros );
-    kernel->input( dataWrapper );
-    kernel->input( weightsWrapper);
-    kernel->output( resultsWrapper );
-    int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
-    int workgroupsize = cl.getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-    kernel->run_1d( globalSize, workgroupsize );
-    resultsWrapper->copyToHost();
-
-//    for( int i = 0; i < 20; i++ ) {
-//        cout << "results[" << i << "]=" << results[i] << endl;
-//    }
     assertEquals( 0, results[0] );
     assertEquals( 1.25f, results[1] );
     assertEquals( -0.5f, results[2] );
@@ -336,31 +285,15 @@ TEST( testsimpleconvolve, test3 ) {
                     0.7,0.8};
     float filter[] = {0.2,0.3,
                      0.5,0.7};
-    float results[512];
-    
-    OpenCLHelper cl;
-    CLWrapper *dataWrapper = cl.wrap( batchSize * numInPlanes * inBoardSize, data );
-    CLWrapper *weightsWrapper = cl.wrap( numInPlanes * numOutPlanes * filterSize * filterSize, filter );
-    CLWrapper *resultsWrapper = cl.wrap( 512, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
 
-    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D LINEAR" );
-    convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
-       ->in( padZeros );
-    convolve->input( dataWrapper );
-    convolve->input( weightsWrapper);
-    convolve->output( resultsWrapper );
-    int globalSize = batchSize * numOutPlanes * outBoardSize * outBoardSize;
-    int workgroupsize = cl.getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    convolve->run_1d( globalSize, workgroupsize );
-
-    resultsWrapper->copyToHost();
-//    for( int i = 0; i < 20; i++ ) {
-//        cout << "results[" << fixed << setprecision(4   ) << i << "]=" << results[i] << endl;
-//    }
-//    cout << setprecision(4) << endl;
+    int outputBoardSize = 0;
+    float *results = TestPropagateHelper::propagate1( 
+        batchSize, 
+        numInPlanes, inBoardSize, 
+        numOutPlanes, filterSize,
+        &outputBoardSize,
+        padZeros == 1, false,
+        data, filter, 0, new LinearActivation() );        
 
     float expectedResults[] = {0.2*0.1+0.3*0.2,
                                0.5*0.1+0.7*0.2,
@@ -397,30 +330,15 @@ TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_1 ) {
     float *inputs = new float[ inputSize ];
     float *filters = new float[weightsSize ];
     float *biasFilters = new float[biasWeightsSize];
-    float *results = new float[resultsSize];;
-    
-    OpenCLHelper cl;
-    CLWrapper *dataWrapper = cl.wrap( inputSize, inputs );
-    CLWrapper *weightsWrapper = cl.wrap( weightsSize, filters );
-    CLWrapper *biasWeightsWrapper = cl.wrap( biasWeightsSize, biasFilters );
-    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
-    biasWeightsWrapper->copyToDevice();
 
-    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D TANH -D BIASED" );
-    convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
-       ->in( padZeros );
-    convolve->input( dataWrapper );
-    convolve->input( weightsWrapper);
-    convolve->input( biasWeightsWrapper);
-    convolve->output( resultsWrapper );
-    int globalSize = resultsSize;
-    int workgroupsize = cl.getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    convolve->run_1d( globalSize, workgroupsize );
-
-    resultsWrapper->copyToHost();
+    int outputBoardSize = 0;
+    float *results = TestPropagateHelper::propagate1( 
+        batchSize, 
+        numInPlanes, inBoardSize, 
+        numOutPlanes, filterSize,
+        &outputBoardSize,
+        padZeros == 1, true,
+        inputs, filters, biasFilters, new TanhActivation() );        
 }
 
 TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_2 ) {
@@ -439,30 +357,15 @@ TEST( testsimpleconvolve, dimensions_from_broken_mnist_layer_2 ) {
     float *inputs = new float[ inputSize ];
     float *filters = new float[weightsSize ];
     float *biasFilters = new float[biasWeightsSize];
-    float *results = new float[resultsSize];;
     
-    OpenCLHelper cl;
-    CLWrapper *dataWrapper = cl.wrap( inputSize, inputs );
-    CLWrapper *weightsWrapper = cl.wrap( weightsSize, filters );
-    CLWrapper *biasWeightsWrapper = cl.wrap( biasWeightsSize, biasFilters );
-    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
-    biasWeightsWrapper->copyToDevice();
-
-    CLKernel *convolve = cl.buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", "-D TANH -D BIASED" );
-    convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( inBoardSize )->in( filterSize )
-       ->in( padZeros );
-    convolve->input( dataWrapper );
-    convolve->input( weightsWrapper);
-    convolve->input( biasWeightsWrapper);
-    convolve->output( resultsWrapper );
-    int globalSize = resultsSize;
-    int workgroupsize = cl.getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    convolve->run_1d( globalSize, workgroupsize );
-
-    resultsWrapper->copyToHost();
+    int outputBoardSize = 0;
+    float *results = TestPropagateHelper::propagate1( 
+        batchSize, 
+        numInPlanes, inBoardSize, 
+        numOutPlanes, filterSize,
+        &outputBoardSize,
+        padZeros == 1, true,
+        inputs, filters, biasFilters, new TanhActivation() );        
 }
 
 
