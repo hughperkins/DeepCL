@@ -47,13 +47,13 @@ set( UNITTEST_SOURCES unittests test/testsimpleconvolve.cpp test/testfilehelper.
 test/testbackprop.cpp test/testcalcerrorsforupstream.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
 test/testbackpropweights2.cpp )
 
-add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
-add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )
-add_executable( testneuralnetmnistconvolve_simple test/testneuralnetmnistconvolve_simple.cpp stringhelper.cpp )
-add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp )
+#add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
+#add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )
+#add_executable( testneuralnetmnistconvolve_simple test/testneuralnetmnistconvolve_simple.cpp stringhelper.cpp )
+#add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve-experimental test/testneuralnetmnistconvolve-experimental.cpp stringhelper.cpp )
 if( PNG_AVAILABLE)
-    add_executable( test4dconvolve test/test4dconvolve.cpp )
+    #add_executable( test4dconvolve test/test4dconvolve.cpp )
     add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
     set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testboardshelper.cpp )
 endif(PNG_AVAILABLE)
