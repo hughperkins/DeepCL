@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <stdexcept>
 #include <string>
 #include <iostream>
@@ -23,7 +24,7 @@ public:
         return data;
     }
 
-    static void writeBinary( std::string filepath, unsigned char*data, int filesize ) {
+    static void writeBinary( std::string filepath, char*data, int filesize ) {
         std::ofstream file( filepath.c_str(), std::ios::out | std::ios::binary );
         if(!file.is_open()) {
              throw std::runtime_error("cannot open file " + filepath );
@@ -39,6 +40,14 @@ public:
        bool exists = testifstream.good();
        testifstream.close();
        return exists;
+    }
+
+    static void rename( std::string oldname, std::string newname ) {
+        ::rename( oldname.c_str(), newname.c_str() );
+    }
+
+    static void remove( std::string filename ) {
+        ::remove( filename.c_str() );
     }
 };
 

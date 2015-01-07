@@ -172,4 +172,9 @@ float Layer::calcLoss( float const *expected ) {
     }
     return E;
  }
+VIRTUAL void setWeights(float *weights, float *biasWeights) {
+}
+VIRTUAL float *getWeights() {
+}
+
 

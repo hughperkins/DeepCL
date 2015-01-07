@@ -12,7 +12,7 @@ TEST( testfilehelper, testfilehelper ) {
     for( int i = 0; i < N; i++ ) {
         somefloats[i] = i * 5.0 / 3.0;
     }
-    FileHelper::writeBinary("foo.dat", reinterpret_cast<unsigned char*>(somefloats), N * sizeof(float) );
+    FileHelper::writeBinary("foo.dat", reinterpret_cast<char*>(somefloats), N * sizeof(float) );
     float *newfloats = new float[N];
     int bytesread = 0;
     char *dataread = FileHelper::readBinary("foo.dat", &bytesread );

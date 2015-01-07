@@ -12,6 +12,7 @@
 #include "stringhelper.h"
 #include "FileHelper.h"
 #include "StatefulTimer.h"
+#include "WeightsPersister.h"
 
 using namespace std;
 
@@ -158,24 +159,11 @@ void go(Config config) {
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->insert();
     }
     net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->boardSize)->tanh()->biased(config.biased)->insert();
-//    net->fullyConnectedMaker()->planes(10)->boardSize(1)->tanh()->biased(config.biased)->insert();
 
-//    if( FileHelper::exists("weights.dat" ) ){
-//        int fileSize;
-//        unsigned char * data = FileHelper::readBinary( "weights.dat", &fileSize );
-//        cout << "read data from file "  << fileSize << " bytes" << endl;
-//        for( int i = 0; i < net->layers[1]->getWeightsSize(); i++ ) {
-//            net->layers[1]->weights[i] = reinterpret_cast<float *>(data)[i];
-//        }
-//        delete [] data;
-//        data = FileHelper::readBinary( "biasweights.dat", &fileSize );
-//        cout << "read data from file "  << fileSize << " bytes" << endl;
-//        for( int i = 0; i < net->layers[1]->getBiasWeightsSize(); i++ ) {
-//            dynamic_cast<ConvolutionalLayer*>(net->layers[1])->biasWeights[i] = reinterpret_cast<float *>(data)[i];
-//        }
-//    }
-//    net->setBatchSize(batchSize);
-//    net->print();
+    if( config.restartable ) {
+        WeightsPersister::loadWeights( config.restartableFilename, net );
+    }
+
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
@@ -197,6 +185,9 @@ void go(Config config) {
         //printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
         printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
         timer.timeCheck("after tests");
+        if( config.restartable ) {
+            WeightsPersister::persistWeights( config.restartableFilename, net );
+        }
     }
     //float const*results = net->getResults( net->getNumLayers() - 1 );
 
@@ -219,16 +210,11 @@ void go(Config config) {
         float const*resultsTest = net->getResults();
         totalNumber += thisBatchSize;
         totalNumRight += AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labelsTest[batchStart]), resultsTest );
+        if( config.restartable ) {
+            WeightsPersister::persistWeights( config.restartableFilename, net );
+        }
     }
     cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
-
-//    if( config.numEpochs >= 10 ) {
-//        FileHelper::writeBinary( "weights.dat", reinterpret_cast<unsigned char *>(net->layers[1]->weights), 
-//            net->layers[1]->getWeightsSize() * sizeof(float) );
-//        cout << "wrote weights to file " << endl;
-//        FileHelper::writeBinary( "biasweights.dat", reinterpret_cast<unsigned char *>(dynamic_cast<ConvolutionalLayer*>(net->layers[1])->biasWeights), 
-//            dynamic_cast<ConvolutionalLayer*>(net->layers[1])->getBiasWeightsSize() * sizeof(float) );
-//    }
 
     delete net;
 

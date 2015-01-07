@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 // whilst this class is portable, the weights files created totally are not (ie: endianness)
@@ -10,36 +12,50 @@
 class WeightsPersister {
 public:
     template<typename T>
-    void copyArray( T *dst, T const*src, length ) { // this might already be in standard C++ library?
-        memcpy( dst, src, length ( sizeof(T) );
+    static void copyArray( T *dst, T const*src, int length ) { // this might already be in standard C++ library?
+        memcpy( dst, src, length * sizeof(T) );
     }
-    void persistWeights( std::string filepath, NeuralNet *net ) {
+    static int getTotalNumWeights( NeuralNet *net ) {
         int totalWeightsSize = 0;
-        for( int layer = 1; layer < net->layers.size(); layer++ ) {
+        for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+            Layer *layer = net->layers[layerIdx];
             totalWeightsSize += layer->getWeightsSize();
             totalWeightsSize += layer->getBiasWeightsSize();
         }
+        return totalWeightsSize;
+    }
+    static void persistWeights( std::string filepath, NeuralNet *net ) {
+        int totalWeightsSize = getTotalNumWeights( net );
         float *allWeightsArray = new float[totalWeightsSize];
         int pos = 0;
-        for( int layer = 1; layer < net->layers.size(); layer++ ) {
+        for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+            Layer *layer = net->layers[layerIdx];
             copyArray( &(allWeightsArray[pos]), layer->weights, layer->getWeightsSize() );
             pos += layer->getWeightsSize();
             copyArray( &(allWeightsArray[pos]), layer->biasWeights, layer->getBiasWeightsSize() );
             pos += layer->getBiasWeightsSize();
         }
-        FileHelper::writeBinary( filepath, reinterpret_cast<unsigned char *>(allWeightsArray), 
+        FileHelper::writeBinary( "~" + filepath, reinterpret_cast<char *>(allWeightsArray), 
             totalWeightsSize * sizeof(float) );
-        cout << "wrote weights to file, size " << (totalWeightsSize/1024) << "KB" << endl;
+        FileHelper::remove( filepath );
+        FileHelper::rename( "~" + filepath, filepath );
+        cout << "wrote weights to file, size " << (totalWeightsSize*sizeof(float)/1024) << "KB" << endl;
         delete[] allWeightsArray;
     }
-    void loadWeights( std::string filepath, NeuralNet *net ) {
+    static void loadWeights( std::string filepath, NeuralNet *net ) {
         if( FileHelper::exists( filepath ) ){
             int fileSize;
-            unsigned char * data = FileHelper::readBinary( filepath, &fileSize );
+            char * data = FileHelper::readBinary( filepath, &fileSize );
             float *allWeightsArray = reinterpret_cast<float *>(data);
-            cout << "read data from file "  << (fileSize/1024) << "KB" << endl;
+            cout << "read weights from file "  << (fileSize/1024) << "KB" << endl;
+            int expectedTotalWeightsSize = getTotalNumWeights( net );
+            int numFloatsRead = fileSize / sizeof( float );
+            if( expectedTotalWeightsSize != numFloatsRead ) {
+                throw std::runtime_error("weights file contains " + toString(numFloatsRead) + " floats, but we expect to see: " + toString( expectedTotalWeightsSize ) + ".  So there is probably some mismatch between the weights file, and the settings, or network version, used." );
+            }
             int pos = 0;
-            for( int layer = 1; layer < net->layers.size(); layer++ ) {
+            for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+            Layer *layer = net->layers[layerIdx];
                 copyArray( layer->weights, &(allWeightsArray[pos]), layer->getWeightsSize() );
                 pos += layer->getWeightsSize();
                 copyArray( layer->biasWeights, &(allWeightsArray[pos]), layer->getBiasWeightsSize() );
