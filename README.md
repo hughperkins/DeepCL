@@ -163,10 +163,11 @@ make testneuralnetconvolve-experimental
 ./testneuralnetconvolve-experimental numfilters=32
 ```
 * Here are some results I obtained, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
-| Number filters | Filter size | Number filter layers || Iteration time | Number epochs | Accuracy | options |
-----------------|--------------|----------------------||----------------|---------------|-----------|--------|
-|32             | 5            | 1                    || 17 seconds | 12 |              |97.3+/-0.2% |  numfilters=32 |
-|32             | 5            | 2                    || 101 seconds      | 50 |         |98.2+/-0.3% |  numfilters=32 numlayers=2 numepochs=50 |
+
+| Number filters | Filter size | Number filter layers | Epoch time | Number epochs | Accuracy | options |
+|----------------|--------------|----------------------|----------------|---------------|-----------|--------|
+|32             | 5            | 1                    | 17 seconds      | 12          |97.3+/-0.2% |  numfilters=32 |
+|32             | 5            | 2                    | 101 seconds      | 50          |98.2+/-0.3% |  numfilters=32 numlayers=2 numepochs=50 |
 
 Unit-testing
 ============
