@@ -13,10 +13,10 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction *fn ) {
+STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
         return new Propagate2( cl, layerDimensions, fn );
 }
-Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction *fn ) :
+Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :
         dim( layerDimensions ),
         cl( cl ),
         fn( fn ) {

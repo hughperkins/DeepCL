@@ -7,6 +7,7 @@
 #include "ConvolutionalLayer.h"
 #include "NeuralNet.h"
 #include "stringhelper.h"
+#include "Propagate.h"
 
 using namespace std;
 
@@ -33,6 +34,10 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         if( padZeros && filterSize % 2 == 0 ) {
             throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
         }
+
+    propagateimpl = Propagate::instance( cl, LayerDimensions( upstreamNumPlanes, upstreamBoardSize, 
+        numPlanes, filterSize, padZeros, biased ), activationFunction );
+
 //        this->cl = new OpenCLHelper();
     if( filterSize > upstreamBoardSize ) {
             throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( filterSize) +
@@ -61,8 +66,8 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
 //    std::cout << "using kernel options: [" + options + "]" << std::endl;
 
 //    options += " -D WORKGROUPSIZE 
-    this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
-    this->kernelConvolve2 = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float3", options );
+//    this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
+//    this->kernelConvolve2 = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float3", options );
     this->kernelBackPropWeights = cl->buildKernel( "ClConvolve.cl", "backprop_floats", options );
 //    this->kernelBackPropWeights2 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_2", options );
 //    this->kernelBackPropWeights3 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_3", options );
@@ -103,9 +108,10 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( errorsForUpstream != 0 ) {
         delete[] errorsForUpstream;
     }
+    delete propagateimpl;
 //    delete kernelBackPropWeightsWithScratch;
-    delete kernelConvolve;
-    delete kernelConvolve2;
+//    delete kernelConvolve;
+//    delete kernelConvolve2;
     delete kernelBackpropErrors;
     delete kernelBackpropBiasWeights;
     delete kernelAddInPlace;
@@ -242,14 +248,12 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     this->allocatedSpaceNumExamples = batchSize;
 }
 VIRTUAL void ConvolutionalLayer::propagate() {
-    if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
-//        propagate2();
-    } else {
-  //      propagate1();
-    }
-    propagate1();
-}
-VIRTUAL void ConvolutionalLayer::propagate1() {
+//    if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
+////        propagate2();
+//    } else {
+//  //      propagate1();
+//    }
+//    propagate1();
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
 
     CLWrapper *upstreamWrapper = 0;
@@ -261,35 +265,14 @@ VIRTUAL void ConvolutionalLayer::propagate1() {
         upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), (float *)previousLayer->getResults() );
         upstreamWrapper->copyToDevice();
     }
-
-//        timer.timeCheck("    propagate, copied to device");
-
     CLFloatWrapper *biasWeightsWrapper = 0;
     if( biased ) {
         biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
         biasWeightsWrapper->copyToDevice();
     }
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", copied to device");
-    kernelConvolve->in(batchSize)->in( upstreamNumPlanes )->in( numPlanes )->in( upstreamBoardSize )->in( filterSize )
-      ->in( padZeros ? 1 : 0 );
-    kernelConvolve->input( upstreamWrapper );
-    kernelConvolve->input( weightsWrapper);
-    if( biased ) {
-        kernelConvolve->input( biasWeightsWrapper);
-    }
-    kernelConvolve->output( resultsWrapper );
-    int globalSize = getResultsSize();
-//        std::cout << "requested globalsize: " << globalSize << std::endl;
-    int workgroupsize = cl->getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        timer.timeCheck("    propagate, passed in inputs");
-//        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
-//           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
-    kernelConvolve->run_1d( globalSize, workgroupsize );
-    cl->finish();
-//        resultsWrapper->copyToHost();
+    propagateimpl->propagate( batchSize, upstreamWrapper, weightsWrapper, biasWeightsWrapper, resultsWrapper );
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after clFinish");
-    // if we are the last layer, then copy results to host
 
     if( !previousLayer->hasResultsWrapper() ) {
         delete upstreamWrapper;
@@ -299,56 +282,106 @@ VIRTUAL void ConvolutionalLayer::propagate1() {
     }
     resultsCopiedToHost = false;
 }
-VIRTUAL void ConvolutionalLayer::propagate2() {
-    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ", START");
+//VIRTUAL void ConvolutionalLayer::propagate1() {
+//    StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
 
-    CLWrapper *upstreamWrapper = 0;
-    if( previousLayer->hasResultsWrapper() ) {
-        upstreamWrapper = previousLayer->getResultsWrapper();
-    } else {
-        upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), (float *)previousLayer->getResults() );
-        upstreamWrapper->copyToDevice();
-    }
+//    CLWrapper *upstreamWrapper = 0;
+//    if( previousLayer->hasResultsWrapper() ) {
+////            std::cout << "layer " << previousLayer->layerIndex << " has resultsWrapper" << std::endl;
+//        upstreamWrapper = previousLayer->getResultsWrapper();
+//    } else {
+////            std::cout << "layer " << previousLayer->layerIndex << " has no resultsWrapper" << std::endl;
+//        upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), (float *)previousLayer->getResults() );
+//        upstreamWrapper->copyToDevice();
+//    }
 
-    CLFloatWrapper *biasWeightsWrapper = 0;
-    if( biased ) {
-        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
-        biasWeightsWrapper->copyToDevice();
-    }
-    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ", copied to device");
+////        timer.timeCheck("    propagate, copied to device");
 
-    kernelConvolve2->in(batchSize);
-    kernelConvolve2->input( upstreamWrapper );
-    kernelConvolve2->input( weightsWrapper);
-    if( biased ) {
-        kernelConvolve2->input( biasWeightsWrapper);
-    }
-    kernelConvolve2->output( resultsWrapper );
-    kernelConvolve2->localFloats(upstreamBoardSizeSquared)
-                    ->localFloats(upstreamNumPlanes * filterSizeSquared );
-    int numWorkgroups = numPlanes;
-    int workgroupSize = std::min( boardSizeSquared, cl->getMaxWorkgroupSize() );
-    int globalSize = numWorkgroups * workgroupSize;
-//    std::cout << "requested globalsize: " << globalSize << std::endl;
- //   int workgroupsize = cl->getMaxWorkgroupSize();
-   // globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        timer.timeCheck("    propagate, passed in inputs");
-//        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
-//           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
-    kernelConvolve2->run_1d( globalSize, workgroupSize );
-    cl->finish();
-//        resultsWrapper->copyToHost();
-    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ",  after clFinish");
-    // if we are the last layer, then copy results to host
+//    CLFloatWrapper *biasWeightsWrapper = 0;
+//    if( biased ) {
+//        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
+//        biasWeightsWrapper->copyToDevice();
+//    }
+//    StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", copied to device");
+//    kernelConvolve->in(batchSize)->in( upstreamNumPlanes )->in( numPlanes )->in( upstreamBoardSize )->in( filterSize )
+//      ->in( padZeros ? 1 : 0 );
+//    kernelConvolve->input( upstreamWrapper );
+//    kernelConvolve->input( weightsWrapper);
+//    if( biased ) {
+//        kernelConvolve->input( biasWeightsWrapper);
+//    }
+//    kernelConvolve->output( resultsWrapper );
+//    int globalSize = getResultsSize();
+////        std::cout << "requested globalsize: " << globalSize << std::endl;
+//    int workgroupsize = cl->getMaxWorkgroupSize();
+//    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+////        timer.timeCheck("    propagate, passed in inputs");
+////        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
+////           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
+//    kernelConvolve->run_1d( globalSize, workgroupsize );
+//    cl->finish();
+////        resultsWrapper->copyToHost();
+//    StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after clFinish");
+//    // if we are the last layer, then copy results to host
 
-    if( !previousLayer->hasResultsWrapper() ) {
-        delete upstreamWrapper;
-    }
-    if( biased ) {
-        delete biasWeightsWrapper;
-    }
-    resultsCopiedToHost = false;
-}
+//    if( !previousLayer->hasResultsWrapper() ) {
+//        delete upstreamWrapper;
+//    }
+//    if( biased ) {
+//        delete biasWeightsWrapper;
+//    }
+//    resultsCopiedToHost = false;
+//}
+//VIRTUAL void ConvolutionalLayer::propagate2() {
+//    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ", START");
+
+//    CLWrapper *upstreamWrapper = 0;
+//    if( previousLayer->hasResultsWrapper() ) {
+//        upstreamWrapper = previousLayer->getResultsWrapper();
+//    } else {
+//        upstreamWrapper = cl->wrap( previousLayer->getResultsSize(), (float *)previousLayer->getResults() );
+//        upstreamWrapper->copyToDevice();
+//    }
+
+//    CLFloatWrapper *biasWeightsWrapper = 0;
+//    if( biased ) {
+//        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
+//        biasWeightsWrapper->copyToDevice();
+//    }
+//    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ", copied to device");
+
+//    kernelConvolve2->in(batchSize);
+//    kernelConvolve2->input( upstreamWrapper );
+//    kernelConvolve2->input( weightsWrapper);
+//    if( biased ) {
+//        kernelConvolve2->input( biasWeightsWrapper);
+//    }
+//    kernelConvolve2->output( resultsWrapper );
+//    kernelConvolve2->localFloats(upstreamBoardSizeSquared)
+//                    ->localFloats(upstreamNumPlanes * filterSizeSquared );
+//    int numWorkgroups = numPlanes;
+//    int workgroupSize = std::min( boardSizeSquared, cl->getMaxWorkgroupSize() );
+//    int globalSize = numWorkgroups * workgroupSize;
+////    std::cout << "requested globalsize: " << globalSize << std::endl;
+// //   int workgroupsize = cl->getMaxWorkgroupSize();
+//   // globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+////        timer.timeCheck("    propagate, passed in inputs");
+////        std::cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize <<
+////           " upsteramwrappersize " << upstreamWrapper->size() << std::endl;
+//    kernelConvolve2->run_1d( globalSize, workgroupSize );
+//    cl->finish();
+////        resultsWrapper->copyToHost();
+//    StatefulTimer::instance()->timeCheck("    propagate2 layer " + toString( layerIndex ) + ",  after clFinish");
+//    // if we are the last layer, then copy results to host
+
+//    if( !previousLayer->hasResultsWrapper() ) {
+//        delete upstreamWrapper;
+//    }
+//    if( biased ) {
+//        delete biasWeightsWrapper;
+//    }
+//    resultsCopiedToHost = false;
+//}
 VIRTUAL float * ConvolutionalLayer::getResults() {
     if( !resultsCopiedToHost ) {
 //            std::cout << "layer " << layerIndex << " copying results to host " << std::endl;

@@ -20,7 +20,7 @@ class Propagate {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
-    ActivationFunction *fn;
+    ActivationFunction const*fn;
 //    Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction *fn ) :
 //            dim( layerDimensions ),
 //            cl( cl ),
@@ -39,8 +39,8 @@ public:
     // classname: Propagate
     // cppfile: Propagate.cpp
 
-    STATIC Propagate *instance(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction *fn );
-    Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction *fn );
+    STATIC Propagate *instance(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
+    Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn );
     VIRTUAL float * propagate( int batchSize, float *inputData, float *filters, float *biases );
 
     // [[[end]]]

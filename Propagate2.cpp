@@ -8,7 +8,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction *fn ) :
+Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
         Propagate( cl, dim, fn )
             {
     kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float2", "-D " + fn->getDefineName() );

@@ -13,7 +13,7 @@ public:
     // classname: Propagate2
     // cppfile: Propagate2.cpp
 
-    Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction *fn );
+    Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
     VIRTUAL ~Propagate2();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper );

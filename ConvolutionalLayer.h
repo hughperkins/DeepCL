@@ -17,11 +17,16 @@
 
 #define VIRTUAL virtual
 
+class Propagate;
+
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
-    CLKernel *kernelConvolve;
-    CLKernel *kernelConvolve2;
+
+    Propagate *propagateimpl;
+
+//    CLKernel *kernelConvolve;
+//    CLKernel *kernelConvolve2;
     CLKernel *kernelBackPropWeights;
 //    CLKernel *kernelBackPropWeights2;
 //    CLKernel *kernelBackPropWeights3;
@@ -86,8 +91,6 @@ public:
     VIRTUAL void printOutput() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
-    VIRTUAL void propagate1();
-    VIRTUAL void propagate2();
     VIRTUAL float * getResults();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
