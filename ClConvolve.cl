@@ -447,6 +447,11 @@ void kernel convolve_imagecubes_float3( const int batchSize,
                 int thisOffset = workgroupSize * i + localId;
                 if( thisOffset < gUpstreamBoardSizeSquared ) {
                     _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+//    if( globalId == 0 ) {
+//        for( int i = 0; i < 4; i++ ) {
+//            results[14 + i] = thisOffset;
+//        }
+//    }
                 }
             }
             barrier(CLK_LOCAL_MEM_FENCE);
@@ -468,22 +473,8 @@ void kernel convolve_imagecubes_float3( const int batchSize,
         int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;
         if( localId < gOutBoardSizeSquared ) {
             results[resultIndex ] = ACTIVATION_FUNCTION(sum);
-//            results[resultIndex ] = _upstreamBoard[resultIndex];
         }
-//        results[localId + 10 * workgroupId] = numPixelsPerThread;
-//        if( globalId == 0 ) {
-//            results[0] = outputRow;
-//            results[1] = outputCol;
-//            results[2] = minv;
-//            results[3] = maxv;
-//        }
     }
-//    if( localId == 0 ) {
-//        for( int i = 0; i < 8; i++ ) {
-//            results[1024+ i+10 * workgroupId] = _filterCube[i];
-//        }
-//        results[1024 + 8 + workgroupId * 10 ] = gOutBoardSizeSquared;
-//    }
 }
 #endif
 #endif

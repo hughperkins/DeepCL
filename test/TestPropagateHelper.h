@@ -90,13 +90,14 @@ public:
         dataWrapper->copyToDevice();
 
         int weightsSize = inputPlanes * numFilters * square( filterSize );
+//        cout << "weightsize: " << weightsSize << endl;
         CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
         weightsWrapper->copyToDevice();
 
         bool isEven = filterSize % 2 == 0;
         int outputBoardSize = padZeros ? ( isEven ? inputBoardSize + 1 : inputBoardSize ) : inputBoardSize - filterSize + 1;
         int outputDataSize = batchSize * numFilters * square( outputBoardSize );
-        int allocatedResultsSize = std::min(5000, outputDataSize );
+        int allocatedResultsSize = std::max(100, outputDataSize );
         float *results = new float[allocatedResultsSize];
         CLWrapper *resultsWrapper = cl->wrap( allocatedResultsSize, results );
 
@@ -117,7 +118,8 @@ public:
         kernel->input( dataWrapper );
         kernel->input( weightsWrapper);
         kernel->output( resultsWrapper );
-        kernel->localFloats( square( outputBoardSize ) );
+//        cout << "square(outputBoardSize) " << square( outputBoardSize ) << endl;
+        kernel->localFloats( square( inputBoardSize ) );
         kernel->localFloats( square( filterSize ) * numFilters );
         int workgroupsize = square( outputBoardSize );
         int numWorkgroups = numFilters;

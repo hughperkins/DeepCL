@@ -16,12 +16,9 @@ using namespace std;
 
 TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
     int batchSize = 2;
-    int numOutPlanes = 2;
-    int numInPlanes = 1;
-    int boardSize = 2;
-    int filterWidth = 2;
+    int numInPlanes = 1; int boardSize = 2;
+    int numOutPlanes = 2; int filterWidth = 2;
     int padZeros = 0;
-
     float data[] = { 0, 0, 
                       0.5f, 0.5f,
 
@@ -41,6 +38,7 @@ TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
         (-0.5f) * (-19) + 0.5f * 2.3f,
         0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
     };
+    cout << "expected number of results: " << resultSize << endl;
     int outputBoardSize = 0;
     float *results = TestPropagateHelper::propagate( 
         batchSize, 
