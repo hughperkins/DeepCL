@@ -14,7 +14,7 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
-        return new Propagate2( cl, layerDimensions, fn );
+        return new Propagate1( cl, layerDimensions, fn );
 }
 Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :
         dim( layerDimensions ),
