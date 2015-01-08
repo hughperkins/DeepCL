@@ -4,6 +4,7 @@
 #include "stringhelper.h"
 #include "Propagate1.h"
 #include "Propagate2.h"
+#include "Propagate3.h"
 #include "StatefulTimer.h"
 
 using namespace std;

@@ -479,6 +479,94 @@ void kernel convolve_imagecubes_float3( const int batchSize,
 #endif
 #endif
 
+
+#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef ACTIVATION_FUNCTION // protect against not defined
+// workgroup id organized like: [imageid][outplane]
+// local id organized like: [outrow][outcol]
+// each thread iterates over: [upstreamplane][filterrow][filtercol]
+// number workgroups = 32
+// one filter plane takes up 5 * 5 * 4 = 100 bytes
+// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
+// all filter cubes = 3.2KB * 32 = 102KB (too big)
+// results are organized like [imageid][filterid][row][col]
+void kernel convolve_imagecubes_float4( const int batchSize,
+      global const float *images, global const float *filters, 
+        #ifdef BIASED
+            global const float*biases, 
+        #endif
+    global float *results,
+    local float *_upstreamBoard, local float *_filterCube ) {
+    const int globalId = get_global_id(0);
+
+    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
+
+    const int workgroupId = get_group_id(0);
+    const int workgroupSize = get_local_size(0);
+    const int n = workgroupId / gNumOutPlanes;
+    const int outPlane = workgroupId % gNumOutPlanes;
+
+    const int localId = get_local_id(0);
+    const int outputRow = localId / gOutBoardSize;
+    const int outputCol = localId % gOutBoardSize;
+
+    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
+    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
+    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
+    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
+
+    const int numUpstreamsPerThread = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+
+    const int filterCubeLength = gUpstreamNumPlanes * gFilterSizeSquared;
+    const int filterCubeGlobalOffset = outPlane * filterCubeLength;
+    const int numPixelsPerThread = ( filterCubeLength + workgroupSize - 1 ) / workgroupSize;
+    for( int i = 0; i < numPixelsPerThread; i++ ) {
+        int thisOffset = localId + i * workgroupSize;
+        if( thisOffset < filterCubeLength ) {
+            _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];
+        }
+    }
+    // dont need a barrier, since we'll just run behind the barrier from the upstream board download
+
+//    if( globalId == 0 ) {
+//        for( int i = 0; i < 4; i++ ) {
+//            results[14 + i] = thisOffset;
+//        }
+//    }
+
+    float sum = 0;
+    for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
+        int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        for( int i = 0; i < numUpstreamsPerThread; i++ ) {
+            int thisOffset = workgroupSize * i + localId;
+            if( thisOffset < gUpstreamBoardSizeSquared ) {
+                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
+        for( int u = minu; u <= maxu; u++ ) {
+            int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+            int inputboardrowoffset = inputRow * gUpstreamBoardSize;
+            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+            for( int v = minv; v <= maxv; v++ ) {
+                int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+            }
+        }
+    }
+    #ifdef BIASED
+        sum += biases[outPlane];
+    #endif
+    // results are organized like [imageid][filterid][row][col]
+    int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;
+    if( localId < gOutBoardSizeSquared ) {
+        results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+    }
+}
+#endif
+#endif
+
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
 // filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600 = 100k bytes, or 3.2KB per filter
 // results are organized like [imageid][filterid][row][col]   128*32*19*19=1,500,000 = 6MB, or 46KB per image,
