@@ -42,7 +42,7 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int workgroupsize = square( dim.outputBoardSize );
     int numWorkgroups = dim.numFilters;
     int globalSize = workgroupsize * numWorkgroups;
-    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
 }
