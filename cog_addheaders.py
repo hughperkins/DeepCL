@@ -30,6 +30,7 @@ def add():
     cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
     f = open( cppfile, 'r')
     in_multiline_comment = False
+    in_header = False;
     line = f.readline()
     cog.outl('')
     while( line != '' ):
@@ -39,10 +40,13 @@ def add():
        if( line.strip().find("*/") == 0 ):
            in_multiline_comment = False
        if not in_multiline_comment:
-           if( line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ):
+           if( in_header or line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ):
+               in_header = True
                fnheader = line.replace( classname + '::', '' )
                fnheader = fnheader.replace( '{', '' )
                fnheader = fnheader.replace( ':', '' )
+               if fnheader.find(")") >= 0:
+                   in_header = False
                fnheader = fnheader.strip().replace( ')', ');' )
                fnheader = fnheader.strip().replace( ';const', 'const;' )
                fnheader = fnheader.strip().replace( '; const', ' const;' )

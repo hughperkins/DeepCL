@@ -243,10 +243,11 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
 }
 VIRTUAL void ConvolutionalLayer::propagate() {
     if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
-        propagate2();
+//        propagate2();
     } else {
-        propagate1();
+  //      propagate1();
     }
+    propagate1();
 }
 VIRTUAL void ConvolutionalLayer::propagate1() {
     StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
