@@ -11,9 +11,10 @@ using namespace std;
 Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
         Propagate( cl, dim, fn )
             {
-    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
-
     std::string options = "-D " + fn->getDefineName();
+    if( dim.biased ) {
+         options += " -D BIASED";
+    }
     options += " -D gUpstreamBoardSize=" + toString(dim.inputBoardSize);
     options += " -D gUpstreamBoardSizeSquared=" + toString(square(dim.inputBoardSize));
     options += " -D gFilterSize=" + toString(dim.filterSize);
