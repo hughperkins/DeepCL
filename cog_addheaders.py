@@ -40,7 +40,7 @@ def add():
        if( line.strip().find("*/") == 0 ):
            in_multiline_comment = False
        if not in_multiline_comment:
-           if( in_header or line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ):
+           if( in_header or line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ) and line.find( ";" ) < 0:
                in_header = True
                fnheader = line.replace( classname + '::', '' )
                fnheader = fnheader.replace( '{', '' )

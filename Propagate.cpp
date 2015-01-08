@@ -4,6 +4,7 @@
 #include "stringhelper.h"
 #include "Propagate1.h"
 #include "Propagate2.h"
+#include "StatefulTimer.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, Activat
         fn( fn ) {
 }
 VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {
+    StatefulTimer::timeCheck("Propagate::propagate begin");
     int inputDataSize = batchSize * dim.inputPlanes * square( dim.inputBoardSize );
     CLWrapper *dataWrapper = cl->wrap( inputDataSize, inputData );
     dataWrapper->copyToDevice();
@@ -34,6 +36,7 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
     if( dim.biased ) {
         int biasWeightsWrapperSize = dim.numFilters;
         biasWeightsWrapper = cl->wrap( biasWeightsWrapperSize, biases );
+        biasWeightsWrapper->copyToDevice();
     }
 
     int outputDataSize = batchSize * dim.numFilters * square( dim.outputBoardSize );
@@ -43,13 +46,16 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
     float *results = new float[allocatedResultsSize];
     CLWrapper *resultsWrapper = cl->wrap( allocatedResultsSize, results );
 
+    StatefulTimer::timeCheck("Propagate::propagate after copied to device");
     propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
             resultsWrapper );
+    StatefulTimer::timeCheck("Propagate::propagate after call propagate");
     resultsWrapper->copyToHost();
+    StatefulTimer::timeCheck("Propagate::propagate after copytohost");
 
-    for( int i = 0; i < 20; i++ ) {
-        cout << "results[" << i << "]=" << results[i] << endl;
-    }
+//    for( int i = 0; i < 20; i++ ) {
+//        cout << "results[" << i << "]=" << results[i] << endl;
+//    }
 
     delete dataWrapper;
     delete weightsWrapper;

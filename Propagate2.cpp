@@ -36,6 +36,7 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
+    if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
 //        cout << "square(outputBoardSize) " << square( outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );

@@ -1,9 +1,10 @@
 
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
-#include "test/myasserts.h"
-
 #include "Propagate.h"
+
+#include "test/myasserts.h"
+#include "test/WeightRandomizer.h"
 
 #include <iostream>
 #include <iomanip>
@@ -306,6 +307,41 @@ TEST( testsimpleconvolve, test3 ) {
 //        cout << "results[" << i << "]=" << results[i] << endl;
       assertEquals( expectedResults[i], results[i], 0.0001);
    }
+}
+
+TEST( testsimpleconvolve, boardsize19 ) {
+    int batchSize = 128;
+    int numInPlanes = 16;
+    int numOutPlanes = 16;
+    int inBoardSize = 19;
+    int outBoardSize = 19;
+    int filterSize = 5;
+    int padZeros = 1;
+
+    int inputSize = batchSize * numInPlanes * inBoardSize * inBoardSize;
+    int resultsSize = batchSize * numOutPlanes * outBoardSize * outBoardSize;
+    int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
+    int biasWeightsSize = numOutPlanes;
+    float *inputs = new float[ inputSize ];
+    float *filters = new float[weightsSize ];
+    float *biasFilters = new float[biasWeightsSize];
+    
+    WeightRandomizer::randomize( inputs, inputSize );
+    WeightRandomizer::randomize( filters, weightsSize );
+    WeightRandomizer::randomize( biasFilters, biasWeightsSize );
+
+    int outputBoardSize = 0;
+    Timer timer;
+    OpenCLHelper cl;
+    Propagate *propagateImpl = Propagate::instance( &cl, LayerDimensions( numInPlanes, inBoardSize, 
+        numOutPlanes, filterSize, padZeros == 1, true ), new ReluActivation() );
+    for( int i = 0; i < 10; i++ ) {
+        float *results = propagateImpl->propagate( 
+            batchSize, inputs, filters, biasFilters );
+    }
+    StatefulTimer::dump(true);
+    timer.timeCheck("propagate time");
+    delete propagateImpl;
 }
 
 TEST( testsimpleconvolve, DISABLED_dimensions_from_broken_mnist_layer_1 ) {
