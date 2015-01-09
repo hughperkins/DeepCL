@@ -13,7 +13,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O2")
 
 add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp NeuralNetMould.cpp
    EpochMaker.cpp ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp FullyConnectedLayer.cpp InputLayer.cpp
-   Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp
+   Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 add_custom_command( 

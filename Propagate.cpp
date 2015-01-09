@@ -2,6 +2,7 @@
 
 #include "Propagate.h"
 #include "stringhelper.h"
+#include "PropagateCpu.h"
 #include "Propagate1.h"
 #include "Propagate2.h"
 #include "Propagate3.h"
@@ -19,13 +20,16 @@ STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, Act
     if( square( dim.outputBoardSize ) < 32 || square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
         return new Propagate1( cl, dim, fn );
     } else {
-        return new Propagate3( cl, dim, fn );
+        return new Propagate2( cl, dim, fn );
     }
 }
 STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     return new Propagate3( cl, layerDimensions, fn );
 }
 STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+    if( idx == 0 ) {
+        return new PropagateCpu( cl, layerDimensions, fn );
+    }
     if( idx == 1 ) {
         return new Propagate1( cl, layerDimensions, fn );
     }
@@ -43,11 +47,11 @@ Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, Activat
 }
 VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {
     StatefulTimer::timeCheck("Propagate::propagate begin");
-    int inputDataSize = batchSize * dim.inputPlanes * square( dim.inputBoardSize );
+    int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = cl->wrap( inputDataSize, inputData );
     dataWrapper->copyToDevice();
 
-    int weightsSize = dim.inputPlanes * dim.numFilters * square( dim.filterSize );
+    int weightsSize = dim.filtersSize;
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
@@ -58,10 +62,9 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
         biasWeightsWrapper->copyToDevice();
     }
 
-    int outputDataSize = batchSize * dim.numFilters * square( dim.outputBoardSize );
-//    cout << " batchsize " << batchSize << " numfilters " << dim.numFilters << " outputboardsize "
-//        << dim.outputBoardSize << " outputdatasize " << outputDataSize << endl;
-    int allocatedResultsSize = outputDataSize; // std::max(5000, outputDataSize );
+    int outputDataSize = batchSize * dim.outputCubeSize;
+//    cout << " batchsize " << batchSize << " " << dim << endl;
+    int allocatedResultsSize = std::max(5000, outputDataSize );
     float *results = new float[allocatedResultsSize];
     CLWrapper *resultsWrapper = cl->wrap( allocatedResultsSize, results );
 
@@ -71,17 +74,16 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
     StatefulTimer::timeCheck("Propagate::propagate after call propagate");
     resultsWrapper->copyToHost();
     StatefulTimer::timeCheck("Propagate::propagate after copytohost");
-
 //    for( int i = 0; i < 20; i++ ) {
 //        cout << "results[" << i << "]=" << results[i] << endl;
 //    }
+    delete resultsWrapper;
 
     delete dataWrapper;
     delete weightsWrapper;
     if( dim.biased ) {
         delete biasWeightsWrapper;
     }
-    delete resultsWrapper;
 
     return results;
 }

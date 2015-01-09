@@ -385,6 +385,8 @@ global const float*biases,
     sum += biases[filterId];
 #endif
     results[globalId] = ACTIVATION_FUNCTION(sum);
+
+//    results[globalId] = globalId;
 //    results[0] = 1234.0;
 //     results[1024+globalId] = maxn;
 //     results[1] = maxMm;
@@ -443,15 +445,11 @@ void kernel convolve_imagecubes_float3( const int batchSize,
         float sum = 0;
         for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
             int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+            barrier(CLK_LOCAL_MEM_FENCE);
             for( int i = 0; i < numUpstreamsPerThread; i++ ) {
                 int thisOffset = workgroupSize * i + localId;
                 if( thisOffset < gUpstreamBoardSizeSquared ) {
                     _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
-//    if( globalId == 0 ) {
-//        for( int i = 0; i < 4; i++ ) {
-//            results[14 + i] = thisOffset;
-//        }
-//    }
                 }
             }
             barrier(CLK_LOCAL_MEM_FENCE);
@@ -479,6 +477,36 @@ void kernel convolve_imagecubes_float3( const int batchSize,
 #endif
 #endif
 
+
+////    if( globalId == 0 ) {
+////        for( int i = 0; i < 4; i++ ) {
+////            results[14 + i] = thisOffset;
+////        }
+////    }
+//    if( globalId == 0 ) {
+//        for( int i = 0; i < gUpstreamBoardSizeSquared; i++ ) {
+//            results[100 * (1+upstreamPlane) + i] = _upstreamBoard[i];
+//        }
+//    }
+//    if( globalId == 12 ) {
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = sum;
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = _upstreamBoard[ inputboardrowoffset + inputCol];
+//        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = inputboardrowoffset + inputCol;
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = minu;
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] += 1;
+//        results[600 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = _filterCube[ filterrowoffset + v ];
+//    }
+//    if( globalId == 0 ) {
+//        for( int i = 0; i < filterCubeLength; i++ ) {
+//            results[300 + i] = _filterCube[i];
+//        }
+//    }
+////    if( globalId == 12 ) {
+////        results[500 + 0] = 
+////    }
+
+////    results[globalId*2] = images[25+globalId];
+////    results[globalId*2+1] = _upstreamBoard[globalId];
 
 #ifdef gOutBoardSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
@@ -528,15 +556,10 @@ void kernel convolve_imagecubes_float4( const int batchSize,
     }
     // dont need a barrier, since we'll just run behind the barrier from the upstream board download
 
-//    if( globalId == 0 ) {
-//        for( int i = 0; i < 4; i++ ) {
-//            results[14 + i] = thisOffset;
-//        }
-//    }
-
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
         int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numUpstreamsPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
             if( thisOffset < gUpstreamBoardSizeSquared ) {
@@ -563,6 +586,7 @@ void kernel convolve_imagecubes_float4( const int batchSize,
     if( localId < gOutBoardSizeSquared ) {
         results[resultIndex ] = ACTIVATION_FUNCTION(sum);
     }
+
 }
 #endif
 #endif
@@ -613,6 +637,7 @@ void kernel convolve_imagecubes_float5( const int batchSize,
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
         int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numUpstreamsPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
             if( thisOffset < gUpstreamBoardSizeSquared ) {

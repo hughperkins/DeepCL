@@ -45,14 +45,14 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-//        cout << "square(outputBoardSize) " << square( outputBoardSize ) << endl;
+//    cout << "square(outputBoardSize) " << square( outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.numFilters );
 
     int workgroupsize = square( dim.outputBoardSize );
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-    cout << "numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
     StatefulTimer::timeCheck("Propagate3::propagate after call propagate");
