@@ -20,7 +20,7 @@ STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, Act
     if( square( dim.outputBoardSize ) < 32 || square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
         return new Propagate1( cl, dim, fn );
     } else {
-        return new Propagate3( cl, dim, fn );
+        return new Propagate2( cl, dim, fn );
     }
 }
 STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
