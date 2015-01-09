@@ -627,12 +627,7 @@ void kernel convolve_imagecubes_float5( const int batchSize,
     const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
 
     const int numUpstreamsPerThread = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-
-//    if( globalId == 0 ) {
-//        for( int i = 0; i < 4; i++ ) {
-//            results[14 + i] = thisOffset;
-//        }
-//    }
+    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
@@ -645,8 +640,11 @@ void kernel convolve_imagecubes_float5( const int batchSize,
             }
         }
         const int filterGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;
-        if( localId < gFilterSizeSquared ) {
-            _filterCube[localId] = filters[filterGlobalOffset + localId];
+        for( int i = 0; i < numFilterPixelsPerThread; i++ ) {
+            int thisOffset = workgroupSize * i + localId;
+            if( thisOffset < gFilterSizeSquared ) {
+                _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];
+            }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int u = minu; u <= maxu; u++ ) {

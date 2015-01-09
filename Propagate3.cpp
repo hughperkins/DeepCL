@@ -32,7 +32,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     options += " -D gMargin=" + toString(dim.padZeros ? dim.filterSize >> 1 : 0);
     options += " -D gHalfFilterSize=" + toString( dim.filterSize >> 1 );
     options += " -D gUpstreamNumPlanes=" + toString(dim.inputPlanes);
-    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float5", options );
+    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float4", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 VIRTUAL Propagate3::~Propagate3() {
@@ -45,11 +45,11 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-//    cout << "square(outputBoardSize) " << square( outputBoardSize ) << endl;
+//    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.numFilters );
 
-    int workgroupsize = square( dim.outputBoardSize );
+    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
 //    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
