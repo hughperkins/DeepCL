@@ -1,5 +1,6 @@
 #include "Propagate3.h"
 #include "stringhelper.h"
+#include "StatefulTimer.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     options += " -D gMargin=" + toString(dim.padZeros ? dim.filterSize >> 1 : 0);
     options += " -D gHalfFilterSize=" + toString( dim.filterSize >> 1 );
     options += " -D gUpstreamNumPlanes=" + toString(dim.inputPlanes);
-    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float4", options );
+    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float5", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 VIRTUAL Propagate3::~Propagate3() {
@@ -54,5 +55,6 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     cout << "numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+    StatefulTimer::timeCheck("Propagate3::propagate after call propagate");
 }
 

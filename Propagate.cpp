@@ -15,8 +15,26 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
+    if( square( dim.outputBoardSize ) < 32 || square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
+        return new Propagate1( cl, dim, fn );
+    } else {
+        return new Propagate3( cl, dim, fn );
+    }
+}
+STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+    return new Propagate3( cl, layerDimensions, fn );
+}
+STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+    if( idx == 1 ) {
         return new Propagate1( cl, layerDimensions, fn );
+    }
+    if( idx == 2 ) {
+        return new Propagate2( cl, layerDimensions, fn );
+    }
+    if( idx == 3 ) {
+        return new Propagate3( cl, layerDimensions, fn );
+    }
 }
 Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :
         dim( layerDimensions ),

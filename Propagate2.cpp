@@ -1,5 +1,6 @@
 #include "Propagate2.h"
 #include "stringhelper.h"
+#include "StatefulTimer.h"
 
 using namespace std;
 
@@ -47,5 +48,6 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 //    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+    StatefulTimer::timeCheck("Propagate2::propagate after call propagate");
 }
 

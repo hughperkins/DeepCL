@@ -1,5 +1,6 @@
 #include "Propagate1.h"
 #include "stringhelper.h"
+#include "StatefulTimer.h"
 
 using namespace std;
 
@@ -40,9 +41,10 @@ VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int globalSize = batchSize * dim.numFilters * square( dim.outputBoardSize );
     int workgroupsize = std::min( globalSize, cl->getMaxWorkgroupSize() );
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+    cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
 
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+    StatefulTimer::timeCheck("Propagate1::propagate after call propagate");
 }
 
