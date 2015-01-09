@@ -571,6 +571,9 @@ void kernel convolve_imagecubes_float4( const int batchSize,
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
+        if( localId >= gOutBoardSizeSquared ) {
+            continue;
+        }
         for( int u = minu; u <= maxu; u++ ) {
             int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
             int inputboardrowoffset = inputRow * gUpstreamBoardSize;
@@ -650,6 +653,9 @@ void kernel convolve_imagecubes_float5( const int batchSize,
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
+        if( localId >= gOutBoardSizeSquared ) {
+            continue;
+        }
         for( int u = minu; u <= maxu; u++ ) {
             int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
             int inputboardrowoffset = inputRow * gUpstreamBoardSize;
