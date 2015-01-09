@@ -481,36 +481,6 @@ void kernel convolve_imagecubes_float3( const int batchSize,
 #endif
 
 
-////    if( globalId == 0 ) {
-////        for( int i = 0; i < 4; i++ ) {
-////            results[14 + i] = thisOffset;
-////        }
-////    }
-//    if( globalId == 0 ) {
-//        for( int i = 0; i < gUpstreamBoardSizeSquared; i++ ) {
-//            results[100 * (1+upstreamPlane) + i] = _upstreamBoard[i];
-//        }
-//    }
-//    if( globalId == 12 ) {
-////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = sum;
-////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = _upstreamBoard[ inputboardrowoffset + inputCol];
-//        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = inputboardrowoffset + inputCol;
-////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = minu;
-////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] += 1;
-//        results[600 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = _filterCube[ filterrowoffset + v ];
-//    }
-//    if( globalId == 0 ) {
-//        for( int i = 0; i < filterCubeLength; i++ ) {
-//            results[300 + i] = _filterCube[i];
-//        }
-//    }
-////    if( globalId == 12 ) {
-////        results[500 + 0] = 
-////    }
-
-////    results[globalId*2] = images[25+globalId];
-////    results[globalId*2+1] = _upstreamBoard[globalId];
-
 #ifdef gOutBoardSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [imageid][outplane]
@@ -653,16 +623,15 @@ void kernel convolve_imagecubes_float5( const int batchSize,
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( localId >= gOutBoardSizeSquared ) {
-            continue;
-        }
-        for( int u = minu; u <= maxu; u++ ) {
-            int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
-            int inputboardrowoffset = inputRow * gUpstreamBoardSize;
-            int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-            for( int v = minv; v <= maxv; v++ ) {
-                int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
-                sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+        if( localId < gOutBoardSizeSquared ) {
+            for( int u = minu; u <= maxu; u++ ) {
+                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+                int inputboardrowoffset = inputRow * gUpstreamBoardSize;
+                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+                for( int v = minv; v <= maxv; v++ ) {
+                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                }
             }
         }
     }
@@ -673,10 +642,42 @@ void kernel convolve_imagecubes_float5( const int batchSize,
     int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;
     if( localId < gOutBoardSizeSquared ) {
         results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+//        results[resultIndex ] = 123;
     }
 }
 #endif
 #endif
+
+////    if( globalId == 0 ) {
+////        for( int i = 0; i < 4; i++ ) {
+////            results[14 + i] = thisOffset;
+////        }
+////    }
+//    if( globalId == 0 ) {
+//        for( int i = 0; i < gUpstreamBoardSizeSquared; i++ ) {
+//            results[100 * (1+upstreamPlane) + i] = _upstreamBoard[i];
+//        }
+//    }
+//    if( globalId == 12 ) {
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = sum;
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = _upstreamBoard[ inputboardrowoffset + inputCol];
+//        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = inputboardrowoffset + inputCol;
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = minu;
+////        results[400 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] += 1;
+//        results[600 + 100 * upstreamPlane + (u+2) * 5 + (v+2) ] = _filterCube[ filterrowoffset + v ];
+//    }
+//    if( globalId == 0 ) {
+//        for( int i = 0; i < filterCubeLength; i++ ) {
+//            results[300 + i] = _filterCube[i];
+//        }
+//    }
+////    if( globalId == 12 ) {
+////        results[500 + 0] = 
+////    }
+
+////    results[globalId*2] = images[25+globalId];
+////    results[globalId*2+1] = _upstreamBoard[globalId];
+
 
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000
 // filters are organized like [filterid][inplane][filterrow][filtercol] 32*32*5*5=25600 = 100k bytes, or 3.2KB per filter
