@@ -26,7 +26,7 @@ STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, Layer
 }
 STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
-//        return new BackpropWeightsCpu( cl, layerDimensions, fn );
+        return new BackpropWeightsCpu( cl, layerDimensions, fn );
     }
     if( idx == 1 ) {
         return new BackpropWeightsNaive( cl, layerDimensions, fn );

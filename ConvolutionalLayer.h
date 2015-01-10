@@ -90,7 +90,6 @@ public:
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void backPropErrors( float learningRate );
-    void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
 
     // [[[end]]]
 };

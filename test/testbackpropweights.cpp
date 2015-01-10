@@ -8,6 +8,7 @@
 #include "test/myasserts.h"
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
+#include "test/WeightRandomizer.h"
 
 using namespace std;
 
@@ -453,5 +454,91 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
             ASSERT_FLOAT_NEAR( expectedResults[i], weights[i] );
         }
     }
+}
+
+TEST( testbackpropweights, compare_specific ) {
+    const int batchSize = 5;
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 5 )
+        .setBiased( false ).setPadZeros( true );
+    ActivationFunction *fn = new ReluActivation();
+    int learningRate = 0.1f;
+
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int weightsSize = dim.filtersSize;
+
+    float *errors = new float[max(10000, resultsSize )];
+    float *results = new float[max(10000, resultsSize )];
+    float *inputData = new float[max(10000, inputSize )];
+    float *weights1 = new float[max(10000, weightsSize ) ];
+    float *weights2 = new float[max(10000, weightsSize ) ];
+
+    memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
+    memset( results, 0, sizeof(float) * max(10000, resultsSize ) );
+    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
+    memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
+    memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
+
+    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomize( results, max( 10000, resultsSize), -1, 1 );
+    WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1, 1 );
+
+//    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
+//    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
+//    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
+
+    OpenCLHelper cl;
+    
+    BackpropWeights *backpropWeightsImpl1 = BackpropWeights::instanceSpecific( 0, &cl, dim, fn );
+    backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
+        errors, results, inputData, weights1, 0 );
+    BackpropWeights *backpropWeightsImpl2 = BackpropWeights::instanceSpecific( 1, &cl, dim, fn );
+    backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
+        errors, results, inputData, weights2, 0 );
+
+    cout << dim << endl;
+    for( int i = 0; i < 25; i++ ) {
+        cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
+        if( i < resultsSize ) {
+            if( weights1[i] == weights2[i] ) {
+                cout << " SAME";
+            } else {
+                cout << " DIFF";
+            }
+        } else {
+            cout << "     ";
+        }
+        cout << "  || " << weights2[100+i] ;
+        cout << "  || " << weights2[200+i] ;
+        cout << "  || " << weights2[300+i] ;
+        cout << "  || " << weights2[400+i] ;
+        cout << "  || " << weights2[500+i] ;
+        cout << "  || " << weights2[600+i] ;
+        cout << "  || " << weights2[700+i] << endl;
+    }
+    bool same = true;
+    int errCount = 0;
+    for( int i = 0; i < weightsSize; i++ ) {
+        if( weights1[i] != weights2[i] ) {
+            cout << "DIFF: i " << i << " " << weights1[i] << " != " << weights2[i] << endl;
+            same = false;
+            errCount++;
+            if( errCount == 5 ) {
+                cout << " ... " << endl;
+                break;
+            }
+        }
+    }
+    EXPECT_EQ( true, same );
+
+    delete backpropWeightsImpl1;
+    delete backpropWeightsImpl2;
+
+    delete[] weights1;
+    delete[] weights2;
+    delete[] errors;
+    delete[] results;
+    delete[] inputData;
 }
 
