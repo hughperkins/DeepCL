@@ -529,6 +529,7 @@ void kernel backprop_floats_withscratch_dobias(
         int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
         // need to fetch the board, but it's bigger than us, so will need to loop...
         int numLoopsForUpstream = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numLoopsForUpstream; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gUpstreamBoardSizeSquared ) {
@@ -545,17 +546,19 @@ void kernel backprop_floats_withscratch_dobias(
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
-            int upstreamRow = outRow - gMargin + filterRow;
-            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
-                int upstreamCol = outCol - gMargin + filterCol;
-                int resultIndex = outRow * gOutBoardSize + outCol;
-                float activationDerivative = _resultBoard[resultIndex];
-                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
-                float upstreamResult = _imageBoard[upstreamDataIndex];
-                float thisimagethiswchange = upstreamResult * activationDerivative;
-                thiswchange += thisimagethiswchange;
-                thisbiaschange += activationDerivative;
+        if( localId < gFilterSizeSquared ) {
+            for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+                int upstreamRow = outRow - gMargin + filterRow;
+                for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+                    int upstreamCol = outCol - gMargin + filterCol;
+                    int resultIndex = outRow * gOutBoardSize + outCol;
+                    float activationDerivative = _resultBoard[resultIndex];
+                    int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
+                    float upstreamResult = _imageBoard[upstreamDataIndex];
+                    float thisimagethiswchange = upstreamResult * activationDerivative;
+                    thiswchange += thisimagethiswchange;
+                    thisbiaschange += activationDerivative;
+                }
             }
         }
     }

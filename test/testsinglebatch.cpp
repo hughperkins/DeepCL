@@ -419,7 +419,7 @@ TEST( testsinglebatch, perf19_depth12 ) {
     }
 
     Timer timer;
-    for( int i = 0; i < 5; i++ ) {
+    for( int i = 0; i < 1; i++ ) {
         net->learnBatch( learningRate, inputData, expectedResults );
     }
     timer.timeCheck("batch time");
