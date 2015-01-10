@@ -23,8 +23,8 @@ using namespace std;
 TEST( testbackproperrors, board28 ) {
     const int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize( 24 ).setNumFilters( 32 ).setFilterSize( 5 )
-        .setBiased( true ).setPadZeros( false );
+    dim.setInputPlanes( 32 ).setInputBoardSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+        .setBiased( true ).setPadZeros( true );
 
     int weightsSize = dim.filtersSize;
     int biasWeightsSize = dim.numFilters;
@@ -36,15 +36,6 @@ TEST( testbackproperrors, board28 ) {
     WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
     WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
 
-    mt19937 random;
-    random.seed(0); // so always gives same results
-    for( int i = 0; i < resultsSize; i++ ) {
-        errors[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        weights[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-    }
-
     OpenCLHelper cl;
     BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim );
     Timer timer;
@@ -53,11 +44,11 @@ TEST( testbackproperrors, board28 ) {
 
     Sampler::printSamples( "errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream );
 
-    EXPECT_FLOAT_NEAR( -3.58157, errorsForUpstream[199340] );
-    EXPECT_FLOAT_NEAR( 7.39109, errorsForUpstream[567855] );
-    EXPECT_FLOAT_NEAR( 1.22385, errorsForUpstream[2270837] );
-    EXPECT_FLOAT_NEAR( 2.36841, errorsForUpstream[2215104] );
-    EXPECT_FLOAT_NEAR( -12.2059, errorsForUpstream[701251] );
+    EXPECT_FLOAT_NEAR( -1.66007, errorsForUpstream[68268] );
+    EXPECT_FLOAT_NEAR( 0.823709, errorsForUpstream[2927151] );
+    EXPECT_FLOAT_NEAR( 6.99365, errorsForUpstream[1746549] );
+    EXPECT_FLOAT_NEAR( 7.25249, errorsForUpstream[576704] );
+    EXPECT_FLOAT_NEAR( 7.88787, errorsForUpstream[570179] );
 
     delete backpropErrorsImpl;
 
@@ -71,7 +62,7 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
     const int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize( 19 ).setNumFilters( 32 ).setFilterSize( 5 )
-        .setBiased( true ).setPadZeros( false );
+        .setBiased( true ).setPadZeros( true );
 
     int weightsSize = dim.filtersSize;
     int biasWeightsSize = dim.numFilters;
@@ -83,15 +74,6 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
     WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
     WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
 
-    mt19937 random;
-    random.seed(0); // so always gives same results
-    for( int i = 0; i < resultsSize; i++ ) {
-        errors[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        weights[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-    }
-
     OpenCLHelper cl;
     BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim );
     Timer timer;
@@ -100,11 +82,11 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
 
     Sampler::printSamples( "errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream );
 
-    EXPECT_FLOAT_NEAR( -6.64657, errorsForUpstream[158380] );
-    EXPECT_FLOAT_NEAR( 0.472149, errorsForUpstream[2607] );
-    EXPECT_FLOAT_NEAR( 2.95767, errorsForUpstream[546421] );
-    EXPECT_FLOAT_NEAR( -2.0853, errorsForUpstream[429248] );
-    EXPECT_FLOAT_NEAR( 4.28357, errorsForUpstream[1200963] );
+    EXPECT_FLOAT_NEAR( -24.5602, errorsForUpstream[158380] );
+    EXPECT_FLOAT_NEAR( 7.39012, errorsForUpstream[2607] );
+    EXPECT_FLOAT_NEAR( -6.50315, errorsForUpstream[546421] );
+    EXPECT_FLOAT_NEAR( -1.22025, errorsForUpstream[429248] );
+    EXPECT_FLOAT_NEAR( -8.89935, errorsForUpstream[1200963] );
 
     delete backpropErrorsImpl;
 
