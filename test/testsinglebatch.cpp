@@ -377,7 +377,7 @@ TEST( testsinglebatch, perf19 ) {
     delete net;
 }
 
-TEST( testsinglebatch, perf19_depth12 ) {
+TEST( DISABLED_testsinglebatch, perf19_depth12 ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 

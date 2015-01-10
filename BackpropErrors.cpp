@@ -16,7 +16,7 @@ using namespace std;
 
 STATIC BackpropErrors *BackpropErrors::instance(OpenCLHelper *cl, LayerDimensions dim ) {
     if( square( dim.inputBoardSize ) <= cl->getMaxWorkgroupSize() ) {
-        return new BackpropErrors1( cl, dim );
+        return new BackpropErrors2( cl, dim );
     } else {
         return new BackpropErrors1( cl, dim );
     }

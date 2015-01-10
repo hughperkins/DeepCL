@@ -99,9 +99,9 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
 }
 
 TEST( testbackproperrors, comparespecific ) {
-    const int batchSize = 128;
+    const int batchSize = 5;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 1 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 5 )
         .setBiased( true ).setPadZeros( false );
 
     int weightsSize = dim.filtersSize;
@@ -113,25 +113,45 @@ TEST( testbackproperrors, comparespecific ) {
     memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
     memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
-    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
-    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
+//    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
+//    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+//    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
+//    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
+    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
 
 //    weights[0] = 3;
 //    weights[1] = 5;
+//    weights[2] = 4;
+
+//    weights[25] = 4;
+//    weights[49] = 4;
+
+//    weights[50] = 4;
+//    weights[99] = 4;
+
+//    weights[75] = 4;
+//    weights[99] = 4;
+
+//    weights[100] = 3;
+//    weights[124] = 3;
 
 //    errors[0] = 2;
 //    errors[1] = 7;
+//    errors[2] = 3;
+//    errors[3] = 1;
+//    errors[4] = 8;
+//    errors[5] = 6;
 
     OpenCLHelper cl;
-    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 0, &cl, dim );
+    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 1, &cl, dim );
     float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, weights, biasWeights, errors );
-    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 1, &cl, dim );
+    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 2, &cl, dim );
     float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, weights, biasWeights, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
     cout << dim << endl;
-    for( int i = 0; i < 10; i++ ) {
+    for( int i = 0; i < 25; i++ ) {
         cout << "results[" << i << "]=" << errorsForUpstream1[i] << " " << errorsForUpstream2[i];
         if( i < resultsSize ) {
             if( errorsForUpstream1[i] == errorsForUpstream2[i] ) {

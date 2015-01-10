@@ -205,7 +205,9 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
 //        if( layerIdx > 1 ) {
 //            errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
 //        }
+        StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backPropErrors( learningRate );
+        StatefulTimer::setPrefix("" );
 //        delete[] errors;
 //        errors = 0;
 //        errors = errorsForNextLayer;

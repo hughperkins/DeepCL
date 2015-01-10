@@ -19,6 +19,7 @@ public:
     }
     std::chrono::time_point<std::chrono::high_resolution_clock> last;
     std::map< std::string, float > timeByState;
+    std::string prefix = "";
     StatefulTimer() {
          last = std::chrono::high_resolution_clock::now();
     }
@@ -45,6 +46,9 @@ public:
         }
         timeByState.clear();
     }
+    static void setPrefix( std::string _prefix ) {
+        instance()->prefix = _prefix;
+    }
     static void dump(bool force = false) {
         instance()->_dump(force);
     }
@@ -52,6 +56,7 @@ public:
         instance()->_timeCheck( state );
     }
     void _timeCheck( std::string state ) {
+        state = prefix + state;
        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
        std::chrono::duration<float> change = thistime - last;
        float timemilliseconds = std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count();

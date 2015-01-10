@@ -126,11 +126,11 @@ void kernel calcErrorsForUpstreamCached(
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( globalId == 0 ) {
-            for( int i = 0; i < gFilterSizeSquared; i++ ) {
-                errorsForUpstream[ (outPlane+1)*100 + i ] = _filterBoard[i];
-            }
-        }
+//        if( globalId == 0 ) {
+//            for( int i = 0; i < gFilterSizeSquared; i++ ) {
+//                errorsForUpstream[ (outPlane+1)*100 + i ] = _filterBoard[i];
+//            }
+//        }
         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {

@@ -11,5 +11,12 @@ public:
             values[i] = random() / (float)std::mt19937::max() * (maxvalue-minvalue) - maxvalue;
         }
     }
+    static void randomizeInts( float *values, int numValues, int minvalue = 0, int maxvalue = 9 ) {
+        std::mt19937 random;
+        random.seed(0); // so always gives same results
+        for( int i = 0; i < numValues; i++ ) {
+            values[i] = ( random() % (maxvalue-minvalue) ) - maxvalue;
+        }
+    }
 };
 
