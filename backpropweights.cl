@@ -507,10 +507,13 @@ void kernel backprop_floats_withscratch(
 
 // biasWeightChanges is: [outplane] (only upstreamplane=0 workgroups need to write it)
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutputBoardSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *results, global const float *errors, global float *weightChanges, global float *biasWeightChanges,
+         global const float *images, global const float *results, global const float *errors, global float *weights,
+#ifdef BIASED
+ global float *biasWeights,
+#endif
         local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
  ) {
     const int globalId = get_global_id(0);
@@ -521,58 +524,64 @@ void kernel backprop_floats_withscratch_dobias(
     const int filterRow = localId / gFilterSize;
     const int filterCol = localId % gFilterSize;
 
-    const int outPlane = workgroupId / gUpstreamNumPlanes;
-    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
+    const int outPlane = workgroupId / gInputPlanes;
+    const int upstreamPlane = workgroupId % gInputPlanes;
 
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
     float thiswchange = 0;
+#ifdef BIASED
     float thisbiaschange = 0;
+#endif
     for( int n = 0; n < batchSize; n++ ) {
-        int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
         // need to fetch the board, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int numLoopsForUpstream = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numLoopsForUpstream; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gUpstreamBoardSizeSquared ) {
+            if( thisOffset < gInputBoardSizeSquared ) {
                 _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
             }
         }
-        int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
-        int numLoopsForResults = ( gOutBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int resultBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
+        int numLoopsForResults = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForResults; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutBoardSizeSquared ) {
+            if( thisOffset < gOutputBoardSizeSquared ) {
                 _resultBoard[thisOffset ] = ( ACTIVATION_DERIV( results[resultBoardGlobalOffset + thisOffset] ) )
                     * errors[resultBoardGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {
-            for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+            for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {
                 int upstreamRow = outRow - gMargin + filterRow;
-                for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+                for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
                     int upstreamCol = outCol - gMargin + filterCol;
-                    int resultIndex = outRow * gOutBoardSize + outCol;
+                    int resultIndex = outRow * gOutputBoardSize + outCol;
                     float activationDerivative = _resultBoard[resultIndex];
-                    int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
+                    int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
                     float upstreamResult = _imageBoard[upstreamDataIndex];
                     float thisimagethiswchange = upstreamResult * activationDerivative;
                     thiswchange += thisimagethiswchange;
+#ifdef BIASED
                     thisbiaschange += activationDerivative;
+#endif
                 }
             }
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = - learningRateMultiplier * thiswchange;
+        weights[ workgroupId * gFilterSizeSquared + localId ] += - learningRateMultiplier * thiswchange;
 //        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
     }
+#ifdef BIASED
     bool writeBias = upstreamPlane == 0 && localId == 0;
     if( writeBias ) {
-        biasWeightChanges[outPlane] = - learningRateMultiplier * thisbiaschange;
+        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
     }
+#endif
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
 }

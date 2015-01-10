@@ -1,109 +1,55 @@
-
-#include "OpenCLHelper.h"
-#include "NeuralNet.h"
-#include "test/myasserts.h"
-
 #include <iostream>
 #include <iomanip>
 
+#include "OpenCLHelper.h"
+#include "NeuralNet.h"
+#include "BackpropWeights.h"
+
+#include "test/myasserts.h"
 #include "gtest/gtest.h"
+#include "test/gtest_supp.h"
 
 using namespace std;
 
-#include "test/gtest_supp.h"
+TEST( testbackpropweights, backprop_weights_2 ) {
+    LayerDimensions dim;
+    dim.setInputBoardSize( 1 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setBiased( 0 ).setPadZeros( 0 );
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2 ) {
     const int batchSize = 1;
-    const int upstreamBoardSize = 1;
-    const int boardSize = 1;
-    const int filterSize = 1;
-    const int upstreamNumPlanes = 1;
-    const int numPlanes = 1;
-    const int filterSizeSquared = filterSize * filterSize;
-    const int boardSizeSquared = boardSize * boardSize;
-    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
-    const int resultsSize = boardSizeSquared * numPlanes * batchSize;
-    const int filtersSize = filterSizeSquared * numPlanes;
-    const int upstreamResultsSize = upstreamBoardSizeSquared * upstreamNumPlanes * batchSize;
-    const int weightsSize = upstreamNumPlanes * numPlanes * filterSizeSquared;
-    const int padZeros = 0;
-    const int biased = 0;
-
     const float learningMultiplier = 1;
-
-    std::string options = " -D LINEAR";
-    if( biased ) {
-         options += " -D BIASED";
-    }
-    options += " -D gUpstreamBoardSize=" + toString(upstreamBoardSize);
-    options += " -D gUpstreamBoardSizeSquared=" + toString(upstreamBoardSizeSquared);
-    options += " -D gFilterSize=" + toString(filterSize);
-    options += " -D gFilterSizeSquared=" + toString(filterSizeSquared);
-    options += " -D gOutBoardSize=" + toString(boardSize);
-    options += " -D gOutBoardSizeSquared=" + toString(boardSizeSquared);
-    options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
-    options += " -D gNumOutPlanes=" + toString(numPlanes);
-    options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
-    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
-    options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
-    std::cout << "using kernel options: [" + options + "]" << std::endl;
 
     float data[] = { 3.0f };
     float errors[] = { 7.0f };
-    float *results = new float[resultsSize]; // ignored, for LINEAR
-//    float results[] = { 11.0f };
-    float *weightChanges = new float[max(1,20)];
+    float *results = new float[batchSize * dim.outputCubeSize]; // ignored, for LINEAR
+    float *weights = new float[max(dim.filtersSize,20)];
+    float *biasWeights = new float[10];
+    memset( weights, 0, sizeof( float ) * max( dim.filtersSize, 20 ) );
+    memset( biasWeights, 0, sizeof(float) * 10 );
 
     float expectedResults[] = { - 3 * 7 };
 
     OpenCLHelper cl;
-    CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
+    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
+    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier, errors, results, data, weights, biasWeights );
+    delete backpropWeightsImpl;
     
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-
-    CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
-    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
-    CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
-    CLWrapper *weightChangesWrapper = cl.wrap( max(weightsSize,20), weightChanges );
-    imagesWrapper->copyToDevice();
-    resultsWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
-    kernel
-       ->in(learningMultiplier)
-       ->in( batchSize )
-        ->in( cl.getNextPower2( workgroupsize ) )
-       ->in( imagesWrapper )
-       ->in(resultsWrapper)
-       ->in( errorsWrapper )
-       ->out( weightChangesWrapper )
-        ->localFloats( upstreamBoardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( filterSizeSquared )
-        ->localFloats( upstreamBoardSizeSquared );
-
-    kernel->run_1d(globalSize, workgroupsize);
-
-    weightChangesWrapper->copyToHost();    
     for( int i = 0; i < 20; i++ ) {
-        cout << "weightchanges[" << i << "]=" << weightChanges[i] << endl;
+        cout << "weights[" << i << "]=" << weights[i] << endl;
     }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != weightChanges[i] ) {
+    for( int i = 0; i < dim.filtersSize; i++ ) {
+        if( expectedResults[i] != weights[i] ) {
             cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weightChanges[i] );
+            EXPECT_EQ( expectedResults[i], weights[i] );
         }
     }
-
-    delete kernel;
+    delete[] results;
+    delete[] weights;
+    delete[] biasWeights;
 }
 
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize2 ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize2 ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 2;
     const int boardSize = 2;
@@ -296,7 +242,7 @@ TEST( DISABLED_testsimpleconvolve, backprop_weights_2_upstreamboardsize3_filters
     delete kernel;
 }
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize4_filtersize3 ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize4_filtersize3 ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 4;
     const int boardSize = 2;
@@ -397,7 +343,7 @@ TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize4_filters
 }
 
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize4_filtersize3_relu ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize4_filtersize3_relu ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 4;
     const int boardSize = 2;
@@ -497,7 +443,7 @@ TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize4_filters
     delete kernel;
 }
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize5_filtersize3 ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize5_filtersize3 ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 5;
     const int boardSize = 3;
@@ -599,7 +545,7 @@ TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize5_filters
     delete kernel;
 }
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize3_filtersize1 ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize3_filtersize1 ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 3;
     const int boardSize = 3;
@@ -713,7 +659,7 @@ TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize3_filters
     delete kernel;
 }
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize16_filtersize1 ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize16_filtersize1 ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 16;
     const int boardSize = 16;
@@ -817,7 +763,7 @@ TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize16_filter
     delete kernel;
 }
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize17_filtersize1 ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize17_filtersize1 ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 17;
     const int boardSize = 17;
@@ -921,7 +867,7 @@ TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize17_filter
     delete kernel;
 }
 
-TEST( testsimpleconvolve, DISABLED_backprop_weights_2_upstreamboardsize17_filtersize1_moredata ) {
+TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize17_filtersize1_moredata ) {
     const int batchSize = 1;
     const int upstreamBoardSize = 17;
     const int boardSize = 17;

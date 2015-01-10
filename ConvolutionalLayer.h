@@ -20,12 +20,14 @@
 
 class Propagate;
 class BackpropErrors;
+class BackpropWeights;
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
 
     Propagate *propagateimpl;
+    BackpropWeights *backpropWeightsImpl;
     BackpropErrors *backpropErrorsImpl;
 
     CLKernel *kernelBackPropWeights;
@@ -33,7 +35,6 @@ public:
 //    CLKernel *kernelBackPropWeights3;
 //    CLKernel *kernelBackPropWeights4;
 //    CLKernel *kernelBackPropWeightsWithScratch;
-    CLKernel *kernelBackPropWeightsWithScratchAndBias;
     CLKernel *kernelBackpropErrors;
     CLKernel *kernelBackpropBiasWeights;
     CLKernel *kernelAddInPlace;
@@ -101,7 +102,6 @@ public:
     void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper );
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
     void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
-    void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges );
     void doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges );
     void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, float *biasWeightChanges );
 

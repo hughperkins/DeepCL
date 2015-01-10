@@ -18,6 +18,7 @@ add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp Neur
    EpochMaker.cpp ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp FullyConnectedLayer.cpp InputLayer.cpp
    Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
+   BackpropWeights.cpp BackpropWeightsScratchBias.cpp
    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 add_custom_command( 
@@ -50,7 +51,7 @@ endif(PYTHON_AVAILABLE)
 set( UNITTEST_SOURCES unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp
  test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
 test/testbackprop.cpp test/testbackproperrors.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
-test/testbackpropweights2.cpp )
+test/testbackpropweights.cpp )
 
 #add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
 #add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )
