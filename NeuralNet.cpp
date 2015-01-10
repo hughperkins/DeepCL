@@ -191,7 +191,9 @@ void NeuralNet::propagate( float const*images) {
 //        Timer timer;
     dynamic_cast<InputLayer *>(layers[0])->in( images );
     for( int layerId = 1; layerId < layers.size(); layerId++ ) {
+        StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
         layers[layerId]->propagate();
+        StatefulTimer::setPrefix("" );
     }
 //        timer.timeCheck("propagate time");
 }

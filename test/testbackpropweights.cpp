@@ -457,9 +457,9 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
 }
 
 TEST( testbackpropweights, compare_specific ) {
-    const int batchSize = 1;
+    const int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize( 3 ).setNumFilters( 1 ).setFilterSize( 3 )
+    dim.setInputPlanes( 32 ).setInputBoardSize( 19 ).setNumFilters( 32 ).setFilterSize( 3 )
         .setBiased( false ).setPadZeros( true );
     ActivationFunction *fn = new LinearActivation();
     int learningRate = 1.0f;
@@ -494,7 +494,7 @@ TEST( testbackpropweights, compare_specific ) {
     backpropWeightsImpl1->debug = true;
     backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
         errors, results, inputData, weights1, 0 );
-    BackpropWeights *backpropWeightsImpl2 = BackpropWeights::instanceSpecific( 2, &cl, dim, fn );
+    BackpropWeights *backpropWeightsImpl2 = BackpropWeights::instanceSpecific( 1, &cl, dim, fn );
     backpropWeightsImpl2->debug = true;
     backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
         errors, results, inputData, weights2, 0 );

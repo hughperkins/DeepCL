@@ -1,0 +1,114 @@
+aws, experimental, defaults + numfilters=32, padzeros=0
+
+aws, with all arrays going via host in each function:
+StatefulTimer readings:
+       propagate layer 1,  after copy to host: 1895
+       propagate layer 1,  after kernel enqueue: 0
+       propagate layer 1, START: 0
+       propagate layer 1, copied to device: 0
+       propagate layer 2,  after copy to host: 9828
+       propagate layer 2,  after kernel enqueue: 940
+       propagate layer 2, START: 0
+       propagate layer 2, copied to device: 647
+    backpropweightsGpu end, layer 2: 2674
+    backpropweightsGpu start, layer 2: 0
+    backpropweightsGpuWithScratch end, layer 1: 7433
+    backpropweightsGpuWithScratch start, layer 1: 0
+   START: 0
+   backproperrors(): calced errors for upstream, layer 2: 0
+   backproperrors(): done biasweight backprop, layer 1: 0
+   backproperrors(): done biasweight backprop, layer 2: 0
+   backproperrors(): done weight backprop, layer 1: 0
+   backproperrors(): done weight backprop, layer 2: 0
+   backproperrors(): start backprop, layer 1: 0
+   backproperrors(): start backprop, layer 2: 0
+   calcErrorsForUpstreamGpu end, layer 2: 1874
+   calcErrorsForUpstreamGpu start, layer 2: 0
+   doBiasBackpropCpu end, layer 1: 4214
+   doBiasBackpropCpu end, layer 2: 0
+   doBiasBackpropCpu start, layer 1: 0
+   doBiasBackpropCpu start, layer 2: 0
+       loss L: 20321.6
+after epoch 0 32105 ms
+train overall: 57168/60000 95.28%
+test overall: 9563/10000 95.63%
+after tests 17437 ms
+
+
+aws, after putting results and weights on gpu:
+StatefulTimer readings:
+       propagate layer 1,  after clFinish: 972
+       propagate layer 1, START: 0
+       propagate layer 1, copied to device: 0
+       propagate layer 2,  after clFinish: 9829
+       propagate layer 2, START: 0
+       propagate layer 2, copied to device: 0
+    backpropweightsGpu end, layer 2: 468
+    backpropweightsGpu start, layer 2: 0
+    backpropweightsGpuWithScratch end, layer 1: 4825
+    backpropweightsGpuWithScratch start, layer 1: 0
+   START: 0
+   backproperrors(): calced errors for upstream, layer 2: 0
+   backproperrors(): done biasweight backprop, layer 1: 0
+   backproperrors(): done biasweight backprop, layer 2: 0
+   backproperrors(): done weight backprop, layer 1: 0
+   backproperrors(): done weight backprop, layer 2: 0
+   backproperrors(): start backprop, layer 1: 0
+   backproperrors(): start backprop, layer 2: 0
+   calcErrorsForUpstreamGpu end, layer 2: 1876
+   calcErrorsForUpstreamGpu start, layer 2: 0
+   doBiasBackpropGpu end, layer 1: 39314
+   doBiasBackpropGpu end, layer 2: 0
+   doBiasBackpropGpu start, layer 1: 0
+   doBiasBackpropGpu start, layer 2: 0
+       loss L: 20395.1
+after epoch 0 59384 ms
+train overall: 57123/60000 95.205%
+test overall: 9530/10000 95.3%
+after tests 13589 ms
+
+aws, after putting results and weights on gpu, and merging bias backprop with weight backprop:
+StatefulTimer readings:
+       propagate layer 1,  after clFinish: 978
+       propagate layer 1, START: 0
+       propagate layer 1, copied to device: 0
+       propagate layer 2,  after clFinish: 9829
+       propagate layer 2, START: 0
+       propagate layer 2, copied to device: 0
+    backpropweightsGpu end, layer 2: 470
+    backpropweightsGpu start, layer 2: 0
+    backpropweightsGpuWithScratchAndBias end, layer 1: 5083
+    backpropweightsGpuWithScratchAndBias start, layer 1: 0
+   START: 0
+   backproperrors(): calced errors for upstream, layer 2: 0
+   backproperrors(): done biasweight backprop, layer 2: 0
+   backproperrors(): done weight backprop, layer 1: 0
+   backproperrors(): done weight backprop, layer 2: 0
+   backproperrors(): start backprop, layer 1: 0
+   backproperrors(): start backprop, layer 2: 0
+   calcErrorsForUpstreamGpu end, layer 2: 1886
+   calcErrorsForUpstreamGpu start, layer 2: 0
+   doBiasBackpropGpu end, layer 2: 0
+   doBiasBackpropGpu start, layer 2: 0
+       loss L: 22680.8
+after epoch 0 19946 ms
+train overall: 56677/60000 94.4617%
+test overall: 9462/10000 94.62%
+after tests 13591 ms
+
+-------------------
+
+padzeros=1
+
+aws
+StatefulTimer readings:
+   Propagate1::propagate after call propagate: 15873ms
+   Propagate3::propagate after call propagate: 1093ms
+   after batch calc training num right: 1ms
+   layer1 BackpropWeightsScratchAndBias end: 6094ms
+   layer2 BackpropErrors2 end: 1875ms
+   layer2 BackpropWeightsScratchAndBias end: 2343ms
+       loss L: 9145.82
+after epoch 2 26090 ms
+
+
