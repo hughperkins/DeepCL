@@ -12,7 +12,7 @@ include_directories( OpenCLHelper )
 include_directories( OpenCLHelper/clew/include )
 link_libraries(dl)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O2")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp NeuralNetMould.cpp
    EpochMaker.cpp ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp FullyConnectedLayer.cpp InputLayer.cpp
