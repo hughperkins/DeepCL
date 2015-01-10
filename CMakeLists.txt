@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+if (NOT CMAKE_BUILD_TYPE)
+    message("Setting build type to 'Release'")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
 OPTION(PYTHON_AVAILABLE "Developers only." OFF)
 OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
 
