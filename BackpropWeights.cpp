@@ -1,6 +1,6 @@
 #include "StatefulTimer.h"
 
-//#include "BackpropWeightsCpu.h"
+#include "BackpropWeightsCpu.h"
 #include "BackpropWeightsNaive.h"
 #include "BackpropWeightsScratchBias.h"
 
@@ -22,7 +22,7 @@ STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensi
     }
 }
 STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
-    return new BackpropWeightsNaive( cl, layerDimensions, fn );
+    return new BackpropWeightsCpu( cl, layerDimensions, fn );
 }
 STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {

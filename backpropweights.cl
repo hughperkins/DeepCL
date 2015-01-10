@@ -93,7 +93,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
                     error;
                 thiswchange += thisimagethiswchange;
 #ifdef BIASED
-                    thisbiaschange += activationDerivative;
+                thisbiaschange += activationDerivative;
 #endif
             }
         }
