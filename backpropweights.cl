@@ -43,7 +43,7 @@
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-         global const float *images, global const float *results, global const float *errors, 
+         global const float *errors, global const float *results, global const float *images, 
         global float *weights
         #ifdef BIASED
             , global float *biasWeights
@@ -77,24 +77,28 @@ void kernel backprop_floats( const float learningRateMultiplier,
             int upstreamRow = outRow - margin + filterRow;
             for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
                 int upstreamCol = outCol - margin + filterCol;
-                int resultIndex = ( ( n * numPlanes 
-                          + outPlane ) * outBoardSize
-                          + outRow ) * outBoardSize
-                          + outCol;
-                float error = errors[resultIndex];
-                float actualOutput = results[resultIndex];
-                float activationDerivative = ACTIVATION_DERIV( actualOutput);
-                int upstreamDataIndex = ( ( n * upstreamNumPlanes 
-                                 + upstreamPlane ) * upstreamBoardSize
-                                 + upstreamRow ) * upstreamBoardSize
-                                 + upstreamCol;
-                float upstreamResult = images[upstreamDataIndex];
-                float thisimagethiswchange = upstreamResult * activationDerivative *
-                    error;
-                thiswchange += thisimagethiswchange;
-#ifdef BIASED
-                thisbiaschange += activationDerivative;
-#endif
+                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < upstreamBoardSize
+                    && upstreamCol < upstreamBoardSize;
+                if( proceed ) {
+                    int resultIndex = ( ( n * numPlanes 
+                              + outPlane ) * outBoardSize
+                              + outRow ) * outBoardSize
+                              + outCol;
+                    float error = errors[resultIndex];
+                    float actualOutput = results[resultIndex];
+                    float activationDerivative = ACTIVATION_DERIV( actualOutput);
+                    int upstreamDataIndex = ( ( n * upstreamNumPlanes 
+                                     + upstreamPlane ) * upstreamBoardSize
+                                     + upstreamRow ) * upstreamBoardSize
+                                     + upstreamCol;
+                    float upstreamResult = images[upstreamDataIndex];
+                    float thisimagethiswchange = upstreamResult * activationDerivative *
+                        error;
+                    thiswchange += thisimagethiswchange;
+    #ifdef BIASED
+                    thisbiaschange += activationDerivative;
+    #endif
+                }
             }
         }
     }
@@ -577,15 +581,19 @@ void kernel backprop_floats_withscratch_dobias(
                 int upstreamRow = outRow - gMargin + filterRow;
                 for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
                     int upstreamCol = outCol - gMargin + filterCol;
-                    int resultIndex = outRow * gOutputBoardSize + outCol;
-                    float activationDerivative = _resultBoard[resultIndex];
-                    int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
-                    float upstreamResult = _imageBoard[upstreamDataIndex];
-                    float thisimagethiswchange = upstreamResult * activationDerivative;
-                    thiswchange += thisimagethiswchange;
-#ifdef BIASED
-                    thisbiaschange += activationDerivative;
-#endif
+                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize
+                        && upstreamCol < gInputBoardSize;
+                    if( proceed ) {
+                        int resultIndex = outRow * gOutputBoardSize + outCol;
+                        float activationDerivative = _resultBoard[resultIndex];
+                        int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
+                        float upstreamResult = _imageBoard[upstreamDataIndex];
+                        float thisimagethiswchange = upstreamResult * activationDerivative;
+                        thiswchange += thisimagethiswchange;
+    #ifdef BIASED
+                        thisbiaschange += activationDerivative;
+    #endif
+                    }
                 }
             }
         }

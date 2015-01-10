@@ -35,9 +35,9 @@ VIRTUAL void BackpropWeightsNaive::backpropWeights( int batchSize, float learnin
        ->in(learningMultiplier)
        ->in( batchSize )->in( dim.inputPlanes )->in( dim.numFilters )
        ->in( dim.inputBoardSize )->in( dim.filterSize )->in( dim.outputBoardSize )->in( dim.padZeros ? 1 : 0 )       
-        ->in( imagesWrapper )
-       ->in(resultsWrapper)
        ->in( errorsWrapper )
+       ->in(resultsWrapper)
+        ->in( imagesWrapper )
        ->inout( weightsWrapper );
     if( dim.biased ) {
         kernel->inout( biasWeightsWrapper );

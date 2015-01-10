@@ -15,7 +15,7 @@ public:
         std::mt19937 random;
         random.seed(0); // so always gives same results
         for( int i = 0; i < numValues; i++ ) {
-            values[i] = ( random() % (maxvalue-minvalue) ) - maxvalue;
+            values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
         }
     }
 };

@@ -15,6 +15,7 @@ public:
     OpenCLHelper *cl;
     LayerDimensions dim;
     ActivationFunction const*fn;
+    bool debug = false;
 
     virtual void backpropWeights( int batchSize, float learningRate, 
         CLWrapper *errorsWrapper, CLWrapper *resultsWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;

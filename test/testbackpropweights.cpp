@@ -457,12 +457,12 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
 }
 
 TEST( testbackpropweights, compare_specific ) {
-    const int batchSize = 5;
+    const int batchSize = 1;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 5 )
+    dim.setInputPlanes( 1 ).setInputBoardSize( 3 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( false ).setPadZeros( true );
-    ActivationFunction *fn = new ReluActivation();
-    int learningRate = 0.1f;
+    ActivationFunction *fn = new LinearActivation();
+    int learningRate = 1.0f;
 
     int resultsSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
@@ -480,28 +480,30 @@ TEST( testbackpropweights, compare_specific ) {
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
 
-    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
-    WeightRandomizer::randomize( results, max( 10000, resultsSize), -1, 1 );
-    WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1, 1 );
+//    WeightRandomizer::randomize( errors, max(10000, resultsSize ), 0.4, 1 );
+//    WeightRandomizer::randomize( results, max( 10000, resultsSize), 1, 2 );
+//    WeightRandomizer::randomize( inputData, max(10000, inputSize ), 0.2, 3 );
 
-//    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
-//    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
-//    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
+    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 1, 3 );
+    WeightRandomizer::randomizeInts( results, max( 10000, resultsSize), 1, 3 );
+    WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 1, 3 );
 
     OpenCLHelper cl;
     
     BackpropWeights *backpropWeightsImpl1 = BackpropWeights::instanceSpecific( 0, &cl, dim, fn );
+    backpropWeightsImpl1->debug = true;
     backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
         errors, results, inputData, weights1, 0 );
-    BackpropWeights *backpropWeightsImpl2 = BackpropWeights::instanceSpecific( 1, &cl, dim, fn );
+    BackpropWeights *backpropWeightsImpl2 = BackpropWeights::instanceSpecific( 2, &cl, dim, fn );
+    backpropWeightsImpl2->debug = true;
     backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
         errors, results, inputData, weights2, 0 );
 
     cout << dim << endl;
     for( int i = 0; i < 25; i++ ) {
         cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
-        if( i < resultsSize ) {
-            if( weights1[i] == weights2[i] ) {
+        if( i < weightsSize ) {
+            if( abs( weights1[i] - weights2[i] ) <= abs(weights1[i]) / 10000.0f ) {
                 cout << " SAME";
             } else {
                 cout << " DIFF";
@@ -520,7 +522,7 @@ TEST( testbackpropweights, compare_specific ) {
     bool same = true;
     int errCount = 0;
     for( int i = 0; i < weightsSize; i++ ) {
-        if( weights1[i] != weights2[i] ) {
+        if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
             cout << "DIFF: i " << i << " " << weights1[i] << " != " << weights2[i] << endl;
             same = false;
             errCount++;

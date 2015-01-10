@@ -28,7 +28,7 @@ VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningR
 
     const int halfFilterSize = dim.filterSize >> 1;
     const int margin = dim.padZeros ? halfFilterSize : 0;
-    for( int outPlane = 0; outPlane < dim.inputPlanes; outPlane++ ) {
+    for( int outPlane = 0; outPlane < dim.numFilters; outPlane++ ) {
         for( int upstreamPlane = 0; upstreamPlane < dim.inputPlanes; upstreamPlane++ ) {
             for( int filterRow = 0; filterRow < dim.filterSize; filterRow++ ) {
                 for( int filterCol = 0; filterCol <dim.filterSize; filterCol++ ) {
@@ -42,8 +42,14 @@ VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningR
                     //       aggregate over:  [outRow][outCol][n]
                     for( int outRow = 0; outRow < dim.outputBoardSize; outRow++ ) {
                         int upstreamRow = outRow - margin + filterRow;
+                        if( upstreamRow < 0 || upstreamRow > dim.inputBoardSize - 1 ) {
+                            continue;
+                        }
                         for( int outCol = 0; outCol < dim.outputBoardSize; outCol++ ) {
                             int upstreamCol = outCol - margin + filterCol;
+                            if( upstreamCol < 0 || upstreamCol > dim.inputBoardSize - 1 ) {
+                                continue;
+                            }
                             for( int n = 0; n < batchSize; n++ ) {
                                 int resultIndex = ( ( n
                                     * dim.numFilters + outPlane )
@@ -61,6 +67,9 @@ VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningR
                                     error;
                                 thiswchange += thisimagethiswchange;
                                 thisBiasChange += activationDerivative;
+//    if( ( filterRow * 3 + filterCol ) == 5 ) {
+//        cout << thisimagethiswchange << " " << activationDerivative << " " << upstreamResult << " " << error << endl;
+//    }
                             }
                         }
                     }

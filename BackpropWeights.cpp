@@ -55,7 +55,12 @@ VIRTUAL void BackpropWeights::backpropWeights( int batchSize, float learningRate
     CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
     inputDataWrapper->copyToDevice();
 
-    CLWrapper *weightsWrapper = cl->wrap( dim.filtersSize, filters );
+    CLWrapper *weightsWrapper = 0;
+    if( debug ) {
+        weightsWrapper = cl->wrap(std::max(10000, dim.filtersSize ), filters );
+    } else {
+        weightsWrapper = cl->wrap( dim.filtersSize, filters );
+    }
     weightsWrapper->copyToDevice();
 
     CLWrapper *biasWeightsWrapper = 0;
