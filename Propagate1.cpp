@@ -21,7 +21,7 @@ Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     if( dim.biased ) {
          options += " -D BIASED";
     }
-    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float2", options );
+    kernel = cl->buildKernel( "propagate.cl", "convolve_imagecubes_float2", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 VIRTUAL Propagate1::~Propagate1() {

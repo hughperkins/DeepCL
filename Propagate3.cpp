@@ -32,7 +32,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     options += " -D gMargin=" + toString(dim.padZeros ? dim.filterSize >> 1 : 0);
     options += " -D gHalfFilterSize=" + toString( dim.filterSize >> 1 );
     options += " -D gUpstreamNumPlanes=" + toString(dim.inputPlanes);
-    kernel = cl->buildKernel( "../ClConvolve.cl", "convolve_imagecubes_float5", options );
+    kernel = cl->buildKernel( "propagate.cl", "convolve_imagecubes_float5", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 VIRTUAL Propagate3::~Propagate3() {
