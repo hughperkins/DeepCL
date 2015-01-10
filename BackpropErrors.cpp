@@ -1,7 +1,8 @@
 #include "StatefulTimer.h"
 
-#include "BackpropErrors1.h"
 #include "BackpropErrorsCpu.h"
+#include "BackpropErrors1.h"
+#include "BackpropErrors2.h"
 
 #include "BackpropErrors.h"
 
@@ -17,7 +18,7 @@ STATIC BackpropErrors *BackpropErrors::instance(OpenCLHelper *cl, LayerDimension
     return new BackpropErrors1( cl, dim );
 }
 STATIC BackpropErrors *BackpropErrors::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
-    return new BackpropErrors1( cl, layerDimensions );
+    return new BackpropErrors2( cl, layerDimensions );
 }
 STATIC BackpropErrors *BackpropErrors::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {

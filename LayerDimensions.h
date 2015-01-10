@@ -77,6 +77,7 @@ public:
 
         halfFilterSize = filterSize >> 1;
     }
+    std::string buildOptionsString();
 };
 
 std::ostream &operator<<( std::ostream &os, const LayerDimensions &dim );

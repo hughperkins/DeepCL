@@ -29,5 +29,11 @@ StatefulTimer readings:
    BackpropErrors::backprop begin: 62ms
 after calcing errors 231 ms
 
+laptop, backproperrors2
+StatefulTimer readings:
+   BackpropErrors2 end: 297ms
+   BackpropErrors::backprop after copied to device: 7ms
+   BackpropErrors::backprop after copytohost: 2ms
+   BackpropErrors::backprop begin: 99ms
 
 

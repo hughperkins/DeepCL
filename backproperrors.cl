@@ -7,6 +7,9 @@
 // expected defines:
 // BIASED (or not)
 
+#define getFilterBoardOffset( filter, inputPlane ) ( filter * gInputPlanes + inputPlane ) * gFilterSizeSquared
+#define getResultBoardOffset( n, filter ) ( n * gNumFilters + filter ) * gOutputBoardSizeSquared
+
 // handle lower layer...
 // errors for upstream look like [n][inPlane][inRow][inCol]
 // need to aggregate over: [outPlane][outRow][outCol] (?)
@@ -19,6 +22,7 @@
 // there will be approx 128 * 32 * 28 * 28 = 3 million threads :-P
 // grouped into 4608 workgroups
 // maybe we want fewer than this?
+// note: currently doesnt use bias as input.  thats probably an error?
 void kernel calcErrorsForUpstream( 
         const int upstreamNumPlanes, const int upstreamBoardSize, const int filterSize, 
         const int outNumPlanes, const int outBoardSize,
@@ -69,58 +73,76 @@ void kernel calcErrorsForUpstream(
 }
 
 // as calcErrorsForUpstream, but with local cache
-// some globalid structure etc
-// well, except that we break into workgroups
-// workgroupid: [n][upstreamPlane]
+// convolve weights with errors to produce errorsForUpstream
+// workgroupid: [n][inputPlane]
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
 // need to store locally:
-// - all filters for [upstreamPlane] (or iterate). size = filtersizesquared * numfilters (but not times upstreamPlanes)
-// - [upstreamPlane] board from [n] upstreamcube. size of upstreamboardsizesquared
-#ifdef gOutBoardSize // for previous tests that dont define it
+// - _errorBoard. size = outputBoardSizeSquared
+// - _filterBoard. size = filtersizesquared
+// note: currently doesnt use bias as input.  thats probably an error?
+// inputs: errors :convolve: filters => errorsForUpstream
+#ifdef gOutputBoardSize // for previous tests that dont define it
 void kernel calcErrorsForUpstreamCached( 
         const int batchSize,
-        global const float *weights, global const float *errors, global float *errorsForUpstream,
-        local float *_weightCube, local float *_upstreamBoard ) {
+        global const float *errorsGlobal,
+        global const float *filtersGlobal, 
+        global float *errorsForUpstream,
+        local float *_errorBoard, 
+        local float *_filterBoard ) {
 
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
     const int workgroupId = get_group_id(0);
     const int workgroupSize = get_local_size(0);
 
-    const int n = workgroupId / gUpstreamNumPlanes;
-    const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
+    const int n = workgroupId / gInputPlanes;
+    const int upstreamPlane = workgroupId % gInputPlanes;
 
-    const int upstreamRow = localId / gUpstreamBoardSize;
-    const int upstreamCol = localId % gUpstreamBoardSize;
+    const int upstreamRow = localId / gInputBoardSize;
+    const int upstreamCol = localId % gInputBoardSize;
 
-    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutBoardSize - 1) );
+    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputBoardSize - 1) );
     const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
-    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutBoardSize -1) );
+    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputBoardSize -1) );
     const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
 
+    const int filterPixelCopiesPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int errorPixelCopiesPerThread = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int pixelCopiesPerThread = max( filterPixelCopiesPerThread, errorPixelCopiesPerThread );
+
     float sumWeightTimesOutError = 0;
-    for( int outPlane = 0; outPlane < gNumOutPlanes; outPlane++ ) {
+    for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
+        const int filterBoardGlobalOffset =( outPlane * gNumFilters + upstreamPlane ) * gFilterSizeSquared;
+        const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
+        barrier(CLK_LOCAL_MEM_FENCE);
+        for( int i = 0; i < pixelCopiesPerThread; i++ ) {
+            int thisOffset = workgroupSize * i + localId;
+            if( thisOffset < gFilterSizeSquared ) {
+                _filterBoard[ thisOffset ] = filtersGlobal[ filterBoardGlobalOffset + thisOffset ];
+            }
+            if( thisOffset < gOutputBoardSizeSquared ) {
+                _errorBoard[ thisOffset ] = errorsGlobal[ errorBoardGlobalOffset + thisOffset ];
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
-                int resultIndex = ( ( n * gNumOutPlanes 
-                          + outPlane ) * gOutBoardSize
-                          + outRow ) * gOutBoardSize
-                          + outCol;
-                float thisError = errors[resultIndex];
-                int thisWeightIndex = ( ( outPlane * gUpstreamNumPlanes
-                                    + upstreamPlane ) * gFilterSize
-                                    + filterRow ) * gFilterSize
-                                    + filterCol;
-                float thisWeight = weights[thisWeightIndex];
+                int resultIndex = outRow * gOutputBoardSize + outCol;
+                float thisError = _errorBoard[resultIndex];
+                int thisWeightIndex = filterRow * gFilterSize + filterCol;
+                float thisWeight = _filterBoard[thisWeightIndex];
                 float thisWeightTimesError = thisWeight * thisError;
                 sumWeightTimesOutError += thisWeightTimesError;
             }
         }
     }
-    errorsForUpstream[globalId] = sumWeightTimesOutError;
+    const int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
+    if( localId < gInputBoardSizeSquared ) {
+        errorsForUpstream[upstreamBoardGlobalOffset + localId] = sumWeightTimesOutError;
+    }
 }
 #endif
 
@@ -130,7 +152,7 @@ void kernel calcErrorsForUpstreamCached(
 // so, workgroupId is [upstreamPlane]
 // localId is [upstreamRow][upstreamCol]
 // we iterate over [n]
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutputBoardSize // for previous tests that dont define it
 /*
 void kernel calcErrorsForUpstream2( 
         const int batchSize,
@@ -143,8 +165,8 @@ void kernel calcErrorsForUpstream2(
     const int workgroupSize = get_local_size(0);
 
     const int upstreamPlane = workgroupId;
-    const int upstreamRow = localId / gUpstreamBoardSize;
-    const int upstreamCol = localId % gUpstreamBoardSize;
+    const int upstreamRow = localId / gInputBoardSize;
+    const int upstreamCol = localId % gInputBoardSize;
 
     const int 
     if( localId < filterSizeSquared ) {
@@ -200,27 +222,27 @@ void kernel calcErrorsForUpstream2(
 //   filters are organized like [filterid][inplane][filterrow][filtercol]
 //        (so we will swap filterid and inplane around when referencing filters, kindof)
 //  globalid will be organized like upstreamresults, ie [imageid][upstreamplane][upstreamrow][upstreamcol]
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutputBoardSize // for previous tests that dont define it
 void kernel convolve_errorcubes_float( 
        const int batchSize,
       global const float *errorcubes, global const float *filters, 
     global float *upstreamErrors ) {
     int globalId = get_global_id(0);
 
-    int upstreamBoard2Id = globalId / gUpstreamBoardSizeSquared;
-    int exampleId = upstreamBoard2Id / gUpstreamNumPlanes;
-    int filterId = upstreamBoard2Id % gUpstreamNumPlanes;
+    int upstreamBoard2Id = globalId / gInputBoardSizeSquared;
+    int exampleId = upstreamBoard2Id / gInputPlanes;
+    int filterId = upstreamBoard2Id % gInputPlanes;
 
     if( exampleId >= batchSize ) {
         return;
     }
 /*
-    int errorCubeOffset = exampleId * gNumOutPlanes * gOutBoardSizeSquared;
+    int errorCubeOffset = exampleId * gOutPlanes * gOutputBoardSizeSquared;
     int filterCubeOffset = filterId * gNumInputPlanes * gFilterSizeSquared;
 
     int localid = globalId % upstreamBoardSizeSquared;
-    int upstreamRow = localid / gUpstreamBoardSize;
-    int upstreamCol = localid % gUpstreamBoardSize;
+    int upstreamRow = localid / gInputBoardSize;
+    int upstreamCol = localid % gInputBoardSize;
 
     float sum = 0;
 // ====in progress
