@@ -102,7 +102,6 @@ public:
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
     void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
     void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges );
-    void calcErrorsForUpstreamCpu( float const *const weights, float const *const errors, float *errorsForUpstream );
     void doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges );
     void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, float *biasWeightChanges );
 

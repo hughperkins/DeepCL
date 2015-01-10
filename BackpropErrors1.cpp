@@ -43,7 +43,7 @@ VIRTUAL void BackpropErrors1::backpropErrors( int batchSize,
     int globalSize = batchSize * dim.inputCubeSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    std::cout << "calcerrorsforupstreamgpu workgroupsize " << workgroupsize << " globalsize " << globalSize << std::endl;
+//    std::cout << "calcerrorsforupstreamgpu workgroupsize " << workgroupsize << " globalsize " << globalSize << std::endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 

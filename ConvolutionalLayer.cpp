@@ -695,56 +695,6 @@ void backPropWeightsGpu4( const float learningRate, float const*const errors, fl
 }
 */
 
-void ConvolutionalLayer::calcErrorsForUpstreamCpu( float const *const weights, float const *const errors, float *errorsForUpstream ) {
-//        Timer timer;
-    StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamCpu start, layer " + toString( layerIndex ) );
-    const int halfFilterSize = filterSize >> 1;
-    const int margin = padZeros ? halfFilterSize : 0;
-    // handle lower layer...
-    // errors for upstream look like [n][inPlane][inRow][inCol]
-    // need to aggregate over: [outPlane][outRow][outCol] (?)
-    // need to backprop errors along each possible weight
-    // each upstream feeds to:
-    //    - each of our filters (so numPlanes filters)
-    //    - each of our outpoint points (so boardSize * boardSize)
-    // for our own backprop, we updated weights for:
-    //      [outPlane][inPlane][filterRow][filtercol]
-    //    aggregating over: [n][outRow][outCol]
-    // errors are provider per [n][inPlane][inRow][inCol]
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
-            for( int upstreamRow = 0; upstreamRow < upstreamBoardSize; upstreamRow++ ) {
-                int minFilterRow = std::max( 0, upstreamRow + margin - (boardSize - 1) );
-                int maxFilterRow = std::min( filterSize - 1, upstreamRow + margin );
-                for( int upstreamCol = 0; upstreamCol < upstreamBoardSize; upstreamCol++ ) {
-                    float sumWeightTimesOutError = 0;
-                    // aggregate over [outPlane][outRow][outCol]
-                    int minFilterCol = std::max( 0, upstreamCol + margin - (boardSize -1) );
-                    int maxFilterCol = std::min( filterSize - 1, upstreamCol + margin );
-                    for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-                        for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
-                            int outRow = upstreamRow + margin - filterRow;
-                            for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
-                                int outCol = upstreamCol + margin - filterCol;
-                                int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
-                                float thisError = errors[resultIndex];
-                                int thisWeightIndex = getWeightIndex( outPlane, upstreamPlane, filterRow, filterCol );
-                                float thisWeight = weights[thisWeightIndex];
-                                float thisWeightTimesError = thisWeight * thisError;
-                                sumWeightTimesOutError += thisWeightTimesError;
-                            }
-                        }
-                    }
-                    int upstreamResultIndex = previousLayer->getResultIndex( n, upstreamPlane, upstreamRow, upstreamCol );
-                    errorsForUpstream[upstreamResultIndex] = sumWeightTimesOutError;
-                }
-            }
-        }
-    }
-//        timer.timeCheck("calced errors for upstream");   
-    StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamCpu end, layer " + toString( layerIndex ) );
-}
-
 void ConvolutionalLayer::doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges ) {
 //        Timer timer;
     const float learningMultiplier = learningRate / batchSize / sqrt( boardSize * boardSize );
