@@ -321,6 +321,7 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
 
     if( dim.biased ) {
+        biasWeightsWrapper->copyToHost();
         delete biasWeightsWrapper;
     }
     if( !previousLayer->hasResultsWrapper() ) {
