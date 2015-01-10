@@ -14,19 +14,20 @@
 #include "Timer.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
+#include "LayerDimensions.h"
 
 #define VIRTUAL virtual
 
 class Propagate;
+class BackpropErrors;
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
 
     Propagate *propagateimpl;
+    BackpropErrors *backpropErrorsImpl;
 
-//    CLKernel *kernelConvolve;
-//    CLKernel *kernelConvolve2;
     CLKernel *kernelBackPropWeights;
 //    CLKernel *kernelBackPropWeights2;
 //    CLKernel *kernelBackPropWeights3;
@@ -36,6 +37,8 @@ public:
     CLKernel *kernelBackpropErrors;
     CLKernel *kernelBackpropBiasWeights;
     CLKernel *kernelAddInPlace;
+
+    LayerDimensions dim;
 
     const int filterSize;
     const int filterSizeSquared;
@@ -99,7 +102,6 @@ public:
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
     void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
     void backPropWeightsGpuWithScratchAndBias( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, CLWrapper *weightChangesWrapper, float *biasWeightChanges );
-    void calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper );
     void calcErrorsForUpstreamCpu( float const *const weights, float const *const errors, float *errorsForUpstream );
     void doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges );
     void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, float *biasWeightChanges );

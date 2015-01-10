@@ -8,6 +8,7 @@
 #include "NeuralNet.h"
 #include "stringhelper.h"
 #include "Propagate.h"
+#include "BackpropErrors.h"
 
 using namespace std;
 
@@ -35,10 +36,11 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
             throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
         }
 
-    propagateimpl = Propagate::instance( cl, LayerDimensions( upstreamNumPlanes, upstreamBoardSize, 
-        numPlanes, filterSize, padZeros, biased ), activationFunction );
+    dim = LayerDimensions( upstreamNumPlanes, upstreamBoardSize, 
+        numPlanes, filterSize, padZeros, biased );
+    propagateimpl = Propagate::instance( cl, dim, activationFunction );
+    backpropErrorsImpl = BackpropErrors::instance( cl, dim );
 
-//        this->cl = new OpenCLHelper();
     if( filterSize > upstreamBoardSize ) {
             throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( filterSize) +
                 " > " + toString(upstreamBoardSize) );
@@ -47,11 +49,6 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     if( biased ) {
          options += " -D BIASED";
     }
-//        const int batchSize, const int upstreamNumPlanes, const int numOutPlanes, 
-//         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-//    const int halfFilterSize = filterSize >> 1;
-//    const int margin = gPadZeros ? halfFilterSize : 0;
-
     options += " -D gUpstreamBoardSize=" + toString(upstreamBoardSize);
     options += " -D gUpstreamBoardSizeSquared=" + toString(upstreamBoardSizeSquared);
     options += " -D gFilterSize=" + toString(filterSize);
@@ -65,15 +62,11 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
 //    std::cout << "using kernel options: [" + options + "]" << std::endl;
 
-//    options += " -D WORKGROUPSIZE 
-//    this->kernelConvolve = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float2", options );
-//    this->kernelConvolve2 = cl->buildKernel( "ClConvolve.cl", "convolve_imagecubes_float3", options );
     this->kernelBackPropWeights = cl->buildKernel( "backpropweights.cl", "backprop_floats", options );
 //    this->kernelBackPropWeights2 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_2", options );
 //    this->kernelBackPropWeights3 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_3", options );
 //    this->kernelBackPropWeights4 = cl->buildKernel( "ClConvolve.cl", "backprop_floats_4", options );
 //    this->kernelBackPropWeightsWithScratch = cl->buildKernel( "ClConvolve.cl", "backprop_floats_withscratch", options );
-    this->kernelBackpropErrors = cl->buildKernel( "backproperrors.cl", "calcErrorsForUpstream", options );
     this->kernelBackpropBiasWeights = cl->buildKernel( "backpropweights.cl", "doBiasBackprop", options );
     this->kernelAddInPlace = cl->buildKernel( "ClConvolve.cl", "add_in_place", options );
     this->kernelBackPropWeightsWithScratchAndBias = cl->buildKernel( "backpropweights.cl", "backprop_floats_withscratch_dobias", options );
@@ -87,21 +80,12 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
 
 VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete kernelBackPropWeights;
-//        delete kernelBackPropWeights2;
-//        delete kernelBackPropWeights3;
-//        delete kernelBackPropWeights4;
     if( weightsWrapper != 0 ) {
         delete weightsWrapper;
     }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
-//    if( errorsWrapper != 0 ) {
-//        delete errorsWrapper;
-//    }
-//    if( errors != 0 ) {
-//        delete[] errors;
-//    }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
     }
@@ -109,14 +93,11 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
         delete[] errorsForUpstream;
     }
     delete propagateimpl;
-//    delete kernelBackPropWeightsWithScratch;
-//    delete kernelConvolve;
-//    delete kernelConvolve2;
-    delete kernelBackpropErrors;
+    delete backpropErrorsImpl;
+
     delete kernelBackpropBiasWeights;
     delete kernelAddInPlace;
     delete kernelBackPropWeightsWithScratchAndBias;
-//        delete cl;
 }
 VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
     if( !errorsForUpstreamCopiedToHost ) {
@@ -308,6 +289,11 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     float *biasWeightChanges = new float[getBiasWeightsSize()];
 
     CLWrapper *weightChangesWrapper = cl->wrap( getWeightsSize(), weightChanges );
+    CLWrapper *biasWeightsWrapper = 0;
+    if( dim.biased ) {
+        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
+        biasWeightsWrapper->copyToDevice();
+    }
 
     StatefulTimer::instance()->timeCheck("backproperrors(): start backprop, layer " + toString( layerIndex ) );
 
@@ -343,7 +329,7 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     }
 
     if( layerIndex > 1 ) {
-        calcErrorsForUpstreamGpu( weightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
+        backpropErrorsImpl->backpropErrors( batchSize, weightsWrapper, biasWeightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
     }
 
@@ -361,6 +347,9 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     }
     delete weightChangesWrapper;
     delete[] weightChanges;
+    if( dim.biased ) {
+        delete biasWeightsWrapper;
+    }
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;
     }
@@ -705,41 +694,6 @@ void backPropWeightsGpu4( const float learningRate, float const*const errors, fl
     delete weightChangesWrapper;
 }
 */
-
-//VIRTUAL //bool ConvolutionalLayer::needErrorsBackprop() {
-//    return true;
-//}
-
-void ConvolutionalLayer::calcErrorsForUpstreamGpu( CLWrapper *weightsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
-//        CLWrapper *weightsWrapper = cl->wrap( getWeightsSize(), weights );
-    StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamGpu start, layer " + toString( layerIndex ) );
-//    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(), (float *)errors );
-//    CLWrapper *errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
-//        weightsWrapper->copyToDevice();
-//    errorsWrapper->copyToDevice();
-    kernelBackpropErrors
-        ->in( upstreamNumPlanes )->in( upstreamBoardSize )->in( filterSize )
-        ->in( numPlanes )->in( boardSize )
-        ->in( padZeros ? 1 : 0 )
-        ->in( weightsWrapper )
-        ->in( errorsWrapper )
-        ->out( errorsForUpstreamWrapper );
-    int globalSize = previousLayer->getResultsSize();
-    int workgroupsize = cl->getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        std::cout << "calcerrorsforupstreamgpu workgroupsize " << workgroupsize << " globalsize " << globalSize << std::endl;
-    kernelBackpropErrors->run_1d(globalSize, workgroupsize);
-
-    cl->finish();
-//    errorsForUpstreamWrapper->copyToHost();
-
-//        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, finished kernel, layer " + toString( layerIndex ) );
-//        StatefulTimer::instance()->timeCheck("    calcErrorsForUpstreamGpu, copied results to host, layer " + toString( layerIndex ) );
-//    delete errorsForUpstreamWrapper;
-//    delete errorsWrapper;
-//        delete weightsWrapper;
-    StatefulTimer::instance()->timeCheck("calcErrorsForUpstreamGpu end, layer " + toString( layerIndex ) );
-}
 
 void ConvolutionalLayer::calcErrorsForUpstreamCpu( float const *const weights, float const *const errors, float *errorsForUpstream ) {
 //        Timer timer;
