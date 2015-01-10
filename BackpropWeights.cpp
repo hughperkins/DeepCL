@@ -15,11 +15,11 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
-    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
+//    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
         return new BackpropWeightsScratchBias( cl, dim, fn );
-    } else {
+//    } else {
 //        return new BackpropWeightsNaive( cl, dim, fn );
-    }
+//    }
 }
 STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     return new BackpropWeightsScratchBias( cl, layerDimensions, fn );
@@ -43,6 +43,8 @@ BackpropWeights::BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensi
 
 VIRTUAL void BackpropWeights::backpropWeights( int batchSize, float learningRate, float *errors, float *results, float *inputData, float *filters, float *biasWeights ) {
     StatefulTimer::timeCheck("BackpropWeights::backprop begin");
+
+//    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputBoardSize * dim.outputBoardSize );
 
     CLWrapper *errorsWrapper = cl->wrap( batchSize * dim.outputCubeSize, errors );
     errorsWrapper->copyToDevice();

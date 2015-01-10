@@ -19,6 +19,10 @@ public:
     virtual void backpropWeights( int batchSize, float learningRate, 
         CLWrapper *errorsWrapper, CLWrapper *resultsWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;
 
+    float learningRateToMultiplier( int batchSize, float rate ) {
+        return rate / batchSize / sqrt( dim.outputBoardSize * dim.outputBoardSize );
+    }
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()

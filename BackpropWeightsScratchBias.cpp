@@ -33,7 +33,7 @@ VIRTUAL void BackpropWeightsScratchBias::backpropWeights( int batchSize, float l
     int globalSize = workgroupsize * numWorkgroups;
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
-    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputBoardSize * dim.outputBoardSize );
+    const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
     kernel
        ->in(learningMultiplier)

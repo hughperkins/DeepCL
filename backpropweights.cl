@@ -510,10 +510,11 @@ void kernel backprop_floats_withscratch(
 #ifdef gOutputBoardSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *results, global const float *errors, global float *weights,
-#ifdef BIASED
- global float *biasWeights,
-#endif
+         global const float *images, global const float *results, global const float *errors, 
+        global float *weights,
+        #ifdef BIASED
+             global float *biasWeights,
+        #endif
         local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
  ) {
     const int globalId = get_global_id(0);
