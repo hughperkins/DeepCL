@@ -1,8 +1,8 @@
 #include "StatefulTimer.h"
 
 //#include "BackpropWeightsCpu.h"
+#include "BackpropWeightsNaive.h"
 #include "BackpropWeightsScratchBias.h"
-//#include "BackpropWeights2.h"
 
 #include "BackpropWeights.h"
 
@@ -15,21 +15,21 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
-//    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
+    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
         return new BackpropWeightsScratchBias( cl, dim, fn );
-//    } else {
-//        return new BackpropWeightsNaive( cl, dim, fn );
-//    }
+    } else {
+        return new BackpropWeightsNaive( cl, dim, fn );
+    }
 }
 STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
-    return new BackpropWeightsScratchBias( cl, layerDimensions, fn );
+    return new BackpropWeightsNaive( cl, layerDimensions, fn );
 }
 STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
 //        return new BackpropWeightsCpu( cl, layerDimensions, fn );
     }
     if( idx == 1 ) {
-//        return new BackpropWeightsNaive( cl, layerDimensions, fn );
+        return new BackpropWeightsNaive( cl, layerDimensions, fn );
     }
     if( idx == 2 ) {
         return new BackpropWeightsScratchBias( cl, layerDimensions, fn );

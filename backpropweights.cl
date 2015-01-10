@@ -43,7 +43,12 @@
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
-         global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
+         global const float *images, global const float *results, global const float *errors, 
+        global float *weights
+        #ifdef BIASED
+            , global float *biasWeights
+        #endif
+ ) {
     int globalId = get_global_id(0);
     if( globalId >= numPlanes * upstreamNumPlanes * filterSize * filterSize ) {
         return;
@@ -64,6 +69,9 @@ void kernel backprop_floats( const float learningRateMultiplier,
     float thiswchange = 0;
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
+#ifdef BIASED
+    float thisbiaschange = 0;
+#endif
     for( int n = 0; n < batchSize; n++ ) {
         for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
             int upstreamRow = outRow - margin + filterRow;
@@ -84,12 +92,21 @@ void kernel backprop_floats( const float learningRateMultiplier,
                 float thisimagethiswchange = upstreamResult * activationDerivative *
                     error;
                 thiswchange += thisimagethiswchange;
+#ifdef BIASED
+                    thisbiaschange += activationDerivative;
+#endif
             }
         }
     }
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    weightChanges[ globalId ] = - learningRateMultiplier * thiswchange;
+    weights[ globalId ] += - learningRateMultiplier * thiswchange;
+#ifdef BIASED
+    bool writeBias = upstreamPlane == 0 && IntraFilterOffset == 0;
+    if( writeBias ) {
+        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
+    }
+#endif
 }
 #endif
 

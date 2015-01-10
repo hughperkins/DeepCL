@@ -10,7 +10,7 @@
 
 using namespace std;
 
-TEST( testbiasbackprop, one ) {
+TEST( DISABLED_testbiasbackprop, one ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
@@ -32,7 +32,7 @@ TEST( testbiasbackprop, one ) {
 
     Timer timer;
     for( int i = 0; i < 200; i++ ) {
-        layer->doBiasBackpropCpu( 0.7f, results, errors, biasWeightChanges );
+//        layer->doBiasBackpropCpu( 0.7f, results, errors, biasWeightChanges );
     }
     timer.timeCheck("after calcing bias change");
 

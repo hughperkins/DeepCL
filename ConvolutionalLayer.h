@@ -30,15 +30,6 @@ public:
     BackpropWeights *backpropWeightsImpl;
     BackpropErrors *backpropErrorsImpl;
 
-    CLKernel *kernelBackPropWeights;
-//    CLKernel *kernelBackPropWeights2;
-//    CLKernel *kernelBackPropWeights3;
-//    CLKernel *kernelBackPropWeights4;
-//    CLKernel *kernelBackPropWeightsWithScratch;
-    CLKernel *kernelBackpropErrors;
-    CLKernel *kernelBackpropBiasWeights;
-    CLKernel *kernelAddInPlace;
-
     LayerDimensions dim;
 
     const int filterSize;
@@ -99,11 +90,7 @@ public:
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void backPropErrors( float learningRate );
-    void updateWeightsGpu( CLWrapper* weightChangesWrapper, CLWrapper*weightsWrapper );
     void backPropWeightsCpu( float learningRate, float const *errors, float *weights );
-    void backPropWeightsGpu( float learningRate, CLWrapper *imagesWrapper, CLWrapper *resultsWrapper, CLWrapper*errorsWrapper, CLWrapper *weightChangesWrapper );
-    void doBiasBackpropCpu(float learningRate, float const *results, float const *errors, float *biasWeightChanges );
-    void doBiasBackpropGpu(float learningRate, CLWrapper *resultsWrapper, CLWrapper *errorsWrapper, float *biasWeightChanges );
 
     // [[[end]]]
 };
