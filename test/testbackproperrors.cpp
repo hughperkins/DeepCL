@@ -40,6 +40,7 @@ TEST( testbackproperrors, board28 ) {
     BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim );
     Timer timer;
     float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, weights, biasWeights, errors );
+    StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream );
@@ -78,6 +79,7 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
     BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim );
     Timer timer;
     float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, weights, biasWeights, errors );
+    StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream );

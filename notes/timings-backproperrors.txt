@@ -1,0 +1,33 @@
+testbackproperrors, board28:
+
+laptop, backproperrorscpu:
+StatefulTimer readings:
+   BackpropErrorsCpu end: 2468ms
+after calcing errors 2468 ms
+
+laptop, backproperrors1:
+StatefulTimer readings:
+   BackpropErrors1 end: 502ms
+   BackpropErrors::backprop after copied to device: 4ms
+   BackpropErrors::backprop after copytohost: 3ms
+after calcing errors 509 ms
+
+====================================
+
+testbackproperrors, board19:
+
+laptop, backproperrorscpu:
+StatefulTimer readings:
+   BackpropErrorsCpu end: 1098ms
+   BackpropErrorsCpu start: 12ms
+
+laptop, backproperrors1:
+StatefulTimer readings:
+   BackpropErrors1 end: 227ms
+   BackpropErrors::backprop after copied to device: 1ms
+   BackpropErrors::backprop after copytohost: 1ms
+   BackpropErrors::backprop begin: 62ms
+after calcing errors 231 ms
+
+
+

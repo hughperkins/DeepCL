@@ -17,7 +17,7 @@ STATIC BackpropErrors *BackpropErrors::instance(OpenCLHelper *cl, LayerDimension
     return new BackpropErrors1( cl, dim );
 }
 STATIC BackpropErrors *BackpropErrors::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
-    return new BackpropErrorsCpu( cl, layerDimensions );
+    return new BackpropErrors1( cl, layerDimensions );
 }
 STATIC BackpropErrors *BackpropErrors::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
