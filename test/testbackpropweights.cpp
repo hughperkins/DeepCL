@@ -167,7 +167,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize4_filtersize3 ) {
 }
 
 
-TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize4_filtersize3_relu ) {
+TEST( testbackpropweights, backprop_weights_2_upstreamboardsize4_filtersize3_relu ) {
     LayerDimensions dim;
     dim.setInputBoardSize( 4 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -303,320 +303,155 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize3_filtersize1 ) {
     }
 }
 
-TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize16_filtersize1 ) {
-    const int batchSize = 1;
-    const int upstreamBoardSize = 16;
-    const int boardSize = 16;
-    const int filterSize = 1;
-    const int upstreamNumPlanes = 1;
-    const int numPlanes = 1;
-    const int filterSizeSquared = filterSize * filterSize;
-    const int boardSizeSquared = boardSize * boardSize;
-    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
-    const int resultsSize = boardSizeSquared * numPlanes * batchSize;
-    const int filtersSize = filterSizeSquared * numPlanes;
-    const int upstreamResultsSize = upstreamBoardSizeSquared * upstreamNumPlanes * batchSize;
-    const int weightsSize = upstreamNumPlanes * numPlanes * filterSizeSquared;
-    const int padZeros = 0;
-    const int biased = 0;
-
+TEST( testbackpropweights, backprop_weights_2_upstreamboardsize16_filtersize1 ) {
+    LayerDimensions dim;
+    dim.setInputBoardSize( 16 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setBiased( 0 ).setPadZeros( 0 );
+    int batchSize = 1;
     const float learningMultiplier = 1;
+    cout << dim << endl;
 
-    std::string options = " -D LINEAR";
-    if( biased ) {
-         options += " -D BIASED";
-    }
-    options += " -D gUpstreamBoardSize=" + toString(upstreamBoardSize);
-    options += " -D gUpstreamBoardSizeSquared=" + toString(upstreamBoardSizeSquared);
-    options += " -D gFilterSize=" + toString(filterSize);
-    options += " -D gFilterSizeSquared=" + toString(filterSizeSquared);
-    options += " -D gOutBoardSize=" + toString(boardSize);
-    options += " -D gOutBoardSizeSquared=" + toString(boardSizeSquared);
-    options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
-    options += " -D gNumOutPlanes=" + toString(numPlanes);
-    options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
-    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
-    options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
-    std::cout << "using kernel options: [" + options + "]" << std::endl;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int weightsSize = dim.filtersSize;
 
-    float *data = new float[ upstreamBoardSizeSquared ];
-    memset( data, 0, sizeof(float) * upstreamBoardSizeSquared );
+    float *data = new float[ inputSize ];
+    memset( data, 0, sizeof(float) * inputSize );
 
 //    data[3 * upstreamBoardSize + 14] = 2;
     data[0] = 2;
-    data[15 * upstreamBoardSize + 15] = 5;
+    data[15 * dim.inputBoardSize + 15] = 5;
 //    data[8 * upstreamBoardSize + 15] = -2;
 
-    float *errors = new float[ boardSizeSquared ];
-    memset( errors, 0, sizeof(float) * boardSizeSquared );
+    float *errors = new float[ resultsSize ];
+    memset( errors, 0, sizeof(float) * resultsSize );
 
 //    errors[3 * upstreamBoardSize + 14] = 1;
     errors[0] = 4;
-    errors[15 * boardSize + 15] = 3;
+    errors[15 * dim.outputBoardSize + 15] = 3;
 //    errors[8 * upstreamBoardSize + 15] = 7;
 
     float *results = new float[resultsSize];
-    float *weightChanges = new float[max(4,20)];
+    float *weights = new float[max(1000,weightsSize)];
+    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
 
     float expectedResults[] = { -(2 * 4 +  3 * 5 ) };          //           
 
     OpenCLHelper cl;
-    CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
-    
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
+    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
+    delete backpropWeightsImpl;
 
-    CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
-    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
-    CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
-    CLWrapper *weightChangesWrapper = cl.wrap( max(weightsSize,20), weightChanges );
-    imagesWrapper->copyToDevice();
-    resultsWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
-    kernel
-       ->in(learningMultiplier)
-       ->in( batchSize )
-        ->in( cl.getNextPower2( workgroupsize ) )
-       ->in( imagesWrapper )
-       ->in(resultsWrapper)
-       ->in( errorsWrapper )
-       ->out( weightChangesWrapper )
-        ->localFloats( upstreamBoardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( filterSizeSquared )
-        ->localFloats( upstreamBoardSizeSquared );
-
-    kernel->run_1d(globalSize, workgroupsize);
-
-    weightChangesWrapper->copyToHost();    
     for( int i = 0; i < 20; i++ ) {
-        cout << "weightchanges[" << i << "]=" << weightChanges[i] << endl;
+        cout << "weights[" << i << "]=" << weights[i] << endl;
     }
     for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weightChanges[i] ) {
+        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
             cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weightChanges[i] );
+            EXPECT_EQ( expectedResults[i], weights[i] );
         }
     }
-
-    delete kernel;
 }
 
-TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize17_filtersize1 ) {
-    const int batchSize = 1;
-    const int upstreamBoardSize = 17;
-    const int boardSize = 17;
-    const int filterSize = 1;
-    const int upstreamNumPlanes = 1;
-    const int numPlanes = 1;
-    const int filterSizeSquared = filterSize * filterSize;
-    const int boardSizeSquared = boardSize * boardSize;
-    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
-    const int resultsSize = boardSizeSquared * numPlanes * batchSize;
-    const int filtersSize = filterSizeSquared * numPlanes;
-    const int upstreamResultsSize = upstreamBoardSizeSquared * upstreamNumPlanes * batchSize;
-    const int weightsSize = upstreamNumPlanes * numPlanes * filterSizeSquared;
-    const int padZeros = 0;
-    const int biased = 0;
-
+TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1 ) {
+    LayerDimensions dim;
+    dim.setInputBoardSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setBiased( 0 ).setPadZeros( 0 );
+    int batchSize = 1;
     const float learningMultiplier = 1;
+    cout << dim << endl;
 
-    std::string options = " -D LINEAR";
-    if( biased ) {
-         options += " -D BIASED";
-    }
-    options += " -D gUpstreamBoardSize=" + toString(upstreamBoardSize);
-    options += " -D gUpstreamBoardSizeSquared=" + toString(upstreamBoardSizeSquared);
-    options += " -D gFilterSize=" + toString(filterSize);
-    options += " -D gFilterSizeSquared=" + toString(filterSizeSquared);
-    options += " -D gOutBoardSize=" + toString(boardSize);
-    options += " -D gOutBoardSizeSquared=" + toString(boardSizeSquared);
-    options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
-    options += " -D gNumOutPlanes=" + toString(numPlanes);
-    options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
-    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
-    options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
-    std::cout << "using kernel options: [" + options + "]" << std::endl;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int weightsSize = dim.filtersSize;
 
-    float *data = new float[ upstreamBoardSizeSquared ];
-    memset( data, 0, sizeof(float) * upstreamBoardSizeSquared );
+    float *data = new float[ inputSize ];
+    memset( data, 0, sizeof(float) * inputSize );
 
     data[0] = 2;
     data[1] = 3.2f;
     data[2] = 1.234f;
-    data[16 * upstreamBoardSize + 16] = 5;
+    data[16 * dim.inputBoardSize + 16] = 5;
 
-    float *errors = new float[ boardSizeSquared ];
-    memset( errors, 0, sizeof(float) * boardSizeSquared );
+    float *errors = new float[ resultsSize ];
+    memset( errors, 0, sizeof(float) * resultsSize );
 
     errors[0] = 4;
     errors[1] = -2.5f;
     errors[2] = 4.125f;
-    errors[16 * boardSize + 16] = 3;
+    errors[16 * dim.outputBoardSize + 16] = 3;
 
     float *results = new float[resultsSize];
-    float *weightChanges = new float[max(4,20)];
+    float *weights = new float[max(1000,weightsSize)];
+    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
 
     float expectedResults[] = { -( 4*2 - 3.2f * 2.5f + 1.234f * 4.125f + 3*5 ) };          // 
 
     OpenCLHelper cl;
-    CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
+    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
+    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
+    delete backpropWeightsImpl;
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-    
-    CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
-    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
-    CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
-    CLWrapper *weightChangesWrapper = cl.wrap( max(weightsSize,20), weightChanges );
-    imagesWrapper->copyToDevice();
-    resultsWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
-    kernel
-       ->in(learningMultiplier)
-       ->in( batchSize )
-        ->in( cl.getNextPower2( workgroupsize ) )
-       ->in( imagesWrapper )
-       ->in(resultsWrapper)
-       ->in( errorsWrapper )
-       ->out( weightChangesWrapper )
-        ->localFloats( upstreamBoardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( filterSizeSquared )
-        ->localFloats( upstreamBoardSizeSquared );
-
-    kernel->run_1d(globalSize, workgroupsize);
-
-    weightChangesWrapper->copyToHost();    
     for( int i = 0; i < 20; i++ ) {
-        cout << "weightchanges[" << i << "]=" << weightChanges[i] << endl;
+        cout << "weights[" << i << "]=" << weights[i] << endl;
     }
     for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weightChanges[i] ) {
+        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
             cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weightChanges[i] );
+            EXPECT_EQ( expectedResults[i], weights[i] );
         }
     }
-
-    delete kernel;
 }
 
-TEST( testbackpropweights, DISABLED_backprop_weights_2_upstreamboardsize17_filtersize1_moredata ) {
-    const int batchSize = 1;
-    const int upstreamBoardSize = 17;
-    const int boardSize = 17;
-    const int filterSize = 1;
-    const int upstreamNumPlanes = 1;
-    const int numPlanes = 1;
-    const int filterSizeSquared = filterSize * filterSize;
-    const int boardSizeSquared = boardSize * boardSize;
-    const int upstreamBoardSizeSquared = upstreamBoardSize * upstreamBoardSize;
-    const int resultsSize = boardSizeSquared * numPlanes * batchSize;
-    const int filtersSize = filterSizeSquared * numPlanes;
-    const int upstreamResultsSize = upstreamBoardSizeSquared * upstreamNumPlanes * batchSize;
-    const int weightsSize = upstreamNumPlanes * numPlanes * filterSizeSquared;
-    const int padZeros = 0;
-    const int biased = 0;
-
+TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_moredata ) {
+    LayerDimensions dim;
+    dim.setInputBoardSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setBiased( 0 ).setPadZeros( 0 );
+    int batchSize = 1;
     const float learningMultiplier = 1;
+    cout << dim << endl;
 
-    std::string options = " -D LINEAR";
-    if( biased ) {
-         options += " -D BIASED";
-    }
-    options += " -D gUpstreamBoardSize=" + toString(upstreamBoardSize);
-    options += " -D gUpstreamBoardSizeSquared=" + toString(upstreamBoardSizeSquared);
-    options += " -D gFilterSize=" + toString(filterSize);
-    options += " -D gFilterSizeSquared=" + toString(filterSizeSquared);
-    options += " -D gOutBoardSize=" + toString(boardSize);
-    options += " -D gOutBoardSizeSquared=" + toString(boardSizeSquared);
-    options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
-    options += " -D gNumOutPlanes=" + toString(numPlanes);
-    options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
-    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
-    options += " -D gUpstreamNumPlanes=" + toString(upstreamNumPlanes);
-    std::cout << "using kernel options: [" + options + "]" << std::endl;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int weightsSize = dim.filtersSize;
 
-    float *data = new float[ upstreamBoardSizeSquared ];
-    memset( data, 0, sizeof(float) * upstreamBoardSizeSquared );
-    for( int i = 0; i < upstreamBoardSizeSquared; i++ ) {
+    float *data = new float[ inputSize ];
+    memset( data, 0, sizeof(float) * inputSize );
+
+    for( int i = 0; i < square( dim.inputBoardSize ); i++ ) {
         data[i] = ( ( 1 + i ) % 20 ) / 5.3f;
     }
 
-    float *errors = new float[ boardSizeSquared ];
-    memset( errors, 0, sizeof(float) * boardSizeSquared );
-    for( int i = 0; i < boardSizeSquared; i++ ) {
+    float *errors = new float[ resultsSize ];
+    memset( errors, 0, sizeof(float) * resultsSize );
+    for( int i = 0; i < square( dim.outputBoardSize ); i++ ) {
         errors[i] = ( ( 2 + i ) % 17 ) / 4.2f;
     }
 
     float *results = new float[resultsSize];
-    float *weightChanges = new float[max(4,20)];
+    float *weights = new float[max(1000,weightsSize)];
+    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
 
     float expectedResults[1];
     expectedResults[0] = 0;
-    for ( int i = 0; i < upstreamBoardSizeSquared; i++ ) {
+    for ( int i = 0; i < square( dim.inputBoardSize ); i++ ) {
         expectedResults[0] += - data[i] * errors[i];
     }
     cout << "expectedresult: " << expectedResults[0] << endl;
 
     OpenCLHelper cl;
-    CLKernel *kernel = cl.buildKernel("../ClConvolve.cl", "backprop_floats_2", options );
-    
-    CLWrapper *imagesWrapper = cl.wrap( upstreamResultsSize, data );
-    CLWrapper *resultsWrapper = cl.wrap( resultsSize, results );
-    CLWrapper *errorsWrapper = cl.wrap( resultsSize, errors );
-    CLWrapper *weightChangesWrapper = cl.wrap( max(weightsSize,20), weightChanges );
-    imagesWrapper->copyToDevice();
-    resultsWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
+    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
+    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
+    delete backpropWeightsImpl;
 
-    int globalSize = batchSize * upstreamNumPlanes * numPlanes * upstreamBoardSizeSquared;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-    cout << " ideal globalsize: " << globalSize << endl;
-    int workgroupsize = ( ( upstreamBoardSizeSquared + 31 ) / 32 ) * 32;
-//    int getNextPower2
-    int workgroupsizepower2 = cl.getNextPower2( workgroupsize );
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "globalsize " << globalSize << " workgroupsize " << workgroupsize << " workgroupsizepower2 "
-        << workgroupsizepower2 << endl;
-
-    kernel
-       ->in(learningMultiplier)
-       ->in( batchSize )
-        ->in( workgroupsizepower2 )
-       ->in( imagesWrapper )
-       ->in(resultsWrapper)
-       ->in( errorsWrapper )
-       ->out( weightChangesWrapper )
-        ->localFloats( upstreamBoardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( boardSizeSquared )
-        ->localFloats( filterSizeSquared )
-        ->localFloats( upstreamBoardSizeSquared );
-
-    kernel->run_1d(globalSize, workgroupsize);
-
-    weightChangesWrapper->copyToHost();    
     for( int i = 0; i < 20; i++ ) {
-        cout << "weightchanges[" << i << "]=" << weightChanges[i] << endl;
+        cout << "weights[" << i << "]=" << weights[i] << endl;
     }
     for( int i = 0; i < weightsSize; i++ ) {
         if( expectedResults[i] != -999 ) {
 //            cout << "mismatch for i " << i << endl;
-            ASSERT_FLOAT_NEAR( expectedResults[i], weightChanges[i] );
+            ASSERT_FLOAT_NEAR( expectedResults[i], weights[i] );
         }
     }
-
-    delete kernel;
 }
 
