@@ -45,6 +45,9 @@ void kernel backprop_floats( const float learningRateMultiplier,
          const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges ) {
     int globalId = get_global_id(0);
+    if( globalId >= numPlanes * upstreamNumPlanes * filterSize * filterSize ) {
+        return;
+    }
 
     int filterSizeSquared = filterSize * filterSize;
 
