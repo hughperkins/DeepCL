@@ -1,19 +1,3 @@
-testbackproperrors, board28:
-
-laptop, backproperrorscpu:
-StatefulTimer readings:
-   BackpropErrorsCpu end: 2468ms
-after calcing errors 2468 ms
-
-laptop, backproperrors1:
-StatefulTimer readings:
-   BackpropErrors1 end: 502ms
-   BackpropErrors::backprop after copied to device: 4ms
-   BackpropErrors::backprop after copytohost: 3ms
-after calcing errors 509 ms
-
-====================================
-
 testbackproperrors, board19:
 
 laptop, backproperrorscpu:
@@ -35,5 +19,50 @@ StatefulTimer readings:
    BackpropErrors::backprop after copied to device: 7ms
    BackpropErrors::backprop after copytohost: 2ms
    BackpropErrors::backprop begin: 99ms
+
+aws, backproperrors1:
+StatefulTimer readings:
+   BackpropErrors1 end: 46ms
+   BackpropErrors::backprop after copied to device: 2ms
+   BackpropErrors::backprop after copytohost: 2ms
+   BackpropErrors::backprop begin: 28ms
+after calcing errors 52 ms
+
+aws, backproperrors2
+StatefulTimer readings:
+   BackpropErrors2 end: 25ms
+   BackpropErrors::backprop after copied to device: 3ms
+   BackpropErrors::backprop after copytohost: 3ms
+   BackpropErrors::backprop begin: 514ms
+after calcing errors 31 ms
+
+========================
+
+testbackproperrors, board28:
+
+laptop, backproperrorscpu:
+StatefulTimer readings:
+   BackpropErrorsCpu end: 2468ms
+after calcing errors 2468 ms
+
+laptop, backproperrors1:
+StatefulTimer readings:
+   BackpropErrors1 end: 502ms
+   BackpropErrors::backprop after copied to device: 4ms
+   BackpropErrors::backprop after copytohost: 3ms
+after calcing errors 509 ms
+
+aws, backproperrors1:
+StatefulTimer readings:
+   BackpropErrors1 end: 100ms
+   BackpropErrors::backprop after copied to device: 5ms
+   BackpropErrors::backprop 
+
+aws, backproperrors2:
+StatefulTimer readings:
+   BackpropErrors2 end: 61ms
+   BackpropErrors::backprop after copied to device: 6ms
+   BackpropErrors::backprop after copytohost: 5ms
+after calcing errors 73 ms
 
 

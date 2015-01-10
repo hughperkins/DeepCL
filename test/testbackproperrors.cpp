@@ -98,4 +98,81 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
     delete[] biasWeights;
 }
 
+TEST( testbackproperrors, comparespecific ) {
+    const int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+        .setBiased( true ).setPadZeros( false );
+
+    int weightsSize = dim.filtersSize;
+    int biasWeightsSize = dim.numFilters;
+    int resultsSize = batchSize * dim.outputCubeSize;
+    float *weights = new float[max(10000, weightsSize ) ];
+    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+    float *errors = new float[max(10000, resultsSize )];
+    memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
+    memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
+    memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
+    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
+    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
+
+//    weights[0] = 3;
+//    weights[1] = 5;
+
+//    errors[0] = 2;
+//    errors[1] = 7;
+
+    OpenCLHelper cl;
+    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 0, &cl, dim );
+    float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, weights, biasWeights, errors );
+    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 1, &cl, dim );
+    float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, weights, biasWeights, errors );
+
+    int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
+    cout << dim << endl;
+    for( int i = 0; i < 10; i++ ) {
+        cout << "results[" << i << "]=" << errorsForUpstream1[i] << " " << errorsForUpstream2[i];
+        if( i < resultsSize ) {
+            if( errorsForUpstream1[i] == errorsForUpstream2[i] ) {
+                cout << " SAME";
+            } else {
+                cout << " DIFF";
+            }
+        } else {
+            cout << "     ";
+        }
+        cout << "  || " << errorsForUpstream2[100+i] ;
+        cout << "  || " << errorsForUpstream2[200+i] ;
+        cout << "  || " << errorsForUpstream2[300+i] ;
+        cout << "  || " << errorsForUpstream2[400+i] ;
+        cout << "  || " << errorsForUpstream2[500+i] ;
+        cout << "  || " << errorsForUpstream2[600+i] ;
+        cout << "  || " << errorsForUpstream2[700+i] << endl;
+    }
+    bool same = true;
+    int errCount = 0;
+    for( int i = 0; i < errorsForUpstreamSize; i++ ) {
+        if( errorsForUpstream1[i] != errorsForUpstream2[i] ) {
+            cout << "DIFF: i " << i << " " << errorsForUpstream1[i] << " != " << errorsForUpstream2[i] << endl;
+            same = false;
+            errCount++;
+            if( errCount == 5 ) {
+                cout << " ... " << endl;
+                break;
+            }
+        }
+    }
+    EXPECT_EQ( true, same );
+
+    delete backpropErrorsImpl1;
+    delete backpropErrorsImpl2;
+
+    delete[] errorsForUpstream1;
+    delete[] errorsForUpstream2;
+    delete[] errors;
+    delete[] weights;
+    delete[] biasWeights;
+}
+
 

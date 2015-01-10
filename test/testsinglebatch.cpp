@@ -377,3 +377,65 @@ TEST( testsinglebatch, perf19 ) {
     delete net;
 }
 
+TEST( testsinglebatch, perf19_depth12 ) {
+    const int batchSize = 128;
+    const float learningRate = 0.1f;
+
+    const int boardSize = 19;
+    NeuralNet *net = NeuralNet::maker()->planes(32)->boardSize(boardSize)->instance();
+    for( int i = 0; i < 12; i++ ) {
+        net->convolutionalMaker()->numFilters(128)->filterSize(3)->relu()->padZeros()->biased()->insert();
+    }
+    net->convolutionalMaker()->numFilters(19*19)->filterSize(19)->tanh()->biased()->insert();
+    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
+    net->getLastLayer()->nextLayer = expectedValuesLayer;
+    net->layers.push_back( expectedValuesLayer );
+    net->setBatchSize(batchSize);
+
+    mt19937 random;
+    random.seed(0); // so always gives same results
+    const int inputsSize = net->getInputSizePerExample() * batchSize;
+    float *inputData = new float[ inputsSize ];
+    for( int i = 0; i < inputsSize; i++ ) {
+        inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+    const int resultsSize = net->getLastLayer()->getResultsSize();
+    float *expectedResults = new float[resultsSize];
+    for( int i = 0; i < resultsSize; i++ ) {
+        expectedResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+
+    for (int layerIndex = 1; layerIndex <= 3; layerIndex++ ) {
+        ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
+        int weightsSize = layer->getWeightsSize();
+        for( int i = 0; i < weightsSize; i++ ) {
+            layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        }
+        layer->weightsWrapper->copyToDevice();
+        int biasWeightsSize = layer->getBiasWeightsSize();
+        for( int i = 0; i < biasWeightsSize; i++ ) {
+            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        }
+    }
+
+    Timer timer;
+    for( int i = 0; i < 5; i++ ) {
+        net->learnBatch( learningRate, inputData, expectedResults );
+    }
+    timer.timeCheck("batch time");
+    StatefulTimer::dump(true);
+
+    float *results = (float*)(net->getResults());
+    Sampler::printSamples( "net->getResults()", resultsSize, (float*)results );
+
+//EXPECT_FLOAT_NEAR( -0.121662, net->getResults()[684] );
+//EXPECT_FLOAT_NEAR( 0.0783329, net->getResults()[559] );
+//EXPECT_FLOAT_NEAR( -0.0549671, net->getResults()[373] );
+//EXPECT_FLOAT_NEAR( 0.0715649, net->getResults()[960] );
+//EXPECT_FLOAT_NEAR( -0.00818501, net->getResults()[323] );
+
+    delete[] expectedResults;
+    delete[] inputData;
+    delete net;
+}
+

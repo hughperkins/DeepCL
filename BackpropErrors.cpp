@@ -15,7 +15,11 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropErrors *BackpropErrors::instance(OpenCLHelper *cl, LayerDimensions dim ) {
-    return new BackpropErrors1( cl, dim );
+    if( square( dim.inputBoardSize ) <= cl->getMaxWorkgroupSize() ) {
+        return new BackpropErrors1( cl, dim );
+    } else {
+        return new BackpropErrors1( cl, dim );
+    }
 }
 STATIC BackpropErrors *BackpropErrors::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     return new BackpropErrors2( cl, layerDimensions );
@@ -26,6 +30,9 @@ STATIC BackpropErrors *BackpropErrors::instanceSpecific( int idx, OpenCLHelper *
     }
     if( idx == 1 ) {
         return new BackpropErrors1( cl, layerDimensions );
+    }
+    if( idx == 2 ) {
+        return new BackpropErrors2( cl, layerDimensions );
     }
 }
 BackpropErrors::BackpropErrors( OpenCLHelper *cl, LayerDimensions layerDimensions ) :

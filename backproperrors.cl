@@ -7,8 +7,8 @@
 // expected defines:
 // BIASED (or not)
 
-#define getFilterBoardOffset( filter, inputPlane ) ( filter * gInputPlanes + inputPlane ) * gFilterSizeSquared
-#define getResultBoardOffset( n, filter ) ( n * gNumFilters + filter ) * gOutputBoardSizeSquared
+#define getFilterBoardOffset( filter, inputPlane ) ( ( filter * gInputPlanes + inputPlane ) * gFilterSizeSquared )
+#define getResultBoardOffset( n, filter ) ( ( n * gNumFilters + filter ) * gOutputBoardSizeSquared )
 
 // handle lower layer...
 // errors for upstream look like [n][inPlane][inRow][inCol]
@@ -113,7 +113,7 @@ void kernel calcErrorsForUpstreamCached(
 
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
-        const int filterBoardGlobalOffset =( outPlane * gNumFilters + upstreamPlane ) * gFilterSizeSquared;
+        const int filterBoardGlobalOffset =( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
         const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < pixelCopiesPerThread; i++ ) {
@@ -126,6 +126,11 @@ void kernel calcErrorsForUpstreamCached(
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
+        if( globalId == 0 ) {
+            for( int i = 0; i < gFilterSizeSquared; i++ ) {
+                errorsForUpstream[ (outPlane+1)*100 + i ] = _filterBoard[i];
+            }
+        }
         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
