@@ -435,7 +435,7 @@ TEST( testpropagate, mnist_finallayer ) {
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper cl;
-    Propagate *p1 = Propagate::instance( &cl, dim, new TanhActivation() );
+    Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new TanhActivation() );
     for( int i = 0; i < (60000+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;

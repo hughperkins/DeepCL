@@ -157,7 +157,7 @@ void go(Config config) {
 //    net->convolutionalMaker()->numFilters(32)->filterSize(5)->rel()->biased()->insert();
     for( int i = 0; i < config.numLayers; i++ ) {
 //        cout << "adding convolutional layer" << endl;
-        net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros()->insert();
+        net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
     net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->boardSize)->tanh()->biased(config.biased)->insert();
 

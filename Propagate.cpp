@@ -6,6 +6,7 @@
 #include "Propagate1.h"
 #include "Propagate2.h"
 #include "Propagate3.h"
+#include "Propagate4.h"
 #include "StatefulTimer.h"
 
 using namespace std;
@@ -29,15 +30,16 @@ STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions laye
 STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
         return new PropagateCpu( cl, layerDimensions, fn );
-    }
-    if( idx == 1 ) {
+    } else if( idx == 1 ) {
         return new Propagate1( cl, layerDimensions, fn );
-    }
-    if( idx == 2 ) {
+    } else if( idx == 2 ) {
         return new Propagate2( cl, layerDimensions, fn );
-    }
-    if( idx == 3 ) {
+    } else if( idx == 3 ) {
         return new Propagate3( cl, layerDimensions, fn );
+    } else if( idx == 4 ) {
+        return new Propagate4( cl, layerDimensions, fn );
+    } else {
+        throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for index " + toString(idx) );
     }
 }
 Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :

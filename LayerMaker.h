@@ -145,6 +145,10 @@ public:
         this->_padZeros = true;
         return this;
     }    
+    ConvolutionalMaker *padZeros( bool value ) {
+        this->_padZeros = value;
+        return this;
+    }    
     ConvolutionalMaker *biased() {
         this->_biased = true;
         return this;
