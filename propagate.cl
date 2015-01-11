@@ -645,3 +645,83 @@ void kernel convolve_imagecubes_float5( const int batchSize,
 #endif
 #endif
 
+#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef ACTIVATION_FUNCTION // protect against not defined
+// workgroupid [n][outputplane]
+// localid: [filterrow][filtercol]
+//  each thread iterates over: [inplane]
+// this kernel assumes:
+//   padzeros == 0 (mandatory)
+//   filtersize == inputboardsize (mandatory)
+//   filtersize >> outputboardsize
+#if gFilterSize == gInputBoardSize && gPadZeros == 0
+void kernel propagate_filter_matches_inboard( const int batchSize,
+      global const float *images, global const float *filters, 
+        #ifdef BIASED
+            global const float*biases, 
+        #endif
+    global float *results,
+    local float *_upstreamBoard, local float *_filterBoard ) {
+    const int globalId = get_global_id(0);
+
+    const int workgroupId = get_group_id(0);
+    const int workgroupSize = get_local_size(0);
+    const int n = workgroupId / gNumOutPlanes;
+    const int outPlane = workgroupId % gNumOutPlanes;
+
+    const int localId = get_local_id(0);
+    const int filterRow = localId / gFilterSize;
+    const int filterCol = localId % gFilterSize;
+
+//    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
+//    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
+//    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
+//    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
+
+//    const int numUpstreamsPerThread = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+//    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
+
+    float sum = 0;
+    for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
+        int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        barrier(CLK_LOCAL_MEM_FENCE);
+        for( int i = 0; i < numUpstreamsPerThread; i++ ) {
+            int thisOffset = workgroupSize * i + localId;
+            if( thisOffset < gUpstreamBoardSizeSquared ) {
+                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+            }
+        }
+        const int filterGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;
+        for( int i = 0; i < numFilterPixelsPerThread; i++ ) {
+            int thisOffset = workgroupSize * i + localId;
+            if( thisOffset < gFilterSizeSquared ) {
+                _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];
+            }
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        if( localId < gOutBoardSizeSquared ) {
+            for( int u = minu; u <= maxu; u++ ) {
+                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+                int inputboardrowoffset = inputRow * gUpstreamBoardSize;
+                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+                for( int v = minv; v <= maxv; v++ ) {
+                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                }
+            }
+        }
+    }
+    #ifdef BIASED
+        sum += biases[outPlane];
+    #endif
+    // results are organized like [imageid][filterid][row][col]
+    int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;
+    if( localId < gOutBoardSizeSquared ) {
+        results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+//        results[resultIndex ] = 123;
+    }
+}
+#endif
+#endif
+#endif
+

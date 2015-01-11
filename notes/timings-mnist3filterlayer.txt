@@ -1,0 +1,17 @@
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 6094ms
+   layer1 Propagate3::propagate after call propagate: 937ms
+   layer2 BackpropErrors2 end: 27173ms
+   layer2 BackpropWeightsScratchAndBias end: 146250ms
+   layer2 Propagate3::propagate after call propagate: 25313ms
+   layer3 BackpropErrors2 end: 27183ms
+   layer3 BackpropWeightsScratchAndBias end: 146250ms
+   layer3 Propagate3::propagate after call propagate: 25313ms
+   layer4 BackpropErrors2 end: 1875ms
+   layer4 BackpropWeightsScratchAndBias end: 2343ms
+   layer4 Propagate1::propagate after call propagate: 13602ms
+       loss L: 26210.3
+after epoch 0 424964 ms
+train accuracy: 48430/60000 80.7167%
+test overall: 8914/10000 89.14%
+

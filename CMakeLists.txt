@@ -48,7 +48,7 @@ endif(PYTHON_AVAILABLE)
 #    git submodule update --init --recursive
 #)
 
-set( UNITTEST_SOURCES unittests test/testsimpleconvolve.cpp test/testfilehelper.cpp test/testMnistLoader.cpp
+set( UNITTEST_SOURCES unittests test/testpropagate.cpp test/testfilehelper.cpp test/testMnistLoader.cpp
  test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
 test/testbackprop.cpp test/testbackproperrors.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
 test/testbackpropweights.cpp )

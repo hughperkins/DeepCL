@@ -15,7 +15,7 @@ using namespace std;
 
 #include "test/gtest_supp.h"
 
-TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
+TEST( testpropagate, boardsize2_nopadzeros ) {
     int batchSize = 2;
     int numInPlanes = 1; int boardSize = 2;
     int numOutPlanes = 2; int filterWidth = 2;
@@ -53,7 +53,7 @@ TEST( testsimpleconvolve, boardsize2_nopadzeros ) {
     delete[] results;
 }
 
-TEST( testsimpleconvolve, boardsize2_padzeros ) {
+TEST( testpropagate, boardsize2_padzeros ) {
     int batchSize = 2;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -142,7 +142,7 @@ TEST( testsimpleconvolve, boardsize2_padzeros ) {
     delete[] results;
 }
 
-TEST( testsimpleconvolve, boardsize3 ) {
+TEST( testpropagate, boardsize3 ) {
     int batchSize = 5;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -203,7 +203,7 @@ TEST( testsimpleconvolve, boardsize3 ) {
     delete[] results;
 }
 
-TEST( testsimpleconvolve, test2 ) {
+TEST( testpropagate, test2 ) {
     int batchSize = 2;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -268,7 +268,7 @@ TEST( testsimpleconvolve, test2 ) {
     cout << "test2 ok" << endl;
 }
 
-TEST( testsimpleconvolve, test3 ) {
+TEST( testpropagate, test3 ) {
     int batchSize = 4;
     int numInPlanes = 2;
     int numOutPlanes = 2;
@@ -309,7 +309,7 @@ TEST( testsimpleconvolve, test3 ) {
    }
 }
 
-TEST( testsimpleconvolve, boardsize19 ) {
+TEST( testpropagate, boardsize19 ) {
     int batchSize = 128;
     int numInPlanes = 16;
     int numOutPlanes = 16;
@@ -344,7 +344,7 @@ TEST( testsimpleconvolve, boardsize19 ) {
     delete propagateImpl;
 }
 
-TEST( testsimpleconvolve, DISABLED_dimensions_from_broken_mnist_layer_1 ) {
+TEST( testpropagate, DISABLED_dimensions_from_broken_mnist_layer_1 ) {
     int batchSize = 128;
     int numInPlanes = 1;
     int numOutPlanes = 14;
@@ -371,7 +371,7 @@ TEST( testsimpleconvolve, DISABLED_dimensions_from_broken_mnist_layer_1 ) {
 //        inputs, filters, biasFilters, new TanhActivation() );        
 }
 
-TEST( testsimpleconvolve, DISABLED_dimensions_from_broken_mnist_layer_2 ) {
+TEST( testpropagate, DISABLED_dimensions_from_broken_mnist_layer_2 ) {
     int batchSize = 128;
     int numInPlanes = 14;
     int numOutPlanes = 10;
@@ -398,7 +398,36 @@ TEST( testsimpleconvolve, DISABLED_dimensions_from_broken_mnist_layer_2 ) {
 //        inputs, filters, biasFilters, new TanhActivation() );        
 }
 
-TEST( testsimpleconvolve, comparespecific ) {
+TEST( testpropagate, specificperf ) {
+    float *inputs = new float[ 10000 ];
+    float *filters = new float[10000 ];
+    float *biasFilters = new float[10000];
+
+    memset( inputs, 0, sizeof(float) * 10000 );
+    memset( filters, 0, sizeof(float) * 10000 );
+    memset( biasFilters, 0, sizeof(float) * 10000 );
+
+    WeightRandomizer::randomize( inputs, 10000, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, 10000, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, 10000, -0.1f, 0.1f );
+
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 10 ).setFilterSize( 28 )
+        .setPadZeros( false ).setBiased( true );    
+
+    OpenCLHelper cl;
+    Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new TanhActivation() );
+    for( int i = 0; i < 40; i++ ) {
+        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+        delete[] results1;
+    }
+    StatefulTimer::dump(true);
+
+    delete p1;
+}
+
+TEST( testpropagate, comparespecific ) {
     OpenCLHelper cl;
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];
@@ -462,7 +491,7 @@ TEST( testsimpleconvolve, comparespecific ) {
     delete p2;
 }
 
-TEST( testsimpleconvolve, compare ) {
+TEST( testpropagate, compare ) {
     OpenCLHelper cl;
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];

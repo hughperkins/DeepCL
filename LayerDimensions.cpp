@@ -35,6 +35,7 @@ string LayerDimensions::buildOptionsString() {
     options += " -D gNumFilters=" + toString(numFilters);
     options += " -D gOutputPlanes=" + toString(numFilters);
     options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
+    options += " -D gEven=" + toString(filterSize % 2 == 0 ? 1 : 0);
     options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
     options += " -D gInputPlanes=" + toString(inputPlanes);
     return options;
