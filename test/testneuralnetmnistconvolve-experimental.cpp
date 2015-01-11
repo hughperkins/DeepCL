@@ -88,6 +88,7 @@ public:
     int numEpochs = 20;
     int numFilters = 16;
     int numLayers = 1;
+    int padZeros = 0;
     int filterSize = 5;
     int restartable = 0;
     string restartableFilename = "weights.dat";
@@ -243,6 +244,7 @@ int main( int argc, char *argv[] ) {
         cout << "    numfilters=[number filters] (" << config.numFilters << ")" << endl;
         cout << "    filtersize=[filter size] (" << config.filterSize << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
+        cout << "    padzeros=[0|1] (" << config.padZeros << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
@@ -265,10 +267,11 @@ int main( int argc, char *argv[] ) {
            if( key == "biased" ) config.biased = atoi(value);
            if( key == "numfilters" ) config.numFilters = atoi(value);
            if( key == "numlayers" ) config.numLayers = atoi(value);
+           if( key == "padzeros" ) config.padZeros = atoi(value);
            if( key == "filtersize" ) config.filterSize = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);
-           if( key == "restartableFilename" ) config.restartableFilename = value;
+           if( key == "restartablefilename" ) config.restartableFilename = value;
        }
     }
     go( config );

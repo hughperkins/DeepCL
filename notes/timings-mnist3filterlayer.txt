@@ -1,4 +1,4 @@
-aws, numlayers=2 numfilters=32 (padzeros=1) 
+aws, numlayers=2 numfilters=32 padzeros=1
 StatefulTimer readings:
    layer1 BackpropWeightsScratchAndBias end: 6094ms
    layer1 Propagate3::propagate after call propagate: 937ms
@@ -20,7 +20,7 @@ test overall: 8914/10000 89.14%
 
 numtrain=1024
 
-aws, numlayers=2 numfilters=32 (padzeros=1) , propagate3, kernel5
+aws, numlayers=2 numfilters=32 padzeros=1 propagate3, kernel5
 StatefulTimer readings:
    layer1 BackpropWeightsScratchAndBias end: 104ms
    layer1 Propagate3::propagate after call propagate: 16ms

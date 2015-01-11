@@ -1,4 +1,4 @@
-aws, numfilters=32 numlayers=2: (padzeros=1)
+aws, numfilters=32 numlayers=2 padzeros=1: 
 StatefulTimer readings:
    layer1 BackpropWeightsScratchAndBias end: 6094ms
    layer1 Propagate3::propagate after call propagate: 938ms
