@@ -25,7 +25,7 @@ STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, Act
     }
 }
 STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
-    return new Propagate2( cl, layerDimensions, fn );
+    return new Propagate3( cl, layerDimensions, fn );
 }
 STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
