@@ -1,15 +1,28 @@
-aws, numfilters=32 numlayers=2:
+aws, numfilters=32 numlayers=2: (padzeros=1)
 StatefulTimer readings:
    layer1 BackpropWeightsScratchAndBias end: 6094ms
-   layer1 Propagate3::propagate after call propagate: 1093ms
-   layer2 BackpropErrors2 end: 27183ms
-   layer2 BackpropWeightsScratchAndBias end: 146253ms
-   layer2 Propagate3::propagate after call propagate: 29531ms
+   layer1 Propagate3::propagate after call propagate: 938ms
+   layer2 BackpropErrors2 end: 27182ms
+   layer2 BackpropWeightsScratchAndBias end: 146250ms
+   layer2 Propagate3::propagate after call propagate: 25313ms
    layer3 BackpropErrors2 end: 1875ms
    layer3 BackpropWeightsScratchAndBias end: 2343ms
-   layer3 Propagate1::propagate after call propagate: 15873ms
-       loss L: 13359.1
-after epoch 2 225477 ms
+   layer3 Propagate1::propagate after call propagate: 13602ms
+       loss L: 18924.2
+after epoch 0 225495 ms
+
+numtrain=1024:
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 104ms
+   layer1 Propagate3::propagate after call propagate: 16ms
+   layer2 BackpropErrors2 end: 464ms
+   layer2 BackpropWeightsScratchAndBias end: 2496ms
+   layer2 Propagate3::propagate after call propagate: 432ms
+   layer3 BackpropErrors2 end: 32ms
+   layer3 BackpropWeightsScratchAndBias end: 40ms
+   layer3 Propagate1::propagate after call propagate: 233ms
+       loss L: 1653.29
+after epoch 0 3849 ms
 
 
 

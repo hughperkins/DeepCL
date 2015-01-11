@@ -111,4 +111,14 @@ StatefulTimer readings:
        loss L: 9145.82
 after epoch 2 26090 ms
 
+numfilters=32 numlayers=1 numtrain=1024, aws:
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 104ms
+   layer1 Propagate3::propagate after call propagate: 172ms
+   layer2 BackpropErrors2 end: 32ms
+   layer2 BackpropWeightsScratchAndBias end: 40ms
+   layer2 Propagate1::propagate after call propagate: 2504ms
+       loss L: 1610.87
+after epoch 1 443 ms
+
 

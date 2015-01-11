@@ -41,7 +41,7 @@ VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int globalSize = batchSize * dim.outputCubeSize;
     int workgroupsize = std::min( globalSize, cl->getMaxWorkgroupSize() );
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-    cout << "propagate1 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "propagate1 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
 
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
