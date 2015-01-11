@@ -29,22 +29,32 @@ testpropagate, mnist_:
 ./unittests --gtest_filter=testpropagate.mnist*
 
 aws:
-[ RUN      ] testpropagate.mnist_finallayer
-Segmentation fault (core dumped)
-[ RUN      ] testpropagate.mnist_intlayers_1024ex
-Segmentation fault (core dumped
 [ RUN      ] testpropagate.mnist_firstconvlayer
 StatefulTimer readings:
    Propagate3::propagate after call propagate: 938ms
-   Propagate::propagate after copytohost: 1423ms
-[       OK ] testpropagate.mnist_firstconvlayer (3210 ms)
-
-
-laptop:
+   Propagate::propagate after copytohost: 1410ms
+   Propagate::propagate begin: 21ms
+[       OK ] testpropagate.mnist_firstconvlayer (2858 ms)
+[ RUN      ] testpropagate.mnist_intlayers_1024ex
+StatefulTimer readings:
+   Propagate3::propagate after call propagate: 464ms
+   Propagate::propagate after copied to device: 40ms
+   Propagate::propagate after copytohost: 44ms
+   Propagate::propagate begin: 41ms
+[       OK ] testpropagate.mnist_intlayers_1024ex (610 ms)
 [ RUN      ] testpropagate.mnist_finallayer
 StatefulTimer readings:
-   Propagate1::propagate after call propagate: 6574ms
-[       OK ] testpropagate.mnist_finallayer (6973 ms)
+   Propagate1::propagate after call propagate: 15488ms
+   Propagate::propagate after copied to device: 1416ms
+[       OK ] testpropagate.mnist_finallayer (17970 ms)
+
+laptop:
+[ RUN      ] testpropagate.mnist_firstconvlayer
+StatefulTimer readings:
+   Propagate1::propagate after call propagate: 11261ms
+   Propagate::propagate after copytohost: 487ms
+   Propagate::propagate begin: 112ms
+[       OK ] testpropagate.mnist_firstconvlayer (12318 ms)
 [ RUN      ] testpropagate.mnist_intlayers_1024ex
 StatefulTimer readings:
    Propagate1::propagate after call propagate: 4403ms
@@ -52,11 +62,9 @@ StatefulTimer readings:
    Propagate::propagate after copytohost: 37ms
    Propagate::propagate begin: 111ms
 [       OK ] testpropagate.mnist_intlayers_1024ex (4574 ms)
-[ RUN      ] testpropagate.mnist_firstconvlayer
+[ RUN      ] testpropagate.mnist_finallayer
 StatefulTimer readings:
-   Propagate1::propagate after call propagate: 11261ms
-   Propagate::propagate after copytohost: 487ms
-   Propagate::propagate begin: 112ms
-[       OK ] testpropagate.mnist_firstconvlayer (12318 ms)
+   Propagate1::propagate after call propagate: 6574ms
+[       OK ] testpropagate.mnist_finallayer (6973 ms)
 
 
