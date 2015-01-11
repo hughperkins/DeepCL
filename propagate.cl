@@ -480,7 +480,7 @@ void kernel propagate_2_by_outplane( const int batchSize,
 #endif
 
 
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutputBoardSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [imageid][outplane]
 // local id organized like: [outrow][outcol]
@@ -503,21 +503,21 @@ void kernel propagate3_by_n_outplane( const int batchSize,
 
     const int workgroupId = get_group_id(0);
     const int workgroupSize = get_local_size(0);
-    const int n = workgroupId / gNumOutPlanes;
-    const int outPlane = workgroupId % gNumOutPlanes;
+    const int n = workgroupId / gNumFilters;
+    const int outPlane = workgroupId % gNumFilters;
 
     const int localId = get_local_id(0);
-    const int outputRow = localId / gOutBoardSize;
-    const int outputCol = localId % gOutBoardSize;
+    const int outputRow = localId / gOutputBoardSize;
+    const int outputCol = localId % gOutputBoardSize;
 
     const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
+    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
     const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
+    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
 
-    const int numUpstreamsPerThread = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
-    const int filterCubeLength = gUpstreamNumPlanes * gFilterSizeSquared;
+    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
     const int filterCubeGlobalOffset = outPlane * filterCubeLength;
     const int numPixelsPerThread = ( filterCubeLength + workgroupSize - 1 ) / workgroupSize;
     for( int i = 0; i < numPixelsPerThread; i++ ) {
@@ -529,27 +529,26 @@ void kernel propagate3_by_n_outplane( const int batchSize,
     // dont need a barrier, since we'll just run behind the barrier from the upstream board download
 
     float sum = 0;
-    for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
-        int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
+        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numUpstreamsPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gUpstreamBoardSizeSquared ) {
+            if( thisOffset < gInputBoardSizeSquared ) {
                 _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
-        if( localId >= gOutBoardSizeSquared ) {
-            continue;
-        }
-        for( int u = minu; u <= maxu; u++ ) {
-            int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
-            int inputboardrowoffset = inputRow * gUpstreamBoardSize;
-            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-            for( int v = minv; v <= maxv; v++ ) {
-                int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
-                sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+        if( localId < gOutputBoardSizeSquared ) {
+            for( int u = minu; u <= maxu; u++ ) {
+                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+                int inputboardrowoffset = inputRow * gInputBoardSize;
+                int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+                for( int v = minv; v <= maxv; v++ ) {
+                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                }
             }
         }
     }
@@ -557,8 +556,8 @@ void kernel propagate3_by_n_outplane( const int batchSize,
         sum += biases[outPlane];
     #endif
     // results are organized like [imageid][filterid][row][col]
-    int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;
-    if( localId < gOutBoardSizeSquared ) {
+    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
+    if( localId < gOutputBoardSizeSquared ) {
         results[resultIndex ] = ACTIVATION_FUNCTION(sum);
     }
 
