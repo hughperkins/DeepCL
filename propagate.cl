@@ -329,10 +329,6 @@ global const float*biases,
     int exampleId = outputBoard2Id / numFilters;
     int filterId = outputBoard2Id % numFilters;
 
-    if( exampleId >= numExamples ) {
-        return;
-    }
-
     int inputCubeOffset = exampleId * numInputPlanes * inputBoardSizeSquared;
     int filterCubeOffset = filterId * numInputPlanes * filterSizeSquared;
 
@@ -361,7 +357,9 @@ global const float*biases,
             int n = minn;
             while( n <= maxn ) {
                 int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
-                sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
+                if( exampleId < numExamples ) {
+                    sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
+                }
 //                probe += 10000 * pown(100, inputPlane) *( inputboardrowoffset + inputCol );
             //    probe += pown(100, inputPlane) *( images[inputboardrowoffset + inputCol] );
                 //probe += pown(100, inputPlane) *( filterrowoffset + n );
@@ -378,10 +376,12 @@ global const float*biases,
     }
 //     probe = exampleId * 100 + filterCubeOffset;
 
-#ifdef BIASED
-    sum += biases[filterId];
-#endif
-    results[globalId] = ACTIVATION_FUNCTION(sum);
+    if( exampleId < numExamples ) {
+    #ifdef BIASED
+        sum += biases[filterId];
+    #endif
+        results[globalId] = ACTIVATION_FUNCTION(sum);
+    }
 
 //    results[globalId] = globalId;
 //    results[0] = 1234.0;

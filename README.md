@@ -166,7 +166,7 @@ make testneuralnetconvolve-experimental
 
 | Number filters | Filter size | Number filter layers | Number epochs | Epoch time | Test accuracy | options |
 |----------------|--------------|----------------------|----------------|---------------|-----------|--------|
-|32             | 5            | 1                    | 12          | 17 seconds      |97.3+/-0.2% |  numfilters=32 |
+|32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |  numfilters=32 |
 |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |  numfilters=32 numlayers=2 numepochs=50 learningrate=0.02 |
 
 Unit-testing

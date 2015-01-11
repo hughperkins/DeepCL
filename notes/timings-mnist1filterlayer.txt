@@ -96,6 +96,16 @@ train overall: 56677/60000 94.4617%
 test overall: 9462/10000 94.62%
 after tests 13591 ms
 
+aws, after bunch of factorization
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 4219ms
+   layer1 Propagate3::propagate after call propagate: 547ms
+   layer2 BackpropErrors2 end: 938ms
+   layer2 BackpropWeightsScratchAndBias end: 1406ms
+   layer2 Propagate1::propagate after call propagate: 11494ms
+       loss L: 7926.21
+after epoch 6 18260 ms
+
 -------------------
 
 padzeros=1

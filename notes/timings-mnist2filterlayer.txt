@@ -1,3 +1,21 @@
+padzeros=0
+
+aws
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 4219ms
+   layer1 Propagate3::propagate after call propagate: 469ms
+   layer1 backproperrors(): updated weights, layer 1: 1ms
+   layer2 BackpropErrors2 end: 16591ms
+   layer2 BackpropWeightsScratchAndBias end: 45937ms
+   layer2 Propagate3::propagate after call propagate: 9843ms
+   layer3 BackpropErrors2 end: 470ms
+   layer3 BackpropWeightsScratchAndBias end: 937ms
+   layer3 Propagate1::propagate after call propagate: 7035ms
+       loss L: 17672.9
+after epoch 0 87370 ms
+
+------------------------------
+
 aws, numfilters=32 numlayers=2 padzeros=1: 
 StatefulTimer readings:
    layer1 BackpropWeightsScratchAndBias end: 6094ms
