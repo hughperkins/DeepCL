@@ -24,5 +24,39 @@ StatefulTimer readings:
        loss L: 1653.29
 after epoch 0 3849 ms
 
+--------------
+testpropagate, mnist_:
+./unittests --gtest_filter=testpropagate.mnist*
+
+aws:
+[ RUN      ] testpropagate.mnist_finallayer
+Segmentation fault (core dumped)
+[ RUN      ] testpropagate.mnist_intlayers_1024ex
+Segmentation fault (core dumped
+[ RUN      ] testpropagate.mnist_firstconvlayer
+StatefulTimer readings:
+   Propagate3::propagate after call propagate: 938ms
+   Propagate::propagate after copytohost: 1423ms
+[       OK ] testpropagate.mnist_firstconvlayer (3210 ms)
+
+
+laptop:
+[ RUN      ] testpropagate.mnist_finallayer
+StatefulTimer readings:
+   Propagate1::propagate after call propagate: 6574ms
+[       OK ] testpropagate.mnist_finallayer (6973 ms)
+[ RUN      ] testpropagate.mnist_intlayers_1024ex
+StatefulTimer readings:
+   Propagate1::propagate after call propagate: 4403ms
+   Propagate::propagate after copied to device: 12ms
+   Propagate::propagate after copytohost: 37ms
+   Propagate::propagate begin: 111ms
+[       OK ] testpropagate.mnist_intlayers_1024ex (4574 ms)
+[ RUN      ] testpropagate.mnist_firstconvlayer
+StatefulTimer readings:
+   Propagate1::propagate after call propagate: 11261ms
+   Propagate::propagate after copytohost: 487ms
+   Propagate::propagate begin: 112ms
+[       OK ] testpropagate.mnist_firstconvlayer (12318 ms)
 
 

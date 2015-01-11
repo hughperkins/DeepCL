@@ -399,22 +399,28 @@ TEST( testpropagate, DISABLED_dimensions_from_broken_mnist_layer_2 ) {
 }
 
 TEST( testpropagate, mnist_finallayer ) {
-    float *inputs = new float[ 10000 ];
-    float *filters = new float[10000 ];
-    float *biasFilters = new float[10000];
-
-    memset( inputs, 0, sizeof(float) * 10000 );
-    memset( filters, 0, sizeof(float) * 10000 );
-    memset( biasFilters, 0, sizeof(float) * 10000 );
-
-    WeightRandomizer::randomize( inputs, 10000, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, 10000, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, 10000, -0.1f, 0.1f );
-
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 10 ).setFilterSize( 28 )
         .setPadZeros( false ).setBiased( true );    
+
+    int inputsSize = batchSize * dim.inputCubeSize;
+    int filtersSize = dim.filtersSize;
+    int biasSize = dim.numFilters;
+    int inputsAllocated = std::max( inputsSize, 10000 );
+    int filtersAllocated = std::max( filtersSize, 10000 );
+    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    float *inputs = new float[ inputsAllocated ];
+    float *filters = new float[ filtersAllocated ];
+    float *biasFilters = new float[ biasFiltersAllocated ];
+
+    memset( inputs, 0, sizeof(float) * inputsAllocated );
+    memset( filters, 0, sizeof(float) * filtersAllocated );
+    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
+
+    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper cl;
     Propagate *p1 = Propagate::instance( &cl, dim, new TanhActivation() );
@@ -428,23 +434,29 @@ TEST( testpropagate, mnist_finallayer ) {
 }
 
 TEST( testpropagate, mnist_intlayers_1024ex ) {
-    float *inputs = new float[ 10000 ];
-    float *filters = new float[10000 ];
-    float *biasFilters = new float[10000];
-
-    memset( inputs, 0, sizeof(float) * 10000 );
-    memset( filters, 0, sizeof(float) * 10000 );
-    memset( biasFilters, 0, sizeof(float) * 10000 );
-
-    WeightRandomizer::randomize( inputs, 10000, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, 10000, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, 10000, -0.1f, 0.1f );
-
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     ActivationFunction *fn = new ReluActivation();
+
+    int inputsSize = batchSize * dim.inputCubeSize;
+    int filtersSize = dim.filtersSize;
+    int biasSize = dim.numFilters;
+    int inputsAllocated = std::max( inputsSize, 10000 );
+    int filtersAllocated = std::max( filtersSize, 10000 );
+    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    float *inputs = new float[ inputsAllocated ];
+    float *filters = new float[ filtersAllocated ];
+    float *biasFilters = new float[ biasFiltersAllocated ];
+
+    memset( inputs, 0, sizeof(float) * inputsAllocated );
+    memset( filters, 0, sizeof(float) * filtersAllocated );
+    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
+
+    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper cl;
     Propagate *p1 = Propagate::instance( &cl, dim, fn );
