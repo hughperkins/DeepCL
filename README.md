@@ -127,9 +127,9 @@ Linking
 
 You will need:
 - libClConvolve.so
-- ClConvolve.cl
+- *.cl files
 
-ClConvolve.cl should be in the current working directory at the time that you call into any clconvolve methods.
+The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.
 
 Sample/test
 ===========
