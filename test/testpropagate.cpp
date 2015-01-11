@@ -398,7 +398,7 @@ TEST( testpropagate, DISABLED_dimensions_from_broken_mnist_layer_2 ) {
 //        inputs, filters, biasFilters, new TanhActivation() );        
 }
 
-TEST( testpropagate, specificperf ) {
+TEST( testpropagate, mnist_finallayer ) {
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];
     float *biasFilters = new float[10000];
@@ -417,8 +417,68 @@ TEST( testpropagate, specificperf ) {
         .setPadZeros( false ).setBiased( true );    
 
     OpenCLHelper cl;
-    Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new TanhActivation() );
-    for( int i = 0; i < 40; i++ ) {
+    Propagate *p1 = Propagate::instance( &cl, dim, new TanhActivation() );
+    for( int i = 0; i < (60000+batchSize - 1) / batchSize; i++ ) {
+        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+        delete[] results1;
+    }
+    StatefulTimer::dump(true);
+
+    delete p1;
+}
+
+TEST( testpropagate, mnist_intlayers_1024ex ) {
+    float *inputs = new float[ 10000 ];
+    float *filters = new float[10000 ];
+    float *biasFilters = new float[10000];
+
+    memset( inputs, 0, sizeof(float) * 10000 );
+    memset( filters, 0, sizeof(float) * 10000 );
+    memset( biasFilters, 0, sizeof(float) * 10000 );
+
+    WeightRandomizer::randomize( inputs, 10000, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, 10000, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, 10000, -0.1f, 0.1f );
+
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    ActivationFunction *fn = new ReluActivation();
+
+    OpenCLHelper cl;
+    Propagate *p1 = Propagate::instance( &cl, dim, fn );
+    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
+        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+        delete[] results1;
+    }
+    StatefulTimer::dump(true);
+
+    delete p1;
+}
+
+TEST( testpropagate, mnist_firstconvlayer ) {
+    float *inputs = new float[ 10000 ];
+    float *filters = new float[10000 ];
+    float *biasFilters = new float[10000];
+
+    memset( inputs, 0, sizeof(float) * 10000 );
+    memset( filters, 0, sizeof(float) * 10000 );
+    memset( biasFilters, 0, sizeof(float) * 10000 );
+
+    WeightRandomizer::randomize( inputs, 10000, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, 10000, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, 10000, -0.1f, 0.1f );
+
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    ActivationFunction *fn = new ReluActivation();
+
+    OpenCLHelper cl;
+    Propagate *p1 = Propagate::instance( &cl, dim, fn );
+    for( int i = 0; i < (60000+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
     }

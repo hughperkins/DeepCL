@@ -102,23 +102,55 @@ padzeros=1
 
 aws
 StatefulTimer readings:
-   Propagate1::propagate after call propagate: 15873ms
-   Propagate3::propagate after call propagate: 1093ms
-   after batch calc training num right: 1ms
    layer1 BackpropWeightsScratchAndBias end: 6094ms
+   layer1 Propagate3::propagate after call propagate: 937ms
    layer2 BackpropErrors2 end: 1875ms
    layer2 BackpropWeightsScratchAndBias end: 2343ms
-       loss L: 9145.82
-after epoch 2 26090 ms
+   layer2 Propagate1::propagate after call propagate: 13602ms
+       loss L: 24063.3
+after epoch 0 25953 ms
+
+aws
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 6094ms
+   layer1 Propagate3::propagate after call propagate: 937ms
+   layer2 BackpropErrors2 end: 1875ms
+   layer2 BackpropWeightsScratchAndBias end: 2343ms
+   layer2 Propagate1::propagate after call propagate: 13602ms
+       loss L: 22069.9
+after epoch 0 25992 ms
+
+laptop:
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 70318ms
+   layer1 Propagate1::propagate after call propagate: 11276ms
+   layer2 BackpropErrors1 end: 10315ms
+   layer2 BackpropWeightsNaive end: 12449ms
+   layer2 Propagate1::propagate after call propagate: 6557ms
+       loss L: -nan
+after epoch 0 111976 ms
+
+---------------------------
+padzeros=1, numtrain=1024
 
 numfilters=32 numlayers=1 numtrain=1024, aws:
 StatefulTimer readings:
    layer1 BackpropWeightsScratchAndBias end: 104ms
-   layer1 Propagate3::propagate after call propagate: 172ms
+   layer1 Propagate3::propagate after call propagate: 16ms
    layer2 BackpropErrors2 end: 32ms
    layer2 BackpropWeightsScratchAndBias end: 40ms
-   layer2 Propagate1::propagate after call propagate: 2504ms
-       loss L: 1610.87
-after epoch 1 443 ms
+   layer2 Propagate1::propagate after call propagate: 233ms
+       loss L: 4149.71
+after epoch 0 444 ms
+
+laptop:
+StatefulTimer readings:
+   layer1 BackpropWeightsScratchAndBias end: 1200ms
+   layer1 Propagate1::propagate after call propagate: 195ms
+   layer2 BackpropErrors1 end: 179ms
+   layer2 BackpropWeightsNaive end: 211ms
+   layer2 Propagate1::propagate after call propagate: 112ms
+       loss L: -nan
+after epoch 0 1917 ms
 
 
