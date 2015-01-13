@@ -4,6 +4,7 @@ using namespace std;
 #include "Timer.h"
 #include "stringhelper.h"
 #include "NeuralNet.h"
+#include "AccuracyHelper.h"
 
 int main(int argc, char *argv[] ) {
     int size;
@@ -12,6 +13,7 @@ int main(int argc, char *argv[] ) {
     timer.timeCheck("read file, size " + toString(size/1024/1024) + "MB");
 //    int i = 0;
     int pos = 0;
+    const float learningRate = 0.01f;
     const int batchSize = 128;
     const int boardSize = 19;
     const int boardSizeSquared = boardSize * boardSize;
@@ -27,18 +29,25 @@ int main(int argc, char *argv[] ) {
         net->convolutionalMaker()->numFilters(128)->filterSize(3)->relu()->biased()->padZeros()->insert();
     }
     net->convolutionalMaker()->numFilters(19*19)->filterSize(net->layers[net->layers.size()-1]->boardSize)->tanh()->biased()->insert();
-    net->
     net->setBatchSize(batchSize);
+    int *labels = new int[ boardSizeSquared ];
+    float *expectedValues = new float[ batchSize * boardSizeSquared ];
     while( pos < size ) {
         int count = 0;
+        for( int i = 0; i < batchSize * boardSizeSquared; i++ ) {
+            expectedValues[i] = -0.5f;
+        }
         while( count < batchSize ) {
             //cout << kgsData[pos];
             //if( count % 80 == 0 && count != 0 ) cout << endl;
             pos += 19*19 + 2 + 2;
             int moveRow = kgsData[pos + 2];
             int moveCol = kgsData[pos + 3];
-            //cout << moveRow << "," << moveCol << endl;
             int label = moveRow * 19 + moveCol;
+            labels[ count ] = label;
+            expectedValues[ count * boardSizeSquared + label ] = 0.5f;
+            //cout << moveRow << "," << moveCol << endl;
+//            int label = moveRow * 19 + moveCol;
             for( int inputPlane = 0; inputPlane < inputPlanes; inputPlane++ ) {
                 int boardOffset = ( count * inputPlanes + inputPlane ) * boardSizeSquared;
                 for( int i = 0; i < boardSizeSquared; i++ ) {
@@ -47,6 +56,15 @@ int main(int argc, char *argv[] ) {
             }
             count++;
         }
+        // use this batch first as a test set, to test accuracy
+        net->propagate( images );
+        float const*resultsTest = net->getResults();
+        int numRight = AccuracyHelper::calcNumRight( batchSize, 19 * 19, labels, resultsTest );
+        cout << "test accuracy " << numRight << "/" << batchSize << " " << ( numRight * 100.0f / batchSize ) << "%" << endl;
+        // now train on it
+        net->learnBatch( learningRate, images, expectedValues );
+        float loss = net->calcLoss( expectedValues );
+        cout << "loss: " << loss << endl;
         cout << ".";
         if( nBatch > 0 && nBatch % 70 == 0 ) cout << nBatch << endl;
         nBatch++;
