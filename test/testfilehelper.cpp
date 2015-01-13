@@ -23,6 +23,7 @@ TEST( testfilehelper, testfilehelper ) {
     for( int i = 0; i < N; i++ ) {
         assertEquals( somefloats[i], newfloats[i], 0.0001 );
     }  
+    EXPECT_EQ( N * sizeof(float), FileHelper::getFilesize( "foo.dat" ) );
 }
 
 TEST( testfilehelper, testreadchunk ) {
