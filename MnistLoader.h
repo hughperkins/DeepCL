@@ -17,8 +17,8 @@
 class MnistLoader {
 public:
     static int **loadImage( string dir, string set, int idx, int *p_size ) {
-        int imagesFilesize = 0;
-        int labelsFilesize = 0;
+        long imagesFilesize = 0;
+        long labelsFilesize = 0;
         char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
         char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
         unsigned char *imagesData = reinterpret_cast< unsigned char *>(imagesDataSigned);
@@ -41,7 +41,7 @@ public:
         return board;
     }
     static int ***loadImages( string dir, string set, int *p_numImages, int *p_size ) {
-        int imagesFilesize = 0;
+        long imagesFilesize = 0;
         char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
         unsigned char *imagesData = reinterpret_cast<unsigned char *>(imagesDataSigned);
         int totalNumImages = readUInt( imagesData, 1 );
@@ -63,7 +63,7 @@ public:
         return boards;
     }
     static int *loadLabels( string dir, string set, int *p_numImages ) {
-        int labelsFilesize = 0;
+        long labelsFilesize = 0;
         char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
         unsigned char *labelsData = reinterpret_cast<unsigned char *>(labelsDataSigned);
         int totalNumImages = readUInt( labelsData, 1 );

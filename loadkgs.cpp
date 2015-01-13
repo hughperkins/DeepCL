@@ -7,7 +7,7 @@ using namespace std;
 #include "AccuracyHelper.h"
 
 int main(int argc, char *argv[] ) {
-    int size;
+    long size;
     Timer timer;
     char *kgsData = FileHelper::readBinary( "../data/kgsgo/kgsgo.dat", &size );
     timer.timeCheck("read file, size " + toString(size/1024/1024) + "MB");
@@ -21,7 +21,7 @@ int main(int argc, char *argv[] ) {
     cout << "recordsize: " << recordSize << endl;
     int inputPlanes = 8;
     float *images = new float[batchSize * boardSizeSquared * inputPlanes ];
-    int N = size / recordSize;
+    int N = (int)(size / recordSize);
     cout << "num records: " << N << endl;
     int nBatch = 0;
     NeuralNet *net = NeuralNet::maker()->planes(8)->boardSize(boardSize)->instance();

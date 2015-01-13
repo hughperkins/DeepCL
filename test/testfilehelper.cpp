@@ -14,7 +14,7 @@ TEST( testfilehelper, testfilehelper ) {
     }
     FileHelper::writeBinary("foo.dat", reinterpret_cast<char*>(somefloats), N * sizeof(float) );
     float *newfloats = new float[N];
-    int bytesread = 0;
+    long bytesread = 0;
     char *dataread = FileHelper::readBinary("foo.dat", &bytesread );
     for( int i = 0; i < N; i++ ) {
         newfloats[i] = reinterpret_cast<float*>(dataread)[i];

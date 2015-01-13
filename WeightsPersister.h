@@ -44,7 +44,7 @@ public:
     }
     static void loadWeights( std::string filepath, NeuralNet *net ) {
         if( FileHelper::exists( filepath ) ){
-            int fileSize;
+            long fileSize;
             char * data = FileHelper::readBinary( filepath, &fileSize );
             float *allWeightsArray = reinterpret_cast<float *>(data);
             cout << "read weights from file "  << (fileSize/1024) << "KB" << endl;

@@ -8,12 +8,12 @@
 
 class FileHelper {
 public:
-    static char *readBinary( std::string filepath, int *p_filesize ) {
+    static char *readBinary( std::string filepath, long *p_filesize ) {
         std::ifstream file( filepath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
         if(!file.is_open()) {
             throw std::runtime_error(filepath);
         }
-        *p_filesize = (int)file.tellg();
+        *p_filesize = file.tellg();
         std::cout << " filesize " << *p_filesize << std::endl;
         char *data = new char[*p_filesize];
         file.seekg(0, std::ios::beg);
@@ -24,7 +24,7 @@ public:
         return data;
     }
 
-    static void writeBinary( std::string filepath, char*data, int filesize ) {
+    static void writeBinary( std::string filepath, char*data, long filesize ) {
         std::ofstream file( filepath.c_str(), std::ios::out | std::ios::binary );
         if(!file.is_open()) {
              throw std::runtime_error("cannot open file " + filepath );
