@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char *argv[] ) {
     int size;
     Timer timer;
-    char *kgsData = FileHelper::readBinary( "../../kgsgo-dataset-preprocessor/data/kgsgo.dat", &size );
+    char *kgsData = FileHelper::readBinary( "../data/kgsgo/kgsgo.dat", &size );
     timer.timeCheck("read file, size " + toString(size/1024/1024) + "MB");
 //    int i = 0;
     int pos = 0;
