@@ -33,6 +33,7 @@
 build/
 
 data/mnist
+data/kgsgo
 
 # vi
 *.swp
