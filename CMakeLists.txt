@@ -75,6 +75,8 @@ thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
+add_executable( loadkgs loadkgs.cpp stringhelper.cpp )
+
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
 target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )

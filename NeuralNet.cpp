@@ -32,9 +32,16 @@ using namespace std;
 #define STATIC
 
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
+//    cout << "NeuralNet() begin" << endl;
     cl = new OpenCLHelper();
     InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
     maker->insert();
+
+    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
+//    expectedValuesLayer->setBatchSize(batchSize);
+    getLastLayer()->nextLayer = expectedValuesLayer;
+    layers.push_back( expectedValuesLayer );
+//    cout << "NeuralNet() end" << endl;
 }
 NeuralNet::~NeuralNet() {
     for( int i = 0; i < layers.size(); i++ ) {
@@ -87,6 +94,14 @@ Layer *NeuralNet::getLastLayer() {
     return layers[layers.size() - 1];
 }
 Layer *NeuralNet::addLayer( LayerMaker *maker ) {
+//    cout << "NeuralNet::addLayer() begin" << endl;
+    // first, remove the expectedvalueslayer
+    if( layers.size() > 1 ) {
+        delete layers[ layers.size() - 1 ];
+        layers.erase( layers.end() - 1 );
+    }
+
+    // then add the new layer
     Layer *previousLayer = 0;
     if( layers.size() > 0 ) {
         previousLayer = layers[ layers.size() - 1 ];
@@ -94,6 +109,15 @@ Layer *NeuralNet::addLayer( LayerMaker *maker ) {
     maker->setPreviousLayer( previousLayer );
     Layer *layer = maker->instance();
     layers.push_back( layer );
+
+    if( layers.size() > 1 ) {
+        ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
+        getLastLayer()->nextLayer = expectedValuesLayer;
+        layers.push_back( expectedValuesLayer );
+    }
+
+//    cout << "NeuralNet::addLayer() end" << endl;
+    // then put back on an expectedvalues layer
     return layer;
 }
 void NeuralNet::setBatchSize( int batchSize ) {
@@ -103,10 +127,6 @@ void NeuralNet::setBatchSize( int batchSize ) {
 }
 float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
 //        Timer timer;
-    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
-//    expectedValuesLayer->setBatchSize(batchSize);
-    getLastLayer()->nextLayer = expectedValuesLayer;
-    layers.push_back( expectedValuesLayer );
     setBatchSize( batchSize );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     float loss = 0;
@@ -126,17 +146,17 @@ float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, floa
     }
 //        StatefulTimer::dump();
 //        timer.timeCheck("epoch time");
-    layers.erase( layers.end() - 1 );
-    getLastLayer()->nextLayer = 0;
-    delete expectedValuesLayer;
+//    layers.erase( layers.end() - 1 );
+//    getLastLayer()->nextLayer = 0;
+//    delete expectedValuesLayer;
     return loss;
 }
 float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
 //        Timer timer;
-    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
-//    expectedValuesLayer->setBatchSize(batchSize);
-    getLastLayer()->nextLayer = expectedValuesLayer;
-    layers.push_back( expectedValuesLayer );
+//    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
+////    expectedValuesLayer->setBatchSize(batchSize);
+//    getLastLayer()->nextLayer = expectedValuesLayer;
+//    layers.push_back( expectedValuesLayer );
     setBatchSize( batchSize );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     std::cout << "numBatches: " << numBatches << std::endl;
@@ -166,9 +186,9 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
     *p_totalCorrect = numRight;
 //        StatefulTimer::dump();
 //        timer.timeCheck("epoch time");
-    layers.erase( layers.end() - 1 );
-    getLastLayer()->nextLayer = 0;
-    delete expectedValuesLayer;
+//    layers.erase( layers.end() - 1 );
+//    getLastLayer()->nextLayer = 0;
+//    delete expectedValuesLayer;
     return loss;
 }
 //    float *propagate( int N, int batchSize, float const*images) {

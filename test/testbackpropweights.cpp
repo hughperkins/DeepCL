@@ -456,7 +456,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
     }
 }
 
-TEST( testbackpropweights, compare_specific ) {
+TEST( SLOW_testbackpropweights, compare_specific ) {
     const int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize( 19 ).setNumFilters( 32 ).setFilterSize( 3 )

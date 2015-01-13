@@ -84,7 +84,8 @@ EXPECT_FLOAT_NEAR( -0.0746839, weights[98933] );
 cout << "=============== backprop ..." << endl;
 //float *errors = new float[100000];
 ConvolutionalLayer *layer3 = dynamic_cast<ConvolutionalLayer*>( net->layers[3] );
-ExpectedValuesLayer *expectedValuesLayer = (new ExpectedValuesLayerMaker(net, net->layers[3]))->instance();
+ExpectedValuesLayer *expectedValuesLayer = dynamic_cast<ExpectedValuesLayer*>(net->getLastLayer() );
+//ExpectedValuesLayer *expectedValuesLayer = (new ExpectedValuesLayerMaker(net, net->layers[3]))->instance();
 expectedValuesLayer->setBatchSize(batchSize);
 expectedValuesLayer->calcErrors( expectedResults );
 int layer3ResultsSize = layer3->getResultsSize();
@@ -132,7 +133,7 @@ cout << endl;
 layer1->nextLayer = layer2;
 layer1->backPropErrors( learningRate );
 
-net->layers.push_back( expectedValuesLayer );
+//net->layers.push_back( expectedValuesLayer );
     net->backProp( learningRate, expectedResults );
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
@@ -256,7 +257,7 @@ EXPECT_FLOAT_NEAR( -0.00845184, net->getResults()[323] );
     delete net;
 }
 
-TEST( testsinglebatch, perf ) {
+TEST( SLOW_testsinglebatch, perf ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 
@@ -264,9 +265,9 @@ TEST( testsinglebatch, perf ) {
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
-    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
-    net->getLastLayer()->nextLayer = expectedValuesLayer;
-    net->layers.push_back( expectedValuesLayer );
+//    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
+//    net->getLastLayer()->nextLayer = expectedValuesLayer;
+//    net->layers.push_back( expectedValuesLayer );
     net->setBatchSize(batchSize);
 
     mt19937 random;
@@ -325,9 +326,9 @@ TEST( testsinglebatch, perf19 ) {
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(boardSize - 4 * 2 )->tanh()->biased()->insert();
-    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
-    net->getLastLayer()->nextLayer = expectedValuesLayer;
-    net->layers.push_back( expectedValuesLayer );
+//    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
+//    net->getLastLayer()->nextLayer = expectedValuesLayer;
+//    net->layers.push_back( expectedValuesLayer );
     net->setBatchSize(batchSize);
 
     mt19937 random;
@@ -377,7 +378,7 @@ TEST( testsinglebatch, perf19 ) {
     delete net;
 }
 
-TEST( testsinglebatch, perf19_depth12 ) {
+TEST( SLOW_testsinglebatch, perf19_depth12 ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 
@@ -387,9 +388,9 @@ TEST( testsinglebatch, perf19_depth12 ) {
         net->convolutionalMaker()->numFilters(128)->filterSize(3)->relu()->padZeros()->biased()->insert();
     }
     net->convolutionalMaker()->numFilters(19*19)->filterSize(19)->tanh()->biased()->insert();
-    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
-    net->getLastLayer()->nextLayer = expectedValuesLayer;
-    net->layers.push_back( expectedValuesLayer );
+//    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
+//    net->getLastLayer()->nextLayer = expectedValuesLayer;
+//    net->layers.push_back( expectedValuesLayer );
     net->setBatchSize(batchSize);
 
     mt19937 random;

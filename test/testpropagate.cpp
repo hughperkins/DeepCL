@@ -42,15 +42,17 @@ TEST( testpropagate, boardsize2_nopadzeros ) {
     cout << "expected number of results: " << resultSize << endl;
     int outputBoardSize = 0;
     OpenCLHelper cl;
-    Propagate *propagate = Propagate::instanceTest( &cl,
-        LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
-        padZeros == 1, false ), new LinearActivation() );
-    float *results = propagate->propagate( batchSize, data, filter1, 0 );  
-    for( int result = 0; result < resultSize; result++ ) {
-        ASSERT_EQ( expectedResults[result], results[result] );
+    for( int i = 1; i <= 4; i++ ) {
+        Propagate *propagate = Propagate::instanceSpecific( 1, &cl,
+            LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+            padZeros == 1, false ), new LinearActivation() );
+        float *results = propagate->propagate( batchSize, data, filter1, 0 );  
+        for( int result = 0; result < resultSize; result++ ) {
+            ASSERT_EQ( expectedResults[result], results[result] );
+        }
+        delete propagate;
+        delete[] results;
     }
-    delete propagate;
-    delete[] results;
 }
 
 TEST( testpropagate, boardsize2_padzeros ) {
@@ -365,7 +367,7 @@ TEST( testpropagate, mnist_firstconvlayer ) {
 
     OpenCLHelper cl;
     Propagate *p1 = Propagate::instance( &cl, dim, fn );
-    for( int i = 0; i < (60000+batchSize - 1) / batchSize; i++ ) {
+    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
     }
@@ -374,7 +376,43 @@ TEST( testpropagate, mnist_firstconvlayer ) {
     delete p1;
 }
 
-TEST( testpropagate, mnist_intlayers_1024ex ) {
+TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    ActivationFunction *fn = new ReluActivation();
+
+    int inputsSize = batchSize * dim.inputCubeSize;
+    int filtersSize = dim.filtersSize;
+    int biasSize = dim.numFilters;
+    int inputsAllocated = std::max( inputsSize, 10000 );
+    int filtersAllocated = std::max( filtersSize, 10000 );
+    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    float *inputs = new float[ inputsAllocated ];
+    float *filters = new float[ filtersAllocated ];
+    float *biasFilters = new float[ biasFiltersAllocated ];
+
+    memset( inputs, 0, sizeof(float) * inputsAllocated );
+    memset( filters, 0, sizeof(float) * filtersAllocated );
+    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
+
+    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+
+    OpenCLHelper cl;
+    Propagate *p1 = Propagate::instance( &cl, dim, fn );
+    for( int i = 0; i < (128+batchSize - 1) / batchSize; i++ ) {
+        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+        delete[] results1;
+    }
+    StatefulTimer::dump(true);
+
+    delete p1;
+}
+
+TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
@@ -436,7 +474,7 @@ TEST( testpropagate, mnist_finallayer ) {
 
     OpenCLHelper cl;
     Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new TanhActivation() );
-    for( int i = 0; i < (60000+batchSize - 1) / batchSize; i++ ) {
+    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
     }
@@ -445,7 +483,7 @@ TEST( testpropagate, mnist_finallayer ) {
     delete p1;
 }
 
-TEST( testpropagate, comparespecific ) {
+TEST( SLOW_testpropagate, comparespecific ) {
     OpenCLHelper cl;
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];
@@ -509,7 +547,7 @@ TEST( testpropagate, comparespecific ) {
     delete p2;
 }
 
-TEST( testpropagate, compare ) {
+TEST( SLOW_testpropagate, compare ) {
     OpenCLHelper cl;
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];
