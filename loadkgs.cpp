@@ -9,7 +9,8 @@ using namespace std;
 int main(int argc, char *argv[] ) {
     long size;
     Timer timer;
-    char *kgsData = FileHelper::readBinary( "../data/kgsgo/kgsgo.dat", &size );
+    std::string dataFilePath = "../data/kgsgo/kgsgo.dat";
+    long fileSize = FileHelper::getFilesize( dataFilePath );
     timer.timeCheck("read file, size " + toString(size/1024/1024) + "MB");
 //    int i = 0;
     int pos = 0;
@@ -37,6 +38,8 @@ int main(int argc, char *argv[] ) {
         for( int i = 0; i < batchSize * boardSizeSquared; i++ ) {
             expectedValues[i] = -0.5f;
         }
+        char *kgsData = FileHelper::readBinaryChunk( dataFilePath, (long)nBatch * batchSize * recordSize * sizeof(float),
+            (long)batchSize * recordSize * sizeof(float) );
         while( count < batchSize ) {
             //cout << kgsData[pos];
             //if( count % 80 == 0 && count != 0 ) cout << endl;

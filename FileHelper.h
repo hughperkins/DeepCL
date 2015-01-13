@@ -24,6 +24,30 @@ public:
         return data;
     }
 
+    static long getFilesize( std::string filepath ) {
+        std::ifstream file( filepath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+        if(!file.is_open()) {
+            throw std::runtime_error(filepath);
+        }
+        long filesize = file.tellg();
+        file.close();
+        return filesize;
+    }
+
+    static char *readBinaryChunk( std::string filepath, long start, long length ) {
+        std::ifstream file( filepath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+        if(!file.is_open()) {
+            throw std::runtime_error(filepath);
+        }
+        file.seekg( start, std::ios::beg );
+        char *data = new char[length];
+        if(!file.read( data, length )) {
+            throw std::runtime_error("failed to read from " + filepath );
+        }
+        file.close();
+        return data;
+    }
+
     static void writeBinary( std::string filepath, char*data, long filesize ) {
         std::ofstream file( filepath.c_str(), std::ios::out | std::ios::binary );
         if(!file.is_open()) {

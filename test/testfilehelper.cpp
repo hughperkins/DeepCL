@@ -25,3 +25,21 @@ TEST( testfilehelper, testfilehelper ) {
     }  
 }
 
+TEST( testfilehelper, testreadchunk ) {
+    int N = 100000;
+    float *somefloats = new float[N];
+    for( int i = 0; i < N; i++ ) {
+        somefloats[i] = i * 5.0 / 3.0;
+    }
+    FileHelper::writeBinary("foo.dat", reinterpret_cast<char*>(somefloats), N * sizeof(float) );
+    float *newfloats = new float[100];
+    char *dataread = FileHelper::readBinaryChunk("foo.dat", 10000 * sizeof(float), 100 * sizeof(float) );
+    for( int i = 0; i < 100; i++ ) {
+        newfloats[i] = reinterpret_cast<float*>(dataread)[i];
+    }
+    delete[] dataread;
+    for( int i = 0; i < 100; i++ ) {
+        assertEquals( somefloats[ 10000 + i], newfloats[i], 0.0001 );
+    }  
+}
+
