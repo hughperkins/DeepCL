@@ -7,11 +7,10 @@ using namespace std;
 #include "AccuracyHelper.h"
 
 int main(int argc, char *argv[] ) {
-    long size;
     Timer timer;
     std::string dataFilePath = "../data/kgsgo/kgsgo.dat";
     long fileSize = FileHelper::getFilesize( dataFilePath );
-    timer.timeCheck("read file, size " + toString(size/1024/1024) + "MB");
+    timer.timeCheck("read file, size " + toString(fileSize/1024/1024) + "MB");
 //    int i = 0;
     int pos = 0;
     const float learningRate = 0.01f;
@@ -22,7 +21,7 @@ int main(int argc, char *argv[] ) {
     cout << "recordsize: " << recordSize << endl;
     int inputPlanes = 8;
     float *images = new float[batchSize * boardSizeSquared * inputPlanes ];
-    int N = (int)(size / recordSize);
+    int N = (int)(fileSize / recordSize);
     cout << "num records: " << N << endl;
     int nBatch = 0;
     NeuralNet *net = NeuralNet::maker()->planes(8)->boardSize(boardSize)->instance();
@@ -33,7 +32,7 @@ int main(int argc, char *argv[] ) {
     net->setBatchSize(batchSize);
     int *labels = new int[ boardSizeSquared ];
     float *expectedValues = new float[ batchSize * boardSizeSquared ];
-    while( pos < size ) {
+    while( pos < fileSize ) {
         int count = 0;
         for( int i = 0; i < batchSize * boardSizeSquared; i++ ) {
             expectedValues[i] = -0.5f;
