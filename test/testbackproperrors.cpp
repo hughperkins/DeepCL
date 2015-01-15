@@ -3,6 +3,7 @@
 
 #include "NeuralNet.h"
 #include "BackpropErrors.h"
+#include "ActivationFunction.h"
 
 #include "gtest/gtest.h"
 
@@ -32,14 +33,16 @@ TEST( testbackproperrors, board28 ) {
     float *weights = new float[max(10000, weightsSize ) ];
     float *biasWeights = new float[max( 10000, biasWeightsSize)];
     float *errors = new float[max(10000, resultsSize )];
+    float *results = new float[max(10000, resultsSize )];
     WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
     WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
     WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomize( results, max(10000, resultsSize ), -1, 1 );
 
     OpenCLHelper cl;
-    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim );
+    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
-    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, weights, biasWeights, errors );
+    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, results, weights, biasWeights, errors );
     StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
@@ -71,14 +74,16 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
     float *weights = new float[max(10000, weightsSize ) ];
     float *biasWeights = new float[max( 10000, biasWeightsSize)];
     float *errors = new float[max(10000, resultsSize )];
+    float *results = new float[max(10000, resultsSize )];
     WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
     WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
     WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomize( results, max(10000, resultsSize ), -1, 1 );
 
     OpenCLHelper cl;
-    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim );
+    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
-    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, weights, biasWeights, errors );
+    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, results, weights, biasWeights, errors );
     StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
@@ -110,15 +115,18 @@ TEST( testbackproperrors, comparespecific ) {
     float *weights = new float[max(10000, weightsSize ) ];
     float *biasWeights = new float[max( 10000, biasWeightsSize)];
     float *errors = new float[max(10000, resultsSize )];
+    float *results = new float[max(10000, resultsSize )];
     memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
     memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
+    memset( results, 0, sizeof(float) * max(10000, resultsSize ) );
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
 //    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
 //    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
     WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
 //    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
     WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
+    WeightRandomizer::randomizeInts( results, max(10000, resultsSize ), 0, 3 );
 
 //    weights[0] = 3;
 //    weights[1] = 5;
@@ -144,10 +152,10 @@ TEST( testbackproperrors, comparespecific ) {
 //    errors[5] = 6;
 
     OpenCLHelper cl;
-    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 1, &cl, dim );
-    float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, weights, biasWeights, errors );
-    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 2, &cl, dim );
-    float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, weights, biasWeights, errors );
+    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 1, &cl, dim, new ReluActivation() );
+    float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, results, weights, biasWeights, errors );
+    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 2, &cl, dim, new ReluActivation() );
+    float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, results, weights, biasWeights, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
     cout << dim << endl;

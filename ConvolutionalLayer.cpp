@@ -41,7 +41,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         numPlanes, filterSize, padZeros, biased );
     propagateimpl = Propagate::instance( cl, dim, activationFunction );
     backpropWeightsImpl = BackpropWeights::instance( cl, dim, activationFunction );
-    backpropErrorsImpl = BackpropErrors::instance( cl, dim );
+    backpropErrorsImpl = BackpropErrors::instance( cl, dim, activationFunction );
 
     if( filterSize > upstreamBoardSize ) {
             throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( filterSize) +
@@ -285,7 +285,7 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     }
 
     if( layerIndex > 1 ) {
-        backpropErrorsImpl->backpropErrors( batchSize, weightsWrapper, biasWeightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
+        backpropErrorsImpl->backpropErrors( batchSize, resultsWrapper, weightsWrapper, biasWeightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
     }
 

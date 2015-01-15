@@ -14,9 +14,10 @@ class BackpropErrors {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
+    ActivationFunction const *fn;
 
     virtual void backpropErrors( int batchSize, 
-        CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errors,
+        CLWrapper *resultsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errors,
         CLWrapper *errorsForUpstream ) = 0;
 
     // [[[cog
@@ -26,11 +27,11 @@ public:
     // classname: BackpropErrors
     // cppfile: BackpropErrors.cpp
 
-    STATIC BackpropErrors *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC BackpropErrors *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC BackpropErrors *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    BackpropErrors( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    VIRTUAL float * backpropErrors( int batchSize, float *filters, float *biases, float *errors );
+    STATIC BackpropErrors *instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn );
+    STATIC BackpropErrors *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
+    STATIC BackpropErrors *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
+    BackpropErrors( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
+    VIRTUAL float * backpropErrors( int batchSize, float *results, float *filters, float *biases, float *errors );
 
     // [[[end]]]
 };

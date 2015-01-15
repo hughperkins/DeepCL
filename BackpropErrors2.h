@@ -16,10 +16,10 @@ public:
     // classname: BackpropErrors2
     // cppfile: BackpropErrors2.cpp
 
-    BackpropErrors2( OpenCLHelper *cl, LayerDimensions dim );
+    BackpropErrors2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn );
     VIRTUAL ~BackpropErrors2();
     VIRTUAL void backpropErrors( int batchSize,
-    CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
+    CLWrapper *resultsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );
 
     // [[[end]]]

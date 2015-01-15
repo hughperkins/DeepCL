@@ -14,12 +14,12 @@ public:
     // classname: BackpropErrorsCpu
     // cppfile: BackpropErrorsCpu.cpp
 
-    BackpropErrorsCpu( OpenCLHelper *cl, LayerDimensions dim );
+    BackpropErrorsCpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn );
     VIRTUAL ~BackpropErrorsCpu();
     VIRTUAL float *backpropErrors( int batchSize, float *results, float *weights, float *biasWeights,
     float *errors );
     VIRTUAL void backpropErrors( int batchSize,
-    CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
+    CLWrapper *resultsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );
 
     // [[[end]]]

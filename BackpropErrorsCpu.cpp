@@ -10,8 +10,8 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropErrorsCpu::BackpropErrorsCpu( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropErrors( cl, dim )
+BackpropErrorsCpu::BackpropErrorsCpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) :
+        BackpropErrors( cl, dim, fn )
             {
     // [[[cog
     // import stringify
@@ -69,8 +69,9 @@ VIRTUAL float *BackpropErrorsCpu::backpropErrors( int batchSize, float *results,
                                     * dim.filterSize + filterRow )
                                     * dim.filterSize + filterCol;
                                 float thisWeight = weights[thisWeightIndex];
-                                float thisWeightTimesError = thisWeight * thisError;
-                                sumWeightTimesOutError += thisWeightTimesError;
+                                float thisOutput = results[resultIndex];
+                                float dOutputdSum = fn->calcDerivative( thisOutput );
+                                sumWeightTimesOutError += thisWeight * thisError * dOutputdSum;
                             }
                         }
                     }
@@ -89,7 +90,7 @@ VIRTUAL float *BackpropErrorsCpu::backpropErrors( int batchSize, float *results,
     return errorsForUpstream;
 }
 VIRTUAL void BackpropErrorsCpu::backpropErrors( int batchSize, 
-        CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
+        CLWrapper *resultsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
         CLWrapper *errorsForUpstreamWrapper ) {
     throw std::runtime_error( "backpropErrors wrappers not implemented for BackpropErrorsCpu");
 }

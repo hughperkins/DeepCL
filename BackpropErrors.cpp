@@ -14,33 +14,37 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-STATIC BackpropErrors *BackpropErrors::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+STATIC BackpropErrors *BackpropErrors::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
     if( square( dim.inputBoardSize ) <= cl->getMaxWorkgroupSize() ) {
-        return new BackpropErrors2( cl, dim );
+        return new BackpropErrorsCpu( cl, dim, fn );
     } else {
-        return new BackpropErrors1( cl, dim );
+        return new BackpropErrorsCpu( cl, dim, fn );
     }
 }
-STATIC BackpropErrors *BackpropErrors::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
-    return new BackpropErrors2( cl, layerDimensions );
+STATIC BackpropErrors *BackpropErrors::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+    return new BackpropErrorsCpu( cl, layerDimensions, fn );
 }
-STATIC BackpropErrors *BackpropErrors::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC BackpropErrors *BackpropErrors::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
-        return new BackpropErrorsCpu( cl, layerDimensions );
+        return new BackpropErrorsCpu( cl, layerDimensions, fn );
     }
     if( idx == 1 ) {
-        return new BackpropErrors1( cl, layerDimensions );
+        return new BackpropErrors1( cl, layerDimensions, fn );
     }
     if( idx == 2 ) {
-        return new BackpropErrors2( cl, layerDimensions );
+        return new BackpropErrors2( cl, layerDimensions, fn );
     }
 }
-BackpropErrors::BackpropErrors( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
+BackpropErrors::BackpropErrors( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) :
         dim( layerDimensions ),
-        cl( cl ) {
+        cl( cl ),
+        fn( fn ) {
 }
-VIRTUAL float * BackpropErrors::backpropErrors( int batchSize, float *filters, float *biases, float *errors ) {
+VIRTUAL float * BackpropErrors::backpropErrors( int batchSize, float *results, float *filters, float *biases, float *errors ) {
     StatefulTimer::timeCheck("BackpropErrors::backprop begin");
+
+    CLWrapper *resultsWrapper = cl->wrap( batchSize * dim.outputCubeSize, results );
+    resultsWrapper->copyToDevice();
 
     int weightsSize = dim.filtersSize;
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
@@ -63,7 +67,7 @@ VIRTUAL float * BackpropErrors::backpropErrors( int batchSize, float *filters, f
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( allocatedResultsSize, errorsForUpstream );
 
     StatefulTimer::timeCheck("BackpropErrors::backprop after copied to device");
-    backpropErrors( batchSize, weightsWrapper, biasWeightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, resultsWrapper, weightsWrapper, biasWeightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
     StatefulTimer::timeCheck("BackpropErrors::backprop after call backprop");
     errorsForUpstreamWrapper->copyToHost();
     StatefulTimer::timeCheck("BackpropErrors::backprop after copytohost");

@@ -10,8 +10,8 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropErrors1::BackpropErrors1( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropErrors( cl, dim )
+BackpropErrors1::BackpropErrors1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) :
+        BackpropErrors( cl, dim, fn )
             {
     // [[[cog
     // import stringify
@@ -29,7 +29,7 @@ VIRTUAL BackpropErrors1::~BackpropErrors1() {
     delete kernel;
 }
 VIRTUAL void BackpropErrors1::backpropErrors( int batchSize, 
-        CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
+        CLWrapper *resultsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
         CLWrapper *errorsForUpstreamWrapper ) {
 
     StatefulTimer::instance()->timeCheck("BackpropErrors1 start" );
