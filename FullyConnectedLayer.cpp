@@ -149,23 +149,23 @@ VIRTUAL void FullyConnectedLayer::propagate() {
     StatefulTimer::timeCheck("end fullyconnected propagate");
 }
 // results structured like [imageid][outputplane][outputrow][outputcol]
-VIRTUAL void FullyConnectedLayer::calcErrors( float const *expected, float *errors ) {
-  //  backPropOld( learningRate, expected );
-//        float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
-    // matrix per-element subtraction...
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
-            for( int outRow = 0; outRow < boardSize; outRow++ ) {
-                for( int outCol = 0; outCol < boardSize; outCol++ ) {
-                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
-                    errors[ resultIndex ] = results[resultIndex] - expected[resultIndex];
-                }
-            } 
-        }
-    }
-//        backPropErrors( learningRate, errors );
-//        delete[] errors;
-}
+//VIRTUAL void FullyConnectedLayer::calcErrors( float const *expected, float *errors ) {
+//  //  backPropOld( learningRate, expected );
+////        float *errors = new float[ batchSize * numPlanes * boardSize * boardSize ];
+//    // matrix per-element subtraction...
+//    for( int n = 0; n < batchSize; n++ ) {
+//        for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
+//            for( int outRow = 0; outRow < boardSize; outRow++ ) {
+//                for( int outCol = 0; outCol < boardSize; outCol++ ) {
+//                    int resultIndex = getResultIndex( n, outPlane, outRow, outCol );
+//                    errors[ resultIndex ] = results[resultIndex] - expected[resultIndex];
+//                }
+//            } 
+//        }
+//    }
+////        backPropErrors( learningRate, errors );
+////        delete[] errors;
+//}
 VIRTUAL void FullyConnectedLayer::backPropErrors( float learningRate ) {
     float *errors = nextLayer->getErrorsForUpstream();
     StatefulTimer::timeCheck("start fullyconnected backproperrors");

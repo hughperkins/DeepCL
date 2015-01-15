@@ -60,7 +60,6 @@ public:
     VIRTUAL float *getErrorsForUpstream();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
-    VIRTUAL void calcErrors( float const *expected, float *errors );
     VIRTUAL void backPropErrors( float learningRate );
 
     // [[[end]]]

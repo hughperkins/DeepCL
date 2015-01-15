@@ -13,6 +13,7 @@
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
 #include "ExpectedValuesLayer.h"
+#include "SoftMaxLayer.h"
 
 using namespace std;
 
@@ -75,6 +76,11 @@ Layer *ConvolutionalMaker::instance() const {
 
 Layer *InputLayerMaker::instance() const {
     Layer *layer = new InputLayer( 0, this );
+    return layer;
+}
+
+Layer *SoftMaxMaker::instance() const {
+    Layer *layer = new SoftMaxLayer( previousLayer, this );
     return layer;
 }
 

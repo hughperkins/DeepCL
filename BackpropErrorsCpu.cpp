@@ -25,7 +25,7 @@ BackpropErrorsCpu::BackpropErrorsCpu( OpenCLHelper *cl, LayerDimensions dim ) :
 }
 VIRTUAL BackpropErrorsCpu::~BackpropErrorsCpu() {
 }
-VIRTUAL float *BackpropErrorsCpu::backpropErrors( int batchSize, float *weights, float *biasWeights,
+VIRTUAL float *BackpropErrorsCpu::backpropErrors( int batchSize, float *results, float *weights, float *biasWeights,
     float *errors ) {
     float *errorsForUpstream = new float[ batchSize * dim.inputCubeSize ];
 

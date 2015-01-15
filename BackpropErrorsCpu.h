@@ -16,7 +16,7 @@ public:
 
     BackpropErrorsCpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropErrorsCpu();
-    VIRTUAL float *backpropErrors( int batchSize, float *weights, float *biasWeights,
+    VIRTUAL float *backpropErrors( int batchSize, float *results, float *weights, float *biasWeights,
     float *errors );
     VIRTUAL void backpropErrors( int batchSize,
     CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,

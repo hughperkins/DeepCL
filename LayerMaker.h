@@ -68,6 +68,14 @@ public:
 //    virtual Layer *insert();
 };
 
+class SoftMaxMaker : public LayerMaker {
+    SoftMaxMaker( NeuralNet *net ) :
+        LayerMaker( net ) {
+    }
+    virtual Layer *insert();
+    virtual Layer *instance() const;
+};
+
 class FullyConnectedMaker : public LayerMaker {
 public:
     int _numPlanes;
