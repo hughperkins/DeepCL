@@ -21,7 +21,8 @@ public:
         CLWrapper *errorsWrapper, CLWrapper *resultsWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;
 
     float learningRateToMultiplier( int batchSize, float rate ) {
-        float multiplier = rate / batchSize / sqrt( dim.outputBoardSize );
+//        float multiplier = rate / batchSize / sqrt( dim.outputBoardSize );
+        float multiplier = rate;
         std::cout << "rate " << rate << " multiplier " << multiplier << std::endl;
         return multiplier;
     }

@@ -170,5 +170,14 @@ eg \[ = \sum_j \frac{\partial L}{\partial s^l_j} w^l_{ij} ( 1 - (o^{l-1}_i)^2) \
 \[ \partialderivative{L}{w^l_{ji}} = \partialderivative{L}{s^l_i} \partialderivative{s^l_i}{w^l_{ji}} \]
 \[ = \partialderivative{L}{s^l_i} o^{l-1}_j \]
 
+\ult{numerical validation}
+
+\[ w_{ji}(n+1) = w_{ji}(n) + \alpha  \partialderivative{L}{w_{ji}} \]
+So \[ \partialderivative{L}{w_{ji}} = \frac{w_{ji}(n+1) - w_{ji}(n)}{\alpha} \]
+ \[ L(n+1) \approx L(n) + \Delta w_{ji} \partialderivative{L}{w_{ji}} \]
+\[ \Delta(w_{ji}) = \alpha \partialderivative{L}{w_{ji}} \]
+Therefore, \[ \partialderivative{L}{w_{ji}} = \frac{\Delta w_{ji}}{\alpha} \]
+And so, \[ \Delta L \approx  \frac{(\Delta w_{ji})^2} {\alpha}   \]
+
 \end{document}
 

@@ -16,9 +16,9 @@ using namespace std;
 
 STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
     if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
-        return new BackpropWeightsCpu( cl, dim, fn );
+        return new BackpropWeightsNaive( cl, dim, fn );
     } else {
-        return new BackpropWeightsCpu( cl, dim, fn );
+        return new BackpropWeightsScratchBias( cl, dim, fn );
     }
 }
 STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {

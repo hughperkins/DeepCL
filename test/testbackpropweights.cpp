@@ -17,8 +17,8 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
 //    const int batchSize = 1;
 //    const int boardSize = 1;
 
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(1)->filterSize(1)->biased(0)->tanh()->insert();
+    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
+    net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->tanh()->insert();
     net->setBatchSize( batchSize );
 
     int inputSize = net->layers[0]->getResultsSize();
@@ -76,7 +76,7 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
 //    cout << "sumweightsdiff / learningrate " << (sumWeightDiff / learningRate ) << endl;
 //    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * boardSize ) << endl;
 
-    float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate * sqrt(boardSize) * batchSize;
+    float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate; // / filterSize;
 
     cout << " loss change " << lossChange << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
     cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
