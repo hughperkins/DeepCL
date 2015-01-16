@@ -12,6 +12,138 @@
 
 using namespace std;
 
+void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
+    float learningRate = 0.01f;
+//    const int batchSize = 1;
+//    const int boardSize = 1;
+
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+    net->convolutionalMaker()->numFilters(1)->filterSize(1)->biased(0)->tanh()->insert();
+    net->setBatchSize( batchSize );
+
+    int inputSize = net->layers[0]->getResultsSize();
+    int resultsSize = net->layers[1]->getResultsSize();
+    int weightsSize = net->layers[1]->getWeightsSize();
+
+    float *inputData = new float[max(10000, inputSize )];
+    float *expectedResults = new float[max(10000, resultsSize )];
+    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
+    memset( expectedResults, 0, sizeof(float) * max(10000, resultsSize ) );
+    int seed = 0;
+    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
+    WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -1.0f, 1.0f );
+    WeightRandomizer::randomize( random, net->layers[1]->weights, weightsSize, -0.1f, 0.1f );
+    dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToDevice();
+//    for( int i = 0; i < inputSize; i++ ) {
+//        cout << "inputData[" << i << "]=" << inputData[i] << endl;
+//    }
+//    for( int i = 0; i < resultsSize; i++ ) {
+//        cout << "expectedResults[" << i << "]=" << expectedResults[i] << endl;
+//    }
+
+    float *weightsBefore = new float[weightsSize];
+    float *currentWeights = net->layers[1]->weights;
+    for( int i = 0; i < weightsSize; i++ ) {
+        weightsBefore[i] = currentWeights[i];
+    }
+
+//    net->print();
+    cout << "propagate" <<endl;
+    net->propagate( inputData );
+//    net->print();
+    float loss = net->calcLoss(expectedResults);
+    float losslayer1 = net->layers[1]->calcLoss(expectedResults);
+    cout << "losslayer1 " << losslayer1 << endl;
+
+    cout << "backprop now" <<endl;
+    net->backProp( learningRate, expectedResults );
+//    net->layers[1]->print();
+    net->propagate( inputData );
+//    net->layers[1]->print();
+    float loss2 = net->calcLoss(expectedResults);
+    float lossChange = loss - loss2;
+    cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
+
+    float *newWeights = net->layers[1]->weights;
+    float sumWeightDiff = 0;
+    float sumWeightDiffSquared = 0;
+    for( int i = 0; i < weightsSize; i++ ) {
+        float diff = newWeights[i] - weightsBefore[i];
+        sumWeightDiff += diff;
+        sumWeightDiffSquared += diff * diff;
+    }
+    cout << "sumweightsdiff " << sumWeightDiff << endl;
+//    cout << "sumweightsdiff / learningrate " << (sumWeightDiff / learningRate ) << endl;
+//    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * boardSize ) << endl;
+
+    float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate * sqrt(boardSize) * batchSize;
+
+    cout << " loss change " << lossChange << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
+    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
+    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
+    EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
+    EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
+
+//    delete[] weights1;
+//    delete[] errors;
+//    delete[] results;
+    delete[] inputData;
+}
+
+TEST( testbackpropweights, numericallytest ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(1, 1, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(3, 1, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize5 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(5, 1, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize9 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(9, 1, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize3_filtersize3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(3, 3, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize5_filtersize3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(5, 3, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize5_filtersize3_batchsize3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(5, 3, 1, 3 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize5_filtersize3_planes3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(5, 3, 3, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize5_filtersize3_planes3_batchsize3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(5, 3, 3, 3 );
+}
+
 TEST( testbackpropweights, backprop_weights_2 ) {
     LayerDimensions dim;
     dim.setInputBoardSize( 1 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )

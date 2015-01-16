@@ -170,7 +170,7 @@ float Layer::calcLoss( float const *expected ) {
             }
         }            
     }
-    return E;
+    return 0.5f * E;
  }
 VIRTUAL void setWeights(float *weights, float *biasWeights) {
 }

@@ -17,7 +17,22 @@ BackpropWeightsCpu::BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim, A
 VIRTUAL BackpropWeightsCpu::~BackpropWeightsCpu() {
 }
 VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *resultsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
-    throw std::runtime_error("backpropWeights wrappers not implemented for BackpropWeightsCpu");
+//    throw std::runtime_error("backpropWeights wrappers not implemented for BackpropWeightsCpu");
+    errorsWrapper->copyToHost();
+    resultsWrapper->copyToHost();
+    imagesWrapper->copyToHost();
+//    weightsWrapper->copyToHost();
+  //  biasWeightsWrapper->copyToHost();
+    float *biasWeights = 0;
+    if( dim.biased ) {
+        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+    }
+    backpropWeights( batchSize, learningRate, (float *)errorsWrapper->getHostArray(), (float *)resultsWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
+        (float *)weightsWrapper->getHostArray(), biasWeights );
+    weightsWrapper->copyToDevice();
+    if( dim.biased ) {
+        biasWeightsWrapper->copyToDevice();
+    }
 }
 VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningRate, float *errors,
     float *results, float *images, float *weights, float *biasWeights ) {

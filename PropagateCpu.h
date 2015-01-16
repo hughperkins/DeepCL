@@ -8,8 +8,25 @@ public:
             Propagate( cl, dim, fn )
         {
     }
-    virtual void propagate( int batchSize, CLWrapper *data, CLWrapper *filters, CLWrapper *biasWeights, CLWrapper *results ) {
-        throw std::runtime_error("propagate wrappers not implemented for PropagateCpu");
+    virtual void propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper ) {
+        inputDataWrapper->copyToHost();
+        weightsWrapper->copyToHost();
+    //    weightsWrapper->copyToHost();
+      //  biasWeightsWrapper->copyToHost();
+        float *biasWeights = 0;
+        if( dim.biased ) {
+            biasWeightsWrapper->copyToHost();
+            biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+        }
+        float *results = propagate( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
+        int resultsSize = batchSize * dim.outputCubeSize;
+//        memcpy( (float *)resultsWrapper->getHostArray(), results, sizeof(float) * resultsSize );
+        float *hostArray = (float *)resultsWrapper->getHostArray();
+        for( int i = 0; i < resultsSize; i++ ) {
+            hostArray[i] = results[i];
+        }
+        resultsWrapper->copyToDevice();
+        delete[] results;
     }
     virtual float *propagate( int batchSize, float *inputData, float *weights, float *biasWeights ) {
         float *results = new float[ dim.outputCubeSize * batchSize ];
