@@ -13,86 +13,108 @@
 
 using namespace std;
 
-// This file contains tests for calculating errors for the upstream layer, whcih is currently a bit slow 
-// as at the time of first creating this file :-P
+// This file contains tests for calculating errors for the upstream layer
 
-TEST( testbackproperrors, checknumerically ) {
-    float learningRate = 0.01f;
-    const int batchSize = 1;
-    const int boardSize = 1;
-
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(1)->filterSize(1)->biased(0)->tanh()->insert();
-    net->convolutionalMaker()->numFilters(1)->filterSize(1)->biased(0)->tanh()->insert();
+void testNumerically( float learningRate, int batchSize, int boardSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros ) {
+    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
+    net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros)->insert();
+    net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros)->insert();
     net->setBatchSize( batchSize );
 
     int inputSize = net->layers[0]->getResultsSize();
-    int resultsSize = net->layers[1]->getResultsSize();
-    int weightsSize = net->layers[1]->getWeightsSize();
+    int resultsSize = net->layers[2]->getResultsSize();
+    int weightsSize1 = net->layers[1]->getWeightsSize();
+    int weightsSize2 = net->layers[2]->getWeightsSize();
 
     float *inputData = new float[max(10000, inputSize )];
     float *expectedResults = new float[max(10000, resultsSize )];
     memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
     memset( expectedResults, 0, sizeof(float) * max(10000, resultsSize ) );
     int seed = 0;
-    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, net->layers[1]->weights, weightsSize, -0.1f, 0.1f );
+    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -2.0f, 2.0f );
+    WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -2.0f, 2.0f );
+    WeightRandomizer::randomize( random, net->layers[1]->weights, weightsSize1, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToDevice();
-//    for( int i = 0; i < inputSize; i++ ) {
-//        cout << "inputData[" << i << "]=" << inputData[i] << endl;
-//    }
-//    for( int i = 0; i < resultsSize; i++ ) {
-//        cout << "expectedResults[" << i << "]=" << expectedResults[i] << endl;
-//    }
+    WeightRandomizer::randomize( random, net->layers[2]->weights, weightsSize2, -2.0f, 2.0f );
+    dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToDevice();
 
-    float *weightsBefore = new float[weightsSize];
-    float *currentWeights = net->layers[1]->weights;
-    for( int i = 0; i < weightsSize; i++ ) {
-        weightsBefore[i] = currentWeights[i];
+    for( int it = 0; it < 20; it++ ) {
+        float *weightsBefore1 = new float[weightsSize1];
+        float *currentWeights = net->layers[1]->weights;
+        for( int i = 0; i < weightsSize1; i++ ) {
+            weightsBefore1[i] = currentWeights[i];
+        }
+        float *weightsBefore2 = new float[weightsSize2];
+        currentWeights = net->layers[2]->weights;
+        for( int i = 0; i < weightsSize2; i++ ) {
+            weightsBefore2[i] = currentWeights[i];
+        }
+
+        net->propagate( inputData );
+    //    net->print();
+        float loss = net->calcLoss(expectedResults);
+        float losslayer1 = net->layers[2]->calcLoss(expectedResults);
+        net->backProp( learningRate, expectedResults );
+        // restore 2nd layer weights :-)
+        for( int i = 0; i < weightsSize2; i++ ) {
+            net->layers[2]->weights[i] = weightsBefore2[i];
+        }
+        dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToDevice();
+        net->propagate( inputData );
+
+        float loss2 = net->calcLoss(expectedResults);
+        float lossChange = loss - loss2;
+        cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
+
+        float *newWeights = net->layers[1]->weights;
+        float sumWeightDiff = 0;
+        float sumWeightDiffSquared = 0;
+        for( int i = 0; i < weightsSize1; i++ ) {
+            float diff = newWeights[i] - weightsBefore1[i];
+            sumWeightDiff += diff;
+            sumWeightDiffSquared += diff * diff;
+        }
+        cout << "sumweightsdiff " << sumWeightDiff << endl;
+    //    cout << "sumweightsdiff / learningrate " << (sumWeightDiff / learningRate ) << endl;
+    //    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * boardSize ) << endl;
+
+        float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate; // / filterSize;
+
+        cout << " loss change              " << lossChange << endl;
+        cout << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
+    //    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
+    //    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
+        EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
+        EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
     }
-
-//    net->print();
-    cout << "propagate" <<endl;
-    net->propagate( inputData );
-//    net->print();
-    float loss = net->calcLoss(expectedResults);
-    float losslayer1 = net->layers[1]->calcLoss(expectedResults);
-    cout << "losslayer1 " << losslayer1 << endl;
-
-    cout << "backprop now" <<endl;
-    net->backProp( learningRate, expectedResults );
-//    net->layers[1]->print();
-    net->propagate( inputData );
-//    net->layers[1]->print();
-    float loss2 = net->calcLoss(expectedResults);
-    float lossChange = loss - loss2;
-    cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
-
-    float *newWeights = net->layers[1]->weights;
-    float sumWeightDiff = 0;
-    float sumWeightDiffSquared = 0;
-    for( int i = 0; i < weightsSize; i++ ) {
-        float diff = newWeights[i] - weightsBefore[i];
-        sumWeightDiff += diff;
-        sumWeightDiffSquared += diff * diff;
-    }
-    cout << "sumweightsdiff " << sumWeightDiff << endl;
-//    cout << "sumweightsdiff / learningrate " << (sumWeightDiff / learningRate ) << endl;
-//    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * boardSize ) << endl;
-
-    float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate * sqrt(boardSize) * batchSize;
-
-    cout << " loss change " << lossChange << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
-    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
-    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
-    EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
-    EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
 
 //    delete[] weights1;
 //    delete[] errors;
 //    delete[] results;
     delete[] inputData;
+}
+
+TEST( testbackproperrors, checknumerically ) {
+    float learningRate = 1.0f;
+    const int batchSize = 1;
+    const int boardSize = 1;
+    const int filterSize = 1;
+    const int numPlanes = 1;
+    bool padZeros = false;
+
+    testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, new TanhActivation(), padZeros );
+}
+
+TEST( testbackproperrors, checknumerically_boardsize5_filter3_relu ) {
+    float learningRate = 0.0001f;
+    const int batchSize = 1;
+    const int boardSize = 5;
+    const int filterSize = 3;
+    const int numPlanes = 1;
+    ActivationFunction *fn = new ReluActivation();
+    bool padZeros = true;
+
+    testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, fn, padZeros );
 }
 
 float *test( int boardSize ) {
@@ -236,7 +258,7 @@ TEST( testbackproperrors, board19 ) { // make it work for a board19 first :-)
 TEST( testbackproperrors, comparespecific ) {
     const int batchSize = 5;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 5 )
+    dim.setInputPlanes( 1 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( true ).setPadZeros( false );
 
     int weightsSize = dim.filtersSize;
@@ -250,13 +272,14 @@ TEST( testbackproperrors, comparespecific ) {
     memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
     memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
     memset( results, 0, sizeof(float) * max(10000, resultsSize ) );
-//    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-//    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
-//    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
-    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
+    mt19937 random = WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
+    WeightRandomizer::randomize( random, biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+    WeightRandomizer::randomize( random, errors, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomize( random, results, max(10000, resultsSize ), -1, 1 );
+//    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
 //    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
-    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
-    WeightRandomizer::randomizeInts( results, max(10000, resultsSize ), 0, 3 );
+//    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
+//    WeightRandomizer::randomizeInts( results, max(10000, resultsSize ), 0, 3 );
 
 //    weights[0] = 3;
 //    weights[1] = 5;
@@ -282,9 +305,9 @@ TEST( testbackproperrors, comparespecific ) {
 //    errors[5] = 6;
 
     OpenCLHelper cl;
-    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 1, &cl, dim, new ReluActivation() );
+    BackpropErrors *backpropErrorsImpl1 = BackpropErrors::instanceSpecific( 0, &cl, dim, new ReluActivation() );
     float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, results, weights, biasWeights, errors );
-    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 2, &cl, dim, new ReluActivation() );
+    BackpropErrors *backpropErrorsImpl2 = BackpropErrors::instanceSpecific( 1, &cl, dim, new ReluActivation() );
     float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, results, weights, biasWeights, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;

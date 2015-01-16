@@ -180,6 +180,10 @@ public:
         this->_activationFunction = new LinearActivation();
         return this;
     }
+    ConvolutionalMaker *fn(ActivationFunction *_fn) {
+        this->_activationFunction = _fn;
+        return this;
+    }
     virtual Layer *insert();
     virtual Layer *instance() const;
 };

@@ -71,7 +71,8 @@ VIRTUAL float *BackpropErrorsCpu::backpropErrors( int batchSize, float *results,
                                 float thisWeight = weights[thisWeightIndex];
                                 float thisOutput = results[resultIndex];
                                 float dOutputdSum = fn->calcDerivative( thisOutput );
-                                sumWeightTimesOutError += thisWeight * thisError * dOutputdSum;
+//                                cout << "doutputdsum " << dOutputdSum << endl;
+                                sumWeightTimesOutError += thisWeight * thisError;// * dOutputdSum;
                             }
                         }
                     }
@@ -92,6 +93,22 @@ VIRTUAL float *BackpropErrorsCpu::backpropErrors( int batchSize, float *results,
 VIRTUAL void BackpropErrorsCpu::backpropErrors( int batchSize, 
         CLWrapper *resultsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *errorsWrapper,
         CLWrapper *errorsForUpstreamWrapper ) {
-    throw std::runtime_error( "backpropErrors wrappers not implemented for BackpropErrorsCpu");
+
+    resultsWrapper->copyToHost();
+    weightsWrapper->copyToHost();
+    errorsWrapper->copyToHost();
+    float *biasWeights = 0;
+    if( dim.biased ) {
+        biasWeightsWrapper->copyToHost();
+        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+    }
+    float *errorsForUpstream = backpropErrors( batchSize, (float *)resultsWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights, (float *)errorsWrapper->getHostArray() );
+    float *errorsForUpstreamHostArray = (float*)errorsForUpstreamWrapper->getHostArray();
+    const int errorsForUpstreamWrapperSize = errorsForUpstreamWrapper->size();
+    for( int i = 0; i < errorsForUpstreamWrapperSize; i++ ) {
+        errorsForUpstreamHostArray[i] = errorsForUpstream[i];
+    }
+    errorsForUpstreamWrapper->copyToDevice();
+    delete[] errorsForUpstream;
 }
 
