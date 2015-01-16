@@ -48,14 +48,14 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
     }
 
 //    net->print();
-    cout << "propagate" <<endl;
+//    cout << "propagate" <<endl;
     net->propagate( inputData );
 //    net->print();
     float loss = net->calcLoss(expectedResults);
     float losslayer1 = net->layers[1]->calcLoss(expectedResults);
-    cout << "losslayer1 " << losslayer1 << endl;
+//    cout << "losslayer1 " << losslayer1 << endl;
 
-    cout << "backprop now" <<endl;
+//    cout << "backprop now" <<endl;
     net->backProp( learningRate, expectedResults );
 //    net->layers[1]->print();
     net->propagate( inputData );
@@ -78,9 +78,10 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
 
     float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate; // / filterSize;
 
-    cout << " loss change " << lossChange << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
-    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
-    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
+    cout << " loss change              " << lossChange << endl;
+    cout << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
+//    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
+//    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
     EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
     EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
 
@@ -112,6 +113,18 @@ TEST( testbackpropweights, numericallytest_boardsize9 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(9, 1, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize9_filtersize9 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(9, 9, 1, 1 );
+}
+
+TEST( testbackpropweights, numericallytest_boardsize9_filtersize3 ) {
+    // do one learning, with very small learning rate, and check that loss function changed by
+    // the amount that we kind of expect
+    test(9, 3, 1, 1 );
 }
 
 TEST( testbackpropweights, numericallytest_boardsize3_filtersize3 ) {

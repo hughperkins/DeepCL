@@ -87,3 +87,11 @@ VIRTUAL void BackpropWeights::backpropWeights( int batchSize, float learningRate
     }
 }
 
+float BackpropWeights::learningRateToMultiplier( int batchSize, float rate ) {
+//        float multiplier = rate / batchSize / sqrt( dim.outputBoardSize );
+    float multiplier = rate;
+//    std::cout << "rate " << rate << " multiplier " << multiplier << std::endl;
+    return multiplier;
+}
+
+

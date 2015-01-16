@@ -17,15 +17,7 @@ public:
     ActivationFunction const*fn;
     bool debug = false;
 
-    virtual void backpropWeights( int batchSize, float learningRate, 
-        CLWrapper *errorsWrapper, CLWrapper *resultsWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;
-
-    float learningRateToMultiplier( int batchSize, float rate ) {
-//        float multiplier = rate / batchSize / sqrt( dim.outputBoardSize );
-        float multiplier = rate;
-        std::cout << "rate " << rate << " multiplier " << multiplier << std::endl;
-        return multiplier;
-    }
+    virtual void backpropWeights( int batchSize, float learningRate, CLWrapper *errorsWrapper, CLWrapper *resultsWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -39,6 +31,7 @@ public:
     STATIC BackpropWeights *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
     BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
     VIRTUAL void backpropWeights( int batchSize, float learningRate, float *errors, float *results, float *inputData, float *filters, float *biasWeights );
+    float learningRateToMultiplier( int batchSize, float rate );
 
     // [[[end]]]
 };
