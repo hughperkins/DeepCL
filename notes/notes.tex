@@ -13,8 +13,9 @@
 % }
 \newcommand{\myitemize}[1]{\begin{itemize}#1\end{itemize}}
 
-\usepackage[a4paper]{geometry}
-\newgeometry{left=2cm,bottom=1.5cm,top=1.5cm,right=2cm}
+%\usepackage[a4paper]{geometry}
+%\newgeometry{left=2cm,bottom=1.5cm,top=1.5cm,right=2cm}
+\usepackage[margin=0.2in]{geometry}
 
 \newcommand{\ult}{\vspace{12px}\noindent}
 \newcommand{\ul}{\\ \indent -  }
@@ -28,6 +29,8 @@
 % ref http://tex.stackexchange.com/questions/9363/how-does-one-insert-a-backslash-or-a-tilde-into-latex
 \newcommand{\mytilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
 \newcommand{\distributedas}{\hspace{0.2cm}\mytilde}
+
+\pagestyle{empty}
 
 \begin{document}
 
@@ -52,10 +55,11 @@ $i_i$ is input to node i in input layer
 \[ = \partialderivative{\text{loss}}{o^l_i} \partialderivative{\text{activation}}{s^l_i} o^{l-1}_j \]
 
 \[ = \partialderivative{\text{loss}}{s^l_i} o^{l-1}_j \]
-
 Recursion:
 \[ \partialderivative{E}{s^{l-1}_i} = \sum_k \partialderivative{E}{s^{l}_k} \partialderivative{s^{l}_k}{o^{l-1}_i} \partialderivative{o^{l-1}_i}{s^{l-1}_i}  \]
-\[ = \partialderivative{\text{activation}^{l-1}}{s^{l-1}_i} \sum_k (\text{error from above}) w^l_{ik} \]
+\[ = \partialderivative{\text{activation}^{l-1}_i}{s^{l-1}_i} \sum_k (\text{loss from $l$})_k w^l_{ik} \]
+Alternatively, \[ \partialderivative{E}{s^{l}_i} = \partialderivative{\text{activation}^{l}_i}{s^{l}_i} \sum_k (\text{loss from $l+1$})_k w^{l+1}_{ik} \]
+Can also recurse on $\partialderivative{E}{o^l_i}$: $\partialderivative{E}{o^{l-1}_i} = \sum_k \partialderivative{E}{o^{l}_k} \partialderivative{o^l_k}{s^l_k}  \partialderivative{s^l_k}{o^{l-1}_i}$ $=\sum_k (\text{loss from $l$})_k \partialderivative{\text{activation}^l_k}{s^l_k} w^l_{ik} $
 
 \subsection*{loss}
 
