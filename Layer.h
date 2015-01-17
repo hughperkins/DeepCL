@@ -63,9 +63,9 @@ public:
     Layer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL ~Layer();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL bool providesDerivLossBySumWrapper() const;
-    VIRTUAL float *getDerivLossBySum();
-    VIRTUAL CLWrapper *getDerivLossBySumWrapper();
+    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
+    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
     VIRTUAL bool getBiased() const;
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();

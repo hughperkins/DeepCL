@@ -19,7 +19,7 @@
 #define VIRTUAL virtual
 
 class Propagate;
-//class BackpropErrors;
+class BackpropErrorsv2;
 class BackpropWeights2;
 
 class ConvolutionalLayer : public Layer {
@@ -28,7 +28,7 @@ public:
 
     Propagate *propagateimpl;
     BackpropWeights2 *backpropWeightsImpl;
-//    BackpropErrors *backpropErrorsImpl;
+    BackpropErrorsv2 *backpropErrorsImpl;
 
     LayerDimensions dim;
     ActivationFunction const *const activationFunction;
@@ -43,15 +43,15 @@ public:
 
     CLWrapper *weightsWrapper;
     CLWrapper *resultsWrapper;
-//    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *errorsForUpstreamWrapper;
 
     int batchSize;
     int allocatedSpaceNumExamples;
 
-//    float *errorsForUpstream;
+    float *errorsForUpstream;
 
     bool resultsCopiedToHost;
-//    bool errorsForUpstreamCopiedToHost;
+    bool errorsForUpstreamCopiedToHost;
 
     inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
         return ( ( filterId 
@@ -96,8 +96,10 @@ public:
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     VIRTUAL ~ConvolutionalLayer();
+    VIRTUAL float *getErrorsForUpstream();
     VIRTUAL ActivationFunction const*getActivationFunction();
-    VIRTUAL bool providesDriveLossBySumWrapper() const;
+    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
+    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL int getResultsSize() const;

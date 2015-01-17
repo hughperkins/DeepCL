@@ -242,6 +242,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(1)->relu()->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(1)->relu()->insert();
+    net->squareLossMaker()->insert();
     cout << "hand-setting weights..." << endl;
     net->initWeights( 1, layer1weights, layer1bias );
     net->initWeights( 2, layer2weights, layer2bias );
@@ -249,12 +250,12 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    net->setBatchSize(4);
 //    net->propagate( data );
 //    net->print();
-    for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(1)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
+    for( int epoch = 0; epoch < 200; epoch++ ) {
+        net->epochMaker()->learningRate(0.1f)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
            ->expectedOutputs(expectedResults)->run();
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(expectedResults) << endl;
     }
-//    net->print();
+    net->print();
     AccuracyHelper::printAccuracy( numExamples, 2, labels, net->getResults() );
 
     float loss = net->calcLoss(expectedResults);

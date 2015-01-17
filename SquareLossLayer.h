@@ -1,3 +1,9 @@
+// Copyright Hugh Perkins 2014 hughperkins at gmail
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #pragma once
 
 #include "Layer.h"
@@ -24,7 +30,7 @@ public:
 
     SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker );
     VIRTUAL ~SquareLossLayer();
-    VIRTUAL float*getDerivLossBySum();
+    VIRTUAL float*getErrorsForUpstream();
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void calcDerivLossBySum( float const*expectedResults );

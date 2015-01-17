@@ -20,7 +20,7 @@ add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp Neur
     BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
     BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
-    BackpropWeights2Cpu.cpp LayerMaker.cpp
+    BackpropWeights2Cpu.cpp LayerMaker.cpp BackpropErrorsv2.cpp BackpropErrorsv2Cpu.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 add_custom_command( 
@@ -52,10 +52,11 @@ endif(PYTHON_AVAILABLE)
 
 set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
+ test/testbackproperrors.cpp
  )
 #
 # test/testmnistlearn_unit.cpp
-#test/testbackprop.cpp test/testbackproperrors.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
+#test/testbackprop.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
 #
 
 #add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )

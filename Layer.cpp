@@ -69,14 +69,14 @@ VIRTUAL Layer::~Layer() {
 VIRTUAL void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");
 }
-VIRTUAL bool Layer::providesDerivLossBySumWrapper() const {
+VIRTUAL bool Layer::providesErrorsForUpstreamWrapper() const {
     return false;
 }
-VIRTUAL float *Layer::getDerivLossBySum() {
-    throw std::runtime_error("getDerivLossBySum not implemented for this layer type, layer " + toString(layerIndex) );
+VIRTUAL float *Layer::getErrorsForUpstream() {
+    throw std::runtime_error("getErrorsForUpstream not implemented for this layer type, layer " + toString(layerIndex) );
 }
-VIRTUAL CLWrapper *Layer::getDerivLossBySumWrapper() {
-    throw std::runtime_error("getDerivLossBySumWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+VIRTUAL CLWrapper *Layer::getErrorsForUpstreamWrapper() {
+    throw std::runtime_error("getErrorsForUpstreamWrapper not implemented for this layer type, layer " + toString(layerIndex) );
 }
 VIRTUAL bool Layer::getBiased() const {
      throw std::runtime_error("getBiased not implemented for this layer type, layer " + toString(layerIndex) );
