@@ -12,108 +12,108 @@ using namespace std;
 #include "LogicalDataCreator.h"
 #include "test/myasserts.h"
 
-TEST( testlogicaloperators, FullyConnected_Biased_Tanh_And_1layer ) {
-//    cout << "And" << endl;
-    LogicalDataCreator ldc;
-    ldc.applyAndGate();
-
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
-//    net->print();
-    for( int epoch = 0; epoch < 100; epoch++ ) {
-        net->epochMaker()
-           ->learningRate(1)->batchSize(4)->numExamples(4)
-           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
-           ->run();
-        if( epoch % 20 == 0 ) {
-            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
-        }
-//        net->printWeights();
-    }
-//    net->print();
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
-    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
-
-    float loss = net->calcLoss(ldc.expectedResults);
-    cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4, loss );
-
-    delete net;
-}
-
-TEST( testlogicaloperators, FullyConnected_1layer_biased_tanh_Or ) {
-    cout << "Or" << endl;
-    LogicalDataCreator ldc;
+//TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
+////    cout << "And" << endl;
+//    LogicalDataCreator ldc;
 //    ldc.applyAndGate();
-    ldc.applyOrGate();
-//    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
-    for( int epoch = 0; epoch < 10; epoch++ ) {
-        net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
-        if( epoch % 5 == 0 ) {
-            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
-        }
-//        net->printWeights();
-    }
 
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
-    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
-
-    float loss = net->calcLoss(ldc.expectedResults);
-    cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4, loss );
-
-    delete net;
-}
-
-TEST( testlogicaloperators, FullyConnected_2layer_Xor ) {
-//    cout << "Xor" << endl;
-    LogicalDataCreator ldc;
-    ldc.applyXorGate();
-//    NeuralNet *net = new NeuralNet(2, 1 );
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
-    float weights1[] = {-1.04243, 0.251409, -0.806014, -0.0268563};
-    float weights2[] = {0.107038, -0.144079, 0.1492, -0.395718};
-    float biasWeights1[] = {-0.415169, 0.536681};
-    float biasWeights2[] = {-0.0480136, 0.167825};
-    net->initWeights( 1, weights1, biasWeights1 );
-    net->initWeights( 2, weights2, biasWeights2 );
-    for( int epoch = 0; epoch < 200; epoch++ ) {
-        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedResults );
-//        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
-
-        if( epoch % 50 == 0 ) {
-            float loss = net->calcLoss(ldc.expectedResults);
-            cout << "loss, E, " << loss << endl;
-        }
-//        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
-//        net->printWeights();
-//        if( loss < 0.00001 ) {
-//            break;
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
+////    net->print();
+//    for( int epoch = 0; epoch < 100; epoch++ ) {
+//        net->epochMaker()
+//           ->learningRate(1)->batchSize(4)->numExamples(4)
+//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+//           ->run();
+//        if( epoch % 20 == 0 ) {
+//            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+//            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
 //        }
-    }
-    cout << " Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
-    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    if( numCorrect != ldc.N ) {
-//        net->print();
+////        net->printWeights();
 //    }
-    assertEquals( numCorrect, ldc.N );
+////    net->print();
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+//    assertEquals( numCorrect, ldc.N );
 
-    float loss = net->calcLoss(ldc.expectedResults);
-    cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.00001, loss );
+//    float loss = net->calcLoss(ldc.expectedResults);
+//    cout << "loss, E, " << loss << endl;
+//    assertLessThan( 0.4, loss );
 
-    delete net;
-}
+//    delete net;
+//}
+
+//TEST( testlogicaloperators, DISABLED_FullyConnected_1layer_biased_tanh_Or ) {
+//    cout << "Or" << endl;
+//    LogicalDataCreator ldc;
+////    ldc.applyAndGate();
+//    ldc.applyOrGate();
+////    NeuralNet *net = new NeuralNet(2, 1 );
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
+//    for( int epoch = 0; epoch < 10; epoch++ ) {
+//        net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
+//        if( epoch % 5 == 0 ) {
+//            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+//            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//        }
+////        net->printWeights();
+//    }
+
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+//    assertEquals( numCorrect, ldc.N );
+
+//    float loss = net->calcLoss(ldc.expectedResults);
+//    cout << "loss, E, " << loss << endl;
+//    assertLessThan( 0.4, loss );
+
+//    delete net;
+//}
+
+//TEST( testlogicaloperators, DISABLED_FullyConnected_2layer_Xor ) {
+////    cout << "Xor" << endl;
+//    LogicalDataCreator ldc;
+//    ldc.applyXorGate();
+////    NeuralNet *net = new NeuralNet(2, 1 );
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
+//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
+//    float weights1[] = {-1.04243, 0.251409, -0.806014, -0.0268563};
+//    float weights2[] = {0.107038, -0.144079, 0.1492, -0.395718};
+//    float biasWeights1[] = {-0.415169, 0.536681};
+//    float biasWeights2[] = {-0.0480136, 0.167825};
+//    net->initWeights( 1, weights1, biasWeights1 );
+//    net->initWeights( 2, weights2, biasWeights2 );
+//    for( int epoch = 0; epoch < 200; epoch++ ) {
+//        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedResults );
+////        net->printWeightsAsCode();
+////        net->printBiasWeightsAsCode();
+
+//        if( epoch % 50 == 0 ) {
+//            float loss = net->calcLoss(ldc.expectedResults);
+//            cout << "loss, E, " << loss << endl;
+//        }
+////        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+////        net->printWeights();
+////        if( loss < 0.00001 ) {
+////            break;
+////        }
+//    }
+//    cout << " Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+////    if( numCorrect != ldc.N ) {
+////        net->print();
+////    }
+//    assertEquals( numCorrect, ldc.N );
+
+//    float loss = net->calcLoss(ldc.expectedResults);
+//    cout << "loss, E, " << loss << endl;
+//    assertLessThan( 0.00001, loss );
+
+//    delete net;
+//}
 
 TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
@@ -140,6 +140,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     ldc.applyAndGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(1)->insert();
+    net->squareLossMaker()->insert();
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
@@ -164,6 +165,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     ldc.applyOrGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(1)->insert();
+    net->squareLossMaker()->insert();
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
@@ -262,59 +264,59 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     delete net;
 }
 
-TEST( testlogicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
-    cout << "And" << endl;
-    LogicalDataCreator ldc( new ReluActivation() );
-    ldc.applyAndGate();
+//TEST( testlogicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
+//    cout << "And" << endl;
+//    LogicalDataCreator ldc( new ReluActivation() );
+//    ldc.applyAndGate();
 
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->relu()->biased()->insert();
-    net->print();
-    for( int epoch = 0; epoch < 10; epoch++ ) {
-        net->epochMaker()
-           ->learningRate(3)->batchSize(4)->numExamples(4)
-           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
-           ->run();
-        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
-//        net->printWeights();
-    }
-    net->print();
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
-    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
-    delete net;
-
-}
-
-TEST( testlogicaloperators, FullyConnected_1layer_biased_linear_And ) {
-    cout << "And" << endl;
-    LogicalDataCreator ldc( new ReluActivation() );
-    ldc.applyAndGate();
-
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-    net->fullyConnectedMaker()->planes(2)->boardSize(1)->linear()->biased()->insert();
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->relu()->biased()->insert();
 //    net->print();
-    for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()
-           ->learningRate(3)->batchSize(4)->numExamples(4)
-           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
-           ->run();
-                
-        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+//    for( int epoch = 0; epoch < 10; epoch++ ) {
+//        net->epochMaker()
+//           ->learningRate(3)->batchSize(4)->numExamples(4)
+//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+//           ->run();
+//        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
 //        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
-//        net->printWeights();
-    }
+////        net->printWeights();
+//    }
 //    net->print();
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
-    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+//    assertEquals( numCorrect, ldc.N );
+//    delete net;
 
-    float loss = net->calcLoss(ldc.expectedResults);
-    cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4, loss );
+//}
 
-    delete net;
-}
+//TEST( testlogicaloperators, DISABLED_FullyConnected_1layer_biased_linear_And ) {
+//    cout << "And" << endl;
+//    LogicalDataCreator ldc( new ReluActivation() );
+//    ldc.applyAndGate();
+
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->linear()->biased()->insert();
+////    net->print();
+//    for( int epoch = 0; epoch < 20; epoch++ ) {
+//        net->epochMaker()
+//           ->learningRate(3)->batchSize(4)->numExamples(4)
+//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+//           ->run();
+//                
+//        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+////        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+////        net->printWeights();
+//    }
+////    net->print();
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
+//    assertEquals( numCorrect, ldc.N );
+
+//    float loss = net->calcLoss(ldc.expectedResults);
+//    cout << "loss, E, " << loss << endl;
+//    assertLessThan( 0.4, loss );
+
+//    delete net;
+//}
 
 
