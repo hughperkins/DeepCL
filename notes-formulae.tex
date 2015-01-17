@@ -1,0 +1,100 @@
+\documentclass[a4paper,12pt,fleqn]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+% Expectation symbol  http://www.guyrutenberg.com/2011/11/19/expectation-symbol-in-latex/
+\DeclareMathOperator*{\E}{\mathbb{E}}
+\DeclareMathOperator*{\I}{\mathbb{I}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+% usage:
+% \myitemize {
+%    \item item one
+%    \item item two
+%    % ...
+% }
+\newcommand{\myitemize}[1]{\begin{itemize}#1\end{itemize}}
+
+%\usepackage[a4paper]{geometry}
+%\newgeometry{left=2cm,bottom=1.5cm,top=1.5cm,right=2cm}
+%\usepackage{geometry}
+\usepackage[margin=0.2in]{geometry}
+\geometry{paperwidth=16cm,paperheight=48cm}
+
+\newcommand{\ult}{\vspace{12px}\noindent}
+\newcommand{\ul}{\\ \indent -  }
+\newcommand{\ull}{\\ \indent\indent - }
+\newcommand{\ulll}{\\ \indent\indent\indent - }
+\newcommand{\bl}{\\ \indent }
+\newcommand{\bll}{\\ \indent\indent }
+
+\newcommand{\partialderivative}[2]{\frac{\partial #1}{\partial #2}}
+
+% ref http://tex.stackexchange.com/questions/9363/how-does-one-insert-a-backslash-or-a-tilde-into-latex
+\newcommand{\mytilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{\sim}$}}
+\newcommand{\distributedas}{\hspace{0.2cm}\mytilde}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\subsection*{notation}
+
+$E$ is error ($\equiv$ loss) \\
+$o$ is output, of a neuron, after activation \\
+$s$ is sum of weight * underlying layer outputs, before activation \\
+$w$ is weight \\
+$o^2$ is output of second layer \\
+$o^2_i$ is output of node i in layer 2 \\
+$w^2_{ji}$ is weight from node j in layer 1 to node i in layer 2\\
+layers are arranged as: 0 is input layer, then layer 1, layer 2 etc \\ 
+$a(x)$ is activation function\\
+$y^*_i$ is label i, ie the ground truth for node i, in final output layer\\
+$i_i$ is input to node i in input layer
+
+\subsection*{overall}
+
+\[ \partialderivative{E}{w^{l-1}_{ji}} = \partialderivative{E}{o_i} \partialderivative{o_i}{s_i} \partialderivative{s_i}{w_{ji}} \]
+
+\[ = \partialderivative{\text{loss}}{o^l_i} \partialderivative{\text{activation}}{s^l_i} o^{l-1}_j \]
+
+\[ = \partialderivative{\text{loss}}{s^l_i} o^{l-1}_j \]
+Recursion:
+\[ \partialderivative{E}{s^{l-1}_i} = \sum_k \partialderivative{E}{s^{l}_k} \partialderivative{s^{l}_k}{o^{l-1}_i} \partialderivative{o^{l-1}_i}{s^{l-1}_i}  \]
+\[ = \partialderivative{\text{activation}^{l-1}_i}{s^{l-1}_i} \sum_k (\text{loss from $l$})_k w^l_{ik} \]
+Alternatively, \[ \partialderivative{E}{s^{l}_i} = \partialderivative{\text{activation}^{l}_i}{s^{l}_i} \sum_k (\text{loss from $l+1$})_k w^{l+1}_{ik} \]
+Can also recurse on $\partialderivative{E}{o^l_i}$: $\partialderivative{E}{o^{l-1}_i} = \sum_k \partialderivative{E}{o^{l}_k} \partialderivative{o^l_k}{s^l_k}  \partialderivative{s^l_k}{o^{l-1}_i}$ $=\sum_k (\text{loss from $l$})_k \partialderivative{\text{activation}^l_k}{s^l_k} w^l_{ik} $
+
+\subsection*{loss}
+
+\ult{Squared error}
+
+\[E = \sum_i \frac{1}{2}( o_i - y^*_i)^2\]
+\[ \partialderivative{E}{o_i} = o_i - y^*_i \]
+
+\ult{Cross-entropy}
+
+\[ E = - \sum_i (y^*_i \log o_i + ( 1-y^*_i)\log(1-o_i) ) \]
+\[ \partialderivative{E}{o_i} = \frac{o_i - y^*_i}{o_i(1-o_i)} \]
+
+\ult{Multinomial cross-entropy}
+
+\[ E = - \sum_i y^*_i \log o_i \]
+\[ \partialderivative{E}{o_i} = -\frac{y^*_i}{o_i} \]
+
+\subsection*{activation}
+
+\ult{sigmoid}
+
+\[ o_i = \sigma(s_i) \] \[ \partialderivative{o_i}{s_i} = o_i(1-o_i) \]
+
+\ult{tanh}
+
+\[ o_i = \tanh(s_i) \] \[ \partialderivative{o_i}{s_i} = 1-(o_i)^2 \]
+
+\ult{relu}
+
+\ult{linear}
+
+\ult{softmax}
+
+\end{document}
+

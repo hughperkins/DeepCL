@@ -218,22 +218,11 @@ void NeuralNet::propagate( float const*images) {
 //        timer.timeCheck("propagate time");
 }
 void NeuralNet::backProp( float learningRate, float const *expectedResults) {
-    // backward...
-//    Layer *lastLayer = getLastLayer();
-//    float *errors = new float[ lastLayer->getResultsSize() ];
     dynamic_cast<ExpectedValuesLayer*>(getLastLayer())->calcErrors( expectedResults );
-//    float *errorsForNextLayer = 0;
     for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
-//        if( layerIdx > 1 ) {
-//            errorsForNextLayer = new float[ layers[layerIdx-1]->getResultsSize() ];
-//        }
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backPropErrors( learningRate );
         StatefulTimer::setPrefix("" );
-//        delete[] errors;
-//        errors = 0;
-//        errors = errorsForNextLayer;
-//        errorsForNextLayer = 0;
     }
 }
 void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
