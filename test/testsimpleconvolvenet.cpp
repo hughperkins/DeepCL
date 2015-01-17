@@ -480,7 +480,7 @@ float biasWeights2[] = {-0.071288, 0.443919};
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
-            ->learningRate(1)
+            ->learningRate(0.4f)
             ->batchSize(2)
             ->numExamples(2)
             ->inputData(data)
@@ -767,7 +767,7 @@ float biasWeights2[] = {-0.0863176, -0.227985, -0.147554};
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.1)
+            ->learningRate(0.01)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)

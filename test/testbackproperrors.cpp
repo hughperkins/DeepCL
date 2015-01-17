@@ -59,7 +59,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
         net->backProp( learningRate, expectedResults );
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
-            dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weights[i] = weightsBefore2[i];
+//            dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weights[i] = weightsBefore2[i];
         }
         dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToDevice();
         net->propagate( inputData );
@@ -73,6 +73,12 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
         float sumWeightDiffSquared = 0;
         for( int i = 0; i < weightsSize1; i++ ) {
             float diff = newWeights[i] - weightsBefore1[i];
+            sumWeightDiff += diff;
+            sumWeightDiffSquared += diff * diff;
+        }
+        newWeights = net->layers[2]->getWeights();
+        for( int i = 0; i < weightsSize2; i++ ) {
+            float diff = newWeights[i] - weightsBefore2[i];
             sumWeightDiff += diff;
             sumWeightDiffSquared += diff * diff;
         }
@@ -97,7 +103,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
 }
 
 TEST( testbackproperrors, checknumerically ) {
-    float learningRate = 1.0f;
+    float learningRate = 0.1f;
     const int batchSize = 1;
     const int boardSize = 1;
     const int filterSize = 1;

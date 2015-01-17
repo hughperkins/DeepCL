@@ -81,7 +81,7 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
                         * dim.inputPlanes + upstreamPlane )
                         * dim.inputBoardSize + upstreamRow )
                         * dim.inputBoardSize + upstreamCol;
-                    errorsForUpstream[upstreamResultIndex] = sumWeightTimesOutError;
+                    errorsForUpstream[upstreamResultIndex] = sumWeightTimesOutError * activationDerivativeUpstream;
                 }
             }
         }
