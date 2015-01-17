@@ -156,7 +156,7 @@ net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->bias
 * Network details:
   * The first layer is a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is using Relu
   * The second layer looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
-* There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](https://github.com/hughperkins/ClConvolve/blob/master/test/testneuralnetmnistconvolve-experimental.cpp)
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](test/testneuralnetmnistconvolve-experimental.cpp)
   * You can build and run it as follows:
 ```
 make testneuralnetconvolve-experimental
@@ -225,7 +225,7 @@ Development notes
 
 - if you want to modify things, please feel free to fork this repository, tweak things, and send a pull request
 - note that declarations in the header files are generated automatically.  [cogapp](http://nedbatchelder.com/code/cog/) generator provides
-the framework, and [cog_addheaders.py](https://github.com/hughperkins/ClConvolve/blob/master/cog_addheaders.py) is a specific generator for header file declarations. You don't need this to
+the framework, and [cog_addheaders.py](cog_addheaders.py) is a specific generator for header file declarations. You don't need this to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
 cmake configuration, then header file declarations will be updated for you automatically :-)
 
