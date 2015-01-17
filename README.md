@@ -218,7 +218,7 @@ Formulae notes
 
 These are generic formulae, but just putting them here, so I remember them ;-)
 
-![formulae](https://github.com/hughperkins/ClConvolve/blob/change-from-dLossdOut-to-dLossdSum/notes-formulae.png)
+![formulae](notes-formulae.png)
 
 Development notes
 =================
