@@ -51,9 +51,10 @@ endif(PYTHON_AVAILABLE)
 #)
 
 set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
- test/testMnistLoader.cpp )
+ test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp
+ )
 #
-# test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
+# test/testlogicaloperators.cpp test/testmnistlearn_unit.cpp
 #test/testbackprop.cpp test/testbackproperrors.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
 #
 

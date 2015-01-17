@@ -17,6 +17,7 @@ public:
     LossLayer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL void propagate();
     VIRTUAL float *getResults();
+    VIRTUAL int getOutputCubeSize() const;
 
     // [[[end]]]
 };

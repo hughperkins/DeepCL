@@ -15,4 +15,7 @@ VIRTUAL void LossLayer::propagate() {
 VIRTUAL float *LossLayer::getResults() {
     return previousLayer->getResults();
 }
+VIRTUAL int LossLayer::getOutputCubeSize() const {
+    return previousLayer->getOutputCubeSize();
+}
 

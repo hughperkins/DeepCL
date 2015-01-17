@@ -27,7 +27,7 @@ VIRTUAL float*SquareLossLayer::getDerivLossBySum() {
 VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
     float loss = 0;
     float *results = getResults();
-    cout << "SquareLossLayer::calcLoss" << endl;
+//    cout << "SquareLossLayer::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
     int boardSize = previousLayer->getOutputBoardSize();
@@ -50,7 +50,7 @@ VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
         }            
     }
     loss *= 0.5f;
-    cout << "loss " << loss << endl;
+//    cout << "loss " << loss << endl;
     return loss;
  }
 VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {

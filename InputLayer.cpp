@@ -72,8 +72,11 @@ VIRTUAL int InputLayer::getOutputBoardSize() const {
 VIRTUAL int InputLayer::getOutputPlanes() const {
     return outputPlanes;
 }
+VIRTUAL int InputLayer::getOutputCubeSize() const {
+    return outputPlanes * outputBoardSize * outputBoardSize;
+}
 VIRTUAL int InputLayer::getResultsSize() const {
-    return batchSize * outputPlanes * outputBoardSize * outputBoardSize;
+    return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string InputLayer::toString() {
     return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";

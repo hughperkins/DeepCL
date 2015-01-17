@@ -20,6 +20,7 @@
 #include "EpochMaker.h"
 //#include "ExpectedValuesLayer.h"
 #include "LossLayer.h"
+#include "ExceptionMacros.h"
 
 #include "NeuralNet.h"
 
@@ -131,6 +132,9 @@ void NeuralNet::setBatchSize( int batchSize ) {
 }
 float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
 //        Timer timer;
+    if( dynamic_cast<LossLayer*>(getLastLayer()) == 0 ) {
+        THROW("You need to add a LossLayer as the last layer of the network");
+    }
     setBatchSize( batchSize );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     float loss = 0;
@@ -168,7 +172,7 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
     int numRight = 0;
     int total = 0;
     if( getLastLayer()->getOutputBoardSize() != 1 ) {
-        throw std::runtime_error("Last layer should have board size of 1, and number of planes equal number of categories, if you want to measure training accuracy");
+        THROW("Last layer should have board size of 1, and number of planes equal number of categories, if you want to measure training accuracy");
     }
     for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;

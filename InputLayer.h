@@ -48,6 +48,7 @@ public:
     VIRTUAL void backPropErrors( float learningRate, float const *errors );
     VIRTUAL int getOutputBoardSize() const;
     VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getResultsSize() const;
     VIRTUAL std::string toString();
 

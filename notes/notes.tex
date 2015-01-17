@@ -240,5 +240,16 @@ softmax: \[ \partialderivative{L}{o^{l=4}_i} = o^{l=4}_i - y^*_i \]
    \ul convolutional, relu, $o^{1}_i$, $s^{1}_i$, $w^{1}_{ji}$, $s^{1}_i = \sum_k o^{0}_k w^{1}_{ki}$, $o^{1}_i = a(s^{1}_i)$
    \ul input $o^{0}_i = i_i$
 
+\ult{bias}
+
+We want \[ \partialderivative{E}{b^l} = \sum_k \partialderivative{E}{o_k} \partialderivative{o_k}{s_k} \partialderivative{s_k}{b^l} \]
+Where: \[ s^l_i = \sum_k w^l_{ki} o^{l-1}_k + b^l \]
+Then, $ \partialderivative{E}{o_i} $ is the same as before, since the loss function didnt change, but note that we need to sum over all nodes.\\
+$ \partialderivative{o_i}{s_i} $  doesnt change, since the activation function doesnt change, but note that we need to sum over all nodes \\
+Lastly $ \partialderivative{s_i}{w_{ji}} $, for $b^l$ is:
+\[ \partialderivative{s^l_i}{b^l} \]
+\[ = 1 \]
+So, \[ \partialderivative{E}{b^l} = \sum_k \partialderivative{E}{o_k} \partialderivative{o_k}{s_k} \]
+\[ = \sum_k \partialderivative{E}{s_k} \]
 \end{document}
 

@@ -105,10 +105,6 @@ VIRTUAL bool ConvolutionalLayer::providesDriveLossBySumWrapper() const {
 //VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
 //    return errorsForUpstreamWrapper;
 //}
-VIRTUAL void ConvolutionalLayer::initWeights( float*weights ) {
-    Layer::initWeights( weights );
-    weightsWrapper->copyToDevice();
-}
 VIRTUAL float const *ConvolutionalLayer::getWeights() const {
     return weights;
 }
@@ -278,6 +274,19 @@ VIRTUAL float * ConvolutionalLayer::getResults() {
     }
     return results;
 };
+VIRTUAL void ConvolutionalLayer::initWeights( float *weights ) {
+    int weightsSize = dim.filtersSize;
+    memcpy( this->weights, weights, sizeof(float) * weightsSize );
+    weightsWrapper->copyToDevice();
+}
+VIRTUAL int ConvolutionalLayer::getOutputCubeSize() const {
+    return dim.outputCubeSize;
+}
+VIRTUAL void ConvolutionalLayer::initBiasWeights( float *biasWeights ) {
+    int biasWeightsSize = dim.numFilters;
+    memcpy( this->biasWeights, biasWeights, sizeof(float) * biasWeightsSize );
+//    biasWeightsWrapper->copyToDevice();
+}
 VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
     return dim.numFilters * dim.inputPlanes * dim.filterSize * dim.filterSize;
 }

@@ -98,7 +98,6 @@ public:
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL bool providesDriveLossBySumWrapper() const;
-    VIRTUAL void initWeights( float*weights );
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL int getResultsSize() const;
@@ -113,6 +112,9 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
     VIRTUAL float * getResults();
+    VIRTUAL void initWeights( float *weights );
+    VIRTUAL int getOutputCubeSize() const;
+    VIRTUAL void initBiasWeights( float *biasWeights );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void backProp( float learningRate );
