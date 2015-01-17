@@ -31,6 +31,52 @@
 
 \begin{document}
 
+\subsection*{overall}
+
+\[ \partialderivative{E}{w_{ji}} = \partialderivative{E}{o_i} \partialderivative{o_i}{s_i} \partialderivative{s_i}{w_{ji}} \]
+
+\[ = \partialderivative{\text{loss}}{o^l_i} \partialderivative{\text{activation}}{s^l_i} o^{l-1}_j \]
+
+\[ = \partialderivative{\text{loss}}{s^l_i} o^{l-1}_j \]
+
+\[ \partialderivative{E}{s^l_i} = \partialderivative{E}{s^{l+1}_i} \partialderivative{s^{l+1}_i}{o^l_i} \partialderivative{o^l_i}{s^l_i}  \]
+\[ \]
+
+\subsection*{loss}
+
+\ult{Squared error}
+
+\[E = \sum_i \frac{1}{2}( o_i - y^*_i)^2\]
+\[ \partialderivative{E}{o_i} = o_i - y^*_i \]
+
+\ult{Cross-entropy}
+
+\[ E = - \sum_i (y^*_i \log o_i + ( 1-y^*_i)\log(1-o_i) ) \]
+\[ \partialderivative{E}{o_i} = \frac{o_i - y^*_i}{o_i(1-o_i)} \]
+
+\ult{Multinomial cross-entropy}
+
+\[ E = - \sum_i y^*_i \log o_i \]
+\[ \partialderivative{E}{o_i} = -\frac{y^*_i}{o_i} \]
+
+\subsection*{activation}
+
+\ult{sigmoid}
+
+\[ o_i = \sigma(s_i) \] \[ \partialderivative{o_i}{s_i} = o_i(1-o_i) \]
+
+\ult{tanh}
+
+\[ o_i = \tanh(s_i) \] \[ \partialderivative{o_i}{s_i} = 1-(o_i)^2 \]
+
+\ult{relu}
+
+\ult{linear}
+
+\ult{softmax}
+
+\subsection*{scratch}
+
 \ult {backpropagation}
 
    \[ y^*(t) = f[x(t)] + \epsilon \]
@@ -136,9 +182,11 @@ Cross entropy: \[ L = - \sum_k ( y^*_k \log( o_k ) + ( 1 - y^*_k) \log(1 - o_k) 
 
 Cross-entropy, multiclass: \[ L = - \sum_i y^*_i \log(o_i) \]
 \[ \frac{\partial L}{\partial o_i} = - \frac{ y^*_i}{o_i}  \]
-\[ \frac{\partial o_i}{\partial s_j} = o_i(1-o_i) \] (when $j = i$)
-\[ \frac{\partial o_i}{\partial s_j} = -o_i o_j \] (when $j != i$)
-\[ = \delta_{i,j}o_i - o_i o_j \]
+when $j = i$: \[ \frac{\partial o_i}{\partial s_j} = o_i(1-o_i) \]
+when $j != i$: \[ \frac{\partial o_i}{\partial s_j} = -o_i o_j \]
+Generalizing:
+\[ \frac{\partial o_i}{\partial s_j} = \delta_{i,j}o_i - o_i o_j \]
+\[ = o_i( \delta_{i,j} - o_j ) \]
 \[ \frac{\partial E}{\partial s_i} = o_i - y^*_i \]
 
 Squared error: \[ L = \sum_k \frac{1}{2} ( y^*_k - o_k )^2 \]
@@ -178,6 +226,60 @@ So \[ \partialderivative{L}{w_{ji}} = \frac{w_{ji}(n+1) - w_{ji}(n)}{\alpha} \]
 \[ \Delta(w_{ji}) = \alpha \partialderivative{L}{w_{ji}} \]
 Therefore, \[ \partialderivative{L}{w_{ji}} = \frac{\Delta w_{ji}}{\alpha} \]
 And so, \[ \Delta L \approx  \frac{(\Delta w_{ji})^2} {\alpha}   \]
+
+\ult{errors backprop compared to possible layer configurations}
+
+using $\partialderivative{E}{s^l_i}$:
+
+\ult{example configuration:}
+   \ul expected outputs, $y^*_i$, $L = \sum_i \frac{1}{2} ( y^*_i - o^{l=4}_i )^2 $
+   \ul softmax, $o^{l=4}_i$, $o^{l=4}_i=a(s^{l=4}_1,s^{l=4}_2,..,s^{l=4}_k)$, $s^{l=4}_i = o^{l=3}_i$
+   \ul fully connected, linear, $o^{l=3}_i$, $s^{l=3}_i$, $w^{l=3}_{ji}$, $o^{l=3}_i=s^{l=3}_i$, $s^{l=3}_i = \sum_k o^{l=2}_k w^{l=3}_{ki}$
+   \ul convolutional, relu, $o^{l=2}_i$, $s^{l=2}_i$, $w^{l=2}_{ji}$, $s^{l=2}_i = \sum_k o^{l=1}_k w^{l=2}_{ki}$, $o^{l=2}_i = a(s^{l=2}_i)$
+   \ul convolutional, relu, $o^{l=1}_i$, $s^{l=1}_i$, $w^{l=1}_{ji}$, $s^{l=1}_i = \sum_k o^{l=0}_k w^{l=1}_{ki}$, $o^{l=1}_i = a(s^{l=1}_i)$
+   \ul input $o^{l=0}_i$
+
+softmax: \[ \partialderivative{L}{o^{l=4}_i} = o^{l=4}_i - y^*_i \]
+\[ \partialderivative{o^{l=4}_i}{s^{l=4}_j} = o_i(\delta_{i,j}-o_j) \]
+\[ \partialderivative{s^{l=4}_i}{o^{l=3}_i} = 1 \]
+\[ \partialderivative{o^{l=3}_i}{s^{l=3}_i} = 1 \]
+\[ \partialderivative{s^{l=3}_i}{w^{l=3}_{ji}} = o^{l=2}_j \]
+\[ \partialderivative{s^{l=3}_i}{o^{l=2}_j} = w^{l=3}_{ji} \]
+\[ \partialderivative{o^{l=2}_i}{s^{l=2}_i} =  \]
+
+\ult{example configuration:}
+   \ul expected outputs, $y^*_i$ $\rightarrow$ squared error $E = \sum_k \frac{1}{2}(o_k - y^*_k)^2 $
+   \ul fully connected layer, $o^2_i = a^2(s^2_i)$, $a^2(x) = \tanh(x)$ $\partialderivative{\tanh(x)}{x} = 1-(\tanh(x))^2 $, $s^2_i = \sum_k o^1_k w^2_{ki}$
+   \ul fully connected layer, $o^1_i = a^1(s^1_i)$, $a^1(x) = \tanh(x)$, $s^1_i = \sum_k o^0_k w^1_{ki}$
+   \ul input layer, $o^0_i = i_i$
+
+\[ \partialderivative{E}{o^2_i} = o_i - y^*_i \] \[ \partialderivative{E}{s^2_i} = (o_i - y^*_i ) (1 - (o^2_i)^2) \]
+
+\ult{example configuration:}
+   \ul expected outputs, $y^*_i$ $\rightarrow$ cross-entropy error $E = - \sum_k (y^*_k \log o^2_k + (1-y^*_k) \log(1-o^2_k)) $
+   \ul fully connected layer, $o^2_i = a^2(s^2_i)$, $a^2(x) = \tanh(x)$ $\partialderivative{\tanh(x)}{x} = 1-(\tanh(x))^2 $, $s^2_i = \sum_k o^1_k w^2_{ki}$
+   \ul fully connected layer, $o^1_i = a^1(s^1_i)$, $a^1(x) = \tanh(x)$, $s^1_i = \sum_k o^0_k w^1_{ki}$
+   \ul input layer, $o^0_i = i_i$
+
+\[ \partialderivative{E}{o^2_i} = \frac{o^2_i - y^*_i}{o^2_i(1-o^2_i)} \]
+\[ \partialderivative{E}{s^2_i} = \frac{o^2_i - y^*_i}{o^2_i(1-o^2_i)} ( 1 - (o^2_i)^2 ) \]
+
+\ult{example configuration:}
+   \ul expected outputs, $y^*_i$ $\rightarrow$ cross-entropy error $E = - \sum_k (y^*_k \log o^2_k + (1-y^*_k) \log(1-o^2_k)) $
+   \ul fully connected layer, $o^2_i = a^2(s^2_i)$, $a^2(x) = \sigma    (x)$ $\partialderivative{\sigma(x)}{x} = \sigma(x)( 1 - \sigma(x) ) $, $s^2_i = \sum_k o^1_k w^2_{ki}$
+   \ul fully connected layer, $o^1_i = a^1(s^1_i)$, $a^1(x) = \tanh(x)$, $s^1_i = \sum_k o^0_k w^1_{ki}$
+   \ul input layer, $o^0_i = i_i$
+
+\[ \partialderivative{E}{o^2_i} = \frac{o^2_i - y^*_i}{o^2_i(1-o^2_i)} \]
+\[ \partialderivative{E}{s^2_i} = \frac{o^2_i - y^*_i}{o^2_i(1-o^2_i)} o^2_i(1-o^2_i) = o^2_i - y^*_i \]
+
+\ult{example configuration:}
+   \ul expected outputs, $y^*_i$, $\rightarrow$ cross-entropy error $E = - \sum_k y^*_k \log o^2_k $
+   \ul softmax, $o^{4}_i$, $o^{4}_i=a(s^{4}_1,s^{4}_2,..,s^{4}_k)$, $s^{l=4}_i = o^{3}_i$
+   \ul fully connected, linear, $o^{l}_i$, $s^{l}_i$, $w^{l}_{ji}$, $o^{l}_i=s^{l}_i$, $s^{l=3}_i = \sum_k o^{2}_k w^{3}_{ki}$
+   \ul convolutional, relu, $o^{l}_i$, $s^{l}_i$, $w^{l}_{ji}$, $s^{l}_i = \sum_k o^{1}_k w^{2}_{ki}$, $o^{2}_i = a(s^{2}_i)$
+   \ul convolutional, relu, $o^{1}_i$, $s^{1}_i$, $w^{1}_{ji}$, $s^{1}_i = \sum_k o^{0}_k w^{1}_{ki}$, $o^{1}_i = a(s^{1}_i)$
+   \ul input $o^{0}_i = i_i$
 
 \end{document}
 
