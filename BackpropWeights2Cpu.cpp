@@ -75,7 +75,7 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
                                 float upstreamResult = images[ upstreamResultIndex ];
                                 float thisimagethiswchange = _derivLossBySum * upstreamResult;
                                 thiswchange += thisimagethiswchange;
-                                thisBiasChange += _derivLossBySum; // not sure if this is right :-P  need to check later...
+                                thisBiasChange += _derivLossBySum; // fairly sure this is right.  Fairly :-P
                             }
                         }
                     }

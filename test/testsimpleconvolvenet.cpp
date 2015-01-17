@@ -33,10 +33,10 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_unbiased_tanh ) {
     net->squareLossMaker()->insert();
     float weights1[] = {0.382147, -1.77522};
     net->initWeights(1, weights1);
-    float lastWeights[2];
-    memcpy( lastWeights, weights1, sizeof(float) * 2 );
-    float lastLoss = 0;
-    for( int epoch = 0; epoch < 30; epoch++ ) {
+//    float lastWeights[2];
+//    memcpy( lastWeights, weights1, sizeof(float) * 2 );
+//    float lastLoss = 0;
+    for( int epoch = 0; epoch < 50; epoch++ ) {
         net->epochMaker()
             ->learningRate(learningRate)
             ->batchSize(batchSize)
@@ -47,17 +47,17 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_unbiased_tanh ) {
         //net->print();
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
-        float sumWeightsDiffSquared = 0;
-        for( int i = 0; i < 2; i++ ) {
-            float diff = lastWeights[i] - net->layers[1]->getWeights()[i];
-            sumWeightsDiffSquared += diff * diff;
-        }
-        memcpy( lastWeights, net->layers[1]->getWeights(), sizeof(float) * 2 );
-        float thisLoss = net->calcLoss(expectedResults);
-        float lossDiff = lastLoss - thisLoss;
-        cout << "sumWeightsDiffSquared " << sumWeightsDiffSquared / learningRate << endl;
-        cout << "losschange " << ( lossDiff ) << endl;
-        lastLoss = thisLoss;
+//        float sumWeightsDiffSquared = 0;
+//        for( int i = 0; i < 2; i++ ) {
+//            float diff = lastWeights[i] - net->layers[1]->getWeights()[i];
+//            sumWeightsDiffSquared += diff * diff;
+//        }
+//        memcpy( lastWeights, net->layers[1]->getWeights(), sizeof(float) * 2 );
+//        float thisLoss = net->calcLoss(expectedResults);
+//        float lossDiff = lastLoss - thisLoss;
+//        cout << "sumWeightsDiffSquared " << sumWeightsDiffSquared / learningRate << endl;
+//        cout << "losschange " << ( lossDiff ) << endl;
+//        lastLoss = thisLoss;
         if( epoch % 10 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     //        net->print();
@@ -75,7 +75,7 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_unbiased_tanh ) {
     int numCorrect = AccuracyHelper::calcNumRight( 2, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 2 << endl;
     assertEquals( numCorrect, 2 );
-    assertLessThan( 0.01, loss );
+    assertLessThan( 0.03, loss );
 
     delete net;
 }
@@ -102,9 +102,9 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_tanh ) {
     float biasweights1[] = {-1.00181, 0.891056};
     net->initWeights(1, weights1);
     net->initBiasWeights(1, biasweights1);
-    float lastWeights[2];
-    memcpy( lastWeights, weights1, sizeof(float) * 2 );
-    float lastLoss = 0;
+//    float lastWeights[2];
+//    memcpy( lastWeights, weights1, sizeof(float) * 2 );
+//    float lastLoss = 0;
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(learningRate)
@@ -116,17 +116,17 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_tanh ) {
         //net->print();
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
-        float sumWeightsDiffSquared = 0;
-        for( int i = 0; i < 2; i++ ) {
-            float diff = lastWeights[i] - net->layers[1]->getWeights()[i];
-            sumWeightsDiffSquared += diff * diff;
-        }
-        memcpy( lastWeights, net->layers[1]->getWeights(), sizeof(float) * 2 );
-        float thisLoss = net->calcLoss(expectedResults);
-        float lossDiff = thisLoss - lastLoss;
-        cout << "sumWeightsDiffSquared " << sumWeightsDiffSquared / learningRate << endl;
-        cout << "losschange " << ( lossDiff / batchSize ) << endl;
-        lastLoss = thisLoss;
+//        float sumWeightsDiffSquared = 0;
+//        for( int i = 0; i < 2; i++ ) {
+//            float diff = lastWeights[i] - net->layers[1]->getWeights()[i];
+//            sumWeightsDiffSquared += diff * diff;
+//        }
+//        memcpy( lastWeights, net->layers[1]->getWeights(), sizeof(float) * 2 );
+//        float thisLoss = net->calcLoss(expectedResults);
+//        float lossDiff = thisLoss - lastLoss;
+//        cout << "sumWeightsDiffSquared " << sumWeightsDiffSquared / learningRate << endl;
+//        cout << "losschange " << ( lossDiff / batchSize ) << endl;
+//        lastLoss = thisLoss;
         if( epoch % 10 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
     //        net->print();
@@ -184,6 +184,7 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_tanh ) {
     expectedResults[7] = 0.5;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->insert();
+    net->squareLossMaker()->insert();
     float weights1[] = {-0.171115, 0.28369, 0.201354, -0.496124, 0.391512, 0.120458, 0.396952, -0.1356, -0.319595, 0.251043, 0.318859, 0.220892, -0.480651, -0.51708, 0.2173, 0.365935, 0.304687, -0.712624};
     float biasWeights1[] = {0.375101, 0.00130748};
     net->initWeights(1, weights1);
@@ -191,7 +192,7 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_tanh ) {
     float const*results = 0;
     for( int epoch = 0; epoch < 15; epoch++ ) {
         net->epochMaker()
-            ->learningRate(1)
+            ->learningRate(0.4f)
             ->batchSize(4)
             ->numExamples(4)
             ->inputData(data)
@@ -232,12 +233,13 @@ TEST( testsimpleconvolvenet, boardsize1_2planes_filtersize1_relu ) {
     expectedResults[3] = 1;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->relu()->insert();
+    net->squareLossMaker()->insert();
     float weights1[] = {-0.380177, -1.5738};
     float biasWeights1[] = {0.5, 0.0606055};
     net->initWeights( 1, weights1, biasWeights1 );
-    for( int epoch = 0; epoch < 15; epoch++ ) {
+    for( int epoch = 0; epoch < 5; epoch++ ) {
         net->epochMaker()
-            ->learningRate(1)
+            ->learningRate(1.2f)
             ->batchSize(2)
             ->numExamples(2)
             ->inputData(data)
@@ -245,7 +247,7 @@ TEST( testsimpleconvolvenet, boardsize1_2planes_filtersize1_relu ) {
             ->run();
         if( epoch % 5 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-    //        net->print();
+//            net->print();
     //        net->printWeightsAsCode();
     //        net->printBiasWeightsAsCode();
             float const*results = net->getResults();
@@ -302,13 +304,14 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_relu ) {
     expectedResults[7] = 1;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->relu()->insert();
+    net->squareLossMaker()->insert();
     float const*results = 0;
     float weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
     float biasWeights1[] = {0.0418723, 0.158733};
     net->initWeights( 1, weights1, biasWeights1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
-            ->learningRate(1)
+            ->learningRate(0.4f)
             ->batchSize(4)
             ->numExamples(4)
             ->inputData(data)
@@ -371,13 +374,14 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_linear ) {
     expectedResults[7] = 1;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->linear()->insert();
+    net->squareLossMaker()->insert();
     float const*results = 0;
     float weights1[] = {0.715867, -0.428623, -0.281465, -0.736675, -0.224507, 0.335028, -0.384762, -0.213304, 0.679177, -0.170055, 0.335075, -0.572057, -0.175718, -0.410962, -0.175277, 0.536131, -0.0568329, -0.00297278};
     float biasWeights1[] = {0.5, 0.5};
     net->initWeights( 1, weights1, biasWeights1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
-            ->learningRate(1)
+            ->learningRate(0.09f)
             ->batchSize(4)
             ->numExamples(4)
             ->inputData(data)
@@ -400,7 +404,7 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_linear ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.00001, loss );
+    assertLessThan( 0.001, loss );
 
     delete net;
 }
@@ -421,6 +425,7 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_unbiased ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->insert();
+    net->squareLossMaker()->insert();
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(1)
@@ -466,6 +471,7 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_biased ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
+    net->squareLossMaker()->insert();
 float weights1[] = {1.12739, 1.21476};
 float weights2[] = {-0.352846, 0.534554, -1.13343, -0.191175};
 float biasWeights1[] = {0.971267, 1.42629};
@@ -549,6 +555,7 @@ TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
     net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(4)->biased()->insert();
+    net->squareLossMaker()->insert();
 //    net->print();
     for( int epoch = 0; epoch < 1000; epoch++ ) {
         net->epochMaker()
@@ -638,6 +645,7 @@ TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
     net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(4)->biased()->insert();
+    net->squareLossMaker()->insert();
 //    net->print();
 float weights1[] = {-0.69664, 0.58017, 0.140447, -0.205859, 0.0198638, 0.0110593, -0.388923, -0.844424, -0.472903, 0.453888, -0.616155, -0.454998};
 float weights2[] = {0.207138, -0.106497, -0.1228, -0.162173, 0.1822, -0.100027, 0.0447708, 0.165723, -0.0147989, 0.109204, -0.0334504, 0.00452646, 0.198443, -0.23725, 0.105671, 0.192242, -0.0268933, 0.150674, 0.160054, -0.116846, 0.222009, 
@@ -744,6 +752,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
+    net->squareLossMaker()->insert();
 //    net->print();
 float weights1[] = {-0.171255, 0.374466, -0.224289, -0.196481, 0.162787, 0.418841, 0.230909, 0.23731, -0.244594, -0.469993, 0.221895, -0.0145731, 0.163359, 0.276707, -0.533498, -0.376532, 0.275129, -0.298299, -0.162541, -0.497442, 0.0331104, 
 0.140816, 0.339377, -0.466528, -0.260578, -0.373026, -0.0151962};
@@ -923,6 +932,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
+    net->squareLossMaker()->insert();
 //    net->print();
     for( int epoch = 0; epoch < 3000; epoch++ ) {
         net->epochMaker()

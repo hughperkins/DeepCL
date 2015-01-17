@@ -49,6 +49,14 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
 * Please use a Convolutional Layer, and set the filter size to be identical to the output
 size of the previous layer.
 
+Loss layer
+----------
+
+Please add one loss layer.  For now we have squared loss:
+```
+net->squareLossMaker()->insert();
+```
+
 Train the net
 -------------
 
