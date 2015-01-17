@@ -53,8 +53,9 @@ $i_i$ is input to node i in input layer
 
 \[ = \partialderivative{\text{loss}}{s^l_i} o^{l-1}_j \]
 
-\[ \partialderivative{E}{s^l_i} = \partialderivative{E}{s^{l+1}_i} \partialderivative{s^{l+1}_i}{o^l_i} \partialderivative{o^l_i}{s^l_i}  \]
-\[ \]
+Recursion:
+\[ \partialderivative{E}{s^{l-1}_i} = \sum_k \partialderivative{E}{s^{l}_k} \partialderivative{s^{l}_k}{o^{l-1}_i} \partialderivative{o^{l-1}_i}{s^{l-1}_i}  \]
+\[ = \partialderivative{\text{activation}^{l-1}}{s^{l-1}_i} \sum_k (\text{error from above}) w^l_{ik} \]
 
 \subsection*{loss}
 
