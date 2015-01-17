@@ -46,14 +46,8 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
 
 *Fully connected layers*
 
-eg:
-```
-net->fullyConnectedMaker()->planes(10)->boardSize(1)->insert();
-```
-
-* fully connected layers run on cpu for now
-* For now, recommend to use a Convolutional Layer, and set the filter size to be identical to the output
-size of the previous layer, and without `padZeros` activated.
+* Please use a Convolutional Layer, and set the filter size to be identical to the output
+size of the previous layer.
 
 Train the net
 -------------

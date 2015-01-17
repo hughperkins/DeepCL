@@ -8,7 +8,8 @@ using namespace std;
 FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker ) :
         Layer( previousLayer, maker ),
         errorsForUpstream(0),
-        allocatedSize(0) {
+        allocatedSize(0),
+        activationFunction( maker->getActivationFunction() ) {
     std::cout << "WARNING: FullyConnectedLayer runs on CPU, and is  slllooowwww :-)" << std::endl;
     std::cout << "You'd better use a ConvolutionalLayer, and just make the filter size the same as " << std::endl;
     std::cout << "the upstream board size.  Use 'numFilters' to specify the number of output planes." << std::endl;
@@ -24,6 +25,9 @@ VIRTUAL float *FullyConnectedLayer::getResults() {
 }
 VIRTUAL bool FullyConnectedLayer::needErrorsBackprop() {
     return true;
+}
+VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
+    return activationFunction;
 }
 VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
     return upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize * numPlanes * boardSize * boardSize;
@@ -166,7 +170,9 @@ VIRTUAL void FullyConnectedLayer::propagate() {
 ////        backPropErrors( learningRate, errors );
 ////        delete[] errors;
 //}
-VIRTUAL void FullyConnectedLayer::backPropErrors( float learningRate ) {
+VIRTUAL void FullyConnectedLayer::backProp( float learningRate ) {
+    throw std::runtime_error( "not (re-)implemented yet :-)");
+/* todo :-)
     float *errors = nextLayer->getErrorsForUpstream();
     StatefulTimer::timeCheck("start fullyconnected backproperrors");
     for( int outPlane = 0; outPlane < numPlanes; outPlane++ ) {
@@ -210,7 +216,6 @@ VIRTUAL void FullyConnectedLayer::backPropErrors( float learningRate ) {
     }
     StatefulTimer::timeCheck("end fullyconnected backprop errors, start errors for upstream");
     if( layerIndex > 1 ) {
-//        float *errorsForUpstream = new float[batchSize * upstreamNumPlanes * upstreamBoardSize * upstreamBoardSize];
     for( int n = 0; n < batchSize; n++ ) {
         for( int upstreamPlane = 0; upstreamPlane < upstreamNumPlanes; upstreamPlane++ ) {
             for( int upstreamRow = 0; upstreamRow < upstreamBoardSize; upstreamRow++ ) {
@@ -237,8 +242,8 @@ VIRTUAL void FullyConnectedLayer::backPropErrors( float learningRate ) {
     }
     }
     StatefulTimer::timeCheck("fully connected calc errors for usptream done");
-//        previousLayer->backPropErrors(learningRate, errorsForUpstream);
-//        delete[] errorsForUpstream;
+    */
 }
+
 
 

@@ -25,42 +25,32 @@ public:
 
     Layer *previousLayer;
     Layer *nextLayer;
-    const int numPlanes;
-    const int boardSize;
-    float *results;
-    float *weights;
-    float *biasWeights;
-    const bool biased;
-    ActivationFunction const *const activationFunction;
-    const int upstreamBoardSize;
-    const int upstreamNumPlanes;
+//    const int numPlanes;
+//    const int boardSize;
+//    const bool biased;
+//    ActivationFunction const *const activationFunction;
+//    const int upstreamBoardSize;
+//    const int upstreamNumPlanes;
     const int layerIndex;
-    bool weOwnResults;
+//    bool weOwnResults;
 
-    const int boardSizeSquared;
-    const int upstreamBoardSizeSquared;
+//    const int boardSizeSquared;
+//    const int upstreamBoardSizeSquared;
 
-    int batchSize;
+//    int batchSize;
 
 //    virtual bool needErrorsBackprop() = 0;
 
     // results structured like [imageid][outputplane][outputrow][outputcol]
-    inline int getResultIndex( int n, int plane, int row, int col ) const {
-        return ( ( ( n * numPlanes ) + plane ) * boardSize + row ) * boardSize + col;
-    }
-    inline float getResult( int n, int plane, int row, int col ) const {
-        return results[getResultIndex( n, plane,row,col)];
-    }
-    inline int getResultsSizePerExample() const {
-        return numPlanes * boardSize * boardSize;
-    }
-    static inline float generateWeight( int fanin ) {
-        float rangesize = sqrt(12.0f / (float)fanin) ;
-    //        float uniformrand = random() / (float)random.max();     
-        float uniformrand = MyRandom::uniform();   
-        float result = rangesize * ( uniformrand - 0.5 );
-        return result;
-    }
+//    inline int getResultIndex( int n, int plane, int row, int col ) const {
+//        return ( ( ( n * numPlanes ) + plane ) * boardSize + row ) * boardSize + col;
+//    }
+//    inline float getResult( int n, int plane, int row, int col ) const {
+//        return results[getResultIndex( n, plane,row,col)];
+//    }
+//    inline int getResultsSizePerExample() const {
+//        return numPlanes * boardSize * boardSize;
+//    }
     virtual float * getResults() = 0;
 
     // [[[cog
@@ -71,17 +61,19 @@ public:
     // cppfile: Layer.cpp
 
     Layer( Layer *previousLayer, LayerMaker const*maker );
-    Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker );
     VIRTUAL ~Layer();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL bool providesErrorsWrapper() const;
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool providesDerivLossBySumWrapper() const;
+    VIRTUAL float *getDerivLossBySum();
+    VIRTUAL CLWrapper *getDerivLossBySumWrapper();
+    VIRTUAL bool getBiased() const;
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL int getResultsSize() const;
-    int getNumPlanes() const;
-    int getBoardSize() const;
+    VIRTUAL int getOutputCubeSize() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getOutputBoardSize() const;
     VIRTUAL void propagate();
     VIRTUAL void print() const;
     VIRTUAL void initWeights( float*weights );
@@ -90,10 +82,13 @@ public:
     VIRTUAL void printBiasWeightsAsCode() const;
     VIRTUAL void printWeights() const;
     VIRTUAL void printOutput() const;
-    VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL void backProp( float learningRate );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    float calcLoss( float const *expected );
+    VIRTUAL void setWeights(float *weights, float *biasWeights);
+    VIRTUAL float const *getWeights() const;
+    VIRTUAL float *getWeights();
+    VIRTUAL float const*getBiasWeights() const;
 
     // [[[end]]]
 

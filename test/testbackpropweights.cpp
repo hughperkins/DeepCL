@@ -3,7 +3,7 @@
 
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
-#include "BackpropWeights.h"
+#include "BackpropWeights2.h"
 
 #include "test/myasserts.h"
 #include "gtest/gtest.h"
@@ -19,6 +19,7 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
 
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->tanh()->insert();
+    net->squareLossMaker()->insert();
     net->setBatchSize( batchSize );
 
     int inputSize = net->layers[0]->getResultsSize();
@@ -32,17 +33,17 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
     int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, net->layers[1]->weights, weightsSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( random, net->layers[1]->getWeights(), weightsSize, -0.1f, 0.1f );
     dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToDevice();
-//    for( int i = 0; i < inputSize; i++ ) {
-//        cout << "inputData[" << i << "]=" << inputData[i] << endl;
-//    }
-//    for( int i = 0; i < resultsSize; i++ ) {
-//        cout << "expectedResults[" << i << "]=" << expectedResults[i] << endl;
-//    }
+    for( int i = 0; i < inputSize; i++ ) {
+        cout << "inputData[" << i << "]=" << inputData[i] << endl;
+    }
+    for( int i = 0; i < resultsSize; i++ ) {
+        cout << "expectedResults[" << i << "]=" << expectedResults[i] << endl;
+    }
 
     float *weightsBefore = new float[weightsSize];
-    float *currentWeights = net->layers[1]->weights;
+    float const*currentWeights = net->layers[1]->getWeights();
     for( int i = 0; i < weightsSize; i++ ) {
         weightsBefore[i] = currentWeights[i];
     }
@@ -52,19 +53,21 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
     net->propagate( inputData );
 //    net->print();
     float loss = net->calcLoss(expectedResults);
-    float losslayer1 = net->layers[1]->calcLoss(expectedResults);
+//    float losslayer1 = dynamic_cast<LossLayer*>(net->layers[1])->calcLoss(expectedResults);
 //    cout << "losslayer1 " << losslayer1 << endl;
 
 //    cout << "backprop now" <<endl;
+    net->print();
     net->backProp( learningRate, expectedResults );
 //    net->layers[1]->print();
     net->propagate( inputData );
+    net->print();
 //    net->layers[1]->print();
     float loss2 = net->calcLoss(expectedResults);
     float lossChange = loss - loss2;
     cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
 
-    float *newWeights = net->layers[1]->weights;
+    float const*newWeights = net->layers[1]->getWeights();
     float sumWeightDiff = 0;
     float sumWeightDiffSquared = 0;
     for( int i = 0; i < weightsSize; i++ ) {
@@ -157,6 +160,32 @@ TEST( testbackpropweights, numericallytest_boardsize5_filtersize3_planes3_batchs
     test(5, 3, 3, 3 );
 }
 
+void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMultiplier, float *data, float *errors, float * expectedResults ) {
+    float *results = new float[batchSize * dim.outputCubeSize]; // ignored, for LINEAR
+    float *weights = new float[max(dim.filtersSize,20)];
+    float *biasWeights = new float[10];
+    memset( weights, 0, sizeof( float ) * max( dim.filtersSize, 20 ) );
+    memset( biasWeights, 0, sizeof(float) * 10 );
+
+    OpenCLHelper cl;
+    BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceForTest( &cl, dim );
+    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
+    delete backpropWeightsImpl;
+    
+    for( int i = 0; i < 20; i++ ) {
+        cout << "weights[" << i << "]=" << weights[i] << endl;
+    }
+    for( int i = 0; i < dim.filtersSize; i++ ) {
+        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
+            cout << "mismatch for i " << i << endl;
+            EXPECT_EQ( expectedResults[i], weights[i] );
+        }
+    }
+    delete[] results;
+    delete[] weights;
+    delete[] biasWeights;
+}
+
 TEST( testbackpropweights, backprop_weights_2 ) {
     LayerDimensions dim;
     dim.setInputBoardSize( 1 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
@@ -167,31 +196,8 @@ TEST( testbackpropweights, backprop_weights_2 ) {
 
     float data[] = { 3.0f };
     float errors[] = { 7.0f };
-    float *results = new float[batchSize * dim.outputCubeSize]; // ignored, for LINEAR
-    float *weights = new float[max(dim.filtersSize,20)];
-    float *biasWeights = new float[10];
-    memset( weights, 0, sizeof( float ) * max( dim.filtersSize, 20 ) );
-    memset( biasWeights, 0, sizeof(float) * 10 );
-
     float expectedResults[] = { - 3 * 7 };
-
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier, errors, results, data, weights, biasWeights );
-    delete backpropWeightsImpl;
-    
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < dim.filtersSize; i++ ) {
-        if( expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
-    delete[] results;
-    delete[] weights;
-    delete[] biasWeights;
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 
@@ -204,33 +210,12 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize2 ) {
 
     float data[] = { 3.0f, 13,
                     17, 19 };
-    float errors[] = { 7.0f, 2,
+    float DerivLossBySum[] = { 7.0f, 2,
                        4,4 };
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-    float *results = new float[resultsSize];
-    memset( results, 0, sizeof(float) * resultsSize );
-    float *weights = new float[max(4,20)];
-    memset( weights, 0, sizeof(float) * 20 );
-
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * dim.inputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
     float expectedResults[] = { -3 * 7 - 13 * 2 // -191
                                  -17*4 -19*4 };   // 
 
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, DerivLossBySum, expectedResults );
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize3_filtersize3 ) {
@@ -239,36 +224,16 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize3_filtersize3 ) {
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
 
     float data[] = { 3.0f, 13, 5,
                     17, 19, -3,
                     2, -4, 7 };
     float errors[] = { 7.0f };
-    float *weights = new float[max(4,20)];
-    memset( weights, 0, sizeof(float) * 20 );
-    float *results = new float[resultsSize]; // for linear activation, irrelevant in fact
-    memset( results, 0, sizeof( float ) * resultsSize );
-
     float expectedResults[] = { -7 * 3, - 7 * 13, - 7 * 5, // -21 -91, -35
                                 -7 * 17, - 7 * 19, 7 * 3,   // -119, 133, 21
                                 - 7 * 2,  7 * 4, - 7 * 7 }; // -14, 28, -49
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize4_filtersize3 ) {
@@ -277,11 +242,6 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize4_filtersize3 ) {
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-
-    float *results = new float[resultsSize];
-    memset( results, 0, sizeof( float ) * resultsSize );
 
     float data[] = { 3.0f, 13, 5, 8,
                     17, 19, -3, 2,
@@ -289,68 +249,11 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize4_filtersize3 ) {
                     0, 6, 8, 9 };
     float errors[] = { 7.0f, 2,
                         0, -3 };
-    float *weights = new float[max(4,20)];
-    memset( weights, 0, sizeof(float) * 20 );
-
     float expectedResults[] = { -3*7-13*2-0+19*3, -999, -999 , // 10
                                 -999, -999, -999,
                                 -999, -999, -49+27 };          //           -22
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
-}
-
-
-TEST( testbackpropweights, backprop_weights_2_upstreamboardsize4_filtersize3_relu ) {
-    LayerDimensions dim;
-    dim.setInputBoardSize( 4 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
-        .setBiased( 0 ).setPadZeros( 0 );
-    int batchSize = 1;
-    const float learningMultiplier = 1;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-
-    float data[] = { 3.0f, 13, 5, 8,
-                    17, 19, -3, 2,
-                    2, -4, 7, 0,
-                    0, 6, 8, 9 };
-    float errors[] = { 7.0f, 2,
-                        0, -3 };
-    float results[] = { 11.0f, -2,
-                        -5, 12 };
-    float *weights = new float[max(4,20)];
-    memset( weights, 0, sizeof(float) * 20 );
-
-    float expectedResults[] = { -3*7-0*13*2-0+19*3, -999, -999 , // 36
-                                -999, -999, -999,
-                                -999, 4*7+3*8, -49+27 };          //           -22
-
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new ReluActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
@@ -359,10 +262,6 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
-    cout << dim << endl;
-
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
 
     float data[] = { 3.0f, 13,  5, 8, 3,
                     17,    19, -3, 2, 1,
@@ -372,29 +271,24 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize5_filtersize3 ) {
     float errors[] = { 7.0f, 2,-1,
                         0, -3,1,
                         2,-1,0 };
-    float *results = new float[resultsSize];
-    memset( results, 0, sizeof(float) * resultsSize );
-    float *weights = new float[max(1000,weightsSize)];
-    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
-
     float expectedResults[] = { -(3*7+13*2-1*5+0*17-3*19-1*3+2*2+1*4+0*7), -999, -999 , // 10
                                 -999, -(19*7-3*2-2*1+  0-3*7+0*1   +2*6-1*8+0), -999,
                                 -999, -999, -(7*7+0+2*1   +0-3*9+1*4   +5*2-1*3+0) };          //           -22
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
+}
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
+float *allocateInputCleared( int batchSize, LayerDimensions &dim ) {
+    int inputSize = batchSize * dim.inputCubeSize;
+    float *data = new float[ inputSize ];
+    memset( data, 0, sizeof(float) * inputSize );
+    return data;
+}
 
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+float *allocateErrorsCleared( int batchSize, LayerDimensions &dim ) {
+    int resultsSize = batchSize * dim.outputCubeSize;
+    float *errors = new float[ resultsSize ];
+    memset( errors, 0, sizeof(float) * resultsSize );
+    return errors;
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize3_filtersize1 ) {
@@ -403,50 +297,20 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize3_filtersize1 ) {
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
-    cout << dim << endl;
 
-    int inputSize = batchSize * dim.inputCubeSize;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-
-    float *data = new float[ inputSize ];
-    memset( data, 0, sizeof(float) * inputSize );
-
-//    data[3 * upstreamBoardSize + 14] = 2;
+    float *data = allocateInputCleared( batchSize, dim );
     data[0] = 2;
     data[1 * dim.inputBoardSize + 1] = 7;
     data[2 * dim.inputBoardSize + 2] = 5;
-//    data[8 * upstreamBoardSize + 15] = -2;
 
-    float *errors = new float[ resultsSize ];
-    memset( errors, 0, sizeof(float) * resultsSize );
-
-//    errors[3 * upstreamBoardSize + 14] = 1;
+    float *errors = allocateErrorsCleared( batchSize, dim );
     errors[0] = 5;
     errors[1 * dim.outputBoardSize + 1] = 11;
     errors[2 * dim.outputBoardSize + 2] = 3;
-//    errors[8 * upstreamBoardSize + 15] = 7;
-
-    float *results = new float[resultsSize];
-    float *weights = new float[max(1000,weightsSize)];
-    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
 
     float expectedResults[] = { -(2 * 5 +  5 * 3 + 7 * 11 ) };          //           
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 10; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize16_filtersize1 ) {
@@ -455,48 +319,18 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize16_filtersize1 ) 
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
-    cout << dim << endl;
 
-    int inputSize = batchSize * dim.inputCubeSize;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-
-    float *data = new float[ inputSize ];
-    memset( data, 0, sizeof(float) * inputSize );
-
-//    data[3 * upstreamBoardSize + 14] = 2;
+    float *data = allocateInputCleared( batchSize, dim );
     data[0] = 2;
     data[15 * dim.inputBoardSize + 15] = 5;
-//    data[8 * upstreamBoardSize + 15] = -2;
 
-    float *errors = new float[ resultsSize ];
-    memset( errors, 0, sizeof(float) * resultsSize );
-
-//    errors[3 * upstreamBoardSize + 14] = 1;
+    float *errors = allocateErrorsCleared( batchSize, dim );
     errors[0] = 4;
     errors[15 * dim.outputBoardSize + 15] = 3;
-//    errors[8 * upstreamBoardSize + 15] = 7;
-
-    float *results = new float[resultsSize];
-    float *weights = new float[max(1000,weightsSize)];
-    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
 
     float expectedResults[] = { -(2 * 4 +  3 * 5 ) };          //           
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1 ) {
@@ -507,46 +341,21 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1 ) 
     const float learningMultiplier = 1;
     cout << dim << endl;
 
-    int inputSize = batchSize * dim.inputCubeSize;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-
-    float *data = new float[ inputSize ];
-    memset( data, 0, sizeof(float) * inputSize );
-
+    float *data = allocateInputCleared( batchSize, dim );
     data[0] = 2;
     data[1] = 3.2f;
     data[2] = 1.234f;
     data[16 * dim.inputBoardSize + 16] = 5;
 
-    float *errors = new float[ resultsSize ];
-    memset( errors, 0, sizeof(float) * resultsSize );
-
+    float *errors = allocateErrorsCleared( batchSize, dim );
     errors[0] = 4;
     errors[1] = -2.5f;
     errors[2] = 4.125f;
     errors[16 * dim.outputBoardSize + 16] = 3;
 
-    float *results = new float[resultsSize];
-    float *weights = new float[max(1000,weightsSize)];
-    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
-
     float expectedResults[] = { -( 4*2 - 3.2f * 2.5f + 1.234f * 4.125f + 3*5 ) };          // 
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
-            cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_moredata ) {
@@ -555,28 +364,16 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
-    cout << dim << endl;
 
-    int inputSize = batchSize * dim.inputCubeSize;
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int weightsSize = dim.filtersSize;
-
-    float *data = new float[ inputSize ];
-    memset( data, 0, sizeof(float) * inputSize );
-
+    float *data = allocateInputCleared( batchSize, dim );
     for( int i = 0; i < square( dim.inputBoardSize ); i++ ) {
         data[i] = ( ( 1 + i ) % 20 ) / 5.3f;
     }
 
-    float *errors = new float[ resultsSize ];
-    memset( errors, 0, sizeof(float) * resultsSize );
+    float *errors = allocateErrorsCleared( batchSize, dim );
     for( int i = 0; i < square( dim.outputBoardSize ); i++ ) {
         errors[i] = ( ( 2 + i ) % 17 ) / 4.2f;
     }
-
-    float *results = new float[resultsSize];
-    float *weights = new float[max(1000,weightsSize)];
-    memset( weights, 0, sizeof(float) * max(1000,weightsSize) );
 
     float expectedResults[1];
     expectedResults[0] = 0;
@@ -585,20 +382,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
     }
     cout << "expectedresult: " << expectedResults[0] << endl;
 
-    OpenCLHelper cl;
-    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( &cl, dim, new LinearActivation() );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier * batchSize * dim.outputBoardSize, errors, results, data, weights, 0 );
-    delete backpropWeightsImpl;
-
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( expectedResults[i] != -999 ) {
-//            cout << "mismatch for i " << i << endl;
-            ASSERT_FLOAT_NEAR( expectedResults[i], weights[i] );
-        }
-    }
+    testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
 TEST( SLOW_testbackpropweights, compare_specific ) {
@@ -606,7 +390,7 @@ TEST( SLOW_testbackpropweights, compare_specific ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize( 19 ).setNumFilters( 32 ).setFilterSize( 3 )
         .setBiased( false ).setPadZeros( true );
-    ActivationFunction *fn = new LinearActivation();
+//    ActivationFunction *fn = new LinearActivation();
     int learningRate = 1.0f;
 
     int resultsSize = batchSize * dim.outputCubeSize;
@@ -614,13 +398,11 @@ TEST( SLOW_testbackpropweights, compare_specific ) {
     int weightsSize = dim.filtersSize;
 
     float *errors = new float[max(10000, resultsSize )];
-    float *results = new float[max(10000, resultsSize )];
     float *inputData = new float[max(10000, inputSize )];
     float *weights1 = new float[max(10000, weightsSize ) ];
     float *weights2 = new float[max(10000, weightsSize ) ];
 
     memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
-    memset( results, 0, sizeof(float) * max(10000, resultsSize ) );
     memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
@@ -630,19 +412,18 @@ TEST( SLOW_testbackpropweights, compare_specific ) {
 //    WeightRandomizer::randomize( inputData, max(10000, inputSize ), 0.2, 3 );
 
     WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 1, 3 );
-    WeightRandomizer::randomizeInts( results, max( 10000, resultsSize), 1, 3 );
     WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 1, 3 );
 
     OpenCLHelper cl;
     
-    BackpropWeights *backpropWeightsImpl1 = BackpropWeights::instanceSpecific( 0, &cl, dim, fn );
+    BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 0, &cl, dim );
     backpropWeightsImpl1->debug = true;
     backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
-        errors, results, inputData, weights1, 0 );
-    BackpropWeights *backpropWeightsImpl2 = BackpropWeights::instanceSpecific( 1, &cl, dim, fn );
+        errors, inputData, weights1, 0 );
+    BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( 1, &cl, dim );
     backpropWeightsImpl2->debug = true;
     backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
-        errors, results, inputData, weights2, 0 );
+        errors, inputData, weights2, 0 );
 
     cout << dim << endl;
     for( int i = 0; i < 25; i++ ) {
@@ -685,7 +466,6 @@ TEST( SLOW_testbackpropweights, compare_specific ) {
     delete[] weights1;
     delete[] weights2;
     delete[] errors;
-    delete[] results;
     delete[] inputData;
 }
 

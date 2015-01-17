@@ -13,10 +13,10 @@
 #include "EpochMaker.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
-#include "FullyConnectedLayer.h"
+//#include "FullyConnectedLayer.h"
 
 class OpenCLHelper;
-class FullyConnectedMaker;
+//class FullyConnectedMaker;
 class ConvolutionalMaker;
 class LayerMaker;
 
@@ -39,8 +39,8 @@ public:
     ~NeuralNet();
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
-    FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
+    SquareLossMaker *squareLossMaker();
     void initWeights( int layerIndex, float *weights, float *biasWeights );
     void initWeights( int layerIndex, float *weights );
     void initBiasWeights( int layerIndex, float *weights );
@@ -59,8 +59,8 @@ public:
     void learnBatch( float learningRate, float const*images, float const *expectedResults );
     int getNumLayers();
     float const *getResults( int layer ) const;
-    int getInputSizePerExample() const;
-    int getResultsSizePerExample() const;
+    int getInputCubeSize() const;
+    int getOutputCubeSize() const;
     float const *getResults() const;
     void print();
     void printWeights();

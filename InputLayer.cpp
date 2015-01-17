@@ -6,22 +6,28 @@ using namespace std;
 #define VIRTUAL 
 
 InputLayer::InputLayer( Layer *previousLayer, InputLayerMaker const*maker ) :
-       Layer( previousLayer, maker ) {
+       Layer( previousLayer, maker ),
+    batchSize(0),
+    output(0),
+    outputPlanes( maker->getNumPlanes() ),
+    outputBoardSize( maker->getBoardSize() ) {
+}
+VIRTUAL InputLayer::~InputLayer() {
 }
 VIRTUAL float *InputLayer::getResults() {
-    return results;
+    return output;
 }
 VIRTUAL void InputLayer::printOutput() const {
-    if( results == 0 ) {
+    if( output == 0 ) {
          return;
     }
     for( int n = 0; n < std::min(5,batchSize); n++ ) {
         std::cout << "InputLayer n " << n << ":" << std::endl;
-        for( int plane = 0; plane < std::min( 5, numPlanes); plane++ ) {
-            if( numPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
-            for( int i = 0; i < std::min(5,boardSize); i++ ) {
+        for( int plane = 0; plane < std::min( 5, outputPlanes); plane++ ) {
+            if( outputPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
+            for( int i = 0; i < std::min(5, outputBoardSize); i++ ) {
                 std::cout << "      ";
-                for( int j = 0; j < std::min(5,boardSize); j++ ) {
+                for( int j = 0; j < std::min(5, outputBoardSize); j++ ) {
                     std::cout << getResult( n, plane, i, j ) << " ";
 //results[
 //                            n * numPlanes * boardSize*boardSize +
@@ -29,12 +35,12 @@ VIRTUAL void InputLayer::printOutput() const {
 //                            i * boardSize +
 //                            j ] << " ";
                 }
-                if( boardSize > 5 ) std::cout << " ... ";
+                if( outputBoardSize > 5 ) std::cout << " ... ";
                 std::cout << std::endl;
             }
-            if( boardSize > 5 ) std::cout << " ... " << std::endl;
+            if( outputBoardSize > 5 ) std::cout << " ... " << std::endl;
         }
-        if( numPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
+        if( outputPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
@@ -43,22 +49,42 @@ VIRTUAL void InputLayer::print() const {
 }
 void InputLayer::in( float const*images ) {
 //        std::cout << "InputLayer::in()" << std::endl;
-    this->results = (float*)images;
+    this->output = (float*)images;
 //        this->batchStart = batchStart;
 //        this->batchEnd = batchEnd;
 //        print();
-}
-VIRTUAL InputLayer::~InputLayer() {
 }
 VIRTUAL bool InputLayer::needErrorsBackprop() {
     return false;
 }
 VIRTUAL void InputLayer::setBatchSize( int batchSize ) {
 //        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
+    
     this->batchSize = batchSize;
 }
 VIRTUAL void InputLayer::propagate() {
 }
 VIRTUAL void InputLayer::backPropErrors( float learningRate, float const *errors ) {
 }
+VIRTUAL int InputLayer::getOutputBoardSize() const {
+    return outputBoardSize;
+}
+VIRTUAL int InputLayer::getOutputPlanes() const {
+    return outputPlanes;
+}
+VIRTUAL int InputLayer::getResultsSize() const {
+    return batchSize * outputPlanes * outputBoardSize * outputBoardSize;
+}
+VIRTUAL std::string InputLayer::toString() {
+    return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+}
+
+//ostream &operator<<( ostream &os, InputLayer &layer ) {
+//    os << "InputLayer { outputPlanes " << layer.outputPlanes << " outputBoardSize " << layer.outputBoardSize << " }";
+//    return os;
+//}
+//ostream &operator<<( ostream &os, InputLayer const*layer ) {
+//    os << "InputLayer { outputPlanes " << layer->outputPlanes << " outputBoardSize " << layer->outputBoardSize << " }";
+//    return os;
+//}
 

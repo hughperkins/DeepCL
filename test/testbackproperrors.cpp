@@ -4,6 +4,7 @@
 #include "NeuralNet.h"
 #include "BackpropErrors.h"
 #include "ActivationFunction.h"
+#include "LossLayer.h"
 
 #include "gtest/gtest.h"
 
@@ -53,7 +54,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
         net->propagate( inputData );
     //    net->print();
         float loss = net->calcLoss(expectedResults);
-        float losslayer1 = net->layers[2]->calcLoss(expectedResults);
+        float losslayer1 = dynamic_cast<LossLayer*>(net->layers[2])->calcLoss(expectedResults);
         net->backProp( learningRate, expectedResults );
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {

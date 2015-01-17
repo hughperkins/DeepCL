@@ -14,8 +14,13 @@
 
 class FullyConnectedLayer : public Layer {
 public:
+    float *results;
+    float *weights;
+    float *biasWeights;
+
     float *errorsForUpstream;
     bool allocatedSize;
+    ActivationFunction const *const activationFunction;
 
     // weights like [upstreamPlane][upstreamRow][upstreamCol][outputPlane][outputrow][outputcol]
     inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
@@ -50,6 +55,7 @@ public:
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker );
     VIRTUAL float *getResults();
     VIRTUAL bool needErrorsBackprop();
+    VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void print() const;
@@ -60,7 +66,7 @@ public:
     VIRTUAL float *getErrorsForUpstream();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
-    VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL void backProp( float learningRate );
 
     // [[[end]]]
 };

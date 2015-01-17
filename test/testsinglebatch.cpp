@@ -4,7 +4,7 @@
 #include <random>
 
 #include "NeuralNet.h"
-#include "ExpectedValuesLayer.h"
+//#include "ExpectedValuesLayer.h"
 
 #include "gtest/gtest.h"
 
@@ -13,7 +13,7 @@
 #include "Timer.h"
 
 using namespace std;
-
+/*
 TEST( testsinglebatch, detailedregression ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
@@ -101,8 +101,8 @@ cout << endl;
 ConvolutionalLayer *layer2 = dynamic_cast<ConvolutionalLayer*>( net->layers[2] );
 int layer2ResultsSize = layer2->getResultsSize();
 layer3->nextLayer = expectedValuesLayer;
-layer3->backPropErrors( learningRate );
-float *layer2errors = layer3->getErrorsForUpstream();
+layer3->backProp( learningRate );
+float *layer2errors = layer3->getDerivLossBySumForUpstream();
 Sampler::printSamples( "layer2errors", layer2ResultsSize, layer2errors );
 
 //EXPECT_FLOAT_NEAR( -0.296495, layer2errors[684] );
@@ -120,8 +120,8 @@ cout << endl;
 ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer*>( net->layers[1] );
 int layer1ResultsSize = layer1->getResultsSize();
 layer2->nextLayer = layer3;
-layer2->backPropErrors( learningRate );
-float *layer1errors = layer2->getErrorsForUpstream();
+layer2->backProp( learningRate );
+float *layer1errors = layer2->getDerivLossBySumForUpstream();
 Sampler::printSamples( "layer1errors", layer1ResultsSize, layer1errors );
 
 EXPECT_FLOAT_NEAR( -0.0137842, layer1errors[199340] );
@@ -131,7 +131,7 @@ EXPECT_FLOAT_NEAR( 0.0170709, layer1errors[2270837] );
 cout << endl;
 
 layer1->nextLayer = layer2;
-layer1->backPropErrors( learningRate );
+layer1->backProp( learningRate );
 
 //net->layers.push_back( expectedValuesLayer );
     net->backProp( learningRate, expectedResults );
@@ -439,4 +439,5 @@ TEST( SLOW_testsinglebatch, perf19_depth12 ) {
     delete[] inputData;
     delete net;
 }
+*/
 

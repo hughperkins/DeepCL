@@ -15,11 +15,12 @@ link_libraries(dl)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp NeuralNetMould.cpp
-    EpochMaker.cpp ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp FullyConnectedLayer.cpp InputLayer.cpp
+    EpochMaker.cpp ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
     Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
     BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
     BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
-    Propagate4.cpp SoftMaxLayer.cpp
+    Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
+    BackpropWeights2Cpu.cpp LayerMaker.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 add_custom_command( 
@@ -49,10 +50,12 @@ endif(PYTHON_AVAILABLE)
 #    git submodule update --init --recursive
 #)
 
-set( UNITTEST_SOURCES unittests test/testpropagate.cpp test/testfilehelper.cpp test/testMnistLoader.cpp
- test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
-test/testbackprop.cpp test/testbackproperrors.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
-test/testbackpropweights.cpp )
+set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
+ test/testMnistLoader.cpp )
+#
+# test/testlogicaloperators.cpp test/testsimpleconvolvenet.cpp test/testmnistlearn_unit.cpp
+#test/testbackprop.cpp test/testbackproperrors.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
+#
 
 #add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )
 #add_executable( testneuralnetmnistconvolve test/testneuralnetmnistconvolve.cpp stringhelper.cpp )

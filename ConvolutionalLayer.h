@@ -19,51 +19,73 @@
 #define VIRTUAL virtual
 
 class Propagate;
-class BackpropErrors;
-class BackpropWeights;
+//class BackpropErrors;
+class BackpropWeights2;
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
 
     Propagate *propagateimpl;
-    BackpropWeights *backpropWeightsImpl;
-    BackpropErrors *backpropErrorsImpl;
+    BackpropWeights2 *backpropWeightsImpl;
+//    BackpropErrors *backpropErrorsImpl;
 
     LayerDimensions dim;
+    ActivationFunction const *const activationFunction;
 
-    const int filterSize;
-    const int filterSizeSquared;
-    const bool padZeros;
+    float *results;
+    float *weights;
+    float *biasWeights;
+
+//    const int filterSize;
+//    const int filterSizeSquared;
+//    const bool padZeros;
 
     CLWrapper *weightsWrapper;
     CLWrapper *resultsWrapper;
-//    CLWrapper *errorsWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+//    CLWrapper *errorsForUpstreamWrapper;
 
+    int batchSize;
     int allocatedSpaceNumExamples;
 
-//    float *errors;
-    float *errorsForUpstream;
+//    float *errorsForUpstream;
 
     bool resultsCopiedToHost;
-//    bool errorsCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
-//    bool weightsCopiedToHost;
+//    bool errorsForUpstreamCopiedToHost;
+
+    inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
+        return ( ( filterId 
+            * dim.inputPlanes + inputPlane )
+            * dim.filterSize + filterRow )
+            * dim.filterSize + filterCol;
+    }
+    inline float getWeight( int filterId, int inputPlane, int filterRow, int filterCol ) const {
+//        getWeights();
+        return weights[ getWeightIndex( filterId, inputPlane, filterRow, filterCol ) ];
+    }
+    inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
+        return ( ( n
+            * dim.numFilters + outPlane )
+            * dim.outputBoardSize + outRow )
+            * dim.outputBoardSize + outCol;
+    }
+    inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
+        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+    }
 
 //    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     // images are organized like [imageId][plane][boardrow][boardcol]
     // filters are organized like [filterid][plane][filterrow][filtercol]
     // results are organized like [imageid][filterid][boardrow][boardcol]
-    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
-        return ( ( outPlane * upstreamNumPlanes 
-             + inPlane ) * filterSize 
-             + filterrow ) * filterSize
-             + filtercol;
-    }
-    inline float getWeight( int outPlane, int inPlane, int filterrow, int filtercol ) const {
-        return weights[getWeightIndex( outPlane, inPlane, filterrow, filtercol ) ];
-    }
+//    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
+//        return ( ( outPlane * upstreamNumPlanes 
+//             + inPlane ) * filterSize 
+//             + filterrow ) * filterSize
+//             + filtercol;
+//    }
+//    inline float getWeight( int outPlane, int inPlane, int filterrow, int filtercol ) const {
+//        return weights[getWeightIndex( outPlane, inPlane, filterrow, filtercol ) ];
+//    }
 
     // [[[cog
     // import cog_addheaders
@@ -74,10 +96,14 @@ public:
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     VIRTUAL ~ConvolutionalLayer();
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL bool providesErrorsWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL ActivationFunction const*getActivationFunction();
+    VIRTUAL bool providesDriveLossBySumWrapper() const;
     VIRTUAL void initWeights( float*weights );
+    VIRTUAL float const *getWeights() const;
+    VIRTUAL float *getWeights();
+    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getOutputBoardSize() const;
     void randomizeWeights();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
@@ -89,7 +115,7 @@ public:
     VIRTUAL float * getResults();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL void backProp( float learningRate );
 
     // [[[end]]]
 };

@@ -9,30 +9,32 @@
 #include "LayerMaker.h"
 
 #include "NeuralNet.h"
-#include "FullyConnectedLayer.h"
+//#include "FullyConnectedLayer.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
-#include "ExpectedValuesLayer.h"
-#include "SoftMaxLayer.h"
+//#include "ExpectedValuesLayer.h"
+//#include "SoftMaxLayer.h"
+#include "SquareLossLayer.h"
 
 using namespace std;
 
-//Layer *ExpectedValuesMaker::insert() {
-//    throw std::runtime_error("insert not implemetned for ExpectedValuesMaker");
+//Layer *FullyConnectedMaker::insert() {
+//    if( _numPlanes == 0 ) {
+//        throw runtime_error("Must provide ->planes(planes)");
+//    }
+//    if( _boardSize == 0 ) {
+//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    }
+////    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _biased, _activationFunction );
+//    Layer *layer = net->addLayer( this );
+//    delete this;
+//    return layer;
 //}
 
-Layer *FullyConnectedMaker::insert() {
-    if( _numPlanes == 0 ) {
-        throw runtime_error("Must provide ->planes(planes)");
-    }
-    if( _boardSize == 0 ) {
-        throw runtime_error("Must provide ->boardSize(boardSize)");
-    }
-//    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _biased, _activationFunction );
-    Layer *layer = net->addLayer( this );
-    delete this;
-    return layer;
-}
+//Layer *FullyConnectedMaker::instance() const {
+//    Layer *layer = new FullyConnectedLayer( previousLayer, this );
+//    return layer;
+//}
 
 Layer *InputLayerMaker::insert() {
     if( _numPlanes == 0 ) {
@@ -58,14 +60,20 @@ Layer *ConvolutionalMaker::insert() {
     return layer;
 }
 
-ExpectedValuesLayer *ExpectedValuesLayerMaker::instance() const {
-    ExpectedValuesLayer *layer = new ExpectedValuesLayer( previousLayer, this );
+//ExpectedValuesLayer *ExpectedValuesLayerMaker::instance() const {
+//    ExpectedValuesLayer *layer = new ExpectedValuesLayer( previousLayer, this );
+//    delete this;
+//    return layer;
+//}
+
+Layer *LossLayerMaker::insert() {
+    Layer *layer = net->addLayer( this );
     delete this;
     return layer;
 }
 
-Layer *FullyConnectedMaker::instance() const {
-    Layer *layer = new FullyConnectedLayer( previousLayer, this );
+Layer *SquareLossMaker::instance() const {
+    SquareLossLayer *layer = new SquareLossLayer( previousLayer, this );
     return layer;
 }
 
@@ -79,17 +87,27 @@ Layer *InputLayerMaker::instance() const {
     return layer;
 }
 
-Layer *SoftMaxMaker::instance() const {
-    Layer *layer = new SoftMaxLayer( previousLayer, this );
-    return layer;
-}
+//Layer *SoftMaxMaker::instance() const {
+//    Layer *layer = new SoftMaxLayer( previousLayer, this );
+//    return layer;
+//}
 
 int ConvolutionalMaker::getBoardSize() const {
     if( previousLayer == 0 ) {
         throw std::runtime_error("convolutional network must be attached to a parent layer");
     }
     int evenPadding = _filterSize % 2 == 0 ? 1 : 0;
-    int boardSize = _padZeros ? previousLayer->boardSize + evenPadding : previousLayer->boardSize - _filterSize + 1;
+    int boardSize = _padZeros ? previousLayer->getOutputBoardSize() + evenPadding : previousLayer->getOutputBoardSize() - _filterSize + 1;
     return boardSize;
+}
+
+int LossLayerMaker::getBoardSize() const {
+    return previousLayer->getOutputBoardSize();
+}
+int LossLayerMaker::getNumPlanes() const {
+    return previousLayer->getOutputPlanes();
+}
+int LossLayerMaker::getBiased() const {
+    return previousLayer->getBiased();
 }
 

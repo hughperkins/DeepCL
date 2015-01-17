@@ -8,8 +8,9 @@
 #include "NeuralNet.h"
 #include "stringhelper.h"
 #include "Propagate.h"
-#include "BackpropErrors.h"
-#include "BackpropWeights.h"
+#include "WeightsHelper.h"
+//#include "BackpropErrors.h"
+#include "BackpropWeights2.h"
 
 using namespace std;
 
@@ -18,34 +19,41 @@ using namespace std;
 
 ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
         Layer( previousLayer, maker ),
-        filterSize( maker->_filterSize ),
-        filterSizeSquared( filterSize * filterSize ),
-        padZeros( maker->_padZeros ),
+//        filterSize( maker->_filterSize ),
+//        filterSizeSquared( filterSize * filterSize ),
+//        padZeros( maker->_padZeros ),
         weightsWrapper( 0 ),
         resultsWrapper( 0 ),
-//        errorsWrapper( 0 ),
-        errorsForUpstreamWrapper( 0 ),
-//        errors( 0 ),
-        errorsForUpstream( 0 ),
+//        errorsForUpstreamWrapper( 0 ),
+//        errorsForUpstream( 0 ),
         allocatedSpaceNumExamples( 0 ),
         resultsCopiedToHost( false ),
-//        errorsCopiedToHost( false ),
-        errorsForUpstreamCopiedToHost( false ),
-//        weightsCopiedToHost( false ),
-        cl( maker->net->getCl() ) {
-        if( padZeros && filterSize % 2 == 0 ) {
+        results(0),
+        weights(0),
+        biasWeights(0),
+//        errorsForUpstreamCopiedToHost( false ),
+        cl( maker->net->getCl() ),
+        batchSize( batchSize ),
+        activationFunction( maker->getActivationFunction() ) {
+    dim.setInputPlanes( previousLayer->getOutputPlanes() )
+        .setInputBoardSize( previousLayer->getOutputBoardSize() )
+        .setNumFilters( maker->_numFilters )
+        .setFilterSize( maker->_filterSize )
+        .setBiased( maker->_biased )
+        .setPadZeros( maker->_padZeros );
+        if( dim.padZeros && dim.filterSize % 2 == 0 ) {
             throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
         }
 
-    dim = LayerDimensions( upstreamNumPlanes, upstreamBoardSize, 
-        numPlanes, filterSize, padZeros, biased );
+//    dim = LayerDimensions( upstreamNumPlanes, upstreamBoardSize, 
+//        numPlanes, filterSize, padZeros, biased );
     propagateimpl = Propagate::instance( cl, dim, activationFunction );
-    backpropWeightsImpl = BackpropWeights::instance( cl, dim, activationFunction );
-    backpropErrorsImpl = BackpropErrors::instance( cl, dim, activationFunction );
+    backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
+//    backpropErrorsImpl = BackpropErrors::instance( cl, dim, activationFunction );
 
-    if( filterSize > upstreamBoardSize ) {
-            throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( filterSize) +
-                " > " + toString(upstreamBoardSize) );
+    if( dim.filterSize > dim.inputBoardSize ) {
+            throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( dim.filterSize) +
+                " > " + toString(dim.inputBoardSize) );
     }
     biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
@@ -54,7 +62,6 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     weightsWrapper = cl->wrap( getWeightsSize(), weights );
     weightsWrapper->copyToDevice();
 }
-
 VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( weightsWrapper != 0 ) {
         delete weightsWrapper;
@@ -62,45 +69,71 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( results != 0 ) {
+        delete[] results;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( weights != 0 ) {
+        delete[] weights;
     }
+    if( biasWeights != 0 ) {
+        delete[] biasWeights;
+    }
+//    if( errorsForUpstreamWrapper != 0 ) {
+//        delete errorsForUpstreamWrapper;
+//    }
+//    if( errorsForUpstream != 0 ) {
+//        delete[] errorsForUpstream;
+//    }
     delete propagateimpl;
     delete backpropWeightsImpl;
-    delete backpropErrorsImpl;
+//    delete backpropErrorsImpl;
 }
-VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
-    if( !errorsForUpstreamCopiedToHost ) {
-        std::cout << "copying errorsForUpstream to host, from GPU" << std::endl;
-        errorsForUpstreamWrapper->copyToHost();
-        errorsForUpstreamCopiedToHost = true;
-    }
-    return errorsForUpstream;
+//VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
+//    if( !errorsForUpstreamCopiedToHost ) {
+//        std::cout << "copying errorsForUpstream to host, from GPU" << std::endl;
+//        errorsForUpstreamWrapper->copyToHost();
+//        errorsForUpstreamCopiedToHost = true;
+//    }
+//    return errorsForUpstream;
+//}
+VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
+    return activationFunction;
 }
-VIRTUAL bool ConvolutionalLayer::providesErrorsWrapper() const {
+VIRTUAL bool ConvolutionalLayer::providesDriveLossBySumWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
-    return errorsForUpstreamWrapper;
-}
+//VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
+//    return errorsForUpstreamWrapper;
+//}
 VIRTUAL void ConvolutionalLayer::initWeights( float*weights ) {
     Layer::initWeights( weights );
     weightsWrapper->copyToDevice();
 }
-
+VIRTUAL float const *ConvolutionalLayer::getWeights() const {
+    return weights;
+}
+VIRTUAL float *ConvolutionalLayer::getWeights() {
+    return weights;
+}
+VIRTUAL int ConvolutionalLayer::getResultsSize() const {
+    return batchSize * dim.outputCubeSize;
+}
+VIRTUAL int ConvolutionalLayer::getOutputPlanes() const {
+    return dim.numFilters;
+}
+VIRTUAL int ConvolutionalLayer::getOutputBoardSize() const {
+    return dim.outputBoardSize;
+}
 // filters are organized like [filterid][plane][row][col]
 void ConvolutionalLayer::randomizeWeights() {
 //        std::cout << "convolutional layer randomzing weights" << std::endl;
-    int fanin = upstreamNumPlanes * filterSize * filterSize;
+    int fanin = dim.inputPlanes * dim.filterSize * dim.filterSize;
     const int numThisLayerWeights = getWeightsSize();
     for( int i = 0; i < numThisLayerWeights; i++ ) {
-        weights[i] = generateWeight( fanin );
+        weights[i] = WeightsHelper::generateWeight( fanin );
     }
-    for( int i = 0; i < numPlanes; i++ ) {
-        biasWeights[i] = generateWeight( fanin );
+    for( int i = 0; i < dim.numFilters; i++ ) {
+        biasWeights[i] = WeightsHelper::generateWeight( fanin );
     }
 }
 VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
@@ -110,8 +143,7 @@ VIRTUAL CLWrapper *ConvolutionalLayer::getResultsWrapper() {
     return resultsWrapper;
 }
 VIRTUAL void ConvolutionalLayer::print() const {
-    std::cout << "ConvolutionalLayer numFilters " << numPlanes << " filtersize " << filterSize << 
-        " padZeros " << padZeros << " biased " << biased << " outputBoardSize " << boardSize << std::endl;
+    std::cout << "ConvolutionalLayer " << dim << std::endl;
     printWeights();
     if( results != 0 ) {
         printOutput();
@@ -119,56 +151,58 @@ VIRTUAL void ConvolutionalLayer::print() const {
 }
 VIRTUAL void ConvolutionalLayer::printWeights() const {
     std::cout << "  weights: " << std::endl;
+    getWeights();
 // filters are organized like [filterid][plane][row][col]
-    for( int filter = 0; filter < std::min( 5, numPlanes ); filter++ ) {
+    for( int filter = 0; filter < std::min( 5, dim.numFilters ); filter++ ) {
        std::cout << "    filter " << filter << std::endl;
-       if( biased ) {
+       if( dim.biased ) {
            std::cout << "       bias=" << biasWeights[filter] << std::endl;            
        }
-       for( int plane = 0; plane < std::min(5,upstreamNumPlanes); plane++ ) {
-           if( upstreamNumPlanes > 1 ) std::cout << "    inplane " << plane << std::endl;
-            for( int i = 0; i < std::min(5,filterSize); i++ ) {
+       for( int plane = 0; plane < std::min(5, dim.inputPlanes); plane++ ) {
+           if( dim.inputPlanes > 1 ) std::cout << "    inplane " << plane << std::endl;
+            for( int i = 0; i < std::min(5, dim.filterSize); i++ ) {
                 std::cout << "      ";
-                for( int j = 0; j < std::min(5,filterSize); j++ ) {
+                for( int j = 0; j < std::min(5, dim.filterSize); j++ ) {
                    std::cout << getWeight( filter, plane, i, j ) << " ";
                 }
-                if( filterSize > 5 ) {
+                if( dim.filterSize > 5 ) {
                    std::cout << " ...";
                 }
                 std::cout << std::endl;
             }
-            if( filterSize > 5 ) {
+            if( dim.filterSize > 5 ) {
                std::cout << " ..." << std::endl;
             }
         }
-        if( upstreamNumPlanes > 5 ) std::cout << " ... other inplanes ... " << std::endl;
+        if( dim.inputPlanes > 5 ) std::cout << " ... other inplanes ... " << std::endl;
     }
-    if( numPlanes > 5 ) std::cout << " ... other filters ... " << std::endl;
+    if( dim.numFilters > 5 ) std::cout << " ... other filters ... " << std::endl;
  }
 VIRTUAL void ConvolutionalLayer::printOutput() const { 
     if( results == 0 ) {
         return;
     }
+    //    getResults();
     std::cout << "  outputs: " << std::endl;
 // results are organized like [imageid][filterid][row][col]
     for( int n = 0; n < std::min( 5, batchSize ); n++ ) {
         std::cout << "    n: " << n << std::endl;
-        for( int plane = 0; plane < std::min(5,numPlanes); plane++ ) {
-            if( numPlanes > 1 ) std::cout << "      plane " << plane << std::endl;
-            if( boardSize == 1 ) {
+        for( int plane = 0; plane < std::min(5, dim.numFilters ); plane++ ) {
+            if( dim.numFilters > 1 ) std::cout << "      plane " << plane << std::endl;
+            if( dim.outputBoardSize == 1 ) {
                  std::cout << "        " << getResult(n, plane, 0, 0 ) << std::endl;
             } else {
-                for( int i = 0; i < std::min(5,boardSize); i++ ) {
+                for( int i = 0; i < std::min(5, dim.outputBoardSize); i++ ) {
                     std::cout << "      ";
-                    for( int j = 0; j < std::min(5,boardSize); j++ ) {
+                    for( int j = 0; j < std::min(5, dim.outputBoardSize); j++ ) {
                         std::cout << getResult( n, plane, i, j ) << " ";
                     }
-                    if( boardSize > 5 ) std::cout << " ... ";
+                    if( dim.outputBoardSize > 5 ) std::cout << " ... ";
                     std::cout << std::endl;
                 }
-                if( boardSize > 5 ) std::cout << " ... " << std::endl;
+                if( dim.outputBoardSize > 5 ) std::cout << " ... " << std::endl;
             }
-            if( numPlanes > 5 ) std::cout << " ... other planes ... " << std::endl;
+            if( dim.numFilters > 5 ) std::cout << " ... other planes ... " << std::endl;
         }
         if( batchSize > 5 ) std::cout << " ... other n ... " << std::endl;
     }
@@ -184,20 +218,20 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
-    }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
-    }
+//    if( errorsForUpstream != 0 ) {
+//        delete[] errorsForUpstream;
+//    }
+//    if( errorsForUpstreamWrapper != 0 ) {
+//        delete errorsForUpstreamWrapper;
+//    }
     this->batchSize = batchSize;
     results = new float[getResultsSize()];
     resultsWrapper = cl->wrap( getResultsSize(), results );
 //        std::cout << " layer " << layerIndex << " allocating results size " << getResultsSize() << std::endl;
-    weOwnResults = true;
+//    weOwnResults = true;
     if( layerIndex > 1 ) {
-        errorsForUpstream = new float[ previousLayer->getResultsSize() ];
-        errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
+//        errorsForUpstream = new float[ previousLayer->getResultsSize() ];
+//        errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
     }
     this->allocatedSpaceNumExamples = batchSize;
 }
@@ -220,7 +254,7 @@ VIRTUAL void ConvolutionalLayer::propagate() {
         upstreamWrapper->copyToDevice();
     }
     CLFloatWrapper *biasWeightsWrapper = 0;
-    if( biased ) {
+    if( dim.biased ) {
         biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
         biasWeightsWrapper->copyToDevice();
     }
@@ -231,7 +265,7 @@ VIRTUAL void ConvolutionalLayer::propagate() {
     if( !previousLayer->hasResultsWrapper() ) {
         delete upstreamWrapper;
     }
-    if( biased ) {
+    if( dim.biased ) {
         delete biasWeightsWrapper;
     }
     resultsCopiedToHost = false;
@@ -245,10 +279,10 @@ VIRTUAL float * ConvolutionalLayer::getResults() {
     return results;
 };
 VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
-    return numPlanes * upstreamNumPlanes * filterSize * filterSize;
+    return dim.numFilters * dim.inputPlanes * dim.filterSize * dim.filterSize;
 }
 VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
-    return numPlanes;
+    return dim.numFilters;
 }
 
 // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
@@ -256,9 +290,9 @@ VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
 // biasweights: [outPlane]
 //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
 
-VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
+VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
 //        Timer timer;
-    StatefulTimer::instance()->timeCheck("backproperrors(): start backprop, layer " + toString( layerIndex ) );
+    StatefulTimer::instance()->timeCheck("backprop(): start, layer " + toString( layerIndex ) );
 
     CLWrapper *biasWeightsWrapper = 0;
     if( dim.biased ) {
@@ -274,22 +308,22 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
         imagesWrapper->copyToDevice();
     }
 
-    CLWrapper *errorsWrapper = 0;
-    bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
-    } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
-        errorsWrapper->copyToDevice();
-        weOwnErrorsWrapper = true;
-    }
-
+    CLWrapper *derivLossBySumWrapper = 0;
+    bool weOwnDerivLossBySumWrapper = false;
+//    if( nextLayer->providesErrorsWrapper() ) {
+//        derivLossBySumWrapper = nextLayer->getDerivLossBySumWrapper();
+//    } else {
+        derivLossBySumWrapper = cl->wrap( getResultsSize(), nextLayer->getDerivLossBySum() );
+        derivLossBySumWrapper->copyToDevice();
+        weOwnDerivLossBySumWrapper = true;
+//    }
+/* temporarily remove for now, till we at least get weight backprop working again :-)
     if( layerIndex > 1 ) {
-        backpropErrorsImpl->backpropErrors( batchSize, resultsWrapper, weightsWrapper, biasWeightsWrapper, errorsWrapper, errorsForUpstreamWrapper );
+        backpropErrorsImpl->backpropErrors( batchSize, resultsWrapper, weightsWrapper, biasWeightsWrapper, errorsWrapper, derivLossBySumWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
     }
-
-    backpropWeightsImpl->backpropWeights( batchSize, learningRate, errorsWrapper, resultsWrapper, imagesWrapper,   weightsWrapper, biasWeightsWrapper );
+*/
+    backpropWeightsImpl->backpropWeights( batchSize, learningRate, derivLossBySumWrapper, imagesWrapper,   weightsWrapper, biasWeightsWrapper );
     StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
 
     if( dim.biased ) {
@@ -299,9 +333,14 @@ VIRTUAL void ConvolutionalLayer::backPropErrors( float learningRate ) {
     if( !previousLayer->hasResultsWrapper() ) {
         delete imagesWrapper;
     }
-    if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+    if( weOwnDerivLossBySumWrapper ) {
+        delete derivLossBySumWrapper;
     }
     StatefulTimer::instance()->timeCheck("backproperrors(): updated weights, layer " + toString( layerIndex ) );
+}
+
+ostream &operator<<( ostream &os, ConvolutionalLayer &layer ) {
+    os << "ConvolutionalLayer { " << layer.dim << " }";
+    return os;
 }
 

@@ -44,7 +44,7 @@ def add():
                in_header = True
                fnheader = line.replace( classname + '::', '' )
                fnheader = fnheader.replace( '{', '' )
-               fnheader = fnheader.replace( ':', '' )
+               fnheader = fnheader.replace( ') :', ')' )
                if fnheader.find(")") >= 0:
                    in_header = False
                fnheader = fnheader.strip().replace( ')', ');' )

@@ -12,6 +12,17 @@
 #include <iostream>
 #include <cstdlib>
 
+class IHasToString {
+public:
+    virtual std::string toString() = 0;
+};
+
+std::string toString( IHasToString *val ); // { // not terribly efficient, but works...
+//   std::ostringstream myostringstream;
+//   myostringstream << val->toString();
+//   return myostringstream.str();
+//}
+
 template<typename T>
 std::string toString(T val ) { // not terribly efficient, but works...
    std::ostringstream myostringstream;
