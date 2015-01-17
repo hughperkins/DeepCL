@@ -11,12 +11,6 @@ using namespace std;
 
 #include "stringhelper.h"
 
-std::string toString( IHasToString *val ) // not terribly efficient, but works...
-   std::ostringstream myostringstream;
-   myostringstream << val->toString();
-   return myostringstream.str();
-}
-
 vector<string> split(const string &str, const string &separator ) {
 	vector<string> splitstring;
 	int start = 0;
