@@ -31,9 +31,23 @@
 
 \begin{document}
 
+\subsection*{notation}
+
+$E$ is error ($\equiv$ loss) \\
+$o$ is output, of a neuron, after activation \\
+$s$ is sum of weight * underlying layer outputs, before activation \\
+$w$ is weight \\
+$o^2$ is output of second layer \\
+$o^2_i$ is output of node i in layer 2 \\
+$w^2_{ji}$ is weight from node j in layer 1 to node i in layer 2\\
+layers are arranged as: 0 is input layer, then layer 1, layer 2 etc \\ 
+$a(x)$ is activation function\\
+$y^*_i$ is label i, ie the ground truth for node i, in final output layer\\
+$i_i$ is input to node i in input layer
+
 \subsection*{overall}
 
-\[ \partialderivative{E}{w_{ji}} = \partialderivative{E}{o_i} \partialderivative{o_i}{s_i} \partialderivative{s_i}{w_{ji}} \]
+\[ \partialderivative{E}{w^{l-1}_{ji}} = \partialderivative{E}{o_i} \partialderivative{o_i}{s_i} \partialderivative{s_i}{w_{ji}} \]
 
 \[ = \partialderivative{\text{loss}}{o^l_i} \partialderivative{\text{activation}}{s^l_i} o^{l-1}_j \]
 
