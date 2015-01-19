@@ -92,7 +92,7 @@ public:
     int filterSize = 5;
     int restartable = 0;
     string restartableFilename = "weights.dat";
-    float learningRate = 0.1f;
+    float learningRate = 0.01f;
     int biased = 1;
     Config() {
     }
@@ -159,7 +159,8 @@ void go(Config config) {
 //        cout << "adding convolutional layer" << endl;
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
-    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->boardSize)->tanh()->biased(config.biased)->insert();
+    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->tanh()->biased(config.biased)->insert();
+    net->squareLossMaker()->insert();
 
     if( config.restartable ) {
         WeightsPersister::loadWeights( config.restartableFilename, net );

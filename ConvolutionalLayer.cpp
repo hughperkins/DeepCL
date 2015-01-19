@@ -28,6 +28,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         errorsForUpstream( 0 ),
         allocatedSpaceNumExamples( 0 ),
         resultsCopiedToHost( false ),
+        weightsCopiedToHost(false),
         results(0),
         weights(0),
         biasWeights(0),
@@ -60,10 +61,10 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
     }
     biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
-//    std::cout << " convolutional layer " << layerIndex << " allocating weights size " << getWeightsSize() << std::endl;
     randomizeWeights();
     weightsWrapper = cl->wrap( getWeightsSize(), weights );
     weightsWrapper->copyToDevice();
+    weightsCopiedToHost = true;
 }
 VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( weightsWrapper != 0 ) {
@@ -109,9 +110,17 @@ VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
     return errorsForUpstreamWrapper;
 }
 VIRTUAL float const *ConvolutionalLayer::getWeights() const {
+    if( !weightsCopiedToHost ) {
+        throw std::runtime_error("weights not copied to host, and htis is const object, so cannot copy");
+    }
     return weights;
 }
 VIRTUAL float *ConvolutionalLayer::getWeights() {
+    if( !weightsCopiedToHost ) {
+        cout << "copying weights to host" << endl;
+        cl->finish();
+        weightsWrapper->copyToHost();
+    }
     return weights;
 }
 VIRTUAL int ConvolutionalLayer::getResultsSize() const {
@@ -211,28 +220,27 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
+
+    this->batchSize = batchSize;
+    this->allocatedSpaceNumExamples = batchSize;
     if( results != 0 ) {
         delete[] results;
     }
+    results = new float[getResultsSize()];
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
+    resultsWrapper = cl->wrap( getResultsSize(), results );
     if( errorsForUpstream != 0 ) {
         delete[] errorsForUpstream;
     }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
     }
-    this->batchSize = batchSize;
-    results = new float[getResultsSize()];
-    resultsWrapper = cl->wrap( getResultsSize(), results );
-//        std::cout << " layer " << layerIndex << " allocating results size " << getResultsSize() << std::endl;
-//    weOwnResults = true;
     if( layerIndex > 1 ) {
         errorsForUpstream = new float[ previousLayer->getResultsSize() ];
         errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
     }
-    this->allocatedSpaceNumExamples = batchSize;
 }
 VIRTUAL void ConvolutionalLayer::propagate() {
 //    if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
@@ -330,11 +338,12 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
     if( layerIndex > 1 ) {
-        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, biasWeightsWrapper, errorsForUpstreamWrapper );
+        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
     }
 
-    backpropWeightsImpl->backpropWeights( batchSize, learningRate, errorsWrapper, imagesWrapper,   weightsWrapper, biasWeightsWrapper );
+    backpropWeightsImpl->backpropWeights( batchSize, learningRate, errorsWrapper, imagesWrapper,  weightsWrapper, biasWeightsWrapper );
+    weightsCopiedToHost = false;
     StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
 
     if( dim.biased ) {

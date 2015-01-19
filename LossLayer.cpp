@@ -21,7 +21,19 @@ VIRTUAL void LossLayer::propagate() {
 VIRTUAL float *LossLayer::getResults() {
     return previousLayer->getResults();
 }
+VIRTUAL int LossLayer::getResultsSize() const {
+    return previousLayer->getResultsSize();
+}
 VIRTUAL int LossLayer::getOutputCubeSize() const {
     return previousLayer->getOutputCubeSize();
+}
+VIRTUAL int LossLayer::getOutputBoardSize() const {
+    return previousLayer->getOutputBoardSize();
+}
+VIRTUAL int LossLayer::getOutputPlanes() const {
+    return previousLayer->getOutputPlanes();
+}
+VIRTUAL int LossLayer::getWeightsSize() const {
+    return previousLayer->getWeightsSize();
 }
 

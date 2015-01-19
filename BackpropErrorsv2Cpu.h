@@ -23,9 +23,9 @@ public:
     BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     VIRTUAL ~BackpropErrorsv2Cpu();
     VIRTUAL float *backpropErrors( int batchSize, float *inputData,
-    float *errors, float *weights, float *biasWeights );
+    float *errors, float *weights );
     VIRTUAL void backpropErrors( int batchSize,
-    CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+    CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
     CLWrapper *errorsForUpstreamWrapper );
 
     // [[[end]]]

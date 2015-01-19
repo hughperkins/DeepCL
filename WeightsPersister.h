@@ -30,9 +30,9 @@ public:
         int pos = 0;
         for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
             Layer *layer = net->layers[layerIdx];
-            copyArray( &(allWeightsArray[pos]), layer->weights, layer->getWeightsSize() );
+            copyArray( &(allWeightsArray[pos]), layer->getWeights(), layer->getWeightsSize() );
             pos += layer->getWeightsSize();
-            copyArray( &(allWeightsArray[pos]), layer->biasWeights, layer->getBiasWeightsSize() );
+            copyArray( &(allWeightsArray[pos]), layer->getBiasWeights(), layer->getBiasWeightsSize() );
             pos += layer->getBiasWeightsSize();
         }
         FileHelper::writeBinary( "~" + filepath, reinterpret_cast<char *>(allWeightsArray), 
@@ -56,9 +56,9 @@ public:
             int pos = 0;
             for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
             Layer *layer = net->layers[layerIdx];
-                copyArray( layer->weights, &(allWeightsArray[pos]), layer->getWeightsSize() );
+                layer->initWeights( &(allWeightsArray[pos]) );
                 pos += layer->getWeightsSize();
-                copyArray( layer->biasWeights, &(allWeightsArray[pos]), layer->getBiasWeightsSize() );
+                layer->initBiasWeights( &(allWeightsArray[pos]) );
                 pos += layer->getBiasWeightsSize();
             }
             delete [] data;

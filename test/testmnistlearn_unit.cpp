@@ -80,9 +80,9 @@ public:
     string testSet = "t10k";
     int numTrain = 60000;
     int numTest = 10000;
-    int batchSize = 512;
+    int batchSize = 128;
     int numEpochs = 2;
-    float learningRate = 0.1f;
+    float learningRate = 0.001f;
     int biased = 1;
     Config() {
     }
@@ -143,6 +143,7 @@ void go(Config config) {
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
     net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased)->insert();
+    net->squareLossMaker()->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){
 //        int fileSize;

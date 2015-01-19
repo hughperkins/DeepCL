@@ -52,6 +52,7 @@ public:
 
     bool resultsCopiedToHost;
     bool errorsForUpstreamCopiedToHost;
+    bool weightsCopiedToHost;
 
     inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
         return ( ( filterId 

@@ -21,11 +21,12 @@ add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp LayerMaker.cpp Neur
     BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
     BackpropWeights2Cpu.cpp LayerMaker.cpp BackpropErrorsv2.cpp BackpropErrorsv2Cpu.cpp
+    BackpropWeights2Naive.cpp BackpropErrorsv2Naive.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 add_custom_command( 
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/OpenCLHelper.cpp ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/CLKernel.cpp
-    COMMAND git submodule update --init --recursive
+    COMMAND git submodule update --init --force --recursive
 )
 add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
 add_dependencies( ClConvolve git_submodules_update )
@@ -40,7 +41,7 @@ link_libraries(ClConvolve)
 if(PYTHON_AVAILABLE)
     add_custom_target( 
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -r ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR} -r ${CMAKE_CURRENT_SOURCE_DIR}/*.h ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp
     )
     add_dependencies( ClConvolve cog )
 endif(PYTHON_AVAILABLE)
@@ -52,11 +53,11 @@ endif(PYTHON_AVAILABLE)
 
 set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
- test/testbackproperrors.cpp
+ test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  )
 #
-# test/testmnistlearn_unit.cpp
-#test/testbackprop.cpp test/testbiasbackprop.cpp test/testsinglebatch.cpp
+#
+#test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
 #add_executable( testneuralnetmnist test/testneuralnetmnist.cpp stringhelper.cpp )

@@ -662,7 +662,7 @@ float biasWeights2[] = {0.232961, 0.141537, 0.159074};
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 500; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.1)
+            ->learningRate(0.04)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)
@@ -767,7 +767,7 @@ float biasWeights2[] = {-0.0863176, -0.227985, -0.147554};
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.01)
+            ->learningRate(0.04)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)
@@ -936,7 +936,7 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
 //    net->print();
     for( int epoch = 0; epoch < 3000; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.1)
+            ->learningRate(0.02)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)

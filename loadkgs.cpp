@@ -36,7 +36,7 @@ int main(int argc, char *argv[] ) {
     for( int i = 0; i < 1; i++ ) {
         net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->padZeros()->insert();
     }
-    net->convolutionalMaker()->numFilters(numLabels)->filterSize(net->layers[net->layers.size()-1]->boardSize)->tanh()->biased()->insert();
+    net->convolutionalMaker()->numFilters(numLabels)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->tanh()->biased()->insert();
     net->setBatchSize(batchSize);
     int *labels = new int[ batchSize ];
     float *expectedValues = new float[ batchSize * numLabels ];

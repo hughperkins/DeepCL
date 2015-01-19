@@ -67,6 +67,7 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
     float lossChange = loss - loss2;
     cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
 
+    dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToHost();
     float const*newWeights = net->layers[1]->getWeights();
     float sumWeightDiff = 0;
     float sumWeightDiffSquared = 0;

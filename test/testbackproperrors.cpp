@@ -16,7 +16,7 @@ using namespace std;
 
 // This file contains tests for calculating errors for the upstream layer
 
-void testNumerically( float learningRate, int batchSize, int boardSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros ) {
+void testNumerically( float learningRate, int batchSize, int boardSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros)->insert();
     net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros)->insert();
@@ -40,7 +40,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weights, weightsSize2, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToDevice();
 
-    for( int it = 0; it < 20; it++ ) {
+    for( int it = 0; it < its; it++ ) {
         float *weightsBefore1 = new float[weightsSize1];
         float *currentWeights = net->layers[1]->getWeights();
         for( int i = 0; i < weightsSize1; i++ ) {
@@ -57,6 +57,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
         float loss = net->calcLoss(expectedResults);
         float losslayer1 = dynamic_cast<LossLayer*>(net->layers[3])->calcLoss(expectedResults);
         net->backProp( learningRate, expectedResults );
+        dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
 //            dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weights[i] = weightsBefore2[i];
@@ -110,7 +111,7 @@ TEST( testbackproperrors, checknumerically ) {
     const int numPlanes = 1;
     bool padZeros = false;
 
-    testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, new TanhActivation(), padZeros );
+    testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, new TanhActivation(), padZeros, 5 );
 }
 
 TEST( testbackproperrors, checknumerically_boardsize5_filter3_relu ) {

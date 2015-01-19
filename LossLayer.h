@@ -23,7 +23,11 @@ public:
     LossLayer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL void propagate();
     VIRTUAL float *getResults();
+    VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputCubeSize() const;
+    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getWeightsSize() const;
 
     // [[[end]]]
 };

@@ -8,6 +8,7 @@
 #include "stringhelper.h"
 
 #include "BackpropErrorsv2Cpu.h"
+#include "BackpropErrorsv2Naive.h"
 
 #include "BackpropErrorsv2.h"
 
@@ -21,17 +22,20 @@ using namespace std;
 
 STATIC BackpropErrorsv2 *BackpropErrorsv2::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn ) {
     if( square( dim.inputBoardSize ) <= cl->getMaxWorkgroupSize() ) {
-        return new BackpropErrorsv2Cpu( cl, dim, upstreamFn );
+        return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
     } else {
-        return new BackpropErrorsv2Cpu( cl, dim, upstreamFn );
+        return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
     }
 }
 STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn ) {
-    return new BackpropErrorsv2Cpu( cl, layerDimensions, upstreamFn );
+    return new BackpropErrorsv2Naive( cl, layerDimensions, upstreamFn );
 }
 STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn ) {
     if( idx == 0 ) {
         return new BackpropErrorsv2Cpu( cl, layerDimensions, upstreamFn );
+    }
+    if( idx == 1 ) {
+        return new BackpropErrorsv2Naive( cl, layerDimensions, upstreamFn );
     }
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
@@ -40,8 +44,7 @@ BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimen
         cl( cl ),
         upstreamFn( upstreamFn ) {
 }
-VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputData, float *errors, float *filters,
-     float *biases ) {
+VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputData, float *errors, float *filters ) {
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop begin");
 
     CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
@@ -54,12 +57,12 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-    CLWrapper *biasWeightsWrapper = 0;
-    if( dim.biased ) {
-        int biasWeightsWrapperSize = dim.numFilters;
-        biasWeightsWrapper = cl->wrap( biasWeightsWrapperSize, biases );
-        biasWeightsWrapper->copyToDevice();
-    }
+//    CLWrapper *biasWeightsWrapper = 0;
+//    if( dim.biased ) {
+//        int biasWeightsWrapperSize = dim.numFilters;
+//        biasWeightsWrapper = cl->wrap( biasWeightsWrapperSize, biases );
+//        biasWeightsWrapper->copyToDevice();
+//    }
 
     int outputDataSize = batchSize * dim.inputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
@@ -68,7 +71,7 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( allocatedResultsSize, errorsForUpstream );
 
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copied to device");
-    backpropErrors( batchSize, inputDataWrapper, errorsWrapper, weightsWrapper, biasWeightsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, inputDataWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after call backprop");
     errorsForUpstreamWrapper->copyToHost();
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copytohost");
@@ -76,9 +79,9 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     delete errorsForUpstreamWrapper;
     delete errorsWrapper;
     delete weightsWrapper;
-    if( dim.biased ) {
-        delete biasWeightsWrapper;
-    }
+//    if( dim.biased ) {
+//        delete biasWeightsWrapper;
+//    }
 
     return errorsForUpstream;
 }

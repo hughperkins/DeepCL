@@ -226,7 +226,11 @@ void NeuralNet::propagate( float const*images) {
 //        timer.timeCheck("propagate time");
 }
 void NeuralNet::backProp( float learningRate, float const *expectedResults) {
-    dynamic_cast<LossLayer*>(getLastLayer())->calcDerivLossBySum( expectedResults );
+    LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
+    if( lossLayer == 0 ) {
+        throw std::runtime_error("Must add a LossLayer as last layer of net");
+    }
+    lossLayer->calcDerivLossBySum( expectedResults );
     for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backProp( learningRate );

@@ -23,7 +23,7 @@ BackpropErrorsv2Cpu::BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim,
 VIRTUAL BackpropErrorsv2Cpu::~BackpropErrorsv2Cpu() {
 }
 VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputData,
-    float *errors, float *weights, float *biasWeights ) {
+    float *errors, float *weights ) {
     float *errorsForUpstream = new float[ batchSize * dim.inputCubeSize ];
 
 //        Timer timer;
@@ -92,19 +92,19 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
     return errorsForUpstream;
 }
 VIRTUAL void BackpropErrorsv2Cpu::backpropErrors( int batchSize, 
-        CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+        CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
         CLWrapper *errorsForUpstreamWrapper ) {
 
     inputDataWrapper->copyToHost();
     errorsWrapper->copyToHost();
     weightsWrapper->copyToHost();
-    float *biasWeights = 0;
-    if( dim.biased ) {
-        biasWeightsWrapper->copyToHost();
-        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
-    }
+//    float *biasWeights = 0;
+//    if( dim.biased ) {
+//        biasWeightsWrapper->copyToHost();
+//        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+//    }
     float *errorsForUpstream = backpropErrors( batchSize, (float *)inputDataWrapper->getHostArray(),
-         (float *)errorsWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
+         (float *)errorsWrapper->getHostArray(), (float *)weightsWrapper->getHostArray() );
     float *errorsForUpstreamHostArray = (float*)errorsForUpstreamWrapper->getHostArray();
     const int errorsForUpstreamWrapperSize = errorsForUpstreamWrapper->size();
     for( int i = 0; i < errorsForUpstreamWrapperSize; i++ ) {

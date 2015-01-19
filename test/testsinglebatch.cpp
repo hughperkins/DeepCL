@@ -7,12 +7,154 @@
 //#include "ExpectedValuesLayer.h"
 
 #include "gtest/gtest.h"
-
 #include "test/gtest_supp.h"
 #include "test/Sampler.h"
 #include "Timer.h"
 
 using namespace std;
+
+class TestArgs{
+public:
+    static TestArgs instance(){ TestArgs args; return args; };
+    // [[[cog
+    // floats= ['learningRate']
+    // ints = ['batchSize','boardSize','numLayers','filterSize','numFilters', 'numEpochs']
+    // import cog_fluent
+    // cog_fluent.go( 'TestArgs', ints = ints, floats = floats )
+    // ]]]
+    int batchSize;
+    int boardSize;
+    int numLayers;
+    int filterSize;
+    int numFilters;
+    int numEpochs;
+    float learningRate;
+    TestArgs BatchSize( int _batchSize ) {
+        this->batchSize = _batchSize;
+        return *this;
+    }
+    TestArgs BoardSize( int _boardSize ) {
+        this->boardSize = _boardSize;
+        return *this;
+    }
+    TestArgs NumLayers( int _numLayers ) {
+        this->numLayers = _numLayers;
+        return *this;
+    }
+    TestArgs FilterSize( int _filterSize ) {
+        this->filterSize = _filterSize;
+        return *this;
+    }
+    TestArgs NumFilters( int _numFilters ) {
+        this->numFilters = _numFilters;
+        return *this;
+    }
+    TestArgs NumEpochs( int _numEpochs ) {
+        this->numEpochs = _numEpochs;
+        return *this;
+    }
+    TestArgs LearningRate( float _learningRate ) {
+        this->learningRate = _learningRate;
+        return *this;
+    }
+    // [[[end]]]
+};
+
+//void test( int batchSize, float learningRate, int boardSize, int numLayers, int filterSize, int numFilters ) {
+void test( TestArgs args ) {
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
+    for( int i = 0; i < args.numLayers; i++ ) {
+        net->convolutionalMaker()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased()->insert();
+    }
+    net->convolutionalMaker()->numFilters(10)->filterSize(net->getLastLayer()->getOutputBoardSize())->tanh()->biased()->insert();
+    net->squareLossMaker()->insert();
+
+    net->setBatchSize(args.batchSize);
+
+    mt19937 random;
+    random.seed(0); // so always gives same results
+    const int inputsSize = net->getInputCubeSize() * args.batchSize;
+    float *inputData = new float[ inputsSize ];
+    for( int i = 0; i < inputsSize; i++ ) {
+        inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+    const int resultsSize = net->getLastLayer()->getResultsSize();
+    float *expectedResults = new float[resultsSize];
+    for( int i = 0; i < resultsSize; i++ ) {
+        expectedResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    }
+
+    for (int layerIndex = 1; layerIndex <= args.numLayers; layerIndex++ ) {
+        ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
+        int weightsSize = layer->getWeightsSize();
+        cout << "weightsSize, layer " << 1 << "= " << weightsSize << endl;
+        for( int i = 0; i < weightsSize; i++ ) {
+            layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        }
+        layer->weightsWrapper->copyToDevice();
+        int biasWeightsSize = layer->getBiasWeightsSize();
+        for( int i = 0; i < biasWeightsSize; i++ ) {
+            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        }
+    }
+
+    Timer timer;
+    int weights1Size = net->layers[1]->getWeightsSize();
+    float *lastWeights1 = new float[weights1Size];
+    memcpy( lastWeights1, net->layers[1]->getWeights(), sizeof(float) * weights1Size );
+    cout << "learningRate: " << args.learningRate << endl;
+    float lastloss = 0;
+    for( int i = 0; i < args.numEpochs; i++ ) {
+//        net->learnBatch( args.learningRate, inputData, expectedResults );
+        net->propagate( inputData );
+        net->backProp( args.learningRate, expectedResults );
+        float sumsquaredweightsdiff = 0;
+//        for( int layerIdx = 1; layerIdx <= args.numLayers + 1; layerIdx++ ) {
+            float *currentWeights1 = net->layers[1]->getWeights();
+//            int weightsSize = 
+            for( int i = 0; i < weights1Size; i++ ) {
+                float thisdiff = currentWeights1[i] - lastWeights1[i];
+                sumsquaredweightsdiff += thisdiff * thisdiff;
+            }
+//        }
+        cout << "sumsquaredweightsdiff " << sumsquaredweightsdiff << " divide by learningrate " << (sumsquaredweightsdiff/args.learningRate) << endl;
+        float thisloss = net->calcLoss( expectedResults ) ;
+        cout << "loss " << thisloss << " loss diff " << (lastloss - thisloss ) << endl;
+        lastloss =thisloss;
+        memcpy( lastWeights1, currentWeights1, sizeof(float) * weights1Size );
+    }
+    timer.timeCheck("batch time");
+    StatefulTimer::dump(true);
+
+    float *results = (float*)(net->getResults());
+//    Sampler::printSamples( "net->getResults()", resultsSize, (float*)results );
+
+    delete[]lastWeights1;
+    delete[] expectedResults;
+    delete[] inputData;
+    delete net;
+}
+
+TEST( testsinglebatch, boardsize5_filtersize3_batchsize2 ) {
+    test( TestArgs::instance().BatchSize(2).LearningRate(0.1f).BoardSize(5).NumLayers(1)
+            .FilterSize(3).NumFilters(5).NumEpochs(20) );
+}
+
+TEST( testsinglebatch, boardsize5_filtersize3_batchsize2_10filters ) {
+    test( TestArgs::instance().BatchSize(2).LearningRate(0.5f).BoardSize(5).NumLayers(1)
+            .FilterSize(3).NumFilters(10).NumEpochs(100) );
+}
+
+TEST( testsinglebatch, boardsize28 ) {
+    test( TestArgs::instance().BatchSize(2).LearningRate(0.2f).BoardSize(28).NumLayers(1)
+            .FilterSize(3).NumFilters(10).NumEpochs(100) );
+}
+
+TEST( testsinglebatch, boardsize28_filtersize5 ) {
+    test( TestArgs::instance().BatchSize(2).LearningRate(0.2f).BoardSize(28).NumLayers(1)
+            .FilterSize(5).NumFilters(10).NumEpochs(100) );
+}
+
 /*
 TEST( testsinglebatch, detailedregression ) {
     const int batchSize = 128;

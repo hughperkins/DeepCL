@@ -10,6 +10,7 @@
 
 #include "BackpropWeights2.h"
 #include "BackpropWeights2Cpu.h"
+#include "BackpropWeights2Naive.h"
 
 using namespace std;
 
@@ -21,21 +22,21 @@ using namespace std;
 
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
 //    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
-        return new BackpropWeights2Cpu( cl, dim );
+        return new BackpropWeights2Naive( cl, dim );
 //    } else {
 //        return new BackpropWeights2ScratchBias( cl, dim, fn );
 //    }
 }
 STATIC BackpropWeights2 *BackpropWeights2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
-    return new BackpropWeights2Cpu( cl, layerDimensions );
+    return new BackpropWeights2Naive( cl, layerDimensions );
 }
 STATIC BackpropWeights2 *BackpropWeights2::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
         return new BackpropWeights2Cpu( cl, layerDimensions );
     }
-//    if( idx == 1 ) {
-//        return new BackpropWeights2Naive( cl, layerDimensions, fn );
-//    }
+    if( idx == 1 ) {
+        return new BackpropWeights2Naive( cl, layerDimensions );
+    }
 //    if( idx == 2 ) {
 //        return new BackpropWeights2ScratchBias( cl, layerDimensions, fn );
 //    }
