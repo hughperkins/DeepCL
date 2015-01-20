@@ -11,6 +11,7 @@
 #include "BackpropWeights2.h"
 #include "BackpropWeights2Cpu.h"
 #include "BackpropWeights2Naive.h"
+#include "BackpropWeights2Scratch.h"
 
 using namespace std;
 
@@ -21,14 +22,14 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
-//    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
+    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
+        return new BackpropWeights2Scratch( cl, dim );
+    } else {
         return new BackpropWeights2Naive( cl, dim );
-//    } else {
-//        return new BackpropWeights2ScratchBias( cl, dim, fn );
-//    }
+    }
 }
 STATIC BackpropWeights2 *BackpropWeights2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
-    return new BackpropWeights2Naive( cl, layerDimensions );
+    return new BackpropWeights2Scratch( cl, layerDimensions );
 }
 STATIC BackpropWeights2 *BackpropWeights2::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
@@ -37,9 +38,9 @@ STATIC BackpropWeights2 *BackpropWeights2::instanceSpecific( int idx, OpenCLHelp
     if( idx == 1 ) {
         return new BackpropWeights2Naive( cl, layerDimensions );
     }
-//    if( idx == 2 ) {
-//        return new BackpropWeights2ScratchBias( cl, layerDimensions, fn );
-//    }
+    if( idx == 2 ) {
+        return new BackpropWeights2Scratch( cl, layerDimensions );
+    }
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx) );
 }
 BackpropWeights2::BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :

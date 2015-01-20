@@ -163,4 +163,17 @@ StatefulTimer readings:
        loss L: -nan
 after epoch 0 1917 ms
 
+========================================
+
+after update to v2 error propagation
+
+aws, numfilters=32 numlayers=1:
+StatefulTimer readings:
+   layer1 BackpropWeights2Naive end: 16875ms
+   layer1 Propagate3::propagate after call propagate: 547ms
+   layer2 BackpropErrorsv2Naive end: 469ms
+   layer2 Propagate1::propagate after call propagate: 11498ms
+       loss L: 5354.12
+after epoch 2 29072 ms
+
 
