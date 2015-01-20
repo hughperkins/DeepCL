@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "SquareLossLayer.h"
+#include "CrossEntropyLoss.h"
 #include "LossLayer.h"
 
 using namespace std;
@@ -14,26 +14,26 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-SquareLossLayer::SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker ) :
+CrossEntropyLoss::CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker const*maker ) :
         LossLayer( previousLayer, maker ),
         errors( 0 ),
         allocatedSize( 0 ) {
 }
-VIRTUAL SquareLossLayer::~SquareLossLayer(){
+VIRTUAL CrossEntropyLoss::~CrossEntropyLoss(){
     if( errors != 0 ) {
         delete[] errors;
     }
 }
-VIRTUAL float*SquareLossLayer::getErrorsForUpstream() {
+VIRTUAL float*CrossEntropyLoss::getErrorsForUpstream() {
     return errors;
 }
-//VIRTUAL float*SquareLossLayer::getDerivLossBySumForUpstream() {
-//    return derivLossBySum;
+//VIRTUAL float*CrossEntropyLoss::getDerivLossBySumForUpstream() {
+//    return errors;
 //}
-VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
+VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
     float loss = 0;
     float *results = getResults();
-//    cout << "SquareLossLayer::calcLoss" << endl;
+//    cout << "CrossEntropyLoss::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
     int boardSize = previousLayer->getOutputBoardSize();
@@ -48,9 +48,9 @@ VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
  //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
                     float expectedOutput = expected[resultOffset];
                     float actualOutput = results[resultOffset];
-                    float diff = actualOutput - expectedOutput;
-                    float squarederror = diff * diff;
-                    loss += squarederror;
+                    float negthisloss = expectedOutput * log( actualOutput ) 
+                        + ( 1 - expectedOutput ) * log( 1 - actualOutput );
+                    loss -= negthisloss;
                 }
             }
         }            
@@ -59,7 +59,7 @@ VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
 //    cout << "loss " << loss << endl;
     return loss;
  }
-VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
+VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;
         return;
@@ -71,14 +71,15 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
     this->batchSize = batchSize;
     allocatedSize = batchSize;
 }
-VIRTUAL void SquareLossLayer::calcErrors( float const*expectedResults ) {
+// just do naively for now, then add sigmoid short-cutting later
+VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedResults ) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();
     int resultsSize = previousLayer->getResultsSize();
     float *results = previousLayer->getResults();
     for( int i = 0; i < resultsSize; i++ ) {
         float result = results[i];
         float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = result - expectedResults[i];
+        float partialLossByOut = ( result - expectedResults[i] ) / result / ( 1 - result );
         errors[i] = partialLossByOut * partialOutBySum;
     }
 }

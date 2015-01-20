@@ -13,7 +13,7 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class SquareLossLayer : public LossLayer {
+class CrossEntropyLoss : public LossLayer {
 public:
 
     float *errors;
@@ -25,11 +25,11 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: SquareLossLayer
-    // cppfile: SquareLossLayer.cpp
+    // classname: CrossEntropyLoss
+    // cppfile: CrossEntropyLoss.cpp
 
-    SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker );
-    VIRTUAL ~SquareLossLayer();
+    CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker const*maker );
+    VIRTUAL ~CrossEntropyLoss();
     VIRTUAL float*getErrorsForUpstream();
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );

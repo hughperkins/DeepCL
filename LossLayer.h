@@ -11,7 +11,7 @@
 class LossLayer : public Layer {
 public:
     virtual float calcLoss( float const*expectedValue ) = 0;
-    virtual void calcDerivLossBySum( float const*expectedResults ) = 0;
+    virtual void calcErrors( float const*expectedResults ) = 0;
 
     // [[[cog
     // import cog_addheaders

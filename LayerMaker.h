@@ -18,6 +18,7 @@ class Layer;
 
 //class ExpectedValuesLayer;
 class SquareLossLayer;
+class CrossEntropyLayer;
 
 class LayerMaker {
 public:
@@ -98,6 +99,14 @@ public:
 class SquareLossMaker : public LossLayerMaker {
 public:
     SquareLossMaker( NeuralNet *net, Layer *previousLayer ) :
+        LossLayerMaker( net, previousLayer ) {
+    }
+    virtual Layer *instance() const;
+};
+
+class CrossEntropyLossMaker : public LossLayerMaker {
+public:
+    CrossEntropyLossMaker( NeuralNet *net, Layer *previousLayer ) :
         LossLayerMaker( net, previousLayer ) {
     }
     virtual Layer *instance() const;

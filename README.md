@@ -171,6 +171,7 @@ make testneuralnetconvolve-experimental
 |v0.1 |0.1  |32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |
 |v0.1 |0.02  |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |
 |head |0.0001  |32             | 5            | 1                    | 12          | 17.2 seconds      | 97.3 +/- ? |
+| head | 0.0001 | 32 | 5 | 2 | 12 | 80.4 seconds | 98.2 +/- ? |
 
 Unit-testing
 ============

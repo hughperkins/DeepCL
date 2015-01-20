@@ -41,6 +41,7 @@ public:
     STATIC NeuralNetMould *maker();
     ConvolutionalMaker *convolutionalMaker();
     SquareLossMaker *squareLossMaker();
+    CrossEntropyLossMaker *crossEntropyLossMaker();
     void initWeights( int layerIndex, float *weights, float *biasWeights );
     void initWeights( int layerIndex, float *weights );
     void initBiasWeights( int layerIndex, float *weights );

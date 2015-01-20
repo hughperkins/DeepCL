@@ -66,6 +66,9 @@ ConvolutionalMaker *NeuralNet::convolutionalMaker() {
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
 }
+CrossEntropyLossMaker *NeuralNet::crossEntropyLossMaker() {
+    return new CrossEntropyLossMaker( this, getLastLayer() );
+}
 void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {
     initWeights( layerIndex, weights );
     initBiasWeights( layerIndex, biasWeights );
@@ -230,7 +233,7 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
     if( lossLayer == 0 ) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
     }
-    lossLayer->calcDerivLossBySum( expectedResults );
+    lossLayer->calcErrors( expectedResults );
     for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backProp( learningRate );

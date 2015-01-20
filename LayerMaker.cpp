@@ -15,6 +15,7 @@
 //#include "ExpectedValuesLayer.h"
 //#include "SoftMaxLayer.h"
 #include "SquareLossLayer.h"
+#include "CrossEntropyLoss.h"
 
 using namespace std;
 
@@ -74,6 +75,10 @@ Layer *LossLayerMaker::insert() {
 
 Layer *SquareLossMaker::instance() const {
     SquareLossLayer *layer = new SquareLossLayer( previousLayer, this );
+    return layer;
+}
+Layer *CrossEntropyLossMaker::instance() const {
+    CrossEntropyLoss *layer = new CrossEntropyLoss( previousLayer, this );
     return layer;
 }
 

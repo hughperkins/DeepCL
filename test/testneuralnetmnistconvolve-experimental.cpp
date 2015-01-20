@@ -91,6 +91,7 @@ public:
     int padZeros = 0;
     int filterSize = 5;
     int restartable = 0;
+    string loss = "square";
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     int biased = 1;
@@ -160,7 +161,13 @@ void go(Config config) {
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
     net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->tanh()->biased(config.biased)->insert();
-    net->squareLossMaker()->insert();
+    if( config.loss == "square" ) {
+        net->squareLossMaker()->insert();
+    } else if( config.loss == "crossentropy" ) {
+        net->crossEntropyLossMaker()->insert();
+    } else {
+        throw std::runtime_error("loss layer type " + config.loss + " not known" );
+    }
 
     if( config.restartable ) {
         WeightsPersister::loadWeights( config.restartableFilename, net );
@@ -246,6 +253,7 @@ int main( int argc, char *argv[] ) {
         cout << "    filtersize=[filter size] (" << config.filterSize << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
         cout << "    padzeros=[0|1] (" << config.padZeros << ")" << endl;
+        cout << "    loss=[square|crossentropy] (" << config.loss << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
@@ -270,6 +278,7 @@ int main( int argc, char *argv[] ) {
            if( key == "numlayers" ) config.numLayers = atoi(value);
            if( key == "padzeros" ) config.padZeros = atoi(value);
            if( key == "filtersize" ) config.filterSize = atoi(value);
+           if( key == "loss" ) config.loss = value;
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);
            if( key == "restartablefilename" ) config.restartableFilename = value;
