@@ -229,6 +229,11 @@ public:
         this->_activationFunction = new ReluActivation();
         return this;
     }
+    ConvolutionalMaker *sigmoid() {
+        delete this->_activationFunction;
+        this->_activationFunction = new SigmoidActivation();
+        return this;
+    }
     ConvolutionalMaker *linear() {
         delete this->_activationFunction;
         this->_activationFunction = new LinearActivation();

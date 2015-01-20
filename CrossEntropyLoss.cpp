@@ -79,7 +79,7 @@ VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedResults ) {
     for( int i = 0; i < resultsSize; i++ ) {
         float result = results[i];
         float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = ( result - expectedResults[i] ) / result / ( 1 - result );
+        float partialLossByOut = ( result - expectedResults[i] ) / result / ( 1.0 - result );
         errors[i] = partialLossByOut * partialOutBySum;
     }
 }

@@ -10,6 +10,8 @@
 
 #ifdef TANH
     #define ACTIVATION_FUNCTION(output) (tanh(output))
+#elif SIGMOID
+    #define ACTIVATION_FUNCTION(output) (1.0 / (1 + exp(-output)))
 #elif defined RELU
     #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
 #elif defined LINEAR

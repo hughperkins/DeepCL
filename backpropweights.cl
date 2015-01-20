@@ -14,6 +14,8 @@
     #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)
 #elif defined LINEAR
     #define ACTIVATION_DERIV(output) (1)
+#elif defined SIGMOID
+    #define ACTIVATION_DERIV(output) (output * ( 1 - output) )
 #endif
 
 // images are organized like [imageId][plane][row][col]    128*32*19*19=1,500,000

@@ -19,3 +19,8 @@ ostream &operator<<( ostream &os, ReluActivation &act ) {
     return os;
 }
 
+ostream &operator<<( ostream &os, SigmoidActivation &act ) {
+    os << "SigmoidActivation{}";
+    return os;
+}
+
