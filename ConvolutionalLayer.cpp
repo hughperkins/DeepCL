@@ -150,14 +150,14 @@ VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
 VIRTUAL CLWrapper *ConvolutionalLayer::getResultsWrapper() {
     return resultsWrapper;
 }
-VIRTUAL void ConvolutionalLayer::print() const {
+VIRTUAL void ConvolutionalLayer::print() {
     std::cout << "ConvolutionalLayer " << dim << std::endl;
     printWeights();
     if( results != 0 ) {
         printOutput();
     }
 }
-VIRTUAL void ConvolutionalLayer::printWeights() const {
+VIRTUAL void ConvolutionalLayer::printWeights() {
     std::cout << "  weights: " << std::endl;
     getWeights();
 // filters are organized like [filterid][plane][row][col]

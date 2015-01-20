@@ -107,7 +107,7 @@ VIRTUAL int Layer::getOutputBoardSize() const {
 VIRTUAL void Layer::propagate() {
     throw std::runtime_error("propagate not implemented for this layer type");
 }
-VIRTUAL void Layer::print() const {
+VIRTUAL void Layer::print() {
 //    printWeights();
 //    if( results != 0 ) {
     printOutput();
@@ -154,7 +154,7 @@ VIRTUAL void Layer::printBiasWeightsAsCode() const {
     std::cout << "};" << std::endl;
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
 }
-VIRTUAL void Layer::printWeights() const {
+VIRTUAL void Layer::printWeights() {
     std::cout << "printWeights() not implemented for this layer type" << std:: endl; 
 }
 VIRTUAL void Layer::printOutput() const {

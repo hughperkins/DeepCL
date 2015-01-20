@@ -109,8 +109,8 @@ public:
     void randomizeWeights();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
-    VIRTUAL void print() const;
-    VIRTUAL void printWeights() const;
+    VIRTUAL void print();
+    VIRTUAL void printWeights();
     VIRTUAL void printOutput() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();

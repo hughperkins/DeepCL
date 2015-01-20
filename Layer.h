@@ -75,12 +75,12 @@ public:
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputBoardSize() const;
     VIRTUAL void propagate();
-    VIRTUAL void print() const;
+    VIRTUAL void print();
     VIRTUAL void initWeights( float*weights );
     VIRTUAL void initBiasWeights( float*biasWeights );
     VIRTUAL void printWeightsAsCode() const;
     VIRTUAL void printBiasWeightsAsCode() const;
-    VIRTUAL void printWeights() const;
+    VIRTUAL void printWeights();
     VIRTUAL void printOutput() const;
     VIRTUAL void backProp( float learningRate );
     VIRTUAL int getWeightsSize() const;
