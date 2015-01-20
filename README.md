@@ -49,16 +49,15 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
 * Please use a Convolutional Layer, and set the filter size to be identical to the output
 size of the previous layer.
 
-Loss layer
-----------
+*Loss layer*
 
 Please add one loss layer.  For now we have squared loss:
 ```
 net->squareLossMaker()->insert();
 ```
 
-Train the net
--------------
+Train
+-----
 
 ```
 for( int epoch = 0; epoch < 12; epoch++ ) {
@@ -71,12 +70,13 @@ for( int epoch = 0; epoch < 12; epoch++ ) {
 }
 ```
 
-Print the net
--------------
+Predict
+-------
 
-You can print the network like this:
 ```
-net->print();
+net->setBatchSize(batchSize);
+net->propagate(somenewdata);
+float *results = net->getResults();
 ```
 
 Data format
@@ -166,10 +166,11 @@ make testneuralnetconvolve-experimental
 ```
 * Here are some results I obtained, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
-|ClConvolve version| Number filters | Filter size | Number filter layers | Number epochs | Epoch time | Test accuracy | options |
-|-------|----------------|--------------|----------------------|----------------|---------------|-----------|--------|
-|v0.1   |32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |  numfilters=32 |
-|v0.1   |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |  numfilters=32 numlayers=2 numepochs=50 learningrate=0.02 |
+|ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Number epochs | Epoch time | Test accuracy |
+|-------|----|---------------|--------------|----------------------|----------------|---------------|-----------|
+|v0.1 |0.1  |32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |
+|v0.1 |0.02  |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |
+|head |0.0001  |32             | 5            | 1                    | 12          | 29.7 seconds      | 97.3 +/- ? |
 
 Unit-testing
 ============
@@ -293,6 +294,24 @@ BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100)
   * second is array of boards, in same format as returned by BoardsHelper::allocateBoards
   * third argument is number of boards to write to png
   * third argument is the length of one side of each board
+
+What's done / what's planned
+============================
+
+* Done:
+  * forward/backward propagation, for convolution networks, using OpenCL
+  * square loss
+  * some optimization of the OpenCL kernels, targeting 19x19 Go boards
+  * can save/load weights
+  * can use 'fluent' style to setup the networks
+  * unit-tests for forward propagation
+  * numerical validation for backward propagation
+* Planned:
+  * softmax activation function
+  * cross entropy loss
+  * multinomial cross entropy loss
+  * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+  * symmetric filters
 
 Third-party libraries
 =====================

@@ -92,7 +92,7 @@ public:
     int filterSize = 5;
     int restartable = 0;
     string restartableFilename = "weights.dat";
-    float learningRate = 0.01f;
+    float learningRate = 0.0001f;
     int biased = 1;
     Config() {
     }
