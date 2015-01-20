@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {
+void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs, ActivationFunction *fn ) {
     int boardSize;
     int Nboards;
     int Nlabels;
@@ -43,9 +43,9 @@ void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, flo
     for( int n = 0; n < Nlabels; n++ ) {
        int thislabel = labels[n];
        for( int i = 0; i < 10; i++ ) {
-          (*p_expectedOutputs)[n*10+i] = -0.5;
+          (*p_expectedOutputs)[n*10+i] = fn->getFalse();
        }
-       (*p_expectedOutputs)[n*10+thislabel] = +0.5;
+       (*p_expectedOutputs)[n*10+thislabel] = fn->getTrue();
     }
 }
 
@@ -131,15 +131,17 @@ void go(Config config) {
     int *labels = 0;
     float *expectedOutputs = 0;
 
+    ActivationFunction *lastLayerActivation = ActivationFunction::fromName(config.lastLayerActivation);
+
     float ***boardsTest = 0;
     int *labelsTest = 0;
     float *expectedOutputsTest = 0;
     {
         int N;
-        loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs );
+        loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs, lastLayerActivation );
 
         int Ntest;
-        loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
+        loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest, lastLayerActivation );
 
     }
 
@@ -161,15 +163,15 @@ void go(Config config) {
 //        cout << "adding convolutional layer" << endl;
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
-    ConvolutionalMaker *maker = net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased);
-    if( config.lastLayerActivation == "tanh" ) {
-        maker->tanh();
-    } else if( config.lastLayerActivation == "sigmoid" ) {
-        maker->sigmoid();
-    } else {
-        throw std::runtime_error("Invalid last layer activation " + config.lastLayerActivation );
-    }
-    maker->insert();
+    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased)->fn( lastLayerActivation )->insert();
+//    if( config.lastLayerActivation == "tanh" ) {
+//        maker->tanh();
+//    } else if( config.lastLayerActivation == "sigmoid" ) {
+//        maker->sigmoid();
+//    } else {
+//        throw std::runtime_error("Invalid last layer activation " + config.lastLayerActivation );
+//    }
+//    maker->insert();
     if( config.loss == "square" ) {
         net->squareLossMaker()->insert();
     } else if( config.loss == "crossentropy" ) {

@@ -17,6 +17,7 @@ public:
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
     virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
     virtual std::string getDefineName() const { throw std::runtime_error("getDefineName not implemented"); } 
+    static ActivationFunction *fromName( std::string name );
 };
 
 class TanhActivation : public ActivationFunction {
@@ -47,10 +48,10 @@ public:
         return output * ( 1 - output );
     }
     virtual float getTrue() const {
-        return 0.9;
+        return 1;
     }
     virtual float getFalse() const {
-        return 0.1;
+        return 0;
     }
     virtual std::string getDefineName() const {
         return "SIGMOID";
