@@ -176,4 +176,15 @@ StatefulTimer readings:
        loss L: 5354.12
 after epoch 2 29072 ms
 
+aws, after migrating backpropweigthscratch to v2:
+aws, numfilters=32 numlayers=1:
+StatefulTimer readings:
+   layer1 BackpropWeights2Scratch end: 4218ms
+   layer1 Propagate3::propagate after call propagate: 547ms
+   layer2 BackpropErrorsv2Naive end: 469ms
+   layer2 BackpropWeights2Scratch end: 938ms
+   layer2 Propagate1::propagate after call propagate: 11498ms
+       loss L: 4649.5
+after epoch 3 17201 ms
+
 
