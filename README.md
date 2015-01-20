@@ -299,8 +299,11 @@ What's done / what's planned
 ============================
 
 * Done:
-  * forward/backward propagation, for convolution networks, using OpenCL
+  * forward/backward propagation, for convolutional networks, using OpenCL
   * square loss
+  * relu activation
+  * tanh activation
+  * linear activation
   * some optimization of the OpenCL kernels, targeting 19x19 Go boards
   * can save/load weights
   * can use 'fluent' style to setup the networks
