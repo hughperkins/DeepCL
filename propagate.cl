@@ -676,14 +676,6 @@ void kernel propagate_filter_matches_inboard( const int batchSize,
     const int filterRow = localId / gFilterSize;
     const int filterCol = localId % gFilterSize;
 
-//    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-//    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
-//    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-//    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
-
-//    const int numUpstreamsPerThread = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-//    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
-
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
         int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;

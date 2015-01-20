@@ -7,7 +7,7 @@ using namespace std;
 #include "AccuracyHelper.h"
 
 int main(int argc, char *argv[] ) {
-    const float learningRate = 0.0001f;
+    const float learningRate = 0.000001f;
     const int batchSize = 128;
     const int labelGrouping = 1;
 
@@ -37,6 +37,7 @@ int main(int argc, char *argv[] ) {
         net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->padZeros()->insert();
     }
     net->convolutionalMaker()->numFilters(numLabels)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->tanh()->biased()->insert();
+    net->squareLossMaker()->insert();
     net->setBatchSize(batchSize);
     int *labels = new int[ batchSize ];
     float *expectedValues = new float[ batchSize * numLabels ];

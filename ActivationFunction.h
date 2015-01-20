@@ -48,10 +48,10 @@ public:
         return output * ( 1 - output );
     }
     virtual float getTrue() const {
-        return 1;
+        return 0.8;
     }
     virtual float getFalse() const {
-        return 0;
+        return 0.2;
     }
     virtual std::string getDefineName() const {
         return "SIGMOID";

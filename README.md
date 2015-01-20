@@ -40,8 +40,9 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
   * `->biased(1)` same as `->biased()`
   * `->biased(0)` turn off bias (default)
   * `->linear()` choose linear activation
-  * `->relu()` choose Relu activation
-  * `->tanh()` choose Tanh activation (current default, but defaults can change...)
+  * `->relu()` choose relu activation
+  * `->sigmoid()` choose sigmoid activation
+  * `->tanh()` choose tanh activation (current default, but defaults can change...)
 * convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
 *Fully connected layers*
@@ -51,10 +52,14 @@ size of the previous layer.
 
 *Loss layer*
 
-Please add one loss layer.  For now we have squared loss:
+Please add one loss layer.  You can choose between squared loss and cross-entropy loss:
 ```
 net->squareLossMaker()->insert();
+net->crossEntropyLossMaker()->insert();
 ```
+* squared loss works well with a `tanh` last layer
+* cross entropy loss works well with a `sigmoid` last layer
+* if you're not sure, then `tanh` last layer, with squared loss, works well
 
 Train
 -----
