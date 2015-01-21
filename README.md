@@ -30,7 +30,7 @@ Add some layers
 *Convolutional layers*
 
 Eg:
-```
+```c++
 net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 ```
 
@@ -53,7 +53,7 @@ size of the previous layer.
 *Loss layer*
 
 Please add one loss layer.  You can choose between squared loss and cross-entropy loss:
-```
+```c++
 net->squareLossMaker()->insert();
 net->crossEntropyLossMaker()->insert();
 ```
@@ -64,7 +64,7 @@ net->crossEntropyLossMaker()->insert();
 Train
 -----
 
-```
+```c++
 for( int epoch = 0; epoch < 12; epoch++ ) {
     net->epochMaker()
        ->learningRate(0.1)->batchSize(128)->numExamples(60000)
@@ -78,7 +78,7 @@ for( int epoch = 0; epoch < 12; epoch++ ) {
 Predict
 -------
 
-```
+```c++
 net->setBatchSize(batchSize);
 net->propagate(somenewdata);
 float *results = net->getResults();
@@ -116,7 +116,7 @@ Pre-requisites
 To build
 ========
 
-```
+```bash
 git clone --recursive https://github.com/hughperkins/ClConvolve.git
 cd ClConvolve
 mkdir build
@@ -143,7 +143,7 @@ Sample/test
 
 How to check for correctness, and speed?  Perhaps the easiest way is to train against MNIST
 * First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
-```
+```bash
 cd ../data
 mkdir mnist
 cd mnist
@@ -155,7 +155,7 @@ gunzip *.gz
 cd ../../build
 ```
 * Then, you can train against MNIST using a 2-layer net created as follows:
-```
+```c++
 NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
 net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
@@ -165,7 +165,7 @@ net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->bias
   * The second layer looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
 * There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](test/testneuralnetmnistconvolve-experimental.cpp)
   * You can build and run it as follows:
-```
+```bash
 make testneuralnetconvolve-experimental
 ./testneuralnetconvolve-experimental numfilters=32
 ```
@@ -212,12 +212,12 @@ Unit-testing implementation
   * lets you choose which tests to run using `--gtest_filter=` option
 * Dont need to install anything: it's included in the `thirdparty` directory, and added to the build automatically
 * To run the unit tests:
-```
+```bash
 make unittests
 ./unittests
 ```
 * To run just the unittests for eg `testbackprop`, do:
-```
+```bash
 make unittests
 ./unittests --gtest_filter=testbackprop.*
 ```
@@ -244,7 +244,7 @@ Helper methods
 *Contiguous arrays*
 
 To allocate contiguous 2d and 3d arrays:
-```
+```c++
 int **BoardHelper::allocateBoard( int boardSize ); // allocates square array of size 
                                                    // boardSize by boardSize
 int ***BoardsHelper::allocateBoards( int numBoards, int boardSize ); 
@@ -254,17 +254,17 @@ BoardHelper::deleteBoard( int *p_board, int boardSize );
 BoardsHelper::deleteBoards( int *p_boards, int numBoards, int boardSize );
 ```
 Use like this:
-```
+```c++
 int ***boards = BoardHelper::allocateBoards( 10, 19 ); // 10 boards, 19 by 19 each
 // &(boards[0][0]) is a contiguous array, of size 10 * 19 * 19
 // or you can use boards[boardIndex][row][col] to access as a 3d array
 ```
 To clean up at the end:
-```
+```c++
 BoardHelper::deleteBoards( &boards, 10, 19 );
 ```
 Also available for floats:
-```
+```c++
 float **BoardHelper::allocateBoardFloats( int boardSize ); // allocates square array of size 
                                                    // boardSize by boardSize
 int ***BoardsHelper::allocateBoardsFloats( int numBoards, int boardSize ); 
@@ -278,7 +278,7 @@ BoardsHelper::deleteBoards( float *p_boards, int numBoards, int boardSize );
 - use to load the mnist data set, that LeCun has provided
 - download the mnist data files into folder ../data/mnist, from LeCun's download page
 - use like this:
-```
+```c++
 int boardSize;
 int N;
 int ***boards = MnistLoader::loadImages( "../data/mnist", "train", &N, &boardSize );
@@ -292,7 +292,7 @@ int *labels = MnistLoader::loadLabels( "../data/mnist", "train", &N );
 
 * use to print one or more boards to a png file
 * use like this:
-```
+```c++
 BoardPng::writeBoardsToPng( "testarraysquare-afterload.png", boards, min(N, 100), boardSize );
 ```
 * where:
