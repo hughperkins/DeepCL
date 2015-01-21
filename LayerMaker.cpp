@@ -13,7 +13,7 @@
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
 //#include "ExpectedValuesLayer.h"
-//#include "SoftMaxLayer.h"
+#include "SoftMaxLayer.h"
 #include "SquareLossLayer.h"
 #include "CrossEntropyLoss.h"
 
@@ -81,6 +81,10 @@ Layer *CrossEntropyLossMaker::instance() const {
     CrossEntropyLoss *layer = new CrossEntropyLoss( previousLayer, this );
     return layer;
 }
+Layer *SoftMaxMaker::instance() const {
+    Layer *layer = new SoftMaxLayer( previousLayer, this );
+    return layer;
+}
 
 Layer *ConvolutionalMaker::instance() const {
     Layer *layer = new ConvolutionalLayer( previousLayer, this );
@@ -91,11 +95,6 @@ Layer *InputLayerMaker::instance() const {
     Layer *layer = new InputLayer( 0, this );
     return layer;
 }
-
-//Layer *SoftMaxMaker::instance() const {
-//    Layer *layer = new SoftMaxLayer( previousLayer, this );
-//    return layer;
-//}
 
 int ConvolutionalMaker::getBoardSize() const {
     if( previousLayer == 0 ) {

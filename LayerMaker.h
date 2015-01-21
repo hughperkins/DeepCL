@@ -19,6 +19,7 @@ class Layer;
 //class ExpectedValuesLayer;
 class SquareLossLayer;
 class CrossEntropyLayer;
+class SoftMaxLayer;
 
 class LayerMaker {
 public:
@@ -74,15 +75,6 @@ public:
 ////    virtual Layer *insert();
 //};
 
-//class SoftMaxMaker : public LayerMaker {
-//public:
-//    SoftMaxMaker( NeuralNet *net ) :
-//        LayerMaker( net ) {
-//    }
-//    virtual Layer *insert();
-//    virtual Layer *instance() const;
-//};
-
 class LossLayerMaker : public LayerMaker {
 public:
     Layer *previousLayer;
@@ -110,6 +102,25 @@ public:
         LossLayerMaker( net, previousLayer ) {
     }
     virtual Layer *instance() const;
+};
+
+// by default, it will be per-plane
+// can switch to be per-column
+class SoftMaxMaker : public LossLayerMaker {
+public:
+    bool _perPlane = true;
+    SoftMaxMaker( NeuralNet *net, Layer *previousLayer ) :
+        LossLayerMaker( net, previousLayer ) {
+    }
+    virtual Layer *instance() const;
+    SoftMaxMaker *perColumn() {
+        this->_perPlane = false;
+        return this;
+    }
+    SoftMaxMaker *perPlane() {
+        this->_perPlane = true;
+        return this;
+    }
 };
 
 //class FullyConnectedMaker : public LayerMaker {
