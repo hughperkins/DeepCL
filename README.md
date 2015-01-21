@@ -1,3 +1,31 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ClConvolve](#clconvolve)
+- [Neural Net API](#neural-net-api)
+  - [Create a net](#create-a-net)
+  - [Add some layers](#add-some-layers)
+  - [Train](#train)
+  - [Predict](#predict)
+- [Data format](#data-format)
+- [Pre-requisites](#pre-requisites)
+- [To build](#to-build)
+- [Linking](#linking)
+- [Sample/test](#sampletest)
+- [Unit-testing](#unit-testing)
+  - [Concepts](#concepts)
+  - [Unit-testing implementation](#unit-testing-implementation)
+- [Formulae notes](#formulae-notes)
+- [Development notes](#development-notes)
+- [Helper methods](#helper-methods)
+- [What's done / what's planned](#whats-done--whats-planned)
+- [Recent changes](#recent-changes)
+- [Third-party libraries](#third-party-libraries)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ClConvolve
 ==========
 
@@ -337,9 +365,9 @@ What's done / what's planned
   * unit-tests for forward propagation
   * numerical validation for backward propagation
 * Planned, short-term:
-  * softmax activation function
-  * cross entropy loss
-  * multinomial cross entropy loss
+  * -softmax activation function- done
+  * -cross entropy loss- done
+  * -multinomial cross entropy loss- done
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
   * maybe L2 regularization?
@@ -347,6 +375,7 @@ What's done / what's planned
   * generalization to non-square images
   * generalization to larger images
   * drop-out
+  * Python bindings?
 
 Recent changes
 ==============
