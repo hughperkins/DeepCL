@@ -93,7 +93,7 @@ add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main
 target_link_libraries( testgtestsupp gtest )
 target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
-file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
+#file( COPY ClConvolve.cl DESTINATION ${CMAKE_BINARY_DIR} )
 
 add_custom_target( 
     clfiles
