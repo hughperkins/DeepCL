@@ -73,7 +73,9 @@ VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
         for( int n = 0; n < batchSize; n++ ) {
             int boardOffset = n * numPlanes * boardSize * boardSize;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                loss -= expectedValues[boardOffset + plane] * log( results[boardOffset + plane] );
+                float thisloss = -expectedValues[boardOffset + plane] * log( results[boardOffset + plane] );
+//                cout << "n " << n << " plane " << plane << " expected " << expectedValues[boardOffset + plane] << " result " << results[boardOffset + plane] << " thisloss " << thisloss << endl;
+                loss += thisloss;
             }
         }
     }

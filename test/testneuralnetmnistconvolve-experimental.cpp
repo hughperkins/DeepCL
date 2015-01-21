@@ -176,10 +176,14 @@ void go(Config config) {
             throw std::runtime_error("must use crossentropy loss with softmax currently");
         }
         net->softMaxLossMaker()->insert();
-        int resultsSize = net->getLastLayer()->getResultsSize();
+        int resultsSize = numToTrain * 10;
+//        cout << "resultsize " << resultsSize << endl;
         for( int i = 0; i < resultsSize; i++ ) {
             expectedOutputs[i] = expectedOutputs[i] > 0 ? 1 : 0;
         }
+//        for( int i = 0; i < resultsSize; i++ ) {
+//            cout << "expectedoutputs " << i << " " << expectedOutputs[i] << endl;
+//        }
     } else {
         if( config.loss == "square" ) {
             net->squareLossMaker()->insert();
