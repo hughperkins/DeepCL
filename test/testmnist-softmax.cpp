@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs, ActivationFunction *fn ) {
+void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels ) {
     int boardSize;
     int Nboards;
     int Nlabels;
@@ -37,16 +37,6 @@ void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, flo
    
     *p_boardSize = boardSize;
     *p_N = Nboards;
-
-    // expected results
-    *p_expectedOutputs = new float[10 * Nboards];
-    for( int n = 0; n < Nlabels; n++ ) {
-       int thislabel = labels[n];
-       for( int i = 0; i < 10; i++ ) {
-          (*p_expectedOutputs)[n*10+i] = fn->getFalse();
-       }
-       (*p_expectedOutputs)[n*10+thislabel] = fn->getTrue();
-    }
 }
 
 void getStats( float ***boards, int N, int boardSize, float *p_mean, float *p_thismax ) {
@@ -91,8 +81,6 @@ public:
     int padZeros = 0;
     int filterSize = 5;
     int restartable = 0;
-    string lastLayerActivation = "softmax";
-    string loss = "crossentropy";
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     int biased = 1;
@@ -113,12 +101,9 @@ void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, i
         }
         net->propagate( &(boards[batchStart][0][0]) );
         float const*results = net->getResults();
-        int thisnumright = AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labels[batchStart]), results );
-//        cout << name << " batch " << batch << ": numright " << thisnumright << "/" << batchSize << endl;
+        int thisnumright = net->calcNumRight( &(labels[batchStart]) );
         testNumRight += thisnumright;
     }
-//    cout << "boards interval: " << ( &(boards[1][0][0]) - &(boards[0][0][0])) << endl;
-//    cout << "labels interval: " << ( &(labels[1]) - &(labels[0])) << endl;
     cout << name << " overall: " << testNumRight << "/" << N << " " << ( testNumRight * 100.0f / N ) << "%" << endl;
 }
 
@@ -129,24 +114,15 @@ void go(Config config) {
 
     float ***boardsFloat = 0;
     int *labels = 0;
-    float *expectedOutputs = 0;
-
-    ActivationFunction *lastLayerActivation = 0;
-    if( config.lastLayerActivation == "softmax" ) {
-        lastLayerActivation = new LinearActivation();
-    } else {
-        lastLayerActivation = ActivationFunction::fromName(config.lastLayerActivation);
-    }
 
     float ***boardsTest = 0;
     int *labelsTest = 0;
-    float *expectedOutputsTest = 0;
     {
         int N;
-        loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs, lastLayerActivation );
+        loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels );
 
         int Ntest;
-        loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest, lastLayerActivation );
+        loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest );
 
     }
 
@@ -168,34 +144,13 @@ void go(Config config) {
 //        cout << "adding convolutional layer" << endl;
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
-    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased)->fn( lastLayerActivation )->insert();
+    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased)->linear()->insert();
+    net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
-//    net->print();
-    if( config.lastLayerActivation == "softmax" ) {
-        if( config.loss != "crossentropy" ) {
-            throw std::runtime_error("must use crossentropy loss with softmax currently");
-        }
-        net->softMaxLossMaker()->insert();
-        int resultsSize = numToTrain * 10;
-//        cout << "resultsize " << resultsSize << endl;
-        for( int i = 0; i < resultsSize; i++ ) {
-            expectedOutputs[i] = expectedOutputs[i] > 0 ? 1 : 0;
-        }
-//        for( int i = 0; i < resultsSize; i++ ) {
-//            cout << "expectedoutputs " << i << " " << expectedOutputs[i] << endl;
-//        }
-    } else {
-        if( config.loss == "square" ) {
-            net->squareLossMaker()->insert();
-        } else if( config.loss == "crossentropy" ) {
-            net->crossEntropyLossMaker()->insert();
-        } else {
-            throw std::runtime_error("loss layer type " + config.loss + " not known" );
-        }
-    }
-    for( int i = 0; i < net->layers.size(); i++ ) {
-        cout << "layer " << i << " " << (net->layers[i]) << endl;
-    }
+    net->print();
+//    for( int i = 0; i < net->layers.size(); i++ ) {
+//        cout << "layer " << i << " " << (net->layers[i]) << endl;
+//    }
 
     if( config.restartable ) {
         WeightsPersister::loadWeights( config.restartableFilename, net );
@@ -210,12 +165,10 @@ void go(Config config) {
             ->batchSize(batchSize)
             ->numExamples(numToTrain)
             ->inputData(&(boardsFloat[0][0][0]))
-            ->expectedOutputs(expectedOutputs)
-            //->run();
-            ->runWithCalcTrainingAccuracy( &trainNumRight );
+            ->labels(labels)
+            ->runFromLabels( &trainNumRight );
         StatefulTimer::dump(true);
         cout << "       loss L: " << loss << endl;
-//        int trainNumRight = 0;
         timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
         std::cout << "train accuracy: " << trainNumRight << "/" << numToTrain << " " << (trainNumRight * 100.0f/ numToTrain) << "%" << std::endl;
@@ -246,7 +199,7 @@ void go(Config config) {
         net->propagate( &(boardsTest[batchStart][0][0]) );
         float const*resultsTest = net->getResults();
         totalNumber += thisBatchSize;
-        totalNumRight += AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labelsTest[batchStart]), resultsTest );
+        totalNumRight += net->calcNumRight( &(labelsTest[batchStart]) );
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, net );
         }
@@ -255,11 +208,9 @@ void go(Config config) {
 
     delete net;
 
-    delete[] expectedOutputsTest;
     delete[] labelsTest;
 //    BoardsHelper::deleteBoards( &boardsTest, Ntest, boardSize );
 
-    delete[] expectedOutputs;
     delete[] labels;
 //    BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
 }
@@ -281,8 +232,6 @@ int main( int argc, char *argv[] ) {
         cout << "    filtersize=[filter size] (" << config.filterSize << ")" << endl;
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
         cout << "    padzeros=[0|1] (" << config.padZeros << ")" << endl;
-        cout << "    loss=[square|crossentropy] (" << config.loss << ")" << endl;
-        cout << "    lastlayeractivation=[tanh|sigmoid|softmax] (" << config.lastLayerActivation << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
@@ -307,8 +256,6 @@ int main( int argc, char *argv[] ) {
            if( key == "numlayers" ) config.numLayers = atoi(value);
            if( key == "padzeros" ) config.padZeros = atoi(value);
            if( key == "filtersize" ) config.filterSize = atoi(value);
-           if( key == "loss" ) config.loss = value;
-           if( key == "lastlayeractivation" ) config.lastLayerActivation = value;
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);
            if( key == "restartablefilename" ) config.restartableFilename = value;

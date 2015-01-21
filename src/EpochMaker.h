@@ -11,9 +11,12 @@ class EpochMaker {
     int _numExamples;
     float *_inputData;
     float *_expectedOutputs;
+    int const*_labels;
 public:
     EpochMaker( NeuralNet *net ) {
         memset( this, 0, sizeof(EpochMaker) );
+        _expectedOutputs = 0;
+        _labels = 0;
         this->net = net;
     }
     EpochMaker *learningRate(float learningRate){
@@ -36,7 +39,12 @@ public:
         this->_expectedOutputs = expectedOutputs;
         return this;
     }
+    EpochMaker *labels(int const*labels){
+        this->_labels = labels;
+        return this;
+    }
     float run();
-    float runWithCalcTrainingAccuracy(int *trainingLabels, int *p_numRight);
+    float runWithCalcTrainingAccuracy( int *p_numRight);
+    float runFromLabels( int *p_numRight);
 };
 

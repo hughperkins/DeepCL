@@ -20,6 +20,7 @@
 #include "EpochMaker.h"
 //#include "ExpectedValuesLayer.h"
 #include "LossLayer.h"
+#include "IAcceptsLabels.h"
 #include "ExceptionMacros.h"
 
 #include "NeuralNet.h"
@@ -34,16 +35,9 @@ using namespace std;
 #define STATIC
 
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
-//    cout << "NeuralNet() begin" << endl;
     cl = new OpenCLHelper();
     InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
     maker->insert();
-
-//    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
-//    expectedValuesLayer->setBatchSize(batchSize);
-//    getLastLayer()->nextLayer = expectedValuesLayer;
-//    layers.push_back( expectedValuesLayer );
-//    cout << "NeuralNet() end" << endl;
 }
 NeuralNet::~NeuralNet() {
     for( int i = 0; i < layers.size(); i++ ) {
@@ -95,6 +89,9 @@ void NeuralNet::printBiasWeightsAsCode() {
 float NeuralNet::calcLoss(float const *expectedValues ) {
     return dynamic_cast<LossLayer*>(layers[layers.size()-1])->calcLoss( expectedValues );
 }
+float NeuralNet::calcLossFromLabels(int const *labels ) {
+    return dynamic_cast<IAcceptsLabels*>(layers[layers.size()-1])->calcLossFromLabels( labels );
+}
 EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
@@ -105,14 +102,6 @@ Layer *NeuralNet::getLastLayer() {
     return layers[layers.size() - 1];
 }
 Layer *NeuralNet::addLayer( LayerMaker *maker ) {
-//    cout << "NeuralNet::addLayer() begin" << endl;
-//    // first, remove the expectedvalueslayer
-//    if( layers.size() > 1 ) {
-//        delete layers[ layers.size() - 1 ];
-//        layers.erase( layers.end() - 1 );
-//    }
-
-    // then add the new layer
     Layer *previousLayer = 0;
     if( layers.size() > 0 ) {
         previousLayer = layers[ layers.size() - 1 ];
@@ -120,21 +109,46 @@ Layer *NeuralNet::addLayer( LayerMaker *maker ) {
     maker->setPreviousLayer( previousLayer );
     Layer *layer = maker->instance();
     layers.push_back( layer );
-
-//    if( layers.size() > 1 ) {
-//        ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
-//        getLastLayer()->nextLayer = expectedValuesLayer;
-//        layers.push_back( expectedValuesLayer );
-//    }
-
-//    cout << "NeuralNet::addLayer() end" << endl;
-    // then put back on an expectedvalues layer
     return layer;
 }
 void NeuralNet::setBatchSize( int batchSize ) {
     for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         (*it)->setBatchSize( batchSize );
     }
+}
+float NeuralNet::doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels ) {
+    return doEpochFromLabels( learningRate, batchSize, numImages, images, labels, 0 );
+}
+float NeuralNet::doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels, int *p_totalCorrect ) {
+//        Timer timer;
+    IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
+    if( acceptsLabels == 0 ) {
+        THROW("You need to add a IAcceptsLabels as the last layer, in order to use doEpochFromLabels");
+    }
+    setBatchSize( batchSize );
+    int numBatches = ( numImages + batchSize - 1 ) / batchSize;
+    float loss = 0;
+    int total = 0;
+    int numRight = 0;
+    int numLabelsPerExample = acceptsLabels->getNumLabelsPerExample();
+    for( int batch = 0; batch < numBatches; batch++ ) {
+        int batchStart = batch * batchSize;
+        int thisBatchSize = batchSize;
+        if( batch == numBatches - 1 ) {
+            thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
+                                                         // so last batch size is: 2 = 5 - 3
+            setBatchSize( thisBatchSize );
+        }
+        learnBatchFromLabels( learningRate, &(images[batchStart*getInputCubeSize()]), &(labels[batchStart * numLabelsPerExample]) );
+        loss += acceptsLabels->calcLossFromLabels( &(labels[batchStart * numLabelsPerExample]) );
+        if( p_totalCorrect != 0 ) {
+            numRight += acceptsLabels->calcNumRight( &(labels[batchStart * numLabelsPerExample]) );
+        }
+    }
+    if( p_totalCorrect != 0 ) {
+        *p_totalCorrect = numRight;
+    }
+    return loss;
 }
 float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
 //        Timer timer;
@@ -158,19 +172,16 @@ float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, floa
         learnBatch( learningRate, &(images[batchStart*getInputCubeSize()]), &(expectedResults[batchStart*getOutputCubeSize()]) );
         loss += calcLoss( &(expectedResults[batchStart*getOutputCubeSize()]) );
     }
-//        StatefulTimer::dump();
-//        timer.timeCheck("epoch time");
-//    layers.erase( layers.end() - 1 );
-//    getLastLayer()->nextLayer = 0;
-//    delete expectedValuesLayer;
     return loss;
 }
+int NeuralNet::calcNumRight( int const *labels ) {
+    IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
+    if( acceptsLabels == 0 ) {
+        THROW("You need to add a IAcceptsLabels as the last layer, in order to use calcNumRight");
+    }
+    return acceptsLabels->calcNumRight( labels );
+}
 float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
-//        Timer timer;
-//    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( this, getLastLayer() ) )->instance();
-////    expectedValuesLayer->setBatchSize(batchSize);
-//    getLastLayer()->nextLayer = expectedValuesLayer;
-//    layers.push_back( expectedValuesLayer );
     setBatchSize( batchSize );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     std::cout << "numBatches: " << numBatches << std::endl;
@@ -198,11 +209,6 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
         StatefulTimer::timeCheck("after batch calc loss");
     }
     *p_totalCorrect = numRight;
-//        StatefulTimer::dump();
-//        timer.timeCheck("epoch time");
-//    layers.erase( layers.end() - 1 );
-//    getLastLayer()->nextLayer = 0;
-//    delete expectedValuesLayer;
     return loss;
 }
 //    float *propagate( int N, int batchSize, float const*images) {
@@ -231,6 +237,18 @@ void NeuralNet::propagate( float const*images) {
     }
 //        timer.timeCheck("propagate time");
 }
+void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
+    IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
+    if( acceptsLabels == 0 ) {
+        throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backPropFromLabels");
+    }
+    acceptsLabels->calcErrorsFromLabels( labels );
+    for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
+        StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
+        layers[layerIdx]->backProp( learningRate );
+        StatefulTimer::setPrefix("" );
+    }
+}
 void NeuralNet::backProp( float learningRate, float const *expectedResults) {
     LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
     if( lossLayer == 0 ) {
@@ -244,11 +262,12 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
     }
 }
 void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
-//        Timer timer;
     propagate( images);
-//        timer.timeCheck("propagate");
     backProp( learningRate, expectedResults );
-//        timer.timeCheck("backProp");
+}
+void NeuralNet::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
+    propagate( images);
+    backPropFromLabels( learningRate, labels );
 }
 int NeuralNet::getNumLayers() {
     return layers.size();
@@ -269,7 +288,8 @@ void NeuralNet::print() {
     int i = 0; 
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
         std::cout << "layer " << i << ":" << std::endl;
-        (*it)->print();
+        //(*it)->print();
+        cout << (*it)->asString() << endl;
         i++;
     }
 }

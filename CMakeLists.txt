@@ -84,6 +84,7 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #add_executable( testneuralnetmnistconvolve_simple test/testneuralnetmnistconvolve_simple.cpp stringhelper.cpp )
 #add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve-experimental test/testneuralnetmnistconvolve-experimental.cpp src/stringhelper.cpp )
+add_executable( testmnist-softmax test/testmnist-softmax.cpp src/stringhelper.cpp )
 if( PNG_AVAILABLE)
     #add_executable( test4dconvolve test/test4dconvolve.cpp )
     add_executable( printMnist test/printMnist.cpp stringhelper.cpp )

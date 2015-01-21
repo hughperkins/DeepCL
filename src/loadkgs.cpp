@@ -7,7 +7,7 @@ using namespace std;
 #include "AccuracyHelper.h"
 
 int main(int argc, char *argv[] ) {
-    const float learningRate = 0.000001f;
+    const float learningRate = 0.01f;
     const int batchSize = 128;
     const int labelGrouping = 1;
 
@@ -36,16 +36,18 @@ int main(int argc, char *argv[] ) {
     for( int i = 0; i < 1; i++ ) {
         net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->padZeros()->insert();
     }
-    net->convolutionalMaker()->numFilters(numLabels)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->tanh()->biased()->insert();
-    net->squareLossMaker()->insert();
+    net->convolutionalMaker()->numFilters(1)->filterSize(boardSize)->linear()->biased()->padZeros()->insert();
+//    net->squareLossMaker()->insert();
+    net->softMaxLossMaker()->perPlane()->insert();
     net->setBatchSize(batchSize);
+    net->print();
     int *labels = new int[ batchSize ];
     float *expectedValues = new float[ batchSize * numLabels ];
 //    while( pos < fileSize ) {
     while( nBatch < numBatches ) {
         int count = 0;
         for( int i = 0; i < batchSize * numLabels; i++ ) {
-            expectedValues[i] = -0.5f;
+            expectedValues[i] = 0.0f;
         }
         char *kgsData = FileHelper::readBinaryChunk( dataFilePath, (long)nBatch * batchSize * recordSize, (long)batchSize * recordSize );
 //        timer.timeCheck("read chunk from file");
@@ -64,7 +66,7 @@ int main(int argc, char *argv[] ) {
             moveCol = moveCol / labelGrouping;
             int label = moveRow * numLabelRows + moveCol;
             labels[ count ] = label;
-            expectedValues[ count * numLabels + label ] = 0.5f;
+            expectedValues[ count * numLabels + label ] = 1.0f;
 //            cout << moveRow << "," << moveCol << " label " << label << endl;
 //            int label = moveRow * 19 + moveCol;
             for( int inputPlane = 0; inputPlane < inputPlanes; inputPlane++ ) {

@@ -8,6 +8,7 @@
 
 #include "Layer.h"
 #include "LossLayer.h"
+#include "IAcceptsLabels.h"
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -16,11 +17,12 @@
 // it will have the same shape as the previous layer, ie same boardsize, same number of planes
 // the softmax will be per-plane, or maybe that is configurable?
 // this will ALWAYS use multinomial logistic loss (ie cross-entropy loss), at least for now
-class SoftMaxLayer : public LossLayer {
+class SoftMaxLayer : public LossLayer, public IAcceptsLabels {
 public:
     const bool perPlane;
     const int boardSize;
     const int numPlanes;
+    const int boardSizeSquared;
 
     float *results;
     float *errorsForUpstream;
@@ -39,8 +41,12 @@ public:
     VIRTUAL float *getResults();
     VIRTUAL float *getErrorsForUpstream();
     VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL float calcLossFromLabels( int const *labels );
     VIRTUAL float calcLoss( float const *expectedValues );
+    VIRTUAL void calcErrorsFromLabels( int const *labels );
     VIRTUAL void calcErrors( float const *expectedValues );
+    VIRTUAL int getNumLabelsPerExample();
+    VIRTUAL int calcNumRight( int const*labels );
     VIRTUAL void propagate();
     VIRTUAL void backPropErrors( float learningRate );
     VIRTUAL std::string asString() const;
