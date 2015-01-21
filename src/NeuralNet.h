@@ -42,7 +42,7 @@ public:
     ConvolutionalMaker *convolutionalMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
-    SoftMaxMaker *softMaxMaker();
+    SoftMaxMaker *softMaxLossMaker();
     void initWeights( int layerIndex, float *weights, float *biasWeights );
     void initWeights( int layerIndex, float *weights );
     void initBiasWeights( int layerIndex, float *weights );

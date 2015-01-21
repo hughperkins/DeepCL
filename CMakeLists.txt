@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
 if (NOT CMAKE_BUILD_TYPE)
-    message("Setting build type to 'Release'")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    message("Setting build type to 'RelWithDebInfo'")
+    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
-OPTION(PYTHON_AVAILABLE "Developers only." OFF)
-OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
 
 include_directories( . )
 include_directories( src )
@@ -37,12 +35,27 @@ add_custom_command(
 add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
 add_dependencies( ClConvolve git_submodules_update )
 
-if( PNG_AVAILABLE)
+find_package(PNG QUIET)
+if( PNG_FOUND )
+    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." ON)
+else()
+    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+endif()
+
+if( LIBPNGPP_AVAILABLE)
 find_package(PNG)
 link_libraries(${PNG_LIBRARY})
-endif(PNG_AVAILABLE)
+endif(LIBPNGPP_AVAILABLE)
 
 link_libraries(ClConvolve)
+
+execute_process( COMMAND python -V ERROR_VARIABLE python_test )
+if( ${python_test} MATCHES "Python 2\\.7\\..*" )
+    #message("Python 2.7 found")
+    OPTION(PYTHON_AVAILABLE "Facilitates development, not needed for normal build." ON)
+else()
+    OPTION(PYTHON_AVAILABLE "Facilitates development, not needed for normal build." OFF)
+endif()
 
 if(PYTHON_AVAILABLE)
     add_custom_target( 
