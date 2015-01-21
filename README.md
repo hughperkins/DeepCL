@@ -61,6 +61,11 @@ net->crossEntropyLossMaker()->insert();
 * cross entropy loss works well with a `sigmoid` last layer
 * if you're not sure, then `tanh` last layer, with squared loss, works well
 
+New: can also choose softmax layer, if your second to last layer has a boardsize of 1:
+```c++
+net->softMaxLossLayer()->insert();
+```
+
 Train
 -----
 
@@ -333,6 +338,9 @@ Recent changes
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
 
+* 21st December:
+  * added softmax layer, for per-column configuration, ie multi-planar output, with boardsize 1
+    * tested once on mnist: 97.65% test accuracy after 12 epochs; 98.09% after 20 epochs
 * week up to 21st December: 
   * added sigmoid activation
   * added cross-entropy loss layer
