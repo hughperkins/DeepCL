@@ -69,7 +69,7 @@ SquareLossMaker *NeuralNet::squareLossMaker() {
 CrossEntropyLossMaker *NeuralNet::crossEntropyLossMaker() {
     return new CrossEntropyLossMaker( this, getLastLayer() );
 }
-SoftMaxMaker *NeuralNet::softMaxMaker() {
+SoftMaxMaker *NeuralNet::softMaxLossMaker() {
     return new SoftMaxMaker( this, getLastLayer() );
 }
 void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {

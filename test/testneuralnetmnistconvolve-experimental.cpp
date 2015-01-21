@@ -91,8 +91,8 @@ public:
     int padZeros = 0;
     int filterSize = 5;
     int restartable = 0;
-    string lastLayerActivation = "tanh";
-    string loss = "square";
+    string lastLayerActivation = "softmax";
+    string loss = "crossentropy";
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     int biased = 1;
@@ -131,7 +131,12 @@ void go(Config config) {
     int *labels = 0;
     float *expectedOutputs = 0;
 
-    ActivationFunction *lastLayerActivation = ActivationFunction::fromName(config.lastLayerActivation);
+    ActivationFunction *lastLayerActivation = 0;
+    if( config.lastLayerActivaion == "softmax" ) {
+        lastLayerActivation = new LinearActivation();
+    } else {
+        lastLayerActivation = ActivationFunction::fromName(config.lastLayerActivation);
+    }
 
     float ***boardsTest = 0;
     int *labelsTest = 0;
@@ -164,20 +169,19 @@ void go(Config config) {
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
     net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased)->fn( lastLayerActivation )->insert();
-//    if( config.lastLayerActivation == "tanh" ) {
-//        maker->tanh();
-//    } else if( config.lastLayerActivation == "sigmoid" ) {
-//        maker->sigmoid();
-//    } else {
-//        throw std::runtime_error("Invalid last layer activation " + config.lastLayerActivation );
-//    }
-//    maker->insert();
-    if( config.loss == "square" ) {
-        net->squareLossMaker()->insert();
-    } else if( config.loss == "crossentropy" ) {
-        net->crossEntropyLossMaker()->insert();
+    if( config.lastLayerActivation == "softmax" ) {
+        if( config.loss != "crossentropy" ) {
+            throw std::runtime_error("must use crossentropy loss with softmax currently");
+        }
+        net->softMaxLossMaker()->insert();
     } else {
-        throw std::runtime_error("loss layer type " + config.loss + " not known" );
+        if( config.loss == "square" ) {
+            net->squareLossMaker()->insert();
+        } else if( config.loss == "crossentropy" ) {
+            net->crossEntropyLossMaker()->insert();
+        } else {
+            throw std::runtime_error("loss layer type " + config.loss + " not known" );
+        }
     }
 
     if( config.restartable ) {
@@ -265,7 +269,7 @@ int main( int argc, char *argv[] ) {
         cout << "    biased=[0|1] (" << config.biased << ")" << endl;
         cout << "    padzeros=[0|1] (" << config.padZeros << ")" << endl;
         cout << "    loss=[square|crossentropy] (" << config.loss << ")" << endl;
-        cout << "    lastlayeractivation=[tanh|sigmoid] (" << config.lastLayerActivation << ")" << endl;
+        cout << "    lastlayeractivation=[tanh|sigmoid|softmax] (" << config.lastLayerActivation << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
