@@ -16,7 +16,7 @@ Neural Net API
 Create a net
 -------------
 
-```
+```c++
 #include "ClConvolve.h"
 
 NeuralNet *net = NeuralNet::maker()->planes(10)->boardSize(19)->instance();
