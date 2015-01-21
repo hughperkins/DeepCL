@@ -132,7 +132,7 @@ void go(Config config) {
     float *expectedOutputs = 0;
 
     ActivationFunction *lastLayerActivation = 0;
-    if( config.lastLayerActivaion == "softmax" ) {
+    if( config.lastLayerActivation == "softmax" ) {
         lastLayerActivation = new LinearActivation();
     } else {
         lastLayerActivation = ActivationFunction::fromName(config.lastLayerActivation);
@@ -169,11 +169,17 @@ void go(Config config) {
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
     net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased)->fn( lastLayerActivation )->insert();
+    net->setBatchSize(config.batchSize);
+//    net->print();
     if( config.lastLayerActivation == "softmax" ) {
         if( config.loss != "crossentropy" ) {
             throw std::runtime_error("must use crossentropy loss with softmax currently");
         }
         net->softMaxLossMaker()->insert();
+        int resultsSize = net->getLastLayer()->getResultsSize();
+        for( int i = 0; i < resultsSize; i++ ) {
+            expectedOutputs[i] = expectedOutputs[i] > 0 ? 1 : 0;
+        }
     } else {
         if( config.loss == "square" ) {
             net->squareLossMaker()->insert();
@@ -182,6 +188,9 @@ void go(Config config) {
         } else {
             throw std::runtime_error("loss layer type " + config.loss + " not known" );
         }
+    }
+    for( int i = 0; i < net->layers.size(); i++ ) {
+        cout << "layer " << i << " " << (net->layers[i]) << endl;
     }
 
     if( config.restartable ) {

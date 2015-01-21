@@ -37,11 +37,13 @@ public:
     SoftMaxLayer(  Layer *previousLayer, SoftMaxMaker const *maker  );
     VIRTUAL ~SoftMaxLayer();
     VIRTUAL float *getResults();
+    VIRTUAL float *getErrorsForUpstream();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL float calcLoss( float const *expectedValues );
     VIRTUAL void calcErrors( float const *expectedValues );
     VIRTUAL void propagate();
     VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 };

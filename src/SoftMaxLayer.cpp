@@ -38,9 +38,9 @@ VIRTUAL float *SoftMaxLayer::getResults() {
 //VIRTUAL bool SoftMaxLayer::needErrorsBackprop() {
 //    return true;
 //}
-//VIRTUAL float *SoftMaxLayer::getErrorsForUpstream() {
-//    return errorsForUpstream;
-//}
+VIRTUAL float *SoftMaxLayer::getErrorsForUpstream() {
+    return errorsForUpstream;
+}
 VIRTUAL void SoftMaxLayer::setBatchSize( int batchSize ) {
     this->batchSize = batchSize;
     if( batchSize <= this->allocatedSize ) {
@@ -59,6 +59,7 @@ VIRTUAL void SoftMaxLayer::setBatchSize( int batchSize ) {
 
 // need to calculate multinomial logistic /cross-entropy loss
 VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
+//    cout << "softmaxlayer::calcloss" << endl;
     StatefulTimer::timeCheck("start SoftMaxLayer calcLoss");
     float loss = 0;
     if( perPlane ) {
@@ -69,8 +70,11 @@ VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
         if( boardSize != 1 ) {
             throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            loss -= expectedValues[plane] * log( results[plane] );
+        for( int n = 0; n < batchSize; n++ ) {
+            int boardOffset = n * numPlanes * boardSize * boardSize;
+            for( int plane = 0; plane < numPlanes; plane++ ) {
+                loss -= expectedValues[boardOffset + plane] * log( results[boardOffset + plane] );
+            }
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcLoss");
@@ -80,6 +84,7 @@ VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
 // (multinomial cross-entropy) loss derivative wrt our output, and
 // derivative of softmax wrt our inputs
 VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
+//    cout << "softmaxlayer::calcerrors" << endl;
     StatefulTimer::timeCheck("start SoftMaxLayer calcErrors");
     if( perPlane ) {
         // let's just handle per-column for now, to get this working
@@ -89,14 +94,21 @@ VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
         if( boardSize != 1 ) {
             throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            errorsForUpstream[plane] = results[plane] - expectedValues[plane];
+//        cout << "numplanes " << numPlanes << endl;
+        for( int n = 0; n < batchSize; n++ ) {
+            int boardOffset = n * numPlanes * boardSize * boardSize;
+            for( int plane = 0; plane < numPlanes; plane++ ) {
+                int resultIndex = boardOffset + plane;
+                errorsForUpstream[resultIndex] = results[resultIndex] - expectedValues[resultIndex];
+//                cout << "plane " << plane << " reuslt " << results[resultIndex] << " expected " << expectedValues[resultIndex] << " error " << errorsForUpstream[resultIndex] << endl;
+            }
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcErrors");
 }
 // for propagate, we just need to apply the softmax activation. "just" :-P
 VIRTUAL void SoftMaxLayer::propagate() {
+//    cout << "softmaxlayer::propagate" << endl;
     StatefulTimer::timeCheck("start SoftMaxLayer propagate");
     if( perPlane ) {
         // let's just handle per-column for now, to get this working
@@ -106,20 +118,23 @@ VIRTUAL void SoftMaxLayer::propagate() {
         if( boardSize != 1 ) {
             throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
-        // first get the max
         float *resultsFromUpstream = previousLayer->getResults(); // just retrieve as host-side array for now
-        float maxValue = resultsFromUpstream[0]; // since we assume boardsize 1, this is correct
-        for( int plane = 1; plane < numPlanes; plane++ ) {
-            maxValue = std::max( maxValue, resultsFromUpstream[plane] );
-        }
-        // calculate sum, under this max
-        float denominator = 0;
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            denominator += exp( resultsFromUpstream[plane] - maxValue );
-        }
-        // now calc the softmaxes:
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            results[plane] = exp( resultsFromUpstream[plane] - maxValue ) / denominator;
+        for( int n = 0; n < batchSize; n++ ) {
+            int boardOffset = n * numPlanes * boardSize * boardSize;
+            // first get the max
+            float maxValue = resultsFromUpstream[boardOffset + 0]; // since we assume boardsize 1, this is correct
+            for( int plane = 1; plane < numPlanes; plane++ ) {
+                maxValue = std::max( maxValue, resultsFromUpstream[boardOffset + plane] );
+            }
+            // calculate sum, under this max
+            float denominator = 0;
+            for( int plane = 0; plane < numPlanes; plane++ ) {
+                denominator += exp( resultsFromUpstream[boardOffset + plane] - maxValue );
+            }
+            // now calc the softmaxes:
+            for( int plane = 0; plane < numPlanes; plane++ ) {
+                results[boardOffset + plane] = exp( resultsFromUpstream[boardOffset + plane] - maxValue ) / denominator;
+            }
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer propagate");
@@ -129,6 +144,11 @@ VIRTUAL void SoftMaxLayer::propagate() {
 // certainly, we dont have any weights to update, and we already handled error
 // propagation in 'calcErrors' method above
 VIRTUAL void SoftMaxLayer::backPropErrors( float learningRate ) {
+//    cout << "softmaxlayer::backproperrors" << endl;
     // nop, do nothing :-)
+}
+VIRTUAL std::string SoftMaxLayer::asString() const {
+    return "SoftMaxLayer{ perPlane=" + toString( perPlane ) + " numPlanes=" + toString( numPlanes )
+        + " boardSize=" + toString( boardSize ) + " }";
 }
 

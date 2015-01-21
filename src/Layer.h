@@ -89,8 +89,11 @@ public:
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL float const*getBiasWeights() const;
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 
 };
+
+std::ostream &operator<<(std::ostream&os, Layer const*layer );
 

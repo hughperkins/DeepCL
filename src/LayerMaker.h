@@ -108,7 +108,7 @@ public:
 // can switch to be per-column
 class SoftMaxMaker : public LossLayerMaker {
 public:
-    bool _perPlane = true;
+    bool _perPlane = false;
     SoftMaxMaker( NeuralNet *net, Layer *previousLayer ) :
         LossLayerMaker( net, previousLayer ) {
     }

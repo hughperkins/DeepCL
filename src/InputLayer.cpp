@@ -87,6 +87,9 @@ VIRTUAL int InputLayer::getResultsSize() const {
 VIRTUAL std::string InputLayer::toString() {
     return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
 }
+VIRTUAL std::string InputLayer::asString() const {
+    return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+}
 
 //ostream &operator<<( ostream &os, InputLayer &layer ) {
 //    os << "InputLayer { outputPlanes " << layer.outputPlanes << " outputBoardSize " << layer.outputBoardSize << " }";

@@ -181,5 +181,12 @@ VIRTUAL float *Layer::getWeights() {
 VIRTUAL float const*Layer::getBiasWeights() const {
     throw std::runtime_error("getBiasWeights not implemented for this layertype");
 }
+VIRTUAL std::string Layer::asString() const {
+    return "Layer{}";
+}
 
+ostream &operator<<(ostream&os, Layer const*layer ) {
+    os << layer->asString();
+    return os;
+}
 

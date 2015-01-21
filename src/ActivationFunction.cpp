@@ -18,22 +18,22 @@ ActivationFunction *ActivationFunction::fromName( std::string name ) {
     }
 }
 
-ostream &operator<<( ostream &os, LinearActivation &act ) {
+ostream &operator<<( ostream &os, LinearActivation const&act ) {
     os << "LinearActivation{}";
     return os;
 }
 
-ostream &operator<<( ostream &os, TanhActivation &act ) {
+ostream &operator<<( ostream &os, TanhActivation const&act ) {
     os << "TanhActivation{}";
     return os;
 }
 
-ostream &operator<<( ostream &os, ReluActivation &act ) {
+ostream &operator<<( ostream &os, ReluActivation const&act ) {
     os << "ReluActivation{}";
     return os;
 }
 
-ostream &operator<<( ostream &os, SigmoidActivation &act ) {
+ostream &operator<<( ostream &os, SigmoidActivation const&act ) {
     os << "SigmoidActivation{}";
     return os;
 }

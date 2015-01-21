@@ -5,7 +5,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR ]
 // BIASED (or not)
 
 // globalId: [outPlane][inputPlane][filterRow][filterCol]

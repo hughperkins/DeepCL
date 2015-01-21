@@ -619,4 +619,61 @@ TEST( SLOW_testpropagate, compare ) {
     }
 }
 
+TEST( testpropagate, softmax ) {
+    NeuralNet *net = NeuralNet::maker()->boardSize(1)->planes(4)->instance();
+    net->softMaxLossMaker()->insert();
+    net->setBatchSize( 1 );
+    float *input = new float[net->layers[0]->getOutputPlanes()];
+    input[0] = 0;
+    input[1] = 1;
+    input[2] = 3;
+    input[3] = 2;
+    net->propagate( input );
+    float const*results = net->getResults();
+    float sum = 0;
+    for( int i = 0; i < net->layers[0]->getOutputPlanes(); i++ ) {
+        cout << "results[" << i << "]=" << results[i] << endl;
+        sum += results[i];
+        EXPECT_LE( 0, results[i] );
+        EXPECT_GE( 1, results[i] );
+    }
+    EXPECT_FLOAT_NEAR( 1.0f, sum );
+    EXPECT_FLOAT_NEAR( exp(0)/(exp(0)+exp(1)+exp(3)+exp(2)), results[0] );
+    EXPECT_FLOAT_NEAR( exp(1)/(exp(0)+exp(1)+exp(3)+exp(2)), results[1] );
+    EXPECT_FLOAT_NEAR( exp(3)/(exp(0)+exp(1)+exp(3)+exp(2)), results[2] );
+    EXPECT_FLOAT_NEAR( exp(2)/(exp(0)+exp(1)+exp(3)+exp(2)), results[3] );
+
+    float *expected = new float[net->layers[0]->getOutputPlanes()];
+    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    expected[2] = 1;
+    float loss = net->calcLoss( expected );
+    cout << "loss " << loss << endl;
+    EXPECT_LT( 0, loss );
+    EXPECT_FLOAT_NEAR( - log(results[2]), loss );
+
+    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    expected[0] = 1;
+    loss = net->calcLoss( expected );
+    cout << "loss " << loss << endl;
+    EXPECT_LT( 0, loss );
+    EXPECT_FLOAT_NEAR( - log(results[0]), loss );
+
+    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    expected[1] = 1;
+    loss = net->calcLoss( expected );
+    cout << "loss " << loss << endl;
+    EXPECT_LT( 0, loss );
+    EXPECT_FLOAT_NEAR( - log(results[1]), loss );
+
+    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    expected[3] = 1;
+    loss = net->calcLoss( expected );
+    cout << "loss " << loss << endl;
+    EXPECT_LT( 0, loss );
+    EXPECT_FLOAT_NEAR( - log(results[3]), loss );
+
+    delete[] input;
+    delete[] expected;
+}
+
 

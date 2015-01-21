@@ -51,6 +51,7 @@ public:
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getResultsSize() const;
     VIRTUAL std::string toString();
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 };

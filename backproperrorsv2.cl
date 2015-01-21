@@ -5,18 +5,21 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR ]
+// one of: [ TANH | RELU | LINEAR | SIGMOID ]
 // BIASED (or not)
 
 #ifdef TANH
     #define ACTIVATION_DERIV(output) (1 - output * output)
+#elif defined SIGMOID
+    #define ACTIVATION_DERIV(output) (output * ( 1 - output ) )
 #elif defined RELU
     #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)
 #elif defined LINEAR
-    #define ACTIVATION_DERIV(output) (1)
+    #define ACTIVATION_DERIV(output) (1.0f)
 #endif
 
 // globalid as: [n][upstreamPlane][upstreamrow][upstreamcol]
+#ifdef ACTIVATION_DERIV
 void kernel calcErrorsForUpstream( 
         const int batchSize,
         global const float *inputData, global const float *errors, global float *weights, global float *errorsForUpstream ) {
@@ -63,5 +66,5 @@ void kernel calcErrorsForUpstream(
     }
     errorsForUpstream[globalId] = sumWeightTimesOutError * inputDeriv;
 }
-
+#endif
 

@@ -335,16 +335,20 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
     } else {
         errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
         errorsWrapper->copyToDevice();
+//        int resultsSize = getResultsSize();
+//        for( int i = 0; i < resultsSize; i++ ) {
+//            cout << "convolutional::backproperrors errorsfromupstream[" << i << "]=" << nextLayer->getErrorsForUpstream()[i] << endl;
+//        }
         weOwnErrorsWrapper = true;
     }
     if( layerIndex > 1 ) {
         backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );
-        StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + toString( layerIndex ) );
+        StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + ::toString( layerIndex ) );
     }
 
     backpropWeightsImpl->backpropWeights( batchSize, learningRate, errorsWrapper, imagesWrapper,  weightsWrapper, biasWeightsWrapper );
     weightsCopiedToHost = false;
-    StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + toString( layerIndex ) );
+    StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + ::toString( layerIndex ) );
 
     if( dim.biased ) {
         biasWeightsWrapper->copyToHost();
@@ -356,7 +360,11 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;
     }
-    StatefulTimer::instance()->timeCheck("backproperrors(): updated weights, layer " + toString( layerIndex ) );
+    StatefulTimer::instance()->timeCheck("backproperrors(): updated weights, layer " + ::toString( layerIndex ) );
+}
+
+VIRTUAL std::string ConvolutionalLayer::asString() const {
+    return "ConvolutionalLayer{ " + toString( dim ) + " " + activationFunction->getDefineName() + " }";
 }
 
 ostream &operator<<( ostream &os, ConvolutionalLayer &layer ) {

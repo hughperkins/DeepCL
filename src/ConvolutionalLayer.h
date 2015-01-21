@@ -121,6 +121,7 @@ public:
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void backProp( float learningRate );
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 };
