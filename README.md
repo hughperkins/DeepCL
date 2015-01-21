@@ -307,6 +307,7 @@ What's done / what's planned
 * Done:
   * forward/backward propagation, for convolutional networks, using OpenCL
   * square loss
+  * zero-padding
   * relu activation
   * tanh activation
   * linear activation
@@ -315,12 +316,32 @@ What's done / what's planned
   * can use 'fluent' style to setup the networks
   * unit-tests for forward propagation
   * numerical validation for backward propagation
-* Planned:
+* Planned, short-term:
   * softmax activation function
   * cross entropy loss
   * multinomial cross entropy loss
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
+  * maybe L2 regularization?
+* Plausible, medium-term (pull requests welcome):
+  * generalization to non-square images
+  * generalization to larger images
+  * drop-out
+
+Recent changes
+==============
+
+Dates are dates of code change / commit, rather than date merged into master, or tagged.
+
+* week up to 21st December: 
+  * added sigmoid activation
+  * added cross-entropy loss layer
+  * migrated to recurse on dLoss/dSum, rather than dLoss/dOutput, ie on partial derivative of loss with input to activation function for each neuron, rather than with output.  Recursing on input instead of output is faster
+  * changed learning rate, so that the square of the sum of the weight changes equals approximately the change in loss, for smallish changes in w, so that we can numerically validate easily
+  * validated backpropagation numerically
+  * migrated to use explicit square-loss layer
+  * moved sources to `src` sub-directory, so root directory cleaner
+  * created `SLOW_` prefix for slow tests, so can run with `gtest_filter=-SLOW*` to ignore slow tests
 
 Third-party libraries
 =====================
