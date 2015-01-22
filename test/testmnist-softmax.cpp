@@ -89,7 +89,7 @@ public:
     }
 };
 
-void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
+float printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
     int testNumRight = 0;
     net->setBatchSize( batchSize );
     int numBatches = (N + batchSize - 1 ) / batchSize;
@@ -105,7 +105,9 @@ void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, i
         int thisnumright = net->calcNumRight( &(labels[batchStart]) );
         testNumRight += thisnumright;
     }
-    cout << name << " overall: " << testNumRight << "/" << N << " " << ( testNumRight * 100.0f / N ) << "%" << endl;
+    float accuracy = ( testNumRight * 100.0f / N );
+    cout << name << " overall: " << testNumRight << "/" << N << " " << accuracy << "%" << endl;
+    return accuracy;
 }
 
 void go(Config config) {
