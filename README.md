@@ -140,8 +140,19 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
 
 *Fully connected layers*
 
-* Please use a Convolutional Layer, and set the filter size to be identical to the output
-size of the previous layer.
+eg:
+```c++
+net->fullyConnectedMaker()->numPlanes(2)->boardSize(28)->insert();
+```
+
+Available options:
+  * `->biased()` turn on bias
+  * `->biased(1)` same as `->biased()`
+  * `->biased(0)` turn off bias (default)
+  * `->linear()` choose linear activation
+  * `->relu()` choose relu activation
+  * `->sigmoid()` choose sigmoid activation
+  * `->tanh()` choose tanh activation (current default, but defaults can change...)
 
 *Loss layer*
 
@@ -154,9 +165,15 @@ net->crossEntropyLossMaker()->insert();
 * cross entropy loss works well with a `sigmoid` last layer
 * if you're not sure, then `tanh` last layer, with squared loss, works well
 
-New: can also choose softmax layer, if your second to last layer has a boardsize of 1:
+New: can also choose softmax layer.  If the previous layer has a boardsize of 1, and multiple planes:
 ```c++
 net->softMaxLossLayer()->insert();
+```
+This will assume that the set of planes together represent a probability distribution.  It is trivial to generalize this to larger boardsizes than 1, so if you want this, then please create an issue.
+
+To apply the softmax per-plane, ie previous layer has several output planes, and each plane represents a separate probability distribution:
+```c++
+net->softMaxLossLayer()->perPlane()->insert();
 ```
 
 Train

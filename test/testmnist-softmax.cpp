@@ -84,6 +84,7 @@ public:
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     int biased = 1;
+    string resultsFilename = "results.txt";
     Config() {
     }
 };
@@ -139,18 +140,13 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-//    net->convolutionalMaker()->numFilters(32)->filterSize(5)->rel()->biased()->insert();
     for( int i = 0; i < config.numLayers; i++ ) {
-//        cout << "adding convolutional layer" << endl;
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }
-    net->convolutionalMaker()->numFilters(10)->filterSize(net->layers[net->layers.size()-1]->getOutputBoardSize())->biased(config.biased)->linear()->insert();
+    net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
     net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
     net->print();
-//    for( int i = 0; i < net->layers.size(); i++ ) {
-//        cout << "layer " << i << " " << (net->layers[i]) << endl;
-//    }
 
     if( config.restartable ) {
         WeightsPersister::loadWeights( config.restartableFilename, net );
@@ -172,17 +168,14 @@ void go(Config config) {
         timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
         std::cout << "train accuracy: " << trainNumRight << "/" << numToTrain << " " << (trainNumRight * 100.0f/ numToTrain) << "%" << std::endl;
-        //printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
         printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
         timer.timeCheck("after tests");
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, net );
         }
     }
-    //float const*results = net->getResults( net->getNumLayers() - 1 );
 
     printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
-//    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
     timer.timeCheck("after tests");
 
     int numTestBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
@@ -235,6 +228,7 @@ int main( int argc, char *argv[] ) {
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
+        cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
     } 
     for( int i = 1; i < argc; i++ ) {
        vector<string> splitkeyval = split( argv[i], "=" );
@@ -259,6 +253,7 @@ int main( int argc, char *argv[] ) {
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);
            if( key == "restartablefilename" ) config.restartableFilename = value;
+           if( key == "resultsfilename" ) config.resultsFilename = value;
        }
     }
     go( config );
