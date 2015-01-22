@@ -392,9 +392,9 @@ What's done / what's planned
   * unit-tests for forward propagation
   * numerical validation for backward propagation
 * Planned, short-term:
-  * -softmax activation function- done
-  * -cross entropy loss- done
-  * -multinomial cross entropy loss- done
+  * ~~softmax activation function~~ done
+  * ~~cross entropy loss~~ done
+  * ~~multinomial cross entropy loss~~ done
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
   * maybe L2 regularization?
@@ -403,6 +403,7 @@ What's done / what's planned
   * generalization to larger images
   * drop-out
   * Python bindings?
+  * max-pooling?
 
 Recent changes
 ==============
