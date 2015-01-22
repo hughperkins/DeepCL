@@ -1,3 +1,31 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [ClConvolve](#clconvolve)
+- [Neural Net API](#neural-net-api)
+  - [Create a net](#create-a-net)
+  - [Add some layers](#add-some-layers)
+  - [Train](#train)
+  - [Predict](#predict)
+- [Data format](#data-format)
+- [Pre-requisites](#pre-requisites)
+- [To build](#to-build)
+- [Linking](#linking)
+- [Sample/test](#sampletest)
+- [Unit-testing](#unit-testing)
+  - [Concepts](#concepts)
+  - [Unit-testing implementation](#unit-testing-implementation)
+- [Formulae notes](#formulae-notes)
+- [Development notes](#development-notes)
+- [Helper methods](#helper-methods)
+- [What's done / what's planned](#whats-done--whats-planned)
+- [Recent changes](#recent-changes)
+- [Third-party libraries](#third-party-libraries)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ClConvolve
 ==========
 
@@ -159,29 +187,46 @@ wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
 gunzip *.gz
 cd ../../build
 ```
-* Then, you can train against MNIST using a 2-layer net created as follows:
+* Then, you can train against MNIST using a net created eg as follows:
 ```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
 net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-net->convolutionalMaker()->numFilters(10)->filterSize(boardSize-4)->tanh()->biased(config.biased)->insert();
+net->convolutionalMaker()->numFilters(10)->filterSize(24)->linear()->biased()->insert();
+net->softMaxLossMaker()->insert();
+net->setBatchSize(128);
 ```
 * Network details:
-  * The first layer is a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is using Relu
-  * The second layer looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
-* There is an implementation of this network, including loading mnist, and normalizing it, at [testneuralnetmnistconvolve-experimental.cpp](test/testneuralnetmnistconvolve-experimental.cpp)
+  * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
+    * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
+  * The second line creates a a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is relu
+  * The next line looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
+    * Each filter will result in one single output node, for a total of 10 output nodes, dimensioned as 10 planes, each of a 1x1 board
+  * Finally, we add a SoftMaxLoss layer, which handles:
+    * generating appropriate loss signals to drive the network
+    * receive our labels array
+    * calculate loss
+    * calculate number correct
+  * You need to set the batch size before passing in any input data, since this sets up the internal buffer sizes.  Failure to do this will result in seg faults and other nasty errors :-P
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist-softmax.cpp](test/testmnist-softmax.cpp)
   * You can build and run it as follows:
 ```bash
-make testneuralnetconvolve-experimental
-./testneuralnetconvolve-experimental numfilters=32
+make testmnist-softmax
+./testmnist-softmax numfilters=32
 ```
 * Here are some results I obtained, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
 |ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Number epochs | Epoch time | Test accuracy |
 |-------|----|---------------|--------------|----------------------|----------------|---------------|-----------|
-|v0.1 |0.1  |32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |
-|v0.1 |0.02  |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |
-|head |0.0001  |32             | 5            | 1                    | 12          | 17.2 seconds      | 97.3 +/- ? |
-| head | 0.0001 | 32 | 5 | 2 | 12 | 80.4 seconds | 98.2 +/- ? |
+|v0.1 (*) |0.1  |32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |
+|v0.1 (*) |0.02  |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |
+|~v0.2c (*) |0.0001  |32             | 5            | 1                    | 12          | 17.2 seconds      | 97.3 +/- ? |
+| ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | 12 | 80.4 seconds | 98.2 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 1 | 12 | 17.2 seconds | 97.5 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 1 | 20 | 17.2 seconds | 98.1 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 12 | 80.5 seconds | 98.3 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 15 | 80.5 seconds | 98.5 +/- ? |
+
+* (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
 
 Unit-testing
 ============
@@ -322,9 +367,9 @@ What's done / what's planned
   * unit-tests for forward propagation
   * numerical validation for backward propagation
 * Planned, short-term:
-  * softmax activation function
-  * cross entropy loss
-  * multinomial cross entropy loss
+  * -softmax activation function- done
+  * -cross entropy loss- done
+  * -multinomial cross entropy loss- done
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
   * maybe L2 regularization?
@@ -332,6 +377,7 @@ What's done / what's planned
   * generalization to non-square images
   * generalization to larger images
   * drop-out
+  * Python bindings?
 
 Recent changes
 ==============
