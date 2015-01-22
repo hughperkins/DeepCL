@@ -4,8 +4,8 @@
 
 - [ClConvolve](#clconvolve)
 - [MNIST results](#mnist-results)
-  - [MNIST Results](#mnist-results)
-  - [Reproducing MNIST results](#reproducing-mnist-results)
+  - [Results](#results)
+  - [Reproducing](#reproducing)
 - [Neural Net API](#neural-net-api)
   - [Create a net](#create-a-net)
   - [Add some layers](#add-some-layers)
