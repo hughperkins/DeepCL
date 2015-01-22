@@ -44,7 +44,9 @@ Target usage:
 MNIST results
 =============
 
-## MNIST Results
+Ran against MNIST to validate that the library does approximately what it says it is doing, and to measure epoch times.
+
+## Results
 
 * Following results on MNIST, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
@@ -65,7 +67,7 @@ MNIST results
   * (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
   * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
 
-## Reproducing MNIST results
+## Reproducing
 
 * First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
 ```bash
