@@ -52,10 +52,6 @@ Ran against MNIST to validate that the library does approximately what it says i
 
 | Test accuracy| Number epochs | Epoch time |ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Pad zeros | Num runs  |
 |-------|----|---------------|--------------|----------|------------|-------------|---|---------------|-----------|
-|97.27+/-0.06% | 12       | 18.2 seconds  |v0.1 (*) |0.1  |32             | 5            | 1           | No   |7   |
-|98.2+/-0.1%| 50       | 101 seconds|v0.1 (*) |0.02  |32             | 5            | 2          | No      |7   |
-| 97.3%| 12       | 17.2 seconds  |~v0.2c (*) |0.0001  |32             | 5            | 1        | No      |1    |
-| 98.2%| 12 | 80.4 seconds| ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | No  |1  |
 | 97.5%| 12| 17.2 seconds| v0.3 | 0.0001 | 32 | 5 | 1  | No  | 1  |
 | 98.1%| 20| 17.2 seconds| v0.3 | 0.0001 | 32 | 5 | 1  | No  | 1  |
 | 98.3%| 12| 80.5 seconds| v0.3 | 0.0001 | 32 | 5 | 2  | No  | 1  |
@@ -64,7 +60,6 @@ Ran against MNIST to validate that the library does approximately what it says i
 | 98.64% +/- 0.02%| 20| 203 seconds| v0.3 | 0.0001 | 32 | 5 | 2  | Yes  | 3  |
 
 * Notes:
-  * (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
   * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
 
 ## Reproducing
