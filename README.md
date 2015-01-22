@@ -3,6 +3,9 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [ClConvolve](#clconvolve)
+- [MNIST results](#mnist-results)
+  - [MNIST Results](#mnist-results)
+  - [Reproducing MNIST results](#reproducing-mnist-results)
 - [Neural Net API](#neural-net-api)
   - [Create a net](#create-a-net)
   - [Add some layers](#add-some-layers)
@@ -12,7 +15,6 @@
 - [Pre-requisites](#pre-requisites)
 - [To build](#to-build)
 - [Linking](#linking)
-- [Sample/test](#sampletest)
 - [Unit-testing](#unit-testing)
   - [Concepts](#concepts)
   - [Unit-testing implementation](#unit-testing-implementation)
@@ -37,6 +39,72 @@ OpenCL library to train deep convolutional networks
 Target usage:
 - 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
 - Also works on MNIST 28 x 28 boards
+  - obtained 98.6% test accuracy on MNIST, using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied
+
+MNIST results
+=============
+
+## MNIST Results
+
+* Following results on MNIST, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
+
+| Test accuracy| Number epochs | Epoch time |ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Pad zeros | Num runs  |
+|-------|----|---------------|--------------|----------|------------|-------------|---|---------------|-----------|
+|97.27+/-0.06% | 12       | 18.2 seconds  |v0.1 (*) |0.1  |32             | 5            | 1           | No   |7   |
+|98.2+/-0.1%| 50       | 101 seconds|v0.1 (*) |0.02  |32             | 5            | 2          | No      |7   |
+| 97.3%| 12       | 17.2 seconds  |~v0.2c (*) |0.0001  |32             | 5            | 1        | No      |1    |
+| 98.2%| 12 | 80.4 seconds| ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | No  |1  |
+| 97.5%| 12| 17.2 seconds| v0.3 | 0.0001 | 32 | 5 | 1  | No  | 1  |
+| 98.1%| 20| 17.2 seconds| v0.3 | 0.0001 | 32 | 5 | 1  | No  | 1  |
+| 98.3%| 12| 80.5 seconds| v0.3 | 0.0001 | 32 | 5 | 2  | No  | 1  |
+| 98.5%| 15| 80.5 seconds| v0.3 | 0.0001 | 32 | 5 | 2  | No  | 1  |
+| 98.57% +/- 0.03%| 20| | v0.3 | 0.0001 | 32 | 5 | 3  | No  | 4  |
+| 98.64% +/- 0.02%| 20| 203 seconds| v0.3 | 0.0001 | 32 | 5 | 2  | Yes  | 3  |
+
+* Notes:
+  * (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
+  * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
+
+## Reproducing MNIST results
+
+* First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
+```bash
+cd ../data
+mkdir mnist
+cd mnist
+wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+gunzip *.gz
+cd ../../build
+```
+* Then, you can train against MNIST using a net created eg as follows:
+```c++
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+net->convolutionalMaker()->numFilters(10)->filterSize(24)->linear()->biased()->insert();
+net->softMaxLossMaker()->insert();
+net->setBatchSize(128);
+```
+* Network details:
+  * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
+    * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
+  * The second line creates a a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is relu
+  * The next line looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
+    * Each filter will result in one single output node, for a total of 10 output nodes, dimensioned as 10 planes, each of a 1x1 board
+  * Finally, we add a SoftMaxLoss layer, which handles:
+    * generating appropriate loss signals to drive the network
+    * receive our labels array
+    * calculate loss
+    * calculate number correct
+  * You need to set the batch size before passing in any input data, since this sets up the internal buffer sizes.  Failure to do this will result in seg faults and other nasty errors :-P
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist-softmax.cpp](test/testmnist-softmax.cpp)
+  * You can build and run it as follows, varying the parameters as appropriate:
+```bash
+make testmnist-softmax
+./testmnist-softmax numfilters=32 numlayers=2 filtersize=5 padzeros=1 numepochs=20 learningrate=0.0001
+```
 
 Neural Net API
 ==============
@@ -170,66 +238,6 @@ You will need:
 - *.cl files
 
 The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.
-
-Sample/test
-===========
-
-How to check for correctness, and speed?  Perhaps the easiest way is to train against MNIST
-* First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
-```bash
-cd ../data
-mkdir mnist
-cd mnist
-wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-gunzip *.gz
-cd ../../build
-```
-* Then, you can train against MNIST using a net created eg as follows:
-```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-net->convolutionalMaker()->numFilters(10)->filterSize(24)->linear()->biased()->insert();
-net->softMaxLossMaker()->insert();
-net->setBatchSize(128);
-```
-* Network details:
-  * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
-    * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
-  * The second line creates a a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is relu
-  * The next line looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
-    * Each filter will result in one single output node, for a total of 10 output nodes, dimensioned as 10 planes, each of a 1x1 board
-  * Finally, we add a SoftMaxLoss layer, which handles:
-    * generating appropriate loss signals to drive the network
-    * receive our labels array
-    * calculate loss
-    * calculate number correct
-  * You need to set the batch size before passing in any input data, since this sets up the internal buffer sizes.  Failure to do this will result in seg faults and other nasty errors :-P
-* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist-softmax.cpp](test/testmnist-softmax.cpp)
-  * You can build and run it as follows:
-```bash
-make testmnist-softmax
-./testmnist-softmax numfilters=32
-```
-* Here are some results I obtained, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
-
-|ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Pad zeros | Number epochs | Epoch time | Num runs | Test accuracy |
-|-------|----|---------------|--------------|----------|------------|-------------|---|---------------|-----------|
-|v0.1 (*) |0.1  |32             | 5            | 1                  | No  | 12       | 18.2 seconds   |7   |97.27+/-0.06% |
-|v0.1 (*) |0.02  |32             | 5            | 2                 | No    | 50       | 101 seconds  |7  |98.2+/-0.1% |
-|~v0.2c (*) |0.0001  |32             | 5            | 1                | No     | 12       | 17.2 seconds   |1   | 97.3% |
-| ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | No | 12 | 80.4 seconds |1 | 98.2% |
-| v0.3 | 0.0001 | 32 | 5 | 1 | 12 | No | 17.2 seconds | 1 | 97.5% |
-| v0.3 | 0.0001 | 32 | 5 | 1 | 20 | No | 17.2 seconds | 1 | 98.1% |
-| v0.3 | 0.0001 | 32 | 5 | 2 | 12 | No | 80.5 seconds | 1 | 98.3% |
-| v0.3 | 0.0001 | 32 | 5 | 2 | 15 | No | 80.5 seconds | 1 | 98.5% |
-| v0.3 | 0.0001 | 32 | 5 | 3 | 20 | No |  | 4 | 98.57% +/- 0.03% |
-| v0.3 | 0.0001 | 32 | 5 | 2 | 20 | Yes | 203 seconds | 3 | 98.64% +/- 0.02% |
-
-* (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
-* +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
 
 Unit-testing
 ============
