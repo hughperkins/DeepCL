@@ -50,14 +50,14 @@ Ran against MNIST to validate that the library does approximately what it says i
 
 * Following results on MNIST, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
-| Test accuracy| Number epochs | Epoch time (s) | Number filter layers | Version| Learning rate | Number filters | Filter size | Pad zeros |
+| Test accuracy| Number epochs | Epoch time (s) | Number filter layers| Number filters | Filter size | Version| Learning rate  | Pad zeros |
 |-------|----|---------------|--------------|----------|------------|-------------|---|---------------|
-| 97.5%| 12| 17.2 | 1 | v0.3 | 0.0001 | 32 | 5  | No  |
-| 98.1%| 20| 17.2 | 1| v0.3 | 0.0001 | 32 | 5   | No  |
-| 98.3%| 12| 80.5 | 2 | v0.3 | 0.0001 | 32 | 5  | No  |
-| 98.5%| 15| 80.5 | 2 | v0.3 | 0.0001 | 32 | 5  | No  |
-| 98.57% +/- 0.03%| 20| | 3 | v0.3 | 0.0001 | 32 | 5  | No  |
-| 98.64% +/- 0.02%| 20| 203 | 2 | v0.3 | 0.0001 | 32 | 5  | Yes  |
+| 97.5%| 12| 17.2 | 1| 32 | 5  | v0.3 | 0.0001  | No  |
+| 98.1%| 20| 17.2 | 1| 32 | 5 | v0.3 | 0.0001   | No  |
+| 98.3%| 12| 80.5 | 2 | 32 | 5 | v0.3 | 0.0001  | No  |
+| 98.5%| 15| 80.5 | 2| 32 | 5  | v0.3 | 0.0001  | No  |
+| 98.57% +/- 0.03%| 20| | 3  | 32 | 5| v0.3 | 0.0001  | No  |
+| 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | v0.3 | 0.0001  | Yes  |
 
 * Notes:
   * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
