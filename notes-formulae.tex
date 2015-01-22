@@ -17,7 +17,7 @@
 %\newgeometry{left=2cm,bottom=1.5cm,top=1.5cm,right=2cm}
 %\usepackage{geometry}
 \usepackage[margin=0.2in]{geometry}
-\geometry{paperwidth=16cm,paperheight=48cm}
+\geometry{paperwidth=16cm,paperheight=54cm}
 
 \newcommand{\ult}{\vspace{12px}\noindent}
 \newcommand{\ul}{\\ \indent -  }
@@ -83,17 +83,38 @@ Can also recurse on $\partialderivative{E}{o^l_i}$: $\partialderivative{E}{o^{l-
 
 \ult{sigmoid}
 
-\[ o_i = \sigma(s_i) \] \[ \partialderivative{o_i}{s_i} = o_i(1-o_i) \]
+\[ o_i = \sigma(s_i) \] 
+\[ \partialderivative{o_i}{s_i} = o_i(1-o_i) \]
 
 \ult{tanh}
 
-\[ o_i = \tanh(s_i) \] \[ \partialderivative{o_i}{s_i} = 1-(o_i)^2 \]
+\[ o_i = \tanh(s_i) \] 
+\[ \partialderivative{o_i}{s_i} = 1-(o_i)^2 \]
 
 \ult{relu}
 
+\[ o_i = \left\{
+    \begin{array}{l l}
+        s_i & \quad \text{when $s_i > 0$} \\
+        0 & \quad \text{otherwise} 
+    \end{array} \right.
+\] 
+\[ \partialderivative{o_i}{s_i} = \left\{
+    \begin{array}{l l}
+        1 & \quad \text{when $o_i > 0$} \\
+        0 & \quad \text{otherwise} 
+    \end{array} \right.
+\] 
+
 \ult{linear}
 
+\[ o_i = s_i \] 
+\[ \partialderivative{o_i}{s_i} = 1 \]
+
 \ult{softmax}
+
+\[ o_i = \frac{ \exp s_i }{\sum_k \exp s_k} = \frac{\exp (s_i - \max_j s_j) }{\sum_k \exp( s_k -\max_j s_j)} \] 
+\[ \partialderivative{o_i}{s_j} = o_i(\delta_{i,j} - o_j) \]
 
 \end{document}
 
