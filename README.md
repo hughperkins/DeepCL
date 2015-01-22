@@ -221,10 +221,10 @@ make testmnist-softmax
 |v0.1 (*) |0.02  |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |
 |~v0.2c (*) |0.0001  |32             | 5            | 1                    | 12          | 17.2 seconds      | 97.3 +/- ? |
 | ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | 12 | 80.4 seconds | 98.2 +/- ? |
-| next v0.3 | 0.0001 | 32 | 5 | 1 | 12 | 17.2 seconds | 97.5 +/- ? |
-| next v0.3 | 0.0001 | 32 | 5 | 1 | 20 | 17.2 seconds | 98.1 +/- ? |
-| next v0.3 | 0.0001 | 32 | 5 | 2 | 12 | 80.5 seconds | 98.3 +/- ? |
-| next v0.3 | 0.0001 | 32 | 5 | 2 | 15 | 80.5 seconds | 98.5 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 1 | 12 | 17.2 seconds | 97.5 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 1 | 20 | 17.2 seconds | 98.1 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 12 | 80.5 seconds | 98.3 +/- ? |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 15 | 80.5 seconds | 98.5 +/- ? |
 
 * (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
 
