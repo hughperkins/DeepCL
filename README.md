@@ -215,18 +215,21 @@ make testmnist-softmax
 ```
 * Here are some results I obtained, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
-|ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Number epochs | Epoch time | Test accuracy |
-|-------|----|---------------|--------------|----------------------|----------------|---------------|-----------|
-|v0.1 (*) |0.1  |32             | 5            | 1                    | 12          | 18.2 seconds      |97.3+/-0.2% |
-|v0.1 (*) |0.02  |32             | 5            | 2                    | 50          | 101 seconds      |98.2+/-0.3% |
-|~v0.2c (*) |0.0001  |32             | 5            | 1                    | 12          | 17.2 seconds      | 97.3 +/- ? |
-| ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | 12 | 80.4 seconds | 98.2 +/- ? |
-| v0.3 | 0.0001 | 32 | 5 | 1 | 12 | 17.2 seconds | 97.5 +/- ? |
-| v0.3 | 0.0001 | 32 | 5 | 1 | 20 | 17.2 seconds | 98.1 +/- ? |
-| v0.3 | 0.0001 | 32 | 5 | 2 | 12 | 80.5 seconds | 98.3 +/- ? |
-| v0.3 | 0.0001 | 32 | 5 | 2 | 15 | 80.5 seconds | 98.5 +/- ? |
+|ClConvolve version| Learning rate | Number filters | Filter size | Number filter layers | Pad zeros | Number epochs | Epoch time | Num runs | Test accuracy |
+|-------|----|---------------|--------------|----------|------------|-------------|---|---------------|-----------|
+|v0.1 (*) |0.1  |32             | 5            | 1                  | No  | 12       | 18.2 seconds   |7   |97.27+/-0.06% |
+|v0.1 (*) |0.02  |32             | 5            | 2                 | No    | 50       | 101 seconds  |7  |98.2+/-0.1% |
+|~v0.2c (*) |0.0001  |32             | 5            | 1                | No     | 12       | 17.2 seconds   |1   | 97.3% |
+| ~v0.2c (*)  | 0.0001 | 32 | 5 | 2 | No | 12 | 80.4 seconds |1 | 98.2% |
+| v0.3 | 0.0001 | 32 | 5 | 1 | 12 | No | 17.2 seconds | 1 | 97.5% |
+| v0.3 | 0.0001 | 32 | 5 | 1 | 20 | No | 17.2 seconds | 1 | 98.1% |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 12 | No | 80.5 seconds | 1 | 98.3% |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 15 | No | 80.5 seconds | 1 | 98.5% |
+| v0.3 | 0.0001 | 32 | 5 | 3 | 20 | No |  | 4 | 98.57% +/- 0.03% |
+| v0.3 | 0.0001 | 32 | 5 | 2 | 20 | Yes | 203 seconds | 3 | 98.64% +/- 0.02% |
 
 * (*) Using earlier `testneuralnetmninstconvolve-experimental` executable, which used a `tanh` last layer activation, square loss, and provided an expected values array of `-0.5` for `false`, and `+0.5` for `true
+* +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
 
 Unit-testing
 ============

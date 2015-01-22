@@ -9,7 +9,7 @@ using namespace std;
 
 int main(int argc, char *argv[] ) {
     const float learningRate = 0.0002f;
-    const int batchSize = 32;
+    const int batchSize = 128;
     const int labelGrouping = 1;
 
     const int numLabelRows = ((19+labelGrouping-1)/labelGrouping);
@@ -31,7 +31,7 @@ int main(int argc, char *argv[] ) {
     float *images = new float[batchSize * boardSizeSquared * inputPlanes ];
     int N = (int)(fileSize / recordSize);
     cout << "num records: " << N << endl;
-    int numBatches = min( 4, N / batchSize );
+    int numBatches = min( 8, N / batchSize );
     NeuralNet *net = NeuralNet::maker()->planes(inputPlanes)->boardSize(boardSize)->instance();
     for( int i = 0; i < 2; i++ ) {
         net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->padZeros()->insert();
