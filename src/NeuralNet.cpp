@@ -16,9 +16,8 @@
 #include "NeuralNetMould.h"
 #include "Layer.h"
 #include "InputLayer.h"
-//#include "FullyConnectedLayer.h"
+#include "FullyConnectedLayer.h"
 #include "EpochMaker.h"
-//#include "ExpectedValuesLayer.h"
 #include "LossLayer.h"
 #include "IAcceptsLabels.h"
 #include "ExceptionMacros.h"
@@ -51,9 +50,9 @@ OpenCLHelper *NeuralNet::getCl() {
 STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
-//FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
-//    return new FullyConnectedMaker( this );
-//}
+FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
+    return new FullyConnectedMaker( this );
+}
 ConvolutionalMaker *NeuralNet::convolutionalMaker() {
     return new ConvolutionalMaker( this );
 }

@@ -39,6 +39,7 @@ public:
     ~NeuralNet();
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
+    FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();

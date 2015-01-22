@@ -123,64 +123,69 @@ public:
     }
 };
 
-//class FullyConnectedMaker : public LayerMaker {
-//public:
-//    int _numPlanes;
-//    int _boardSize;
-//    int _biased;
-//    ActivationFunction *_activationFunction;
-//    FullyConnectedMaker( NeuralNet *net ) :
-//        LayerMaker(net),
-//        _numPlanes(0),
-//        _boardSize(0),
-//        _activationFunction( new TanhActivation() ) {
-//    }
-//    virtual int getBoardSize() const {
-//        return _boardSize;
-//    }
-//    virtual int getNumPlanes() const {
-//        return _numPlanes;
-//    }
-//    virtual int getBiased() const {
-//        return _biased;
-//    }
-//    virtual ActivationFunction const *getActivationFunction() const {
-//        return _activationFunction;
-//    }
-//    FullyConnectedMaker *planes(int numPlanes) {
-//        this->_numPlanes = numPlanes;
-//        return this;
-//    }    
-//    FullyConnectedMaker *boardSize(int boardSize) {
-//        this->_boardSize = boardSize;
-//        return this;
-//    }
-//    FullyConnectedMaker *biased() {
-//        this->_biased = true;
-//        return this;
-//    }    
-//    FullyConnectedMaker *biased(int _biased) {
-//        this->_biased = _biased;
-//        return this;
-//    }    
-//    FullyConnectedMaker *linear() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new LinearActivation();
-//        return this;
-//    }
-//    FullyConnectedMaker *tanh() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new TanhActivation();
-//        return this;
-//    }
-//    FullyConnectedMaker *relu() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new ReluActivation();
-//        return this;
-//    }
-//    virtual Layer *insert();
-//    virtual Layer *instance() const;
-//};
+class FullyConnectedMaker : public LayerMaker {
+public:
+    int _numPlanes;
+    int _boardSize;
+    int _biased;
+    ActivationFunction *_activationFunction;
+    FullyConnectedMaker( NeuralNet *net ) :
+        LayerMaker(net),
+        _numPlanes(0),
+        _boardSize(0),
+        _activationFunction( new TanhActivation() ) {
+    }
+    virtual int getBoardSize() const {
+        return _boardSize;
+    }
+    virtual int getNumPlanes() const {
+        return _numPlanes;
+    }
+    virtual int getBiased() const {
+        return _biased;
+    }
+    virtual ActivationFunction const *getActivationFunction() const {
+        return _activationFunction;
+    }
+    FullyConnectedMaker *numPlanes(int numPlanes) {
+        this->_numPlanes = numPlanes;
+        return this;
+    }    
+    FullyConnectedMaker *boardSize(int boardSize) {
+        this->_boardSize = boardSize;
+        return this;
+    }
+    FullyConnectedMaker *biased() {
+        this->_biased = true;
+        return this;
+    }    
+    FullyConnectedMaker *biased(int _biased) {
+        this->_biased = _biased;
+        return this;
+    }    
+    FullyConnectedMaker *linear() {
+        delete this->_activationFunction;
+        this->_activationFunction = new LinearActivation();
+        return this;
+    }
+    FullyConnectedMaker *tanh() {
+        delete this->_activationFunction;
+        this->_activationFunction = new TanhActivation();
+        return this;
+    }
+    FullyConnectedMaker *sigmoid() {
+        delete this->_activationFunction;
+        this->_activationFunction = new SigmoidActivation();
+        return this;
+    }
+    FullyConnectedMaker *relu() {
+        delete this->_activationFunction;
+        this->_activationFunction = new ReluActivation();
+        return this;
+    }
+    virtual Layer *insert();
+    virtual Layer *instance() const;
+};
 
 class ConvolutionalMaker : public LayerMaker {
 public:
@@ -188,7 +193,7 @@ public:
     int _filterSize;
     bool _padZeros;
     int _biased;
-    ActivationFunction *_activationFunction;
+    ActivationFunction const *_activationFunction;
     ConvolutionalMaker( NeuralNet *net ) :
             LayerMaker( net ),
             _numFilters(0),
@@ -250,7 +255,7 @@ public:
         this->_activationFunction = new LinearActivation();
         return this;
     }
-    ConvolutionalMaker *fn(ActivationFunction *_fn) {
+    ConvolutionalMaker *fn(ActivationFunction const*_fn) {
         this->_activationFunction = _fn;
         return this;
     }

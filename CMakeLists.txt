@@ -19,7 +19,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
     BackpropWeights2Cpu.cpp LayerMaker.cpp BackpropErrorsv2.cpp BackpropErrorsv2Cpu.cpp
     BackpropWeights2Naive.cpp BackpropErrorsv2Naive.cpp BackpropWeights2Scratch.cpp
-    CrossEntropyLoss.cpp SoftMaxLayer.cpp)
+    CrossEntropyLoss.cpp SoftMaxLayer.cpp FullyConnectedLayer.cpp )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
 endforeach()
@@ -85,6 +85,7 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #add_executable( test2layerconvolve test/test2layerconvolve.cpp stringhelper.cpp )
 add_executable( testneuralnetmnistconvolve-experimental test/testneuralnetmnistconvolve-experimental.cpp src/stringhelper.cpp )
 add_executable( testmnist-softmax test/testmnist-softmax.cpp src/stringhelper.cpp )
+add_executable( testmnist-fullyconnected test/testmnist-fullyconnected.cpp src/stringhelper.cpp )
 if( PNG_AVAILABLE)
     #add_executable( test4dconvolve test/test4dconvolve.cpp )
     add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
@@ -101,7 +102,7 @@ thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
-add_executable( loadkgs src/loadkgs.cpp src/stringhelper.cpp )
+add_executable( loadkgs test/loadkgs.cpp src/stringhelper.cpp )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )

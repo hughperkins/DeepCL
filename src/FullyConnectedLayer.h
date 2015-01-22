@@ -7,43 +7,19 @@
 #pragma once
 
 #include "Layer.h"
-#include "ActivationFunction.h"
-#include "StatefulTimer.h"
+#include "ConvolutionalLayer.h"
 
 #define VIRTUAL virtual
+#define STATIC static
 
 class FullyConnectedLayer : public Layer {
 public:
-    float *results;
-    float *weights;
-    float *biasWeights;
+    const int numPlanes;
+    const int boardSize;
+    ActivationFunction const*fn;
 
-    float *errorsForUpstream;
-    bool allocatedSize;
-    ActivationFunction const *const activationFunction;
-
-    // weights like [upstreamPlane][upstreamRow][upstreamCol][outputPlane][outputrow][outputcol]
-    inline int getWeightIndex( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
-        int index = ( ( ( ( prevPlane ) * upstreamBoardSize
-                       + prevRow ) * upstreamBoardSize
-                       + prevCol ) * numPlanes
-                       + outputPlane * boardSize 
-                       + outputRow ) * boardSize
-                       + outputCol;
-        return index;
-    }
-    inline float getWeight( int prevPlane, int prevRow, int prevCol, int outputPlane, int outputRow, int outputCol ) const {
-        return weights[getWeightIndex( prevPlane, prevRow, prevCol, outputPlane, outputRow, outputCol )];
-    }
-    inline int getBiasWeightIndex( int outputPlane, int outputRow, int outputCol ) const {
-        int index = (outputPlane * boardSize 
-                       + outputRow ) * boardSize
-                       + outputCol;
-        return index;
-    }
-    inline float getBiasWeight( int outputPlane, int outputRow, int outputCol ) const {
-        return biasWeights[getBiasWeightIndex( outputPlane, outputRow, outputCol ) ];
-    }
+    ConvolutionalLayer *convolutionalLayer;
+    int batchSize;
 
     // [[[cog
     // import cog_addheaders
@@ -52,21 +28,21 @@ public:
     // classname: FullyConnectedLayer
     // cppfile: FullyConnectedLayer.cpp
 
-    FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const *maker );
-    VIRTUAL float *getResults();
-    VIRTUAL bool needErrorsBackprop();
-    VIRTUAL ActivationFunction const*getActivationFunction();
-    VIRTUAL int getWeightsSize() const;
-    VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL void print() const;
-    VIRTUAL void printWeights() const;
-    VIRTUAL void printOutput() const;
-    void randomizeWeights(int fanIn, float *weights, int numWeights );
+    FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const*maker );
     VIRTUAL ~FullyConnectedLayer();
-    VIRTUAL float *getErrorsForUpstream();
     VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getResultsSize() const;
+    VIRTUAL float *getResults();
+    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
+    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool hasResultsWrapper() const;
+    VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 };

@@ -92,6 +92,9 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete backpropWeightsImpl;
     delete backpropErrorsImpl;
 }
+VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
+    return activationFunction;
+}
 VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
     if( !errorsForUpstreamCopiedToHost ) {
         std::cout << "copying errorsForUpstream to host, from GPU" << std::endl;
@@ -100,14 +103,17 @@ VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
     }
     return errorsForUpstream;
 }
-VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
-    return activationFunction;
-}
 VIRTUAL bool ConvolutionalLayer::providesErrorsForUpstreamWrapper() const {
     return true;
 }
 VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
     return errorsForUpstreamWrapper;
+}
+VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
+    return true;
+}
+VIRTUAL CLWrapper *ConvolutionalLayer::getResultsWrapper() {
+    return resultsWrapper;
 }
 VIRTUAL float const *ConvolutionalLayer::getWeights() const {
     if( !weightsCopiedToHost ) {
@@ -143,12 +149,6 @@ void ConvolutionalLayer::randomizeWeights() {
     for( int i = 0; i < dim.numFilters; i++ ) {
         biasWeights[i] = WeightsHelper::generateWeight( fanin );
     }
-}
-VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
-    return true;
-}
-VIRTUAL CLWrapper *ConvolutionalLayer::getResultsWrapper() {
-    return resultsWrapper;
 }
 VIRTUAL void ConvolutionalLayer::print() {
     std::cout << "ConvolutionalLayer " << dim << std::endl;

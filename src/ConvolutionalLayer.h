@@ -97,18 +97,18 @@ public:
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     VIRTUAL ~ConvolutionalLayer();
-    VIRTUAL float *getErrorsForUpstream();
     VIRTUAL ActivationFunction const*getActivationFunction();
+    VIRTUAL float *getErrorsForUpstream();
     VIRTUAL bool providesErrorsForUpstreamWrapper() const;
     VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool hasResultsWrapper() const;
+    VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputBoardSize() const;
     void randomizeWeights();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL void print();
     VIRTUAL void printWeights();
     VIRTUAL void printOutput() const;

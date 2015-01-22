@@ -118,6 +118,56 @@ static void print( float const*const*const board, int boardSize ) {
     std::cout << ss.str() << std::endl;
 }
 
+static void printBoard( int *board, int boardSize ) {
+    std::ostringstream ss;
+    ss << "\n";
+    for( int i = 0; i < boardSize; i++ ) {
+        for( int j = 0; j < boardSize; j++ ) {
+            int offset = i * boardSize + j;
+            int value = board[offset];
+            if( value == 0 ) {
+                ss << ".";
+            }
+            if( value == 1 ) {
+                ss << "*";
+            }
+            if( value == 2 ) {
+                ss << "O";
+            }
+            if( value == 3 ) {
+                ss << "+";
+            }
+        }
+        ss << "\n";
+    }
+    std::cout << ss.str() << std::endl;
+}
+
+static void printBoard( float *board, int boardSize ) {
+    std::ostringstream ss;
+    ss << "\n";
+    for( int i = 0; i < boardSize; i++ ) {
+        for( int j = 0; j < boardSize; j++ ) {
+            int offset = i * boardSize + j;
+            float value = board[offset];
+            if( value == 0 ) {
+                ss << ".";
+            }
+            if( value == 1 ) {
+                ss << "*";
+            }
+            if( value == 2 ) {
+                ss << "O";
+            }
+            if( value == 3 ) {
+                ss << "+";
+            }
+        }
+        ss << "\n";
+    }
+    std::cout << ss.str() << std::endl;
+}
+
 //static void printBoard( int const *const *const board, int boardSize ) {
 ///*    int numdigits = 1;
 //    for( int i = 0; i < boardSize; i++ ) {

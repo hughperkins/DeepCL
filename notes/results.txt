@@ -1,0 +1,16 @@
+numlayers=2 numfilters=64 filtersize=3 learningrate=0.0001 padzeros=0, softmax, v0.3, aws 17 epochs, 98.32%
+numlayers=2 numfilters=64 filtersize=3 learningrate=0.0001 padzeros=0, softmax, v0.3, aws 18 epochs, 98.32%
+
+numlayers=1 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1, softmax, v0.3, aws 20 epochs, 98.09%
+
+numlayers=2 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1, softmax, v0.3, aws 12 epochs, 98.4% epochtime 203s
+numlayers=2 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1, softmax, v0.3, aws 15 epochs, 98.52%
+numlayers=2 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1, softmax, v0.3, aws 20 epochs, 98.6%
+
+numlayers=2 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1, softmax, v0.3, aws 12 epochs, 98.42%
+
+numlayers=3 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 8 epochs, 98.45% epochtime 383s
+numlayers=3 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 12 epochs, 98.46%
+numlayers=3 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 15 epochs, 98.5%
+numlayers=3 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 20 epochs, 98.5%
+

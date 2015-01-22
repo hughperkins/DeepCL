@@ -783,6 +783,48 @@ StatefulTimer readings:
 after epoch 0 120256 ms
 
 
+------------
+aws, 64 filters, 3 layers (?), filtersize 3, v0.3, softmax
+StatefulTimer readings:
+   layer1 BackpropWeights2Scratch end: 3281ms
+   layer1 Propagate3::propagate after call propagate: 1093ms
+   layer2 BackpropErrorsv2Naive end: 49628ms
+   layer2 BackpropWeights2Scratch end: 179538ms
+   layer2 Propagate3::propagate after call propagate: 33358ms
+   layer3 BackpropErrorsv2Naive end: 1406ms
+   layer3 BackpropWeights2Scratch end: 2343ms
+   layer3 Propagate1::propagate after call propagate: 23543ms
+       loss L: 2257.07
+after epoch 16 287540 ms
+
+aws, 32 filters, padzeros=1, numlayers=2 filtersize=5, v0.3, softmax
+StatefulTimer readings:
+   layer1 BackpropWeights2Scratch end: 5625ms
+   layer1 Propagate3::propagate after call propagate: 1093ms
+   layer2 BackpropErrorsv2Naive end: 45938ms
+   layer2 BackpropWeights2Scratch end: 107344ms
+   layer2 Propagate3::propagate after call propagate: 30017ms
+   layer3 BackpropErrorsv2Naive end: 937ms
+   layer3 BackpropWeights2Scratch end: 1407ms
+   layer3 Propagate1::propagate after call propagate: 15877ms
+       loss L: 1965.96
+after epoch 17 203420 ms
+
+aws, 32 filters, padzeros=1, numlayers=3, filtersize=5, v0.3, softmax
+StatefulTimer readings:
+   layer1 BackpropWeights2Scratch end: 5625ms
+   layer1 Propagate3::propagate after call propagate: 937ms
+   layer2 BackpropErrorsv2Naive end: 45938ms
+   layer2 BackpropWeights2Scratch end: 107344ms
+   layer2 Propagate3::propagate after call propagate: 25715ms
+   layer3 BackpropErrorsv2Naive end: 45938ms
+   layer3 BackpropWeights2Scratch end: 107344ms
+   layer3 Propagate3::propagate after call propagate: 25723ms
+   layer4 BackpropErrorsv2Naive end: 937ms
+   layer4 BackpropWeights2Scratch end: 1411ms
+   layer4 Propagate1::propagate after call propagate: 13600ms
+       loss L: 22727.5
+after epoch 0 383196 ms
 
 
 

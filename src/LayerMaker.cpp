@@ -9,7 +9,7 @@
 #include "LayerMaker.h"
 
 #include "NeuralNet.h"
-//#include "FullyConnectedLayer.h"
+#include "FullyConnectedLayer.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
 //#include "ExpectedValuesLayer.h"
@@ -19,23 +19,23 @@
 
 using namespace std;
 
-//Layer *FullyConnectedMaker::insert() {
-//    if( _numPlanes == 0 ) {
-//        throw runtime_error("Must provide ->planes(planes)");
-//    }
-//    if( _boardSize == 0 ) {
-//        throw runtime_error("Must provide ->boardSize(boardSize)");
-//    }
-////    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _biased, _activationFunction );
-//    Layer *layer = net->addLayer( this );
-//    delete this;
-//    return layer;
-//}
+Layer *FullyConnectedMaker::insert() {
+    if( _numPlanes == 0 ) {
+        throw runtime_error("Must provide ->planes(planes)");
+    }
+    if( _boardSize == 0 ) {
+        throw runtime_error("Must provide ->boardSize(boardSize)");
+    }
+//    Layer *layer = net->addFullyConnected( _numPlanes, _boardSize, _biased, _activationFunction );
+    Layer *layer = net->addLayer( this );
+    delete this;
+    return layer;
+}
 
-//Layer *FullyConnectedMaker::instance() const {
-//    Layer *layer = new FullyConnectedLayer( previousLayer, this );
-//    return layer;
-//}
+Layer *FullyConnectedMaker::instance() const {
+    Layer *layer = new FullyConnectedLayer( previousLayer, this );
+    return layer;
+}
 
 Layer *InputLayerMaker::insert() {
     if( _numPlanes == 0 ) {

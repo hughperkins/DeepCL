@@ -208,6 +208,7 @@ VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
                     }
                 }
                 if( label == iMax ) {
+//                    cout << "n " << n << " plane " << plane << " label " << label << endl;
                     numRight++;
                 }
             }
@@ -232,10 +233,10 @@ VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
                 numRight++;
             }
         }
-        return numRight;
     }
 
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
+    return numRight;
 }
 // for propagate, we just need to apply the softmax activation. "just" :-P
 VIRTUAL void SoftMaxLayer::propagate() {
