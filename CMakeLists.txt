@@ -5,6 +5,16 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
+find_package(MPI QUIET)
+if( MPI_FOUND )
+    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." ON)
+else()
+    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." OFF)
+endif()
+if( MPI_AVAILABLE )
+find_package(MPI REQUIRED)
+endif()
+
 include_directories( . )
 include_directories( src )
 include_directories( OpenCLHelper )
@@ -43,7 +53,7 @@ else()
 endif()
 
 if( LIBPNGPP_AVAILABLE)
-find_package(PNG)
+find_package(PNG REQUIRED)
 link_libraries(${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
@@ -80,6 +90,13 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #
 
 add_executable( testmnist test/testmnist src/stringhelper.cpp )
+
+if( MPI_AVAILABLE )
+add_definitions(-DMPI_AVAILABLE)
+add_executable( testmnist-mpi test/testmnist-mpi src/stringhelper.cpp )
+target_include_directories(testmnist-mpi PRIVATE ${MPI_C_INCLUDE_PATH})
+target_link_libraries(testmnist-mpi ${MPI_CXX_LIBRARIES})
+endif()
 
 if( PNG_AVAILABLE)
     add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
