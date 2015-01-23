@@ -338,6 +338,7 @@ What's done / what's planned
   * symmetric filters
   * maybe L2 regularization?
   * mpi so can run over several gpus, spread across multiple hosts???
+    * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
 * Plausible, medium-term (pull requests welcome):
   * generalization to non-square images
   * generalization to larger images
@@ -350,6 +351,8 @@ Recent changes
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
 
+* 23rd December:
+  * created `testmnist-mpi`, to experiment with using mpi to parallelize across multiple compute nodes (which must each have a GPU, which GPUs must ideally each be the same model/specifications)
 * 22nd December:
   * re-added FullyConnectedLayer, which is now a wrapper around ConvolutionalLayer, with one filter per output node.  So, if we want a 28x28 board as the output, this will need 784 filters in the underlying convolutional layer, which
 sounds excessive, but this is how a fully connected layer works :-)
