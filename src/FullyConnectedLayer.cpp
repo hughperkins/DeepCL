@@ -18,7 +18,7 @@ FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMa
         numPlanes( maker->getNumPlanes() ),
         boardSize( maker->getBoardSize() ),
         fn( maker->getActivationFunction() ) {
-    ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker( maker->net );
+    ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker( maker->net, previousLayer );
     convolutionalMaker->numFilters( numPlanes * boardSize * boardSize )
                       ->filterSize( previousLayer->getOutputBoardSize() )
                         ->biased( maker->_biased )

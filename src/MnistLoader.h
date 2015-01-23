@@ -16,7 +16,7 @@
 
 class MnistLoader {
 public:
-    static int **loadImage( string dir, string set, int idx, int *p_size ) {
+    static int **loadImage( std::string dir, std::string set, int idx, int *p_size ) {
         long imagesFilesize = 0;
         long labelsFilesize = 0;
         char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
@@ -28,7 +28,7 @@ public:
         int numRows = readUInt( imagesData, 2 );
         int numCols = readUInt( imagesData, 3 );
         *p_size = numRows;
-        cout << "numimages " << numImages << " " << numRows << "*" << numCols << endl;
+        std::cout << "numimages " << numImages << " " << numRows << "*" << numCols << std::endl;
 
         int **board = BoardHelper::allocateBoard( numRows );
         for( int i = 0; i < numRows; i++ ) {
@@ -40,7 +40,7 @@ public:
         delete[] labelsDataSigned;
         return board;
     }
-    static int ***loadImages( string dir, string set, int *p_numImages, int *p_size ) {
+    static int ***loadImages( std::string dir, std::string set, int *p_numImages, int *p_size ) {
         long imagesFilesize = 0;
         char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
         unsigned char *imagesData = reinterpret_cast<unsigned char *>(imagesDataSigned);
@@ -50,7 +50,7 @@ public:
 //        *p_numImages = min(100,totalNumImages);
         *p_numImages = totalNumImages;
         *p_size = numRows;
-        cout << "totalNumImages " << *p_numImages << " " << *p_size << "*" << numCols << endl;
+        std::cout << "totalNumImages " << *p_numImages << " " << *p_size << "*" << numCols << std::endl;
         int ***boards = BoardsHelper::allocateBoards( *p_numImages, numRows );
         for( int n = 0; n < *p_numImages; n++ ) {
             for( int i = 0; i < numRows; i++ ) {
@@ -62,14 +62,14 @@ public:
         delete[] imagesDataSigned;
         return boards;
     }
-    static int *loadLabels( string dir, string set, int *p_numImages ) {
+    static int *loadLabels( std::string dir, std::string set, int *p_numImages ) {
         long labelsFilesize = 0;
         char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
         unsigned char *labelsData = reinterpret_cast<unsigned char *>(labelsDataSigned);
         int totalNumImages = readUInt( labelsData, 1 );
       //  *p_numImages = min(100,totalNumImages);
         *p_numImages = totalNumImages;
-        cout << "set " << set << " num labels " << *p_numImages << endl;
+        std::cout << "set " << set << " num labels " << *p_numImages << std::endl;
         int *labels = new int[*p_numImages];
         for( int n = 0; n < *p_numImages; n++ ) {
            labels[n] = (int)labelsData[8 + n];

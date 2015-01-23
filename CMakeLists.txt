@@ -29,7 +29,9 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
     BackpropWeights2Cpu.cpp LayerMaker.cpp BackpropErrorsv2.cpp BackpropErrorsv2Cpu.cpp
     BackpropWeights2Naive.cpp BackpropErrorsv2Naive.cpp BackpropWeights2Scratch.cpp
-    CrossEntropyLoss.cpp SoftMaxLayer.cpp FullyConnectedLayer.cpp )
+    CrossEntropyLoss.cpp SoftMaxLayer.cpp FullyConnectedLayer.cpp 
+    PoolingPropagate.cpp PoolingPropagateCpu.cpp PoolingLayer.cpp
+ )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
 endforeach()

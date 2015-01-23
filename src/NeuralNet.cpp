@@ -51,10 +51,10 @@ STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
 FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
-    return new FullyConnectedMaker( this );
+    return new FullyConnectedMaker( this, getLastLayer() );
 }
 ConvolutionalMaker *NeuralNet::convolutionalMaker() {
-    return new ConvolutionalMaker( this );
+    return new ConvolutionalMaker( this, getLastLayer() );
 }
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
@@ -105,7 +105,7 @@ Layer *NeuralNet::addLayer( LayerMaker *maker ) {
     if( layers.size() > 0 ) {
         previousLayer = layers[ layers.size() - 1 ];
     }
-    maker->setPreviousLayer( previousLayer );
+//    maker->setPreviousLayer( previousLayer );
     Layer *layer = maker->instance();
     layers.push_back( layer );
     return layer;

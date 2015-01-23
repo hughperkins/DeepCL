@@ -9,14 +9,11 @@
 #include <cstring>
 #include <iostream>
 
-//#include "NeuralNet.h"
-//#include "Layer.h"
 #include "ActivationFunction.h"
 
 class NeuralNet;
 class Layer;
 
-//class ExpectedValuesLayer;
 class SquareLossLayer;
 class CrossEntropyLayer;
 class SoftMaxLayer;
@@ -31,13 +28,14 @@ public:
     virtual ActivationFunction const*getActivationFunction() const {
         throw std::runtime_error("getactivationfunction not impelmented for this maker type");
     }
-    LayerMaker( NeuralNet *net ) :
-        net( net ) {
+    LayerMaker( NeuralNet *net, Layer *previousLayer ) :
+        net( net ),
+        previousLayer( previousLayer ) {
     }
-    void setPreviousLayer( Layer *previousLayer ) {
-        this->previousLayer = previousLayer;
-    }
-    virtual Layer *insert() = 0;
+//    void setPreviousLayer( Layer *previousLayer ) {
+//        this->previousLayer = previousLayer;
+//    }
+    virtual Layer *insert();
     virtual Layer *instance() const = 0;
 };
 
@@ -46,7 +44,7 @@ public:
     int _numPlanes;
     int _boardSize;
     InputLayerMaker( NeuralNet *net, int numPlanes, int boardSize ) :
-            LayerMaker( net ),
+            LayerMaker( net, 0 ),
             _numPlanes(numPlanes),
             _boardSize(boardSize) {
     }
@@ -63,29 +61,33 @@ public:
     virtual Layer *insert();
 };
 
-//class ExpectedValuesLayerMaker {
-//public:
-//    NeuralNet *net;
-//    Layer *previousLayer;
-//    ExpectedValuesLayerMaker( NeuralNet *net, Layer *previousLayer ) :
-//        net( net ),
-//        previousLayer( previousLayer ) {
-//    }
-//    virtual ExpectedValuesLayer *instance() const;
-////    virtual Layer *insert();
-//};
-
-class LossLayerMaker : public LayerMaker {
+class PoolingMaker : public LayerMaker {
 public:
-    Layer *previousLayer;
-    LossLayerMaker( NeuralNet *net, Layer *previousLayer ) :
-        LayerMaker( net ),
-        previousLayer( previousLayer ) {
+//    Layer *previousLayer;
+    int _poolingSize = 2;
+    PoolingMaker( NeuralNet *net, Layer *previousLayer ) :
+        LayerMaker( net, previousLayer ) {
+    }
+    PoolingMaker *poolingSize( int _poolingSize ) {
+        this->_poolingSize = _poolingSize;
+        return this;
     }
     virtual int getBoardSize() const;
     virtual int getNumPlanes() const;
     virtual int getBiased() const;
     virtual Layer *insert();
+    virtual Layer *instance() const;
+};
+
+class LossLayerMaker : public LayerMaker {
+public:
+//    Layer *previousLayer;
+    LossLayerMaker( NeuralNet *net, Layer *previousLayer ) :
+        LayerMaker( net, previousLayer ) {
+    }
+    virtual int getBoardSize() const;
+    virtual int getNumPlanes() const;
+    virtual int getBiased() const;
 };
 
 class SquareLossMaker : public LossLayerMaker {
@@ -129,8 +131,8 @@ public:
     int _boardSize;
     int _biased;
     ActivationFunction *_activationFunction;
-    FullyConnectedMaker( NeuralNet *net ) :
-        LayerMaker(net),
+    FullyConnectedMaker( NeuralNet *net, Layer *previousLayer ) :
+        LayerMaker(net, previousLayer),
         _numPlanes(0),
         _boardSize(0),
         _activationFunction( new TanhActivation() ) {
@@ -194,8 +196,8 @@ public:
     bool _padZeros;
     int _biased;
     ActivationFunction const *_activationFunction;
-    ConvolutionalMaker( NeuralNet *net ) :
-            LayerMaker( net ),
+    ConvolutionalMaker( NeuralNet *net, Layer *previousLayer ) :
+            LayerMaker( net, previousLayer ),
             _numFilters(0),
             _filterSize(0),
             _padZeros(false),

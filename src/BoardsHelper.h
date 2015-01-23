@@ -6,25 +6,26 @@
 
 #pragma once
 
+#include <stdexcept>
+
 #include "BoardHelper.h"
-#include "MyException.h"
 
 class BoardsHelper {
 public:
     static int ***allocateBoards( int N, int boardSize ) {
         int *contiguousSpace = new int[N * boardSize * boardSize ];
         if( contiguousSpace == 0 ) {
-            throw MyException("failed to allocate memory");
+            throw std::runtime_error("failed to allocate memory");
         }
         int ***boards = new int**[N];
         if( boards == 0 ) {
-            throw MyException("failed to allocate int***boards memory");
+            throw std::runtime_error("failed to allocate int***boards memory");
         }
         for( int n = 0; n < N; n++ ) {
            int **board = new int*[boardSize];
            int *thisboardcontiguousspace = &(contiguousSpace[n * boardSize * boardSize]);
             if( board == 0 ) {
-                throw MyException("failed to allocate int **board memory");
+                throw std::runtime_error("failed to allocate int **board memory");
             }
            boards[n] = board;
            for( int i = 0; i < boardSize; i++ ) {
@@ -58,17 +59,17 @@ public:
     static float ***allocateBoardsFloats( int N, int boardSize ) {
         float *contiguousSpace = new float[N * boardSize * boardSize ];
         if( contiguousSpace == 0 ) {
-            throw MyException("failed to allocate memory");
+            throw std::runtime_error("failed to allocate memory");
         }
         float ***boards = new float**[N];
         if( boards == 0 ) {
-            throw MyException("failed to allocate int***boards memory");
+            throw std::runtime_error("failed to allocate int***boards memory");
         }
         for( int n = 0; n < N; n++ ) {
            float **board = new float*[boardSize];
            float *thisboardcontiguousspace = &(contiguousSpace[n * boardSize * boardSize]);
             if( board == 0 ) {
-                throw MyException("failed to allocate int **board memory");
+                throw std::runtime_error("failed to allocate int **board memory");
             }
            boards[n] = board;
            for( int i = 0; i < boardSize; i++ ) {
