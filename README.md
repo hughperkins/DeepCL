@@ -64,7 +64,7 @@ Ran against MNIST to validate that the library does approximately what it says i
 
 ## Reproducing
 
-* First you need to download MNIST.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
+* First, you need to obtain the MNIST data.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
 ```bash
 cd ../data
 mkdir mnist
@@ -79,8 +79,10 @@ cd ../../build
 * Then, you can train against MNIST using a net created eg as follows:
 ```c++
 NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-net->convolutionalMaker()->numFilters(10)->filterSize(24)->linear()->biased()->insert();
+for( int layer = 0; layer < 2; layer++ ) {
+    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+}
+net->fullyConnectedLayer()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
 net->softMaxLossMaker()->insert();
 net->setBatchSize(128);
 ```
@@ -88,8 +90,8 @@ net->setBatchSize(128);
   * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
     * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
   * The second line creates a a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is relu
-  * The next line looks like a convolutional layer, and in fact it is, but it's being used as a fully-connected layer, since the filter size is identical to the output of the previous layer, and padZeros is not enabled
-    * Each filter will result in one single output node, for a total of 10 output nodes, dimensioned as 10 planes, each of a 1x1 board
+  * The next line is a fully connected layer, with one output plane per possible output label, and a boardsize of 1
+    * since we are going to use softmax activation, then we specify `linear` for the activation within this layer
   * Finally, we add a SoftMaxLoss layer, which handles:
     * generating appropriate loss signals to drive the network
     * receive our labels array
