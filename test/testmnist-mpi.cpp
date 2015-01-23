@@ -213,6 +213,7 @@ void go(Config config) {
             #ifdef MPI_AVAILABLE
             StatefulTimer::timeCheck("allreduce START");
             WeightsPersister::copyNetWeightsToArray( net, newWeights );
+            StatefulTimer::timeCheck("allreduce done copyNetWeightsToArray");
             if( myrank == 0 ) {
                 for( int i = 0; i < totalWeightsSize; i++ ) {
                     weightsChange[i] = newWeights[i];
@@ -223,6 +224,7 @@ void go(Config config) {
                 }
             }
             MPI_Allreduce( weightsChange, weightsChangeReduced, totalWeightsSize, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
+            StatefulTimer::timeCheck("allreduce done Allreduce");
             WeightsPersister::copyArrayToNetWeights( weightsChangeReduced, net );
             StatefulTimer::timeCheck("allreduce END");
             #endif            
