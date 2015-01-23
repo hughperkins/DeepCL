@@ -14,7 +14,7 @@
 using namespace std;
 
 float EpochMaker::run() {
-    if( _expectedOutputs != 0 ) {
+    if( _labels != 0 ) {
         throw runtime_error("should not provide labels if using Epoch::run");
     }
     if( _expectedOutputs == 0 ) {

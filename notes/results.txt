@@ -40,4 +40,26 @@ numlayers=1 numfilters=32 filtersize=7 learningrate=0.0001 padzeros=1 softmax v0
 numlayers=2 numfilters=32 filtersize=7 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 12 epochs, 98.46% 254.4s
 
 
+23rd
+2layer 32filt 7size 20ep padz 98.62% 254.4s
+3layer 32filt 7size 98.62% 485.2s
+3layer 16filters 7size padz 20ep 98.51% 133s
+4 layers 16filt 7size padz 20ep 98.52 192s ep12 98.54%
+4lay 12filt 7size pz ep10 98.68 112.5s ep13 98.72 ep20 98.73
+4lay 8filt 7size pz ep20 98.23
+5lay 8filt 7size pz ep4 98.05 84.4s ep12 98.51% ep20 98.51%
+6Lay 8filt 7sz pz ep20 98.43% 103s
+
+4lay 16filt 5size 98.48
+6lay 8filt 5sz pz 90.5s 98.29%
+7Lay 8filt 5sz pz 106.5s 20epochs 98.11% test (99.6 train)
+
+7Lay 6filt 3sz pz 40.5s 97.9:99.2
+7Lay 8filt 3sz pz 73.4s ep12 97.91%:98.9 ep15 98.04:99.14 ep20 97.8:99.49
+7Lay 10filt 3sz pz 79.9s ep20 97.91:99.64
+
+
+
+
+
 
