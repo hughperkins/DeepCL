@@ -42,6 +42,21 @@ VIRTUAL int FullyConnectedLayer::getOutputBoardSize() const {
 VIRTUAL int FullyConnectedLayer::getOutputPlanes() const {
     return numPlanes;
 }
+VIRTUAL int FullyConnectedLayer::getPersistSize() const {
+    return convolutionalLayer->getPersistSize();
+}
+VIRTUAL void FullyConnectedLayer::persistToArray(float *array) {
+    convolutionalLayer->persistToArray( array );
+}
+VIRTUAL void FullyConnectedLayer::unpersistFromArray(float const*array) {
+    convolutionalLayer->unpersistFromArray( array );
+}
+VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
+    return convolutionalLayer->getWeightsSize();
+}
+VIRTUAL int FullyConnectedLayer::getBiasWeightsSize() const {
+    return convolutionalLayer->getBiasWeightsSize();
+}
 VIRTUAL int FullyConnectedLayer::getResultsSize() const {
     return convolutionalLayer->getResultsSize();
 }

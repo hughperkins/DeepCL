@@ -190,6 +190,13 @@ VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
         return boardSizeSquared;
     }
 }
+VIRTUAL int SoftMaxLayer::getPersistSize() const {
+    return 0;
+}
+VIRTUAL void SoftMaxLayer::persistToArray(float *array) {
+}
+VIRTUAL void SoftMaxLayer::unpersistFromArray(float const*array) {
+}
 VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
     float *resultsFromUpstream = previousLayer->getResults(); // just retrieve as host-side array for now

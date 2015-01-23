@@ -123,7 +123,7 @@ VIRTUAL float const *ConvolutionalLayer::getWeights() const {
 }
 VIRTUAL float *ConvolutionalLayer::getWeights() {
     if( !weightsCopiedToHost ) {
-        cout << "copying weights to host" << endl;
+//        cout << "copying weights to host" << endl;
         cl->finish();
         weightsWrapper->copyToHost();
     }
@@ -285,7 +285,7 @@ VIRTUAL float * ConvolutionalLayer::getResults() {
     }
     return results;
 };
-VIRTUAL void ConvolutionalLayer::initWeights( float *weights ) {
+VIRTUAL void ConvolutionalLayer::initWeights( float const*weights ) {
     int weightsSize = dim.filtersSize;
     memcpy( this->weights, weights, sizeof(float) * weightsSize );
     weightsWrapper->copyToDevice();
@@ -293,7 +293,22 @@ VIRTUAL void ConvolutionalLayer::initWeights( float *weights ) {
 VIRTUAL int ConvolutionalLayer::getOutputCubeSize() const {
     return dim.outputCubeSize;
 }
-VIRTUAL void ConvolutionalLayer::initBiasWeights( float *biasWeights ) {
+VIRTUAL int ConvolutionalLayer::getPersistSize() const {
+    return getWeightsSize() + getBiasWeightsSize();
+}
+VIRTUAL void ConvolutionalLayer::persistToArray(float *array) {
+    float const*weights = getWeights();
+//    float const*biasWeights = getBiasWeights();
+    memcpy( array, weights, sizeof(float) * getWeightsSize() );
+    memcpy( array + getWeightsSize(), biasWeights, sizeof(float) * getBiasWeightsSize() );
+}
+VIRTUAL void ConvolutionalLayer::unpersistFromArray(float const*array) {
+    float const*newweights = array;
+    float const*newbiasWeights = array + getWeightsSize();
+    initWeights( newweights );
+    initBiasWeights( newbiasWeights );
+}
+VIRTUAL void ConvolutionalLayer::initBiasWeights( float const*biasWeights ) {
     int biasWeightsSize = dim.numFilters;
     memcpy( this->biasWeights, biasWeights, sizeof(float) * biasWeightsSize );
 //    biasWeightsWrapper->copyToDevice();

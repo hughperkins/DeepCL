@@ -116,14 +116,14 @@ VIRTUAL void Layer::print() {
 //        std::cout << "No results yet " << std::endl;
 //    }
 }
-VIRTUAL void Layer::initWeights( float*weights ) {
+VIRTUAL void Layer::initWeights( float const*weights ) {
     throw std::runtime_error("initWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 //    int numWeights = getWeightsSize();
 //    for( int i = 0; i < numWeights; i++ ) {
 //        this->weights[i] = weights[i];
 //    }
 }
-VIRTUAL void Layer::initBiasWeights( float*biasWeights ) {
+VIRTUAL void Layer::initBiasWeights( float const *biasWeights ) {
     throw std::runtime_error("initBiasWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 //    int numBiasWeights = getBiasWeightsSize();
 //    for( int i = 0; i < numBiasWeights; i++ ) {
@@ -168,6 +168,15 @@ VIRTUAL int Layer::getWeightsSize() const {
 }
 VIRTUAL int Layer::getBiasWeightsSize() const {
     throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
+}
+VIRTUAL int Layer::getPersistSize() const {
+    throw std::runtime_error("getPersistSize not implemented for this layertype, layerindex " + toString(layerIndex ) );
+}
+VIRTUAL void Layer::persistToArray(float *array) {
+    throw std::runtime_error("persistToArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
+}
+VIRTUAL void Layer::unpersistFromArray(float const*array) {
+    throw std::runtime_error("unpersistFromArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
 VIRTUAL void Layer::setWeights(float *weights, float *biasWeights) {
     throw std::runtime_error("setWeights not implemented for this layertype");

@@ -76,8 +76,8 @@ public:
     VIRTUAL int getOutputBoardSize() const;
     VIRTUAL void propagate();
     VIRTUAL void print();
-    VIRTUAL void initWeights( float*weights );
-    VIRTUAL void initBiasWeights( float*biasWeights );
+    VIRTUAL void initWeights( float const*weights );
+    VIRTUAL void initBiasWeights( float const *biasWeights );
     VIRTUAL void printWeightsAsCode() const;
     VIRTUAL void printBiasWeightsAsCode() const;
     VIRTUAL void printWeights();
@@ -85,6 +85,9 @@ public:
     VIRTUAL void backProp( float learningRate );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL int getPersistSize() const;
+    VIRTUAL void persistToArray(float *array);
+    VIRTUAL void unpersistFromArray(float const*array);
     VIRTUAL void setWeights(float *weights, float *biasWeights);
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();

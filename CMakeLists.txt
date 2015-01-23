@@ -91,9 +91,9 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 
 add_executable( testmnist test/testmnist src/stringhelper.cpp )
 
+add_executable( testmnist-mpi test/testmnist-mpi src/stringhelper.cpp )
 if( MPI_AVAILABLE )
 add_definitions(-DMPI_AVAILABLE)
-add_executable( testmnist-mpi test/testmnist-mpi src/stringhelper.cpp )
 target_include_directories(testmnist-mpi PRIVATE ${MPI_C_INCLUDE_PATH})
 target_link_libraries(testmnist-mpi ${MPI_CXX_LIBRARIES})
 endif()

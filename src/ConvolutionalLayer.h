@@ -115,9 +115,12 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
     VIRTUAL float * getResults();
-    VIRTUAL void initWeights( float *weights );
+    VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL void initBiasWeights( float *biasWeights );
+    VIRTUAL int getPersistSize() const;
+    VIRTUAL void persistToArray(float *array);
+    VIRTUAL void unpersistFromArray(float const*array);
+    VIRTUAL void initBiasWeights( float const*biasWeights );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void backProp( float learningRate );

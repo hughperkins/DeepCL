@@ -33,6 +33,11 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getOutputBoardSize() const;
     VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getPersistSize() const;
+    VIRTUAL void persistToArray(float *array);
+    VIRTUAL void unpersistFromArray(float const*array);
+    VIRTUAL int getWeightsSize() const;
+    VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL int getResultsSize() const;
     VIRTUAL float *getResults();
     VIRTUAL float *getErrorsForUpstream();

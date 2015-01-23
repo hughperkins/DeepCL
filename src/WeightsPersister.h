@@ -19,22 +19,46 @@ public:
         int totalWeightsSize = 0;
         for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
             Layer *layer = net->layers[layerIdx];
-            totalWeightsSize += layer->getWeightsSize();
-            totalWeightsSize += layer->getBiasWeightsSize();
+            totalWeightsSize += layer->getPersistSize();
+//            totalWeightsSize += layer->getBiasWeightsSize();
         }
         return totalWeightsSize;
+    }
+    static void copyNetWeightsToArray( NeuralNet *net, float *target ) {
+        int pos = 0;
+        for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+            Layer *layer = net->layers[layerIdx];
+            layer->persistToArray( &(target[pos]) );
+//            copyArray( &(target[pos]), layer->getWeights(), layer->getWeightsSize() );
+//            pos += layer->getWeightsSize();
+//            copyArray( &(target[pos]), layer->getBiasWeights(), layer->getBiasWeightsSize() );
+            pos += layer->getPersistSize();
+        }
+    }
+    static void copyArrayToNetWeights( float const*source, NeuralNet *net ) {
+        int pos = 0;
+        for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+        Layer *layer = net->layers[layerIdx];
+            layer->unpersistFromArray( &(source[pos]) );
+//            layer->initWeights( &(source[pos]) );
+//            pos += layer->getWeightsSize();
+//            layer->initBiasWeights( &(source[pos]) );
+//            pos += layer->getBiasWeightsSize();
+            pos += layer->getPersistSize();
+        }
     }
     static void persistWeights( std::string filepath, NeuralNet *net ) {
         int totalWeightsSize = getTotalNumWeights( net );
         float *allWeightsArray = new float[totalWeightsSize];
-        int pos = 0;
-        for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
-            Layer *layer = net->layers[layerIdx];
-            copyArray( &(allWeightsArray[pos]), layer->getWeights(), layer->getWeightsSize() );
-            pos += layer->getWeightsSize();
-            copyArray( &(allWeightsArray[pos]), layer->getBiasWeights(), layer->getBiasWeightsSize() );
-            pos += layer->getBiasWeightsSize();
-        }
+        copyNetWeightsToArray( net, allWeightsArray );
+//        int pos = 0;
+//        for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+//            Layer *layer = net->layers[layerIdx];
+//            copyArray( &(allWeightsArray[pos]), layer->getWeights(), layer->getWeightsSize() );
+//            pos += layer->getWeightsSize();
+//            copyArray( &(allWeightsArray[pos]), layer->getBiasWeights(), layer->getBiasWeightsSize() );
+//            pos += layer->getBiasWeightsSize();
+//        }
         FileHelper::writeBinary( "~" + filepath, reinterpret_cast<char *>(allWeightsArray), 
             totalWeightsSize * sizeof(float) );
         FileHelper::remove( filepath );
@@ -53,14 +77,15 @@ public:
             if( expectedTotalWeightsSize != numFloatsRead ) {
                 throw std::runtime_error("weights file contains " + toString(numFloatsRead) + " floats, but we expect to see: " + toString( expectedTotalWeightsSize ) + ".  So there is probably some mismatch between the weights file, and the settings, or network version, used." );
             }
-            int pos = 0;
-            for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
-            Layer *layer = net->layers[layerIdx];
-                layer->initWeights( &(allWeightsArray[pos]) );
-                pos += layer->getWeightsSize();
-                layer->initBiasWeights( &(allWeightsArray[pos]) );
-                pos += layer->getBiasWeightsSize();
-            }
+            copyArrayToNetWeights( allWeightsArray, net );
+//            int pos = 0;
+//            for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+//            Layer *layer = net->layers[layerIdx];
+//                layer->initWeights( &(allWeightsArray[pos]) );
+//                pos += layer->getWeightsSize();
+//                layer->initBiasWeights( &(allWeightsArray[pos]) );
+//                pos += layer->getBiasWeightsSize();
+//            }
             delete [] data;
         }
     }
