@@ -163,6 +163,7 @@ void go(Config config) {
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
     const int totalWeightsSize = WeightsPersister::getTotalNumWeights(net);
+    cout << "totalweightssize: " << totalWeightsSize << endl;
     float *weightsCopy = new float[totalWeightsSize];
     float *newWeights = new float[totalWeightsSize];
     float *weightsChange = new float[totalWeightsSize];
@@ -193,7 +194,9 @@ void go(Config config) {
                 net->setBatchSize( thisNodeBatchSize );
             }
             #ifdef MPI_AVAILABLE
+            StatefulTimer::timeCheck("copyNetWeightsToArray START");
             WeightsPersister::copyNetWeightsToArray( net, weightsCopy );
+            StatefulTimer::timeCheck("copyNetWeightsToArray END");
             #endif
             net->propagate( &(boardsFloat[nodeBatchStart][0][0]) );
             net->backPropFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
@@ -208,6 +211,7 @@ void go(Config config) {
             // we want: wnew = wold + dw1 + dw2 = wnew1 + wnew2 - wold
             // seems like we should keep a copy of the old weights, otherwise cannot compute
             #ifdef MPI_AVAILABLE
+            StatefulTimer::timeCheck("allreduce START");
             WeightsPersister::copyNetWeightsToArray( net, newWeights );
             if( myrank == 0 ) {
                 for( int i = 0; i < totalWeightsSize; i++ ) {
@@ -220,7 +224,7 @@ void go(Config config) {
             }
             MPI_Allreduce( weightsChange, weightsChangeReduced, totalWeightsSize, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
             WeightsPersister::copyArrayToNetWeights( weightsChangeReduced, net );
-            StatefulTimer::timeCheck("allreduced weights");
+            StatefulTimer::timeCheck("allreduce END");
             #endif            
         }
         StatefulTimer::dump(true);
