@@ -37,6 +37,7 @@ numlayers=3 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1 softmax v0
 numlayers=3 numfilters=32 filtersize=5 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 20 epochs, 98.5%
 
 numlayers=1 numfilters=32 filtersize=7 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 20 epochs, 98.3% 23.6s
+numlayers=2 numfilters=32 filtersize=7 learningrate=0.0001 padzeros=1 softmax v0.3 aws, 12 epochs, 98.46% 254.4s
 
 
 
