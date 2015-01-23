@@ -171,23 +171,35 @@ void go(Config config) {
         int trainTotalNumber = 0;
         int trainNumRight = 0;
         int numBatches = ( config.numTrain + config.batchSize - 1 ) / config.batchSize;
-        net->setBatchSize( batchSize );
+        int eachNodeBatchSize = config.batchSize / mysize;
+        int thisNodeBatchSize = eachNodeBatchSize;
+        if( myrank == mysize - 1 ) {
+            thisNodeBatchSize = config.batchSize - ( mysize - 1 ) * eachNodeBatchSize;
+        }
+        net->setBatchSize( thisNodeBatchSize );
         float loss = 0;
         for( int batch = 0; batch < numBatches; batch++ ) {
             int batchStart = batch * config.batchSize;
             int thisBatchSize = config.batchSize;
+            int nodeBatchStart = batchStart + myrank * eachNodeBatchSize;
             if( batch == numBatches - 1 ) {
                 thisBatchSize = config.numTrain - batchStart;
-                net->setBatchSize( thisBatchSize );
+                eachNodeBatchSize = thisBatchSize / mysize;
+                nodeBatchStart = batchStart + myrank * eachNodeBatchSize;
+                thisNodeBatchSize = eachNodeBatchSize;
+                if( myrank == mysize - 1 ) {
+                    thisNodeBatchSize = thisBatchSize - ( mysize - 1 ) * eachNodeBatchSize;
+                }
+                net->setBatchSize( thisNodeBatchSize );
             }
             #ifdef MPI_AVAILABLE
             WeightsPersister::copyNetWeightsToArray( net, weightsCopy );
             #endif
-            net->propagate( &(boardsFloat[batchStart][0][0]) );
-            net->backPropFromLabels( config.learningRate, &(labels[batchStart]) );
-            trainTotalNumber += thisBatchSize;
-            trainNumRight += net->calcNumRight( &(labels[batchStart]) );
-            loss += net->calcLossFromLabels( &(labels[batchStart]) );
+            net->propagate( &(boardsFloat[nodeBatchStart][0][0]) );
+            net->backPropFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
+            trainTotalNumber += thisNodeBatchSize;
+            trainNumRight += net->calcNumRight( &(labels[nodeBatchStart]) );
+            loss += net->calcLossFromLabels( &(labels[nodeBatchStart]) );
             // share out the weights... just average them?
             // for each weight, wnew = wold + dw
             // if multiple changes, wnew = wold + dw1 + dw2 + dw3 + ...
