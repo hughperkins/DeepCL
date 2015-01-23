@@ -415,7 +415,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
 * 22nd December:
   * re-added FullyConnectedLayer, which is now a wrapper around ConvolutionalLayer, with one filter per output node.  So, if we want a 28x28 board as the output, this will need 784 filters in the underlying convolutional layer, which
 sounds excessive, but this is how a fully connected layer works :-)
-  * mnist accuracy now at 98.6%
+  * best mnist accuracy now at 98.6%
 * 21st December:
   * added softmax layer, for per-column configuration, ie multi-planar output, with boardsize 1
     * tested once on mnist: 97.65% test accuracy after 12 epochs; 98.09% after 20 epochs
