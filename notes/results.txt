@@ -58,8 +58,11 @@ numlayers=2 numfilters=32 filtersize=7 learningrate=0.0001 padzeros=1 softmax v0
 7Lay 8filt 3sz pz 73.4s ep12 97.91%:98.9 ep15 98.04:99.14 ep20 97.8:99.49
 7Lay 10filt 3sz pz 79.9s ep20 97.91:99.64
 
+4lay 12filt 7size pz ep10 98.68, v0.3 112.5s: 
+    ep9:98.69% ep10: 98.74% ep12:98.63
+    ep12:98.32%:99.21
 
-
-
-
+4lay 12filt 7size pz, v0.4:
+    ep12:98.5 
+    ep12:98.63%:99.31
 
