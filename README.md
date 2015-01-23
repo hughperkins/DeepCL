@@ -20,7 +20,6 @@
   - [Unit-testing implementation](#unit-testing-implementation)
 - [Formulae notes](#formulae-notes)
 - [Development notes](#development-notes)
-- [Helper methods](#helper-methods)
 - [What's done / what's planned](#whats-done--whats-planned)
 - [Recent changes](#recent-changes)
 - [Third-party libraries](#third-party-libraries)
