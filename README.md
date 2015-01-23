@@ -57,7 +57,6 @@ Ran against MNIST to validate that the library does approximately what it says i
 | 98.5%| 15| 80.5 | 2| 32 | 5 | No  | v0.3 | 0.0001   |
 | 98.57% +/- 0.03%| 20| | 3  | 32 | 5 | No | v0.3 | 0.0001  |
 | 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | Yes| v0.3 | 0.0001    |
-| 98.7% | 12 | 112.5 | 4 | 12 | 7 | Yes | v0.3 | 0.0001 |
 
 * Notes:
   * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
