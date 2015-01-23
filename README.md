@@ -98,12 +98,13 @@ net->setBatchSize(128);
     * calculate loss
     * calculate number correct
   * You need to set the batch size before passing in any input data, since this sets up the internal buffer sizes.  Failure to do this will result in seg faults and other nasty errors :-P
-* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist-softmax.cpp](test/testmnist-softmax.cpp)
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist.cpp](test/testmnist.cpp)
   * You can build and run it as follows, varying the parameters as appropriate:
 ```bash
-make testmnist-softmax
-./testmnist-softmax numfilters=32 numlayers=2 filtersize=5 padzeros=1 numepochs=20 learningrate=0.0001
+make testmnist
+./testmnist numfilters=32 numlayers=2 filtersize=5 padzeros=1 numepochs=20 learningrate=0.0001
 ```
+* Note: in v0.3, the executable name was `testmnist-softmax`, simplified in v0.5 to `testmnist`
 
 Neural Net API
 ==============
@@ -337,6 +338,7 @@ What's done / what's planned
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
   * maybe L2 regularization?
+  * mpi so can run over several gpus, spread across multiple hosts???
 * Plausible, medium-term (pull requests welcome):
   * generalization to non-square images
   * generalization to larger images

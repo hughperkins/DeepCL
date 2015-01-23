@@ -79,7 +79,8 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
-add_executable( testmnist-softmax test/testmnist-softmax.cpp src/stringhelper.cpp )
+add_executable( testmnist test/testmnist src/stringhelper.cpp )
+
 if( PNG_AVAILABLE)
     add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
     set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testboardshelper.cpp )
