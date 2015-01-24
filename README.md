@@ -175,25 +175,23 @@ net->poolingMaker()->poolingSize(2)->insert();
 
 *Loss layer*
 
-You need to add exactly one loss layer, as the last layer of the net.  You can choose between squared loss and cross-entropy loss:
+You need to add exactly one loss layer, as the last layer of the net.  The following loss layers are available:
 ```c++
 net->squareLossMaker()->insert();
 net->crossEntropyLossMaker()->insert();
-```
-* squared loss works well with a `tanh` last layer
-* cross entropy loss works well with a `sigmoid` last layer
-* if you're not sure, then `tanh` last layer, with squared loss, works well
-
-New: can also choose softmax layer.  If the previous layer has a boardsize of 1, and multiple planes:
-```c++
 net->softMaxLossLayer()->insert();
 ```
-This will assume that the set of planes together represent a probability distribution.  It is trivial to generalize this to larger boardsizes than 1, so if you want this, then please create an issue.
-
-To apply the softmax per-plane, ie previous layer has several output planes, and each plane represents a separate probability distribution:
-```c++
-net->softMaxLossLayer()->perPlane()->insert();
-```
+* if your outputs are categorial, 1-of-N, then softMaxLossLayer is probably what you want
+* otherwise, you can choose square loss, or cross-entropy loss:
+  * squared loss works well with a `tanh` last layer
+  * cross entropy loss works well with a `sigmoid` last layer
+  * if you're not sure, then `tanh` last layer, with squared loss, works well
+* the softmax layer:
+  * creates a probability distribution, ie a set of outputs, that sum to 1, and each lie in the range `0 <= x <= 1`
+  * can create this probability distribution either across all output planes, with a boardsize of 1, ie a single column of output planes
+    * this is the default
+  * or else a per-plane probability distribution, over all positions in each board/image
+    * add option `->perPlane()`
 
 Train
 -----
