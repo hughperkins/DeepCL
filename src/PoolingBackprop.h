@@ -10,9 +10,8 @@
 #define STATIC static
 
 class OpenCLHelper;
-class CLWrapper;
 
-class PoolingPropagate {
+class PoolingBackprop {
 public:
     OpenCLHelper *cl;
 
@@ -39,17 +38,15 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingPropagate
-    // cppfile: PoolingPropagate.cpp
+    // classname: PoolingBackprop
+    // cppfile: PoolingBackprop.cpp
 
-    PoolingPropagate( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
-    VIRTUAL void propagate( int batchSize, float *input, int *selectors, float *output );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getResultsSize(int batchSize);
+    STATIC PoolingBackprop *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize);
+    STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingBackprop( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream );
+    VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *errorsForUpstreamWrapper );
 
     // [[[end]]]
 };

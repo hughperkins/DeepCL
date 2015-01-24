@@ -23,9 +23,13 @@ public:
     PoolingPropagate *poolingPropagateImpl;
 
     float *results;
+    int *selectors;
     float *errorsForUpstream;
+
     CLWrapper *resultsWrapper;
+    CLWrapper *selectorsWrapper;
     CLWrapper *errorsForUpstreamWrapper;
+
     bool resultsCopiedToHost;
     bool errorsForUpstreamCopiedToHost;
 

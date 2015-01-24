@@ -22,8 +22,8 @@ public:
     // cppfile: PoolingPropagateCpu.cpp
 
     PoolingPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    VIRTUAL float *propagate( int batchSize, float *input );
+    VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
+    VIRTUAL void propagate( int batchSize, float *input, int *selectors, float *output );
 
     // [[[end]]]
 };

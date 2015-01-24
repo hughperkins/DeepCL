@@ -42,6 +42,12 @@ VIRTUAL PoolingLayer::~PoolingLayer() {
     if( results != 0 ) {
         delete[] results;
     }
+    if( selectorsWrapper != 0 ) {
+        delete selectorsWrapper;
+    }
+    if( selectors != 0 ) {
+        delete[] selectors;
+    }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
     }
@@ -60,6 +66,12 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     if( results != 0 ) {
         delete[] results;
     }
+    if( selectorsWrapper != 0 ) {
+        delete selectorsWrapper;
+    }
+    if( selectors != 0 ) {
+        delete[] selectors;
+    }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
     }
@@ -70,6 +82,8 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     this->allocatedSize = batchSize;
     results = new float[ getResultsSize() ];
     resultsWrapper = cl->wrap( getResultsSize(), results );
+    selectors = new int[ getResultsSize() ];
+    selectorsWrapper = cl->wrap( getResultsSize(), selectors );
     errorsForUpstream = new float[ previousLayer->getResultsSize() ];
     errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
 }
@@ -91,9 +105,10 @@ VIRTUAL void PoolingLayer::propagate() {
         float *upstreamResults = previousLayer->getResults();
         upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
     }
-    poolingPropagateImpl->propagate( batchSize, upstreamResultsWrapper, resultsWrapper );
+    poolingPropagateImpl->propagate( batchSize, upstreamResultsWrapper, selectorsWrapper, resultsWrapper );
 }
 VIRTUAL void PoolingLayer::backProp( float learningRate ) {
+    // have no weights to backprop to, just need to backprop the errors
 }
 
 

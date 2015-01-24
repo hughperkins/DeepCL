@@ -21,35 +21,53 @@ using namespace std;
 PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) :
         PoolingPropagate( cl, numPlanes, inputBoardSize, poolingSize ) {
 }
-VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-    float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
+VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+    inputWrapper->copyToHost();
 
-    float *output = propagate( batchSize, input );
+    float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
+    int *selectors = new int[ getResultsSize( batchSize ) ];
+    float *output = new float[ getResultsSize( batchSize ) ];
+
+    propagate( batchSize, input, selectors, output );
+
+    int *selectorsHostArray = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
+    memcpy( selectorsHostArray, selectors, sizeof(int) * getResultsSize( batchSize ) );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
     memcpy( outputHostArray, output, sizeof(float) * getResultsSize( batchSize ) );
+
+    selectorsWrapper->copyToDevice();
+    outputWrapper->copyToDevice();
+
+    delete[] selectors;
     delete[] output;
 }
-VIRTUAL float *PoolingPropagateCpu::propagate( int batchSize, float *input ) {
-    float *output = new float[ getResultsSize( batchSize ) ];
+VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *selectors, float *output ) {
+//    float *output = new float[ getResultsSize( batchSize ) ];
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outputRow = 0; outputRow < outputBoardSize; outputRow++ ) {
                 int inputRow = outputRow * poolingSize;
                 for( int outputCol = 0; outputCol < outputBoardSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
+                    int selector = 0;
                     float maxValue = input[ getInputIndex( n, plane, inputRow, inputCol ) ];
                     for( int dx = 0; dx < poolingSize; dx++ ) {
                         for( int dy = 0; dy < poolingSize; dy++ ) {
                             float thisValue = input[ getInputIndex( n, plane, inputRow + dx, inputCol + dy ) ];
-                            maxValue = std::max( maxValue, thisValue );
+                            if( thisValue > maxValue ) {
+                                maxValue = thisValue;
+                                selector = dx * poolingSize + dy;
+                            }
                         }
                     }
-                    output[getResultIndex( n, plane, outputRow, outputCol ) ] = maxValue;
+                    int resultIndex = getResultIndex( n, plane, outputRow, outputCol );
+                    output[ resultIndex ] = maxValue;
+                    selectors[ resultIndex ] = selector;
                 }
             }
         }
     }
-    return output;
+//    return output;
 }
 

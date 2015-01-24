@@ -38,22 +38,23 @@ STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelp
     }
     throw runtime_error("PoolingPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
+VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData ) {
     throw runtime_error("propagate not implemented for this child type");
 }
-VIRTUAL float *PoolingPropagate::propagate( int batchSize, float *input ) {
+VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *selectors, float *output ) {
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
-    float *output = new float[ getResultsSize( batchSize ) ];
+    CLWrapper *selectorsWrapper = cl->wrap( getResultsSize( batchSize ), selectors );
     CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
     throw runtime_error("propagate not implemented for this child type");
 
     inputWrapper->copyToDevice();
-    propagate( batchSize, inputWrapper, outputWrapper );
+    propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    selectorsWrapper->copyToHost();    
     outputWrapper->copyToHost();    
 
     delete outputWrapper;
+    delete selectorsWrapper;
     delete inputWrapper;
-    return output;
 }
 VIRTUAL int PoolingPropagate::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputBoardSize * inputBoardSize;
