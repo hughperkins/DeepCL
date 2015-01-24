@@ -85,14 +85,14 @@ cd ../../build
 ```
 * Then, you can train against MNIST using a net created eg as follows:
 ```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
 net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
 net->poolingMaker()->poolingSize(2)->insert();
 net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
 net->poolingMaker()->poolingSize(3)->insert();
-net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
+net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
 net->softMaxLossMaker()->insert();
-net->setBatchSize(config.batchSize);
+net->setBatchSize(128);
 ```
 * Network details:
   * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
