@@ -66,7 +66,6 @@ Ran against MNIST to validate that the library does approximately what it says i
 | 98.6% +/- 0.1% | 12 | 17 | 2 conv, 2 pooling | 8,16 | 5 | Yes | v0.5 (2) | 0.002 |
 
 * Notes:
-  * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
   * (1) Using `testmnist` or `testmnist-softmax`
   * (2) Using `testmnist-convjs`
 
