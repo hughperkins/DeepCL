@@ -1,0 +1,3 @@
+for commit 6e55034f0b98d7, on aws:
+- 125seconds per epoch
+- after 5 epochs: 86.9% test accuracy

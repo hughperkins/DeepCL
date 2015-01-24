@@ -9,6 +9,8 @@
 
 #include "OpenCLHelper.h"
 
+#include "StatefulTimer.h"
+
 #include "PoolingPropagateCpu.h"
 
 using namespace std;
@@ -44,6 +46,7 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
 }
 VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *selectors, float *output ) {
 //    float *output = new float[ getResultsSize( batchSize ) ];
+    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outputRow = 0; outputRow < outputBoardSize; outputRow++ ) {
@@ -68,6 +71,7 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *s
             }
         }
     }
+    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate end" );
 //    return output;
 }
 

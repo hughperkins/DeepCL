@@ -9,6 +9,7 @@
 #include "OpenCLHelper.h"
 #include "stringhelper.h"
 #include "PoolingPropagateCpu.h"
+#include "PoolingPropagateGpuNaive.h"
 
 #include "PoolingPropagate.h"
 
@@ -27,14 +28,17 @@ PoolingPropagate::PoolingPropagate( OpenCLHelper *cl, int numPlanes, int inputBo
         outputBoardSize( inputBoardSize / poolingSize ) {
 }
 STATIC PoolingPropagate *PoolingPropagate::instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) {
-    return new PoolingPropagateCpu( cl, numPlanes, inputBoardSize, poolingSize );
+    return new PoolingPropagateGpuNaive( cl, numPlanes, inputBoardSize, poolingSize );
 }
 STATIC PoolingPropagate *PoolingPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) {
-    return new PoolingPropagateCpu( cl, numPlanes, inputBoardSize, poolingSize );
+    return new PoolingPropagateGpuNaive( cl, numPlanes, inputBoardSize, poolingSize );
 }
 STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) {
     if( idx == 0 ) {
         return new PoolingPropagateCpu( cl, numPlanes, inputBoardSize, poolingSize );
+    }
+    if( idx == 1 ) {
+        return new PoolingPropagateGpuNaive( cl, numPlanes, inputBoardSize, poolingSize );
     }
     throw runtime_error("PoolingPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
@@ -45,7 +49,6 @@ VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *sele
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
     CLWrapper *selectorsWrapper = cl->wrap( getResultsSize( batchSize ), selectors );
     CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
-    throw runtime_error("propagate not implemented for this child type");
 
     inputWrapper->copyToDevice();
     propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
