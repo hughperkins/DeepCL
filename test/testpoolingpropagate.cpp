@@ -25,12 +25,25 @@ TEST( testpoolingpropagate, basic ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    float *output = poolingPropagate->propagate( batchSize, data );
+    int outputSize = poolingPropagate->getResultsSize( batchSize );
+    int *selectors = new int[outputSize];
+    float *output = new float[outputSize];
+
+    poolingPropagate->propagate( batchSize, data, selectors, output );
+
+    EXPECT_EQ( selectors[0], 3 );
+    EXPECT_EQ( selectors[1], 0 );
+    EXPECT_EQ( selectors[2], 1 );
+    EXPECT_EQ( selectors[3], 2 );
+
     EXPECT_EQ( output[0], 8 );
     EXPECT_EQ( output[1], 5 );
     EXPECT_EQ( output[2], 33 );
     EXPECT_EQ( output[3], 37.4f );
+
     delete poolingPropagate;
+    delete[] selectors;
+    delete[] output;
 }
 
 TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
@@ -52,11 +65,24 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    float *output = poolingPropagate->propagate( batchSize, data );
+    int outputSize = poolingPropagate->getResultsSize( batchSize );
+    int *selectors = new int[outputSize];
+    float *output = new float[outputSize];
+
+    poolingPropagate->propagate( batchSize, data, selectors, output );
+
+    EXPECT_EQ( selectors[0], 2 );
+    EXPECT_EQ( selectors[1], 1 );
+    EXPECT_EQ( selectors[2], 1 );
+    EXPECT_EQ( selectors[3], 2 );
+
     EXPECT_EQ( output[0], 5 );
     EXPECT_EQ( output[1], 8 );
     EXPECT_EQ( output[2], 33 );
     EXPECT_EQ( output[3], 37.4f );
+
     delete poolingPropagate;
+    delete[] selectors;
+    delete[] output;
 }
 
