@@ -10,8 +10,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: Propagate1
-    // cppfile: Propagate1.cpp
 
     Propagate1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
     VIRTUAL ~Propagate1();

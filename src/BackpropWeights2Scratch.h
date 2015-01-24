@@ -13,8 +13,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropWeights2Scratch
-    // cppfile: BackpropWeights2Scratch.cpp
 
     BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2Scratch();

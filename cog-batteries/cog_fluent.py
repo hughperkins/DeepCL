@@ -2,9 +2,10 @@ import cog
 
 def go(classname, ints = [], floats = []):
     for thisint in ints:
-        cog.outl('int ' + thisint + ';')
+        cog.outl('int ' + thisint + ' = 0;')
     for thisfloat in floats:
-        cog.outl('float ' + thisfloat + ';')
+        cog.outl('float ' + thisfloat + ' = 0;')
+    cog.outl('')
     for thisint in ints:
         thisintTitlecase = thisint[0].upper() + thisint[1:]
         cog.outl(classname + ' ' + thisintTitlecase + '( int ' + '_' + thisint + ' ) {')

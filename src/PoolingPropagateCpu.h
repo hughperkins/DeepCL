@@ -18,8 +18,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingPropagateCpu
-    // cppfile: PoolingPropagateCpu.cpp
 
     PoolingPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );

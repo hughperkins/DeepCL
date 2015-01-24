@@ -25,8 +25,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: MultinomialCrossEntropy
-    // cppfile: MultinomialCrossEntropy.cpp
 
     MultinomialCrossEntropy( Layer *previousLayer, MultinomialCrossEntropyMaker const*maker );
     VIRTUAL ~MultinomialCrossEntropy();

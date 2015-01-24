@@ -13,8 +13,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropWeights2Naive
-    // cppfile: BackpropWeights2Naive.cpp
 
     BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2Naive();

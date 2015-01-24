@@ -78,6 +78,9 @@ VIRTUAL bool FullyConnectedLayer::hasResultsWrapper() const {
 VIRTUAL CLWrapper *FullyConnectedLayer::getResultsWrapper() {
     return convolutionalLayer->getResultsWrapper();
 }
+VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
+    return fn;
+}
 VIRTUAL void FullyConnectedLayer::propagate() {
     convolutionalLayer->propagate();
 }

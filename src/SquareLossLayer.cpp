@@ -82,4 +82,10 @@ VIRTUAL void SquareLossLayer::calcErrors( float const*expectedResults ) {
         errors[i] = partialLossByOut * partialOutBySum;
     }
 }
+VIRTUAL int SquareLossLayer::getPersistSize() const {
+    return 0;
+}
+VIRTUAL std::string SquareLossLayer::asString() const {
+    return "SquareLossLayer{}";
+}
 

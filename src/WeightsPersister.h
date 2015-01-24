@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "FileHelper.h"
+
 // whilst this class is portable, the weights files created totally are not (ie: endianness)
 // but okish for now... (since it's not like weights files tend to be shared around much, and
 // if they are, then the quickly-written file created by this could be converted by another

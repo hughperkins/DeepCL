@@ -32,8 +32,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: NeuralNet
-    // cppfile: NeuralNet.cpp
 
     NeuralNet( int numPlanes, int boardSize );
     ~NeuralNet();

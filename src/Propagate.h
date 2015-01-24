@@ -30,8 +30,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: Propagate
-    // cppfile: Propagate.cpp
 
     STATIC Propagate *instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn );
     STATIC Propagate *instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );

@@ -14,8 +14,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropErrorsv2Naive
-    // cppfile: BackpropErrorsv2Naive.cpp
 
     BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     VIRTUAL ~BackpropErrorsv2Naive();

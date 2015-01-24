@@ -18,8 +18,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropWeights2Cpu
-    // cppfile: BackpropWeights2Cpu.cpp
 
     BackpropWeights2Cpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2Cpu();

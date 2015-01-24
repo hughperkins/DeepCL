@@ -57,8 +57,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: Layer
-    // cppfile: Layer.cpp
 
     Layer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL ~Layer();

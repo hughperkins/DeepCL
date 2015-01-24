@@ -26,8 +26,8 @@ def add():
     splitinfile = infile.split('/')
     infilename = splitinfile[ len(splitinfile) - 1 ]
     classname = infilename.replace('.h','')
-    cog.outl( '// classname: ' + classname )
-    cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
+    # cog.outl( '// classname: ' + classname )
+    # cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
     f = open( cppfile, 'r')
     in_multiline_comment = False
     in_header = False;

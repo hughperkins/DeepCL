@@ -30,8 +30,6 @@ public:
     // import cog_addheaders    
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropErrorsv2
-    // cppfile: BackpropErrorsv2.cpp
 
     STATIC BackpropErrorsv2 *instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );

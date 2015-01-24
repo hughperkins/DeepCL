@@ -33,8 +33,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: InputLayer
-    // cppfile: InputLayer.cpp
 
     InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
     VIRTUAL ~InputLayer();

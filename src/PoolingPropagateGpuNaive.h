@@ -21,8 +21,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingPropagateGpuNaive
-    // cppfile: PoolingPropagateGpuNaive.cpp
 
     PoolingPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL ~PoolingPropagateGpuNaive();

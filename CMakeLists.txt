@@ -137,7 +137,7 @@ target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 add_custom_target( 
     clfiles
-    cp ${CMAKE_CURRENT_SOURCE_DIR}/*.cl ${CMAKE_BINARY_DIR}
+    cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
 )
 
 add_dependencies( ClConvolve clfiles )

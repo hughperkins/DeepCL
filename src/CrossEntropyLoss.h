@@ -25,8 +25,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: CrossEntropyLoss
-    // cppfile: CrossEntropyLoss.cpp
 
     CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker const*maker );
     VIRTUAL ~CrossEntropyLoss();

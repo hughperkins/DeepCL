@@ -39,8 +39,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingPropagate
-    // cppfile: PoolingPropagate.cpp
 
     PoolingPropagate( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );

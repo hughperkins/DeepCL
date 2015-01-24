@@ -18,8 +18,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingBackpropCpu
-    // cppfile: PoolingBackpropCpu.cpp
 
     PoolingBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL void backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream );

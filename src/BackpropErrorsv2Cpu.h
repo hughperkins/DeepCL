@@ -17,8 +17,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropErrorsv2Cpu
-    // cppfile: BackpropErrorsv2Cpu.cpp
 
     BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     VIRTUAL ~BackpropErrorsv2Cpu();

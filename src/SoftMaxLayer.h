@@ -33,8 +33,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: SoftMaxLayer
-    // cppfile: SoftMaxLayer.cpp
 
     SoftMaxLayer(  Layer *previousLayer, SoftMaxMaker const *maker  );
     VIRTUAL ~SoftMaxLayer();

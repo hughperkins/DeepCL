@@ -25,8 +25,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: SquareLossLayer
-    // cppfile: SquareLossLayer.cpp
 
     SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker );
     VIRTUAL ~SquareLossLayer();
@@ -34,6 +32,8 @@ public:
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void calcErrors( float const*expectedResults );
+    VIRTUAL int getPersistSize() const;
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 };

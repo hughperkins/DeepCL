@@ -39,8 +39,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingBackprop
-    // cppfile: PoolingBackprop.cpp
 
     STATIC PoolingBackprop *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize);

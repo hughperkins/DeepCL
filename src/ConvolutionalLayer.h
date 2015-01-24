@@ -92,8 +92,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: ConvolutionalLayer
-    // cppfile: ConvolutionalLayer.cpp
 
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     VIRTUAL ~ConvolutionalLayer();

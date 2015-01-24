@@ -28,8 +28,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: BackpropWeights2
-    // cppfile: BackpropWeights2.cpp
 
     STATIC BackpropWeights2 *instance(OpenCLHelper *cl, LayerDimensions dim );
     STATIC BackpropWeights2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );

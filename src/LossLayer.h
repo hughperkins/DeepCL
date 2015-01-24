@@ -17,8 +17,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: LossLayer
-    // cppfile: LossLayer.cpp
 
     LossLayer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL void propagate();

@@ -25,8 +25,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: FullyConnectedLayer
-    // cppfile: FullyConnectedLayer.cpp
 
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const*maker );
     VIRTUAL ~FullyConnectedLayer();
@@ -45,6 +43,7 @@ public:
     VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );
     VIRTUAL std::string asString() const;

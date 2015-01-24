@@ -42,8 +42,6 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-    // classname: PoolingLayer
-    // cppfile: PoolingLayer.cpp
 
     PoolingLayer( Layer *previousLayer, PoolingMaker const*maker );
     VIRTUAL ~PoolingLayer();
