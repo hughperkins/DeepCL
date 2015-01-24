@@ -29,7 +29,7 @@ public:
 //        float stdDev = sqrt( sumSquaredDiff / ( length - 1 ) );
 
         *p_mean = mean;
-        *p_scaling = max( 255-mean, mean );
+        *p_scaling = std::max<float>( 255-mean, mean );
     }
 
     template<typename T>
