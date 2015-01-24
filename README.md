@@ -198,12 +198,12 @@ Train
 
 ```c++
 for( int epoch = 0; epoch < 12; epoch++ ) {
-    net->epochMaker()
-       ->learningRate(0.1)->batchSize(128)->numExamples(60000)
-       ->inputData(mydata)->expectedOutputs(myExpectedResults)
-       ->run();
-    cout << "Loss L " << net->calcLoss(expectedOutputs) << endl;
-    AccuracyHelper::printAccuracy( numImages, numClasses, trainingLabels, net->getResults() );
+    float loss = net->epochMaker()
+       ->learningRate(0.002)->batchSize(128)->numExamples(60000)
+       ->inputData(mydata)
+       ->labels(labels)
+       ->runFromLabels( &trainNumRight );
+    cout << "Loss L " << loss << " number correct: " << trainNumRight << endl;
 }
 ```
 
