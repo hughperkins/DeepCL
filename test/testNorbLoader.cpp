@@ -17,17 +17,58 @@
 
 using namespace std;
 
-TEST( SLOW_testNorbLoader, basic ) {
+TEST( SLOW_testNorbLoader, loadall ) {
     int N;
     int numPlanes;
     int boardSize;
     string norbDataDir = "../data/norb";
 
 //    string trainingFilename = "smallnorb-5x46789x9x18x6x2x96x96-training";
-//    string trainingFilename = "training-shuffled";
-    string trainingFilename = "testing-sampled";
+    string trainingFilename = "training-shuffled";
+//    string trainingFilename = "testing-sampled";
 
     unsigned char *images = NorbLoader::loadImages( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &boardSize );
+    int *labels = NorbLoader::loadLabels( norbDataDir + "/" + trainingFilename + "-cat.mat", N );
+    cout << "labels here, please open testNorbLoader.png, and compare" << endl;
+    for( int i = 0; i < 4; i++ ) {
+        string thisRow = "";
+        for( int j = 0; j < 4; j++ ) {
+            thisRow += toString( labels[i*4+j] ) + " ";
+        }
+        cout << thisRow << endl;
+    }
+#ifdef PNG_AVAILABLE
+    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * 8, boardSize * 4 );
+    for( int imageRow = 0; imageRow < 4; imageRow++ ) {
+        for( int imageCol = 0; imageCol < 4; imageCol++ ) {
+            for( int p = 0; p < 2; p++ ) {
+                for( int i = 0; i < boardSize; i++ ) {
+                    for( int j = 0; j < boardSize; j++ ) {
+                           int value = images[((imageRow*4+imageCol )*2 + p) * boardSize * boardSize + i*boardSize + j];
+                       (*image)[i + imageRow*boardSize][j + (imageCol*2+p)*boardSize] = png::rgb_pixel( value, value, value );
+                    }
+                }
+            }
+        }
+    }
+    FileHelper::remove( "testNorbLoader.png" );
+    image->write( "testNorbLoader.png" );
+#endif
+    delete[] images;
+}
+
+TEST( testNorbLoader, load1000 ) {
+    int N;
+    int numPlanes;
+    int boardSize;
+    string norbDataDir = "../data/norb";
+
+//    string trainingFilename = "smallnorb-5x46789x9x18x6x2x96x96-training";
+    string trainingFilename = "training-shuffled";
+//    string trainingFilename = "testing-sampled";
+
+    unsigned char *images = NorbLoader::loadImages( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &boardSize, 1000 );
+    cout << "N: " << N << endl;
     int *labels = NorbLoader::loadLabels( norbDataDir + "/" + trainingFilename + "-cat.mat", N );
     cout << "labels here, please open testNorbLoader.png, and compare" << endl;
     for( int i = 0; i < 4; i++ ) {

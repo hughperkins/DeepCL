@@ -12,36 +12,40 @@
 #include "FileHelper.h"
 #include "StatefulTimer.h"
 #include "WeightsPersister.h"
+#include "test/NormalizationHelper.h"
 
 using namespace std;
 
-void getStats( float ***boards, int N, int boardSize, float *p_mean, float *p_thismax ) {
-    // get mean of the dataset
-    int count = 0;
-    float thismax = 0;
-   float sum = 0;
-    for( int n = 0; n < N; n++ ) {
-       for( int i = 0; i < boardSize; i++ ) {
-          for( int j = 0; j < boardSize; j++ ) {
-              count++;
-              sum += boards[n][i][j];
-              thismax = max( thismax, boards[n][i][j] );
-          }
-       }
-    }
-    *p_mean = sum / count;
-    *p_thismax = thismax;
-}
+//void getStats( unsigned char *data, int N, int numPlanes, int boardSize, float *p_mean, float *p_stdDev ) {
+//    // get mean of the dataset, and stddev
+////    float thismax = 0;
+//    float sum = 0;
+//    int linearLength = N * numPlanes * boardSize * boardSize;
+//    for( int i = 0; i < linearLength; i++ ) {
+//        int thisValue = (int)data[i];
+//        sum += thisValue;
+//    }
+//    float mean = sum / linearLength;
 
-void normalize( float ***boards, int N, int boardSize, double mean, double thismax ) {
-    for( int n = 0; n < N; n++ ) {
-       for( int i = 0; i < boardSize; i++ ) {
-          for( int j = 0; j < boardSize; j++ ) {
-              boards[n][i][j] = boards[n][i][j] / thismax - 0.1;
-          }
-       }       
-    }
-}
+//    float sumSquaredDiff = 0;
+//    for( int i = 0; i < linearLength; i++ ) {
+//        int thisValue = (int)data[i];
+//        float diffFromMean = thisValue - mean;
+//        float diffSquared = diffFromMean * diffFromMean;
+//        sumSquaredDiff += diffSquared;
+//    }
+//    float stdDev = sqrt( sumSquaredDiff / ( linearLength - 1 ) );
+
+//    *p_mean = mean;
+//    *p_stdDev = stdDev;
+//}
+
+//void normalize( float *data, int N, int numPlanes, int boardSize, double mean, double stdDev ) {
+//    int linearLength = N * numPlanes * boardSize * boardSize;
+//    for( int i = 0; i < linearLength; i++ ) {
+//        data[i] = ( data[i] - mean ) / stdDev;
+//    }
+//}
 
 class Config {
 public:
@@ -65,10 +69,11 @@ public:
     }
 };
 
-float printAccuracy( string name, NeuralNet *net, unsigned char *boards, int *labels, int batchSize, int N, int inputCubeSize ) {
+float printAccuracy( string name, NeuralNet *net, unsigned char *boards, int *labels, int batchSize, int N, int numPlanes, int boardSize, float mean, float stdDev ) {
     int testNumRight = 0;
     net->setBatchSize( batchSize );
     int numBatches = (N + batchSize - 1 ) / batchSize;
+    int inputCubeSize = numPlanes * boardSize * boardSize;
     float *batchData = new float[ batchSize * inputCubeSize ];
     for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;
@@ -82,6 +87,7 @@ float printAccuracy( string name, NeuralNet *net, unsigned char *boards, int *la
         for( int i = 0; i < batchInputSize; i++ ) {
             batchData[i] = thisBatchData[i];
         }
+        NormalizationHelper::normalize( batchData, batchInputSize, mean, stdDev );
         net->propagate( batchData );
         float const*results = net->getResults();
         int thisnumright = net->calcNumRight( &(labels[batchStart]) );
@@ -101,21 +107,18 @@ void go(Config config) {
     int numPlanes;
     int boardSize;
 
-    unsigned char *trainData = NorbLoader::loadImages( config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize );
-    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize );
+    unsigned char *trainData = NorbLoader::loadImages( config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize, config.numTrain );
+    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
     int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
     int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
     timer.timeCheck("after load images");
 
+    const int inputCubeSize = numPlanes * boardSize * boardSize;
     float mean;
-    float thismax;
-//    getStats( trainData, Ntrain, numPlanes, boardSize, &mean, &thismax );
-    mean = 33;
-    thismax = 255;
-    cout << " board stats mean " << mean << " max " << thismax << " boardSize " << boardSize << endl;
-//    normalize( trainData, config.numTrain, numPlanes, boardSize, mean, thismax );
-//    normalize( boardsTest, config.numTest, boardSize, mean, thismax );
-    timer.timeCheck("after normalize");
+    float stdDev;
+    NormalizationHelper::getStats( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+    cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+    timer.timeCheck("after getting stats");
 
     const int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
@@ -136,7 +139,6 @@ void go(Config config) {
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
     int numBatches = ( config.numTrain + batchSize - 1 ) / batchSize;
-    const int inputCubeSize = numPlanes * boardSize * boardSize;
     float *batchData = new float[ config.batchSize * inputCubeSize ];
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
         int trainNumRight = 0;
@@ -155,6 +157,7 @@ void go(Config config) {
             for( int i = 0; i < batchInputSize; i++ ) {
                 batchData[i] = thisBatchData[i];
             }
+            NormalizationHelper::normalize( batchData, batchInputSize, mean, stdDev );
             net->learnBatchFromLabels( config.learningRate, batchData, &(trainLabels[batchStart]) );
             loss += net->calcLossFromLabels( &(trainLabels[batchStart]) );
             numRight += net->calcNumRight( &(trainLabels[batchStart]) );
@@ -164,36 +167,12 @@ void go(Config config) {
         timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
         std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ numToTrain) << "%" << std::endl;
-        printAccuracy( "test", net, testData, testLabels, batchSize, config.numTest, inputCubeSize );
+        printAccuracy( "test", net, testData, testLabels, batchSize, config.numTest, numPlanes, boardSize, mean, stdDev );
         timer.timeCheck("after tests");
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, net );
         }
     }
-
-//    printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest, inputCubeSize );
-//    timer.timeCheck("after tests");
-
-//    int numTestBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
-//    int totalNumber = 0;
-//    int totalNumRight = 0;
-//    net->setBatchSize( config.batchSize );
-//    for( int batch = 0; batch < numTestBatches; batch++ ) {
-//        int batchStart = batch * config.batchSize;
-//        int thisBatchSize = config.batchSize;
-//        if( batch == numTestBatches - 1 ) {
-//            thisBatchSize = config.numTest - batchStart;
-//            net->setBatchSize( thisBatchSize );
-//        }
-//        net->propagate( &(boardsTest[batchStart][0][0]) );
-//        float const*resultsTest = net->getResults();
-//        totalNumber += thisBatchSize;
-//        totalNumRight += net->calcNumRight( &(labelsTest[batchStart]) );
-//        if( config.restartable ) {
-//            WeightsPersister::persistWeights( config.restartableFilename, net );
-//        }
-//    }
-//    cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
 
     delete net;
 

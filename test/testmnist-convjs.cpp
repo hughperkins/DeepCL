@@ -16,6 +16,7 @@
 #include "FileHelper.h"
 #include "StatefulTimer.h"
 #include "WeightsPersister.h"
+#include "test/NormalizationHelper.h"
 
 using namespace std;
 
@@ -43,34 +44,6 @@ void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, flo
    
     *p_boardSize = boardSize;
     *p_N = Nboards;
-}
-
-void getStats( float ***boards, int N, int boardSize, float *p_mean, float *p_thismax ) {
-    // get mean of the dataset
-    int count = 0;
-    float thismax = 0;
-   float sum = 0;
-    for( int n = 0; n < N; n++ ) {
-       for( int i = 0; i < boardSize; i++ ) {
-          for( int j = 0; j < boardSize; j++ ) {
-              count++;
-              sum += boards[n][i][j];
-              thismax = max( thismax, boards[n][i][j] );
-          }
-       }
-    }
-    *p_mean = sum / count;
-    *p_thismax = thismax;
-}
-
-void normalize( float ***boards, int N, int boardSize, double mean, double thismax ) {
-    for( int n = 0; n < N; n++ ) {
-       for( int i = 0; i < boardSize; i++ ) {
-          for( int j = 0; j < boardSize; j++ ) {
-              boards[n][i][j] = boards[n][i][j] / thismax - 0.1;
-          }
-       }       
-    }
 }
 
 class Config {
@@ -143,22 +116,16 @@ void go(Config config) {
     int Ntest;
     loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest );
 
-//    float ***boardsFloat = padBoards( N, boardSize, unpaddedboardsFloat, 2 );
-//    BoardsHelper::deleteBoards( &unpaddedboardsFloat, N, boardSize );
-
-//    float ***boardsTest = padBoards( Ntest, boardSize, unpaddedboardsTest, 2 );
-//    BoardsHelper::deleteBoards( &unpaddedboardsTest, Ntest, boardSize );
-
-//    boardSize = boardSize + 2 * 2;
-
+    const int numPlanes = 1;
+    const int inputCubeSize = numPlanes * boardSize * boardSize;
     float mean;
-    float thismax;
-    getStats( boardsFloat, config.numTrain, boardSize, &mean, &thismax );
+    float stdDev;
+    NormalizationHelper::getStats( &(boardsFloat[0][0][0]), config.numTrain * inputCubeSize, &mean, &stdDev );
 //    mean = 33;
 //    thismax = 255;
-    if( myrank == 0 ) cout << " board stats mean " << mean << " max " << thismax << " boardSize " << boardSize << endl;
-    normalize( boardsFloat, config.numTrain, boardSize, mean, thismax );
-    normalize( boardsTest, config.numTest, boardSize, mean, thismax );
+    if( myrank == 0 ) cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+    NormalizationHelper::normalize( &(boardsFloat[0][0][0]), config.numTrain *  inputCubeSize, mean, stdDev );
+    NormalizationHelper::normalize( &(boardsTest[0][0][0]), config.numTest *  inputCubeSize, mean, stdDev );
     if( myrank == 0 ) timer.timeCheck("after load images");
 
     int numToTrain = config.numTrain;
