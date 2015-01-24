@@ -188,9 +188,9 @@ net->softMaxLossLayer()->insert();
   * if you're not sure, then `tanh` last layer, with squared loss, works well
 * the softmax layer:
   * creates a probability distribution, ie a set of outputs, that sum to 1, and each lie in the range `0 <= x <= 1`
-  * can create this probability distribution either across all output planes, with a boardsize of 1, ie a single column of output planes
+  * can create this probability distribution either across all output planes, with a boardsize of 1
     * this is the default
-  * or else a per-plane probability distribution, over all positions in each board/image
+  * or else a per-plane probability distribution
     * add option `->perPlane()`
 
 Train
