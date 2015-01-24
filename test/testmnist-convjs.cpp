@@ -119,13 +119,13 @@ void go(Config config) {
     const int numPlanes = 1;
     const int inputCubeSize = numPlanes * boardSize * boardSize;
     float mean;
-    float stdDev;
-    NormalizationHelper::getStats( &(boardsFloat[0][0][0]), config.numTrain * inputCubeSize, &mean, &stdDev );
+    float scaling;
+    NormalizationHelper::getStats( &(boardsFloat[0][0][0]), config.numTrain * inputCubeSize, &mean, &scaling );
 //    mean = 33;
 //    thismax = 255;
-    if( myrank == 0 ) cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
-    NormalizationHelper::normalize( &(boardsFloat[0][0][0]), config.numTrain *  inputCubeSize, mean, stdDev );
-    NormalizationHelper::normalize( &(boardsTest[0][0][0]), config.numTest *  inputCubeSize, mean, stdDev );
+    if( myrank == 0 ) cout << " board stats mean " << mean << " scaling " << scaling << endl;
+    NormalizationHelper::normalize( &(boardsFloat[0][0][0]), config.numTrain *  inputCubeSize, mean, scaling );
+    NormalizationHelper::normalize( &(boardsTest[0][0][0]), config.numTest *  inputCubeSize, mean, scaling );
     if( myrank == 0 ) timer.timeCheck("after load images");
 
     int numToTrain = config.numTrain;

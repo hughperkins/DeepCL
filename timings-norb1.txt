@@ -1,0 +1,19 @@
+numtrain=10000, commit af2d5a003d5d8b, aws:
+StatefulTimer readings:
+   layer1     propagate layer 1, START: 2065ms
+   layer1     propagate layer 1, copied to device: 140ms
+   layer1 BackpropWeights2Naive end: 31327ms
+   layer1 BackpropWeights2Naive start: 156ms
+   layer1 Propagate1::propagate after call propagate: 1632ms
+   layer1 backprop(): start, layer 1: 3544ms
+   layer3     propagate layer 3, START: 9671ms
+   layer3 BackpropErrorsv2Naive end: 1095ms
+   layer3 BackpropWeights2Scratch end: 859ms
+   layer3 Propagate3::propagate after call propagate: 429ms
+   layer3 backprop(): start, layer 3: 391ms
+   layer5     propagate layer 5, START: 1222ms
+       loss L: 11886.7
+after epoch 1 51740 ms
+
+
+
