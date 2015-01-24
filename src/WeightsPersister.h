@@ -28,23 +28,29 @@ public:
         int pos = 0;
         for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
             Layer *layer = net->layers[layerIdx];
-            layer->persistToArray( &(target[pos]) );
+            int persistSize = layer->getPersistSize();
+            if( persistSize > 0 ) {
+                layer->persistToArray( &(target[pos]) );
+            }
 //            copyArray( &(target[pos]), layer->getWeights(), layer->getWeightsSize() );
 //            pos += layer->getWeightsSize();
 //            copyArray( &(target[pos]), layer->getBiasWeights(), layer->getBiasWeightsSize() );
-            pos += layer->getPersistSize();
+            pos += persistSize;
         }
     }
     static void copyArrayToNetWeights( float const*source, NeuralNet *net ) {
         int pos = 0;
         for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
         Layer *layer = net->layers[layerIdx];
-            layer->unpersistFromArray( &(source[pos]) );
+            int persistSize = layer->getPersistSize();
+            if( persistSize > 0 ) {
+                layer->unpersistFromArray( &(source[pos]) );
+            }
 //            layer->initWeights( &(source[pos]) );
 //            pos += layer->getWeightsSize();
 //            layer->initBiasWeights( &(source[pos]) );
 //            pos += layer->getBiasWeightsSize();
-            pos += layer->getPersistSize();
+            pos += persistSize;
         }
     }
     static void persistWeights( std::string filepath, NeuralNet *net ) {

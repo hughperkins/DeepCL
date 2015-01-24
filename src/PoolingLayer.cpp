@@ -10,6 +10,7 @@
 #include "Layer.h"
 #include "PoolingLayer.h"
 #include "PoolingPropagate.h"
+#include "PoolingBackprop.h"
 
 using namespace std;
 
@@ -25,7 +26,9 @@ PoolingLayer::PoolingLayer( Layer *previousLayer, PoolingMaker const*maker ) :
         inputBoardSize( previousLayer->getOutputBoardSize() ),
         results(0),
         errorsForUpstream(0),
+        selectors(0),
         resultsWrapper(0),
+        selectorsWrapper(0),
         errorsForUpstreamWrapper(0),
         resultsCopiedToHost(false),
         errorsForUpstreamCopiedToHost(false),
@@ -33,9 +36,11 @@ PoolingLayer::PoolingLayer( Layer *previousLayer, PoolingMaker const*maker ) :
         allocatedSize(0),
         cl( maker->net->getCl() ){
     poolingPropagateImpl = PoolingPropagate::instance( cl, numPlanes, inputBoardSize, poolingSize );
+    poolingBackpropImpl = PoolingBackprop::instance( cl, numPlanes, inputBoardSize, poolingSize );
 }
 VIRTUAL PoolingLayer::~PoolingLayer() {
     delete poolingPropagateImpl;
+    delete poolingBackpropImpl;
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
@@ -88,7 +93,7 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
 }
 VIRTUAL int PoolingLayer::getResultsSize() {
-    return numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
+    return batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
 }
 VIRTUAL float *PoolingLayer::getResults() {
     if( !resultsCopiedToHost ) {
@@ -96,6 +101,37 @@ VIRTUAL float *PoolingLayer::getResults() {
         resultsCopiedToHost = true;
     }
     return results;
+}
+VIRTUAL int PoolingLayer::getResultsSize() const {
+    int outputBoardSize = inputBoardSize / poolingSize;
+    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
+}
+VIRTUAL int PoolingLayer::getOutputBoardSize() const {
+    return inputBoardSize / poolingSize;
+}
+VIRTUAL int PoolingLayer::getOutputPlanes() const {
+    return numPlanes;
+}
+VIRTUAL int PoolingLayer::getPersistSize() const {
+    return 0;
+}
+VIRTUAL bool PoolingLayer::providesErrorsForUpstreamWrapper() const {
+    return true;
+}
+VIRTUAL CLWrapper *PoolingLayer::getErrorsForUpstreamWrapper() {
+    return errorsForUpstreamWrapper;
+}
+VIRTUAL bool PoolingLayer::hasResultsWrapper() const {
+    return true;
+}
+VIRTUAL CLWrapper *PoolingLayer::getResultsWrapper() {
+    return resultsWrapper;
+}
+VIRTUAL float *PoolingLayer::getErrorsForUpstream() {
+    return errorsForUpstream;
+}
+VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
+    return previousLayer->getActivationFunction(); // I guess???
 }
 VIRTUAL void PoolingLayer::propagate() {
     CLWrapper *upstreamResultsWrapper = 0;
@@ -106,9 +142,31 @@ VIRTUAL void PoolingLayer::propagate() {
         upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
     }
     poolingPropagateImpl->propagate( batchSize, upstreamResultsWrapper, selectorsWrapper, resultsWrapper );
+    if( !previousLayer->hasResultsWrapper() ) {
+        delete upstreamResultsWrapper;
+    }
 }
 VIRTUAL void PoolingLayer::backProp( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
+
+    CLWrapper *errorsWrapper = 0;
+    bool weOwnErrorsWrapper = false;
+    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
+        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    } else {
+        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
+        errorsWrapper->copyToDevice();
+        weOwnErrorsWrapper = true;
+    }
+
+    poolingBackpropImpl->backpropErrors( batchSize, errorsWrapper, selectorsWrapper, errorsForUpstreamWrapper );
+
+    if( weOwnErrorsWrapper ) {
+        delete errorsWrapper;
+    }
+}
+VIRTUAL std::string PoolingLayer::asString() const {
+    return "PoolingLayer{ inputPlanes=" + toString(numPlanes) + " inputBoardSize=" + toString(inputBoardSize) + " poolingSize=" + toString( poolingSize ) + " }";
 }
 
 

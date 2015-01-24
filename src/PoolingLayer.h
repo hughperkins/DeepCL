@@ -12,6 +12,7 @@
 class CLKernel;
 class CLWrapper;
 class PoolingPropagate;
+class PoolingBackprop;
 
 class PoolingLayer : public Layer {
 public:
@@ -21,6 +22,7 @@ public:
 
     OpenCLHelper *const cl; // NOT owned by us
     PoolingPropagate *poolingPropagateImpl;
+    PoolingBackprop *poolingBackpropImpl;
 
     float *results;
     int *selectors;
@@ -48,8 +50,19 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();
+    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getPersistSize() const;
+    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
+    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool hasResultsWrapper() const;
+    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );
+    VIRTUAL std::string asString() const;
 
     // [[[end]]]
 };

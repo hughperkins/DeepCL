@@ -112,24 +112,44 @@ float printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, 
     return accuracy;
 }
 
+float ***padBoards( const int N, const int boardSize, float ***unpaddedBoards, const int paddingSize ) {
+    int newBoardSize = boardSize + paddingSize * 2;
+    float ***newBoards = BoardsHelper::allocateBoardsFloats( N, newBoardSize );
+    memset( &(newBoards[0][0][0]), 0, sizeof(float) * N * newBoardSize * newBoardSize );
+    for( int n = 0; n < N; n++ ) {
+        for( int i = 0; i < boardSize; i++ ) {
+            for( int j = 0; j < boardSize; j++ ) {
+                newBoards[n][i+paddingSize][j+paddingSize] = unpaddedBoards[n][i][j];
+            }
+        }
+    }
+    return newBoards;
+}
+
 void go(Config config) {
     Timer timer;
 
     int boardSize;
 
-    float ***boardsFloat = 0;
+    float ***unpaddedboardsFloat = 0;
     int *labels = 0;
 
-    float ***boardsTest = 0;
+    float ***unpaddedboardsTest = 0;
     int *labelsTest = 0;
-    {
-        int N;
-        loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels );
 
-        int Ntest;
-        loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest );
+    int N;
+    loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &unpaddedboardsFloat, &labels );
 
-    }
+    int Ntest;
+    loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &unpaddedboardsTest, &labelsTest );
+
+    float ***boardsFloat = padBoards( N, boardSize, unpaddedboardsFloat, 2 );
+    BoardsHelper::deleteBoards( &unpaddedboardsFloat, N, boardSize );
+
+    float ***boardsTest = padBoards( Ntest, boardSize, unpaddedboardsTest, 2 );
+    BoardsHelper::deleteBoards( &unpaddedboardsTest, Ntest, boardSize );
+
+    boardSize = boardSize + 2 * 2;
 
     float mean;
     float thismax;
@@ -144,9 +164,9 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(6)->filterSize(4)->relu()->biased()->padZeros()->insert();
+    net->convolutionalMaker()->numFilters(6)->filterSize(5)->relu()->biased()->insert();
     net->poolingMaker()->poolingSize(2)->insert();
-    net->convolutionalMaker()->numFilters(16)->filterSize(4)->relu()->biased()->insert();
+    net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
     net->poolingMaker()->poolingSize(2)->insert();
     net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
     net->softMaxLossMaker()->insert();

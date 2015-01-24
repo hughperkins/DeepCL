@@ -77,7 +77,7 @@ Layer *SoftMaxMaker::instance() const {
 }
 Layer *PoolingMaker::instance() const {
     if( previousLayer->getOutputBoardSize() % 2 != 0 ) {
-        throw std::runtime_error("For now, pooling layer only handles inputboardsizes with even number.");
+        throw std::runtime_error("For now, pooling layer only handles inputboardsizes with even number.  You specified: " + toString( previousLayer->getOutputBoardSize() ) );
     }
     Layer *layer = new PoolingLayer( previousLayer, this );
     return layer;
