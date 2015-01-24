@@ -46,8 +46,10 @@ void normalize( float ***boards, int N, int boardSize, double mean, double thism
 class Config {
 public:
     string dataDir = "../data/norb";
-    int numTrain = 1280;
-    int numTest = 1280;
+    string trainSet = "training-shuffled";
+    string testSet = "testing-sampled";
+    int numTrain = 1000;
+    int numTest = 1000;
     int batchSize = 128;
     int numEpochs = 12;
     int numFilters = 16;
@@ -63,10 +65,11 @@ public:
     }
 };
 
-float printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
+float printAccuracy( string name, NeuralNet *net, unsigned char *boards, int *labels, int batchSize, int N, int inputCubeSize ) {
     int testNumRight = 0;
     net->setBatchSize( batchSize );
     int numBatches = (N + batchSize - 1 ) / batchSize;
+    float *batchData = new float[ batchSize * inputCubeSize ];
     for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;
         int thisBatchSize = batchSize;
@@ -74,13 +77,19 @@ float printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, 
             thisBatchSize = N - batchStart;
             net->setBatchSize( thisBatchSize );
         }
-        net->propagate( &(boards[batchStart][0][0]) );
+        const int batchInputSize = thisBatchSize * inputCubeSize;
+        unsigned char *thisBatchData = boards + batchStart * inputCubeSize;
+        for( int i = 0; i < batchInputSize; i++ ) {
+            batchData[i] = thisBatchData[i];
+        }
+        net->propagate( batchData );
         float const*results = net->getResults();
         int thisnumright = net->calcNumRight( &(labels[batchStart]) );
         testNumRight += thisnumright;
     }
     float accuracy = ( testNumRight * 100.0f / N );
     cout << name << " overall: " << testNumRight << "/" << N << " " << accuracy << "%" << endl;
+    delete[] batchData;
     return accuracy;
 }
 
@@ -88,13 +97,14 @@ void go(Config config) {
     Timer timer;
 
     int Ntrain;
+    int Ntest;
     int numPlanes;
     int boardSize;
 
-    int Ntest;
-
-    unsigned char *trainData = NorbLoader::loadImages( config.dataDir, &Ntrain, &numPlanes, &boardSize );
-//    unsigned int *testData = NorbLoader::loadImages( config.dataDir, &Ntest, &numPlanes, &boardSize );
+    unsigned char *trainData = NorbLoader::loadImages( config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize );
+    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize );
+    int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
+    int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
     timer.timeCheck("after load images");
 
     float mean;
@@ -118,66 +128,80 @@ void go(Config config) {
     net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
     net->print();
-/*
+
     if( config.restartable ) {
         WeightsPersister::loadWeights( config.restartableFilename, net );
     }
 
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
+    int numBatches = ( config.numTrain + batchSize - 1 ) / batchSize;
+    const int inputCubeSize = numPlanes * boardSize * boardSize;
+    float *batchData = new float[ config.batchSize * inputCubeSize ];
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
         int trainNumRight = 0;
-        float loss = net->epochMaker()
-            ->learningRate(config.learningRate)
-            ->batchSize(batchSize)
-            ->numExamples(numToTrain)
-            ->inputData(&(boardsFloat[0][0][0]))
-            ->labels(labels)
-            ->runFromLabels( &trainNumRight );
+        int thisBatchSize = batchSize;
+        net->setBatchSize( thisBatchSize );
+        float loss = 0;
+        int numRight = 0;
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = config.numTrain - (numBatches - 1) * batchSize;
+                net->setBatchSize( thisBatchSize );
+            }
+            int batchStart = batchSize * batch;
+            const int batchInputSize = thisBatchSize * inputCubeSize;
+            unsigned char *thisBatchData = trainData + batchStart * inputCubeSize;
+            for( int i = 0; i < batchInputSize; i++ ) {
+                batchData[i] = thisBatchData[i];
+            }
+            net->learnBatchFromLabels( config.learningRate, batchData, &(trainLabels[batchStart]) );
+            loss += net->calcLossFromLabels( &(trainLabels[batchStart]) );
+            numRight += net->calcNumRight( &(trainLabels[batchStart]) );
+        }
         StatefulTimer::dump(true);
         cout << "       loss L: " << loss << endl;
         timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
-        std::cout << "train accuracy: " << trainNumRight << "/" << numToTrain << " " << (trainNumRight * 100.0f/ numToTrain) << "%" << std::endl;
-        printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
+        std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ numToTrain) << "%" << std::endl;
+        printAccuracy( "test", net, testData, testLabels, batchSize, config.numTest, inputCubeSize );
         timer.timeCheck("after tests");
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, net );
         }
     }
 
-    printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
-    timer.timeCheck("after tests");
+//    printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest, inputCubeSize );
+//    timer.timeCheck("after tests");
 
-    int numTestBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
-    int totalNumber = 0;
-    int totalNumRight = 0;
-    net->setBatchSize( config.batchSize );
-    for( int batch = 0; batch < numTestBatches; batch++ ) {
-        int batchStart = batch * config.batchSize;
-        int thisBatchSize = config.batchSize;
-        if( batch == numTestBatches - 1 ) {
-            thisBatchSize = config.numTest - batchStart;
-            net->setBatchSize( thisBatchSize );
-        }
-        net->propagate( &(boardsTest[batchStart][0][0]) );
-        float const*resultsTest = net->getResults();
-        totalNumber += thisBatchSize;
-        totalNumRight += net->calcNumRight( &(labelsTest[batchStart]) );
-        if( config.restartable ) {
-            WeightsPersister::persistWeights( config.restartableFilename, net );
-        }
-    }
-    cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
+//    int numTestBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
+//    int totalNumber = 0;
+//    int totalNumRight = 0;
+//    net->setBatchSize( config.batchSize );
+//    for( int batch = 0; batch < numTestBatches; batch++ ) {
+//        int batchStart = batch * config.batchSize;
+//        int thisBatchSize = config.batchSize;
+//        if( batch == numTestBatches - 1 ) {
+//            thisBatchSize = config.numTest - batchStart;
+//            net->setBatchSize( thisBatchSize );
+//        }
+//        net->propagate( &(boardsTest[batchStart][0][0]) );
+//        float const*resultsTest = net->getResults();
+//        totalNumber += thisBatchSize;
+//        totalNumRight += net->calcNumRight( &(labelsTest[batchStart]) );
+//        if( config.restartable ) {
+//            WeightsPersister::persistWeights( config.restartableFilename, net );
+//        }
+//    }
+//    cout << "test accuracy : " << totalNumRight << "/" << totalNumber << endl;
 
     delete net;
 
-    delete[] labelsTest;
-//    BoardsHelper::deleteBoards( &boardsTest, Ntest, boardSize );
+    delete[] trainData;
+    delete[] testData;
+    delete[] testLabels;
+    delete[] trainLabels;
 
-    delete[] labels;
-//    BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
-*/
 }
 
 int main( int argc, char *argv[] ) {
@@ -186,6 +210,8 @@ int main( int argc, char *argv[] ) {
         cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
         cout << "Possible key=value pairs:" << endl;
         cout << "    datadir=[data directory] (" << config.dataDir << ")" << endl;
+        cout << "    trainset=[training-shuffled|testing-sampled|other set name] (" << config.trainSet << ")" << endl;
+        cout << "    testset=[training-shuffled|testing-sampled|other set name] (" << config.testSet << ")" << endl;
         cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
         cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
@@ -209,6 +235,8 @@ int main( int argc, char *argv[] ) {
            string key = splitkeyval[0];
            string value = splitkeyval[1];
            if( key == "datadir" ) config.dataDir = value;
+           if( key == "trainset" ) config.trainSet = value;
+           if( key == "testset" ) config.testSet = value;
            if( key == "numtrain" ) config.numTrain = atoi(value);
            if( key == "numtest" ) config.numTest = atoi(value);
            if( key == "batchsize" ) config.batchSize = atoi(value);
