@@ -120,7 +120,7 @@ void go(Config config) {
     const int inputCubeSize = numPlanes * boardSize * boardSize;
     float mean;
     float scaling;
-    NormalizationHelper::getStats( &(boardsFloat[0][0][0]), config.numTrain * inputCubeSize, &mean, &scaling );
+    NormalizationHelper::getMeanAndMaxDev( &(boardsFloat[0][0][0]), config.numTrain * inputCubeSize, &mean, &scaling );
 //    mean = 33;
 //    thismax = 255;
     if( myrank == 0 ) cout << " board stats mean " << mean << " scaling " << scaling << endl;

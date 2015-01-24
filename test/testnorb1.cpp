@@ -116,7 +116,7 @@ void go(Config config) {
     const int inputCubeSize = numPlanes * boardSize * boardSize;
     float mean;
     float stdDev;
-    NormalizationHelper::getStats( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+    NormalizationHelper::getMeanAndStdDev( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
     cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
     timer.timeCheck("after getting stats");
 
