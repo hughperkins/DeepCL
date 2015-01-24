@@ -45,13 +45,44 @@ Target usage:
 - 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
 - Also works on MNIST 28 x 28 boards
   - obtained 98.6% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+- Tested on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, gets 90% at the moment, which is not too far away from [LeCun's results](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf).
 
-MNIST results
-=============
+# Validation against standard dataset
+
+## NORB
+
+* Create a network like this:
+```c++
+    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
+    net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->insert();
+    net->poolingMaker()->poolingSize(4)->insert();
+    net->convolutionalMaker()->numFilters(24)->filterSize(6)->relu()->biased()->insert();
+    net->poolingMaker()->poolingSize(3)->insert();
+    net->fullyConnectedMaker()->numPlanes(5)->boardSize(1)->linear()->biased()->insert();
+    net->softMaxLossMaker()->insert();
+```
+* I think this is missing a layer actually, might need some tweaking possibly
+* Current results is about 90% test accuracy, after 20 epochs.  Each epoch is 125seconds
+* To run
+  * First download the [norb datafiles](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) to `data/norb`, and gunzip them
+  * Run pre-processing:
+```bash
+make
+./prepare-norb
+```
+* pre-processing done is:
+  * shuffle training samples
+  * draw 1000 samples from test set, which is enough to determine test accuracy to nearest 0.1%
+* Then run:
+```bash
+./testnorb1
+```
+
+## MNIST
 
 Ran against MNIST to validate that the library does approximately what it says it is doing, and to measure epoch times.
 
-## Results
+### Results
 
 * Following results on MNIST, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
@@ -69,7 +100,7 @@ Ran against MNIST to validate that the library does approximately what it says i
   * (1) Using `testmnist` or `testmnist-softmax`
   * (2) Using `testmnist-convjs`
 
-## Reproducing
+### Reproducing
 
 * First, you need to obtain the MNIST data.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
 ```bash
