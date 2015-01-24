@@ -68,3 +68,10 @@ numlayers=2 numfilters=32 filtersize=7 learningrate=0.0001 padzeros=1 softmax v0
     ep12:98.63%:99.31 ep20:98.71:99.71
     ep20:98.49
 
+-- convjs demo config
+10 epochs, learningrate=0.002:
+   98.91 98.78 98.57 98.69 98.62 98.73 98.35 98.6
+
+12 epochs, learningrate=0.002:
+   98.54 98.74 98.45 98.64
+

@@ -44,7 +44,7 @@ OpenCL library to train deep convolutional networks
 Target usage:
 - 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
 - Also works on MNIST 28 x 28 boards
-  - obtained 98.6% test accuracy on MNIST, using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied
+  - obtained 98.6% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 
 MNIST results
 =============
@@ -57,15 +57,18 @@ Ran against MNIST to validate that the library does approximately what it says i
 
 | Test accuracy| Number epochs | Epoch time (s) | Number filter layers| Filters per layer | Filter size | Pad zeros | Version| Learning rate  |
 |-------|----|---------------|--------------|----------|------------|-------------|---|---------------|
-| 97.5%| 12| 17.2 | 1| 32 | 5  | No  | v0.3 | 0.0001  |
-| 98.1%| 20| 17.2 | 1| 32 | 5 | No| v0.3 | 0.0001     |
-| 98.3%| 12| 80.5 | 2 | 32 | 5 | No | v0.3 | 0.0001   |
-| 98.5%| 15| 80.5 | 2| 32 | 5 | No  | v0.3 | 0.0001   |
-| 98.57% +/- 0.03%| 20| | 3  | 32 | 5 | No | v0.3 | 0.0001  |
-| 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | Yes| v0.3 | 0.0001    |
+| 97.5%| 12| 17.2 | 1| 32 | 5  | No  | v0.3(1) | 0.0001  |
+| 98.1%| 20| 17.2 | 1| 32 | 5 | No| v0.3(1) | 0.0001     |
+| 98.3%| 12| 80.5 | 2 | 32 | 5 | No | v0.3(1) | 0.0001   |
+| 98.5%| 15| 80.5 | 2| 32 | 5 | No  | v0.3(1) | 0.0001   |
+| 98.57% +/- 0.03%| 20| | 3  | 32 | 5 | No | v0.3(1) | 0.0001  |
+| 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | Yes| v0.3(1) | 0.0001    |
+| 98.6% +/- 0.1% | 12 | 17 | 2 conv, 2 pooling | 8,16 | 5 | Yes | v0.5 (2) | 0.002 |
 
 * Notes:
   * +/- values here are [standard error of the mean](http://en.wikipedia.org/wiki/Standard_error)
+  * (1) Using `testmnist` or `testmnist-softmax`
+  * (2) Using `testmnist-convjs`
 
 ## Reproducing
 
@@ -83,19 +86,22 @@ cd ../../build
 ```
 * Then, you can train against MNIST using a net created eg as follows:
 ```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-for( int layer = 0; layer < 2; layer++ ) {
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-}
-net->fullyConnectedLayer()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
+net->poolingMaker()->poolingSize(2)->insert();
+net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
+net->poolingMaker()->poolingSize(3)->insert();
+net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
 net->softMaxLossMaker()->insert();
-net->setBatchSize(128);
+net->setBatchSize(config.batchSize);
 ```
 * Network details:
   * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
     * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
-  * The second line creates a a convolutional layer with 32 feature maps, each with a filter size of 5.  Non-linearity is relu
-  * The next line is a fully connected layer, with one output plane per possible output label, and a boardsize of 1
+  * The second line creates a a convolutional layer with 8 feature maps, each with a filter size of 5.  Non-linearity is relu.  Incoming images are zero-padded, conceptually.
+  * Then a max-pooling layer, with a size/stride of 2.
+  * Another pair of convolutional and pooling layers
+  * A fully connected layer, with one output plane per possible output label, and a boardsize of 1
     * since we are going to use softmax activation, then we specify `linear` for the activation within this layer
   * Finally, we add a SoftMaxLoss layer, which handles:
     * generating appropriate loss signals to drive the network
@@ -103,13 +109,13 @@ net->setBatchSize(128);
     * calculate loss
     * calculate number correct
   * You need to set the batch size before passing in any input data, since this sets up the internal buffer sizes.  Failure to do this will result in seg faults and other nasty errors :-P
-* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist.cpp](test/testmnist.cpp)
-  * You can build and run it as follows, varying the parameters as appropriate:
+* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist-convjs.cpp](test/testmnist-convjs.cpp)
+  * You can build and run it as follows:
 ```bash
-make testmnist
-./testmnist numfilters=32 numlayers=2 filtersize=5 padzeros=1 numepochs=20 learningrate=0.0001
+make testmnist-convjs
+./testmnist-convjs
 ```
-* Note: in v0.3, the executable name was `testmnist-softmax`, simplified in v0.5 to `testmnist`
+* The other rows above were generated using [test/testmnist.cpp](test/testmnist.cpp)
 
 Neural Net API
 ==============
@@ -356,7 +362,7 @@ What's done / what's planned
   * generalization to larger images
   * drop-out
   * Python bindings?
-  * max-pooling?
+  * ~~max-pooling?~~ done
 
 Recent changes
 ==============
@@ -364,11 +370,13 @@ Recent changes
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
 
 * 24th January:
-  * added max-pooling layer
+  * added max-pooling layer (albeit in cpu for now)
   * created draft 'lenet5' implementation, but it's not quite the same, specifically:
     * lenet-5 has RBF layers at the end
     * lenet-5 has multiple of these RBF and fully-connected layers at the end
     * lenet-5 is not using max-pooling but something more like average-pooling, and it has an activation function applied (sigmoid)
+  * added the mnist training config from [convjs](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+  * noticed we are actually in January, not December, and updated the name of the month in this section appropriately :-P
 * 23rd January:
   * created `testmnist-mpi`, to experiment with using mpi to parallelize across multiple compute nodes (which must each have a GPU, which GPUs must ideally each be the same model/specifications)
 * 22nd January:
