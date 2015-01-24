@@ -34,6 +34,8 @@ public:
         std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
 
         int totalLinearSize = N * numPlanes * boardSize * boardSize;
+// note: apparently, next bit wont fit into memory too well :-P, so let's just store as bytes, and convert on the 
+// fly?
 //        float *images = new float[ totalLinearSize ];
 //        for( int i = 0; i < totalLinearSize; i++ ) {
 //            images[i] = imagesDataUnsigned[i];

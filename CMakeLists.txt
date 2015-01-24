@@ -94,6 +94,7 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #
 
 add_executable( testmnist test/testmnist src/stringhelper.cpp )
+add_executable( testnorb1 test/testnorb1.cpp src/stringhelper.cpp )
 
 add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
 add_executable( testmnist-lenet5 test/testmnist-lenet5.cpp src/stringhelper.cpp )
