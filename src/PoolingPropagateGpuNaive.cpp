@@ -38,7 +38,7 @@ VIRTUAL PoolingPropagateGpuNaive::~PoolingPropagateGpuNaive() {
 VIRTUAL void PoolingPropagateGpuNaive::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::propagate start" );
 
-    kernel->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
+    kernel->input( batchSize )->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
     int globalSize = batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
