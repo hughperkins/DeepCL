@@ -20,6 +20,21 @@ public:
     const int inputBoardSize;
     const int poolingSize;
 
+    const int outputBoardSize;
+
+    inline int getInputIndex( int n, int plane, int row, int col ) {
+        return ( ( n
+            * numPlanes + plane )
+            * inputBoardSize + row )
+            * inputBoardSize + col;
+    }
+    inline int getResultIndex( int n, int plane, int row, int col ) {
+        return ( ( n
+            * numPlanes + plane )
+            * outputBoardSize + row )
+            * outputBoardSize + col;
+    }
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
@@ -31,8 +46,10 @@ public:
     STATIC PoolingPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    VIRTUAL void propagate( CLWrapper *inputData, CLWrapper *outputData );
-    VIRTUAL float *propagate( float *input );
+    VIRTUAL void propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
+    VIRTUAL float *propagate( int batchSize, float *input );
+    VIRTUAL int getInputSize( int batchSize );
+    VIRTUAL int getResultsSize(int batchSize);
 
     // [[[end]]]
 };

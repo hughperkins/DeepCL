@@ -23,7 +23,8 @@ PoolingPropagate::PoolingPropagate( OpenCLHelper *cl, int numPlanes, int inputBo
         cl( cl ),
         numPlanes( numPlanes ),
         inputBoardSize( inputBoardSize ),
-        poolingSize( poolingSize ) {
+        poolingSize( poolingSize ),
+        outputBoardSize( inputBoardSize / poolingSize ) {
 }
 STATIC PoolingPropagate *PoolingPropagate::instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) {
     return new PoolingPropagateCpu( cl, numPlanes, inputBoardSize, poolingSize );
@@ -37,23 +38,28 @@ STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelp
     }
     throw runtime_error("PoolingPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void PoolingPropagate::propagate( CLWrapper *inputData, CLWrapper *outputData ) {
+VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
     throw runtime_error("propagate not implemented for this child type");
 }
-VIRTUAL float *PoolingPropagate::propagate( float *input ) {
-    CLWrapper *inputWrapper = cl->wrap( numPlanes * inputBoardSize * inputBoardSize, input );
-    int outputSize = numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
-    float *output = new float[ outputSize ];
-    CLWrapper *outputWrapper = cl->wrap( outputSize, output );
+VIRTUAL float *PoolingPropagate::propagate( int batchSize, float *input ) {
+    CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
+    float *output = new float[ getResultsSize( batchSize ) ];
+    CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
     throw runtime_error("propagate not implemented for this child type");
 
     inputWrapper->copyToDevice();
-    propagate( inputWrapper, outputWrapper );
+    propagate( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();    
 
     delete outputWrapper;
     delete inputWrapper;
     return output;
+}
+VIRTUAL int PoolingPropagate::getInputSize( int batchSize ) {
+    return batchSize * numPlanes * inputBoardSize * inputBoardSize;
+}
+VIRTUAL int PoolingPropagate::getResultsSize(int batchSize) {
+    return batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
 }
 
 
