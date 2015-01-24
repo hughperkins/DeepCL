@@ -6,7 +6,9 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
+#include "OpenCLHelper.h"
 #include "PoolingBackprop.h"
 
 #include "PoolingBackpropCpu.h"
@@ -18,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingBackpropCpu::PoolingBackpropCpu( int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingBackprop( numPlanes, inputBoardSize, poolingSize ) {
+PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) :
+        PoolingBackprop( cl, numPlanes, inputBoardSize, poolingSize ) {
 }
 VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream ) {
     memset( errorsForUpstream, 0, sizeof( float ) * getInputSize( batchSize ) );
@@ -34,7 +36,8 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, 
                     int selector = selectors[resultIndex];
                     int drow = selector / poolingSize;
                     int dcol = selector % poolingSize;
-                    errorsForUpstream[ 
+                    int inputIndex = getInputIndex( n, plane, inputRow + drow, inputCol + dcol );
+                    errorsForUpstream[ inputIndex ] = error;
                 }
             }
         }
@@ -49,7 +52,7 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *error
     int *selectors = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
     float *errorsForUpstream = new float[ getInputSize( batchSize ) ];
 
-    propagate( batchSize, errors, selectors, errorsForUpstream );
+    backpropErrors( batchSize, errors, selectors, errorsForUpstream );
 
     float *errorsForUpstreamHostArray = reinterpret_cast<float *>( errorsForUpstreamWrapper->getHostArray() );
     memcpy( errorsForUpstreamHostArray, errorsForUpstream, sizeof(float) * getInputSize( batchSize ) );

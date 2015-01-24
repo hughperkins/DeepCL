@@ -10,6 +10,7 @@
 #define STATIC static
 
 class OpenCLHelper;
+class CLWrapper;
 
 class PoolingBackprop {
 public:
@@ -45,6 +46,8 @@ public:
     STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize);
     STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     PoolingBackprop( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    VIRTUAL int getInputSize( int batchSize );
+    VIRTUAL int getResultsSize(int batchSize);
     VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *errorsForUpstreamWrapper );
 

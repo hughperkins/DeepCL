@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "PoolingBackprop.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -19,7 +21,7 @@ public:
     // classname: PoolingBackpropCpu
     // cppfile: PoolingBackpropCpu.cpp
 
-    PoolingBackpropCpu( int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL void backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );

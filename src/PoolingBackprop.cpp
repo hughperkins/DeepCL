@@ -10,6 +10,8 @@
 #include "OpenCLHelper.h"
 #include "stringhelper.h"
 
+#include "PoolingBackpropCpu.h"
+
 #include "PoolingBackprop.h"
 
 using namespace std;
@@ -35,7 +37,14 @@ PoolingBackprop::PoolingBackprop( OpenCLHelper *cl, int numPlanes, int inputBoar
         cl( cl ),
         numPlanes( numPlanes ),
         inputBoardSize( inputBoardSize ),
-        poolingSize( poolingSize ) {
+        poolingSize( poolingSize ),
+        outputBoardSize( inputBoardSize / poolingSize ) {
+}
+VIRTUAL int PoolingBackprop::getInputSize( int batchSize ) {
+    return batchSize * numPlanes * inputBoardSize * inputBoardSize;
+}
+VIRTUAL int PoolingBackprop::getResultsSize(int batchSize) {
+    return batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
 }
 VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream ) {
     CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
