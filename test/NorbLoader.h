@@ -6,6 +6,7 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <cstring>
 
 #include "stringhelper.h"
 #include "FileHelper.h"
@@ -15,8 +16,7 @@ using namespace std;
 class NorbLoader {
 public:
     // you need to delete[] this yourself, after use
-    static unsigned char *loadTrainingImages( std::string dirpath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
-        string filepath = dirpath + "/" + "smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat";
+    static unsigned char *loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
         long imagesFilesize;
         char *imagesDataSigned = FileHelper::readBinary( filepath, &imagesFilesize );
         unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
@@ -32,24 +32,65 @@ public:
         int boardSize = imagesDataInt[4];
         int boardSizeRepeated = imagesDataInt[5];
         std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
+        checkSame( "boardSize", boardSize, boardSizeRepeated );
 
         int totalLinearSize = N * numPlanes * boardSize * boardSize;
-// note: apparently, next bit wont fit into memory too well :-P, so let's just store as bytes, and convert on the 
-// fly?
-//        float *images = new float[ totalLinearSize ];
-//        for( int i = 0; i < totalLinearSize; i++ ) {
-//            images[i] = imagesDataUnsigned[i];
-//        }
+        unsigned char*images = new unsigned char[ totalLinearSize ];
+        memcpy( images, imagesDataUnsigned + 6 * 4, sizeof(unsigned char) * totalLinearSize );
+        delete[] imagesDataUnsigned;
 
         *p_N = N;
         *p_numPlanes = numPlanes;
         *p_boardSize = boardSize;
-        return imagesDataUnsigned;
-//        return images;
+        return images;
     }
     // you need to delete[] this yourself, after use
-    static int *loadTrainingLabels( std::string dirpath ) {
-        std::string filepath = dirpath + "/" + "smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat";
+    static int *loadLabels( std::string filepath, int checkN ) {
+        long imagesFilesize;
+        char *imagesDataSigned = FileHelper::readBinary( filepath, &imagesFilesize );
+        unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
+        unsigned int *imagesDataInt = reinterpret_cast< unsigned int *>( imagesDataSigned );
+        int magic = imagesDataInt[0];
+        std::cout << "magic: " << magic << std::endl;
+        if( magic != 0x1e3d4c54 ) {
+            throw std::runtime_error("magic value doesnt match expections: " + toString(magic) + " expected: " + toString( 0x1e3d4c54 ) );
+        }
+        int ndim = imagesDataInt[1];
+        int N = imagesDataInt[2];
+//        int d2 = imagesDataInt[3];
+        checkSame( "ndim", 1, ndim );
+        checkSame( "N", checkN, N );
+//        checkSame( "d2", 1, d2 );
+        
+        int totalLinearSize = N;
+        int *labels = new int[ N ];
+        memcpy( labels, imagesDataInt + 5, sizeof(int) * totalLinearSize );
+        delete[] imagesDataUnsigned;
+
+        return labels;
+    }
+    static void writeImages( std::string filepath, unsigned char *images, int N, int numPlanes, int boardSize ) {
+        int totalLinearSize = N * numPlanes * boardSize * boardSize;
+
+        long imagesFilesize = totalLinearSize + 6 * 4; // magic, plus num dimensions, plus 4 dimensions
+        char *imagesDataSigned = new char[ imagesFilesize ];
+        unsigned int *imagesDataInt = reinterpret_cast< unsigned int *>( imagesDataSigned );
+        unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
+        imagesDataInt[0] = 0x1e3d4c55;
+        imagesDataInt[1] = 4;
+        imagesDataInt[2] = N;
+        imagesDataInt[3] = numPlanes;
+        imagesDataInt[4] = boardSize;
+        imagesDataInt[5] = boardSize;
+        memcpy( imagesDataUnsigned + 6 * sizeof(int), images, totalLinearSize * sizeof( unsigned char ) );
+        FileHelper::writeBinary( filepath, imagesDataSigned, imagesFilesize );
+    }
+
+protected:
+    static void checkSame( std::string name, int one, int two ) {
+        if( one != two ) {
+            throw runtime_error( "Error, didnt match: " + name + " " + toString(one) + " != " + toString(two ) );
+        }
     }
 };
 

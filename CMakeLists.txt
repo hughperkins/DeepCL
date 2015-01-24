@@ -93,6 +93,8 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
+add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
+
 add_executable( testmnist test/testmnist src/stringhelper.cpp )
 add_executable( testnorb1 test/testnorb1.cpp src/stringhelper.cpp )
 
@@ -113,10 +115,11 @@ if( MPI_AVAILABLE )
     target_link_libraries(testmnist-convjs ${MPI_CXX_LIBRARIES})
 endif()
 
-if( PNG_AVAILABLE)
-    add_executable( printMnist test/printMnist.cpp stringhelper.cpp )
+if( LIBPNGPP_AVAILABLE)
+    add_definitions(-DPNG_AVAILABLE)
+    add_executable( printMnist test/printMnist.cpp src/stringhelper.cpp )
     set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testboardshelper.cpp )
-endif(PNG_AVAILABLE)
+endif(LIBPNGPP_AVAILABLE)
 
 add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
 target_link_libraries( gtest pthread)

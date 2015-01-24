@@ -6,7 +6,9 @@
 
 #include <iostream>
 
+#ifdef PNG_AVAILABLE
 #include "png++/png.hpp"
+#endif //PNG_AVAILABLE
 
 #include "test/NorbLoader.h"
 
@@ -19,20 +21,34 @@ TEST( SLOW_testNorbLoader, basic ) {
     int N;
     int numPlanes;
     int boardSize;
-    unsigned char *images = NorbLoader::loadTrainingImages( "../data/norb", &N, &numPlanes, &boardSize );
-    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * 2, boardSize * 2 );
-    for( int imageRow = 0; imageRow < 2; imageRow++ ) {
-        for( int imageCol = 0; imageCol < 2; imageCol++ ) {
-            for( int i = 0; i < boardSize; i++ ) {
-                for( int j = 0; j < boardSize; j++ ) {
-                   int value = images[(imageRow*2+imageCol) * boardSize * boardSize + i*boardSize + j];
-                   (*image)[i + imageRow*boardSize][j + imageCol*boardSize] = png::rgb_pixel( value, value, value );
+    string norbDataDir = "../data/norb";
+    unsigned char *images = NorbLoader::loadImages( norbDataDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat", &N, &numPlanes, &boardSize );
+    int *labels = NorbLoader::loadLabels( norbDataDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat", N );
+    cout << "labels here, please open testNorbLoader.png, and compare" << endl;
+    for( int i = 0; i < 4; i++ ) {
+        string thisRow = "";
+        for( int j = 0; j < 4; j++ ) {
+            thisRow += toString( labels[i*4+j] ) + " ";
+        }
+        cout << thisRow << endl;
+    }
+#ifdef PNG_AVAILABLE
+    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * 8, boardSize * 4 );
+    for( int imageRow = 0; imageRow < 4; imageRow++ ) {
+        for( int imageCol = 0; imageCol < 4; imageCol++ ) {
+            for( int p = 0; p < 2; p++ ) {
+                for( int i = 0; i < boardSize; i++ ) {
+                    for( int j = 0; j < boardSize; j++ ) {
+                           int value = images[((imageRow*4+imageCol )*2 + p) * boardSize * boardSize + i*boardSize + j];
+                       (*image)[i + imageRow*boardSize][j + (imageCol*2+p)*boardSize] = png::rgb_pixel( value, value, value );
+                    }
                 }
             }
         }
     }
-    remove( "testNorbLoader.png" );
+    FileHelper::remove( "testNorbLoader.png" );
     image->write( "testNorbLoader.png" );
+#endif
     delete[] images;
 }
 

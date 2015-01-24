@@ -93,8 +93,8 @@ void go(Config config) {
 
     int Ntest;
 
-    unsigned char *trainData = NorbLoader::loadTrainingImages( config.dataDir, &Ntrain, &numPlanes, &boardSize );
-//    unsigned int *testData = NorbLoader::loadTestingImages( config.dataDir, &Ntest, &numPlanes, &boardSize );
+    unsigned char *trainData = NorbLoader::loadImages( config.dataDir, &Ntrain, &numPlanes, &boardSize );
+//    unsigned int *testData = NorbLoader::loadImages( config.dataDir, &Ntest, &numPlanes, &boardSize );
     timer.timeCheck("after load images");
 
     float mean;
