@@ -7,7 +7,7 @@
 // every plane is independent
 // every example is independent
 // so, globalid can be: [n][plane][outputRow][outputCol]
-kernel void propagateNaive( global const float *input, global int *selectors, global float *output ) {
+kernel void propagateNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {
     const int globalId = get_global_id(0);
 
     const int intraBoardOffset = globalId % gOutputBoardSizeSquared;
@@ -17,6 +17,10 @@ kernel void propagateNaive( global const float *input, global int *selectors, gl
     const int board2dIdx = globalId / gOutputBoardSizeSquared;
     const int plane = board2dIdx % gNumPlanes;
     const int n = board2dIdx / gNumPlanes;
+
+    if( n >= batchSize ) {
+        return;
+    }
 
     const int inputRow = outputRow * gPoolingSize;
     const int inputCol = outputCol * gPoolingSize;
