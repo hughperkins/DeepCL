@@ -9,9 +9,11 @@ Contents
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [ClConvolve](#clconvolve)
-- [MNIST results](#mnist-results)
-  - [Results](#results)
-  - [Reproducing](#reproducing)
+- [Validation against standard datasets](#validation-against-standard-datasets)
+  - [NORB](#norb)
+  - [MNIST](#mnist)
+    - [Results](#results)
+    - [Reproducing](#reproducing)
 - [Neural Net API](#neural-net-api)
   - [Create a net](#create-a-net)
   - [Add some layers](#add-some-layers)
@@ -47,7 +49,7 @@ Target usage:
   - obtained 98.6% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 - Tested on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, gets 90% at the moment, which is not too far away from [LeCun's results](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf).
 
-# Validation against standard dataset
+# Validation against standard datasets
 
 ## NORB
 
