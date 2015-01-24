@@ -97,7 +97,7 @@ net->setBatchSize(128);
 * Network details:
   * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
     * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
-  * The second line creates a a convolutional layer with 8 feature maps, each with a filter size of 5.  Non-linearity is relu.  Incoming images are zero-padded, conceptually.
+  * The second line creates a a convolutional layer with 8 feature maps, each with a filter size of 5.  Non-linearity is relu.  Incoming images are zero-padded.
   * Then a max-pooling layer, with a size/stride of 2.
   * Another pair of convolutional and pooling layers
   * A fully connected layer, with one output plane per possible output label, and a boardsize of 1
