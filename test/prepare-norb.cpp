@@ -93,7 +93,7 @@ void prepareTest( string norbDir, int numSamples ) {
 int main( int argc, char *argv[] ) {
     string norbDir = "../data/norb";
 
-//    prepareTraining( norbDir );
+    prepareTraining( norbDir );
     prepareTest( norbDir, 1000 );
 
     return 0;
