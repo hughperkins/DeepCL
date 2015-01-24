@@ -16,54 +16,18 @@
 
 using namespace std;
 
-//void getStats( unsigned char *data, int N, int numPlanes, int boardSize, float *p_mean, float *p_stdDev ) {
-//    // get mean of the dataset, and stddev
-////    float thismax = 0;
-//    float sum = 0;
-//    int linearLength = N * numPlanes * boardSize * boardSize;
-//    for( int i = 0; i < linearLength; i++ ) {
-//        int thisValue = (int)data[i];
-//        sum += thisValue;
-//    }
-//    float mean = sum / linearLength;
-
-//    float sumSquaredDiff = 0;
-//    for( int i = 0; i < linearLength; i++ ) {
-//        int thisValue = (int)data[i];
-//        float diffFromMean = thisValue - mean;
-//        float diffSquared = diffFromMean * diffFromMean;
-//        sumSquaredDiff += diffSquared;
-//    }
-//    float stdDev = sqrt( sumSquaredDiff / ( linearLength - 1 ) );
-
-//    *p_mean = mean;
-//    *p_stdDev = stdDev;
-//}
-
-//void normalize( float *data, int N, int numPlanes, int boardSize, double mean, double stdDev ) {
-//    int linearLength = N * numPlanes * boardSize * boardSize;
-//    for( int i = 0; i < linearLength; i++ ) {
-//        data[i] = ( data[i] - mean ) / stdDev;
-//    }
-//}
-
 class Config {
 public:
     string dataDir = "../data/norb";
     string trainSet = "training-shuffled";
     string testSet = "testing-sampled";
-    int numTrain = 1000;
+    int numTrain = 24300;
     int numTest = 1000;
     int batchSize = 128;
-    int numEpochs = 12;
-    int numFilters = 16;
-    int numLayers = 1;
-    int padZeros = 0;
-    int filterSize = 5;
+    int numEpochs = 20;
     int restartable = 0;
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
-    int biased = 1;
     string resultsFilename = "results.txt";
     Config() {
     }
@@ -127,6 +91,7 @@ void go(Config config) {
     net->poolingMaker()->poolingSize(4)->insert();
     net->convolutionalMaker()->numFilters(24)->filterSize(6)->relu()->biased()->insert();
     net->poolingMaker()->poolingSize(3)->insert();
+    net->convolutionalMaker()->numFilters(80)->filterSize(6)->relu()->biased()->insert();
     net->fullyConnectedMaker()->numPlanes(5)->boardSize(1)->linear()->biased()->insert();
     net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
@@ -195,11 +160,6 @@ int main( int argc, char *argv[] ) {
         cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
         cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
-        cout << "    numlayers=[number convolutional layers] (" << config.numLayers << ")" << endl;
-        cout << "    numfilters=[number filters] (" << config.numFilters << ")" << endl;
-        cout << "    filtersize=[filter size] (" << config.filterSize << ")" << endl;
-        cout << "    biased=[0|1] (" << config.biased << ")" << endl;
-        cout << "    padzeros=[0|1] (" << config.padZeros << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
@@ -220,11 +180,6 @@ int main( int argc, char *argv[] ) {
            if( key == "numtest" ) config.numTest = atoi(value);
            if( key == "batchsize" ) config.batchSize = atoi(value);
            if( key == "numepochs" ) config.numEpochs = atoi(value);
-           if( key == "biased" ) config.biased = atoi(value);
-           if( key == "numfilters" ) config.numFilters = atoi(value);
-           if( key == "numlayers" ) config.numLayers = atoi(value);
-           if( key == "padzeros" ) config.padZeros = atoi(value);
-           if( key == "filtersize" ) config.filterSize = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);
            if( key == "restartablefilename" ) config.restartableFilename = value;
