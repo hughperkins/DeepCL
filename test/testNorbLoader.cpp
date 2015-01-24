@@ -22,8 +22,13 @@ TEST( SLOW_testNorbLoader, basic ) {
     int numPlanes;
     int boardSize;
     string norbDataDir = "../data/norb";
-    unsigned char *images = NorbLoader::loadImages( norbDataDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat", &N, &numPlanes, &boardSize );
-    int *labels = NorbLoader::loadLabels( norbDataDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat", N );
+
+//    string trainingFilename = "smallnorb-5x46789x9x18x6x2x96x96-training";
+//    string trainingFilename = "training-shuffled";
+    string trainingFilename = "testing-sampled";
+
+    unsigned char *images = NorbLoader::loadImages( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &boardSize );
+    int *labels = NorbLoader::loadLabels( norbDataDir + "/" + trainingFilename + "-cat.mat", N );
     cout << "labels here, please open testNorbLoader.png, and compare" << endl;
     for( int i = 0; i < 4; i++ ) {
         string thisRow = "";

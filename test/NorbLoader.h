@@ -85,6 +85,21 @@ public:
         memcpy( imagesDataUnsigned + 6 * sizeof(int), images, totalLinearSize * sizeof( unsigned char ) );
         FileHelper::writeBinary( filepath, imagesDataSigned, imagesFilesize );
     }
+    static void writeLabels( std::string filepath, int *labels, int N ) {
+        int totalLinearSize = N;
+
+        long imagesFilesize = totalLinearSize * 4 + 5 * 4; // magic, plus num dimensions, plus 3 dimensions
+        char *imagesDataSigned = new char[ imagesFilesize ];
+        unsigned int *imagesDataInt = reinterpret_cast< unsigned int *>( imagesDataSigned );
+        unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
+        imagesDataInt[0] = 0x1e3d4c54;
+        imagesDataInt[1] = 1;
+        imagesDataInt[2] = N;
+        imagesDataInt[3] = 1;
+        imagesDataInt[4] = 1;
+        memcpy( imagesDataUnsigned + 5 * sizeof(int), labels, totalLinearSize * sizeof( int ) );
+        FileHelper::writeBinary( filepath, imagesDataSigned, imagesFilesize );
+    }
 
 protected:
     static void checkSame( std::string name, int one, int two ) {
