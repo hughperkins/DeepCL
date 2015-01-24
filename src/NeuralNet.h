@@ -41,6 +41,7 @@ public:
     STATIC NeuralNetMould *maker();
     FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
+    PoolingMaker *poolingMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();

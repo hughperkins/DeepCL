@@ -83,5 +83,17 @@ VIRTUAL float *PoolingLayer::getResults() {
     }
     return results;
 }
+VIRTUAL void PoolingLayer::propagate() {
+    CLWrapper *upstreamResultsWrapper = 0;
+    if( previousLayer->hasResultsWrapper() ) {
+        upstreamResultsWrapper = previousLayer->getResultsWrapper();
+    } else {
+        float *upstreamResults = previousLayer->getResults();
+        upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
+    }
+    poolingPropagateImpl->propagate( batchSize, upstreamResultsWrapper, resultsWrapper );
+}
+VIRTUAL void PoolingLayer::backProp( float learningRate ) {
+}
 
 

@@ -50,7 +50,7 @@ public:
         return minvalue;
     }
 
-    static void writeBoardToPng( string filename, int **board, int boardSize ) {
+    static void writeBoardToPng( std::string filename, int **board, int boardSize ) {
         int maxvalue = getBoardMax( board, boardSize );
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize, boardSize );
         for( int i = 0; i < boardSize; i++ ) {
@@ -63,13 +63,13 @@ public:
         delete image;
     }
 
-    static void writeBoardsToPng( string filename, int ***boards, int numBoards, int boardSize ) {
+    static void writeBoardsToPng( std::string filename, int ***boards, int numBoards, int boardSize ) {
         int cols = sqrt( numBoards );
         if( cols * cols < numBoards ) {
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+        std::cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << std::endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 
@@ -80,7 +80,7 @@ public:
                 }
 //                cout << "board at x " << x << " y " << y << endl;
                 int **board = boards[x*rows + y];
-                int maxvalue = max( 1, getBoardMax( board, boardSize ) );
+                int maxvalue = std::max( 1, getBoardMax( board, boardSize ) );
                 for( int i = 0; i < boardSize; i++ ) {
                     for( int j = 0; j < boardSize; j++ ) {
                        (*image)[x*boardSize + i][y*boardSize + j] = png::rgb_pixel( board[i][j] * 255 / maxvalue, board[i][j] * 255 / maxvalue, board[i][j] * 255 / maxvalue );
@@ -94,13 +94,13 @@ public:
         delete image;
     }
 
-    static void writeBoardsToPng( string filename, float ***boards, int numBoards, int boardSize ) {
+    static void writeBoardsToPng( std::string filename, float ***boards, int numBoards, int boardSize ) {
         int cols = sqrt( numBoards );
         if( cols * cols < numBoards ) {
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+        std::cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << std::endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 
@@ -111,7 +111,7 @@ public:
                 }
 //                cout << "board at x " << x << " y " << y << endl;
                 float **board = boards[x*rows + y];
-                float maxvalue = max( 1.0f, getBoardMax( board, boardSize ) );
+                float maxvalue = std::max( 1.0f, getBoardMax( board, boardSize ) );
                 for( int i = 0; i < boardSize; i++ ) {
                     for( int j = 0; j < boardSize; j++ ) {
                        (*image)[x*boardSize + i][y*boardSize + j] = png::rgb_pixel( board[i][j] * 255 / maxvalue, board[i][j] * 255 / maxvalue, board[i][j] * 255 / maxvalue );
@@ -125,13 +125,13 @@ public:
         delete image;
     }
 
-    static void writeBoardsToPng( string filename, float const*boards, int numBoards, int boardSize ) {
+    static void writeBoardsToPng( std::string filename, float const*boards, int numBoards, int boardSize ) {
         int cols = sqrt( numBoards );
         if( cols * cols < numBoards ) {
             cols++;
         }
         int rows = ( numBoards + cols - 1 ) / cols;
-        cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << endl;
+        std::cout << "numBoards " << numBoards << " rows " << rows << " cols " << cols << std::endl;
         png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( boardSize * rows, boardSize * cols );
 
 

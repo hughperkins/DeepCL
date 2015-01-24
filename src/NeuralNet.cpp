@@ -56,6 +56,9 @@ FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
 ConvolutionalMaker *NeuralNet::convolutionalMaker() {
     return new ConvolutionalMaker( this, getLastLayer() );
 }
+PoolingMaker *NeuralNet::poolingMaker() {
+    return new PoolingMaker( this, getLastLayer() );
+}
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
 }

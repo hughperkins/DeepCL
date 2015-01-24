@@ -22,8 +22,8 @@ class LayerMaker {
 public:
     Layer *previousLayer;
     NeuralNet *net;
-    virtual int getBoardSize() const = 0;
-    virtual int getNumPlanes() const = 0;
+    virtual int getOutputBoardSize() const = 0;
+    virtual int getOutputPlanes() const = 0;
     virtual int getBiased() const = 0;
     virtual ActivationFunction const*getActivationFunction() const {
         throw std::runtime_error("getactivationfunction not impelmented for this maker type");
@@ -48,10 +48,10 @@ public:
             _numPlanes(numPlanes),
             _boardSize(boardSize) {
     }
-    virtual int getBoardSize() const {
+    virtual int getOutputBoardSize() const {
         return _boardSize;
     }
-    virtual int getNumPlanes() const {
+    virtual int getOutputPlanes() const {
         return _numPlanes;
     }
     virtual int getBiased() const {
@@ -72,10 +72,9 @@ public:
         this->_poolingSize = _poolingSize;
         return this;
     }
-    virtual int getBoardSize() const;
-    virtual int getNumPlanes() const;
+    virtual int getOutputBoardSize() const;
+    virtual int getOutputPlanes() const;
     virtual int getBiased() const;
-    virtual Layer *insert();
     virtual Layer *instance() const;
 };
 
@@ -85,8 +84,8 @@ public:
     LossLayerMaker( NeuralNet *net, Layer *previousLayer ) :
         LayerMaker( net, previousLayer ) {
     }
-    virtual int getBoardSize() const;
-    virtual int getNumPlanes() const;
+    virtual int getOutputBoardSize() const;
+    virtual int getOutputPlanes() const;
     virtual int getBiased() const;
 };
 
@@ -137,10 +136,10 @@ public:
         _boardSize(0),
         _activationFunction( new TanhActivation() ) {
     }
-    virtual int getBoardSize() const {
+    virtual int getOutputBoardSize() const {
         return _boardSize;
     }
-    virtual int getNumPlanes() const {
+    virtual int getOutputPlanes() const {
         return _numPlanes;
     }
     virtual int getBiased() const {
@@ -203,8 +202,8 @@ public:
             _padZeros(false),
         _activationFunction( new TanhActivation() ) {
     }
-    virtual int getBoardSize() const;
-    virtual int getNumPlanes() const {
+    virtual int getOutputBoardSize() const;
+    virtual int getOutputPlanes() const {
         return _numFilters;
     }
     virtual int getBiased() const {

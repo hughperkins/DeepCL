@@ -15,8 +15,8 @@ using namespace std;
 
 FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const*maker ) :
         Layer( previousLayer, maker ),
-        numPlanes( maker->getNumPlanes() ),
-        boardSize( maker->getBoardSize() ),
+        numPlanes( maker->getOutputPlanes() ),
+        boardSize( maker->getOutputBoardSize() ),
         fn( maker->getActivationFunction() ) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker( maker->net, previousLayer );
     convolutionalMaker->numFilters( numPlanes * boardSize * boardSize )

@@ -63,7 +63,7 @@ public:
             totalWeightsSize * sizeof(float) );
         FileHelper::remove( filepath );
         FileHelper::rename( "~" + filepath, filepath );
-        cout << "wrote weights to file, size " << (totalWeightsSize*sizeof(float)/1024) << "KB" << endl;
+        std::cout << "wrote weights to file, size " << (totalWeightsSize*sizeof(float)/1024) << "KB" << std::endl;
         delete[] allWeightsArray;
     }
     static void loadWeights( std::string filepath, NeuralNet *net ) {
@@ -71,7 +71,7 @@ public:
             long fileSize;
             char * data = FileHelper::readBinary( filepath, &fileSize );
             float *allWeightsArray = reinterpret_cast<float *>(data);
-            cout << "read weights from file "  << (fileSize/1024) << "KB" << endl;
+            std::cout << "read weights from file "  << (fileSize/1024) << "KB" << std::endl;
             int expectedTotalWeightsSize = getTotalNumWeights( net );
             int numFloatsRead = fileSize / sizeof( float );
             if( expectedTotalWeightsSize != numFloatsRead ) {

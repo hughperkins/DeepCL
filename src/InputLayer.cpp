@@ -15,8 +15,8 @@ InputLayer::InputLayer( Layer *previousLayer, InputLayerMaker const*maker ) :
        Layer( previousLayer, maker ),
     batchSize(0),
     output(0),
-    outputPlanes( maker->getNumPlanes() ),
-    outputBoardSize( maker->getBoardSize() ) {
+    outputPlanes( maker->getOutputPlanes() ),
+    outputBoardSize( maker->getOutputBoardSize() ) {
 }
 VIRTUAL InputLayer::~InputLayer() {
 }

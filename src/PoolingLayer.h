@@ -44,6 +44,8 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();
+    VIRTUAL void propagate();
+    VIRTUAL void backProp( float learningRate );
 
     // [[[end]]]
 };

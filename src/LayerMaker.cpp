@@ -91,7 +91,7 @@ Layer *InputLayerMaker::instance() const {
     return layer;
 }
 
-int ConvolutionalMaker::getBoardSize() const {
+int ConvolutionalMaker::getOutputBoardSize() const {
     if( previousLayer == 0 ) {
         throw std::runtime_error("convolutional network must be attached to a parent layer");
     }
@@ -100,13 +100,22 @@ int ConvolutionalMaker::getBoardSize() const {
     return boardSize;
 }
 
-int LossLayerMaker::getBoardSize() const {
+int LossLayerMaker::getOutputBoardSize() const {
     return previousLayer->getOutputBoardSize();
 }
-int LossLayerMaker::getNumPlanes() const {
+int LossLayerMaker::getOutputPlanes() const {
     return previousLayer->getOutputPlanes();
 }
 int LossLayerMaker::getBiased() const {
     return previousLayer->getBiased();
+}
+int PoolingMaker::getOutputBoardSize() const {
+    return previousLayer->getOutputBoardSize() / _poolingSize;
+}
+int PoolingMaker::getOutputPlanes() const {
+    return previousLayer->getOutputPlanes();
+}
+int PoolingMaker::getBiased() const {
+    return false;
 }
 
