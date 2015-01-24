@@ -877,4 +877,19 @@ StatefulTimer readings:
        loss L: 65497
 after epoch 0 40554 ms
 
+=============
+testmnist-convjs, aws, v0.5:
+StatefulTimer readings:
+   layer1 BackpropWeights2Scratch end: 5625ms
+   layer1 backprop(): start, layer 1: 1089ms
+   layer3     propagate layer 3, START: 2189ms
+   layer3 BackpropErrorsv2Naive end: 1406ms
+   layer3 BackpropWeights2Scratch end: 2344ms
+   layer3 Propagate3::propagate after call propagate: 547ms
+   layer3 backprop(): start, layer 3: 468ms
+   layer5     propagate layer 5, START: 548ms
+       loss L: 3242.98
+after epoch 2 16455 ms
+
+
 

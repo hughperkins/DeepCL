@@ -360,6 +360,7 @@ What's done / what's planned
   * drop-out
   * Python bindings?
   * ~~max-pooling?~~ done
+  * read network from a config file?
 
 Recent changes
 ==============
@@ -383,7 +384,7 @@ sounds excessive, but this is how a fully connected layer works :-)
 * 21st January:
   * added softmax layer, for per-column configuration, ie multi-planar output, with boardsize 1
     * tested once on mnist: 97.65% test accuracy after 12 epochs; 98.09% after 20 epochs
-* week up to 21st December: 
+* week up to 21st January: 
   * added sigmoid activation
   * added cross-entropy loss layer
   * migrated to recurse on dLoss/dSum, rather than dLoss/dOutput, ie on partial derivative of loss with input to activation function for each neuron, rather than with output.  Recursing on input instead of output is faster
