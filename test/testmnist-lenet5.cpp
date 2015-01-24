@@ -81,10 +81,10 @@ public:
     int numTrain = 60000;
     int numTest = 10000;
     int batchSize = 128;
-    int numEpochs = 20;
+    int numEpochs = 12;
     int restartable = 0;
     string restartableFilename = "weights.dat";
-    float learningRate = 0.0001f;
+    float learningRate = 0.002f;
     int biased = 1;
     string resultsFilename = "results.txt";
     Config() {

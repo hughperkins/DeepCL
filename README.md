@@ -162,9 +162,15 @@ Available options:
   * `->sigmoid()` choose sigmoid activation
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
 
+*Max-pooling layers*
+
+```c++
+net->poolingMaker()->poolingSize(2)->insert();
+```
+
 *Loss layer*
 
-Please add one loss layer.  You can choose between squared loss and cross-entropy loss:
+You need to add exactly one loss layer, as the last layer of the net.  You can choose between squared loss and cross-entropy loss:
 ```c++
 net->squareLossMaker()->insert();
 net->crossEntropyLossMaker()->insert();
@@ -357,13 +363,19 @@ Recent changes
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
 
-* 23rd December:
+* 24th January:
+  * added max-pooling layer
+  * created draft 'lenet5' implementation, but it's not quite the same, specifically:
+    * lenet-5 has RBF layers at the end
+    * lenet-5 has multiple of these RBF and fully-connected layers at the end
+    * lenet-5 is not using max-pooling but something more like average-pooling, and it has an activation function applied (sigmoid)
+* 23rd January:
   * created `testmnist-mpi`, to experiment with using mpi to parallelize across multiple compute nodes (which must each have a GPU, which GPUs must ideally each be the same model/specifications)
-* 22nd December:
+* 22nd January:
   * re-added FullyConnectedLayer, which is now a wrapper around ConvolutionalLayer, with one filter per output node.  So, if we want a 28x28 board as the output, this will need 784 filters in the underlying convolutional layer, which
 sounds excessive, but this is how a fully connected layer works :-)
   * best mnist accuracy now at 98.6%
-* 21st December:
+* 21st January:
   * added softmax layer, for per-column configuration, ie multi-planar output, with boardsize 1
     * tested once on mnist: 97.65% test accuracy after 12 epochs; 98.09% after 20 epochs
 * week up to 21st December: 
