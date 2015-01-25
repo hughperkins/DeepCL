@@ -97,14 +97,14 @@ void kernel backprop_floats_withscratch_dobias_striped(
             const int stripeOutRowStart = stripe * gOutputStripeNumRows;
             const int stripeOutRowEndExcl = stripeOutRowStart + gOutputStripeNumRows;
             barrier(CLK_LOCAL_MEM_FENCE);
-            if( localId == 13 ) {
-                for( int i = 0; i < 12; i++ ) {
-                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];
-                }
-                for( int i = 0; i < 20; i++ ) {
-                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputBoardSize];
-                }
-            }
+//            if( localId == 13 ) {
+//                for( int i = 0; i < 12; i++ ) {
+//                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];
+//                }
+//                for( int i = 0; i < 20; i++ ) {
+//                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputBoardSize];
+//                }
+//            }
             if( localId < gFilterSizeSquared ) {
                 for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {
                     int upstreamRow = outRow - gMargin + filterRow;
