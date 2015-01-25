@@ -227,12 +227,12 @@ void kernel backprop_floats_withscratch_dobias_striped(
             // need to fetch the board, but it's bigger than us, so will need to loop...
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int i = 0; i < numLoopsForImageStripe; i++ ) {
-                int thisLocalOffset = i * workgroupSize + localId;
+                int thisOffset = i * workgroupSize + localId;
                 int thisGlobalOffset = imageStripeOffset + thisOffset;
                 bool process = thisOffset < gInputStripeOuterSize 
                     && thisGlobalOffset >= imageBoardGlobalOffset && thisGlobalOffset < imageBoardGlobalOffsetAfter;
                 if( process ) {
-                    _imageStripe[thisLocalOffset] = images[ thisGlobalOffset ];
+                    _imageStripe[thisOffset] = images[ thisGlobalOffset ];
                 }
             }
             int errorStripeOffset = errorBoardGlobalOffset + stripe * gOutputStripeSize;
