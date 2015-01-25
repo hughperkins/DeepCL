@@ -25,8 +25,8 @@ public:
     string dataDir = "../data/norb";
     string trainSet = "training-shuffled";
     string testSet = "testing-sampled";
-    int numTrain = 24300;
-    int numTest = 1000;
+    int numTrain = 0;
+    int numTest = 0;
     int batchSize = 128;
     int numEpochs = 20;
     int restartable = 0;
@@ -90,7 +90,7 @@ void go(Config config) {
     cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
     timer.timeCheck("after getting stats");
 
-    const int numToTrain = config.numTrain;
+    const int numToTrain = Ntrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
 
@@ -129,7 +129,7 @@ void go(Config config) {
 
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
-    int numBatches = ( config.numTrain + batchSize - 1 ) / batchSize;
+    int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
     float *batchData = new float[ config.batchSize * inputCubeSize ];
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
         int trainNumRight = 0;
@@ -139,7 +139,7 @@ void go(Config config) {
         int numRight = 0;
         for( int batch = 0; batch < numBatches; batch++ ) {
             if( batch == numBatches - 1 ) {
-                thisBatchSize = config.numTrain - (numBatches - 1) * batchSize;
+                thisBatchSize = Ntrain - (numBatches - 1) * batchSize;
                 net->setBatchSize( thisBatchSize );
             }
             int batchStart = batchSize * batch;
@@ -157,8 +157,8 @@ void go(Config config) {
         cout << "       loss L: " << loss << endl;
         timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();
-        std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ numToTrain) << "%" << std::endl;
-        printAccuracy( "test", net, testData, testLabels, batchSize, config.numTest, numPlanes, boardSize, mean, stdDev );
+        std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ Ntrain) << "%" << std::endl;
+        printAccuracy( "test", net, testData, testLabels, batchSize, Ntest, numPlanes, boardSize, mean, stdDev );
         timer.timeCheck("after tests");
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, net );
