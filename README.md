@@ -68,7 +68,7 @@ Target usage:
     net->softMaxLossMaker()->insert();
 ```
 * I think this is missing a layer actually, might need some tweaking possibly
-* Current results is about 90% test accuracy, after 20 epochs.  Each epoch is 125seconds
+* Current results is about 90% test accuracy, after 20 epochs.  Each epoch is ~~125seconds in v1.0~~ 78 seconds, in v1.1
 * To run
   * First download the [norb datafiles](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) to `data/norb`, and gunzip them
   * Run pre-processing:
@@ -431,6 +431,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
 * 25th January:
   * Added gpu implementation for max-pooling forward-prop
   * Added padZeros option for max-pooling
+  * Accelerated backpropweights kernel a bit, for larger images (ie norb, 96x96)
 * 24th January:
   * added max-pooling layer (albeit in cpu for now)
   * created draft 'lenet5' implementation, but it's not quite the same, specifically:
