@@ -392,6 +392,90 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
+TEST( testbackpropweights, backprop_instance3_smaller2 ) {
+    LayerDimensions dim;
+    dim.setInputBoardSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 4 )
+        .setBiased( 0 ).setPadZeros( 0 );
+    int batchSize = 1;
+    const float learningRate = 1;
+
+    OpenCLHelper cl;
+
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int weightsSize = dim.filtersSize;
+    int biasWeightsSize = dim.numFilters;
+
+    cout << "numweights: " << weightsSize << endl;
+
+    float *errors = new float[max(10000, resultsSize )];
+    float *inputData = new float[max(10000, inputSize )];
+    float *weights0 = new float[max(10000, weightsSize ) ];
+    float *weights1 = new float[max(10000, weightsSize ) ];
+
+    memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
+    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
+    memset( weights0, 0, sizeof(float) * max(10000, weightsSize ) );
+    memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
+
+//    inputData[ 0 ] = 3;
+//    errors[0] = 4;
+
+//    inputData[95 * 96] = 7;
+//    errors[92 * 93] = 5;
+
+//    inputData[47 * 96 + 95] = 9;
+//    errors[46 * 93 + 92] = 4;
+
+//    inputData[48 * 96 + 95] = 3;
+//    errors[47 * 93 + 92] = 6;
+
+    inputData[95 * 96 + 95] = 11;
+//    errors[92 * 93 + 92] = 3;
+
+//    inputData[84 * 96 + 95] = 100;
+    errors[81 * 93 + 92] = 4;
+    
+    BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, &cl, dim );
+    backpropWeightsImpl0->debug = true;
+    backpropWeightsImpl0->backpropWeights( batchSize, learningRate,
+        errors, inputData, weights0, 0 );
+    BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 3, &cl, dim );
+    backpropWeightsImpl1->debug = true;
+    backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
+        errors, inputData, weights1, 0 );
+
+    for( int i = 0; i < 4; i++ ) {
+        for( int j = 0; j < 4; j++ ) {
+            cout << weights0[i*4+j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    for( int i = 0; i < 4; i++ ) {
+        for( int j = 0; j < 4; j++ ) {
+            cout << weights1[i*4+j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << endl;
+    int isok = 1;
+    for( int i = 0; i < 4; i++ ) {
+        for( int j = 0; j < 4; j++ ) {
+            if( weights0[i*4+j] == weights1[i*4+j] ) {
+                cout << ".";
+            } else {
+                cout << "!";
+                isok = 0;
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+    EXPECT_EQ( 1, isok );
+}
+
 class CompareSpecificArgs {
 public:
     static CompareSpecificArgs instance(){ CompareSpecificArgs args; return args; };
@@ -570,7 +654,7 @@ namespace testbackpropweights {
     TEST( SLOW_testbackpropweights, compare_specific_96board_smaller2 ) {
         compareSpecific( CompareSpecificArgs::instance()
             .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
-            .filterSize( 4 ).biased( 1 ).padZeros( false )
+            .filterSize( 4 ).biased( 0 ).padZeros( false )
             .instance0(0).instance1(3) );
     }
 }

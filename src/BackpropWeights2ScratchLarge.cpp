@@ -89,10 +89,12 @@ VIRTUAL BackpropWeights2ScratchLarge::~BackpropWeights2ScratchLarge() {
 VIRTUAL void BackpropWeights2ScratchLarge::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2ScratchLarge start" );
 
-    int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
+    int workgroupSize = 32 * ( ( square(dim.filterSize) + 32 - 1 ) / 32 ); // quantize to nearest 32
+//    int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
     int numWorkgroups = dim.inputPlanes * dim.numFilters;
-    int globalSize = workgroupsize * numWorkgroups;
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    int globalSize = workgroupSize * numWorkgroups;
+//    globalSize = ( ( globalSize + workgroupSize - 1 ) / workgroupSize ) * workgroupSize;
+    cout << "workgroupsize " << workgroupSize << " numworkgroups " << numWorkgroups << " globalsize " << globalSize << endl;
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
@@ -109,7 +111,7 @@ VIRTUAL void BackpropWeights2ScratchLarge::backpropWeights( int batchSize, float
         ->localFloats( outputStripeSize )
         ->localFloats( inputStripeOuterSize );
 
-    kernel->run_1d(globalSize, workgroupsize);
+    kernel->run_1d(globalSize, workgroupSize);
 
     cl->finish();
 

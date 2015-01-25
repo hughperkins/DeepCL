@@ -68,25 +68,30 @@ void kernel backprop_floats_withscratch_dobias_striped(
         const int imageBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
         const int imageBoardGlobalOffsetAfter = imageBoardGlobalOffset + gInputBoardSizeSquared;
         const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
+        const int errorBoardGlobalOffsetAfter = errorBoardGlobalOffset + gOutputBoardSizeSquared;
         for( int stripe = 0; stripe < gNumStripes; stripe++ ) {
-            int imageStripeOffset = imageBoardGlobalOffset + stripe * gInputStripeInnerSize
-                               - gInputStripeMarginSize;
+            const int imageStripeInnerOffset = imageBoardGlobalOffset + stripe * gInputStripeInnerSize;
+            const int imageStripeOuterOffset = imageStripeInnerOffset - gInputStripeMarginSize;
             // need to fetch the board, but it's bigger than us, so will need to loop...
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int i = 0; i < numLoopsForImageStripe; i++ ) {
                 int thisOffset = i * workgroupSize + localId;
-                int thisGlobalOffset = imageStripeOffset + thisOffset;
+                int thisGlobalImagesOffset = imageStripeOuterOffset + thisOffset;
                 bool process = thisOffset < gInputStripeOuterSize 
-                    && thisGlobalOffset >= imageBoardGlobalOffset && thisGlobalOffset < imageBoardGlobalOffsetAfter;
+                    && thisGlobalImagesOffset >= imageBoardGlobalOffset 
+                    && thisGlobalImagesOffset < imageBoardGlobalOffsetAfter;
                 if( process ) {
-                    _imageStripe[thisOffset] = images[ thisGlobalOffset ];
+                    _imageStripe[thisOffset] = images[ thisGlobalImagesOffset ];
                 }
             }
             int errorStripeOffset = errorBoardGlobalOffset + stripe * gOutputStripeSize;
             for( int i = 0; i < numLoopsForErrorStripe; i++ ) {
                 int thisOffset = i * workgroupSize + localId;
-                if( thisOffset < gOutputStripeSize ) {
-                    _errorStripe[thisOffset ] = errors[errorStripeOffset + thisOffset];
+                int globalErrorsOffset = errorStripeOffset + thisOffset;
+                bool process = thisOffset < gOutputStripeSize 
+                    && globalErrorsOffset < errorBoardGlobalOffsetAfter;
+                if( process ) {
+                    _errorStripe[thisOffset ] = errors[globalErrorsOffset];
                 }
             }
             const int stripeOutRowStart = stripe * gOutputStripeNumRows;
