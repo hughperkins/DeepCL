@@ -118,7 +118,6 @@ void kernel backprop_floats_withscratch_dobias_striped(
                             int resultIndex = outRow * gOutputBoardSize + outCol;
                             float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];
                             int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
-                            // next line segfaults on nvidia, out of bounds
                             float upstreamResult = _imageStripe[upstreamDataIndex +  gInputStripeMarginSize
                                         - stripe * gInputStripeInnerSize ];
                             thiswchange += upstreamResult * error;

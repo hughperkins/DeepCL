@@ -87,11 +87,15 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
  test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
+ test/teststringhelper.cpp 
+ src/stringhelper.cpp
  )
 #
 #
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
+
+add_executable( clconvolve1 test/clconvolve1.cpp src/stringhelper.cpp )
 
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
 

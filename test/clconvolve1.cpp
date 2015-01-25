@@ -4,6 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+
 #include <iostream>
 
 #include "test/NorbLoader.h"
@@ -29,6 +30,8 @@ public:
     int batchSize = 128;
     int numEpochs = 20;
     int restartable = 0;
+//    int cats = 5;
+    string netDef = "8C5-MP4-24C6-MP3-80C6-10N";
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     string resultsFilename = "results.txt";
@@ -90,12 +93,32 @@ void go(Config config) {
     const int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->insert();
-    net->poolingMaker()->poolingSize(4)->insert();
-    net->convolutionalMaker()->numFilters(24)->filterSize(6)->relu()->biased()->insert();
-    net->poolingMaker()->poolingSize(3)->insert();
-    net->convolutionalMaker()->numFilters(80)->filterSize(6)->relu()->biased()->insert();
-    net->fullyConnectedMaker()->numPlanes(5)->boardSize(1)->linear()->biased()->insert();
+
+    string netDefLower = toLower( config.netDef );
+    vector<string> splitNetDef = split( netDefLower, "-" );
+    for( int i = 0; i < splitNetDef.size(); i++ ) {
+        string thisLayerDef = splitNetDef[i];
+        if( thisLayerDef.find("c") != string::npos ) {
+            vector<string> splitConvDef = split( thisLayerDef, "c" );
+            int numFilters = atoi( splitConvDef[0] );
+            int filterSize = atoi( splitConvDef[1] );
+            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->relu()->biased()->insert();
+        } else if( thisLayerDef.find("mp") != string::npos ) {
+            vector<string> splitPoolDef = split( thisLayerDef, "mp" );
+            int poolingSize = atoi( splitPoolDef[1] );
+            net->poolingMaker()->poolingSize(poolingSize)->insert();
+        } else if( thisLayerDef.find("n") != string::npos ) {
+            vector<string> fullDef = split( thisLayerDef, "n" );
+            int numPlanes = atoi( fullDef[0] );
+            if( i == splitNetDef.size() - 1 ) {
+                net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->linear()->biased()->insert();
+            } else {
+                net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased()->insert();
+            }
+        } else {
+            throw runtime_error("network definition " + thisLayerDef + " not recognised" );
+        }
+    }
     net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
     net->print();
@@ -163,6 +186,8 @@ int main( int argc, char *argv[] ) {
         cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
         cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
+        cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
+//        cout << "    cats=[num categories] (" << config.cats << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
@@ -182,6 +207,8 @@ int main( int argc, char *argv[] ) {
            if( key == "numtrain" ) config.numTrain = atoi(value);
            if( key == "numtest" ) config.numTest = atoi(value);
            if( key == "batchsize" ) config.batchSize = atoi(value);
+           if( key == "netdef" ) config.netDef = atoi(value);
+//           if( key == "cats" ) config.cats = atoi(value);
            if( key == "numepochs" ) config.numEpochs = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);

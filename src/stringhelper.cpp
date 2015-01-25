@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -17,11 +17,11 @@ vector<string> split(const string &str, const string &separator ) {
 	int npos = str.find(separator);
 	while (npos != (int)str.npos ) {
 		splitstring.push_back( str.substr(start, npos-start) );
-		start = npos + 1;
+		start = npos + separator.length();
 		npos = str.find(separator, start);
 	}
 	splitstring.push_back( str.substr( start ) );
-   return splitstring;
+    return splitstring;
 }
 
 string trim( const string &target ) {
