@@ -219,6 +219,7 @@ void kernel backprop_floats_withscratch_dobias_striped(
     const int numLoopsForErrorStripe = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
     for( int n = 0; n < batchSize; n++ ) {
         const int imageBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
+        const int imageBoardGlobalOffsetAfter = imageBoardGlobalOffset + gInputBoardSizeSquared;
         const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
         for( int stripe = 0; stripe < gNumStripes; stripe++ ) {
             int imageStripeOffset = imageBoardGlobalOffset + stripe * gInputStripeInnerSize
@@ -226,9 +227,12 @@ void kernel backprop_floats_withscratch_dobias_striped(
             // need to fetch the board, but it's bigger than us, so will need to loop...
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int i = 0; i < numLoopsForImageStripe; i++ ) {
-                int thisOffset = i * workgroupSize + localId;
-                if( thisOffset < gInputStripeOuterSize ) {
-                    _imageStripe[thisOffset] = images[ imageStripeOffset + thisOffset ];
+                int thisLocalOffset = i * workgroupSize + localId;
+                int thisGlobalOffset = imageStripeOffset + thisOffset;
+                bool process = thisOffset < gInputStripeOuterSize 
+                    && thisGlobalOffset >= imageBoardGlobalOffset && thisGlobalOffset < imageBoardGlobalOffsetAfter;
+                if( process ) {
+                    _imageStripe[thisLocalOffset] = images[ thisGlobalOffset ];
                 }
             }
             int errorStripeOffset = errorBoardGlobalOffset + stripe * gOutputStripeSize;
@@ -253,6 +257,7 @@ void kernel backprop_floats_withscratch_dobias_striped(
                             int resultIndex = outRow * gOutputBoardSize + outCol;
                             float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];
                             int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
+                            // next line segfaults on nvidia, out of bounds
                             float upstreamResult = _imageStripe[upstreamDataIndex +  gInputStripeMarginSize
                                         - stripe * gInputStripeInnerSize ];
                             thiswchange += upstreamResult * error;
