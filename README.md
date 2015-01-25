@@ -102,7 +102,6 @@ net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZ
 net->poolingMaker()->poolingSize(3)->insert();
 net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
 net->softMaxLossMaker()->insert();
-net->setBatchSize(128);
 ```
 * Compared to the convjs demo:
   * convjs demo augments the data, by cropping a 24x24 region, which we're not doing here
