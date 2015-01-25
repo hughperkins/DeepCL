@@ -249,6 +249,7 @@ void testLabelled( TestArgs args ) {
     float *currentWeights = new float[weightsTotalSize];
     WeightsPersister::copyNetWeightsToArray( net, lastWeights );
 //    cout << "learningRate: " << args.learningRate << endl;
+    net->propagate( inputData );
     float lastloss = 0;
     for( int i = 0; i < args.numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedResults );
@@ -264,27 +265,32 @@ void testLabelled( TestArgs args ) {
         float thisloss = net->calcLossFromLabels( labels ) ;
         float lossChange = (lastloss - thisloss );
 //        cout << "loss " << thisloss << " loss diff " << lossChange << endl;
-//        cout << "compare:" << endl;
-//        cout << "    losschangefromw " << lossChangeFromW << endl;
-//        cout << "    actual loss change " << lossChange << endl;
-        if( isnan( lossChange ) ) {
+        if( i > 0 ) {
             cout << "compare:" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
-            EXPECT_TRUE( !isnan( lossChange ) );
-        }
-        if( lossChange / lossChangeFromW > 1.3f ) {
-            cout << "compare:" << endl;
-            cout << "    losschangefromw " << lossChangeFromW << endl;
-            cout << "    actual loss change " << lossChange << endl;
-            cout << "loss: " << lastloss << " -> " << thisloss << endl;
-            EXPECT_EQ( lossChange, lossChangeFromW );
-        } else if( lossChangeFromW / lossChange > 1.3f ) {
-            cout << "compare:" << endl;
-            cout << "    losschangefromw " << lossChangeFromW << endl;
-            cout << "    actual loss change " << lossChange << endl;
-            cout << "loss: " << lastloss << " -> " << thisloss << endl;
-            EXPECT_EQ( lossChange, lossChangeFromW );
+            if( isnan( lossChange ) ) {
+                cout << "epoch " << i << endl;
+                cout << "compare:" << endl;
+                cout << "    losschangefromw " << lossChangeFromW << endl;
+                cout << "    actual loss change " << lossChange << endl;
+                EXPECT_TRUE( !isnan( lossChange ) );
+            }
+            if( lossChange / lossChangeFromW > 1.3f ) {
+                cout << "epoch " << i << endl;
+                cout << "compare:" << endl;
+                cout << "    losschangefromw " << lossChangeFromW << endl;
+                cout << "    actual loss change " << lossChange << endl;
+                cout << "loss: " << lastloss << " -> " << thisloss << endl;
+                EXPECT_EQ( lossChange, lossChangeFromW );
+            } else if( lossChangeFromW / lossChange > 1.3f ) {
+                cout << "epoch " << i << endl;
+                cout << "compare:" << endl;
+                cout << "    losschangefromw " << lossChangeFromW << endl;
+                cout << "    actual loss change " << lossChange << endl;
+                cout << "loss: " << lastloss << " -> " << thisloss << endl;
+                EXPECT_EQ( lossChange, lossChangeFromW );
+            }
         }
         lastloss =thisloss;
 //        memcpy( lastWeights1, currentWeights1, sizeof(float) * weights1Size );

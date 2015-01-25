@@ -4,5 +4,5 @@ mean 98.702 se 0.087
 
 testmnist-letnet, dc98b20d74, aws
 98.75% 98.86% 98.66% 98.55% 98.46%
-
+mean 98.656 se 0.0708
 
