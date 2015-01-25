@@ -1,0 +1,26 @@
+#pragma once
+
+#include "BackpropWeights2.h"
+
+#define STATIC static
+#define VIRTUAL virtual
+
+class BackpropWeights2ScratchLarge : public BackpropWeights2 {
+public:
+    CLKernel *kernel;
+    int numStripes;
+    int inputStripeOuterSize;
+    int outputStripeSize;
+
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.add()
+    // ]]]
+
+    BackpropWeights2ScratchLarge( OpenCLHelper *cl, LayerDimensions dim );
+    VIRTUAL ~BackpropWeights2ScratchLarge();
+    VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
+
+    // [[[end]]]
+};
+
