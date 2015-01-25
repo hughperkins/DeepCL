@@ -12,20 +12,24 @@ Contents
 - [Validation against standard datasets](#validation-against-standard-datasets)
   - [NORB](#norb)
   - [MNIST](#mnist)
-    - [Results](#results)
-    - [Reproducing](#reproducing)
+    - [Data](#data)
+    - [Architecture from convjs](#architecture-from-convjs)
+    - [Architecture from lenet5](#architecture-from-lenet5)
+    - [Uniform layers](#uniform-layers)
+    - [Detailed results](#detailed-results)
 - [Neural Net API](#neural-net-api)
   - [Create a net](#create-a-net)
   - [Add some layers](#add-some-layers)
   - [Train](#train)
-  - [Predict](#predict)
+  - [Test](#test)
 - [Data format](#data-format)
 - [Pre-requisites](#pre-requisites)
 - [To build](#to-build)
 - [Linking](#linking)
+- [Correctness checking](#correctness-checking)
 - [Unit-testing](#unit-testing)
   - [Concepts](#concepts)
-  - [Unit-testing implementation](#unit-testing-implementation)
+  - [Implementation](#implementation)
 - [Formulae notes](#formulae-notes)
 - [Development notes](#development-notes)
 - [What's done / what's planned](#whats-done--whats-planned)
@@ -82,9 +86,65 @@ make
 
 ## MNIST
 
-Ran against MNIST to validate that the library does approximately what it says it is doing, and to measure epoch times.
+### Data
 
-### Results
+* Please download from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
+
+### Architecture from convjs
+
+* Based on [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture
+* Create a network like this:
+```c++
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
+net->poolingMaker()->poolingSize(2)->insert();
+net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
+net->poolingMaker()->poolingSize(3)->insert();
+net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
+net->softMaxLossMaker()->insert();
+net->setBatchSize(128);
+```
+* Compared to the convjs demo:
+  * convjs demo augments the data, by cropping a 24x24 region, which we're not doing here
+* For the implementation above, on my tests, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 17seconds, and test accuracy was around 98.6%, using ClConvolve v0.5
+* Implementation: [test/testmnist-convjs.cpp](test/testmnist-convjs.cpp)
+
+### Architecture from lenet5
+
+* Based on [LeCun's paper](http://yann.lecun.com/exdb/publis/index.html#lecun-98)
+* Create a net as follows:
+```c++
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+net->convolutionalMaker()->numFilters(6)->filterSize(5)->relu()->biased()->insert();
+net->poolingMaker()->poolingSize(2)->insert();
+net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
+net->poolingMaker()->poolingSize(2)->insert();
+net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
+net->softMaxLossMaker()->insert();
+```
+* this is similar to lenet-5, but not quite the same, specifically:
+  * lenet-5 has RBF layers at the end (page 8, second column, of the paper)
+  * lenet-5 has multiple of these RBF and fully-connected layers at the end
+  * lenet-5 is not using max-pooling but something more like average-pooling, and it has an activation function applied (sigmoid) (page 7, second column, bottom half)
+  * lenet-5 is not connecting all filters from one layer with all filters of the next layer (Table I, of the paper)
+* Using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 21seconds, and test accuracy was around 98.6-98.7%, using ClConvolve v0.5
+* Implementation: [test/testmnist-lenet5.cpp](test/testmnist-lenet5.cpp)
+
+### Uniform layers
+
+* [test/testmnist.cpp](test/testmnist.cpp) creates multiple configurable uniform layers as follows:
+```c++
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+for( int layer = 0; layer < numlayers; layer++ ) {
+    net->convolutionalMaker()->numFilters(numfilters)->filterSize(filtersize)->relu()->biased(biased)->padZeros(padzeros)->insert();
+}
+net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
+net->softMaxLossMaker()->insert();
+net->setBatchSize(128);
+```
+* This doesn't run as quickly, or give as good results, as the highly-optimized networks listed earlier, but might be interesting for easy experimentation, with different layer depths, filter sizes, and so on?
+
+### Detailed results
 
 * Following results on MNIST, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
 
@@ -101,53 +161,6 @@ Ran against MNIST to validate that the library does approximately what it says i
 * Notes:
   * (1) Using `testmnist` or `testmnist-softmax`
   * (2) Using `testmnist-convjs`
-
-### Reproducing
-
-* First, you need to obtain the MNIST data.  The files need to be placed in the `data\mnist` directory.  If you're on linux, and you're currently in the `build` subdirectory, you could do:
-```bash
-cd ../data
-mkdir mnist
-cd mnist
-wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-gunzip *.gz
-cd ../../build
-```
-* Then, you can train against MNIST using a net created eg as follows:
-```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
-net->poolingMaker()->poolingSize(2)->insert();
-net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
-net->poolingMaker()->poolingSize(3)->insert();
-net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
-net->softMaxLossMaker()->insert();
-net->setBatchSize(128);
-```
-* Network details:
-  * First line creates a NeuralNet object, together with a first `InputLayer` layer, to receive the incoming data
-    * When we create the net, we specify the size of the incoming data, ie number of planes per example, and size of each plane
-  * The second line creates a a convolutional layer with 8 feature maps, each with a filter size of 5.  Non-linearity is relu.  Incoming images are zero-padded.
-  * Then a max-pooling layer, with a size/stride of 2.
-  * Another pair of convolutional and pooling layers
-  * A fully connected layer, with one output plane per possible output label, and a boardsize of 1
-    * since we are going to use softmax activation, then we specify `linear` for the activation within this layer
-  * Finally, we add a SoftMaxLoss layer, which handles:
-    * generating appropriate loss signals to drive the network
-    * receive our labels array
-    * calculate loss
-    * calculate number correct
-  * You need to set the batch size before passing in any input data, since this sets up the internal buffer sizes.  Failure to do this will result in seg faults and other nasty errors :-P
-* There is an implementation of this network, including loading mnist, and normalizing it, at [testmnist-convjs.cpp](test/testmnist-convjs.cpp)
-  * You can build and run it as follows:
-```bash
-make testmnist-convjs
-./testmnist-convjs
-```
-* The other rows above were generated using [test/testmnist.cpp](test/testmnist.cpp)
 
 Neural Net API
 ==============
@@ -240,31 +253,35 @@ for( int epoch = 0; epoch < 12; epoch++ ) {
 }
 ```
 
-Predict
+Test
 -------
 
 ```c++
 net->setBatchSize(batchSize);
 net->propagate(somenewdata);
-float *results = net->getResults();
+float *results = net->getResults(); // to get results
+float loss = net->calcLossFromLabels( labels ); // calc loss
+int numberCorrect = net->calcNumRight( labels ); // check accuracy
 ```
 
 Data format
 ===========
 
-Input data should be provided in a contiguous array.  "group by" order should be:
+Input data should be provided in a contiguous array, of floats.  "group by" order should be:
 
 * training example id
 * input plane
 * board row
 * board column
 
-Expected output data should be provided as a contiguous array. "group by" order should be:
+Expected output data should be provided as a contiguous array, of floats. "group by" order should be:
 
 * training example id
 * output plane (eg, corresponds to filter id, for convolutional network)
 * output row
 * output column
+
+Labels are simply an integer array, with one number, zero-based, per training example, or per test example.
 
 Pre-requisites
 ==============
@@ -303,33 +320,33 @@ You will need:
 
 The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.
 
+Correctness checking
+====================
+
+* For forward propagation:
+  * We slot in some numbers, calculate the results manually, and compare with results actually obtained
+  * We also forward propagate pictures/photos, and check the results look approximately like what we would expect
+* For backward propagation:
+  * We use numerical validation, since the sum of the square of the weight changes, divided by the learning rate, approximately equals the change in loss.  Or it should. We test this :-)
+* Standard test sets
+  * Checked using implementations for MNIST, and NORB is in progress
+
 Unit-testing
 ============
 
 Concepts
 --------
 
-* Unit-testing is a challenge, with neural nets, because:
-  * training is stochastic
-  * there are many local minima
-* So, if you run a net once, you might get a MSE loss of 0.000001, and a perfect accuracy, but if you run it 10 times, 
-it might fail horribly on one run, with a much higher MSE, and a non-perfect score.  Even for toy problems, like 'and'
-or 'or' gates
-* One could run each test a hundred times, and check that at least 90% of them pass, but this would be slow, and would
-still fail sometimes
-* One could run many times, and check that at least once, there is perfect accuracy, but this doesnt show that learning
-is correct, could just be by random chance
-* I think that what we really want to show is not that we always reach the global minimum, but that:
-  * the network is correctly stable in the global minimum, and
-  * if we move the network away from the global minimum slightly, it will converge, correctly, on this global minimum
-* Therefore, the current plan is to run each network once or twice, till it finds a global minimum, then record the
-weights from 15-20 iterations higher up, which we've seen converge on the global solution
-* Then, for our unit tests, we simply re-use these same weights, and check that the loss after 15-20 iterations is
-better than for example 0.0001 (for toy problems)
-* Result: repeatable, fast, unit tests
+* Network optimization is stochastic, and there are typically numerous local minima, into which the optimization can get stuck
+* For unit testing, this is not very suitable, since unit tests must run repeatably, reliably, quickly
+* Therefore, for unit-testing, the network weights are preset to a fixed set of values
+  * using a random number generator with a fixed seed
+  * or by explicitly giving a hard-coded set of weights
+* Then, the test checks that the network converges to better than an expected loss, and accuracy, within a preset number of epochs
+* We also have unit tests for forward-propagation, and backward propagation, as per section [Correctness checking](#correctness-checking) above.
 
-Unit-testing implementation
----------------------------
+Implementation
+--------------
 
 * Using googletest, which:
   * compiles quickly
@@ -345,6 +362,10 @@ make unittests
 ```bash
 make unittests
 ./unittests --gtest_filter=testbackprop.*
+```
+* To skip any slow tests, do:
+```bash
+./unittests --gtest_filter=-*SLOW*
 ```
 
 Formulae notes
@@ -373,7 +394,7 @@ What's done / what's planned
   * relu activation
   * tanh activation
   * linear activation
-  * some optimization of the OpenCL kernels, targeting 19x19 Go boards
+  * some optimization of the OpenCL kernels
   * can save/load weights
   * can use 'fluent' style to setup the networks
   * unit-tests for forward propagation
