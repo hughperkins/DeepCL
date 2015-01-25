@@ -159,7 +159,7 @@ net->setBatchSize(128);
 | 98.57% +/- 0.03%| 20| | 3  | 32 | 5 | No | v0.3(1) | 0.0001  |
 | 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | Yes| v0.3(1) | 0.0001    |
 | 98.7% +/- 0.1% | 12 | 13.8s | 2 conv 2 pool | 8,16 | conv:5,5 pool:2,3 | Yes | next v0.7 (2) | 0.002 |
-| 98.7% +/- 0.2% | 12 | 14.6s | 2 conv 2 pool | 6,16 | conv:5,5 pool:2,2 | Yes | next v0.7 (3) | 0.002 |
+| 98.7% +/- 0.1% | 12 | 14.6s | 2 conv 2 pool | 6,16 | conv:5,5 pool:2,2 | Yes | next v0.7 (3) | 0.002 |
 
 * Notes:
   * (1) Using [testmnist](test/testmnist.cpp) or `testmnist-softmax`
