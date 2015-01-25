@@ -92,7 +92,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL ActivationFunction const*getActivationFunction();

@@ -143,7 +143,7 @@ public:
     // import cog_fluent
     // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
     // ]]]
-
+    // generated, using cog:
     int _batchSize = 0;
     int _numPlanes = 0;
     int _boardSize = 0;
@@ -151,7 +151,6 @@ public:
     int _instance0 = 0;
     int _instance1 = 0;
     int _padZeros = 0;
-
     CompareSpecificArgs batchSize( int _batchSize ) {
         this->_batchSize = _batchSize;
         return *this;

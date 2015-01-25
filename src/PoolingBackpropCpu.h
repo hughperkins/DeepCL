@@ -18,7 +18,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL void backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper,

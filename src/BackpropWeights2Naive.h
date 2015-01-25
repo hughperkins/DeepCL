@@ -13,7 +13,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2Naive();
     VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );

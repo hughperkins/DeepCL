@@ -40,7 +40,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     STATIC PoolingBackprop *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize);
     STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );

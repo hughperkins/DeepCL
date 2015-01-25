@@ -45,7 +45,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     PoolingLayer( Layer *previousLayer, PoolingMaker const*maker );
     VIRTUAL ~PoolingLayer();
     VIRTUAL void setBatchSize( int batchSize );

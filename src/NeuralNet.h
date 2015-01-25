@@ -32,7 +32,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     NeuralNet( int numPlanes, int boardSize );
     ~NeuralNet();
     OpenCLHelper *getCl();

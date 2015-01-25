@@ -25,7 +25,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker const*maker );
     VIRTUAL ~CrossEntropyLoss();
     VIRTUAL float*getErrorsForUpstream();

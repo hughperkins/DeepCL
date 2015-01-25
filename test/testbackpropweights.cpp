@@ -1,3 +1,9 @@
+// Copyright Hugh Perkins 2014,2015 hughperkins at gmail
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include <iostream>
 #include <iomanip>
 
@@ -397,7 +403,7 @@ public:
     // import cog_fluent
     // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
     // ]]]
-
+    // generated, using cog:
     int _inputPlanes = 0;
     int _inputBoardSize = 0;
     int _numFilters = 0;
@@ -407,7 +413,6 @@ public:
     int _padZeros = 0;
     int _instance0 = 0;
     int _instance1 = 0;
-
     CompareSpecificArgs inputPlanes( int _inputPlanes ) {
         this->_inputPlanes = _inputPlanes;
         return *this;
@@ -462,6 +467,8 @@ namespace testbackpropweights {
         int weightsSize = dim.filtersSize;
         int biasWeightsSize = dim.numFilters;
 
+        cout << "numweights: " << weightsSize << endl;
+
         float *biasWeights1 = new float[ biasWeightsSize ];
         float *biasWeights2 = new float[ biasWeightsSize ];
         memset( biasWeights1, 0, sizeof(float) * biasWeightsSize );
@@ -477,12 +484,12 @@ namespace testbackpropweights {
         memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
         memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
 
-        WeightRandomizer::randomize( errors, max(10000, resultsSize ), -0.1f, 0.1f );
+      //  WeightRandomizer::randomize( errors, max(10000, resultsSize ), -0.1f, 0.1f );
     //    WeightRandomizer::randomize( results, max( 10000, resultsSize), 1, 2 );
-        WeightRandomizer::randomize( inputData, max(10000, inputSize ), -0.3f, 0.7f );
+      //  WeightRandomizer::randomize( inputData, max(10000, inputSize ), -0.3f, 0.7f );
 
-    //    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 1, 3 );
-    //    WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 1, 3 );
+        WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 99 );
+        WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 0, 99 );
 
         OpenCLHelper cl;
         
@@ -557,6 +564,13 @@ namespace testbackpropweights {
         compareSpecific( CompareSpecificArgs::instance()
             .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 48 ).numFilters( 1 )
             .filterSize( 2 ).biased( 1 ).padZeros( false )
+            .instance0(0).instance1(3) );
+    }
+
+    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller2 ) {
+        compareSpecific( CompareSpecificArgs::instance()
+            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
+            .filterSize( 4 ).biased( 1 ).padZeros( false )
             .instance0(0).instance1(3) );
     }
 }

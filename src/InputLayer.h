@@ -33,7 +33,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
     VIRTUAL ~InputLayer();
     VIRTUAL float *getResults();

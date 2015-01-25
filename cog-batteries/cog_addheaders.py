@@ -1,5 +1,5 @@
-# Copyright Hugh Perkins 2014 hughperkins at gmail
-
+# Copyright Hugh Perkins 2014,2015 hughperkins at gmail
+#
 # This Source Code Form is subject to the terms of the Mozilla Public License, 
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 # obtain one at http://mozilla.org/MPL/2.0/.
@@ -32,7 +32,7 @@ def add():
     in_multiline_comment = False
     in_header = False;
     line = f.readline()
-    cog.outl('')
+    cog.outl( '// generated, using cog:' )
     while( line != '' ):
        # cog.outl(line)
        if( line.strip().find("/*") == 0 ):

@@ -1,3 +1,9 @@
+// Copyright Hugh Perkins 2014,2015 hughperkins at gmail
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include "BackpropWeights2ScratchLarge.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -52,7 +58,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     inputStripeOuterSize = inputStripeOuterNumRows * dim.inputBoardSize;
     int inputStripeMarginSize = inputStripeMarginRows * dim.inputBoardSize;
 
-    int outputStripeNumRows = dim.outputBoardSize / numStripes;
+    int outputStripeNumRows = ( dim.outputBoardSize + numStripes - 1 ) / numStripes;
     outputStripeSize = outputStripeNumRows * dim.outputBoardSize;
 
     // [[[cog

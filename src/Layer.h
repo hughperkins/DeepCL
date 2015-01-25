@@ -57,7 +57,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     Layer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL ~Layer();
     VIRTUAL void setBatchSize( int batchSize );

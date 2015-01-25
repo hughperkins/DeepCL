@@ -25,7 +25,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     MultinomialCrossEntropy( Layer *previousLayer, MultinomialCrossEntropyMaker const*maker );
     VIRTUAL ~MultinomialCrossEntropy();
     VIRTUAL float*getErrorsForUpstream();

@@ -40,7 +40,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     PoolingPropagate( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingPropagate *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );

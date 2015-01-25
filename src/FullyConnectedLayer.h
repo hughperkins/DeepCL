@@ -25,7 +25,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const*maker );
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL void setBatchSize( int batchSize );

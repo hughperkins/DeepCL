@@ -25,7 +25,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker );
     VIRTUAL ~SquareLossLayer();
     VIRTUAL float*getErrorsForUpstream();

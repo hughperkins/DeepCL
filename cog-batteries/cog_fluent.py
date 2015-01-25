@@ -1,11 +1,17 @@
+# Copyright Hugh Perkins 2014,2015 hughperkins at gmail
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License, 
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+# obtain one at http://mozilla.org/MPL/2.0/.
+
 import cog
 
 def go(classname, ints = [], floats = []):
+    cog.outl( '// generated, using cog:' )
     for thisint in ints:
         cog.outl('int ' + thisint + ' = 0;')
     for thisfloat in floats:
         cog.outl('float ' + thisfloat + ' = 0;')
-    cog.outl('')
     for thisint in ints:
         thisintTitlecase = thisint[0].upper() + thisint[1:]
         cog.outl(classname + ' ' + thisintTitlecase + '( int ' + '_' + thisint + ' ) {')
@@ -20,12 +26,11 @@ def go(classname, ints = [], floats = []):
         cog.outl('}')
 
 def gov2(classname, ints = [], floats = []):
-    cog.outl('')
+    cog.outl( '// generated, using cog:' )
     for thisint in ints:
         cog.outl('int _' + thisint + ' = 0;')
     for thisfloat in floats:
         cog.outl('float _' + thisfloat + ' = 0;')
-    cog.outl('')
     for thisint in ints:
         thisintTitlecase = thisint[0].upper() + thisint[1:]
         cog.outl(classname + ' ' + thisint + '( int ' + '_' + thisint + ' ) {')

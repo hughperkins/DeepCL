@@ -23,6 +23,7 @@ public:
     // import cog_fluent
     // cog_fluent.go( 'TestArgs', ints = ints, floats = floats )
     // ]]]
+    // generated, using cog:
     int batchSize = 0;
     int boardSize = 0;
     int numLayers = 0;
@@ -33,7 +34,6 @@ public:
     int numCats = 0;
     int softMax = 0;
     float learningRate = 0;
-
     TestArgs BatchSize( int _batchSize ) {
         this->batchSize = _batchSize;
         return *this;

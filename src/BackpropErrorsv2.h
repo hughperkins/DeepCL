@@ -30,7 +30,7 @@ public:
     // import cog_addheaders    
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     STATIC BackpropErrorsv2 *instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
     STATIC BackpropErrorsv2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );

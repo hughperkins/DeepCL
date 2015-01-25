@@ -17,7 +17,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     VIRTUAL ~BackpropErrorsv2Cpu();
     VIRTUAL float *backpropErrors( int batchSize, float *inputData,

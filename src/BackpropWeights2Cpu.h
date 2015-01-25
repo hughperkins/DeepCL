@@ -18,7 +18,7 @@ public:
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
-
+    // generated, using cog:
     BackpropWeights2Cpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2Cpu();
     VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *derivLossBySumWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
