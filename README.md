@@ -106,7 +106,7 @@ net->setBatchSize(128);
 ```
 * Compared to the convjs demo:
   * convjs demo augments the data, by cropping a 24x24 region, which we're not doing here
-* For the implementation above, on my tests, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 13.8seconds, and test accuracy was around 98.6%, using ClConvolve v0.5, after 12 epochs
+* For the implementation above, on my tests, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 13.8seconds, and test accuracy was around 98.7%, using ClConvolve v0.5, after 12 epochs
 * Implementation: [test/testmnist-convjs.cpp](test/testmnist-convjs.cpp)
 
 ### Architecture from lenet5
@@ -114,7 +114,7 @@ net->setBatchSize(128);
 * Based on [LeCun's paper](http://yann.lecun.com/exdb/publis/index.html#lecun-98)
 * Create a net as follows:
 ```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(32)->instance();
 net->convolutionalMaker()->numFilters(6)->filterSize(5)->relu()->biased()->insert();
 net->poolingMaker()->poolingSize(2)->insert();
 net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
@@ -128,7 +128,8 @@ net->softMaxLossMaker()->insert();
   * lenet-5 uses tanh (I think?), not relu
   * lenet-5 is not using max-pooling but something more like average-pooling, and it has an activation function applied (sigmoid) (page 7, second column, bottom half)
   * lenet-5 is not connecting all filters from one layer with all filters of the next layer (Table I, of the paper)
-* Using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 14.6seconds, and test accuracy was around 98.6-98.7%, using ClConvolve v0.5, after 12 epochs
+* Note that the images are padded with a border of margin 2 by the implementation, as per lenet5
+* Using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 14.6seconds, and test accuracy was around 98.7%, using ClConvolve v0.5, after 12 epochs
 * Implementation: [test/testmnist-lenet5.cpp](test/testmnist-lenet5.cpp)
 
 ### Uniform layers
@@ -157,8 +158,8 @@ net->setBatchSize(128);
 | 98.5%| 15| 80.5 | 2| 32 | 5 | No  | v0.3(1) | 0.0001   |
 | 98.57% +/- 0.03%| 20| | 3  | 32 | 5 | No | v0.3(1) | 0.0001  |
 | 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | Yes| v0.3(1) | 0.0001    |
-| 98.6% +/- 0.2% | 12 | 13.8s | 2 conv, 2 pooling | 8,16 | 5 | Yes | next v0.7 (2) | 0.002 |
-| 98.6% +/- 0.2% | 12 | 14.6s | 2 conv, 2 pooling | 6,16 | 5 | Yes | next v0.7 (3) | 0.002 |
+| 98.7% +/- 0.1% | 12 | 13.8s | 2 conv 2 pool | 8,16 | conv:5,5 pool:2,3 | Yes | next v0.7 (2) | 0.002 |
+| 98.7% +/- 0.2% | 12 | 14.6s | 2 conv 2 pool | 6,16 | conv:5,5 pool:2,2 | Yes | next v0.7 (3) | 0.002 |
 
 * Notes:
   * (1) Using [testmnist](test/testmnist.cpp) or `testmnist-softmax`
@@ -428,7 +429,9 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
-
+* 25th January:
+  * Added gpu implementation for max-pooling forward-prop
+  * Added padZeros option for max-pooling
 * 24th January:
   * added max-pooling layer (albeit in cpu for now)
   * created draft 'lenet5' implementation, but it's not quite the same, specifically:
