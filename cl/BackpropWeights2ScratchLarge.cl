@@ -97,7 +97,7 @@ void kernel backprop_floats_withscratch_dobias_striped(
             const int stripeOutRowStart = stripe * gOutputStripeNumRows;
             const int stripeOutRowEndExcl = stripeOutRowStart + gOutputStripeNumRows;
             barrier(CLK_LOCAL_MEM_FENCE);
-            if( localId == 8 ) {
+            if( localId == 13 ) {
                 for( int i = 0; i < 12; i++ ) {
                     weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];
                 }

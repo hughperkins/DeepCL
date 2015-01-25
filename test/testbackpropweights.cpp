@@ -423,9 +423,10 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     CLWrapper *weights0Wrap = cl.wrap( 10000, weights0 );
     CLWrapper *weights1Wrap = cl.wrap( 10000, weights1 );
 
-    for( int i = ( dim.inputBoardSize - 10 ) * dim.inputBoardSize; i < ( dim.inputBoardSize - 9 ) * dim.inputBoardSize; i++ ) {
-        inputData[i] = 3;
-    }
+//    for( int i = 86 * dim.inputBoardSize; i < 86 * dim.inputBoardSize + 1; i++ ) {
+//        inputData[i] = 3;
+//    }
+    inputData[ 86 * 96 ] = 3;
 
 //    inputData[ 0 ] = 3;
 
