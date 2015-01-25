@@ -50,9 +50,9 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     numStripes = OpenCLHelper::getNextPower2( numStripes );
     cout << "numStripes: " << numStripes << endl;
 
-    int inputStripeMarginRows = dim.halfFilterSize;
+    int inputStripeMarginRows = dim.filterSize - 1;
     int inputStripeInnerNumRows = dim.inputBoardSize / numStripes;
-    int inputStripeOuterNumRows = inputStripeInnerNumRows + 2 * dim.halfFilterSize;
+    int inputStripeOuterNumRows = inputStripeInnerNumRows + 2 * inputStripeMarginRows;
 
     int inputStripeInnerSize = inputStripeInnerNumRows * dim.inputBoardSize;
     inputStripeOuterSize = inputStripeOuterNumRows * dim.inputBoardSize;

@@ -101,8 +101,8 @@ void kernel backprop_floats_withscratch_dobias_striped(
                 for( int i = 0; i < 12; i++ ) {
                     weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];
                 }
-                for( int i = 0; i < 16; i++ ) {
-                    weights[200 + stripe * 16 + i ] = _imageStripe[i * gInputBoardSize];
+                for( int i = 0; i < 20; i++ ) {
+                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputBoardSize];
                 }
             }
             if( localId < gFilterSizeSquared ) {

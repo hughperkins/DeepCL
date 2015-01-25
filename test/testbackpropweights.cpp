@@ -394,7 +394,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
 
 TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     LayerDimensions dim;
-    dim.setInputBoardSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 4 )
+    dim.setInputBoardSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningRate = 1;
@@ -423,10 +423,10 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     CLWrapper *weights0Wrap = cl.wrap( 10000, weights0 );
     CLWrapper *weights1Wrap = cl.wrap( 10000, weights1 );
 
-//    for( int i = 86 * dim.inputBoardSize; i < 86 * dim.inputBoardSize + 1; i++ ) {
-//        inputData[i] = 3;
-//    }
-    inputData[ 86 * 96 ] = 3;
+    for( int i = 0 * dim.inputBoardSize; i < dim.inputBoardSize * dim.inputBoardSize; i+= dim.inputBoardSize * 4 ) {
+        inputData[i] = 3;
+    }
+//    inputData[ 86 * 96 ] = 3;
 
 //    inputData[ 0 ] = 3;
 
@@ -442,8 +442,8 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
 //    inputData[85 * 96] = 42;
 //    inputData[95 * 96] = 7;
 
-    for( int i = 0; i < dim.outputBoardSize * dim.outputBoardSize; i++ ) {
-//        errors[i] = 2;
+    for( int i = 0; i < dim.outputBoardSize * dim.outputBoardSize; i+= dim.outputBoardSize ) {
+        errors[i] = 2;
     }
 
 //    errors[0] = 4;
@@ -453,7 +453,7 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
 
 //    errors[81 * 93] = 4;
 //    errors[82 * 93] = 15;
-    errors[83 * 93] = 8;
+//    errors[83 * 93] = 8;
 
 //    errors[84 * 93] = 3;
 //    errors[85 * 93] = 9;
@@ -477,25 +477,25 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     weights0Wrap->copyToHost();
     weights1Wrap->copyToHost();
 
-    for( int i = 0; i < 4; i++ ) {
-        for( int j = 0; j < 4; j++ ) {
-            cout << weights0[i*4+j] << " ";
+    for( int i = 0; i < 6; i++ ) {
+        for( int j = 0; j < 6; j++ ) {
+            cout << weights0[i*6+j] << " ";
         }
         cout << endl;
     }
     cout << endl;
-    for( int i = 0; i < 4; i++ ) {
-        for( int j = 0; j < 4; j++ ) {
-            cout << weights1[i*4+j] << " ";
+    for( int i = 0; i < 6; i++ ) {
+        for( int j = 0; j < 6; j++ ) {
+            cout << weights1[i*6+j] << " ";
         }
         cout << endl;
     }
 
     cout << endl;
     int isok = 1;
-    for( int i = 0; i < 4; i++ ) {
-        for( int j = 0; j < 4; j++ ) {
-            if( weights0[i*4+j] == weights1[i*4+j] ) {
+    for( int i = 0; i < 6; i++ ) {
+        for( int j = 0; j < 6; j++ ) {
+            if( weights0[i*6+j] == weights1[i*6+j] ) {
                 cout << ".";
             } else {
                 cout << "!";
@@ -516,10 +516,10 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     }
     cout << endl;
 
-    for( int i = 0; i < 16; i++ ) {
+    for( int i = 0; i < 20; i++ ) {
         cout << i << "=";
         for( int slice = 0; slice < 8; slice++ ) {
-            cout << weights1[200+ 16 * slice + i] << " ";
+            cout << weights1[200+ 20 * slice + i] << " ";
         }
         cout << endl;
     }
@@ -704,6 +704,13 @@ namespace testbackpropweights {
         compareSpecific( CompareSpecificArgs::instance()
             .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
             .filterSize( 4 ).biased( 0 ).padZeros( false )
+            .instance0(0).instance1(3) );
+    }
+
+    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller3 ) {
+        compareSpecific( CompareSpecificArgs::instance()
+            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
+            .filterSize( 6 ).biased( false ).padZeros( false )
             .instance0(0).instance1(3) );
     }
 }
