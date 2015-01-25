@@ -430,11 +430,11 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
 //    inputData[48 * 96 + 95] = 3;
 //    errors[47 * 93 + 92] = 6;
 
-    inputData[95 * 96 + 95] = 11;
+    inputData[95 * 96] = 11;
 //    errors[92 * 93 + 92] = 3;
 
 //    inputData[84 * 96 + 95] = 100;
-    errors[81 * 93 + 92] = 4;
+    errors[81 * 93] = 4;
     
     BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, &cl, dim );
     backpropWeightsImpl0->debug = true;
