@@ -556,7 +556,7 @@ namespace testbackpropweights {
     TEST( SLOW_testbackpropweights, compare_specific_96board_smaller ) {
         compareSpecific( CompareSpecificArgs::instance()
             .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 48 ).numFilters( 1 )
-            .filterSize( 6 ).biased( 1 ).padZeros( false )
+            .filterSize( 2 ).biased( 1 ).padZeros( false )
             .instance0(0).instance1(3) );
     }
 }
