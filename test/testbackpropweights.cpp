@@ -418,32 +418,63 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     memset( weights0, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
 
+    CLWrapper *errorsWrap = cl.wrap( 10000, errors );
+    CLWrapper *inputWrap = cl.wrap( 10000, inputData );
+    CLWrapper *weights0Wrap = cl.wrap( 10000, weights0 );
+    CLWrapper *weights1Wrap = cl.wrap( 10000, weights1 );
+
+    for( int i = ( dim.inputBoardSize - 10 ) * dim.inputBoardSize; i < ( dim.inputBoardSize - 9 ) * dim.inputBoardSize; i++ ) {
+        inputData[i] = 3;
+    }
+
 //    inputData[ 0 ] = 3;
+
+//    inputData[47 * 96] = 9;
+//    inputData[48 * 96] = 3;
+
+//    inputData[71 * 96] = 17;
+//    inputData[72 * 96] = 13;
+
+//    inputData[82 * 96] = 16;
+//    inputData[83 * 96] = 18;
+//    inputData[84 * 96] = 100;
+//    inputData[85 * 96] = 42;
+//    inputData[95 * 96] = 7;
+
+    for( int i = 0; i < dim.outputBoardSize * dim.outputBoardSize; i++ ) {
+//        errors[i] = 2;
+    }
+
 //    errors[0] = 4;
 
-//    inputData[95 * 96] = 7;
+//    errors[46 * 93] = 4;
+//    errors[47 * 93] = 6;
+
+//    errors[81 * 93] = 4;
+//    errors[82 * 93] = 15;
+    errors[83 * 93] = 8;
+
+//    errors[84 * 93] = 3;
+//    errors[85 * 93] = 9;
+
 //    errors[92 * 93] = 5;
 
-//    inputData[47 * 96 + 95] = 9;
-//    errors[46 * 93 + 92] = 4;
 
-//    inputData[48 * 96 + 95] = 3;
-//    errors[47 * 93 + 92] = 6;
-
-    inputData[95 * 96] = 11;
-//    errors[92 * 93 + 92] = 3;
-
-//    inputData[84 * 96 + 95] = 100;
-    errors[81 * 93] = 4;
+    errorsWrap->copyToDevice();
+    inputWrap->copyToDevice();
+    weights0Wrap->copyToDevice();
+    weights1Wrap->copyToDevice();
     
     BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, &cl, dim );
     backpropWeightsImpl0->debug = true;
     backpropWeightsImpl0->backpropWeights( batchSize, learningRate,
-        errors, inputData, weights0, 0 );
+        errorsWrap, inputWrap, weights0Wrap, 0 );
     BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 3, &cl, dim );
     backpropWeightsImpl1->debug = true;
     backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
-        errors, inputData, weights1, 0 );
+        errorsWrap, inputWrap, weights1Wrap, 0 );
+    weights0Wrap->copyToHost();
+    weights1Wrap->copyToHost();
 
     for( int i = 0; i < 4; i++ ) {
         for( int j = 0; j < 4; j++ ) {
@@ -474,6 +505,23 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     }
     cout << endl;
     EXPECT_EQ( 1, isok );
+
+    for( int i = 0; i < 12; i++ ) {
+        cout << i << "=";
+        for( int slice = 0; slice < 8; slice++ ) {
+            cout << weights1[100+ 12 * slice + i] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+
+    for( int i = 0; i < 16; i++ ) {
+        cout << i << "=";
+        for( int slice = 0; slice < 8; slice++ ) {
+            cout << weights1[200+ 16 * slice + i] << " ";
+        }
+        cout << endl;
+    }
 }
 
 class CompareSpecificArgs {

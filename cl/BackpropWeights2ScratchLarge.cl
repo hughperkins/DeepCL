@@ -97,14 +97,23 @@ void kernel backprop_floats_withscratch_dobias_striped(
             const int stripeOutRowStart = stripe * gOutputStripeNumRows;
             const int stripeOutRowEndExcl = stripeOutRowStart + gOutputStripeNumRows;
             barrier(CLK_LOCAL_MEM_FENCE);
+            if( localId == 8 ) {
+                for( int i = 0; i < 12; i++ ) {
+                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];
+                }
+                for( int i = 0; i < 16; i++ ) {
+                    weights[200 + stripe * 16 + i ] = _imageStripe[i * gInputBoardSize];
+                }
+            }
             if( localId < gFilterSizeSquared ) {
                 for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {
                     int upstreamRow = outRow - gMargin + filterRow;
                     for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
                         int upstreamCol = outCol - gMargin + filterCol;
-                        bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize
-                            && upstreamCol < gInputBoardSize; // dont need to check more than this, since
-                                                              // the inputstripe margin means we have
+                        bool proceed = 
+                            upstreamRow >= 0 && upstreamCol >= 0 
+                            && upstreamRow < gInputBoardSize && upstreamCol < gInputBoardSize
+                            && outRow < gOutputBoardSize;
                         if( proceed ) {
                             int resultIndex = outRow * gOutputBoardSize + outCol;
                             float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];
