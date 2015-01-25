@@ -23,14 +23,23 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
-    return new BackpropWeights2ScratchLarge( cl, dim );
-
     if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
             && dim.inputBoardSize <= 32 ) { // if inputboardsize too big, we run out of local memory
         return new BackpropWeights2Scratch( cl, dim );
+    } else if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
+        return new BackpropWeights2ScratchLarge( cl, dim );
     } else {
         return new BackpropWeights2Naive( cl, dim );
     }
+
+//    return new BackpropWeights2ScratchLarge( cl, dim );
+
+//    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
+//            && dim.inputBoardSize <= 32 ) { // if inputboardsize too big, we run out of local memory
+//        return new BackpropWeights2Scratch( cl, dim );
+//    } else {
+//        return new BackpropWeights2Naive( cl, dim );
+//    }
 }
 STATIC BackpropWeights2 *BackpropWeights2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     return new BackpropWeights2ScratchLarge( cl, layerDimensions );

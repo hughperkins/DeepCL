@@ -94,7 +94,7 @@ VIRTUAL void BackpropWeights2ScratchLarge::backpropWeights( int batchSize, float
     int numWorkgroups = dim.inputPlanes * dim.numFilters;
     int globalSize = workgroupSize * numWorkgroups;
 //    globalSize = ( ( globalSize + workgroupSize - 1 ) / workgroupSize ) * workgroupSize;
-    cout << "workgroupsize " << workgroupSize << " numworkgroups " << numWorkgroups << " globalsize " << globalSize << endl;
+//    cout << "workgroupsize " << workgroupSize << " numworkgroups " << numWorkgroups << " globalsize " << globalSize << endl;
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
