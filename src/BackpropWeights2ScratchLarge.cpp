@@ -74,7 +74,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     // [[[end]]]
     cout << "options: " << options << endl;
 
-    kernel = cl->buildKernel( "backpropweights2.cl", "backprop_floats_withscratch_dobias_striped", options );
+    kernel = cl->buildKernel( "BackpropWeights2ScratchLarge.cl", "backprop_floats_withscratch_dobias_striped", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options );
 }
 VIRTUAL BackpropWeights2ScratchLarge::~BackpropWeights2ScratchLarge() {

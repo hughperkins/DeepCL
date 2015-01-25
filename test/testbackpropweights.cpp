@@ -386,87 +386,178 @@ TEST( testbackpropweights, backprop_weights_2_upstreamboardsize17_filtersize1_mo
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedResults );
 }
 
-TEST( SLOW_testbackpropweights, compare_specific ) {
-    const int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize( 19 ).setNumFilters( 32 ).setFilterSize( 3 )
-        .setBiased( false ).setPadZeros( true );
-//    ActivationFunction *fn = new LinearActivation();
-    int learningRate = 1.0f;
+class CompareSpecificArgs {
+public:
+    static CompareSpecificArgs instance(){ CompareSpecificArgs args; return args; };
 
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
-    int weightsSize = dim.filtersSize;
+    // [[[cog
+    // floats= []
+    // ints = [  'inputPlanes', 'inputBoardSize', 'numFilters', 'filterSize',
+    //    'batchSize', 'biased', 'padZeros', 'instance0', 'instance1' ]
+    // import cog_fluent
+    // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
+    // ]]]
 
-    float *errors = new float[max(10000, resultsSize )];
-    float *inputData = new float[max(10000, inputSize )];
-    float *weights1 = new float[max(10000, weightsSize ) ];
-    float *weights2 = new float[max(10000, weightsSize ) ];
+    int _inputPlanes = 0;
+    int _inputBoardSize = 0;
+    int _numFilters = 0;
+    int _filterSize = 0;
+    int _batchSize = 0;
+    int _biased = 0;
+    int _padZeros = 0;
+    int _instance0 = 0;
+    int _instance1 = 0;
 
-    memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
-    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
-    memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
-    memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
+    CompareSpecificArgs inputPlanes( int _inputPlanes ) {
+        this->_inputPlanes = _inputPlanes;
+        return *this;
+    }
+    CompareSpecificArgs inputBoardSize( int _inputBoardSize ) {
+        this->_inputBoardSize = _inputBoardSize;
+        return *this;
+    }
+    CompareSpecificArgs numFilters( int _numFilters ) {
+        this->_numFilters = _numFilters;
+        return *this;
+    }
+    CompareSpecificArgs filterSize( int _filterSize ) {
+        this->_filterSize = _filterSize;
+        return *this;
+    }
+    CompareSpecificArgs batchSize( int _batchSize ) {
+        this->_batchSize = _batchSize;
+        return *this;
+    }
+    CompareSpecificArgs biased( int _biased ) {
+        this->_biased = _biased;
+        return *this;
+    }
+    CompareSpecificArgs padZeros( int _padZeros ) {
+        this->_padZeros = _padZeros;
+        return *this;
+    }
+    CompareSpecificArgs instance0( int _instance0 ) {
+        this->_instance0 = _instance0;
+        return *this;
+    }
+    CompareSpecificArgs instance1( int _instance1 ) {
+        this->_instance1 = _instance1;
+        return *this;
+    }
+    // [[[end]]]
+};
 
-//    WeightRandomizer::randomize( errors, max(10000, resultsSize ), 0.4, 1 );
-//    WeightRandomizer::randomize( results, max( 10000, resultsSize), 1, 2 );
-//    WeightRandomizer::randomize( inputData, max(10000, inputSize ), 0.2, 3 );
+namespace testbackpropweights {
+    void compareSpecific( CompareSpecificArgs args ) {
+        const int batchSize = args._batchSize;
+        LayerDimensions dim;
+        dim.setInputPlanes( args._inputPlanes ).setInputBoardSize( args._inputBoardSize )
+            .setNumFilters( args._numFilters ).setFilterSize( args._filterSize )
+            .setBiased( args._biased ).setPadZeros( args._padZeros );
 
-    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 1, 3 );
-    WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 1, 3 );
+        int learningRate = 1.0f;
 
-    OpenCLHelper cl;
-    
-    BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 0, &cl, dim );
-    backpropWeightsImpl1->debug = true;
-    backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
-        errors, inputData, weights1, 0 );
-    BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( 1, &cl, dim );
-    backpropWeightsImpl2->debug = true;
-    backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
-        errors, inputData, weights2, 0 );
+        int resultsSize = batchSize * dim.outputCubeSize;
+        int inputSize = batchSize * dim.inputCubeSize;
+        int weightsSize = dim.filtersSize;
+        int biasWeightsSize = dim.numFilters;
 
-    cout << dim << endl;
-    for( int i = 0; i < 25; i++ ) {
-        cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
-        if( i < weightsSize ) {
-            if( abs( weights1[i] - weights2[i] ) <= abs(weights1[i]) / 10000.0f ) {
-                cout << " SAME";
+        float *biasWeights1 = new float[ biasWeightsSize ];
+        float *biasWeights2 = new float[ biasWeightsSize ];
+        memset( biasWeights1, 0, sizeof(float) * biasWeightsSize );
+        memset( biasWeights2, 0, sizeof(float) * biasWeightsSize );
+
+        float *errors = new float[max(10000, resultsSize )];
+        float *inputData = new float[max(10000, inputSize )];
+        float *weights1 = new float[max(10000, weightsSize ) ];
+        float *weights2 = new float[max(10000, weightsSize ) ];
+
+        memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
+        memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
+        memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
+        memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
+
+        WeightRandomizer::randomize( errors, max(10000, resultsSize ), -0.1f, 0.1f );
+    //    WeightRandomizer::randomize( results, max( 10000, resultsSize), 1, 2 );
+        WeightRandomizer::randomize( inputData, max(10000, inputSize ), -0.3f, 0.7f );
+
+    //    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 1, 3 );
+    //    WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 1, 3 );
+
+        OpenCLHelper cl;
+        
+        BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( args._instance0, &cl, dim );
+        backpropWeightsImpl1->debug = true;
+        backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
+            errors, inputData, weights1, biasWeights1 );
+        BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( args._instance1, &cl, dim );
+        backpropWeightsImpl2->debug = true;
+        backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
+            errors, inputData, weights2, biasWeights2 );
+
+        cout << dim << endl;
+        for( int i = 0; i < 25; i++ ) {
+            cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
+            if( i < weightsSize ) {
+                if( abs( weights1[i] - weights2[i] ) <= abs(weights1[i]) / 10000.0f ) {
+                    cout << " SAME";
+                } else {
+                    cout << " DIFF";
+                }
             } else {
-                cout << " DIFF";
+                cout << "     ";
             }
-        } else {
-            cout << "     ";
+            cout << "  || " << weights2[100+i] ;
+            cout << "  || " << weights2[200+i] ;
+            cout << "  || " << weights2[300+i] ;
+            cout << "  || " << weights2[400+i] ;
+            cout << "  || " << weights2[500+i] ;
+            cout << "  || " << weights2[600+i] ;
+            cout << "  || " << weights2[700+i] << endl;
         }
-        cout << "  || " << weights2[100+i] ;
-        cout << "  || " << weights2[200+i] ;
-        cout << "  || " << weights2[300+i] ;
-        cout << "  || " << weights2[400+i] ;
-        cout << "  || " << weights2[500+i] ;
-        cout << "  || " << weights2[600+i] ;
-        cout << "  || " << weights2[700+i] << endl;
-    }
-    bool same = true;
-    int errCount = 0;
-    for( int i = 0; i < weightsSize; i++ ) {
-        if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
-            cout << "DIFF: i " << i << " " << weights1[i] << " != " << weights2[i] << endl;
-            same = false;
-            errCount++;
-            if( errCount == 5 ) {
-                cout << " ... " << endl;
-                break;
+        bool same = true;
+        int errCount = 0;
+        for( int i = 0; i < weightsSize; i++ ) {
+            if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
+                cout << "DIFF: i " << i << " " << weights1[i] << " != " << weights2[i] << endl;
+                same = false;
+                errCount++;
+                if( errCount == 5 ) {
+                    cout << " ... " << endl;
+                    break;
+                }
             }
         }
+        EXPECT_EQ( true, same );
+
+        delete backpropWeightsImpl1;
+        delete backpropWeightsImpl2;
+
+        delete[] weights1;
+        delete[] weights2;
+        delete[] errors;
+        delete[] inputData;
     }
-    EXPECT_EQ( true, same );
 
-    delete backpropWeightsImpl1;
-    delete backpropWeightsImpl2;
+    TEST( SLOW_testbackpropweights, compare_specific ) {
+        compareSpecific( CompareSpecificArgs::instance()
+            .batchSize( 128 ).inputPlanes( 32 ).inputBoardSize( 19 ).numFilters( 32 )
+            .filterSize( 3 ).biased( 0 ).padZeros( false )
+            .instance0(1).instance1(3) );
+    }
 
-    delete[] weights1;
-    delete[] weights2;
-    delete[] errors;
-    delete[] inputData;
+    TEST( SLOW_testbackpropweights, compare_specific_96board ) {
+        compareSpecific( CompareSpecificArgs::instance()
+            .batchSize( 128 ).inputPlanes( 2 ).inputBoardSize( 96 ).numFilters( 8 )
+            .filterSize( 6 ).biased( 1 ).padZeros( false )
+            .instance0(0).instance1(3) );
+    }
+
+    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller ) {
+        compareSpecific( CompareSpecificArgs::instance()
+            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 48 ).numFilters( 1 )
+            .filterSize( 6 ).biased( 1 ).padZeros( false )
+            .instance0(0).instance1(3) );
+    }
 }
 
