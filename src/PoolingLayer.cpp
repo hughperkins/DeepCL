@@ -21,9 +21,11 @@ using namespace std;
 
 PoolingLayer::PoolingLayer( Layer *previousLayer, PoolingMaker const*maker ) :
         Layer( previousLayer, maker ),
+        padZeros( maker->_padZeros ),
         poolingSize( maker->_poolingSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputBoardSize( previousLayer->getOutputBoardSize() ),
+        outputBoardSize( maker->_padZeros ? ( previousLayer->getOutputBoardSize() + maker->_poolingSize - 1 ) / maker->_poolingSize : previousLayer->getOutputBoardSize() / maker->_poolingSize ),
         results(0),
         errorsForUpstream(0),
         selectors(0),
@@ -35,8 +37,8 @@ PoolingLayer::PoolingLayer( Layer *previousLayer, PoolingMaker const*maker ) :
         batchSize(0),
         allocatedSize(0),
         cl( maker->net->getCl() ){
-    poolingPropagateImpl = PoolingPropagate::instance( cl, numPlanes, inputBoardSize, poolingSize );
-    poolingBackpropImpl = PoolingBackprop::instance( cl, numPlanes, inputBoardSize, poolingSize );
+    poolingPropagateImpl = PoolingPropagate::instance( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
+    poolingBackpropImpl = PoolingBackprop::instance( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
 }
 VIRTUAL PoolingLayer::~PoolingLayer() {
     delete poolingPropagateImpl;
@@ -93,7 +95,7 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
 }
 VIRTUAL int PoolingLayer::getResultsSize() {
-    return batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
+    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
 }
 VIRTUAL float *PoolingLayer::getResults() {
     if( !resultsCopiedToHost ) {
@@ -107,7 +109,7 @@ VIRTUAL int PoolingLayer::getResultsSize() const {
     return batchSize * numPlanes * outputBoardSize * outputBoardSize;
 }
 VIRTUAL int PoolingLayer::getOutputBoardSize() const {
-    return inputBoardSize / poolingSize;
+    return outputBoardSize;
 }
 VIRTUAL int PoolingLayer::getOutputPlanes() const {
     return numPlanes;

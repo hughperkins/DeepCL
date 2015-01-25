@@ -20,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingPropagate( cl, numPlanes, inputBoardSize, poolingSize ) {
+PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
+        PoolingPropagate( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
 }
 VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
     inputWrapper->copyToHost();
@@ -57,10 +57,12 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *s
                     float maxValue = input[ getInputIndex( n, plane, inputRow, inputCol ) ];
                     for( int dx = 0; dx < poolingSize; dx++ ) {
                         for( int dy = 0; dy < poolingSize; dy++ ) {
-                            float thisValue = input[ getInputIndex( n, plane, inputRow + dx, inputCol + dy ) ];
-                            if( thisValue > maxValue ) {
-                                maxValue = thisValue;
-                                selector = dx * poolingSize + dy;
+                            if( inputRow + dx < inputBoardSize && inputCol + dy < inputBoardSize ) {
+                                float thisValue = input[ getInputIndex( n, plane, inputRow + dx, inputCol + dy ) ];
+                                if( thisValue > maxValue ) {
+                                    maxValue = thisValue;
+                                    selector = dx * poolingSize + dy;
+                                }
                             }
                         }
                     }

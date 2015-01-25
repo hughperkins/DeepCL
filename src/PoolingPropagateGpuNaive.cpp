@@ -21,11 +21,11 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingPropagate( cl, numPlanes, inputBoardSize, poolingSize ) {
+PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
+        PoolingPropagate( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
     string options = "";
-    options += " -DgOutputBoardSize=" + toString( inputBoardSize / poolingSize );
-    options += " -DgOutputBoardSizeSquared=" + toString( inputBoardSize * inputBoardSize / poolingSize / poolingSize );
+    options += " -DgOutputBoardSize=" + toString( outputBoardSize );
+    options += " -DgOutputBoardSizeSquared=" + toString( outputBoardSize * outputBoardSize );
     options += " -DgInputBoardSize=" + toString( inputBoardSize );
     options += " -DgInputBoardSizeSquared=" + toString( inputBoardSize * inputBoardSize );
     options += " -DgPoolingSize=" + toString( poolingSize );
@@ -39,7 +39,7 @@ VIRTUAL void PoolingPropagateGpuNaive::propagate( int batchSize, CLWrapper *inpu
     StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::propagate start" );
 
     kernel->input( batchSize )->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
-    int globalSize = batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
+    int globalSize = batchSize * numPlanes * outputBoardSize * outputBoardSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
     kernel->run_1d(globalSize, workgroupsize);

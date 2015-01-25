@@ -20,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingBackprop( cl, numPlanes, inputBoardSize, poolingSize ) {
+PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
+        PoolingBackprop( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
 }
 VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream ) {
     memset( errorsForUpstream, 0, sizeof( float ) * getInputSize( batchSize ) );

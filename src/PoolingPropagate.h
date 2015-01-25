@@ -16,6 +16,7 @@ class PoolingPropagate {
 public:
     OpenCLHelper *cl;
 
+    const bool padZeros;
     const int numPlanes;
     const int inputBoardSize;
     const int poolingSize;
@@ -40,10 +41,10 @@ public:
     // cog_addheaders.add()
     // ]]]
 
-    PoolingPropagate( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingPropagate( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingPropagate *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingPropagate *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL void propagate( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
     VIRTUAL void propagate( int batchSize, float *input, int *selectors, float *output );
     VIRTUAL int getInputSize( int batchSize );

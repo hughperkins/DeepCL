@@ -218,6 +218,11 @@ Available options:
 ```c++
 net->poolingMaker()->poolingSize(2)->insert();
 ```
+* By default, if the input board size is not an exact multiple of the poolingsize, the extra margin will be ignored
+* You can specify `padZeros` to include this margin:
+```c++
+net->poolingMaker()->poolingSize(2)->padZeros()->insert();
+```
 
 *Loss layer*
 

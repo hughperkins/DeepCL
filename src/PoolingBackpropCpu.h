@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
 
-    PoolingBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL void backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );

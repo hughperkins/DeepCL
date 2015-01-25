@@ -16,6 +16,7 @@ class PoolingBackprop {
 public:
     OpenCLHelper *cl;
 
+    const bool padZeros;
     const int numPlanes;
     const int inputBoardSize;
     const int poolingSize;
@@ -40,10 +41,10 @@ public:
     // cog_addheaders.add()
     // ]]]
 
-    STATIC PoolingBackprop *instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize);
-    STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
-    PoolingBackprop( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingBackprop *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize);
+    STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getResultsSize(int batchSize);
     VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream );

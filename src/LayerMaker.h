@@ -65,11 +65,16 @@ class PoolingMaker : public LayerMaker {
 public:
 //    Layer *previousLayer;
     int _poolingSize = 2;
+    bool _padZeros = false;
     PoolingMaker( NeuralNet *net, Layer *previousLayer ) :
         LayerMaker( net, previousLayer ) {
     }
     PoolingMaker *poolingSize( int _poolingSize ) {
         this->_poolingSize = _poolingSize;
+        return this;
+    }
+    PoolingMaker *padZeros() {
+        this->_padZeros = true;
         return this;
     }
     virtual int getOutputBoardSize() const;

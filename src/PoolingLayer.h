@@ -16,9 +16,12 @@ class PoolingBackprop;
 
 class PoolingLayer : public Layer {
 public:
+    const bool padZeros;
     const int numPlanes;
     const int inputBoardSize;
     const int poolingSize;
+
+    const int outputBoardSize;
 
     OpenCLHelper *const cl; // NOT owned by us
     PoolingPropagate *poolingPropagateImpl;

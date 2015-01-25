@@ -10,6 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
+#include "test/WeightRandomizer.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ TEST( testpoolingpropagate, basic ) {
     int boardSize = 4;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -52,7 +53,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     int boardSize = 2;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -92,7 +93,7 @@ TEST( testpoolingpropagate, fromwrappers ) {
     int boardSize = 4;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, &cl, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, &cl, false, numPlanes, boardSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -132,4 +133,182 @@ TEST( testpoolingpropagate, fromwrappers ) {
     delete[] output;
 }
 
+class CompareSpecificArgs{
+public:
+    static CompareSpecificArgs instance(){ CompareSpecificArgs args; return args; };
+
+    // [[[cog
+    // floats= []
+    // ints = ['batchSize', 'numPlanes', 'boardSize', 'poolingSize', 'instance0', 'instance1', 'padZeros' ]
+    // import cog_fluent
+    // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
+    // ]]]
+
+    int _batchSize = 0;
+    int _numPlanes = 0;
+    int _boardSize = 0;
+    int _poolingSize = 0;
+    int _instance0 = 0;
+    int _instance1 = 0;
+    int _padZeros = 0;
+
+    CompareSpecificArgs batchSize( int _batchSize ) {
+        this->_batchSize = _batchSize;
+        return *this;
+    }
+    CompareSpecificArgs numPlanes( int _numPlanes ) {
+        this->_numPlanes = _numPlanes;
+        return *this;
+    }
+    CompareSpecificArgs boardSize( int _boardSize ) {
+        this->_boardSize = _boardSize;
+        return *this;
+    }
+    CompareSpecificArgs poolingSize( int _poolingSize ) {
+        this->_poolingSize = _poolingSize;
+        return *this;
+    }
+    CompareSpecificArgs instance0( int _instance0 ) {
+        this->_instance0 = _instance0;
+        return *this;
+    }
+    CompareSpecificArgs instance1( int _instance1 ) {
+        this->_instance1 = _instance1;
+        return *this;
+    }
+    CompareSpecificArgs padZeros( int _padZeros ) {
+        this->_padZeros = _padZeros;
+        return *this;
+    }
+    // [[[end]]]
+};
+
+void compareSpecific( CompareSpecificArgs args ) {
+    int batchSize = args._batchSize;
+    int numPlanes = args._numPlanes;
+    int boardSize = args._boardSize;
+    int poolingSize = args._poolingSize;
+    OpenCLHelper cl;
+
+    PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, &cl, args._padZeros, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, &cl, args._padZeros, numPlanes, boardSize, poolingSize );
+
+    const int inputSize = batchSize * numPlanes * boardSize * boardSize;
+    int outputSize = poolingPropagate0->getResultsSize( batchSize );
+
+    float *input = new float[ inputSize ];
+    int *selectors = new int[ outputSize ];
+    float *output = new float[ outputSize ];
+
+    CLWrapper *inputWrapper = cl.wrap( inputSize, input );
+    CLWrapper *selectorsWrapper = cl.wrap( outputSize, selectors );
+    CLWrapper *outputWrapper = cl.wrap( outputSize, output );
+
+    WeightRandomizer::randomize( input, inputSize );
+
+    memset( selectors, 99, sizeof(int) * outputSize );
+    memset( output, 99, sizeof(int) * outputSize );
+
+    inputWrapper->copyToDevice();
+    selectorsWrapper->copyToDevice();
+    outputWrapper->copyToDevice();
+
+    poolingPropagate0->propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    selectorsWrapper->copyToHost();
+    outputWrapper->copyToHost();
+
+    int *selectors0 = new int[ outputSize ];
+    float *output0 = new float[ outputSize ];
+    memcpy( selectors0, selectors, sizeof(int) * outputSize );
+    memcpy( output0, output, sizeof(float) * outputSize );
+    
+    memset( selectors, 99, sizeof(int) * outputSize );
+    memset( output, 99, sizeof(int) * outputSize );
+
+    inputWrapper->copyToDevice();
+    selectorsWrapper->copyToDevice();
+    outputWrapper->copyToDevice();
+
+    poolingPropagate1->propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    selectorsWrapper->copyToHost();
+    outputWrapper->copyToHost();
+    
+    int numErrors = 0;
+    for( int i = 0; i < outputSize; i++ ) {
+        if( selectors[i] != selectors0[i] ) {
+            cout << "ERROR: selectors[" << i << "] instance0:" << selectors0[i] << " != instance1:" << selectors[i] << endl;
+            numErrors++;
+        }
+        if( output[i] != output0[i] ) {
+            cout << "ERROR: output[" << i << "] instance0:" << output0[i] << " != instance1:" << output[i] << endl;
+            numErrors++;
+        }
+        if( numErrors >= 10 ) {
+            cout << "More than 10 errors. Skipping the rest :-)" << endl;
+            break;
+        }
+    }
+    EXPECT_EQ( 0, numErrors );
+    if( numErrors > 0 ) {
+        int num2dPlanes = inputSize / boardSize / boardSize;
+        for( int plane = 0; plane < num2dPlanes; plane++ ) {
+            cout << "2dplane " << plane << ":" << endl;
+            for( int i = 0; i < boardSize; i++ ) {
+                string line = "";
+                for( int j = 0; j < boardSize; j++ ) {
+                    line += toString( input[ plane * boardSize * boardSize + i * boardSize + j] ) + " ";
+                }
+                cout << line << endl;
+            }
+            cout << endl;
+        }
+    }
+
+    delete inputWrapper;
+    delete selectorsWrapper;
+    delete outputWrapper;
+    delete poolingPropagate0;
+    delete poolingPropagate1;
+    delete[] selectors0;
+    delete[] output0;
+    delete[] selectors;
+    delete[] output;
+    delete[] input;
+}
+
+TEST( testpoolingpropagate, comparespecific_0_1_pooling2 ) {
+    compareSpecific( CompareSpecificArgs::instance()
+        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(2)
+        .instance0(0).instance1(1) );
+}
+
+TEST( testpoolingpropagate, comparespecific_0_1_pooling3 ) {
+    compareSpecific( CompareSpecificArgs::instance()
+        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(3)
+        .instance0(0).instance1(1) );
+}
+
+TEST( testpoolingpropagate, comparespecific_0_1_pooling2_pz ) {
+    compareSpecific( CompareSpecificArgs::instance()
+        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(2)
+        .instance0(0).instance1(1).padZeros(1) );
+}
+
+TEST( testpoolingpropagate, comparespecific_0_1_pooling3_pz ) {
+    compareSpecific( CompareSpecificArgs::instance()
+        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(3)
+        .instance0(0).instance1(1).padZeros(1) );
+}
+
+TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small ) {
+    compareSpecific( CompareSpecificArgs::instance()
+        .batchSize(1).numPlanes(1).boardSize(2).poolingSize(3)
+        .instance0(0).instance1(1).padZeros(1) );
+}
+
+TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small2 ) {
+    compareSpecific( CompareSpecificArgs::instance()
+        .batchSize(2).numPlanes(1).boardSize(2).poolingSize(3)
+        .instance0(0).instance1(1).padZeros(1) );
+}
 

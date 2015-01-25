@@ -130,11 +130,11 @@ void go(Config config) {
 
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
-    net->poolingMaker()->poolingSize(2)->insert();
-    net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
-    net->poolingMaker()->poolingSize(3)->insert();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance(); // 28
+    net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert(); // 28
+    net->poolingMaker()->poolingSize(2)->insert();  // 14
+    net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert(); // 14
+    net->poolingMaker()->poolingSize(3)->insert(); // 5
     net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
     net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
@@ -178,9 +178,11 @@ void go(Config config) {
                 net->setBatchSize( thisNodeBatchSize );
             }
             #ifdef MPI_AVAILABLE
-            StatefulTimer::timeCheck("copyNetWeightsToArray START");
-            WeightsPersister::copyNetWeightsToArray( net, weightsCopy );
-            StatefulTimer::timeCheck("copyNetWeightsToArray END");
+            if( mysize > 0 ) {
+                StatefulTimer::timeCheck("copyNetWeightsToArray START");
+                WeightsPersister::copyNetWeightsToArray( net, weightsCopy );
+                StatefulTimer::timeCheck("copyNetWeightsToArray END");
+            }
             #endif
             net->propagate( &(boardsFloat[nodeBatchStart][0][0]) );
             net->backPropFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
@@ -195,22 +197,24 @@ void go(Config config) {
             // we want: wnew = wold + dw1 + dw2 = wnew1 + wnew2 - wold
             // seems like we should keep a copy of the old weights, otherwise cannot compute
             #ifdef MPI_AVAILABLE
-            StatefulTimer::timeCheck("allreduce START");
-            WeightsPersister::copyNetWeightsToArray( net, newWeights );
-            StatefulTimer::timeCheck("allreduce done copyNetWeightsToArray");
-            if( myrank == 0 ) {
-                for( int i = 0; i < totalWeightsSize; i++ ) {
-                    weightsChange[i] = newWeights[i];
+            if( mysize > 0 ) {
+                StatefulTimer::timeCheck("allreduce START");
+                WeightsPersister::copyNetWeightsToArray( net, newWeights );
+                StatefulTimer::timeCheck("allreduce done copyNetWeightsToArray");
+                if( myrank == 0 ) {
+                    for( int i = 0; i < totalWeightsSize; i++ ) {
+                        weightsChange[i] = newWeights[i];
+                    }
+                } else {
+                    for( int i = 0; i < totalWeightsSize; i++ ) {
+                        weightsChange[i] = newWeights[i] - weightsCopy[i];
+                    }
                 }
-            } else {
-                for( int i = 0; i < totalWeightsSize; i++ ) {
-                    weightsChange[i] = newWeights[i] - weightsCopy[i];
-                }
+                MPI_Allreduce( weightsChange, weightsChangeReduced, totalWeightsSize, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
+                StatefulTimer::timeCheck("allreduce done Allreduce");
+                WeightsPersister::copyArrayToNetWeights( weightsChangeReduced, net );
+                StatefulTimer::timeCheck("allreduce END");
             }
-            MPI_Allreduce( weightsChange, weightsChangeReduced, totalWeightsSize, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
-            StatefulTimer::timeCheck("allreduce done Allreduce");
-            WeightsPersister::copyArrayToNetWeights( weightsChangeReduced, net );
-            StatefulTimer::timeCheck("allreduce END");
             #endif            
         }
         StatefulTimer::dump(true);

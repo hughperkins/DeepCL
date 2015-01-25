@@ -26,14 +26,17 @@ kernel void propagateNaive( const int batchSize, global const float *input, glob
     const int inputCol = outputCol * gPoolingSize;
     const int inputBoardOffset = ( n * gNumPlanes + plane ) * gInputBoardSizeSquared;
     int selector = 0;
-    int poolOffset = inputBoardOffset + inputRow * gInputBoardSize + inputCol;
-    float maxValue = input[ poolOffset ];
+    int poolInputOffset = inputBoardOffset + inputRow * gInputBoardSize + inputCol;
+    float maxValue = input[ poolInputOffset ];
     for( int dRow = 0; dRow < gPoolingSize; dRow++ ) {
         for( int dCol = 0; dCol < gPoolingSize; dCol++ ) {
-            float thisValue = input[ poolOffset + dRow * gInputBoardSize + dCol ];
-            if( thisValue > maxValue ) {
-                maxValue = thisValue;
-                selector = dRow * gPoolingSize + dCol;
+            bool process = ( inputRow + dRow < gInputBoardSize ) && ( inputCol + dCol < gInputBoardSize );
+            if( process ) {
+                float thisValue = input[ poolInputOffset + dRow * gInputBoardSize + dCol ];
+                if( thisValue > maxValue ) {
+                    maxValue = thisValue;
+                    selector = dRow * gPoolingSize + dCol;
+                }
             }
         }
     }

@@ -19,7 +19,7 @@ TEST( testpoolingbackprop, basic ) {
     int boardSize = 4;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( &cl, numPlanes, boardSize, poolingSize );
+    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
     float errors[] = {
         3, 5,
         2, 9
@@ -54,7 +54,7 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
     int boardSize = 2;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( &cl, numPlanes, boardSize, poolingSize );
+    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
     float errors[] = {
         3, 
         5,

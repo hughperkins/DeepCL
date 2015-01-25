@@ -21,30 +21,34 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC PoolingBackprop *PoolingBackprop::instance( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) {
-    return new PoolingBackpropCpu( cl, numPlanes, inputBoardSize, poolingSize );
+STATIC PoolingBackprop *PoolingBackprop::instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) {
+    return new PoolingBackpropCpu( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
 }
-STATIC PoolingBackprop *PoolingBackprop::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize) {
-    return new PoolingBackpropCpu( cl, numPlanes, inputBoardSize, poolingSize );
+STATIC PoolingBackprop *PoolingBackprop::instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize) {
+    return new PoolingBackpropCpu( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
 }
-STATIC PoolingBackprop *PoolingBackprop::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) {
+STATIC PoolingBackprop *PoolingBackprop::instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) {
     if( idx == 0 ) {
-        return new PoolingBackpropCpu( cl, numPlanes, inputBoardSize, poolingSize );
+        return new PoolingBackpropCpu( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
     }
     throw runtime_error("PoolingBackprop::instanceSpecific, idx not known: " + toString( idx ) );
 }
-PoolingBackprop::PoolingBackprop( OpenCLHelper *cl, int numPlanes, int inputBoardSize, int poolingSize ) :
+PoolingBackprop::PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
         cl( cl ),
+        padZeros( padZeros ),
         numPlanes( numPlanes ),
         inputBoardSize( inputBoardSize ),
         poolingSize( poolingSize ),
-        outputBoardSize( inputBoardSize / poolingSize ) {
+        outputBoardSize( padZeros ? ( inputBoardSize + poolingSize - 1 ) / poolingSize : inputBoardSize / poolingSize ) {
+//    if( inputBoardSize % poolingSize != 0 ) {
+//        throw runtime_error("inputBoardSize should be an exact multiple of poolingsize: " + toString( inputBoardSize ) + " " + toString(poolingSize ) );
+//    }
 }
 VIRTUAL int PoolingBackprop::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputBoardSize * inputBoardSize;
 }
 VIRTUAL int PoolingBackprop::getResultsSize(int batchSize) {
-    return batchSize * numPlanes * inputBoardSize * inputBoardSize / poolingSize / poolingSize;
+    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
 }
 VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream ) {
     CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
