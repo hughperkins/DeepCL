@@ -50,7 +50,7 @@ OpenCL library to train deep convolutional networks
 Target usage:
 - 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
 - Also works on MNIST 28 x 28 boards
-  - obtained 98.6% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+  - obtained 98.7% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 - Tested on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, gets 90% at the moment, which is not too far away from [LeCun's results](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf).
 
 # Validation against standard datasets
