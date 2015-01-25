@@ -1,0 +1,6 @@
+testmnist-convjs, dc98b20d74, aws
+98.9% 98.88% 98.47% 98.54%
+
+testmnist-letnet, dc98b20d74, aws
+98.75% 98.86% 98.66%
+
