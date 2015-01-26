@@ -26,9 +26,10 @@ Contents
   - [Data format](#data-format)
   - [Train](#train)
   - [Test](#test)
-- [Pre-requisites](#pre-requisites)
 - [To build](#to-build)
-- [Linking](#linking)
+  - [Pre-requisites](#pre-requisites)
+  - [Procedure](#procedure)
+  - [Linking](#linking)
 - [Testing](#testing)
   - [Correctness checking](#correctness-checking)
   - [Unit-testing](#unit-testing)
@@ -280,8 +281,9 @@ float loss = net->calcLossFromLabels( labels ); // calc loss
 int numberCorrect = net->calcNumRight( labels ); // check accuracy
 ```
 
-Pre-requisites
-==============
+#To build
+
+## Pre-requisites
 
 - git
 - cmake
@@ -292,8 +294,7 @@ Pre-requisites
 - opencl-headers
 - make 
 
-To build
-========
+## Procedure
 
 ```bash
 git clone --recursive https://github.com/hughperkins/ClConvolve.git
@@ -308,8 +309,7 @@ Note:
 * be sure to add `--recursive` when you clone, else when you build it will complain about OpenCLHelper missing (or clew missing)
 * you might need to play around with commands such as `git submodule update` occasionally, to pull down new OpenCLHelper updates
 
-Linking
-=======
+## Linking
 
 You will need:
 - libClConvolve.so
