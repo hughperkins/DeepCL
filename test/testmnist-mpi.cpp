@@ -8,7 +8,7 @@
 
 #include "BoardHelper.h"
 #include "MnistLoader.h"
-#include "BoardPng.h"
+// #include "BoardPng.h"
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"

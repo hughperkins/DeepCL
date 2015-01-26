@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <algorithm>
 
 #include "NeuralNet.h"
 #include "BackpropErrorsv2.h"
