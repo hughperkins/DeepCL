@@ -134,7 +134,9 @@ if( LIBPNGPP_AVAILABLE)
 endif(LIBPNGPP_AVAILABLE)
 
 add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
+if( ON_LINUX )
 target_link_libraries( gtest pthread)
+endif()
 
 add_executable( ${UNITTEST_SOURCES}
 thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
