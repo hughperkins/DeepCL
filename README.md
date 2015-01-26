@@ -439,6 +439,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
   * Created idx-to-mat, to convert from mnist idx format to norb mat format
   * Massively overhauled this readme in the light of these changes
   * Added annealed learning rate, as described in [Ciresan et al](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf)
+  * Add reasonably robust restart-file
 * 25th January:
   * Added gpu implementation for max-pooling forward-prop
   * Added padZeros option for max-pooling
