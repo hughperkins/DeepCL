@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 #include "gtest/gtest.h"
 

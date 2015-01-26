@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
