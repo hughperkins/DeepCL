@@ -51,13 +51,15 @@ inline std::string getToken( std::string targetstring, int tokenIndexFromZero, s
 }
 
 inline std::string toLower(std::string in ) {
-   int len = in.size();
-   char buffer[len + 1];
-   for( int i = 0; i < len; i++ ) {
-      char thischar = in[i];
-      thischar = tolower(thischar);
-      buffer[i] = thischar;
-   }
-   buffer[len] = 0;
-   return std::string(buffer);
+     int len = in.size();
+     char *buffer = new char[len + 1];
+     for( int i = 0; i < len; i++ ) {
+        char thischar = in[i];
+        thischar = tolower(thischar);
+        buffer[i] = thischar;
+    }
+    buffer[len] = 0;
+    std::string result = std::string(buffer);
+    delete[] buffer;
+    return result;
 }

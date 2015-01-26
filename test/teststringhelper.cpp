@@ -38,3 +38,8 @@ TEST( teststringhelper, split3 ) {
     EXPECT_EQ( "54", splitString[3] );
 }
 
+TEST( teststringhelper, tolower ) {
+    string mystring = "3fAfef4FAD";
+    EXPECT_EQ( "3fafef4fad", toLower( mystring ) );
+}
+
