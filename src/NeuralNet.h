@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "Layer.h"
 #include "NeuralNetMould.h"

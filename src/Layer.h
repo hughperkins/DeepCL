@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include "MyRandom.h"
 #include "ActivationFunction.h"
