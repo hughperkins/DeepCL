@@ -34,7 +34,7 @@ using namespace std;
         'numTest': 0,
         'batchSize': 128,
         'numEpochs': 20,
-        'restartable': 0
+        'restartable': 1
     }
     floats = {
         'learningRate': 0.0001,
@@ -76,7 +76,7 @@ public:
     string trainSet = "training-shuffled";
     int batchSize = 128;
     int numTest = 0;
-    int restartable = 0;
+    int restartable = 1;
     int numTrain = 0;
     int numEpochs = 20;
     float learningRate = 0.0001;
@@ -84,6 +84,11 @@ public:
     // [[[end]]]
 
     Config() {
+    }
+    string getTrainingString() {
+        string configString = "";
+        configString += "netDef=" + netDef + " dataDir=" + dataDir + " trainSet=" + trainSet;
+        return configString;
     }
 };
 
@@ -171,23 +176,35 @@ void go(Config config) {
     net->setBatchSize(config.batchSize);
     net->print();
 
+    bool afterRestart = false;
+    int restartEpoch = 0;
+    int restartBatch = 0;
+    float restartAnnealedLearningRate = 0;
+    int restartNumRight = 0;
+    float restartLoss = 0;
     if( config.restartable ) {
-        WeightsPersister::loadWeights( config.restartableFilename, net );
+        afterRestart = WeightsPersister::loadWeights( config.restartableFilename, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
+        if( !afterRestart && FileHelper::exists( config.restartableFilename ) ) {
+            cout << "Weights file " << config.restartableFilename << " exists, but doesnt match training options provided => aborting" << endl;
+            cout << "Please either check the training options, or choose a weights file that doesnt exist yet" << endl;
+            return;
+        }
     }
 
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
     int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
     float *batchData = new float[ config.batchSize * inputCubeSize ];
-    float annealedLearningRate = config.learningRate;
-    for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
+    float annealedLearningRate = afterRestart ? restartAnnealedLearningRate : config.learningRate;
+    for( int epoch = afterRestart ? restartEpoch : 0; epoch < config.numEpochs; epoch++ ) {
         cout << "Annealed learning rate: " << annealedLearningRate << endl;
-        int trainNumRight = 0;
+//        int trainNumRight = 0;
         int thisBatchSize = batchSize;
         net->setBatchSize( thisBatchSize );
-        float loss = 0;
-        int numRight = 0;
-        for( int batch = 0; batch < numBatches; batch++ ) {
+        float loss = afterRestart ? restartLoss : 0;
+        int numRight = afterRestart ? restartNumRight : 0;
+        for( int batch = afterRestart ? restartBatch : 0; batch < numBatches; batch++ ) {
+            afterRestart = false;
             if( batch == numBatches - 1 ) {
                 thisBatchSize = Ntrain - (numBatches - 1) * batchSize;
                 net->setBatchSize( thisBatchSize );
@@ -210,10 +227,10 @@ void go(Config config) {
         std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ Ntrain) << "%" << std::endl;
         printAccuracy( "test", net, testData, testLabels, batchSize, Ntest, numPlanes, boardSize, mean, stdDev );
         timer.timeCheck("after tests");
-        if( config.restartable ) {
-            WeightsPersister::persistWeights( config.restartableFilename, net );
-        }
         annealedLearningRate *= config.annealLearningRate;
+        if( config.restartable ) {
+            WeightsPersister::persistWeights( config.restartableFilename, config.getTrainingString(), net, epoch + 1, 0, annealedLearningRate, 0, 0 );
+        }
     }
 
     delete net;

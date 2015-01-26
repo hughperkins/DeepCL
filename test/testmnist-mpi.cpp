@@ -86,11 +86,11 @@ public:
     int numLayers = 1;
     int padZeros = 0;
     int filterSize = 5;
-    int restartable = 0;
-    string restartableFilename = "weights.dat";
+//    int restartable = 0;
+//    string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     int biased = 1;
-    string resultsFilename = "results.txt";
+//    string resultsFilename = "results.txt";
     Config() {
     }
 };
@@ -156,9 +156,9 @@ void go(Config config) {
     net->setBatchSize(config.batchSize);
     net->print();
 
-    if( config.restartable ) {
-        WeightsPersister::loadWeights( config.restartableFilename, net );
-    }
+//    if( config.restartable ) {
+//        WeightsPersister::loadWeights( config.restartableFilename, net );
+//    }
 
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
@@ -236,9 +236,9 @@ void go(Config config) {
         if( myrank == 0 ) std::cout << "train accuracy: " << trainNumRight << "/" << trainTotalNumber << " " << (trainNumRight * 100.0f/ trainTotalNumber) << "%" << std::endl;
         if( myrank == 0 ) printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
         if( myrank == 0 ) timer.timeCheck("after tests");
-        if( config.restartable ) {
-            WeightsPersister::persistWeights( config.restartableFilename, net );
-        }
+//        if( config.restartable ) {
+//            WeightsPersister::persistWeights( config.restartableFilename, net );
+//        }
     }
     delete[] weightsCopy;
 
@@ -297,9 +297,9 @@ int main( int argc, char *argv[] ) {
             cout << "    biased=[0|1] (" << config.biased << ")" << endl;
             cout << "    padzeros=[0|1] (" << config.padZeros << ")" << endl;
             cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
-            cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
-            cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
-            cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
+//            cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
+//            cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
+//            cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
         } 
     }
     for( int i = 1; i < argc; i++ ) {
@@ -328,9 +328,9 @@ int main( int argc, char *argv[] ) {
            if( key == "padzeros" ) config.padZeros = atoi(value);
            if( key == "filtersize" ) config.filterSize = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
-           if( key == "restartable" ) config.restartable = atoi(value);
-           if( key == "restartablefilename" ) config.restartableFilename = value;
-           if( key == "resultsfilename" ) config.resultsFilename = value;
+//           if( key == "restartable" ) config.restartable = atoi(value);
+//           if( key == "restartablefilename" ) config.restartableFilename = value;
+//           if( key == "resultsfilename" ) config.resultsFilename = value;
        }
     }
     go( config );
