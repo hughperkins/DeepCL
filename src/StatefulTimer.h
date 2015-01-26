@@ -10,6 +10,7 @@
 #include <chrono>
 #include <vector>
 #include <map>
+#include <string>
 
 class StatefulTimer {
 public:
