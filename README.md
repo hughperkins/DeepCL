@@ -69,16 +69,16 @@ Target usage:
   * `300N` means a fully connected layer with 300 hidden units
 * Thus, you can do, for example:
 ```bash
-./clconvolve1 datadir=../data/mnist trainset=train testset=t10k netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002
+./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001
+./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001
+./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
 
 ## Pre-processing
@@ -107,6 +107,7 @@ Target usage:
 | numtest=1000 | only uses the first 1000 testing samples |
 | netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
 | learningrate=0.0001 | specify learning rate |
+| anneallearningrate=0.95 | multiply learning rate by this after each epoch, as described in [Ciresan et al](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf) |
 | numepochs=20 | train for this many epochs |
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
 
@@ -121,20 +122,18 @@ Target usage:
 ```
 * Run training, eg:
 ```bash
-./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001
+./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
 * Or:
 ```bash
-./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001
+./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
 * On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, some results are epoch time for the first net is 78 seconds, and for the second is 1550 seconds 
 * The first architecture gives about 90% accuracy currently, the second one is still running...
 
 ## MNIST
 
-### Data
-
-* Please download from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
+* You can download the MNIST data from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
 * Convert from idx to mat format:
 ```bash
 ./idx-to-mat ../data/mnist train
@@ -142,7 +141,7 @@ Target usage:
 ```
 * Run as per the [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
-./clconvolve1 datadir=../data/mnist trainset=train testset=t10k netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002
+./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
 ```
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 
@@ -431,6 +430,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
   * Implemented network-definition, as specified in [Ciresan et al](arxiv.org/pdf/1202.2745.pdf)
   * Created idx-to-mat, to convert from mnist idx format to norb mat format
   * Massively overhauled this readme in the light of these changes
+  * Added annealed learning rate, as described in [Ciresan et al](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf)
 * 25th January:
   * Added gpu implementation for max-pooling forward-prop
   * Added padZeros option for max-pooling

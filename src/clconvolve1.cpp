@@ -179,7 +179,9 @@ void go(Config config) {
     StatefulTimer::timeCheck("START");
     int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
     float *batchData = new float[ config.batchSize * inputCubeSize ];
+    float annealedLearningRate = config.learningRate;
     for( int epoch = 0; epoch < config.numEpochs; epoch++ ) {
+        cout << "Annealed learning rate: " << annealedLearningRate << endl;
         int trainNumRight = 0;
         int thisBatchSize = batchSize;
         net->setBatchSize( thisBatchSize );
@@ -197,7 +199,7 @@ void go(Config config) {
                 batchData[i] = thisBatchData[i];
             }
             NormalizationHelper::normalize( batchData, batchInputSize, mean, stdDev );
-            net->learnBatchFromLabels( config.learningRate, batchData, &(trainLabels[batchStart]) );
+            net->learnBatchFromLabels( annealedLearningRate, batchData, &(trainLabels[batchStart]) );
             loss += net->calcLossFromLabels( &(trainLabels[batchStart]) );
             numRight += net->calcNumRight( &(trainLabels[batchStart]) );
         }
@@ -211,6 +213,7 @@ void go(Config config) {
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, net );
         }
+        annealedLearningRate *= config.annealLearningRate;
     }
 
     delete net;
