@@ -100,24 +100,13 @@ add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
 add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
 
-add_executable( testmnist test/testmnist src/stringhelper.cpp )
-add_executable( testnorb1 test/testnorb1.cpp src/stringhelper.cpp )
-
 add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
-add_executable( testmnist-lenet5 test/testmnist-lenet5.cpp src/stringhelper.cpp )
-add_executable( testmnist-convjs test/testmnist-convjs.cpp src/stringhelper.cpp )
 
 if( MPI_AVAILABLE )
     add_definitions(-DMPI_AVAILABLE)
 
     target_include_directories(testmnist-mpi PRIVATE ${MPI_C_INCLUDE_PATH})
     target_link_libraries(testmnist-mpi ${MPI_CXX_LIBRARIES})
-
-    target_include_directories(testmnist-lenet5 PRIVATE ${MPI_C_INCLUDE_PATH})
-    target_link_libraries(testmnist-lenet5 ${MPI_CXX_LIBRARIES})
-
-    target_include_directories(testmnist-convjs PRIVATE ${MPI_C_INCLUDE_PATH})
-    target_link_libraries(testmnist-convjs ${MPI_CXX_LIBRARIES})
 endif()
 
 if( LIBPNGPP_AVAILABLE)
