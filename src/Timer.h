@@ -10,6 +10,7 @@
 //#include <ctime>
 //#include <sys/time.h>
 #include <chrono>
+#include <string>
 
 class Timer{
 public:
