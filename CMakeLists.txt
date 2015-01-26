@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
-message( ${CMAKE_SYSTEM_NAME} )
+#message( "[${CMAKE_SYSTEM_NAME}]" )
+if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
+  set( ON_LINUX 1 )
+endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     message("Setting build type to 'RelWithDebInfo'")
@@ -22,7 +25,7 @@ include_directories( src )
 include_directories( OpenCLHelper )
 include_directories( OpenCLHelper/clew/include )
 
-if( ${CMAKE_SYSTEM_NAME} EQUAL Linux )
+if( ON_LINUX )
 link_libraries(dl)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
@@ -52,8 +55,6 @@ if( ${git_test} EQUAL 0 )
 endif()
 if( GIT_FOUND )
 message("git found")
-else()
-message("git not found")
 endif()
 
 if( GIT_FOUND )
@@ -77,7 +78,7 @@ find_package(PNG REQUIRED)
 link_libraries(${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
-# link_libraries(ClConvolve)
+link_libraries(ClConvolve)
 
 execute_process( COMMAND python -V ERROR_VARIABLE python_test )
 if( ${python_test} MATCHES "Python 2\\.7\\..*" )
@@ -112,8 +113,7 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
-add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp OpenCLHelper/OpenCLHelper.cpp ${CLConvolve_sources_prefixed}
-    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
+add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
 
 add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
@@ -150,7 +150,7 @@ add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main
 target_link_libraries( testgtestsupp gtest )
 target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
-if( ${CMAKE_SYSTEM_NAME} EQUAL Linux )
+if( ON_LINUX )
 add_custom_target( 
     clfiles
     cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
