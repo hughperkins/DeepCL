@@ -76,7 +76,7 @@ public:
     string trainSet = "training-shuffled";
     int batchSize = 128;
     int numTest = 0;
-    int restartable = 1;
+    int restartable = 0;
     int numTrain = 0;
     int numEpochs = 20;
     float learningRate = 0.0001;
