@@ -98,7 +98,7 @@ Target usage:
 ## Command-line options
 
 | Option | Description |
-|-|-|
+|----|----|
 | datadir=../data/mnist | path of directory with data in |
 | trainset=training-shuffled | filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem |
 | testset=testing-sampled | filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem |
@@ -119,11 +119,13 @@ Target usage:
 ./prepare-norb
 ```
 * Run training, eg:
+```bash
 ./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001
 ```
 * Or:
 ```bash
 ./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001
+```
 * On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, some results are epoch time for the first net is 78 seconds, and for the second is 1550 seconds 
 * The first architecture gives about 90% accuracy currently, the second one is still running...
 
@@ -303,7 +305,7 @@ make
 ```
 
 Note:
-* dont forget the `--recursive`, when you clone, else when you build it will complain about OpenCLHelper missing
+* be sure to add `--recursive` when you clone, else when you build it will complain about OpenCLHelper missing (or clew missing)
 * you might need to play around with commands such as `git submodule update` occasionally, to pull down new OpenCLHelper updates
 
 Linking
@@ -381,9 +383,9 @@ What if I want to contribute myself?
 
 ## Development technical details
 * [cogapp](http://nedbatchelder.com/code/cog/) generator is used extensively, to accelerate development, reduce the number of manual copy-and-pasting and so on.  Specifically, it's used for:
-** generating header declarations from .cpp definition files
-** generating fluent-style argument classes for certain tests
-** ... and more uses will surely be found :-)
+  * generating header declarations from .cpp definition files
+  * generating fluent-style argument classes for certain tests
+  * ... and more uses will surely be found :-)
 * You need Python installed and available for this to work.  You don't need python just to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
 cmake configuration, then a lot of manual editing will no longer be necessary :-)
