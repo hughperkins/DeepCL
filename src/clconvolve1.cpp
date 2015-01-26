@@ -22,7 +22,7 @@ using namespace std;
 
 class Config {
 public:
-    string dataDir = "../data/norb";
+    string dataDir = "norb";
     string trainSet = "training-shuffled";
     string testSet = "testing-sampled";
 //    string dataDir = "mnist";
@@ -79,10 +79,10 @@ void go(Config config) {
     int numPlanes;
     int boardSize;
 
-    unsigned char *trainData = NorbLoader::loadImages( config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize, config.numTrain );
-    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
-    int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
-    int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
+    unsigned char *trainData = NorbLoader::loadImages( "../data/" + config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize, config.numTrain );
+    unsigned char *testData = NorbLoader::loadImages( "../data/" + config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
+    int *trainLabels = NorbLoader::loadLabels( "../data/" + config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
+    int *testLabels = NorbLoader::loadLabels( "../data/" + config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
     timer.timeCheck("after load images");
 
     const int inputCubeSize = numPlanes * boardSize * boardSize;

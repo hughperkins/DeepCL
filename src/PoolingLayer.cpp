@@ -37,6 +37,14 @@ PoolingLayer::PoolingLayer( Layer *previousLayer, PoolingMaker const*maker ) :
         batchSize(0),
         allocatedSize(0),
         cl( maker->net->getCl() ){
+    if( inputBoardSize == 0 ){
+        maker->net->print();
+        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input board size is 0" );
+    }
+    if( outputBoardSize == 0 ){
+        maker->net->print();
+        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output board size is 0" );
+    }
     poolingPropagateImpl = PoolingPropagate::instance( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
     poolingBackpropImpl = PoolingBackprop::instance( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
 }

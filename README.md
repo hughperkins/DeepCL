@@ -9,29 +9,35 @@ Contents
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [ClConvolve](#clconvolve)
+- [Commandline usage](#commandline-usage)
+  - [Pre-processing](#pre-processing)
+  - [Command-line options](#command-line-options)
 - [Validation against standard datasets](#validation-against-standard-datasets)
   - [NORB](#norb)
   - [MNIST](#mnist)
     - [Data](#data)
-    - [Architecture from convjs](#architecture-from-convjs)
-    - [Architecture from lenet5](#architecture-from-lenet5)
-    - [Uniform layers](#uniform-layers)
-    - [Detailed results](#detailed-results)
 - [Neural Net API](#neural-net-api)
   - [Create a net](#create-a-net)
   - [Add some layers](#add-some-layers)
+    - [Convolutional layers](#convolutional-layers)
+    - [Fully connected layers](#fully-connected-layers)
+    - [Max-pooling layers](#max-pooling-layers)
+    - [Loss layer](#loss-layer)
+  - [Data format](#data-format)
   - [Train](#train)
   - [Test](#test)
-- [Data format](#data-format)
 - [Pre-requisites](#pre-requisites)
 - [To build](#to-build)
 - [Linking](#linking)
-- [Correctness checking](#correctness-checking)
-- [Unit-testing](#unit-testing)
-  - [Concepts](#concepts)
-  - [Implementation](#implementation)
+- [Testing](#testing)
+  - [Correctness checking](#correctness-checking)
+  - [Unit-testing](#unit-testing)
+    - [Concepts](#concepts)
+    - [Implementation](#implementation)
 - [Formulae notes](#formulae-notes)
-- [Development notes](#development-notes)
+- [What if I need a new feature?](#what-if-i-need-a-new-feature)
+- [What if I want to contribute myself?](#what-if-i-want-to-contribute-myself)
+  - [Development technical details](#development-technical-details)
 - [What's done / what's planned](#whats-done--whats-planned)
 - [Recent changes](#recent-changes)
 - [Third-party libraries](#third-party-libraries)
@@ -53,47 +59,93 @@ Target usage:
   - obtained 98.7% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 - Tested on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, gets 90% at the moment, which is not too far away from [LeCun's results](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf).
 
+# Commandline usage
+
+* Syntax is based on that specified in Ciresan et al's [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf), section 3, first paragraph:
+  * network is defined by a string like: `100C5-MP2-100C5-MP2-100C4-MP2-300N-100N-6N`
+  * `100C5` means: a convolutional layer, with 100 filters, each 5x5
+  * `MP2` means a max-pooling layer, over non-overlapping regions of 2x2
+  * `300N` means a fully connected layer with 300 hidden units
+* Thus, you can do, for example:
+```bash
+./clconvolve1 datadir=../data/mnist trainset=train testset=t10k netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002
+```
+... in order to learn mnist, using the same neural net architecture as used in the [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+* Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
+```bash
+./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001
+```
+* Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
+```bash
+./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001
+```
+
+## Pre-processing
+
+* Note that the datasets must be in the NORB .mat format specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) page
+    * For mnist, you can convert from idx to mat format using `idx-to-mat`:
+```bash
+./idx-to-mat ../data/mnist train
+./idx-to-mat ../data/mnist t10k
+```
+* For NORB, the training set as originally downloaded is unshuffled.  In addition, the test set is far larger than is needed for evaluating accuracy up to 0.1%.  Therefore, you might want to run `prepare-norb`:
+  * shuffles the training set, creating `training-shuffled-dat.mat` and `training-shuffled-cat.mat`
+  * draws 1000 test samples, and writes them to `testing-sampled-dat.mat` and `testing-sampled-cat.mat`
+```bash
+./prepare-norb
+```
+
+## Command-line options
+
+| Option | Description |
+|-|-|
+| datadir=../data/mnist | path of directory with data in |
+| trainset=training-shuffled | filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem |
+| testset=testing-sampled | filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem |
+| numtrain=1000 | only uses the first 1000 training samples |
+| numtest=1000 | only uses the first 1000 testing samples |
+| netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
+| learningrate=0.0001 | specify learning rate |
+| numepochs=20 | train for this many epochs |
+| batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
+
 # Validation against standard datasets
 
 ## NORB
 
-* Create a network like this:
-```c++
-    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->insert();
-    net->poolingMaker()->poolingSize(4)->insert();
-    net->convolutionalMaker()->numFilters(24)->filterSize(6)->relu()->biased()->insert();
-    net->poolingMaker()->poolingSize(3)->insert();
-    net->fullyConnectedMaker()->numPlanes(5)->boardSize(1)->linear()->biased()->insert();
-    net->softMaxLossMaker()->insert();
-```
-* I think this is missing a layer actually, might need some tweaking possibly
-* Current results is about 90% test accuracy, after 20 epochs.  Each epoch is ~~125seconds in v1.0~~ 78 seconds, in v1.1
-* To run
-  * First download the [norb datafiles](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) to `data/norb`, and gunzip them
-  * Run pre-processing:
+* Download the data files from [NORB datafiles](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/), and place in `data/norb`, decompressed, ie (g)unzipped
+* Pre-process, to shuffle the training samples, and draw 1000 testing samples:
 ```bash
-make
 ./prepare-norb
 ```
-* pre-processing done is:
-  * shuffle training samples
-  * draw 1000 samples from test set, which is enough to determine test accuracy to nearest 0.1%
-* Then run:
-```bash
-./testnorb1
+* Run training, eg:
+./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001
 ```
+* Or:
+```bash
+./clconvolve1 datadir=../data/norb trainset=training-shuffled testset=testing-sampled netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001
+* On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, some results are epoch time for the first net is 78 seconds, and for the second is 1550 seconds 
+* The first architecture gives about 90% accuracy currently, the second one is still running...
 
 ## MNIST
 
 ### Data
 
 * Please download from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
+* Convert from idx to mat format:
+```bash
+./idx-to-mat ../data/mnist train
+./idx-to-mat ../data/mnist t10k
+```
+* Run as per the [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
+```bash
+./clconvolve1 datadir=../data/mnist trainset=train testset=t10k netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002
+```
+* On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 
-### Architecture from convjs
+# Neural Net API
 
-* Based on [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture
-* Create a network like this:
+* You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-10N` network, you could do:
 ```c++
 NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
 net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
@@ -102,74 +154,13 @@ net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZ
 net->poolingMaker()->poolingSize(3)->insert();
 net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
 net->softMaxLossMaker()->insert();
+net->print();
 ```
-* Compared to the convjs demo:
-  * convjs demo augments the data, by cropping a 24x24 region, which we're not doing here
-* For the implementation above, on my tests, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 13.8seconds, and test accuracy was around 98.7%, using ClConvolve v0.5, after 12 epochs
-* Implementation: [test/testmnist-convjs.cpp](test/testmnist-convjs.cpp)
+* You can see that this gives a bit more control over which activation function to use and so on (though, these could be added to the command-line version sooner or later too)
+* Data must be provided in contiguous, 1d format, see below
+* The following sections will detail the various layers available, and the options available for each layer type
 
-### Architecture from lenet5
-
-* Based on [LeCun's paper](http://yann.lecun.com/exdb/publis/index.html#lecun-98)
-* Create a net as follows:
-```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(32)->instance();
-net->convolutionalMaker()->numFilters(6)->filterSize(5)->relu()->biased()->insert();
-net->poolingMaker()->poolingSize(2)->insert();
-net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
-net->poolingMaker()->poolingSize(2)->insert();
-net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
-net->softMaxLossMaker()->insert();
-```
-* this is similar to lenet-5, but not quite the same, specifically:
-  * lenet-5 has RBF layers at the end (page 8, second column, of the paper)
-  * lenet-5 has multiple of these RBF and fully-connected layers at the end
-  * lenet-5 uses tanh (I think?), not relu
-  * lenet-5 is not using max-pooling but something more like average-pooling, and it has an activation function applied (sigmoid) (page 7, second column, bottom half)
-  * lenet-5 is not connecting all filters from one layer with all filters of the next layer (Table I, of the paper)
-* Note that the images are padded with a border of margin 2 by the implementation, as per lenet5
-* Using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, epoch time was 14.6seconds, and test accuracy was around 98.7%, using ClConvolve v0.5, after 12 epochs
-* Implementation: [test/testmnist-lenet5.cpp](test/testmnist-lenet5.cpp)
-
-### Uniform layers
-
-* [test/testmnist.cpp](test/testmnist.cpp) creates multiple configurable uniform layers as follows:
-```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-for( int layer = 0; layer < numlayers; layer++ ) {
-    net->convolutionalMaker()->numFilters(numfilters)->filterSize(filtersize)->relu()->biased(biased)->padZeros(padzeros)->insert();
-}
-net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
-net->softMaxLossMaker()->insert();
-net->setBatchSize(128);
-```
-* This doesn't run as quickly, or give as good results, as the highly-optimized networks listed earlier, but might be interesting for easy experimentation, with different layer depths, filter sizes, and so on?
-
-### Detailed results
-
-* Following results on MNIST, using an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU:
-
-| Test accuracy| Number epochs | Epoch time (s) | Number filter layers| Filters per layer | Filter size | Pad zeros | Version| Learning rate  |
-|-------|----|---------------|--------------|----------|------------|-------------|---|---------------|
-| 97.5%| 12| 17.2 | 1| 32 | 5  | No  | v0.3(1) | 0.0001  |
-| 98.1%| 20| 17.2 | 1| 32 | 5 | No| v0.3(1) | 0.0001     |
-| 98.3%| 12| 80.5 | 2 | 32 | 5 | No | v0.3(1) | 0.0001   |
-| 98.5%| 15| 80.5 | 2| 32 | 5 | No  | v0.3(1) | 0.0001   |
-| 98.57% +/- 0.03%| 20| | 3  | 32 | 5 | No | v0.3(1) | 0.0001  |
-| 98.64% +/- 0.02%| 20| 203 | 2 | 32 | 5 | Yes| v0.3(1) | 0.0001    |
-| 98.7% +/- 0.1% | 12 | 13.8s | 2 conv 2 pool | 8,16 | conv:5,5 pool:2,3 | Yes | next v0.7 (2) | 0.002 |
-| 98.7% +/- 0.1% | 12 | 14.6s | 2 conv 2 pool | 6,16 | conv:5,5 pool:2,2 | Yes | next v0.7 (3) | 0.002 |
-
-* Notes:
-  * (1) Using [testmnist](test/testmnist.cpp) or `testmnist-softmax`
-  * (2) Using [testmnist-convjs](test/testmnist-convjs.cpp)
-  * (3) Using [testmnist-lenet5](test/testmnist-lenet5.cpp)
-
-Neural Net API
-==============
-
-Create a net
--------------
+## Create a net
 
 ```c++
 #include "ClConvolve.h"
@@ -179,10 +170,9 @@ NeuralNet *net = NeuralNet::maker()->planes(10)->boardSize(19)->instance();
 
 * You can change the number of input planes, and the board size.
 
-Add some layers
----------------
+## Add some layers
 
-*Convolutional layers*
+### Convolutional layers
 
 Eg:
 ```c++
@@ -200,7 +190,7 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
 * convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
-*Fully connected layers*
+### Fully connected layers
 
 eg:
 ```c++
@@ -216,7 +206,7 @@ Available options:
   * `->sigmoid()` choose sigmoid activation
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
 
-*Max-pooling layers*
+### Max-pooling layers
 
 ```c++
 net->poolingMaker()->poolingSize(2)->insert();
@@ -227,7 +217,7 @@ net->poolingMaker()->poolingSize(2)->insert();
 net->poolingMaker()->poolingSize(2)->padZeros()->insert();
 ```
 
-*Loss layer*
+### Loss layer
 
 You need to add exactly one loss layer, as the last layer of the net.  The following loss layers are available:
 ```c++
@@ -247,33 +237,7 @@ net->softMaxLossLayer()->insert();
   * or else a per-plane probability distribution
     * add option `->perPlane()`
 
-Train
------
-
-```c++
-for( int epoch = 0; epoch < 12; epoch++ ) {
-    float loss = net->epochMaker()
-       ->learningRate(0.002)->batchSize(128)->numExamples(60000)
-       ->inputData(mydata)
-       ->labels(labels)
-       ->runFromLabels( &trainNumRight );
-    cout << "Loss L " << loss << " number correct: " << trainNumRight << endl;
-}
-```
-
-Test
--------
-
-```c++
-net->setBatchSize(batchSize);
-net->propagate(somenewdata);
-float *results = net->getResults(); // to get results
-float loss = net->calcLossFromLabels( labels ); // calc loss
-int numberCorrect = net->calcNumRight( labels ); // check accuracy
-```
-
-Data format
-===========
+## Data format
 
 Input data should be provided in a contiguous array, of floats.  "group by" order should be:
 
@@ -290,6 +254,29 @@ Expected output data should be provided as a contiguous array, of floats. "group
 * output column
 
 Labels are simply an integer array, with one number, zero-based, per training example, or per test example.
+
+## Train
+
+```c++
+for( int epoch = 0; epoch < 12; epoch++ ) {
+    float loss = net->epochMaker()
+       ->learningRate(0.002)->batchSize(128)->numExamples(60000)
+       ->inputData(mydata)
+       ->labels(labels)
+       ->runFromLabels( &trainNumRight );
+    cout << "Loss L " << loss << " number correct: " << trainNumRight << endl;
+}
+```
+
+## Test
+
+```c++
+net->setBatchSize(batchSize);
+net->propagate(somenewdata);
+float *results = net->getResults(); // to get results
+float loss = net->calcLossFromLabels( labels ); // calc loss
+int numberCorrect = net->calcNumRight( labels ); // check accuracy
+```
 
 Pre-requisites
 ==============
@@ -328,8 +315,9 @@ You will need:
 
 The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.
 
-Correctness checking
-====================
+# Testing
+
+## Correctness checking
 
 * For forward propagation:
   * We slot in some numbers, calculate the results manually, and compare with results actually obtained
@@ -339,11 +327,9 @@ Correctness checking
 * Standard test sets
   * Checked using implementations for MNIST, and NORB is in progress
 
-Unit-testing
-============
+## Unit-testing
 
-Concepts
---------
+### Concepts
 
 * Network optimization is stochastic, and there are typically numerous local minima, into which the optimization can get stuck
 * For unit testing, this is not very suitable, since unit tests must run repeatably, reliably, quickly
@@ -353,8 +339,7 @@ Concepts
 * Then, the test checks that the network converges to better than an expected loss, and accuracy, within a preset number of epochs
 * We also have unit tests for forward-propagation, and backward propagation, as per section [Correctness checking](#correctness-checking) above.
 
-Implementation
---------------
+### Implementation
 
 * Using googletest, which:
   * compiles quickly
@@ -383,14 +368,25 @@ These are generic formulae, but just putting them here, so I remember them ;-)
 
 ![formulae](notes-formulae.png)
 
-Development notes
+# What if I need a new feature?
+
+Please raise an issue, let me know you're interested.
+* If it's on my list of things I was going to do sooner or later anyway (see below), I might do it sooner rather than later.
+* If it's to do with usability, I will try to make that a priority
+
+What if I want to contribute myself?
 =================
 
-- if you want to modify things, please feel free to fork this repository, tweak things, and send a pull request
-- note that declarations in the header files are generated automatically.  [cogapp](http://nedbatchelder.com/code/cog/) generator provides
-the framework, and [cog_addheaders.py](cog_addheaders.py) is a specific generator for header file declarations. You don't need this to
+- please feel free to fork this repository, tweak things, send a pull request
+
+## Development technical details
+* [cogapp](http://nedbatchelder.com/code/cog/) generator is used extensively, to accelerate development, reduce the number of manual copy-and-pasting and so on.  Specifically, it's used for:
+** generating header declarations from .cpp definition files
+** generating fluent-style argument classes for certain tests
+** ... and more uses will surely be found :-)
+* You need Python installed and available for this to work.  You don't need python just to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
-cmake configuration, then header file declarations will be updated for you automatically :-)
+cmake configuration, then a lot of manual editing will no longer be necessary :-)
 
 What's done / what's planned
 ============================
@@ -428,6 +424,11 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 26th January:
+  * Unified mnist and norb testing executable
+  * Implemented network-definition, as specified in [Ciresan et al](arxiv.org/pdf/1202.2745.pdf)
+  * Created idx-to-mat, to convert from mnist idx format to norb mat format
+  * Massively overhauled this readme in the light of these changes
 * 25th January:
   * Added gpu implementation for max-pooling forward-prop
   * Added padZeros option for max-pooling

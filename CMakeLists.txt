@@ -95,8 +95,9 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
-add_executable( clconvolve1 test/clconvolve1.cpp src/stringhelper.cpp )
+add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
 
+add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
 
 add_executable( testmnist test/testmnist src/stringhelper.cpp )

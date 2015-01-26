@@ -7,7 +7,7 @@
 #endif
 
 #include "BoardHelper.h"
-#include "MnistLoader.h"
+#include "test/MnistLoader.h"
 #include "BoardPng.h"
 #include "Timer.h"
 #include "NeuralNet.h"

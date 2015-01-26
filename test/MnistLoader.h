@@ -78,41 +78,6 @@ public:
         return labels;
     }
 
-    static void swap( int **tempBoard, int ***images, int *labels, int boardSize, int one, int two ) {
-        int templabel = labels[one];
-        labels[one] = labels[two];
-        labels[two] = templabel;
-        BoardHelper::copyBoard( tempBoard, images[one], boardSize );
-        BoardHelper::copyBoard( images[one], images[two], boardSize );
-        BoardHelper::copyBoard( images[two], tempBoard, boardSize );        
-    }
-
-    static void shuffle( int ***images, int *labels, int N, int boardSize ) {
-        std::mt19937 random;
-//        int boardSizeSquared = boardSize * boardSize;
-        // eg N = 2
-        // i = 0   random() % 2  0, 1 + i => 0, 1
-        // i = 1   random() % 1  0    +i => 1
-//        return;
-        int **tempBoard = BoardHelper::allocateBoard( boardSize );
-//        for( int i = 0; i < N - 1; i++ ) {
-//            int swappos = i + ( random() % ( N - i ) );
-//            if( i != swappos ) {
-////                std::cout << "swap " << i << " " << swappos << std::endl;
-//                int templabel = labels[i];
-//                labels[i] = labels[swappos];
-//                labels[swappos] = templabel;
-//                BoardHelper::copyBoard( tempBoard, images[i], boardSize );
-//                BoardHelper::copyBoard( images[i], images[swappos], boardSize );
-//                BoardHelper::copyBoard( images[swappos], tempBoard, boardSize );
-//            }
-//        }
-//        for( int i = 0; i < 1000; i++ ) {
-//            swap( tempBoard, images, labels, boardSize, i, i + 1000 );
-//        }
-        BoardHelper::deleteBoard( &tempBoard, boardSize );
-    }
-
     static int readUInt( unsigned char *data, int location ) {
         unsigned int value = 0;
         for( int i = 0; i < 4; i++ ) {
