@@ -14,6 +14,8 @@
 
 using namespace std;
 
+namespace testpoolingpropagate {
+
 TEST( testpoolingpropagate, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
@@ -135,7 +137,10 @@ TEST( testpoolingpropagate, fromwrappers ) {
 
 class CompareSpecificArgs{
 public:
-    static CompareSpecificArgs instance(){ CompareSpecificArgs args; return args; };
+    static CompareSpecificArgs instance() { 
+        static CompareSpecificArgs args; 
+        return args; 
+    }
 
     // [[[cog
     // floats= []
@@ -183,10 +188,14 @@ public:
 };
 
 void compareSpecific( CompareSpecificArgs args ) {
+    cout << "instance0: " << args._instance0 << endl;
+    cout << "instance1: " << args._instance1 << endl;
+
     int batchSize = args._batchSize;
     int numPlanes = args._numPlanes;
     int boardSize = args._boardSize;
     int poolingSize = args._poolingSize;
+
     OpenCLHelper cl;
 
     PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, &cl, args._padZeros, numPlanes, boardSize, poolingSize );
@@ -309,5 +318,7 @@ TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(2).numPlanes(1).boardSize(2).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );
+}
+
 }
 

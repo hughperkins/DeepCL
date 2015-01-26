@@ -45,6 +45,7 @@ STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelp
     if( idx == 1 ) {
         return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
     }
+    cout << "idx " << idx << " not known" << endl;
     throw runtime_error("PoolingPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
 VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData ) {
