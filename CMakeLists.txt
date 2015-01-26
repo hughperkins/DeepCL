@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+message( ${CMAKE_SYSTEM_NAME} )
+
 if (NOT CMAKE_BUILD_TYPE)
     message("Setting build type to 'RelWithDebInfo'")
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
@@ -19,9 +21,11 @@ include_directories( . )
 include_directories( src )
 include_directories( OpenCLHelper )
 include_directories( OpenCLHelper/clew/include )
-link_libraries(dl)
 
+if( ${CMAKE_SYSTEM_NAME} EQUAL Linux )
+link_libraries(dl)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
 
 set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     EpochMaker.cpp ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
@@ -41,12 +45,25 @@ add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp ${CLConvolve_source
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 #    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
 #    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
+
+execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
+if( ${git_test} EQUAL 0 )
+    set( GIT_FOUND 1 )
+endif()
+if( GIT_FOUND )
+message("git found")
+else()
+message("git not found")
+endif()
+
+if( GIT_FOUND )
 add_custom_command( 
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/OpenCLHelper.cpp ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/CLKernel.cpp
     COMMAND git submodule update --init --force --recursive
 )
 add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
 add_dependencies( ClConvolve git_submodules_update )
+endif()
 
 find_package(PNG QUIET)
 if( PNG_FOUND )
@@ -133,10 +150,17 @@ add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main
 target_link_libraries( testgtestsupp gtest )
 target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
+if( ${CMAKE_SYSTEM_NAME} EQUAL Linux )
 add_custom_target( 
     clfiles
     cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
 )
+else()
+add_custom_target( 
+    clfiles
+    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
+)
+endif()
 
 add_dependencies( ClConvolve clfiles )
 
