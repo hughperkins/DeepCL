@@ -5,11 +5,14 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <random>
+#include <chrono>
 
 class MyRandom {
     std::mt19937 random;
     MyRandom() {
-        srand(time(0));
+        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
+        int time = std::chrono::duration_cast<std::chrono::milliseconds> ( thistime.time_since_epoch() ).count();
+        srand(time);
         int seed = rand() << 8 + rand();
         //MPI_Bcast( &seed, 1, MPI_INT, 0, MPI_COMM_WORLD );
         random.seed( seed );
