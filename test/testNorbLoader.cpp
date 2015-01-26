@@ -10,7 +10,7 @@
 #include "png++/png.hpp"
 #endif //PNG_AVAILABLE
 
-#include "test/NorbLoader.h"
+#include "NorbLoader.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"

@@ -16,7 +16,7 @@
 #include <cstring>
 #include <random>
 
-#include "test/NorbLoader.h"
+#include "NorbLoader.h"
 
 using namespace std;
 

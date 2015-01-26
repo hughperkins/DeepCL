@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "test/NorbLoader.h"
+#include "NorbLoader.h"
 #include "test/MnistLoader.h"
 
 using namespace std;

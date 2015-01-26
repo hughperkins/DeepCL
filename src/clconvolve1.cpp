@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "test/NorbLoader.h"
+#include "NorbLoader.h"
 #include "BoardHelper.h"
 #include "Timer.h"
 #include "NeuralNet.h"
@@ -22,7 +22,7 @@ using namespace std;
 
 class Config {
 public:
-    string dataDir = "norb";
+    string dataDir = "../data/norb";
     string trainSet = "training-shuffled";
     string testSet = "testing-sampled";
 //    string dataDir = "mnist";
@@ -36,7 +36,7 @@ public:
     string netDef = "8C5-MP4-24C6-MP3-80C6-10N";
     string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
-    string resultsFilename = "results.txt";
+//    string resultsFilename = "results.txt";
     Config() {
     }
 };
@@ -79,10 +79,10 @@ void go(Config config) {
     int numPlanes;
     int boardSize;
 
-    unsigned char *trainData = NorbLoader::loadImages( "../data/" + config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize, config.numTrain );
-    unsigned char *testData = NorbLoader::loadImages( "../data/" + config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
-    int *trainLabels = NorbLoader::loadLabels( "../data/" + config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
-    int *testLabels = NorbLoader::loadLabels( "../data/" + config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
+    unsigned char *trainData = NorbLoader::loadImages( config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize, config.numTrain );
+    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
+    int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
+    int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
     timer.timeCheck("after load images");
 
     const int inputCubeSize = numPlanes * boardSize * boardSize;
@@ -189,11 +189,10 @@ int main( int argc, char *argv[] ) {
         cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
         cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
         cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
-//        cout << "    cats=[num categories] (" << config.cats << ")" << endl;
         cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
         cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
         cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
-        cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
+//        cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
     } 
     for( int i = 1; i < argc; i++ ) {
        vector<string> splitkeyval = split( argv[i], "=" );
@@ -210,12 +209,11 @@ int main( int argc, char *argv[] ) {
            if( key == "numtest" ) config.numTest = atoi(value);
            if( key == "batchsize" ) config.batchSize = atoi(value);
            if( key == "netdef" ) config.netDef = value;
-//           if( key == "cats" ) config.cats = atoi(value);
            if( key == "numepochs" ) config.numEpochs = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);
            if( key == "restartable" ) config.restartable = atoi(value);
            if( key == "restartablefilename" ) config.restartableFilename = value;
-           if( key == "resultsfilename" ) config.resultsFilename = value;
+//           if( key == "resultsfilename" ) config.resultsFilename = value;
        }
     }
     go( config );
