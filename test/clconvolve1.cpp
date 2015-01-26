@@ -207,7 +207,7 @@ int main( int argc, char *argv[] ) {
            if( key == "numtrain" ) config.numTrain = atoi(value);
            if( key == "numtest" ) config.numTest = atoi(value);
            if( key == "batchsize" ) config.batchSize = atoi(value);
-           if( key == "netdef" ) config.netDef = atoi(value);
+           if( key == "netdef" ) config.netDef = value;
 //           if( key == "cats" ) config.cats = atoi(value);
            if( key == "numepochs" ) config.numEpochs = atoi(value);
            if( key == "learningrate" ) config.learningRate = atof(value);

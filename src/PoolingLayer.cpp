@@ -142,6 +142,7 @@ VIRTUAL void PoolingLayer::propagate() {
     } else {
         float *upstreamResults = previousLayer->getResults();
         upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
+        upstreamResultsWrapper->copyToDevice();
     }
     poolingPropagateImpl->propagate( batchSize, upstreamResultsWrapper, selectorsWrapper, resultsWrapper );
     if( !previousLayer->hasResultsWrapper() ) {

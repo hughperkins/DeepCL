@@ -37,6 +37,7 @@ public:
     InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
     VIRTUAL ~InputLayer();
     VIRTUAL float *getResults();
+    VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
     void in( float const*images );
