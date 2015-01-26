@@ -60,7 +60,7 @@ find_package(PNG REQUIRED)
 link_libraries(${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
-link_libraries(ClConvolve)
+# link_libraries(ClConvolve)
 
 execute_process( COMMAND python -V ERROR_VARIABLE python_test )
 if( ${python_test} MATCHES "Python 2\\.7\\..*" )
@@ -95,7 +95,8 @@ set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
-add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
+add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp OpenCLHelper/OpenCLHelper.cpp ${CLConvolve_sources_prefixed}
+    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 
 add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
@@ -124,6 +125,9 @@ target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 add_executable( loadkgs test/loadkgs.cpp src/stringhelper.cpp )
+target_link_libraries( loadkgs ClConvolve )
+target_link_libraries( testmnist-mpi ClConvolve )
+target_link_libraries( unittests ClConvolve )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
