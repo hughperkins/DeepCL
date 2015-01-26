@@ -20,23 +20,69 @@
 
 using namespace std;
 
+/* [[[cog
+    # cog.outl('// generated using cog:')
+    strings = { 
+        'dataDir': '../data/norb', 
+        'trainSet': 'training-shuffled',
+        'testSet': 'testing-sampled',
+        'netDef': '8C5-MP4-24C6-MP3-80C6-10N',
+        'restartableFilename': 'weights.dat'
+    }
+    ints = {
+        'numTrain': 0,
+        'numTest': 0,
+        'batchSize': 128,
+        'numEpochs': 20,
+        'restartable': 0
+    }
+    floats = {
+        'learningRate': 0.0001,
+        'annealLearningRate': 0.95
+    }
+    descriptions = {
+        'datadir': 'data directory',
+        'trainset': '[training-shuffled|testing-sampled|other set name]',
+        'testset': '[training-shuffled|testing-sampled|other set name]',
+        'numtrain': 'num training examples',
+        'numtest': 'num test examples]',
+        'batchsize': 'batch size',
+        'numepochs': 'number epochs',
+        'netdef': 'network definition',
+        'learningrate': 'learning rate, a float value',
+        'anneallearningrate': 'multiply learning rate by this, each epoch',
+        'restartable': 'weights are persistent?',
+        'restartablefilename': 'filename to store weights'
+    }
+*///]]]
+// [[[end]]]
+
 class Config {
 public:
-    string dataDir = "../data/norb";
-    string trainSet = "training-shuffled";
-    string testSet = "testing-sampled";
-//    string dataDir = "mnist";
-//    string trainSet = "train";
-//    string testSet = "t10k";
-    int numTrain = 0;
-    int numTest = 0;
-    int batchSize = 128;
-    int numEpochs = 20;
-    int restartable = 0;
+    // [[[cog
+    // cog.outl('// generated using cog:')
+    // for astring in strings.keys():
+    //    cog.outl( 'string ' + astring + ' = "' + strings[astring] + '";')
+    // for anint in ints.keys():
+    //    cog.outl( 'int ' + anint + ' = ' + str(ints[anint]) + ';')
+    // for name in floats.keys():
+    //    cog.outl( 'float ' + name + ' = ' + str(floats[name]) + ';')
+    // ]]]
+    // generated using cog:
     string netDef = "8C5-MP4-24C6-MP3-80C6-10N";
+    string dataDir = "../data/norb";
+    string testSet = "testing-sampled";
     string restartableFilename = "weights.dat";
-    float learningRate = 0.0001f;
-//    string resultsFilename = "results.txt";
+    string trainSet = "training-shuffled";
+    int batchSize = 128;
+    int numTest = 0;
+    int restartable = 0;
+    int numTrain = 0;
+    int numEpochs = 20;
+    float learningRate = 0.0001;
+    float annealLearningRate = 0.95;
+    // [[[end]]]
+
     Config() {
     }
 };
@@ -176,45 +222,97 @@ void go(Config config) {
 
 }
 
+void printUsage( char *argv[], Config config ) {
+    cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
+    cout << endl;
+    cout << "Possible key=value pairs:" << endl;
+    // [[[cog
+    // cog.outl('// generated using cog:')
+    // for name in strings.keys():
+    //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
+    // for name in ints.keys():
+    //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
+    // for name in floats.keys():
+    //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
+    // ]]]
+    // generated using cog:
+    cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
+    cout << "    datadir=[data directory] (" << config.dataDir << ")" << endl;
+    cout << "    testset=[[training-shuffled|testing-sampled|other set name]] (" << config.testSet << ")" << endl;
+    cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
+    cout << "    trainset=[[training-shuffled|testing-sampled|other set name]] (" << config.trainSet << ")" << endl;
+    cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
+    cout << "    numtest=[num test examples]] (" << config.numTest << ")" << endl;
+    cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
+    cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
+    cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
+    cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
+    cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
+    // [[[end]]]
+}
+
 int main( int argc, char *argv[] ) {
     Config config;
     if( argc == 2 && ( string(argv[1]) == "--help" || string(argv[1]) == "--?" || string(argv[1]) == "-?" || string(argv[1]) == "-h" ) ) {
-        cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
-        cout << "Possible key=value pairs:" << endl;
-        cout << "    datadir=[data directory] (" << config.dataDir << ")" << endl;
-        cout << "    trainset=[training-shuffled|testing-sampled|other set name] (" << config.trainSet << ")" << endl;
-        cout << "    testset=[training-shuffled|testing-sampled|other set name] (" << config.testSet << ")" << endl;
-        cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
-        cout << "    numtest=[num test examples] (" << config.numTest << ")" << endl;
-        cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
-        cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
-        cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
-        cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
-        cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
-        cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
-//        cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
+        printUsage( argv, config );
     } 
     for( int i = 1; i < argc; i++ ) {
-       vector<string> splitkeyval = split( argv[i], "=" );
-       if( splitkeyval.size() != 2 ) {
+        vector<string> splitkeyval = split( argv[i], "=" );
+        if( splitkeyval.size() != 2 ) {
           cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
           exit(1);
-       } else {
-           string key = splitkeyval[0];
-           string value = splitkeyval[1];
-           if( key == "datadir" ) config.dataDir = value;
-           if( key == "trainset" ) config.trainSet = value;
-           if( key == "testset" ) config.testSet = value;
-           if( key == "numtrain" ) config.numTrain = atoi(value);
-           if( key == "numtest" ) config.numTest = atoi(value);
-           if( key == "batchsize" ) config.batchSize = atoi(value);
-           if( key == "netdef" ) config.netDef = value;
-           if( key == "numepochs" ) config.numEpochs = atoi(value);
-           if( key == "learningrate" ) config.learningRate = atof(value);
-           if( key == "restartable" ) config.restartable = atoi(value);
-           if( key == "restartablefilename" ) config.restartableFilename = value;
-//           if( key == "resultsfilename" ) config.resultsFilename = value;
-       }
+        } else {
+            string key = splitkeyval[0];
+            string value = splitkeyval[1];
+            // [[[cog
+            // cog.outl('// generated using cog:')
+            // cog.outl('if( false ) {')
+            // for name in strings.keys():
+            //    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
+            //    cog.outl( '    config.' + name + ' = value;')
+            // for name in ints.keys():
+            //    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
+            //    cog.outl( '    config.' + name + ' = atoi( value );')
+            // for name in floats.keys():
+            //    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
+            //    cog.outl( '    config.' + name + ' = atof( value );')
+            // ]]]
+            // generated using cog:
+            if( false ) {
+            } else if( key == "netdef" ) {
+                config.netDef = value;
+            } else if( key == "datadir" ) {
+                config.dataDir = value;
+            } else if( key == "testset" ) {
+                config.testSet = value;
+            } else if( key == "restartablefilename" ) {
+                config.restartableFilename = value;
+            } else if( key == "trainset" ) {
+                config.trainSet = value;
+            } else if( key == "batchsize" ) {
+                config.batchSize = atoi( value );
+            } else if( key == "numtest" ) {
+                config.numTest = atoi( value );
+            } else if( key == "restartable" ) {
+                config.restartable = atoi( value );
+            } else if( key == "numtrain" ) {
+                config.numTrain = atoi( value );
+            } else if( key == "numepochs" ) {
+                config.numEpochs = atoi( value );
+            } else if( key == "learningrate" ) {
+                config.learningRate = atof( value );
+            } else if( key == "anneallearningrate" ) {
+                config.annealLearningRate = atof( value );
+            // [[[end]]]
+            } else {
+                cout << endl;
+                cout << "Error: key '" << key << "' not recognised" << endl;
+                cout << endl;
+                printUsage( argv, config );
+                cout << endl;
+                return -1;
+            }
+        }
     }
     go( config );
 }
