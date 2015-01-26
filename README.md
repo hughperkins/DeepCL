@@ -96,6 +96,14 @@ Target usage:
 ./prepare-norb
 ```
 
+## Weight persistence
+
+* If we're going to train for hours or days, we probably want to make sure that if our process gets interrupted, we don't lose our training so far
+* Simply specify option `restartable=1`, and all progress will be stored after each epoch!
+* The epoch number, annealed learning rate, and all weights, will be stored in a restart-file, by default called `weights.dat`
+* If the training options change which affect learning, meaning `netdef`, `datadir`, or `trainset`, and a restart-file already exist, and `restartable=1` was specified, then ClConvolve will refuse to go on, and request you to either use a non-existing filename, or check the options used
+* You can set the restart filename with option `restartablefilename`.
+
 ## Command-line options
 
 | Option | Description |

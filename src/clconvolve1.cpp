@@ -62,28 +62,40 @@ public:
     // [[[cog
     // cog.outl('// generated using cog:')
     // for astring in strings.keys():
-    //    cog.outl( 'string ' + astring + ' = "' + strings[astring] + '";')
+    //    cog.outl( 'string ' + astring + ' = "";')
     // for anint in ints.keys():
-    //    cog.outl( 'int ' + anint + ' = ' + str(ints[anint]) + ';')
+    //    cog.outl( 'int ' + anint + ' = 0;')
     // for name in floats.keys():
-    //    cog.outl( 'float ' + name + ' = ' + str(floats[name]) + ';')
+    //    cog.outl( 'float ' + name + ' = 0;')
     // ]]]
     // generated using cog:
-    string netDef = "8C5-MP4-24C6-MP3-80C6-10N";
-    string dataDir = "../data/norb";
-    string testSet = "testing-sampled";
-    string restartableFilename = "weights.dat";
-    string trainSet = "training-shuffled";
-    int batchSize = 128;
+    string netDef = "";
+    string dataDir = "";
+    string testSet = "";
+    string restartableFilename = "";
+    string trainSet = "";
+    int batchSize = 0;
     int numTest = 0;
     int restartable = 0;
     int numTrain = 0;
-    int numEpochs = 20;
-    float learningRate = 0.0001;
-    float annealLearningRate = 0.95;
+    int numEpochs = 0;
+    float learningRate = 0;
+    float annealLearningRate = 0;
     // [[[end]]]
 
     Config() {
+        netDef = "8C5-MP4-24C6-MP3-80C6-10N";
+        dataDir = "../data/norb";
+        testSet = "testing-sampled";
+        restartableFilename = "weights.dat";
+        trainSet = "training-shuffled";
+        batchSize = 128;
+        numTest = 0;
+        restartable = 0;
+        numTrain = 0;
+        numEpochs = 20;
+        learningRate = 0.0001;
+        annealLearningRate = 0.95;
     }
     string getTrainingString() {
         string configString = "";
