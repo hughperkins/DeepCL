@@ -44,8 +44,11 @@ foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
 endforeach()
 
-add_library( ClConvolve SHARED OpenCLHelper/OpenCLHelper.cpp ${CLConvolve_sources_prefixed}
+add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp 
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
+link_libraries( OpenCLHelper )
+
+add_library( ClConvolve SHARED ${CLConvolve_sources_prefixed} )
 #    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
 #    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
 
