@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include "DllImportExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
 class OpenCLHelper;
 class CLWrapper;
 
-class PoolingPropagate {
+class ClConvolve_EXPORT PoolingPropagate {
 public:
     OpenCLHelper *cl;
 

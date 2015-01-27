@@ -3,11 +3,13 @@
 #include <iostream>
 #include <cstring>
 
+#include "DllImportExport.h"
+
 inline int square( int value ) {
     return value * value;
 }
 
-class LayerDimensions {
+class ClConvolve_EXPORT LayerDimensions {
 public:
     int inputPlanes, inputBoardSize, numFilters, filterSize, outputBoardSize;
     bool padZeros, isEven;

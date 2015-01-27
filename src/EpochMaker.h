@@ -2,9 +2,11 @@
 
 #include <cstring>
 
+#include "DllImportExport.h"
+
 class NeuralNet;
 
-class EpochMaker {
+class ClConvolve_EXPORT EpochMaker {
     NeuralNet *net;
     float _learningRate;
     int _batchSize;
