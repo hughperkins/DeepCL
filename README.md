@@ -288,6 +288,10 @@ float loss = net->calcLossFromLabels( labels ); // calc loss
 int numberCorrect = net->calcNumRight( labels ); // check accuracy
 ```
 
+# To use the pre-built binaries
+
+Pre-built binaries are available for Windows, for certain releases.  In order to use them, please first install [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
+
 #To build
 
 ## Pre-requisites

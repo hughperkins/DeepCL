@@ -79,10 +79,11 @@ public:
     }
     static std::string localizePath( std::string path ) {
         std::replace( path.begin(), path.end(), '/', pathSeparator().c_str()[0] );
+        std::cout << "localized path: " << path << std::endl;
         return path;
     }
     static std::string pathSeparator() {
-#ifdef WIN32
+#ifdef _WIN32
         return "\\";
 #else
         return "/";
