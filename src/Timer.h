@@ -33,7 +33,7 @@ public:
 //      double thistime = getCount();
      std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
     std::chrono::duration<double> change = thistime - last;
-      double timemilliseconds = std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count();
+      double timemilliseconds = static_cast<double>( std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count() );
       last = thistime;
       std::cout << label << " " << timemilliseconds << " ms" << std::endl;
    }
@@ -41,7 +41,7 @@ public:
    double lap() {
       std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
     std::chrono::duration<double> change = thistime - last;
-      double timemilliseconds = std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count();
+      double timemilliseconds = static_cast<double>( std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count() );
 //      double timemilliseconds = 1000 * ( change );
       last = thistime;
       return timemilliseconds;

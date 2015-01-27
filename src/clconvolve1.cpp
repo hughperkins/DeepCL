@@ -94,8 +94,8 @@ public:
         restartable = 0;
         numTrain = 0;
         numEpochs = 20;
-        learningRate = 0.0001;
-        annealLearningRate = 0.95;
+        learningRate = 0.0001f;
+        annealLearningRate = 0.95f;
     }
     string getTrainingString() {
         string configString = "";

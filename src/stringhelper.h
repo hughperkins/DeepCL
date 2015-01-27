@@ -36,7 +36,7 @@ std::string trim( const std::string &target );
 inline double atof( std::string stringvalue ) {
    return std::atof(stringvalue.c_str());
 }
-inline double atoi( std::string stringvalue ) {
+inline int atoi( std::string stringvalue ) {
    return std::atoi(stringvalue.c_str());
 }
 
@@ -51,7 +51,7 @@ inline std::string getToken( std::string targetstring, int tokenIndexFromZero, s
 }
 
 inline std::string toLower(std::string in ) {
-     int len = in.size();
+     int len = static_cast<int>( in.size() );
      char *buffer = new char[len + 1];
      for( int i = 0; i < len; i++ ) {
         char thischar = in[i];

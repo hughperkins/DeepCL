@@ -15,7 +15,7 @@ public:
         if(!file.is_open()) {
             throw std::runtime_error(filepath);
         }
-        *p_filesize = file.tellg();
+        *p_filesize = static_cast<long>( file.tellg() );
         std::cout << " filesize " << *p_filesize << std::endl;
         char *data = new char[*p_filesize];
         file.seekg(0, std::ios::beg);
@@ -35,7 +35,7 @@ public:
 //        file.close();
 //        return filesize;
         std::ifstream in( localizePath( filepath ).c_str(), std::ifstream::ate | std::ifstream::binary);
-        return in.tellg(); 
+        return static_cast<long>( in.tellg() ); 
     }
 
     static char *readBinaryChunk( std::string filepath, long start, long length ) {

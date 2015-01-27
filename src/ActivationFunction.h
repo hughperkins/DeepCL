@@ -29,10 +29,10 @@ public:
         return 1 - output * output;
     }
     virtual float getTrue() const {
-        return 0.5;
+        return 0.5f;
     }
     virtual float getFalse() const {
-        return -0.5;
+        return -0.5f;
     }
     virtual std::string getDefineName() const {
         return "TANH";
@@ -48,10 +48,10 @@ public:
         return output * ( 1 - output );
     }
     virtual float getTrue() const {
-        return 0.8;
+        return 0.8f;
     }
     virtual float getFalse() const {
-        return 0.2;
+        return 0.2f;
     }
     virtual std::string getDefineName() const {
         return "SIGMOID";
@@ -67,10 +67,10 @@ public:
         return 1;
     }
     virtual float getTrue() const {
-        return 0.5;
+        return 0.5f;
     }
     virtual float getFalse() const {
-        return -0.5;
+        return -0.5f;
     }
     virtual std::string getDefineName() const {
         return "LINEAR";
@@ -86,10 +86,10 @@ public:
         return output > 0 ? 1 : 0;
     }
     virtual float getTrue() const {
-        return 0.8;
+        return 0.8f;
     }
     virtual float getFalse() const {
-        return 0.2;
+        return 0.2f;
     }
     virtual std::string getDefineName() const {
         return "RELU";
