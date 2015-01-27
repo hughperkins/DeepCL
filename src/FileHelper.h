@@ -11,16 +11,17 @@
 class FileHelper {
 public:
     static char *readBinary( std::string filepath, long *p_filesize ) {
-        std::ifstream file( localizePath( filepath ).c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+        std::string localPath = localizePath( filepath );
+        std::ifstream file( localPath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
         if(!file.is_open()) {
-            throw std::runtime_error("couldnt open file " + filepath);
+            throw std::runtime_error("couldnt open file " + localPath);
         }
         *p_filesize = static_cast<long>( file.tellg() );
         std::cout << " filesize " << *p_filesize << std::endl;
         char *data = new char[*p_filesize];
         file.seekg(0, std::ios::beg);
         if(!file.read( data, *p_filesize )) {
-            throw std::runtime_error("failed to read from " + filepath );
+            throw std::runtime_error("failed to read from " + localPath );
         }
         file.close();
         return data;
@@ -39,32 +40,35 @@ public:
     }
 
     static char *readBinaryChunk( std::string filepath, long start, long length ) {
-        std::ifstream file( localizePath( filepath ).c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+        std::string localPath = localizePath( filepath );
+        std::ifstream file( localPath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
         if(!file.is_open()) {
-            throw std::runtime_error("failed to open file: " + filepath);
+            throw std::runtime_error("failed to open file: " + localPath);
         }
         file.seekg( start, std::ios::beg );
         char *data = new char[length];
         if(!file.read( data, length )) {
-            throw std::runtime_error("failed to read from " + filepath );
+            throw std::runtime_error("failed to read from " + localPath );
         }
         file.close();
         return data;
     }
 
     static void writeBinary( std::string filepath, char*data, long filesize ) {
-        std::ofstream file( localizePath( filepath ).c_str(), std::ios::out | std::ios::binary );
+        std::string localPath = localizePath( filepath );
+        std::ofstream file( localPath.c_str(), std::ios::out | std::ios::binary );
         if(!file.is_open()) {
-             throw std::runtime_error("cannot open file " + filepath );
+             throw std::runtime_error("cannot open file " + localPath );
         }
         if( !file.write( (char *)data, filesize ) ) {
-            throw std::runtime_error("failed to write to " + filepath );
+            throw std::runtime_error("failed to write to " + localPath );
         }
         file.close();
     }
 
     static bool exists( const std::string filepath ) {
-       std::ifstream testifstream( localizePath( filepath ).c_str() );
+       std::string localPath = localizePath( filepath );
+       std::ifstream testifstream( localPath.c_str() );
        bool exists = testifstream.good();
        testifstream.close();
        return exists;
@@ -79,7 +83,7 @@ public:
     }
     static std::string localizePath( std::string path ) {
         std::replace( path.begin(), path.end(), '/', pathSeparator().c_str()[0] );
-        std::cout << "localized path: " << path << std::endl;
+        //std::cout << "localized path: " << path << std::endl;
         return path;
     }
     static std::string pathSeparator() {
