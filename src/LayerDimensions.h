@@ -82,6 +82,6 @@ public:
     std::string buildOptionsString();
 };
 
-std::ostream &operator<<( std::ostream &os, const LayerDimensions &dim );
+ClConvolve_EXPORT std::ostream &operator<<( std::ostream &os, const LayerDimensions &dim );
 
 
