@@ -13,7 +13,7 @@ public:
     static char *readBinary( std::string filepath, long *p_filesize ) {
         std::ifstream file( localizePath( filepath ).c_str(), std::ios::in | std::ios::binary | std::ios::ate);
         if(!file.is_open()) {
-            throw std::runtime_error(filepath);
+            throw std::runtime_error("couldnt open file " + filepath);
         }
         *p_filesize = static_cast<long>( file.tellg() );
         std::cout << " filesize " << *p_filesize << std::endl;
