@@ -66,7 +66,7 @@ public:
     // for anint in ints.keys():
     //    cog.outl( 'int ' + anint + ' = 0;')
     // for name in floats.keys():
-    //    cog.outl( 'float ' + name + ' = 0;')
+    //    cog.outl( 'float ' + name + ' = 0.0f;')
     // ]]]
     // generated using cog:
     string netDef = "";
@@ -79,8 +79,8 @@ public:
     int restartable = 0;
     int numTrain = 0;
     int numEpochs = 0;
-    float learningRate = 0;
-    float annealLearningRate = 0;
+    float learningRate = 0.0f;
+    float annealLearningRate = 0.0f;
     // [[[end]]]
 
     Config() {
