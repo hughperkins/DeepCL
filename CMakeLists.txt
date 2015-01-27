@@ -133,9 +133,11 @@ if( LIBPNGPP_AVAILABLE)
     set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testboardshelper.cpp )
 endif(LIBPNGPP_AVAILABLE)
 
-add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
 if( ON_LINUX )
+add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
 target_link_libraries( gtest pthread)
+else()
+add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
 
 add_executable( ${UNITTEST_SOURCES}
