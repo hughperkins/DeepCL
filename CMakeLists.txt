@@ -101,7 +101,7 @@ endif(PYTHON_AVAILABLE)
 #    git submodule update --init --recursive
 #)
 
-set( UNITTEST_SOURCES unittests test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
+set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
@@ -140,7 +140,7 @@ else()
 add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
 
-add_executable( ${UNITTEST_SOURCES}
+add_executable( unittests ${UNITTEST_SOURCES}
 thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )

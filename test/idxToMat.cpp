@@ -15,15 +15,7 @@
 
 using namespace std;
 
-int main( int argc, char *argv[] ) {
-    if( argc != 3  ) {
-        cout << "Usage: " << argv[0] << " [directory path] [set name, eg t10k or train]" << endl;
-        return -1;
-    }
-
-    string dir = argv[1];
-    string setName = argv[2];
-
+void go( string dir, string setName ) {
     // string matDir = argv[2];
     
     string idxDatfilename = dir + "/" + setName + "-images-idx3-ubyte";
@@ -52,6 +44,23 @@ int main( int argc, char *argv[] ) {
     NorbLoader::writeImages( matDatFilename, imagesUchar, Nboards, 1, boardSize );
 
     delete[] imagesUchar;
+}
+
+int main( int argc, char *argv[] ) {
+    if( argc != 3  ) {
+        cout << "Usage: " << argv[0] << " [directory path] [set name, eg t10k or train]" << endl;
+        return -1;
+    }
+
+    string dir = argv[1];
+    string setName = argv[2];
+
+    try {
+        go( dir, setName );
+    } catch( runtime_error e ) {
+        cout << "Something went wrong: " << e.what() << endl;
+        return -1;
+    }
 
     return 0;
 }
