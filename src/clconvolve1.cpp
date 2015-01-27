@@ -181,7 +181,8 @@ void go(Config config) {
                 net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased()->insert();
             }
         } else {
-            throw runtime_error("network definition " + thisLayerDef + " not recognised" );
+            cout << "network definition " << thisLayerDef << " not recognised" << endl;
+            return;
         }
     }
     net->softMaxLossMaker()->insert();
@@ -346,7 +347,12 @@ int main( int argc, char *argv[] ) {
             }
         }
     }
-    go( config );
+    try {
+        go( config );
+    } catch( runtime_error e ) {
+        cout << "Something went wrong: " << e.what() << endl;
+        return -1;
+    }
 }
 
 

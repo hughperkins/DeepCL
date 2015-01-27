@@ -41,7 +41,7 @@ public:
     static char *readBinaryChunk( std::string filepath, long start, long length ) {
         std::ifstream file( localizePath( filepath ).c_str(), std::ios::in | std::ios::binary | std::ios::ate);
         if(!file.is_open()) {
-            throw std::runtime_error(filepath);
+            throw std::runtime_error("failed to open file: " + filepath);
         }
         file.seekg( start, std::ios::beg );
         char *data = new char[length];
