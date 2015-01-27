@@ -83,7 +83,7 @@ public:
         return value > 0 ? value : 0;
     }
     virtual float calcDerivative( float output ) const {
-        return output > 0 ? 1 : 0;
+        return output > 0 ? 1.0f : 0.0f;
     }
     virtual float getTrue() const {
         return 0.8f;

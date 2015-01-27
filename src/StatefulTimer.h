@@ -60,7 +60,7 @@ public:
         state = prefix + state;
        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
        std::chrono::duration<float> change = thistime - last;
-       float timemilliseconds = std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count();
+       float timemilliseconds = static_cast<float>( std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count() );
 //        if( timeByState.has_key( state ) ) {
             timeByState[state] += timemilliseconds;
 //        } else {

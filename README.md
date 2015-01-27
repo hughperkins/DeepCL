@@ -314,12 +314,13 @@ make
 
 Note:
 * be sure to add `--recursive` when you clone, else when you build it will complain about OpenCLHelper missing (or clew missing)
-* you might need to play around with commands such as `git submodule update` occasionally, to pull down new OpenCLHelper updates
+  * if you do forget, you can experiment with running `git submodule init --recursive`, and then `git submodule update --recursive`
+* you might need to play around with commands such as `git submodule update --recursive` occasionally, to pull down new OpenCLHelper updates
 
 ## Linking
 
 You will need:
-- libClConvolve.so
+- libClConvolve.so (or ClConvolve.dll)
 - *.cl files
 
 The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.

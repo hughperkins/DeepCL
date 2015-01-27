@@ -245,7 +245,7 @@ void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
         throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backPropFromLabels");
     }
     acceptsLabels->calcErrorsFromLabels( labels );
-    for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
+    for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backProp( learningRate );
         StatefulTimer::setPrefix("" );
@@ -257,7 +257,7 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
     }
     lossLayer->calcErrors( expectedResults );
-    for( int layerIdx = layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
+    for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backProp( learningRate );
         StatefulTimer::setPrefix("" );
@@ -272,7 +272,7 @@ void NeuralNet::learnBatchFromLabels( float learningRate, float const*images, in
     backPropFromLabels( learningRate, labels );
 }
 int NeuralNet::getNumLayers() {
-    return layers.size();
+    return (int)layers.size();
 }
 float const *NeuralNet::getResults( int layer ) const {
     return layers[layer]->getResults();
@@ -284,7 +284,7 @@ int NeuralNet::getOutputCubeSize() const {
     return layers[ layers.size() - 1 ]->getOutputCubeSize();
 }
 float const *NeuralNet::getResults() const {
-    return getResults( layers.size() - 1 );
+    return getResults( (int)layers.size() - 1 );
 }
 void NeuralNet::print() {
     int i = 0; 
