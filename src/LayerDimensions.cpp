@@ -16,6 +16,7 @@ ostream &operator<<( ostream &os, const LayerDimensions &dim ) {
     os << " outputBoardSize=" << dim.outputBoardSize;
     os << " padZeros=" << dim.padZeros;
     os << " biased=" << dim.biased;
+    os << " skip=" << dim.skip;
     os << "}";
     return os;
 }
@@ -38,6 +39,7 @@ string LayerDimensions::buildOptionsString() {
     options += " -D gEven=" + toString(filterSize % 2 == 0 ? 1 : 0);
     options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
     options += " -D gInputPlanes=" + toString(inputPlanes);
+    options += " -D gSkip=" + toString(skip);
     return options;
 }
 

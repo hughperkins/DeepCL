@@ -32,8 +32,8 @@ public:
         float *results = new float[ dim.outputCubeSize * batchSize ];
         for( int n = 0; n < batchSize; n++ ) {
             for( int filter = 0; filter < dim.numFilters; filter++ ) {
-                for( int outRow = 0; outRow < dim.outputBoardSize; outRow++ ) {
-                    for( int outCol = 0; outCol < dim.outputBoardSize; outCol++ ) {
+                for( int outRow = 0; outRow < dim.outputBoardSize; outRow += 1 + dim.skip ) {
+                    for( int outCol = 0; outCol < dim.outputBoardSize; outCol += 1 + dim.skip ) {
                         float sum = 0;
                         for( int inPlane = 0; inPlane < dim.inputPlanes; inPlane++ ) {
                             for( int u = -dim.halfFilterSize; u <= dim.halfFilterSize; u++ ) {

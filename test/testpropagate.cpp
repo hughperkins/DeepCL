@@ -56,6 +56,64 @@ TEST( testpropagate, boardsize2_nopadzeros ) {
     }
 }
 
+TEST( testpropagate, boardsize2_nopadzeros_skip1 ) {
+    int batchSize = 2;
+    int numInPlanes = 1; int boardSize = 4;
+    int numOutPlanes = 2; int filterWidth = 2;
+    int padZeros = 0;
+    int skip = 1;
+    float data[] = { 0, 1, 3, 0, 
+                    4, 0, 0, 0, 
+                      0.5f, 0, 0.5f,0, 
+                    0, 0, 0, 0, 
+
+                        13, 0, 17,0, 
+                        0, 0, 0, 0, 
+                       -19, 0, 2.3f,0, 
+                        0, 0, 0, 0, 
+};
+    float filter1[] = { 0, 0,
+                        -0.5f, 0.5f,
+
+                        0.2f, 0.3f, 
+                         0.7f, -1.1f,
+ };
+    int outputBoardSize = boardSize / ( skip + 1 ) - filterWidth + 1;
+    cout << "outputboardsize: " << outputBoardSize << endl;
+    int resultsSize = outputBoardSize * numOutPlanes * batchSize;
+    cout << "resultssize: " << resultsSize << endl;
+    float expectedResults[] = {
+        -2,  0,
+        0, 0,
+
+         2.8f, 0.6f,
+         1.0f, 0.1f,
+
+         0, 0,
+         0,0,
+
+         13*0.2f,17*0.2f,
+         -19*0.2f, -2.3f*1.1f
+
+
+    };
+    cout << "expected number of results: " << resultsSize << endl;
+//    int outputBoardSize = 0;
+    OpenCLHelper cl;
+    for( int i = 1; i <= 4; i++ ) {
+        Propagate *propagate = Propagate::instanceSpecific( 1, &cl,
+            LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+            padZeros == 1, false ).setSkip(1), new LinearActivation() );
+        float *results = propagate->propagate( batchSize, data, filter1, 0 );  
+        for( int result = 0; result < resultsSize; result++ ) {
+            cout << "checking result " << result << endl;
+            EXPECT_EQ( expectedResults[result], results[result] );
+        }
+        delete propagate;
+        delete[] results;
+    }
+}
+
 TEST( testpropagate, boardsize2_padzeros ) {
     int batchSize = 2;
     int numOutPlanes = 2;

@@ -14,6 +14,7 @@ public:
     int inputPlanes, inputBoardSize, numFilters, filterSize, outputBoardSize;
     bool padZeros, isEven;
     bool biased;
+    int skip;
 
     int inputCubeSize;
     int filtersSize;
@@ -34,6 +35,7 @@ public:
             padZeros( padZeros ),
             biased( biased )
         {
+        skip = 0;
         deriveOthers();
 //        std::cout << "outputBoardSize " << outputBoardSize << " padZeros " << padZeros << " filtersize "
 //            << filterSize << " inputBoardSize " << inputBoardSize << std::endl;
@@ -45,6 +47,11 @@ public:
     }
     LayerDimensions &setInputBoardSize( int inputBoardSize ) {
         this->inputBoardSize = inputBoardSize;
+        deriveOthers();
+        return *this;
+    }
+    LayerDimensions &setSkip( int skip ) {
+        this->skip = skip;
         deriveOthers();
         return *this;
     }
@@ -71,8 +78,8 @@ public:
     void deriveOthers() {
         this->isEven = filterSize % 2 == 0;
         outputBoardSize = padZeros ? 
-                ( filterSize % 2 == 0 ? inputBoardSize + 1 : inputBoardSize ) :
-                inputBoardSize - filterSize + 1;
+                ( filterSize % 2 == 0 ? inputBoardSize / ( skip + 1 ) + 1 : inputBoardSize / ( skip + 1 ) ) :
+                inputBoardSize / ( skip + 1 ) - filterSize + 1;
         inputCubeSize = inputPlanes * inputBoardSize * inputBoardSize;
         filtersSize = inputPlanes * numFilters * filterSize * filterSize;
         outputCubeSize = numFilters * outputBoardSize * outputBoardSize;

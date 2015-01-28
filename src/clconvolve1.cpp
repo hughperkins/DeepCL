@@ -163,17 +163,36 @@ void go(Config config) {
     vector<string> splitNetDef = split( netDefLower, "-" );
     for( int i = 0; i < splitNetDef.size(); i++ ) {
         string thisLayerDef = splitNetDef[i];
-        if( thisLayerDef.find("c") != string::npos ) {
-            vector<string> splitConvDef = split( thisLayerDef, "c" );
+        vector<string>splitLayerDef = split( thisLayerDef, "{" );
+        string baseLayerDef = splitLayerDef[0];
+        string optionsDef = "";
+        vector<string> splitOptionsDef;
+        if( splitLayerDef.size() == 1 ) {
+            optionsDef = split( splitLayerDef[1], "}" )[0];
+            splitOptionsDef = split( optionsDef, "," );
+        }
+        if( baseLayerDef.find("c") != string::npos ) {
+            vector<string> splitConvDef = split( baseLayerDef, "c" );
             int numFilters = atoi( splitConvDef[0] );
             int filterSize = atoi( splitConvDef[1] );
+            int skip = 0;
+            for( int i = 0; i < splitOptionsDef.size(); i++ ) {
+                string thiskeyvalue = splitOptionsDef[i];
+                vector<string> splitkeyvalue = split( thiskeyvalue, "=");
+                if( splitkeyvalue.size() == 2 ) {
+                    if( splitkeyvalue[0] == "skip" ) {
+                        skip = atoi(splitkeyvalue[1] );
+                        cout << "got skip: " << skip << endl;
+                    }
+                }
+            }
             net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->relu()->biased()->insert();
-        } else if( thisLayerDef.find("mp") != string::npos ) {
-            vector<string> splitPoolDef = split( thisLayerDef, "mp" );
+        } else if( baseLayerDef.find("mp") != string::npos ) {
+            vector<string> splitPoolDef = split( baseLayerDef, "mp" );
             int poolingSize = atoi( splitPoolDef[1] );
             net->poolingMaker()->poolingSize(poolingSize)->insert();
-        } else if( thisLayerDef.find("n") != string::npos ) {
-            vector<string> fullDef = split( thisLayerDef, "n" );
+        } else if( baseLayerDef.find("n") != string::npos ) {
+            vector<string> fullDef = split( baseLayerDef, "n" );
             int numPlanes = atoi( fullDef[0] );
             if( i == splitNetDef.size() - 1 ) {
                 net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->linear()->biased()->insert();
@@ -181,7 +200,7 @@ void go(Config config) {
                 net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased()->insert();
             }
         } else {
-            cout << "network definition " << thisLayerDef << " not recognised" << endl;
+            cout << "network definition " << baseLayerDef << " not recognised" << endl;
             return;
         }
     }
@@ -208,8 +227,9 @@ void go(Config config) {
     StatefulTimer::timeCheck("START");
     int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
     float *batchData = new float[ config.batchSize * inputCubeSize ];
-    float annealedLearningRate = afterRestart ? restartAnnealedLearningRate : config.learningRate;
+    //float annealedLearningRate = afterRestart ? restartAnnealedLearningRate : config.learningRate;
     for( int epoch = afterRestart ? restartEpoch : 0; epoch < config.numEpochs; epoch++ ) {
+        float annealedLearningRate = config.learningRate * pow( config.annealLearningRate, epoch );
         cout << "Annealed learning rate: " << annealedLearningRate << endl;
 //        int trainNumRight = 0;
         int thisBatchSize = batchSize;
@@ -240,7 +260,7 @@ void go(Config config) {
         std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ Ntrain) << "%" << std::endl;
         printAccuracy( "test", net, testData, testLabels, batchSize, Ntest, numPlanes, boardSize, mean, stdDev );
         timer.timeCheck("after tests");
-        annealedLearningRate *= config.annealLearningRate;
+//        annealedLearningRate *= config.annealLearningRate;
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, config.getTrainingString(), net, epoch + 1, 0, annealedLearningRate, 0, 0 );
         }
