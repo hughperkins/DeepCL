@@ -167,26 +167,45 @@ void go(Config config) {
         string baseLayerDef = splitLayerDef[0];
         string optionsDef = "";
         vector<string> splitOptionsDef;
-        if( splitLayerDef.size() == 1 ) {
+        if( splitLayerDef.size() == 2 ) {
             optionsDef = split( splitLayerDef[1], "}" )[0];
             splitOptionsDef = split( optionsDef, "," );
         }
+        cout << "optionsDef: " << optionsDef << endl;
         if( baseLayerDef.find("c") != string::npos ) {
             vector<string> splitConvDef = split( baseLayerDef, "c" );
             int numFilters = atoi( splitConvDef[0] );
             int filterSize = atoi( splitConvDef[1] );
             int skip = 0;
+            ActivationFunction *fn = new ReluActivation();
             for( int i = 0; i < splitOptionsDef.size(); i++ ) {
-                string thiskeyvalue = splitOptionsDef[i];
-                vector<string> splitkeyvalue = split( thiskeyvalue, "=");
-                if( splitkeyvalue.size() == 2 ) {
-                    if( splitkeyvalue[0] == "skip" ) {
-                        skip = atoi(splitkeyvalue[1] );
+                string optionDef = splitOptionsDef[i];
+                cout << "optionDef: " << optionDef << endl;
+                vector<string> splitOptionDef = split( optionDef, "=");
+                string optionName = splitOptionDef[0];
+                if( splitOptionDef.size() == 2 ) {
+                    string optionValue = splitOptionDef[1];
+                    if( optionName == "skip" ) {
+                        skip = atoi( optionValue );
                         cout << "got skip: " << skip << endl;
                     }
+                } else if( splitOptionDef.size() == 1 ) {
+                    if( optionName == "tanh" ) {
+                        fn = new TanhActivation();
+                    } else if( optionName == "sigmoid" ) {
+                        fn = new SigmoidActivation();
+                    } else if( optionName == "linear" ) {
+                        fn = new LinearActivation();
+                    } else {
+                        cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
+                        return;
+                    }
+                } else {
+                    cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
+                    return;
                 }
             }
-            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->relu()->biased()->insert();
+            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->biased()->insert();
         } else if( baseLayerDef.find("mp") != string::npos ) {
             vector<string> splitPoolDef = split( baseLayerDef, "mp" );
             int poolingSize = atoi( splitPoolDef[1] );

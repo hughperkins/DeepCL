@@ -79,7 +79,7 @@ public:
         this->isEven = filterSize % 2 == 0;
         outputBoardSize = padZeros ? 
                 ( filterSize % 2 == 0 ? inputBoardSize / ( skip + 1 ) + 1 : inputBoardSize / ( skip + 1 ) ) :
-                inputBoardSize / ( skip + 1 ) - filterSize + 1;
+                ( inputBoardSize - filterSize ) / ( skip + 1 ) + 1;
         inputCubeSize = inputPlanes * inputBoardSize * inputBoardSize;
         filtersSize = inputPlanes * numFilters * filterSize * filterSize;
         outputCubeSize = numFilters * outputBoardSize * outputBoardSize;
