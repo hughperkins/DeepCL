@@ -1,11 +1,11 @@
 to do:
 - skip
-- activation function in cmdline
 - scaled tanh activation
 
 - adagrad or similar?
 
 done:
+- activation function in cmdline
 - windows build
 
 

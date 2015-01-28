@@ -39,6 +39,25 @@ public:
     } 
 };
 
+class ScaledTanhActivation : public ActivationFunction {
+public:
+    virtual float calc( float value ) const {
+        return 1.73205f * tanh( value );
+    }
+    virtual float calcDerivative( float output ) const {
+        return 1.73205f * ( 1 - output * output );
+    }
+    virtual float getTrue() const {
+        return 1.0f;
+    }
+    virtual float getFalse() const {
+        return -1.0f;
+    }
+    virtual std::string getDefineName() const {
+        return "SCALEDTANH";
+    } 
+};
+
 class SigmoidActivation : public ActivationFunction {
 public:
     virtual float calc( float value ) const {

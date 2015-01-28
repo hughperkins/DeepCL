@@ -10,6 +10,8 @@
 
 #ifdef TANH
     #define ACTIVATION_DERIV(output) (1 - output * output)
+#elif defined SCALEDTANH
+    #define ACTIVATION_DERIV(output) ( 1.73205f * ( 1 - output * output ) )
 #elif defined SIGMOID
     #define ACTIVATION_DERIV(output) (output * ( 1 - output ) )
 #elif defined RELU

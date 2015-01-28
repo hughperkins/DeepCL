@@ -192,6 +192,8 @@ void go(Config config) {
                 } else if( splitOptionDef.size() == 1 ) {
                     if( optionName == "tanh" ) {
                         fn = new TanhActivation();
+                    } else if( optionName == "scaledtanh" ) {
+                        fn = new ScaledTanhActivation();
                     } else if( optionName == "sigmoid" ) {
                         fn = new SigmoidActivation();
                     } else if( optionName == "linear" ) {

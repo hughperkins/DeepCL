@@ -10,6 +10,8 @@
 
 #ifdef TANH
     #define ACTIVATION_DERIV(output) (1 - output * output)
+#elif defined SCALEDTANH
+    #define ACTIVATION_DERIV(output) ( 1.73205f * ( 1 - output * output) )
 #elif defined RELU
     #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)
 #elif defined LINEAR

@@ -7,6 +7,8 @@ using namespace std;
 ActivationFunction *ActivationFunction::fromName( std::string name ) {
     if( name == "tanh" ) {
         return new TanhActivation();
+    } else if( name == "scaledtanh" ) {
+        return new ScaledTanhActivation();
     } else if( name == "sigmoid" ) {
         return new SigmoidActivation();
     } else if( name == "linear" ) {
@@ -25,6 +27,11 @@ ostream &operator<<( ostream &os, LinearActivation const&act ) {
 
 ostream &operator<<( ostream &os, TanhActivation const&act ) {
     os << "TanhActivation{}";
+    return os;
+}
+
+ostream &operator<<( ostream &os, ScaledTanhActivation const&act ) {
+    os << "ScaledTanhActivation{}";
     return os;
 }
 
