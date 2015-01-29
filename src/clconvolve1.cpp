@@ -16,6 +16,7 @@
 #include "WeightsPersister.h"
 #include "NormalizationHelper.h"
 #include "BatchLearner.h"
+#include "NetdefToNet.h"
 
 using namespace std;
 
@@ -126,80 +127,9 @@ void go(Config config) {
     const int numToTrain = Ntrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
-
-    string netDefLower = toLower( config.netDef );
-    vector<string> splitNetDef = split( netDefLower, "-" );
-    for( int i = 0; i < splitNetDef.size(); i++ ) {
-        string thisLayerDef = splitNetDef[i];
-        vector<string>splitLayerDef = split( thisLayerDef, "{" );
-        string baseLayerDef = splitLayerDef[0];
-        string optionsDef = "";
-        vector<string> splitOptionsDef;
-        if( splitLayerDef.size() == 2 ) {
-            optionsDef = split( splitLayerDef[1], "}" )[0];
-            splitOptionsDef = split( optionsDef, "," );
-        }
-        cout << "optionsDef: " << optionsDef << endl;
-        if( baseLayerDef.find("c") != string::npos ) {
-            vector<string> splitConvDef = split( baseLayerDef, "c" );
-            int numFilters = atoi( splitConvDef[0] );
-            int filterSize = atoi( splitConvDef[1] );
-            int skip = 0;
-            ActivationFunction *fn = new ReluActivation();
-            int padZeros = 0;
-            for( int i = 0; i < splitOptionsDef.size(); i++ ) {
-                string optionDef = splitOptionsDef[i];
-                cout << "optionDef: " << optionDef << endl;
-                vector<string> splitOptionDef = split( optionDef, "=");
-                string optionName = splitOptionDef[0];
-                if( splitOptionDef.size() == 2 ) {
-                    string optionValue = splitOptionDef[1];
-                    if( optionName == "skip" ) {
-                        skip = atoi( optionValue );
-                        cout << "got skip: " << skip << endl;
-                    }
-                } else if( splitOptionDef.size() == 1 ) {
-                    if( optionName == "tanh" ) {
-                        fn = new TanhActivation();
-                    } else if( optionName == "scaledtanh" ) {
-                        fn = new ScaledTanhActivation();
-                    } else if( optionName == "sigmoid" ) {
-                        fn = new SigmoidActivation();
-                    } else if( optionName == "relu" ) {
-                        fn = new ReluActivation();
-                    } else if( optionName == "linear" ) {
-                        fn = new LinearActivation();
-                    } else if( optionName == "padzeros" ) {
-                        padZeros = 1;
-                    } else {
-                        cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
-                        return;
-                    }
-                } else {
-                    cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
-                    return;
-                }
-            }
-            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->padZeros( padZeros )->biased()->insert();
-        } else if( baseLayerDef.find("mp") != string::npos ) {
-            vector<string> splitPoolDef = split( baseLayerDef, "mp" );
-            int poolingSize = atoi( splitPoolDef[1] );
-            net->poolingMaker()->poolingSize(poolingSize)->insert();
-        } else if( baseLayerDef.find("n") != string::npos ) {
-            vector<string> fullDef = split( baseLayerDef, "n" );
-            int numPlanes = atoi( fullDef[0] );
-            if( i == splitNetDef.size() - 1 ) {
-                net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->linear()->biased()->insert();
-            } else {
-                net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased()->insert();
-            }
-        } else {
-            cout << "network definition " << baseLayerDef << " not recognised" << endl;
-            return;
-        }
+    if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
+        return;
     }
-    net->softMaxLossMaker()->insert();
-    net->setBatchSize(config.batchSize);
     net->print();
 
     bool afterRestart = false;
