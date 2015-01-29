@@ -144,6 +144,7 @@ void go(Config config) {
     float stdDev;
     if( config.normalization == "stddev" ) {
         NormalizationHelper::getMeanAndStdDev( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+        stdDev *= config.normalizationNumStds;
     } else if( config.normalization == "maxmin" ) {
         NormalizationHelper::getMinMax( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
     } else {
