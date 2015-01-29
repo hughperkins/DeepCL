@@ -462,6 +462,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
   * fix showstopper bug in idx-to-mat
   * add {sigmoid}, {tanh}, {scaledtanh}, {linear} options
   * add normalization=maxmin, normalization=stddev (default)
+  * add {padzeros} options
 * 27th January:
   * builds on Windows
 * 26th January:
