@@ -71,7 +71,7 @@ public:
             thismax = std::max<float>( thisValue, thismax );
         }
 
-        *p_mean = ( thismax + thismin ) / 2; // pick number in the middle
+        *p_middle = ( thismax + thismin ) / 2; // pick number in the middle
         *p_maxDev = ( thismax - thismin ) / 2; // distance from middle of range to either end
     }
 
