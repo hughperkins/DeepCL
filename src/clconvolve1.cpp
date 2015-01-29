@@ -8,10 +8,8 @@
 #include <iostream>
 
 #include "NorbLoader.h"
-//#include "BoardHelper.h"
 #include "Timer.h"
 #include "NeuralNet.h"
-#include "AccuracyHelper.h"
 #include "stringhelper.h"
 #include "FileHelper.h"
 #include "StatefulTimer.h"

@@ -66,6 +66,7 @@ public:
         float *batchData = new float[ batchSize * inputCubeSize ];
         float loss = 0;
         int numRight = 0;
+        net->setBatchSize( batchSize );
         for( int batch = 0; batch < numBatches; batch++ ) {
             int thisBatchSize = batchSize;
             if( batch == numBatches - 1 ) {
