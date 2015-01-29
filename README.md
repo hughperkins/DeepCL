@@ -70,7 +70,7 @@ Target usage:
   * `300N` means a fully connected layer with 300 hidden units
 * Thus, you can do, for example:
 ```bash
-./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 normalizationnumstds=3 datadir=../data/mnist trainset=train testset=t10k
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
@@ -132,6 +132,8 @@ Target usage:
 | anneallearningrate=0.95 | multiply learning rate by this after each epoch, as described in [Ciresan et al](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf) |
 | numepochs=20 | train for this many epochs |
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
+| normalization=maxmin | can choose maxmin or stddev.  Default is stddev |
+| normalizationnumstds=2 | how many standard deviations from mean should be +1/-2?  Default is 2 |
 
 # Validation against standard datasets
 
@@ -163,7 +165,7 @@ Target usage:
 ```
 * Run as per the [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
-./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 normalizationnumstds=3 datadir=../data/mnist trainset=train testset=t10k
 ```
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 

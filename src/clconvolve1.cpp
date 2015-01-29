@@ -177,6 +177,7 @@ void go(Config config) {
             int filterSize = atoi( splitConvDef[1] );
             int skip = 0;
             ActivationFunction *fn = new ReluActivation();
+            int padZeros = 0;
             for( int i = 0; i < splitOptionsDef.size(); i++ ) {
                 string optionDef = splitOptionsDef[i];
                 cout << "optionDef: " << optionDef << endl;
@@ -199,6 +200,8 @@ void go(Config config) {
                         fn = new ReluActivation();
                     } else if( optionName == "linear" ) {
                         fn = new LinearActivation();
+                    } else if( optionName == "padzeros" ) {
+                        padZeros = 1;
                     } else {
                         cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
                         return;
@@ -208,7 +211,7 @@ void go(Config config) {
                     return;
                 }
             }
-            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->biased()->insert();
+            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->padZeros( padZeros )->biased()->insert();
         } else if( baseLayerDef.find("mp") != string::npos ) {
             vector<string> splitPoolDef = split( baseLayerDef, "mp" );
             int poolingSize = atoi( splitPoolDef[1] );
