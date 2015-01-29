@@ -94,6 +94,11 @@ Target usage:
     * tanh
     * linear
     * relu (default)
+    * padzeros
+* can be combined, comma-separated (no spaces), eg:
+```bash
+./clconvolve1 netdef=8c5{tanh,padzeros}-mp2-16c5{tanh,padzeros}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+```
 
 ## Pre-processing
 
