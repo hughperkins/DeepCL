@@ -92,6 +92,7 @@ Target usage:
   * For convolution layers:
     * sigmoid
     * tanh
+    * scaledtanh (ie, tanh * sqrt(3) )
     * linear
     * relu (default)
     * padzeros
