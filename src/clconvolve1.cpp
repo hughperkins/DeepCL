@@ -191,6 +191,8 @@ void go(Config config) {
                         fn = new ScaledTanhActivation();
                     } else if( optionName == "sigmoid" ) {
                         fn = new SigmoidActivation();
+                    } else if( optionName == "relu" ) {
+                        fn = new ReluActivation();
                     } else if( optionName == "linear" ) {
                         fn = new LinearActivation();
                     } else {

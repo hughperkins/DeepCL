@@ -82,6 +82,19 @@ Target usage:
 ./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
 
+## Additional net-def options
+
+* You can add additional options in `{}` brackets after each layer, eg:
+```bash
+./clconvolve1 netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+```
+* Options currently available:
+  * For convolution layers:
+    * sigmoid
+    * tanh
+    * linear
+    * relu (default)
+
 ## Pre-processing
 
 * Note that the datasets must be in the NORB .mat format specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) page
@@ -442,6 +455,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
 * 29th January:
   * fix showstopper bug in idx-to-mat
   * add {sigmoid}, {tanh}, {scaledtanh}, {linear} options
+  * add normalization=maxmin, normalization=stddev (default)
 * 27th January:
   * builds on Windows
 * 26th January:
