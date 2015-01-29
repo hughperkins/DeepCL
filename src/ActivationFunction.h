@@ -42,10 +42,10 @@ public:
 class ScaledTanhActivation : public ActivationFunction {
 public:
     virtual float calc( float value ) const {
-        return 1.73205f * tanh( value );
+        return 1.7159f * tanh( value * 0.66667f );
     }
     virtual float calcDerivative( float output ) const {
-        return 1.73205f * ( 1 - output * output );
+        return 0.66667f * ( 1.7159f - 1 / 1.7159f * output * output );
     }
     virtual float getTrue() const {
         return 1.0f;

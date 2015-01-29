@@ -11,7 +11,7 @@
 #ifdef TANH
     #define ACTIVATION_FUNCTION(output) (tanh(output))
 #elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.73205f * tanh(output))
+    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
 #elif SIGMOID
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
