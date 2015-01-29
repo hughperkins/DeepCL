@@ -84,18 +84,18 @@ public:
     // [[[end]]]
 
     Config() {
-        netDef = "8C5-MP4-24C6-MP3-80C6-10N";
-        dataDir = "../data/norb";
-        testSet = "testing-sampled";
+        netDef = "8C5-MP2-16C5-MP3-10N";
+        dataDir = "../data/mnist";
+        testSet = "t10k";
         restartableFilename = "weights.dat";
-        trainSet = "training-shuffled";
+        trainSet = "train";
         batchSize = 128;
         numTest = 0;
         restartable = 0;
         numTrain = 0;
-        numEpochs = 20;
-        learningRate = 0.0001f;
-        annealLearningRate = 0.95f;
+        numEpochs = 12;
+        learningRate = 0.002f;
+        annealLearningRate = 1.0f;
     }
     string getTrainingString() {
         string configString = "";

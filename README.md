@@ -439,6 +439,11 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 29th January:
+  * fix showstopper bug in idx-to-mat
+  * add {sigmoid}, {tanh}, {scaledtanh}, {linear} options
+* 27th January:
+  * builds on Windows
 * 26th January:
   * Unified mnist and norb testing executable
   * Implemented network-definition, as specified in [Ciresan et al](arxiv.org/pdf/1202.2745.pdf)
