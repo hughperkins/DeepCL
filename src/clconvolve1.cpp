@@ -96,36 +96,6 @@ public:
     }
 };
 
-float printAccuracy( string name, NeuralNet *net, unsigned char *boards, int *labels, int batchSize, int N, int numPlanes, int boardSize, float mean, float stdDev ) {
-    int testNumRight = 0;
-    net->setBatchSize( batchSize );
-    int numBatches = (N + batchSize - 1 ) / batchSize;
-    int inputCubeSize = numPlanes * boardSize * boardSize;
-    float *batchData = new float[ batchSize * inputCubeSize ];
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int batchStart = batch * batchSize;
-        int thisBatchSize = batchSize;
-        if( batch == numBatches - 1 ) {
-            thisBatchSize = N - batchStart;
-            net->setBatchSize( thisBatchSize );
-        }
-        const int batchInputSize = thisBatchSize * inputCubeSize;
-        unsigned char *thisBatchData = boards + batchStart * inputCubeSize;
-        for( int i = 0; i < batchInputSize; i++ ) {
-            batchData[i] = thisBatchData[i];
-        }
-        NormalizationHelper::normalize( batchData, batchInputSize, mean, stdDev );
-        net->propagate( batchData );
-        float const*results = net->getResults();
-        int thisnumright = net->calcNumRight( &(labels[batchStart]) );
-        testNumRight += thisnumright;
-    }
-    float accuracy = ( testNumRight * 100.0f / N );
-    cout << name << " overall: " << testNumRight << "/" << N << " " << accuracy << "%" << endl;
-    delete[] batchData;
-    return accuracy;
-}
-
 void go(Config config) {
     Timer timer;
 
@@ -261,7 +231,8 @@ void go(Config config) {
         cout << "       loss L: " << batchLearner.getLoss() << endl;
         timer.timeCheck("after epoch " + toString(epoch) );
         std::cout << "train accuracy: " << batchLearner.getNumRight() << "/" << numToTrain << " " << (batchLearner.getNumRight() * 100.0f/ Ntrain) << "%" << std::endl;
-        printAccuracy( "test", net, testData, testLabels, batchSize, Ntest, numPlanes, boardSize, mean, stdDev );
+        int testNumRight = batchLearner.test( config.batchSize, Ntest, testData, testLabels );
+        cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
         timer.timeCheck("after tests");
         if( config.restartable ) {
             WeightsPersister::persistWeights( config.restartableFilename, config.getTrainingString(), net, epoch + 1, 0, annealedLearningRate, 0, 0 );

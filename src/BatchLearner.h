@@ -24,6 +24,31 @@ public:
     float loss;
     int numRight;
 
+    int test( int batchSize, int N, unsigned char *testData, int *testLabels ) {
+        int numRight = 0;
+        net->setBatchSize( batchSize );
+        int numBatches = (N + batchSize - 1 ) / batchSize;
+        int inputCubeSize = net->getInputCubeSize();
+        float *batchData = new float[ batchSize * inputCubeSize ];
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            int batchStart = batch * batchSize;
+            int thisBatchSize = batchSize;
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = N - batchStart;
+                net->setBatchSize( thisBatchSize );
+            }
+            const int batchInputSize = thisBatchSize * inputCubeSize;
+            unsigned char *thisBatchData = testData + batchStart * inputCubeSize;
+            for( int i = 0; i < batchInputSize; i++ ) {
+                batchData[i] = thisBatchData[i];
+            }
+            NormalizationHelper::normalize( batchData, batchInputSize, - dataTranslate, 1.0f / dataScale );
+            net->propagate( batchData );
+            numRight += net->calcNumRight( &(testLabels[batchStart]) );
+        }
+        delete[] batchData;
+        return numRight;
+    }
 
     template< typename T > void runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
         const int inputCubeSize = net->getInputCubeSize();
