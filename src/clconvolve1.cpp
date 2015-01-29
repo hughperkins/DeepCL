@@ -226,11 +226,11 @@ void go(Config config) {
     for( int epoch = afterRestart ? restartEpoch : 0; epoch < config.numEpochs; epoch++ ) {
         float annealedLearningRate = config.learningRate * pow( config.annealLearningRate, epoch );
         cout << "Annealed learning rate: " << annealedLearningRate << endl;
-        batchLearner.runEpochFromLabels( annealedLearningRate, config.batchSize, Ntrain, trainData, trainLabels );
+        EpochResult epochResult = batchLearner.runEpochFromLabels( annealedLearningRate, config.batchSize, Ntrain, trainData, trainLabels );
         StatefulTimer::dump(true);
-        cout << "       loss L: " << batchLearner.getLoss() << endl;
+        cout << "       loss L: " << epochResult.loss << endl;
         timer.timeCheck("after epoch " + toString(epoch) );
-        std::cout << "train accuracy: " << batchLearner.getNumRight() << "/" << numToTrain << " " << (batchLearner.getNumRight() * 100.0f/ Ntrain) << "%" << std::endl;
+        std::cout << "train accuracy: " << epochResult.numRight << "/" << numToTrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
         int testNumRight = batchLearner.test( config.batchSize, Ntest, testData, testLabels );
         cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
         timer.timeCheck("after tests");

@@ -15,14 +15,24 @@ class NeuralNet;
 #define VIRTUAL virtual
 #define STATIC static
 
+class EpochResult {
+public:
+    float loss;
+    int numRight;
+    EpochResult( float loss, int numRight ) :
+        loss( loss ),
+        numRight( numRight ) {
+    }
+};
+
 class BatchLearner {
 public:
     NeuralNet *net; // NOT owned by us, dont delete
     float dataTranslate;
     float dataScale;
 
-    float loss;
-    int numRight;
+    //float loss;
+    //int numRight;
 
     int test( int batchSize, int N, unsigned char *testData, int *testLabels ) {
         int numRight = 0;
@@ -50,12 +60,12 @@ public:
         return numRight;
     }
 
-    template< typename T > void runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
+    template< typename T > EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
         const int inputCubeSize = net->getInputCubeSize();
         const int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
         float *batchData = new float[ batchSize * inputCubeSize ];
-        loss = 0;
-        numRight = 0;
+        float loss = 0;
+        int numRight = 0;
         for( int batch = 0; batch < numBatches; batch++ ) {
             int thisBatchSize = batchSize;
             if( batch == numBatches - 1 ) {
@@ -74,6 +84,8 @@ public:
             numRight += net->calcNumRight( &(trainLabels[batchStart]) );
         }
         delete[] batchData;
+        EpochResult epochResult( loss, numRight );
+        return epochResult;
     }
 
     // [[[cog
@@ -82,8 +94,6 @@ public:
     // ]]]
     // generated, using cog:
     BatchLearner( NeuralNet *net, float dataTranslate, float dataScale );
-    VIRTUAL float getLoss() const;
-    VIRTUAL int getNumRight() const;
 
     // [[[end]]]
 };

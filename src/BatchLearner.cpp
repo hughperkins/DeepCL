@@ -22,13 +22,13 @@ BatchLearner::BatchLearner( NeuralNet *net, float dataTranslate, float dataScale
     dataScale( dataScale ) {
 }
 
-VIRTUAL float BatchLearner::getLoss() const {
-    return loss;
-}
+//VIRTUAL float BatchLearner::getLoss() const {
+//    return loss;
+//}
 
-VIRTUAL int BatchLearner::getNumRight() const {
-    return numRight;
-}
+//VIRTUAL int BatchLearner::getNumRight() const {
+//    return numRight;
+//}
 
 
 
