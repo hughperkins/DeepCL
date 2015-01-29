@@ -37,7 +37,7 @@ void go( string dir, string setName ) {
     int totalLinearSize = Nboards * boardSize * boardSize;
     unsigned char *imagesUchar = new unsigned char[ totalLinearSize ];
     for( int i = 0; i < totalLinearSize; i++ ) {
-        imagesUchar[i] = reinterpret_cast<unsigned char *>( &(images[0][0][0]) )[i];
+        imagesUchar[i] = ( &(images[0][0][0]) )[i];
     }
 
     NorbLoader::writeLabels( matCatFilename, labels, Nboards );

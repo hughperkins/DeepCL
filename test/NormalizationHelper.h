@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 class NormalizationHelper {
 public:
     template<typename T>
@@ -14,14 +16,15 @@ public:
     //    float thismax = 0;
         float sum = 0;
         for( int i = 0; i < length; i++ ) {
-            int thisValue = (int)data[i];
+            float thisValue = data[i];
             sum += thisValue;
         }
         float mean = sum / length;
 
         float sumSquaredDiff = 0;
         for( int i = 0; i < length; i++ ) {
-            int thisValue = (int)data[i];
+            float thisValue = data[i];
+//            std::cout << "i " << i << "=" << thisValue << std::endl;
             float diffFromMean = thisValue - mean;
             float diffSquared = diffFromMean * diffFromMean;
             sumSquaredDiff += diffSquared;
@@ -38,7 +41,7 @@ public:
     //    float thismax = 0;
         float sum = 0;
         for( int i = 0; i < length; i++ ) {
-            int thisValue = (int)data[i];
+            float thisValue = data[i];
             sum += thisValue;
         }
         float mean = sum / length;
@@ -57,7 +60,7 @@ public:
     }
 
     template<typename T>
-    static void normalize( T *data, int length, double mean, double scaling ) {
+    static void normalize( T *data, int length, float mean, float scaling ) {
         for( int i = 0; i < length; i++ ) {
             data[i] = ( data[i] - mean ) / scaling;
         }
