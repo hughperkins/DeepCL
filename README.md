@@ -10,6 +10,7 @@ Contents
 
 - [ClConvolve](#clconvolve)
 - [Commandline usage](#commandline-usage)
+  - [Additional net-def options](#additional-net-def-options)
   - [Pre-processing](#pre-processing)
   - [Weight persistence](#weight-persistence)
   - [Command-line options](#command-line-options)
@@ -92,7 +93,7 @@ Target usage:
   * For convolution layers:
     * sigmoid
     * tanh
-    * scaledtanh (ie, tanh * sqrt(3) )
+    * scaledtanh (ie, 1.7159f * tanh( 0.66667f * x ) )
     * linear
     * relu (default)
     * padzeros
@@ -459,6 +460,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 30th January:
+  * add scaled tanh, ie 1.7159f * tanh(0.66667f * x )
 * 29th January:
   * fix showstopper bug in idx-to-mat
   * add {sigmoid}, {tanh}, {scaledtanh}, {linear} options
