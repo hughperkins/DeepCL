@@ -24,7 +24,7 @@ using namespace std;
     # These are used in the later cog sections in this file:
     strings = [ 'dataDir', 'trainSet', 'testSet', 'netDef', 'restartableFilename', 'normalization' ]
     ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable' ]
-    floats = [ 'learningRate', 'annealLearningRate' ]
+    floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
         'datadir': 'data directory',
         'trainset': '[training-shuffled|testing-sampled|other set name]',
@@ -38,7 +38,8 @@ using namespace std;
         'anneallearningrate': 'multiply learning rate by this, each epoch',
         'restartable': 'weights are persistent?',
         'restartablefilename': 'filename to store weights',
-        'normalization': '[stddev|maxmin]'
+        'normalization': '[stddev|maxmin]',
+        'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?'
     }
 *///]]]
 // [[[end]]]
@@ -68,6 +69,7 @@ public:
     int restartable = 0;
     float learningRate = 0.0f;
     float annealLearningRate = 0.0f;
+    float normalizationNumStds = 0.0f;
     // [[[end]]]
 
     Config() {
@@ -84,6 +86,7 @@ public:
         numEpochs = 12;
         learningRate = 0.002f;
         annealLearningRate = 1.0f;
+        normalizationNumStds = 2.0f;
     }
     string getTrainingString() {
         string configString = "";
@@ -320,6 +323,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
+    cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
     // [[[end]]]
 }
 
@@ -377,6 +381,8 @@ int main( int argc, char *argv[] ) {
                 config.learningRate = atof( value );
             } else if( key == "anneallearningrate" ) {
                 config.annealLearningRate = atof( value );
+            } else if( key == "normalizationnumstds" ) {
+                config.normalizationNumStds = atof( value );
             // [[[end]]]
             } else {
                 cout << endl;
