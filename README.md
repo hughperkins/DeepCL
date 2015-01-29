@@ -170,7 +170,7 @@ Target usage:
 ```
 * Run as per the [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
-./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 normalizationnumstds=3 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 normalizationnumstds=3 datadir=../data/mnist trainset=train testset=t10k
 ```
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 
@@ -179,17 +179,16 @@ Target usage:
 * You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-10N` network, you could do:
 ```c++
 NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->padZeros()->insert();
+net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->insert();
 net->poolingMaker()->poolingSize(2)->insert();
-net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
+net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
 net->poolingMaker()->poolingSize(3)->insert();
 net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
 net->softMaxLossMaker()->insert();
 net->print();
 ```
-* You can see that this gives a bit more control over which activation function to use and so on (though, these could be added to the command-line version sooner or later too)
-* Data must be provided in contiguous, 1d format, see below
 * The following sections will detail the various layers available, and the options available for each layer type
+* Data must be provided in contiguous, 1d format, see below
 
 ## Create a net
 
