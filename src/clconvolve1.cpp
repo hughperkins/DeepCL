@@ -239,47 +239,6 @@ void go(Config config) {
         }
     }
 
-//    int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
-//    float *batchData = new float[ config.batchSize * inputCubeSize ];
-//    //float annealedLearningRate = afterRestart ? restartAnnealedLearningRate : config.learningRate;
-//    for( int epoch = afterRestart ? restartEpoch : 0; epoch < config.numEpochs; epoch++ ) {
-//        float annealedLearningRate = config.learningRate * pow( config.annealLearningRate, epoch );
-//        cout << "Annealed learning rate: " << annealedLearningRate << endl;
-////        int trainNumRight = 0;
-//        int thisBatchSize = batchSize;
-//        net->setBatchSize( thisBatchSize );
-//        float loss = afterRestart ? restartLoss : 0;
-//        int numRight = afterRestart ? restartNumRight : 0;
-//        for( int batch = afterRestart ? restartBatch : 0; batch < numBatches; batch++ ) {
-//            afterRestart = false;
-//            if( batch == numBatches - 1 ) {
-//                thisBatchSize = Ntrain - (numBatches - 1) * batchSize;
-//                net->setBatchSize( thisBatchSize );
-//            }
-//            int batchStart = batchSize * batch;
-//            const int batchInputSize = thisBatchSize * inputCubeSize;
-//            unsigned char *thisBatchData = trainData + batchStart * inputCubeSize;
-//            for( int i = 0; i < batchInputSize; i++ ) {
-//                batchData[i] = thisBatchData[i];
-//            }
-//            NormalizationHelper::normalize( batchData, batchInputSize, mean, stdDev );
-//            net->learnBatchFromLabels( annealedLearningRate, batchData, &(trainLabels[batchStart]) );
-//            loss += net->calcLossFromLabels( &(trainLabels[batchStart]) );
-//            numRight += net->calcNumRight( &(trainLabels[batchStart]) );
-//        }
-//        StatefulTimer::dump(true);
-//        cout << "       loss L: " << loss << endl;
-//        timer.timeCheck("after epoch " + toString(epoch) );
-////        net->print();
-//        std::cout << "train accuracy: " << numRight << "/" << numToTrain << " " << (numRight * 100.0f/ Ntrain) << "%" << std::endl;
-//        printAccuracy( "test", net, testData, testLabels, batchSize, Ntest, numPlanes, boardSize, mean, stdDev );
-//        timer.timeCheck("after tests");
-////        annealedLearningRate *= config.annealLearningRate;
-//        if( config.restartable ) {
-//            WeightsPersister::persistWeights( config.restartableFilename, config.getTrainingString(), net, epoch + 1, 0, annealedLearningRate, 0, 0 );
-//        }
-//    }
-
     delete net;
 
     delete[] trainData;
