@@ -1,10 +1,10 @@
 to do:
 - skip
-- scaled tanh activation
 
 - adagrad or similar?
 
 done:
+- scaled tanh activation (but not tested...)
 - activation function in cmdline
 - windows build
 
