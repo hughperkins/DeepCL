@@ -60,6 +60,22 @@ public:
     }
 
     template<typename T>
+    static void getMinMax( T *data, int length, float *p_middle, float *p_maxDev ) {
+        // get mean of the dataset, and stddev
+        float thismin = 0;
+        float thismax = 0;
+        float sum = 0;
+        for( int i = 0; i < length; i++ ) {
+            float thisValue = data[i];
+            thismin = std::min<float>( thisValue, thismin );
+            thismax = std::max<float>( thisValue, thismax );
+        }
+
+        *p_mean = ( thismax + thismin ) / 2; // pick number in the middle
+        *p_maxDev = ( thismax - thismin ) / 2; // distance from middle of range to either end
+    }
+
+    template<typename T>
     static void normalize( T *data, int length, float mean, float scaling ) {
         for( int i = 0; i < length; i++ ) {
             data[i] = ( data[i] - mean ) / scaling;
