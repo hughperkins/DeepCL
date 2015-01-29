@@ -56,9 +56,6 @@ public:
     float dataTranslate;
     float dataScale;
 
-    //float loss;
-    //int numRight;
-
     template<typename T>
     EpochResult batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction *netAction ) {
         int numRight = 0;
@@ -94,29 +91,6 @@ public:
         int numRight = batchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
         delete action;
         return numRight;
-//        int numRight = 0;
-//        net->setBatchSize( batchSize );
-//        int numBatches = (N + batchSize - 1 ) / batchSize;
-//        int inputCubeSize = net->getInputCubeSize();
-//        float *batchData = new float[ batchSize * inputCubeSize ];
-//        for( int batch = 0; batch < numBatches; batch++ ) {
-//            int batchStart = batch * batchSize;
-//            int thisBatchSize = batchSize;
-//            if( batch == numBatches - 1 ) {
-//                thisBatchSize = N - batchStart;
-//                net->setBatchSize( thisBatchSize );
-//            }
-//            const int batchInputSize = thisBatchSize * inputCubeSize;
-//            unsigned char *thisBatchData = testData + batchStart * inputCubeSize;
-//            for( int i = 0; i < batchInputSize; i++ ) {
-//                batchData[i] = thisBatchData[i];
-//            }
-//            NormalizationHelper::normalize( batchData, batchInputSize, - dataTranslate, 1.0f / dataScale );
-//            net->propagate( batchData );
-//            numRight += net->calcNumRight( &(testLabels[batchStart]) );
-//        }
-//        delete[] batchData;
-//        return numRight;
     }
 
     template< typename T > EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
@@ -124,32 +98,6 @@ public:
         EpochResult epochResult = batchedNetAction( batchSize, Ntrain, trainData, trainLabels, action );
         delete action;
         return epochResult;
-//        const int inputCubeSize = net->getInputCubeSize();
-//        const int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
-//        float *batchData = new float[ batchSize * inputCubeSize ];
-//        float loss = 0;
-//        int numRight = 0;
-//        net->setBatchSize( batchSize );
-//        for( int batch = 0; batch < numBatches; batch++ ) {
-//            int thisBatchSize = batchSize;
-//            if( batch == numBatches - 1 ) {
-//                thisBatchSize = Ntrain - (numBatches - 1) * batchSize;
-//                net->setBatchSize( thisBatchSize );
-//            }
-//            int batchStart = batchSize * batch;
-//            const int batchInputSize = thisBatchSize * inputCubeSize;
-//            T *thisBatchData = trainData + batchStart * inputCubeSize;
-//            for( int i = 0; i < batchInputSize; i++ ) {
-//                batchData[i] = thisBatchData[i];
-//            }
-//            NormalizationHelper::normalize( batchData, batchInputSize, - dataTranslate, 1.0f / dataScale );
-//            net->learnBatchFromLabels( learningRate, batchData, &(trainLabels[batchStart]) );
-//            loss += net->calcLossFromLabels( &(trainLabels[batchStart]) );
-//            numRight += net->calcNumRight( &(trainLabels[batchStart]) );
-//        }
-//        delete[] batchData;
-//        EpochResult epochResult( loss, numRight );
-//        return epochResult;
     }
 
     // [[[cog

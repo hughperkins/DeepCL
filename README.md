@@ -59,7 +59,7 @@ OpenCL library to train deep convolutional networks
 Target usage:
 - 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
 - Also works on MNIST 28 x 28 boards
-  - obtained 98.7% test accuracy on MNIST, ~~using 2 convolutional layers of 32 filters, each filter 5 by 5, and with zero-padding applied~~, using the architecture given on [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+  - obtains 98.8% test accuracy on MNIST, using `netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-50n-10n`.
 - Tested on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, gets 90% at the moment, which is not too far away from [LeCun's results](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf).
 
 # Commandline usage
@@ -175,6 +175,10 @@ Target usage:
 ./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
 ```
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
+* Actually, I think the following gives slightly better test accuracy, about 98.8%, using 14.8seconds per epoch:
+```bash
+./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-50n-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+```
 
 # Neural Net API
 
