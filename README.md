@@ -24,6 +24,7 @@ Contents
     - [Fully connected layers](#fully-connected-layers)
     - [Max-pooling layers](#max-pooling-layers)
     - [Loss layer](#loss-layer)
+  - [Normalization layer](#normalization-layer)
   - [Data format](#data-format)
   - [Train](#train)
   - [Test](#test)
