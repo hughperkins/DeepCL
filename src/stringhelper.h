@@ -12,6 +12,8 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "DllImportExport.h"
+
 class IHasToString {
 public:
     virtual std::string toString() = 0;
@@ -30,7 +32,7 @@ std::string toString(T val ) { // not terribly efficient, but works...
    return myostringstream.str();
 }
 
-std::vector<std::string> split(const std::string &str, const std::string &separator = " " );
+ClConvolve_EXPORT std::vector<std::string> split(const std::string &str, const std::string &separator = " " );
 std::string trim( const std::string &target );
 
 inline double atof( std::string stringvalue ) {
