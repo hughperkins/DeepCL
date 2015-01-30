@@ -12,7 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "DllImportExport.h"
+// #include "DllImportExport.h"
 
 class IHasToString {
 public:
@@ -32,7 +32,7 @@ std::string toString(T val ) { // not terribly efficient, but works...
    return myostringstream.str();
 }
 
-ClConvolve_EXPORT std::vector<std::string> split(const std::string &str, const std::string &separator = " " );
+std::vector<std::string> split(const std::string &str, const std::string &separator = " " );
 std::string trim( const std::string &target );
 
 inline double atof( std::string stringvalue ) {
