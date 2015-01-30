@@ -331,7 +331,7 @@ int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 
 # To use the pre-built binaries
 
-Pre-built binaries are available for Windows, for certain releases.  In order you need:
+Pre-built binaries are available for Windows-64, for certain releases.  In order to use them you need:
 * [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
 * An OpenCL driver for your GPU
 
