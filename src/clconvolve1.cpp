@@ -96,6 +96,19 @@ public:
     }
 };
 
+class WeightsWriter : public PostEpochAction {
+public:
+    NeuralNet *net;
+    Config *config;
+    WeightsWriter( NeuralNet *net, Config *config ) :
+        net( net ),
+        config( config ) {
+    }
+    virtual void run( int epoch ) {
+        WeightsPersister::persistWeights( config->restartableFilename, config->getTrainingString(), net, epoch + 1, 0, 0, 0, 0 );
+    }
+};
+
 void go(Config config) {
     Timer timer;
 
@@ -154,30 +167,14 @@ void go(Config config) {
     NetLearner<unsigned char> netLearner( net );
     netLearner.setTrainingData( Ntrain, trainData, trainLabels );
     netLearner.setTestingData( Ntest, testData, testLabels );
-    netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
+    netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
     netLearner.setNormalize( - mean, 1.0f / stdDev );
     netLearner.setBatchSize( config.batchSize );
+    WeightsWriter weightsWriter( net, &config );
     if( config.restartable ) {
-        netLearner.addPostEpochAction( );
+        netLearner.addPostEpochAction( &weightsWriter );
     }
     netLearner.learn( config.learningRate, config.annealLearningRate );
-
-    BatchLearner<unsigned char> batchLearner( net, - mean, 1.0f / stdDev );
-    for( int epoch = afterRestart ? restartEpoch : 0; epoch < config.numEpochs; epoch++ ) {
-        float annealedLearningRate = config.learningRate * pow( config.annealLearningRate, epoch );
-        cout << "Annealed learning rate: " << annealedLearningRate << endl;
-        EpochResult epochResult = batchLearner.runEpochFromLabels( annealedLearningRate, config.batchSize, Ntrain, trainData, trainLabels );
-        StatefulTimer::dump(true);
-        cout << "       loss L: " << epochResult.loss << endl;
-        timer.timeCheck("after epoch " + toString(epoch) );
-        std::cout << "train accuracy: " << epochResult.numRight << "/" << numToTrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
-        int testNumRight = batchLearner.test( config.batchSize, Ntest, testData, testLabels );
-        cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
-        timer.timeCheck("after tests");
-        if( config.restartable ) {
-            WeightsPersister::persistWeights( config.restartableFilename, config.getTrainingString(), net, epoch + 1, 0, annealedLearningRate, 0, 0 );
-        }
-    }
 
     delete net;
 

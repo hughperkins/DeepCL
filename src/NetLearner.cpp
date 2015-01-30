@@ -25,7 +25,7 @@ template< typename T > NetLearner<T>::NetLearner( NeuralNet *net ) :
     translate = 0;
     scale = 1.0f;
     numEpochs = 12;
-    startEpoch = 0;
+    startEpoch = 1;
 }
 
 template< typename T > void NetLearner<T>::setTrainingData( int Ntrain, T *trainData, int *trainLabels ) {
@@ -41,7 +41,7 @@ template< typename T > void NetLearner<T>::setTestingData( int Ntest, T *testDat
 }
 
 template< typename T > void NetLearner<T>::setSchedule( int numEpochs ) {
-    setSchedule( numEpochs, 0 );
+    setSchedule( numEpochs, 1 );
 }
 
 template< typename T > void NetLearner<T>::setSchedule( int numEpochs, int startEpoch ) {
@@ -74,13 +74,13 @@ template< typename T > void NetLearner<T>::learn( float learningRate ) {
 template< typename T > void NetLearner<T>::learn( float learningRate, float annealLearningRate ) {
     BatchLearner<T> batchLearner( net, translate, scale );
     Timer timer;
-    for( int epoch = startEpoch; epoch < numEpochs; epoch++ ) {
+    for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
         float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
         cout << "Annealed learning rate: " << annealedLearningRate << endl;
         EpochResult epochResult = batchLearner.runEpochFromLabels( annealedLearningRate, batchSize, Ntrain, trainData, trainLabels );
         StatefulTimer::dump(true);
         cout << "       loss L: " << epochResult.loss << endl;
-        timer.timeCheck("after epoch " + toString(epoch) );
+        timer.timeCheck("after epoch " + toString(epoch ) );
         std::cout << "train accuracy: " << epochResult.numRight << "/" << Ntrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
         int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
         cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
