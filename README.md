@@ -305,25 +305,28 @@ Labels are simply an integer array, with one number, zero-based, per training ex
 
 ## Train
 
+eg:
 ```c++
-for( int epoch = 0; epoch < 12; epoch++ ) {
-    float loss = net->epochMaker()
-       ->learningRate(0.002)->batchSize(128)->numExamples(60000)
-       ->inputData(mydata)
-       ->labels(labels)
-       ->runFromLabels( &trainNumRight );
-    cout << "Loss L " << loss << " number correct: " << trainNumRight << endl;
-}
+// (create a net, as above)
+// train, eg on unsigned char input data:
+NetLearner<unsigned char> netLearner( net );
+netLearner.setTrainingData( Ntrain, trainData, trainLabels );
+netLearner.setTestingData( Ntest, testData, testLabels );
+netLearner.setSchedule( numEpochs );
+netLearner.setBatchSize( batchSize );
+netLearner.learn( learningRate );
+// learning is now done :-)
 ```
 
 ## Test
 
+eg
 ```c++
-net->setBatchSize(batchSize);
-net->propagate(somenewdata);
-float *results = net->getResults(); // to get results
-float loss = net->calcLossFromLabels( labels ); // calc loss
-int numberCorrect = net->calcNumRight( labels ); // check accuracy
+// (create a net, as above)
+// (train it, as above)
+// test, eg for unsigned char input data:
+BatchLearner<unsigned char> batchLearner( net );
+int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
 
 # To use the pre-built binaries
