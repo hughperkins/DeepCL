@@ -509,6 +509,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 31st January:
+  * added NormalizationLayer
 * 30th January:
   * add scaled tanh, ie 1.7159f * tanh(0.66667f * x )
 * 29th January:
