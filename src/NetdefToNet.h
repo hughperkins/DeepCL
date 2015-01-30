@@ -8,9 +8,11 @@
 
 #include <string>
 
+#include "DllImportExport.h"
+
 class NeuralNet;
 
-class NetdefToNet {
+class ClConvolve_EXPORT NetdefToNet {
 public:
     static bool createNetFromNetdef( NeuralNet *net, std::string netdef );
 };
