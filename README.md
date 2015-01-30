@@ -275,6 +275,15 @@ net->softMaxLossLayer()->insert();
   * or else a per-plane probability distribution
     * add option `->perPlane()`
 
+## Normalization layer
+
+* You can add a normalization layer, to translate and scale input data.  Put it just after creating the net, like this:
+```c++
+NeuralNet *net = NeuralNet::maker()->planes(10)->boardSize(19)->instance();
+net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation )->insert();
+// other layers here...
+```
+
 ## Data format
 
 Input data should be provided in a contiguous array, of floats.  "group by" order should be:
