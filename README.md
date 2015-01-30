@@ -29,8 +29,12 @@ Contents
   - [Test](#test)
 - [To use the pre-built binaries](#to-use-the-pre-built-binaries)
 - [To build](#to-build)
-  - [Pre-requisites](#pre-requisites)
-  - [Procedure](#procedure)
+  - [linux](#linux)
+    - [Pre-requisites](#pre-requisites)
+    - [Procedure](#procedure)
+  - [Windows](#windows)
+    - [Pre-requisites](#pre-requisites-1)
+    - [Procedure](#procedure-1)
   - [Linking](#linking)
 - [Testing](#testing)
   - [Correctness checking](#correctness-checking)
@@ -152,16 +156,11 @@ Example usage:
 ```bash
 ./prepare-norb
 ```
-* Run training, eg:
+* Run training, eg, based on LeCun's lenet-7:
 ```bash
 ./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
-* Or:
-```bash
-./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
-```
-* On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, some results are epoch time for the first net is 78 seconds, and for the second is 1550 seconds 
-* The first architecture gives about 90% accuracy currently, the second one is still running...
+* On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, this has epoch time of 76 seconds, and reaches test accuracy of around 91.7% after around 200 epochs (train accuracy 99.996%!)
 
 ## MNIST
 
@@ -225,6 +224,7 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
   * `->relu()` choose relu activation
   * `->sigmoid()` choose sigmoid activation
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
+  * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
 * convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
 ### Fully connected layers
@@ -242,6 +242,7 @@ Available options:
   * `->relu()` choose relu activation
   * `->sigmoid()` choose sigmoid activation
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
+  * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
 
 ### Max-pooling layers
 
@@ -317,11 +318,15 @@ int numberCorrect = net->calcNumRight( labels ); // check accuracy
 
 # To use the pre-built binaries
 
-Pre-built binaries are available for Windows, for certain releases.  In order to use them, please first install [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
+Pre-built binaries are available for Windows, for certain releases.  In order you need:
+* [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
+* An OpenCL driver for your GPU
 
 #To build
 
-## Pre-requisites
+## linux
+
+### Pre-requisites
 
 - git
 - cmake
@@ -332,7 +337,7 @@ Pre-built binaries are available for Windows, for certain releases.  In order to
 - opencl-headers
 - make 
 
-## Procedure
+### Procedure
 
 ```bash
 git clone --recursive https://github.com/hughperkins/ClConvolve.git
@@ -347,6 +352,26 @@ Note:
 * be sure to add `--recursive` when you clone, else when you build it will complain about OpenCLHelper missing (or clew missing)
   * if you do forget, you can experiment with running `git submodule init --recursive`, and then `git submodule update --recursive`
 * you might need to play around with commands such as `git submodule update --recursive` occasionally, to pull down new OpenCLHelper updates
+
+## Windows
+
+### Pre-requisites
+
+- git
+- cmake
+- Visual Studio (tested on 2013 Community Edition)
+- An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+
+### Procedure
+
+- in git, do `git clone --recursive https://github.com/hughperkins/ClConvolve.git`
+- create a subdirectory `build` in the git cloned `ClConvolve` directory
+- open cmake, point at the `ClConvolve` directory, and set to build in the `build` subdirectory
+  - `configure` then `generate`
+- open visual studio, and load any of the projects in the `build` directory
+  - change release type to `Release`
+  - choose `build` from the `build` menu
+- after building, you will need to copy the *.cl files by hand, from the `cl` directory
 
 ## Linking
 
@@ -455,11 +480,11 @@ What's done / what's planned
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
 * Plausible, medium-term (pull requests welcome):
   * generalization to non-square images
-  * generalization to larger images
+  * ~~generalization to larger images~~ kind of done, ish, for NORB
   * drop-out
   * Python bindings?
   * ~~max-pooling?~~ done
-  * read network from a config file?
+  * ~~read network from a config file?~~ soft of done with the `netdef` syntax
 
 Recent changes
 ==============
