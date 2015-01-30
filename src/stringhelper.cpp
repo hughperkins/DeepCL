@@ -14,11 +14,11 @@ using namespace std;
 vector<string> split(const string &str, const string &separator ) {
 	vector<string> splitstring;
 	int start = 0;
-	int npos = str.find(separator);
+	int npos = (int)str.find(separator);
 	while (npos != (int)str.npos ) {
 		splitstring.push_back( str.substr(start, npos-start) );
-		start = npos + separator.length();
-		npos = str.find(separator, start);
+		start = npos + (int)separator.length();
+		npos = (int)str.find(separator, start);
 	}
 	splitstring.push_back( str.substr( start ) );
     return splitstring;
@@ -26,7 +26,7 @@ vector<string> split(const string &str, const string &separator ) {
 
 string trim( const string &target ) {
 
-   int origlen = target.size();
+   int origlen = (int)target.size();
    int startpos = -1;
    for( int i = 0; i < origlen; i++ ) {
       if( target[i] != ' ' && target[i] != '\r' && target[i] != '\n' ) {
