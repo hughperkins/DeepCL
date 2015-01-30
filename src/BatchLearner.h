@@ -15,7 +15,9 @@ class NeuralNet;
 #define VIRTUAL virtual
 #define STATIC static
 
-class EpochResult {
+#include "DllImportExport.h"
+
+class ClConvolve_EXPORT EpochResult {
 public:
     float loss;
     int numRight;
@@ -25,12 +27,12 @@ public:
     }
 };
 
-class NetAction {
+class ClConvolve_EXPORT NetAction {
 public:
     virtual void run( NeuralNet *net, float *batchData, int *batchLabels ) = 0;
 };
 
-class NetLearnLabeledBatch : public NetAction {
+class ClConvolve_EXPORT NetLearnLabeledBatch : public NetAction {
 public:
     float learningRate;
     NetLearnLabeledBatch( float learningRate ) :
@@ -39,7 +41,7 @@ public:
     virtual void run( NeuralNet *net, float *batchData, int *batchLabels );
 };
 
-class NetPropagateBatch : public NetAction {
+class ClConvolve_EXPORT NetPropagateBatch : public NetAction {
 public:
     NetPropagateBatch() {
     }
@@ -47,7 +49,7 @@ public:
 };
 
 template< typename T>
-class BatchLearner {
+class ClConvolve_EXPORT BatchLearner {
 public:
     NeuralNet *net; // NOT owned by us, dont delete
     float dataTranslate;

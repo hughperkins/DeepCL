@@ -1,3 +1,29 @@
 for commit 6e55034f0b98d7, on aws:
 - 125seconds per epoch
 - after 5 epochs: 86.9% test accuracy
+
+8c5-mp2-8c5{padzeros}-mp2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-5n
+learningrate=0.00001 50epochs: 84.3:95.31 111.5s
+
+8c5-mp4-24c6-mp3-80c6-5n 76s
+lr=0.00001 ep2 44.5:46.2
+ep5 48:59.5
+ep28 78.4:90.4
+ep32 80.1:92.2
+ep41 83.5:95
+ep75:89.3:98.6
+ep82 89.6:98.9
+ep100 90.4:99.3
+ep112 90.7:99.5
+ep124 90.9:99.6
+ep153 91.2:99.85
+ep175 91.4:99.91
+ep210 91.6:99.9753
+
+8c5-mp4-24c6-mp3-80c6-150n-5n 77.6s
+lr=0.00001 
+ep57 88.8:98.15
+ep70 89.4:98.73
+
+8c5-mp4-24c6-mp3-100c6-5n lr=0.00001
+

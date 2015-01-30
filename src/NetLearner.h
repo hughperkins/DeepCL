@@ -13,13 +13,15 @@
 
 class NeuralNet;
 
-class PostEpochAction {
+#include "DllImportExport.h"
+
+class ClConvolve_EXPORT PostEpochAction {
 public:
     virtual void run( int epoch ) = 0;
 };
 
 template<typename T>
-class NetLearner {
+class ClConvolve_EXPORT NetLearner {
 public:
     NeuralNet *net;
 
