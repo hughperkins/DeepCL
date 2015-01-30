@@ -52,7 +52,7 @@ public:
     // generated, using cog:
     NetLearner( NeuralNet *net );
     void setTrainingData( int Ntrain, T *trainData, int *trainLabels );
-    void setTestData( int Ntest, T *testData, int *testLabels );
+    void setTestingData( int Ntest, T *testData, int *testLabels );
     void setSchedule( int numEpochs );
     void setSchedule( int numEpochs, int startEpoch );
     void setNormalize( float translate, float scale );

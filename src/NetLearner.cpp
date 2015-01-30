@@ -34,7 +34,7 @@ template< typename T > void NetLearner<T>::setTrainingData( int Ntrain, T *train
     this->trainLabels = trainLabels;
 }
 
-template< typename T > void NetLearner<T>::setTestData( int Ntest, T *testData, int *testLabels ) {
+template< typename T > void NetLearner<T>::setTestingData( int Ntest, T *testData, int *testLabels ) {
     this->Ntest = Ntest;
     this->testData = testData;
     this->testLabels = testLabels;

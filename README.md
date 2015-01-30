@@ -475,10 +475,16 @@ What's done / what's planned
   * ~~multinomial cross entropy loss~~ done
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
+  * skip, as described in [Ciresan et al, 2011](http://arxiv.org/pdf/1102.0183v1.pdf)
+  * fuse convolutional and max-pooling layers, so can optimize more
+  * create a 'transforming input' layer, to handle things like:
+    * conversion from `unsigned char *` to `float *`
+    * translation and scaling by mean and standard deviation
+* Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
+  * randomly translating input layer?
   * mpi so can run over several gpus, spread across multiple hosts???
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
-* Plausible, medium-term (pull requests welcome):
   * generalization to non-square images
   * ~~generalization to larger images~~ kind of done, ish, for NORB
   * drop-out
