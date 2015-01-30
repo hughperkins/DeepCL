@@ -36,76 +36,33 @@ public:
     NetLearnLabeledBatch( float learningRate ) :
         learningRate( learningRate ) {
     }
-    virtual void run( NeuralNet *net, float *batchData, int *batchLabels ) {
-        net->learnBatchFromLabels( learningRate, batchData, batchLabels );
-    }
+    virtual void run( NeuralNet *net, float *batchData, int *batchLabels );
 };
 
 class NetPropagateBatch : public NetAction {
 public:
     NetPropagateBatch() {
     }
-    virtual void run( NeuralNet *net, float *batchData, int *batchLabels ) {
-        net->propagate( batchData );
-    }
+    virtual void run( NeuralNet *net, float *batchData, int *batchLabels );
 };
 
+template< typename T>
 class BatchLearner {
 public:
     NeuralNet *net; // NOT owned by us, dont delete
     float dataTranslate;
     float dataScale;
 
-    template<typename T>
-    EpochResult batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction *netAction ) {
-        int numRight = 0;
-        float loss = 0;
-        net->setBatchSize( batchSize );
-        int numBatches = (N + batchSize - 1 ) / batchSize;
-        int inputCubeSize = net->getInputCubeSize();
-        float *batchData = new float[ batchSize * inputCubeSize ];
-        for( int batch = 0; batch < numBatches; batch++ ) {
-            int batchStart = batch * batchSize;
-            int thisBatchSize = batchSize;
-            if( batch == numBatches - 1 ) {
-                thisBatchSize = N - batchStart;
-                net->setBatchSize( thisBatchSize );
-            }
-            const int batchInputSize = thisBatchSize * inputCubeSize;
-            T *thisBatchData = data + batchStart * inputCubeSize;
-            for( int i = 0; i < batchInputSize; i++ ) {
-                batchData[i] = thisBatchData[i];
-            }
-            NormalizationHelper::normalize( batchData, batchInputSize, - dataTranslate, 1.0f / dataScale );
-            netAction->run( net, batchData, &(labels[batchStart]) );
-            loss += net->calcLossFromLabels( &(labels[batchStart]) );
-            numRight += net->calcNumRight( &(labels[batchStart]) );
-        }
-        delete[] batchData;
-        EpochResult epochResult( loss, numRight );
-        return epochResult;
-    }
-
-    int test( int batchSize, int N, unsigned char *testData, int *testLabels ) {
-        NetAction *action = new NetPropagateBatch();
-        int numRight = batchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
-        delete action;
-        return numRight;
-    }
-
-    template< typename T > EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
-        NetAction *action = new NetLearnLabeledBatch( learningRate );
-        EpochResult epochResult = batchedNetAction( batchSize, Ntrain, trainData, trainLabels, action );
-        delete action;
-        return epochResult;
-    }
 
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add()
+    // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
     BatchLearner( NeuralNet *net, float dataTranslate, float dataScale );
+    EpochResult batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction *netAction );
+    int test( int batchSize, int N, T *testData, int *testLabels );
+    EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels );
 
     // [[[end]]]
 };

@@ -57,3 +57,44 @@ def add():
 
 #    debug.close()
 
+def add_templated():
+#    debug = open('debug.txt', 'a' )
+#    debug.write( 'foo\n')
+#    debug.write( 'infile [' + cog.inFile + ']\n' )
+
+    infile = cog.inFile
+    cppfile = infile.replace('.h','.cpp')
+    splitinfile = infile.split('/')
+    infilename = splitinfile[ len(splitinfile) - 1 ]
+    classname = infilename.replace('.h','')
+    # cog.outl( '// classname: ' + classname )
+    # cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
+    f = open( cppfile, 'r')
+    in_multiline_comment = False
+    in_header = False;
+    line = f.readline()
+    cog.outl( '// generated, using cog:' )
+    while( line != '' ):
+       # cog.outl(line)
+       if( line.strip().find("/*") == 0 ):
+           in_multiline_comment = True
+       if( line.strip().find("*/") == 0 ):
+           in_multiline_comment = False
+       if not in_multiline_comment:
+           if( in_header or line.find( classname + '<T>::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ) and line.find( ";" ) < 0:
+               in_header = True
+               fnheader = line.replace('template< typename T >', '' ).replace( classname + '<T>::', '' )
+               fnheader = fnheader.replace( '{', '' )
+               fnheader = fnheader.replace( ') :', ')' )
+               if fnheader.find(")") >= 0:
+                   in_header = False
+               fnheader = fnheader.strip().replace( ')', ');' )
+               fnheader = fnheader.strip().replace( ';const', 'const;' )
+               fnheader = fnheader.strip().replace( '; const', ' const;' )
+               cog.outl( fnheader );
+       line = f.readline()
+    f.close()
+    cog.outl('')
+
+#    debug.close()
+

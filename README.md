@@ -56,11 +56,12 @@ OpenCL library to train deep convolutional networks
 - OpenCL
 - Deep convolutional
 
-Target usage:
-- 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
-- Also works on MNIST 28 x 28 boards
-  - obtains 98.8% test accuracy on MNIST, using `netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-50n-10n`.
-- Tested on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, gets 90% at the moment, which is not too far away from [LeCun's results](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf).
+Example usage:
+- intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
+- obtained 98.9% test accuracy on MNIST, using `netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
+  - epoch time 16.7 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
+- obtained 91.7% on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, using `netdef=8ct-mp4-24c6-mp3-80c6-tn`
+  - epoch time 76 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
 
 # Commandline usage
 

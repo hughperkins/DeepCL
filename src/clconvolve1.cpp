@@ -17,6 +17,7 @@
 #include "NormalizationHelper.h"
 #include "BatchLearner.h"
 #include "NetdefToNet.h"
+#include "NetLearner.h"
 
 using namespace std;
 
@@ -150,7 +151,18 @@ void go(Config config) {
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
 
-    BatchLearner batchLearner( net, - mean, 1.0f / stdDev );
+    NetLearner<unsigned char> netLearner( net );
+    netLearner.setTrainingData( Ntrain, trainData, trainLabels );
+    netLearner.setTestingData( Ntest, testData, testLabels );
+    netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
+    netLearner.setNormalize( - mean, 1.0f / stdDev );
+    netLearner.setBatchSize( config.batchSize );
+    if( config.restartable ) {
+        netLearner.addPostEpochAction( );
+    }
+    netLearner.learn( config.learningRate, config.annealLearningRate );
+
+    BatchLearner<unsigned char> batchLearner( net, - mean, 1.0f / stdDev );
     for( int epoch = afterRestart ? restartEpoch : 0; epoch < config.numEpochs; epoch++ ) {
         float annealedLearningRate = config.learningRate * pow( config.annealLearningRate, epoch );
         cout << "Annealed learning rate: " << annealedLearningRate << endl;

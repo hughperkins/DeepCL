@@ -6,3 +6,8 @@ testmnist-letnet, dc98b20d74, aws
 98.75% 98.86% 98.66% 98.55% 98.46%
 mean 98.656 se 0.0708
 
+
+Using ./clconvolve1 datadir=../data/mnist trainset=train testset=t10k learningrate=0.002 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-50n-10n , v1.5:
+98.89%  98.79% 98.9% 98.67% 98.76% 98.69%
+mean: 98.78%, se: 0.04%
+
