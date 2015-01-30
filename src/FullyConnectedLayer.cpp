@@ -81,6 +81,9 @@ VIRTUAL CLWrapper *FullyConnectedLayer::getResultsWrapper() {
 VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
     return fn;
 }
+VIRTUAL bool FullyConnectedLayer::needsBackProp() {
+    return true;;
+}
 VIRTUAL void FullyConnectedLayer::propagate() {
     convolutionalLayer->propagate();
 }

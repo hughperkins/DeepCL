@@ -74,6 +74,7 @@ public:
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputBoardSize() const;
     VIRTUAL void propagate();
+    VIRTUAL bool needsBackProp();
     VIRTUAL void print();
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL void initBiasWeights( float const *biasWeights );

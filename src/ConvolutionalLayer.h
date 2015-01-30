@@ -101,6 +101,7 @@ public:
     VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL bool needsBackProp();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL int getResultsSize() const;

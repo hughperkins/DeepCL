@@ -24,10 +24,8 @@ void NetPropagateBatch::run( NeuralNet *net, float *batchData, int *batchLabels 
     net->propagate( batchData );
 }
 
-template< typename T > BatchLearner<T>::BatchLearner( NeuralNet *net, float dataTranslate, float dataScale ) :
-    net( net ),
-    dataTranslate( dataTranslate ),
-    dataScale( dataScale ) {
+template< typename T > BatchLearner<T>::BatchLearner( NeuralNet *net ) :
+    net( net ) {
 }
 
 template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction *netAction ) {
@@ -49,7 +47,6 @@ template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchS
         for( int i = 0; i < batchInputSize; i++ ) {
             batchData[i] = thisBatchData[i];
         }
-        NormalizationHelper::normalize( batchData, batchInputSize, - dataTranslate, 1.0f / dataScale );
         netAction->run( net, batchData, &(labels[batchStart]) );
         loss += net->calcLossFromLabels( &(labels[batchStart]) );
         numRight += net->calcNumRight( &(labels[batchStart]) );

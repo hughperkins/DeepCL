@@ -59,6 +59,9 @@ ConvolutionalMaker *NeuralNet::convolutionalMaker() {
 PoolingMaker *NeuralNet::poolingMaker() {
     return new PoolingMaker( this, getLastLayer() );
 }
+NormalizationLayerMaker *NeuralNet::normalizationMaker() {
+    return new NormalizationLayerMaker( this, getLastLayer() );
+}
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
 }
@@ -247,7 +250,10 @@ void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
     acceptsLabels->calcErrorsFromLabels( labels );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
-        layers[layerIdx]->backProp( learningRate );
+        Layer *layer = layers[layerIdx];
+        if( layer->needsBackProp() ) {
+            layer->backProp( learningRate );
+        }
         StatefulTimer::setPrefix("" );
     }
 }

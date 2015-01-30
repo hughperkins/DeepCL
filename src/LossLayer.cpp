@@ -18,6 +18,9 @@ LossLayer::LossLayer( Layer *previousLayer, LayerMaker const*maker ) :
 }
 VIRTUAL void LossLayer::propagate() {
 }
+VIRTUAL bool LossLayer::needsBackProp() {
+    return previousLayer->needsBackProp();
+}
 VIRTUAL float *LossLayer::getResults() {
     return previousLayer->getResults();
 }

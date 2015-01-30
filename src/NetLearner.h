@@ -40,12 +40,7 @@ public:
     int startEpoch;
     int numEpochs;
 
-    float translate;
-    float scale;
-
     std::vector<PostEpochAction *> postEpochActions;
-
-//    NetLearner( NeuralNet *net );
 
     // [[[cog
     // import cog_addheaders
@@ -57,7 +52,6 @@ public:
     void setTestingData( int Ntest, T *testData, int *testLabels );
     void setSchedule( int numEpochs );
     void setSchedule( int numEpochs, int startEpoch );
-    void setNormalize( float translate, float scale );
     void setBatchSize( int batchSize );
     VIRTUAL ~NetLearner();
     VIRTUAL void addPostEpochAction( PostEpochAction *action );

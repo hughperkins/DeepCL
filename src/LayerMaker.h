@@ -61,6 +61,29 @@ public:
     virtual Layer *insert();
 };
 
+class NormalizationLayerMaker : public LayerMaker {
+public:
+    float _translate;
+    float _scale;
+    NormalizationLayerMaker( NeuralNet *net, Layer *previousLayer ) :
+        LayerMaker( net, previousLayer ),
+        _translate(0.0f),
+        _scale( 1.0f ) {
+    }
+    NormalizationLayerMaker *translate( float _translate ) {
+        this->_translate = _translate;
+        return this;
+    }
+    NormalizationLayerMaker *scale( float _scale ) {
+        this->_scale = _scale;
+        return this;
+    }
+    virtual int getOutputBoardSize() const;
+    virtual int getOutputPlanes() const;
+    virtual int getBiased() const;
+    virtual Layer *instance() const;
+};
+
 class PoolingMaker : public LayerMaker {
 public:
 //    Layer *previousLayer;

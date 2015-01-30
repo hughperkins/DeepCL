@@ -14,12 +14,10 @@
 #include "EpochMaker.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
-//#include "FullyConnectedLayer.h"
 
 #include "DllImportExport.h"
 
 class OpenCLHelper;
-//class FullyConnectedMaker;
 class ConvolutionalMaker;
 class LayerMaker;
 
@@ -43,6 +41,7 @@ public:
     FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
     PoolingMaker *poolingMaker();
+    NormalizationLayerMaker *normalizationMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();

@@ -51,6 +51,7 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();
+    VIRTUAL bool needsBackProp();
     VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputBoardSize() const;
     VIRTUAL int getOutputPlanes() const;

@@ -20,6 +20,7 @@ public:
     // generated, using cog:
     LossLayer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL void propagate();
+    VIRTUAL bool needsBackProp();
     VIRTUAL float *getResults();
     VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputCubeSize() const;

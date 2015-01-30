@@ -16,6 +16,7 @@
 #include "SquareLossLayer.h"
 #include "CrossEntropyLoss.h"
 #include "PoolingLayer.h"
+#include "NormalizationLayer.h"
 
 using namespace std;
 
@@ -47,6 +48,11 @@ Layer *InputLayerMaker::insert() {
     delete this;
     return layer;
 }
+//Layer *NormalizationLayerMaker::insert() {
+//    Layer *layer = net->addLayer( this );
+//    delete this;
+//    return layer;
+//}
 Layer *ConvolutionalMaker::insert() {
     if( _numFilters == 0 ) {
         throw runtime_error("Must provide ->numFilters(numFilters)");
@@ -90,6 +96,10 @@ Layer *InputLayerMaker::instance() const {
     Layer *layer = new InputLayer( 0, this );
     return layer;
 }
+Layer *NormalizationLayerMaker::instance() const {
+    Layer *layer = new NormalizationLayer( previousLayer, this );
+    return layer;
+}
 
 int ConvolutionalMaker::getOutputBoardSize() const {
     if( previousLayer == 0 ) {
@@ -116,6 +126,15 @@ int PoolingMaker::getOutputPlanes() const {
     return previousLayer->getOutputPlanes();
 }
 int PoolingMaker::getBiased() const {
+    return false;
+}
+int NormalizationLayerMaker::getOutputBoardSize() const {
+    return previousLayer->getOutputBoardSize();
+}
+int NormalizationLayerMaker::getOutputPlanes() const {
+    return previousLayer->getOutputPlanes();
+}
+int NormalizationLayerMaker::getBiased() const {
     return false;
 }
 

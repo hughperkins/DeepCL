@@ -22,8 +22,6 @@ template< typename T > NetLearner<T>::NetLearner( NeuralNet *net ) :
         net( net ) {
     batchSize = 128;
     annealLearningRate = 1.0f;
-    translate = 0;
-    scale = 1.0f;
     numEpochs = 12;
     startEpoch = 1;
 }
@@ -49,11 +47,6 @@ template< typename T > void NetLearner<T>::setSchedule( int numEpochs, int start
     this->startEpoch = startEpoch;
 }
 
-template< typename T > void NetLearner<T>::setNormalize( float translate, float scale ) {
-    this->translate = translate;
-    this->scale = scale;
-}
-
 template< typename T > void NetLearner<T>::setBatchSize( int batchSize ) {
     this->batchSize = batchSize;
 }
@@ -72,7 +65,7 @@ template< typename T > void NetLearner<T>::learn( float learningRate ) {
 }
 
 template< typename T > void NetLearner<T>::learn( float learningRate, float annealLearningRate ) {
-    BatchLearner<T> batchLearner( net, translate, scale );
+    BatchLearner<T> batchLearner( net );
     Timer timer;
     for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
         float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
@@ -88,9 +81,6 @@ template< typename T > void NetLearner<T>::learn( float learningRate, float anne
         for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
             (*it)->run( epoch );
         }
-//        if( config.restartable ) {
-//            WeightsPersister::persistWeights( config.restartableFilename, config.getTrainingString(), net, epoch + 1, 0, annealedLearningRate, 0, 0 );
-//        }
     }
 }
 

@@ -115,6 +115,9 @@ VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
 VIRTUAL CLWrapper *ConvolutionalLayer::getResultsWrapper() {
     return resultsWrapper;
 }
+VIRTUAL bool ConvolutionalLayer::needsBackProp() {
+    return true;
+}
 VIRTUAL float const *ConvolutionalLayer::getWeights() const {
     if( !weightsCopiedToHost ) {
         throw std::runtime_error("weights not copied to host, and htis is const object, so cannot copy");

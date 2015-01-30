@@ -12,12 +12,17 @@
 
 #define VIRTUAL virtual
 
-class InputLayer : public Layer, IHasToString {
+class NormalizationLayer : public Layer, IHasToString {
 public:
-    int batchSize;
-    float *output; // we dont own this
+    const float translate; // apply translate first
+    const float scale;  // then scale
+
     const int outputPlanes;
     const int outputBoardSize;
+
+    int batchSize;
+    int allocatedSize;
+    float *results;
 
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
@@ -26,7 +31,7 @@ public:
             * outputBoardSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
+        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
@@ -34,14 +39,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
-    VIRTUAL ~InputLayer();
+    NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker const*maker );
+    VIRTUAL ~NormalizationLayer();
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
-    void in( float const*images );
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
@@ -56,6 +60,6 @@ public:
     // [[[end]]]
 };
 
-std::ostream &operator<<( std::ostream &os, InputLayer &layer );
-std::ostream &operator<<( std::ostream &os, InputLayer const*layer );
+std::ostream &operator<<( std::ostream &os, NormalizationLayer &layer );
+std::ostream &operator<<( std::ostream &os, NormalizationLayer const*layer );
 

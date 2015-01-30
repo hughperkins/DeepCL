@@ -112,6 +112,9 @@ VIRTUAL float *PoolingLayer::getResults() {
     }
     return results;
 }
+VIRTUAL bool PoolingLayer::needsBackProp() {
+    return previousLayer->needsBackProp();
+}
 VIRTUAL int PoolingLayer::getResultsSize() const {
     int outputBoardSize = inputBoardSize / poolingSize;
     return batchSize * numPlanes * outputBoardSize * outputBoardSize;

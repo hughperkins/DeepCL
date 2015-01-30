@@ -52,8 +52,6 @@ template< typename T>
 class ClConvolve_EXPORT BatchLearner {
 public:
     NeuralNet *net; // NOT owned by us, dont delete
-    float dataTranslate;
-    float dataScale;
 
 
     // [[[cog
@@ -61,7 +59,7 @@ public:
     // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
-    BatchLearner( NeuralNet *net, float dataTranslate, float dataScale );
+    BatchLearner( NeuralNet *net );
     EpochResult batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction *netAction );
     int test( int batchSize, int N, T *testData, int *testLabels );
     EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels );

@@ -26,6 +26,9 @@ VIRTUAL float *InputLayer::getResults() {
 VIRTUAL ActivationFunction const *InputLayer::getActivationFunction() {
     return new LinearActivation();
 }
+VIRTUAL bool InputLayer::needsBackProp() {
+    return false;
+}
 VIRTUAL void InputLayer::printOutput() const {
     if( output == 0 ) {
          return;

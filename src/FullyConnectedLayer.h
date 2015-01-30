@@ -44,6 +44,7 @@ public:
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL ActivationFunction const*getActivationFunction();
+    VIRTUAL bool needsBackProp();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );
     VIRTUAL std::string asString() const;

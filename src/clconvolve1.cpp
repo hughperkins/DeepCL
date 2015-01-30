@@ -141,6 +141,7 @@ void go(Config config) {
     const int numToTrain = Ntrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
+    net->normalizationMaker()->translate(-mean)->scale(1.0f / stdDev)->insert();
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;
     }
@@ -168,7 +169,6 @@ void go(Config config) {
     netLearner.setTrainingData( Ntrain, trainData, trainLabels );
     netLearner.setTestingData( Ntest, testData, testLabels );
     netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
-    netLearner.setNormalize( - mean, 1.0f / stdDev );
     netLearner.setBatchSize( config.batchSize );
     WeightsWriter weightsWriter( net, &config );
     if( config.restartable ) {
