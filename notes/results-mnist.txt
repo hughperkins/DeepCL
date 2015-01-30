@@ -11,3 +11,6 @@ Using ./clconvolve1 datadir=../data/mnist trainset=train testset=t10k learningra
 98.89%  98.79% 98.9% 98.67% 98.76% 98.69%
 mean: 98.78%, se: 0.04%
 
+Using ./clconvolve1 datadir=../data/mnist trainset=train testset=t10k learningrate=0.002 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n , v1.5:
+
+
