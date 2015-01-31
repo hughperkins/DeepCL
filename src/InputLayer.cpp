@@ -105,21 +105,19 @@ template< typename T > VIRTUAL int InputLayer<T>::getResultsSize() const {
     return batchSize * getOutputCubeSize();
 }
 template< typename T > VIRTUAL std::string InputLayer<T>::toString() {
-    return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+    return asString();
 }
 template< typename T > VIRTUAL std::string InputLayer<T>::asString() const {
     return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
 }
 
-//ostream &operator<<( ostream &os, InputLayer &layer ) {
-//    os << "InputLayer { outputPlanes " << layer.outputPlanes << " outputBoardSize " << layer.outputBoardSize << " }";
-//    return os;
-//}
-//ostream &operator<<( ostream &os, InputLayer const*layer ) {
-//    os << "InputLayer { outputPlanes " << layer->outputPlanes << " outputBoardSize " << layer->outputBoardSize << " }";
-//    return os;
-//}
+template<> VIRTUAL std::string InputLayer<unsigned char>::asString() const {
+    return std::string("") + "InputLayer<unsigned char>{ outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+}
 
+template<> VIRTUAL std::string InputLayer<float>::asString() const {
+    return std::string("") + "InputLayer<float>{ outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+}
 
 template class InputLayer<float>;
 template class InputLayer<unsigned char>;

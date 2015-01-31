@@ -103,10 +103,11 @@ VIRTUAL int NormalizationLayer::getResultsSize() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string NormalizationLayer::toString() {
-    return std::string("") + "NormalizationLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+    return toString();
 }
 VIRTUAL std::string NormalizationLayer::asString() const {
-    return std::string("") + "NormalizationLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+    return std::string("") + "NormalizationLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputBoardSize=" +  ::toString( outputBoardSize ) + " translate=" + ::toString( translate ) + 
+        " scale=" + ::toString( scale ) + " }";
 }
 
 
