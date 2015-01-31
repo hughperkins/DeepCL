@@ -95,7 +95,7 @@ endif()
 if(PYTHON_AVAILABLE)
     add_custom_target( 
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h
     )
     add_dependencies( ClConvolve cog )
 endif(PYTHON_AVAILABLE)
@@ -149,7 +149,7 @@ thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
-add_executable( loadkgs test/loadkgs.cpp src/stringhelper.cpp )
+add_executable( loadkgs test/loadkgs.cpp src/stringhelper.cpp test/KgsLoader.cpp )
 target_link_libraries( loadkgs ClConvolve )
 target_link_libraries( testmnist-mpi ClConvolve )
 target_link_libraries( unittests ClConvolve )

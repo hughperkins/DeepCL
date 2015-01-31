@@ -1,126 +1,104 @@
+// Copyright Hugh Perkins 2015 hughperkins at gmail
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include <iostream>
-using namespace std;
-#include "FileHelper.h"
+
+//#include "FileHelper.h"
 #include "Timer.h"
 #include "stringhelper.h"
 #include "NeuralNet.h"
-#include "AccuracyHelper.h"
-#include "BoardHelper.h"
+//#include "AccuracyHelper.h"
+//#include "BoardHelper.h"
+#include "BatchLearner.h"
+#include "KgsLoader.h"
+
+using namespace std;
 
 int main(int argc, char *argv[] ) {
-    const float learningRate = 0.0002f;
+    const float learningRate = 0.0001f;
     const int batchSize = 128;
-    const int labelGrouping = 1;
+//    const int labelGrouping = 1;
 
-    const int numLabelRows = ((19+labelGrouping-1)/labelGrouping);
-    const int numLabels = numLabelRows * numLabelRows;
-    cout << " labelgrouping " << labelGrouping << " numLabelRows " << numLabelRows << " numLabels " << numLabels << endl;
+//    const int numLabelRows = ((19+labelGrouping-1)/labelGrouping);
+//    const int numLabels = numLabelRows * numLabelRows;
+//    cout << " labelgrouping " << labelGrouping << " numLabelRows " << numLabelRows << " numLabels " << numLabels << endl;
 //return -1;
     Timer timer;
-    std::string dataFilePath = "/home/user/git/kgsgo-dataset-preprocessor/data/KGS-2011_06-19-1419-.dat";
+    std::string trainFilepath = "../data/kgsgo/kgsgo-train10k.dat";
+    std::string testFilepath = "../data/kgsgo/kgsgo-test.dat";
 //    std::string dataFilePath = "/home/user/git/kgsgo-dataset-preprocessor/data/kgsgo.dat";
-    long fileSize = FileHelper::getFilesize( dataFilePath );
-    timer.timeCheck("read file, size " + toString(fileSize/1024/1024) + "MB");
+//    long trainFilesize = FileHelper::getFilesize( trainFilepath );
+
+    int numPlanes = 8;
+    int boardSize = 19;
+
+    int Ntrain = KgsLoader::getNumRecords( trainFilepath );
+    int Ntest = KgsLoader::getNumRecords( testFilepath );
+    int testInputSize = Ntest * numPlanes * boardSize * boardSize;
+    cout << "testINputSize " << testInputSize << endl;
+    unsigned char *testData = new unsigned char[ testInputSize ];
+    int *testLabels = new int[Ntest];
+    KgsLoader::loadKgs( testFilepath, &numPlanes, &boardSize, testData, testLabels, 0, Ntest );
+
+//    timer.timeCheck("read file, size " + toString(trainFilesize/1024/1024) + "MB");
 //    int i = 0;
-    long pos = 0;
-    const int boardSize = 19;
+//    long pos = 0;
+//    const int boardSize = 19;
     const int boardSizeSquared = boardSize * boardSize;
-    const int recordSize = 2 + 2 + boardSizeSquared;
-    cout << "recordsize: " << recordSize << endl;
-    int inputPlanes = 2;
-    float *images = new float[batchSize * boardSizeSquared * inputPlanes ];
-    int N = (int)(fileSize / recordSize);
-    cout << "num records: " << N << endl;
-    int numBatches = min( 8, N / batchSize );
+//    const int recordSize = 2 + 2 + boardSizeSquared;
+//    cout << "recordsize: " << recordSize << endl;
+//    int inputPlanes = 2;
+    unsigned char *trainData = new unsigned char[batchSize * numPlanes * boardSizeSquared ];
+    int *trainLabels = new int[batchSize ];
+//    int N = (int)(fileSize / recordSize);
+//    cout << "num records: " << N << endl;
+//    int numBatches = min( 8, N / batchSize );
+
     NeuralNet *net = NeuralNet::maker()->instance();
-    net->inputMaker<float>()->numPlanes(inputPlanes)->boardSize(boardSize)->insert();
+    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
+    net->normalizationMaker()->translate(-0.3f)->scale(1.0f)->insert();
     for( int i = 0; i < 2; i++ ) {
-        net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->padZeros()->insert();
+        net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();
+//        net->poolingMaker()->poolingSize(2)->insert();
     }
-    net->fullyConnectedMaker()->numPlanes(1)->boardSize(boardSize)->linear()->biased()->insert();
-    net->softMaxLossMaker()->perPlane()->insert();
-    net->setBatchSize(batchSize);
+    net->fullyConnectedMaker()->numPlanes(boardSizeSquared)->boardSize(1)->linear()->biased()->insert();
+    net->softMaxLossMaker()->insert();
     net->print();
-    int *labels = new int[ batchSize ];
-    for( int epoch = 0; epoch < 200; epoch++ ) {
-        int nBatch = 0;
-        while( nBatch < numBatches ) {
-            int count = 0;
-            unsigned char *kgsData = reinterpret_cast<unsigned char *>( FileHelper::readBinaryChunk( dataFilePath, (long)nBatch * batchSize * recordSize, (long)batchSize * recordSize ) );
-    //        timer.timeCheck("read chunk from file");
-            memset( images, 0, sizeof(float) * batchSize * inputPlanes * boardSizeSquared );
-            for( int n = 0; n < batchSize; n++ ) {
-                int intraChunkPos = n * recordSize;
-                //cout << kgsData[pos];
-                //if( count % 80 == 0 && count != 0 ) cout << endl;
-                if( kgsData[intraChunkPos] != 'G' ) {
-                    throw std::runtime_error("alignment error, for intrachunkpos " + toString(intraChunkPos) );
-                }
-                int moveRow = kgsData[intraChunkPos + 2];
-                int moveCol = kgsData[intraChunkPos + 3];
-    //            cout << moveRow << "," << moveCol << endl;
-                moveRow = moveRow / labelGrouping;
-                moveCol = moveCol / labelGrouping;
-                int label = moveRow * numLabelRows + moveCol;
-                labels[ n ] = label;
-//                cout << moveRow << "," << moveCol << " label " << label << endl;
-    //            int label = moveRow * 19 + moveCol;
-//                for( int inputPlane = 0; inputPlane < inputPlanes; inputPlane++ ) {
-                    int board0Offset = ( n * inputPlanes + 0 ) * boardSizeSquared;
-                    int board1Offset = ( n * inputPlanes + 1 ) * boardSizeSquared;
-                    for( int i = 0; i < boardSizeSquared; i++ ) {
-//                        images[ boardOffset + i ] = ( kgsData[intraChunkPos + 4 + i] >> inputPlane ) & 1;
-                        images[ board0Offset + i ] = ( kgsData[intraChunkPos + 4 + i] & 7 ) > 0 ? 1 : 0;
-                        images[ board1Offset + i ] = ( kgsData[intraChunkPos + 4 + i] & 56 ) > 0 ? 1 : 0;
-                    }
-//                }
-//                cout << "n: " << n << endl;
-//                BoardHelper::printBoard( &(images[ board0Offset]), boardSize );
-//                BoardHelper::printBoard( &(images[ board1Offset]), boardSize );
+
+    int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;
+    numBatches = 100;
+    Ntrain = numBatches * batchSize;
+//    int *labels = new int[ batchSize ];
+    for( int epoch = 0; epoch < 20000; epoch++ ) {
+        net->setBatchSize( batchSize );
+        int thisBatchSize = batchSize;
+        float epochLoss = 0;
+        int epochTrainRight = 0;
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            const int batchStart = batch * batchSize;
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = Ntrain - batchStart;
+                net->setBatchSize( thisBatchSize );
             }
-    //        timer.timeCheck("copy to array");
-            // use this batch first as a test set, to test accuracy
-            net->propagate( images );
-    //        timer.timeCheck("propagate, for test");
-            float const*resultsTest = net->getResults();
-            for( int n = 0; n < batchSize; n++ ) {
-    //            cout << "n " << n << endl;
-    //            cout << "label: " << labels[n] << endl;
-    //            for( int i = 0; i < numLabelRows; i++ ) {
-    //                for( int j = 0; j < numLabelRows; j++ ) {
-    //                    if( labels[n] == ( i * numLabelRows + j ) ) {
-    //                        cout << "*";
-    //                    } else {
-    //                        cout << ".";
-    //                    }
-    //                }
-    //                cout << endl;
-    //            }
-    //            cout << endl;
-                int thisboard[boardSizeSquared];
-                memset( thisboard, 0, sizeof(int) * boardSizeSquared );
-                for( int inputPlane = 0; inputPlane < 6; inputPlane++ ) {
-                    for( int i = 0; i < boardSize; i++ ) {
-                        for( int j = 0; j < boardSize; j++ ) {
-                            if( images[ n * boardSizeSquared * inputPlanes + inputPlane * boardSizeSquared + i * boardSize + j ] == 1 ) {
-                                if( inputPlane < 3 ) {
-                                    thisboard[i*boardSize+j] = 1;
-                                } else if( inputPlane < 6 ) {
-                                    thisboard[i*boardSize+j] = 2;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            int numRight = net->calcNumRight( labels );
-            // now train on it
-            net->learnBatchFromLabels( learningRate, images, labels );
-            float loss = net->calcLossFromLabels( labels );
-            cout << "loss: " << loss << " test accuracy " << numRight << "/" << batchSize << " " << ( numRight * 100.0f / batchSize ) << "%" << " batch " << nBatch << endl;
-            if( nBatch > 0 && nBatch % 70 == 0 ) cout << nBatch << endl;
-            nBatch++;
+            KgsLoader::loadKgs( trainFilepath, &numPlanes, &boardSize, trainData, trainLabels, batchStart, thisBatchSize );
+//            net->propagate( images );
+//            int numRight = net->calcNumRight( trainLabels );
+            net->learnBatchFromLabels( learningRate, trainData, trainLabels );
+            float loss = net->calcLossFromLabels( trainLabels );
+            int numRight = net->calcNumRight( trainLabels );
+            epochLoss += loss;
+            epochTrainRight += numRight;
+//            cout << "batch " << batch << " train loss: " << loss << " train accuracy " << numRight << "/" << batchSize << " " << ( numRight * 100.0f / batchSize ) << endl;
+//            net->propagate( testData );
+//            int testRight = net->calcNumRight( testLabels );
         }
+        cout << "epoch train totals: " << epochTrainRight << "/" << Ntrain << " " << ( epochTrainRight * 100.0f / Ntrain ) << endl;
+        BatchLearner<unsigned char>batchLearner( net );
+        int testRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
+        cout << "test accuracy " << testRight << "/" << Ntest << " " << ( testRight * 100.0f / Ntest ) << endl;
     }
     return 0;
 }
