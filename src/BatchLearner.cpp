@@ -36,24 +36,15 @@ template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchS
     net->setBatchSize( batchSize );
     int numBatches = (N + batchSize - 1 ) / batchSize;
     int inputCubeSize = net->getInputCubeSize();
-//    float *batchData = new float[ batchSize * inputCubeSize ];
     for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;
-        int thisBatchSize = batchSize;
         if( batch == numBatches - 1 ) {
-            thisBatchSize = N - batchStart;
-            net->setBatchSize( thisBatchSize );
+            net->setBatchSize( N - batchStart );
         }
-        const int batchInputSize = thisBatchSize * inputCubeSize;
-        T *thisBatchData = data + batchStart * inputCubeSize;
-//        for( int i = 0; i < batchInputSize; i++ ) {
-//            batchData[i] = thisBatchData[i];
-//        }
-        netAction->run( net, thisBatchData, &(labels[batchStart]) );
+        netAction->run( net, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
         loss += net->calcLossFromLabels( &(labels[batchStart]) );
         numRight += net->calcNumRight( &(labels[batchStart]) );
     }
-//    delete[] batchData;
     EpochResult epochResult( loss, numRight );
     return epochResult;
 }
