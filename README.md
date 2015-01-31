@@ -304,7 +304,7 @@ Input data should be provided in a contiguous array, of `float`s (edit: or `unsi
 * board row
 * board column
 
-Providing labels, as an integer array, is the most efficient way of training, if you are training against categorical data.  The labels should be provided as one number per example, zero-based.
+Providing labels, as an integer array, is the most efficient way of training, if you are training against categorical data.  The labels should be provided as one integer per example, zero-based.
 
 * in this case, the last layer of the net should have the same number of nodes as categories, eg a `netdef` ending in `-5n`, if there are 5 categories
 * if using the C++ API, you would probably want to use a `softmax` loss layer
