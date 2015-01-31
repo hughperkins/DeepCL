@@ -503,9 +503,9 @@ What's done / what's planned
   * symmetric filters
   * skip, as described in [Ciresan et al, 2011](http://arxiv.org/pdf/1102.0183v1.pdf)
   * fuse convolutional and max-pooling layers, so can optimize more
-  * create a 'transforming input' layer, to handle things like:
-    * conversion from `unsigned char *` to `float *`
-    * translation and scaling by mean and standard deviation
+  * ~~create a 'transforming input' layer, to handle things like:~~ done
+    * ~~conversion from `unsigned char *` to `float *`~~ done
+    * ~~translation and scaling by mean and standard deviation~~ done
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
   * randomly translating input layer?
@@ -524,6 +524,7 @@ Recent changes
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
 * 31st January:
   * added NormalizationLayer
+  * templated InputLayer, for different input array types, which simplifies BatchLearner class
 * 30th January:
   * add scaled tanh, ie 1.7159f * tanh(0.66667f * x )
 * 29th January:
