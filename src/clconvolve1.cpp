@@ -140,7 +140,7 @@ void go(Config config) {
 
     const int numToTrain = Ntrain;
     const int batchSize = config.batchSize;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    NeuralNet *net = new NeuralNet();
     net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
     net->normalizationMaker()->translate(-mean)->scale(1.0f / stdDev)->insert();
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {

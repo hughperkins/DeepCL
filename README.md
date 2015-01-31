@@ -19,12 +19,12 @@ Contents
   - [MNIST](#mnist)
 - [Neural Net API](#neural-net-api)
   - [Create a net](#create-a-net)
-  - [Add some layers](#add-some-layers)
-    - [Convolutional layers](#convolutional-layers)
-    - [Fully connected layers](#fully-connected-layers)
-    - [Max-pooling layers](#max-pooling-layers)
-    - [Loss layer](#loss-layer)
+  - [Add an input layer](#add-an-input-layer)
   - [Normalization layer](#normalization-layer)
+  - [Convolutional layers](#convolutional-layers)
+  - [Fully connected layers](#fully-connected-layers)
+  - [Max-pooling layers](#max-pooling-layers)
+  - [Loss layer](#loss-layer)
   - [Data format](#data-format)
   - [Train](#train)
   - [Test](#test)
@@ -202,14 +202,29 @@ net->print();
 ```c++
 #include "ClConvolve.h"
 
-NeuralNet *net = NeuralNet::maker()->planes(10)->boardSize(19)->instance();
+NeuralNet *net = new NeuralNet();
 ```
 
-* You can change the number of input planes, and the board size.
+## Add an input layer
 
-## Add some layers
+* You need exactly one input layer
+* This is templated, so you can feed it an array of `unsigned char *`, or `float *`, later, as you wish.  If you want to feed in data as `float *`, then do:
+```c++
+net->inputMaker<float>()->numPlanes(10)->boardSize(19)->insert();
+```
+* You need to set the number of input planes, and the board size.
 
-### Convolutional layers
+## Normalization layer
+
+* You can add a normalization layer, to translate and scale input data.  Put it just after the input layer, like this:
+```c++
+NeuralNet *net = new NeuralNet();
+net->inputMaker<float>()->numPlanes(10)->boardSize(19)->insert();
+net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation )->insert();
+// other layers here...
+```
+
+## Convolutional layers
 
 Eg:
 ```c++
@@ -228,7 +243,7 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
   * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
 * convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
-### Fully connected layers
+## Fully connected layers
 
 eg:
 ```c++
@@ -245,7 +260,7 @@ Available options:
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
   * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
 
-### Max-pooling layers
+## Max-pooling layers
 
 ```c++
 net->poolingMaker()->poolingSize(2)->insert();
@@ -256,7 +271,7 @@ net->poolingMaker()->poolingSize(2)->insert();
 net->poolingMaker()->poolingSize(2)->padZeros()->insert();
 ```
 
-### Loss layer
+## Loss layer
 
 You need to add exactly one loss layer, as the last layer of the net.  The following loss layers are available:
 ```c++
@@ -275,15 +290,6 @@ net->softMaxLossLayer()->insert();
     * this is the default
   * or else a per-plane probability distribution
     * add option `->perPlane()`
-
-## Normalization layer
-
-* You can add a normalization layer, to translate and scale input data.  Put it just after creating the net, like this:
-```c++
-NeuralNet *net = NeuralNet::maker()->planes(10)->boardSize(19)->instance();
-net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation )->insert();
-// other layers here...
-```
 
 ## Data format
 
