@@ -100,6 +100,7 @@ int main(int argc, char *argv[] ) {
         cout << "epoch train totals: " << epochTrainRight << "/" << Ntrain << " " << ( epochTrainRight * 100.0f / Ntrain ) << endl;
         BatchLearner<unsigned char>batchLearner( net );
         int testRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
+        timer.timeCheck("testing");
         cout << "test accuracy " << testRight << "/" << Ntest << " " << ( testRight * 100.0f / Ntest ) << endl;
     }
     return 0;
