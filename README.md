@@ -183,13 +183,16 @@ Example usage:
 
 # Neural Net API
 
-* You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-10N` network, you could do:
+* You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
 ```c++
-NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+NeuralNet *net = new NeuralNet();
+net->inputMaker<unsigned char>()->numPlanes(1)->boardSize(28)->insert();
+net->normalizationMaker()->translate( -mean )->scale( 1.0f / standardDeviation )->insert();
 net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->insert();
 net->poolingMaker()->poolingSize(2)->insert();
 net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
 net->poolingMaker()->poolingSize(3)->insert();
+net->fullyConnectedMaker()->numPlanes(150)->boardSize(1)->tanh()->biased()->insert();
 net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
 net->softMaxLossMaker()->insert();
 net->print();
