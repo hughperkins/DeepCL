@@ -15,14 +15,21 @@
 using namespace std;
 
 NeuralNet *NeuralNetMould::instance() {
-    if( _numPlanes == 0 ) {
-        throw runtime_error("Must provide ->planes(planes)");
+    cout << "neuralnetmould::instance boardsize " << _boardSize << " numPlanes " << _numPlanes << endl;
+    if( _numPlanes != 0 || _boardSize != 0 ) {
+        if( _numPlanes == 0 ) {
+            throw runtime_error("Must provide ->planes(planes)");
+        }
+        if( _boardSize == 0 ) {
+            throw runtime_error("Must provide ->boardSize(boardSize)");
+        }
+        NeuralNet *net = new NeuralNet( _numPlanes, _boardSize );
+        delete this;
+        return net;
+    } else {
+        NeuralNet *net = new NeuralNet();
+        delete this;
+        return net;
     }
-    if( _boardSize == 0 ) {
-        throw runtime_error("Must provide ->boardSize(boardSize)");
-    }
-    NeuralNet *net = new NeuralNet( _numPlanes, _boardSize );
-    delete this;
-    return net;
 }
 

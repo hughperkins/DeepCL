@@ -33,9 +33,17 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
+NeuralNet::NeuralNet() {
+    cout << "NeuralNet()" << endl;
     cl = new OpenCLHelper();
-    InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, boardSize );
+//    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, boardSize );
+//    maker->insert();
+}
+NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
+    cout << "NeuralNet(planes,boardsize)" << endl;
+    cl = new OpenCLHelper();
+    InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
+        ->numPlanes( numPlanes )->boardSize( boardSize );
     maker->insert();
 }
 NeuralNet::~NeuralNet() {
@@ -49,6 +57,12 @@ OpenCLHelper *NeuralNet::getCl() {
 }
 STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
+}
+template< typename T >InputLayerMaker<T> *NeuralNet::inputMaker() {
+    if( layers.size() != 0 ) {
+        throw runtime_error("Already added an InputLayer to this net");
+    }
+    return new InputLayerMaker<T>( this );
 }
 FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
     return new FullyConnectedMaker( this, getLastLayer() );
@@ -100,8 +114,8 @@ float NeuralNet::calcLossFromLabels(int const *labels ) {
 EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
-InputLayer *NeuralNet::getFirstLayer() {
-    return dynamic_cast<InputLayer*>( layers[0] );
+template< typename T > InputLayer<T> *NeuralNet::getFirstLayer() {
+    return dynamic_cast<InputLayer<T> *>( layers[0] );
 }
 Layer *NeuralNet::getLastLayer() {
     return layers[layers.size() - 1];
@@ -216,31 +230,14 @@ float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchS
     *p_totalCorrect = numRight;
     return loss;
 }
-//    float *propagate( int N, int batchSize, float const*images) {
-//        float *results = new float[N];
-//        int numBatches = N / batchSize;
-//        for( int batch = 0; batch < numBatches; batch++ ) {
-//            int batchStart = batch * batchSize;
-//            int batchEndExcl = std::min( N, (batch + 1 ) * batchSize );
-//            propagateBatch( &(images[batchStart]) );
-//            std::cout << " batch " << batch << " start " << batchStart << " end " << batchEndExcl << std::endl;
-//                float const *netResults = getResults();
-//            for( int i = 0; i < batchSize; i++ ) {
-//                results[batchStart + i ] = netResults[i];
-//            }
-//        }
-//        return results;
-//    }
-void NeuralNet::propagate( float const*images) {
+template< typename T > void NeuralNet::propagate( T const*images) {
     // forward...
-//        Timer timer;
-    dynamic_cast<InputLayer *>(layers[0])->in( images );
-    for( int layerId = 1; layerId < layers.size(); layerId++ ) {
+    dynamic_cast<InputLayer<T> *>(layers[0])->in( images );
+    for( int layerId = 0; layerId < layers.size(); layerId++ ) {
         StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
         layers[layerId]->propagate();
         StatefulTimer::setPrefix("" );
     }
-//        timer.timeCheck("propagate time");
 }
 void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
@@ -269,11 +266,11 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
         StatefulTimer::setPrefix("" );
     }
 }
-void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
+template< typename T > void NeuralNet::learnBatch( float learningRate, T const*images, float const *expectedResults ) {
     propagate( images);
     backProp( learningRate, expectedResults );
 }
-void NeuralNet::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
+template< typename T > void NeuralNet::learnBatchFromLabels( float learningRate, T const*images, int const *labels ) {
     propagate( images);
     backPropFromLabels( learningRate, labels );
 }
@@ -317,4 +314,12 @@ void NeuralNet::printOutput() {
         i++;
     }
 }
+
+template InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
+template InputLayerMaker<float> *NeuralNet::inputMaker<float>();
+template void NeuralNet::propagate( unsigned char const*images);
+template void NeuralNet::propagate( float const*images);
+template void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels );
+template void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels );
+
 

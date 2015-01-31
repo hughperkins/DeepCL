@@ -39,15 +39,23 @@ public:
     virtual Layer *instance() const = 0;
 };
 
-class InputLayerMaker : public LayerMaker {
+template< typename T > class InputLayerMaker : public LayerMaker {
 public:
     int _numPlanes;
     int _boardSize;
-    InputLayerMaker( NeuralNet *net, int numPlanes, int boardSize ) :
+    InputLayerMaker( NeuralNet *net) :
             LayerMaker( net, 0 ),
-            _numPlanes(numPlanes),
-            _boardSize(boardSize) {
+            _numPlanes(0),
+            _boardSize(0) {
     }
+    InputLayerMaker *numPlanes( int _numPlanes ) {
+        this->_numPlanes = _numPlanes;
+        return this;
+    }    
+    InputLayerMaker *boardSize( int _boardSize ) {
+        this->_boardSize = _boardSize;
+        return this;
+    }    
     virtual int getOutputBoardSize() const {
         return _boardSize;
     }

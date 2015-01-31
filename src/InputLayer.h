@@ -12,12 +12,17 @@
 
 #define VIRTUAL virtual
 
+template< typename T >
 class InputLayer : public Layer, IHasToString {
 public:
     int batchSize;
-    float *output; // we dont own this
+    int allocatedSize;
+
     const int outputPlanes;
     const int outputBoardSize;
+
+    T const*input; // we dont own this
+    float *results; // we own this :-)
 
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
@@ -26,22 +31,22 @@ public:
             * outputBoardSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
+        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add()
+    // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
-    InputLayer( Layer *previousLayer, InputLayerMaker const*maker );
+    InputLayer( Layer *previousLayer, InputLayerMaker<T> const*maker );
     VIRTUAL ~InputLayer();
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
-    void in( float const*images );
+    void in( T const*images );
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
@@ -56,6 +61,6 @@ public:
     // [[[end]]]
 };
 
-std::ostream &operator<<( std::ostream &os, InputLayer &layer );
-std::ostream &operator<<( std::ostream &os, InputLayer const*layer );
+template< typename T > std::ostream &operator<<( std::ostream &os, InputLayer<T> &layer );
+template< typename T > std::ostream &operator<<( std::ostream &os, InputLayer<T> const*layer );
 

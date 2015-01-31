@@ -32,7 +32,8 @@ int main(int argc, char *argv[] ) {
     int N = (int)(fileSize / recordSize);
     cout << "num records: " << N << endl;
     int numBatches = min( 8, N / batchSize );
-    NeuralNet *net = NeuralNet::maker()->planes(inputPlanes)->boardSize(boardSize)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(inputPlanes)->boardSize(boardSize)->insert();
     for( int i = 0; i < 2; i++ ) {
         net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->padZeros()->insert();
     }

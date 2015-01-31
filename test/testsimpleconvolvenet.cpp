@@ -28,7 +28,8 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_unbiased_tanh ) {
     expectedResults[1] = -0.5;
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(1)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->tanh()->insert();
     net->squareLossMaker()->insert();
     float weights1[] = {0.382147, -1.77522};
@@ -95,7 +96,8 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_tanh ) {
     expectedResults[1] = -0.5;
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(1)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->tanh()->insert();
     net->squareLossMaker()->insert();
     float weights1[] = {0.382147, -1.77522};
@@ -182,7 +184,8 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_tanh ) {
     expectedResults[5] = -0.5;
     expectedResults[6] = -0.5;
     expectedResults[7] = 0.5;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(3)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->insert();
     net->squareLossMaker()->insert();
     float weights1[] = {-0.171115, 0.28369, 0.201354, -0.496124, 0.391512, 0.120458, 0.396952, -0.1356, -0.319595, 0.251043, 0.318859, 0.220892, -0.480651, -0.51708, 0.2173, 0.365935, 0.304687, -0.712624};
@@ -231,7 +234,8 @@ TEST( testsimpleconvolvenet, boardsize1_2planes_filtersize1_relu ) {
     expectedResults[1] = 0;
     expectedResults[2] = 0;
     expectedResults[3] = 1;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(1)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->relu()->insert();
     net->squareLossMaker()->insert();
     float weights1[] = {-0.380177, -1.5738};
@@ -302,7 +306,8 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_relu ) {
     expectedResults[5] = 0;
     expectedResults[6] = 0;
     expectedResults[7] = 1;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(3)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->relu()->insert();
     net->squareLossMaker()->insert();
     float const*results = 0;
@@ -372,7 +377,8 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_linear ) {
     expectedResults[5] = 0;
     expectedResults[6] = 0;
     expectedResults[7] = 1;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(3)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(3)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(3)->biased()->linear()->insert();
     net->squareLossMaker()->insert();
     float const*results = 0;
@@ -422,7 +428,8 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_unbiased ) {
     expectedResults[1] = -0.5;
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(1)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased(0)->insert();
     net->squareLossMaker()->insert();
@@ -468,7 +475,8 @@ TEST( testsimpleconvolvenet, boardsize1_n2_2layers_biased ) {
     expectedResults[1] = -0.5;
     expectedResults[2] = -0.5;
     expectedResults[3] = 0.5;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(1)->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
     net->convolutionalMaker()->numFilters(2)->filterSize(1)->biased()->insert();
     net->squareLossMaker()->insert();
@@ -552,7 +560,8 @@ TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n3 ) {
         }
         expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
     }
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(5)->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(4)->biased()->insert();
     net->squareLossMaker()->insert();
@@ -642,7 +651,8 @@ TEST( testsimpleconvolvenet, boardsize_5_4_2layers_filtersize_2_4_biased_n6 ) {
         }
         expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
     }
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(5)->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(2)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(4)->biased()->insert();
     net->squareLossMaker()->insert();
@@ -749,7 +759,8 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n6 ) {
         }
         expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
     }
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(5)->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->squareLossMaker()->insert();
@@ -929,7 +940,8 @@ TEST( testsimpleconvolvenet, boardsize_5_3_2layers_filtersize_3_3_biased_n18 ) {
         }
         expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
     }
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(5)->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->convolutionalMaker()->numFilters(3)->filterSize(3)->biased()->insert();
     net->squareLossMaker()->insert();

@@ -34,10 +34,12 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    NeuralNet();
     NeuralNet( int numPlanes, int boardSize );
     ~NeuralNet();
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
+    template< typename T >InputLayerMaker<T> *inputMaker();
     FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
     PoolingMaker *poolingMaker();
@@ -53,7 +55,7 @@ public:
     float calcLoss(float const *expectedValues );
     float calcLossFromLabels(int const *labels );
     EpochMaker *epochMaker();
-    InputLayer *getFirstLayer();
+    template< typename T > InputLayer<T> *getFirstLayer();
     Layer *getLastLayer();
     Layer *addLayer( LayerMaker *maker );
     void setBatchSize( int batchSize );
@@ -62,11 +64,11 @@ public:
     float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults );
     int calcNumRight( int const *labels );
     float doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect );
-    void propagate( float const*images);
+    template< typename T > void propagate( T const*images);
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);
-    void learnBatch( float learningRate, float const*images, float const *expectedResults );
-    void learnBatchFromLabels( float learningRate, float const*images, int const *labels );
+    template< typename T > void learnBatch( float learningRate, T const*images, float const *expectedResults );
+    template< typename T > void learnBatchFromLabels( float learningRate, T const*images, int const *labels );
     int getNumLayers();
     float const *getResults( int layer ) const;
     int getInputCubeSize() const;

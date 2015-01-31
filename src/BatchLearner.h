@@ -27,25 +27,28 @@ public:
     }
 };
 
+template< typename T>
 class ClConvolve_EXPORT NetAction {
 public:
-    virtual void run( NeuralNet *net, float *batchData, int *batchLabels ) = 0;
+    virtual void run( NeuralNet *net, T *batchData, int *batchLabels ) = 0;
 };
 
-class ClConvolve_EXPORT NetLearnLabeledBatch : public NetAction {
+template< typename T>
+class ClConvolve_EXPORT NetLearnLabeledBatch : public NetAction<T> {
 public:
     float learningRate;
     NetLearnLabeledBatch( float learningRate ) :
         learningRate( learningRate ) {
     }
-    virtual void run( NeuralNet *net, float *batchData, int *batchLabels );
+    virtual void run( NeuralNet *net, T *batchData, int *batchLabels );
 };
 
-class ClConvolve_EXPORT NetPropagateBatch : public NetAction {
+template< typename T>
+class ClConvolve_EXPORT NetPropagateBatch : public NetAction<T> {
 public:
     NetPropagateBatch() {
     }
-    virtual void run( NeuralNet *net, float *batchData, int *batchLabels );
+    virtual void run( NeuralNet *net, T *batchData, int *batchLabels );
 };
 
 template< typename T>
@@ -60,7 +63,7 @@ public:
     // ]]]
     // generated, using cog:
     BatchLearner( NeuralNet *net );
-    EpochResult batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction *netAction );
+    EpochResult batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction<T> *netAction );
     int test( int batchSize, int N, T *testData, int *testLabels );
     EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels );
 

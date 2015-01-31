@@ -147,7 +147,8 @@ void go(Config config) {
 
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+    NeuralNet *net = NeuralNet::maker()->instance();
+    net->inputMaker<float>()->numPlanes(1)->boardSize(boardSize)->insert();
     for( int i = 0; i < config.numLayers; i++ ) {
         net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
     }

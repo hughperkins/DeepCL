@@ -6,8 +6,6 @@
 
 #include <stdexcept>
 
-#include "LayerMaker.h"
-
 #include "NeuralNet.h"
 #include "FullyConnectedLayer.h"
 #include "ConvolutionalLayer.h"
@@ -17,6 +15,8 @@
 #include "CrossEntropyLoss.h"
 #include "PoolingLayer.h"
 #include "NormalizationLayer.h"
+
+#include "LayerMaker.h"
 
 using namespace std;
 
@@ -37,9 +37,9 @@ Layer *FullyConnectedMaker::insert() {
     delete this;
     return layer;
 }
-Layer *InputLayerMaker::insert() {
+template< typename T > Layer *InputLayerMaker<T>::insert() {
     if( _numPlanes == 0 ) {
-        throw runtime_error("Must provide ->planes(planes)");
+        throw runtime_error("Must provide ->numPlanes(planes)");
     }
     if( _boardSize == 0 ) {
         throw runtime_error("Must provide ->boardSize(boardSize)");
@@ -92,8 +92,8 @@ Layer *ConvolutionalMaker::instance() const {
     Layer *layer = new ConvolutionalLayer( previousLayer, this );
     return layer;
 }
-Layer *InputLayerMaker::instance() const {
-    Layer *layer = new InputLayer( 0, this );
+template< typename T > Layer *InputLayerMaker<T>::instance() const {
+    Layer *layer = new InputLayer<T>( 0, this );
     return layer;
 }
 Layer *NormalizationLayerMaker::instance() const {
@@ -137,4 +137,7 @@ int NormalizationLayerMaker::getOutputPlanes() const {
 int NormalizationLayerMaker::getBiased() const {
     return false;
 }
+
+template class InputLayerMaker<float>;
+template class InputLayerMaker<unsigned char>;
 

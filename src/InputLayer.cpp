@@ -11,26 +11,28 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-InputLayer::InputLayer( Layer *previousLayer, InputLayerMaker const*maker ) :
+template< typename T > InputLayer<T>::InputLayer( Layer *previousLayer, InputLayerMaker<T> const*maker ) :
        Layer( previousLayer, maker ),
     batchSize(0),
-    output(0),
+    allocatedSize(0),
+    input(0),
+    results(0),
     outputPlanes( maker->getOutputPlanes() ),
     outputBoardSize( maker->getOutputBoardSize() ) {
 }
-VIRTUAL InputLayer::~InputLayer() {
+template< typename T > VIRTUAL InputLayer<T>::~InputLayer() {
 }
-VIRTUAL float *InputLayer::getResults() {
-    return output;
+template< typename T > VIRTUAL float *InputLayer<T>::getResults() {
+    return results;
 }
-VIRTUAL ActivationFunction const *InputLayer::getActivationFunction() {
+template< typename T > VIRTUAL ActivationFunction const *InputLayer<T>::getActivationFunction() {
     return new LinearActivation();
 }
-VIRTUAL bool InputLayer::needsBackProp() {
+template< typename T > VIRTUAL bool InputLayer<T>::needsBackProp() {
     return false;
 }
-VIRTUAL void InputLayer::printOutput() const {
-    if( output == 0 ) {
+template< typename T > VIRTUAL void InputLayer<T>::printOutput() const {
+    if( results == 0 ) {
          return;
     }
     for( int n = 0; n < std::min(5,batchSize); n++ ) {
@@ -56,44 +58,56 @@ VIRTUAL void InputLayer::printOutput() const {
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
-VIRTUAL void InputLayer::print() const {
+template< typename T > VIRTUAL void InputLayer<T>::print() const {
     printOutput();
 }
-void InputLayer::in( float const*images ) {
+template< typename T > void InputLayer<T>::in( T const*images ) {
 //        std::cout << "InputLayer::in()" << std::endl;
-    this->output = (float*)images;
+    this->input = images;
 //        this->batchStart = batchStart;
 //        this->batchEnd = batchEnd;
 //        print();
 }
-VIRTUAL bool InputLayer::needErrorsBackprop() {
+template< typename T > VIRTUAL bool InputLayer<T>::needErrorsBackprop() {
     return false;
 }
-VIRTUAL void InputLayer::setBatchSize( int batchSize ) {
+template< typename T > VIRTUAL void InputLayer<T>::setBatchSize( int batchSize ) {
 //        std::cout << "inputlayer setting batchsize " << batchSize << std::endl;
-    
+    if( batchSize <= allocatedSize ) {
+        this->batchSize = batchSize;
+        return;
+    }
+    if( results != 0 ) {
+        delete[] results;
+    }
     this->batchSize = batchSize;
+    this->allocatedSize = batchSize;
+    results = new float[batchSize * getOutputCubeSize() ];
 }
-VIRTUAL void InputLayer::propagate() {
+template< typename T > VIRTUAL void InputLayer<T>::propagate() {
+    int totalLinearLength = getResultsSize();
+    for( int i = 0; i < totalLinearLength; i++ ) {
+        results[i] = input[i];
+    }
 }
-VIRTUAL void InputLayer::backPropErrors( float learningRate, float const *errors ) {
+template< typename T > VIRTUAL void InputLayer<T>::backPropErrors( float learningRate, float const *errors ) {
 }
-VIRTUAL int InputLayer::getOutputBoardSize() const {
+template< typename T > VIRTUAL int InputLayer<T>::getOutputBoardSize() const {
     return outputBoardSize;
 }
-VIRTUAL int InputLayer::getOutputPlanes() const {
+template< typename T > VIRTUAL int InputLayer<T>::getOutputPlanes() const {
     return outputPlanes;
 }
-VIRTUAL int InputLayer::getOutputCubeSize() const {
+template< typename T > VIRTUAL int InputLayer<T>::getOutputCubeSize() const {
     return outputPlanes * outputBoardSize * outputBoardSize;
 }
-VIRTUAL int InputLayer::getResultsSize() const {
+template< typename T > VIRTUAL int InputLayer<T>::getResultsSize() const {
     return batchSize * getOutputCubeSize();
 }
-VIRTUAL std::string InputLayer::toString() {
+template< typename T > VIRTUAL std::string InputLayer<T>::toString() {
     return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
 }
-VIRTUAL std::string InputLayer::asString() const {
+template< typename T > VIRTUAL std::string InputLayer<T>::asString() const {
     return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
 }
 
@@ -105,4 +119,8 @@ VIRTUAL std::string InputLayer::asString() const {
 //    os << "InputLayer { outputPlanes " << layer->outputPlanes << " outputBoardSize " << layer->outputBoardSize << " }";
 //    return os;
 //}
+
+
+template class InputLayer<float>;
+template class InputLayer<unsigned char>;
 

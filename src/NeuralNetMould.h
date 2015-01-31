@@ -23,6 +23,12 @@ public:
     int _numPlanes;
     int _boardSize;
     NeuralNetMould(){
+        _numPlanes = 0;
+        _boardSize = 0;
+    }
+    NeuralNetMould( int planes, int boardSize ){
+        this->_numPlanes = planes;
+        this->_boardSize = boardSize;
     }
     NeuralNetMould *planes(int planes ) {
         this->_numPlanes = planes;
