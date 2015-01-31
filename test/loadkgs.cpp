@@ -95,6 +95,8 @@ int main(int argc, char *argv[] ) {
 //            net->propagate( testData );
 //            int testRight = net->calcNumRight( testLabels );
         }
+        timer.timeCheck("epoch " + toString( epoch ) );
+        StatefulTimer::dump(true);
         cout << "epoch train totals: " << epochTrainRight << "/" << Ntrain << " " << ( epochTrainRight * 100.0f / Ntrain ) << endl;
         BatchLearner<unsigned char>batchLearner( net );
         int testRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
