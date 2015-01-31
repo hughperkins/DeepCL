@@ -159,7 +159,7 @@ Example usage:
 ```
 * Run training, eg, based on LeCun's lenet-7:
 ```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
+./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.00001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
 ```
 * On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, this has epoch time of 76 seconds, and reaches test accuracy of around 91.7% after around 200 epochs (train accuracy 99.996%!)
 
