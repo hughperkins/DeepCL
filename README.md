@@ -212,6 +212,10 @@ NeuralNet *net = new NeuralNet();
 ```c++
 net->inputMaker<float>()->numPlanes(10)->boardSize(19)->insert();
 ```
+* If you want to feed in data as `unsigned char *`, then do:
+```c++
+net->inputMaker<unsigned char>()->numPlanes(10)->boardSize(19)->insert();
+```
 * You need to set the number of input planes, and the board size.
 
 ## Normalization layer
