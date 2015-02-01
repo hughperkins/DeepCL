@@ -114,6 +114,7 @@ TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
         delete propagate;
         delete[] results;
     }
+    delete cl;
 }
 
 TEST( testpropagate, boardsize2_padzeros ) {
@@ -203,6 +204,7 @@ TEST( testpropagate, boardsize2_padzeros ) {
     }
     delete propagate;
     delete[] results;
+    delete cl;
 }
 
 TEST( testpropagate, boardsize3 ) {
@@ -264,6 +266,7 @@ TEST( testpropagate, boardsize3 ) {
         cout << "test1 ok" << endl;
     delete propagate;
     delete[] results;
+    delete cl;
 }
 
 TEST( testpropagate, test2 ) {
@@ -329,6 +332,12 @@ TEST( testpropagate, test2 ) {
         assertEquals( -0.143989f, results[3], 0.0001 );
     }
     cout << "test2 ok" << endl;
+    delete convolve;
+    delete resultsWrapper;
+    delete weightsWrapper;
+    delete dataWrapper;
+    delete[] results;
+    delete cl;
 }
 
 TEST( testpropagate, test3 ) {
@@ -370,6 +379,8 @@ TEST( testpropagate, test3 ) {
 //        cout << "results[" << i << "]=" << results[i] << endl;
       assertEquals( expectedResults[i], results[i], 0.0001);
    }
+    delete propagate;
+    delete cl;
 }
 
 TEST( testpropagate, boardsize19 ) {
@@ -405,6 +416,7 @@ TEST( testpropagate, boardsize19 ) {
     StatefulTimer::dump(true);
     timer.timeCheck("propagate time");
     delete propagateImpl;
+    delete cl;
 }
 
 TEST( testpropagate, mnist_firstconvlayer ) {
@@ -435,6 +447,10 @@ TEST( testpropagate, mnist_firstconvlayer ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
@@ -471,6 +487,10 @@ TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
@@ -507,6 +527,10 @@ TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( testpropagate, mnist_finallayer ) {
@@ -542,6 +566,10 @@ TEST( testpropagate, mnist_finallayer ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, comparespecific ) {
@@ -606,6 +634,10 @@ TEST( SLOW_testpropagate, comparespecific ) {
     delete[] results2;
     delete p1;
     delete p2;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, compare ) {
@@ -678,6 +710,10 @@ TEST( SLOW_testpropagate, compare ) {
             }
         }
     }
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
+    delete cl;
 }
 
 TEST( testpropagate, softmax ) {
@@ -735,6 +771,7 @@ TEST( testpropagate, softmax ) {
 
     delete[] input;
     delete[] expected;
+    delete net;
 }
 
 TEST( testpropagate, softmax_byplane ) {
@@ -793,6 +830,7 @@ TEST( testpropagate, softmax_byplane ) {
 
     delete[] input;
     delete[] expected;
+    delete net;
 }
 
 
