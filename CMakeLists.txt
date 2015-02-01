@@ -45,11 +45,13 @@ foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
 endforeach()
 
-add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp 
+add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp
+    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 link_libraries( OpenCLHelper )
 
-add_executable( gpuinfo OpenCLHelper/gpuinfo.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
+add_executable( gpuinfo OpenCLHelper/gpuinfo.cpp OpenCLHelper/thirdparty/clew/src/clew.c 
+    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp )
 if( ON_LINUX )
 target_link_libraries( gpuinfo dl )
 endif()
