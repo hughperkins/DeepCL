@@ -18,8 +18,8 @@ TEST( testpoolingbackprop, basic ) {
     int numPlanes = 1;
     int boardSize = 4;
     int poolingSize = 2;
-    OpenCLHelper cl;
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
     float errors[] = {
         3, 5,
         2, 9
@@ -46,6 +46,7 @@ TEST( testpoolingbackprop, basic ) {
 
     delete poolingBackprop;
     delete[] errorsForUpstream;
+    delete cl;
 }
 
 TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
@@ -53,8 +54,8 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int boardSize = 2;
     int poolingSize = 2;
-    OpenCLHelper cl;
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
     float errors[] = {
         3, 
         5,
@@ -92,6 +93,7 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
 
     delete poolingBackprop;
     delete[] errorsForUpstream;
+    delete cl;
 }
 
 /*
@@ -101,7 +103,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     int boardSize = 2;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, numPlanes, boardSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 

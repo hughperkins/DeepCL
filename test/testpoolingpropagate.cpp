@@ -21,8 +21,8 @@ TEST( testpoolingpropagate, basic ) {
     int numPlanes = 1;
     int boardSize = 4;
     int poolingSize = 2;
-    OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -47,6 +47,7 @@ TEST( testpoolingpropagate, basic ) {
     delete poolingPropagate;
     delete[] selectors;
     delete[] output;
+    delete cl;
 }
 
 TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
@@ -54,8 +55,8 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int boardSize = 2;
     int poolingSize = 2;
-    OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( &cl, false, numPlanes, boardSize, poolingSize );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -87,6 +88,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     delete poolingPropagate;
     delete[] selectors;
     delete[] output;
+    delete cl;
 }
 
 TEST( testpoolingpropagate, fromwrappers ) {
@@ -94,8 +96,8 @@ TEST( testpoolingpropagate, fromwrappers ) {
     int numPlanes = 1;
     int boardSize = 4;
     int poolingSize = 2;
-    OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, &cl, false, numPlanes, boardSize, poolingSize );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, cl, false, numPlanes, boardSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -106,9 +108,9 @@ TEST( testpoolingpropagate, fromwrappers ) {
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * boardSize * boardSize;
-    CLWrapper *inputWrapper = cl.wrap( inputSize, input );
-    CLWrapper *selectorsWrapper = cl.wrap( outputSize, selectors );
-    CLWrapper *outputWrapper = cl.wrap( outputSize, output );
+    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
+    CLWrapper *selectorsWrapper = cl->wrap( outputSize, selectors );
+    CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
     inputWrapper->copyToDevice();
 
@@ -133,6 +135,7 @@ TEST( testpoolingpropagate, fromwrappers ) {
     delete poolingPropagate;
     delete[] selectors;
     delete[] output;
+    delete cl;
 }
 
 class CompareSpecificArgs{
@@ -196,10 +199,10 @@ void compareSpecific( CompareSpecificArgs args ) {
     int boardSize = args._boardSize;
     int poolingSize = args._poolingSize;
 
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, &cl, args._padZeros, numPlanes, boardSize, poolingSize );
-    PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, &cl, args._padZeros, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, boardSize, poolingSize );
 
     const int inputSize = batchSize * numPlanes * boardSize * boardSize;
     int outputSize = poolingPropagate0->getResultsSize( batchSize );
@@ -208,9 +211,9 @@ void compareSpecific( CompareSpecificArgs args ) {
     int *selectors = new int[ outputSize ];
     float *output = new float[ outputSize ];
 
-    CLWrapper *inputWrapper = cl.wrap( inputSize, input );
-    CLWrapper *selectorsWrapper = cl.wrap( outputSize, selectors );
-    CLWrapper *outputWrapper = cl.wrap( outputSize, output );
+    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
+    CLWrapper *selectorsWrapper = cl->wrap( outputSize, selectors );
+    CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
     WeightRandomizer::randomize( input, inputSize );
 
@@ -282,6 +285,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     delete[] selectors;
     delete[] output;
     delete[] input;
+    delete cl;
 }
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling2 ) {
