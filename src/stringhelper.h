@@ -45,7 +45,7 @@ inline int atoi( std::string stringvalue ) {
 // returns empty string if off the end of the number of available tokens
 inline std::string getToken( std::string targetstring, int tokenIndexFromZero, std::string separator = " " ) {
    std::vector<std::string> splitstring = split( targetstring, separator );
-   if( tokenIndexFromZero < splitstring.size() ) {
+   if( tokenIndexFromZero < (int)splitstring.size() ) {
       return splitstring[tokenIndexFromZero];
    } else {
       return "";

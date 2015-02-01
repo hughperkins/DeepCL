@@ -35,13 +35,13 @@ using namespace std;
 
 NeuralNet::NeuralNet() {
     cout << "NeuralNet()" << endl;
-    cl = new OpenCLHelper();
+    cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, boardSize );
 //    maker->insert();
 }
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
     cout << "NeuralNet(planes,boardsize)" << endl;
-    cl = new OpenCLHelper();
+    cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
         ->numPlanes( numPlanes )->boardSize( boardSize );
     maker->insert();
@@ -315,11 +315,11 @@ void NeuralNet::printOutput() {
     }
 }
 
-template InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
-template InputLayerMaker<float> *NeuralNet::inputMaker<float>();
-template void NeuralNet::propagate( unsigned char const*images);
-template void NeuralNet::propagate( float const*images);
-template void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels );
-template void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels );
+template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
+template ClConvolve_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
+template ClConvolve_EXPORT void NeuralNet::propagate(unsigned char const*images);
+template ClConvolve_EXPORT void NeuralNet::propagate(float const*images);
+template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels);
+template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels);
 
 

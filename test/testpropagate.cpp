@@ -42,9 +42,9 @@ TEST( testpropagate, boardsize2_nopadzeros ) {
     };
     cout << "expected number of results: " << resultSize << endl;
     int outputBoardSize = 0;
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
-        Propagate *propagate = Propagate::instanceSpecific( 1, &cl,
+        Propagate *propagate = Propagate::instanceSpecific( 1, cl,
             LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
             padZeros == 1, false ), new LinearActivation() );
         float *results = propagate->propagate( batchSize, data, filter1, 0 );  
@@ -54,6 +54,8 @@ TEST( testpropagate, boardsize2_nopadzeros ) {
         delete propagate;
         delete[] results;
     }
+
+    delete cl;
 }
 
 TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
@@ -99,9 +101,9 @@ TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
     };
     cout << "expected number of results: " << resultsSize << endl;
 //    int outputBoardSize = 0;
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
-        Propagate *propagate = Propagate::instanceSpecific( 0, &cl,
+        Propagate *propagate = Propagate::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
             padZeros == 1, false ).setSkip(1), new LinearActivation() );
         float *results = propagate->propagate( batchSize, data, filter1, 0 );  
@@ -112,6 +114,7 @@ TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
         delete propagate;
         delete[] results;
     }
+    delete cl;
 }
 
 TEST( testpropagate, boardsize2_padzeros ) {
@@ -183,8 +186,8 @@ TEST( testpropagate, boardsize2_padzeros ) {
 //    };
 
     int outputBoardSize = 0;
-    OpenCLHelper cl;
-    Propagate *propagate = Propagate::instanceTest( &cl, LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
     float *results = propagate->propagate( batchSize, data, filter1, 0 );        
 
@@ -201,6 +204,7 @@ TEST( testpropagate, boardsize2_padzeros ) {
     }
     delete propagate;
     delete[] results;
+    delete cl;
 }
 
 TEST( testpropagate, boardsize3 ) {
@@ -243,8 +247,8 @@ TEST( testpropagate, boardsize3 ) {
  };
 
     int outputBoardSize = 0;
-    OpenCLHelper cl;
-    Propagate *propagate = Propagate::instanceTest( &cl, LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
     float *results = propagate->propagate( 
         batchSize, data, filter1, 0 );        
@@ -262,6 +266,7 @@ TEST( testpropagate, boardsize3 ) {
         cout << "test1 ok" << endl;
     delete propagate;
     delete[] results;
+    delete cl;
 }
 
 TEST( testpropagate, test2 ) {
@@ -292,17 +297,17 @@ TEST( testpropagate, test2 ) {
 
  };
 
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     float *results = new float[512];
 
-    CLWrapper *dataWrapper = cl.wrap( batchSize * 9, data );
-    CLWrapper *weightsWrapper = cl.wrap( numOutPlanes * 9, filter1 );
-    CLWrapper *resultsWrapper = cl.wrap( 512, results );
+    CLWrapper *dataWrapper = cl->wrap( batchSize * 9, data );
+    CLWrapper *weightsWrapper = cl->wrap( numOutPlanes * 9, filter1 );
+    CLWrapper *resultsWrapper = cl->wrap( 512, results );
     dataWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
 
-    CLKernel *convolve = cl.buildKernel( "propagate.cl", "convolve_imagecubes_float2", "-D TANH" );
-//    CLKernel *tanh = cl.buildKernel( "ClConvolve.cl", "byelement_tanh" );
+    CLKernel *convolve = cl->buildKernel( "propagate.cl", "convolve_imagecubes_float2", "-D TANH" );
+//    CLKernel *tanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
 
     for( int it = 0; it < 100; it ++ ) {
         convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
@@ -311,7 +316,7 @@ TEST( testpropagate, test2 ) {
         convolve->input( weightsWrapper);
         convolve->output( resultsWrapper );
         int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
-        int workgroupsize = cl.getMaxWorkgroupSize();
+        int workgroupsize = cl->getMaxWorkgroupSize();
         globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
         convolve->run_1d( globalSize, workgroupsize );
@@ -327,6 +332,12 @@ TEST( testpropagate, test2 ) {
         assertEquals( -0.143989f, results[3], 0.0001 );
     }
     cout << "test2 ok" << endl;
+    delete convolve;
+    delete resultsWrapper;
+    delete weightsWrapper;
+    delete dataWrapper;
+    delete[] results;
+    delete cl;
 }
 
 TEST( testpropagate, test3 ) {
@@ -345,8 +356,8 @@ TEST( testpropagate, test3 ) {
                      0.5,0.7};
 
     int outputBoardSize = 0;
-    OpenCLHelper cl;
-    Propagate *propagate = Propagate::instanceTest( &cl, LayerDimensions( numInPlanes, inBoardSize, numOutPlanes, filterSize,
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inBoardSize, numOutPlanes, filterSize,
         padZeros == 1, false ), new LinearActivation() );
     float *results = propagate->propagate( 
         batchSize, data, filter, 0 );        
@@ -368,6 +379,8 @@ TEST( testpropagate, test3 ) {
 //        cout << "results[" << i << "]=" << results[i] << endl;
       assertEquals( expectedResults[i], results[i], 0.0001);
    }
+    delete propagate;
+    delete cl;
 }
 
 TEST( testpropagate, boardsize19 ) {
@@ -393,8 +406,8 @@ TEST( testpropagate, boardsize19 ) {
 
     int outputBoardSize = 0;
     Timer timer;
-    OpenCLHelper cl;
-    Propagate *propagateImpl = Propagate::instanceTest( &cl, LayerDimensions( numInPlanes, inBoardSize, 
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *propagateImpl = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inBoardSize, 
         numOutPlanes, filterSize, padZeros == 1, true ), new ReluActivation() );
     for( int i = 0; i < 10; i++ ) {
         float *results = propagateImpl->propagate( 
@@ -403,6 +416,7 @@ TEST( testpropagate, boardsize19 ) {
     StatefulTimer::dump(true);
     timer.timeCheck("propagate time");
     delete propagateImpl;
+    delete cl;
 }
 
 TEST( testpropagate, mnist_firstconvlayer ) {
@@ -424,8 +438,8 @@ TEST( testpropagate, mnist_firstconvlayer ) {
         .setPadZeros( true ).setBiased( true );    
     ActivationFunction *fn = new ReluActivation();
 
-    OpenCLHelper cl;
-    Propagate *p1 = Propagate::instance( &cl, dim, fn );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *p1 = Propagate::instance( cl, dim, fn );
     for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
@@ -433,6 +447,10 @@ TEST( testpropagate, mnist_firstconvlayer ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
@@ -460,8 +478,8 @@ TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
-    OpenCLHelper cl;
-    Propagate *p1 = Propagate::instance( &cl, dim, fn );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *p1 = Propagate::instance( cl, dim, fn );
     for( int i = 0; i < (128+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
@@ -469,6 +487,10 @@ TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
@@ -496,8 +518,8 @@ TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
-    OpenCLHelper cl;
-    Propagate *p1 = Propagate::instance( &cl, dim, fn );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *p1 = Propagate::instance( cl, dim, fn );
     for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
@@ -505,6 +527,10 @@ TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( testpropagate, mnist_finallayer ) {
@@ -531,8 +557,8 @@ TEST( testpropagate, mnist_finallayer ) {
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
-    OpenCLHelper cl;
-    Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new TanhActivation() );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
     for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
@@ -540,10 +566,14 @@ TEST( testpropagate, mnist_finallayer ) {
     StatefulTimer::dump(true);
 
     delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, comparespecific ) {
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];
     float *biasFilters = new float[10000];
@@ -571,9 +601,9 @@ TEST( SLOW_testpropagate, comparespecific ) {
     filters[24] = 11;
     filters[25] = 2;
       
-    Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new LinearActivation() );
+    Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new LinearActivation() );
     float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-    Propagate *p2 = Propagate::instanceSpecific( 3, &cl, dim, new LinearActivation() );
+    Propagate *p2 = Propagate::instanceSpecific( 3, cl, dim, new LinearActivation() );
     float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
 
     int resultsSize = batchSize * dim.outputCubeSize;
@@ -604,10 +634,14 @@ TEST( SLOW_testpropagate, comparespecific ) {
     delete[] results2;
     delete p1;
     delete p2;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
 }
 
 TEST( SLOW_testpropagate, compare ) {
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     float *inputs = new float[ 10000 ];
     float *filters = new float[10000 ];
     float *biasFilters = new float[10000];
@@ -631,9 +665,9 @@ TEST( SLOW_testpropagate, compare ) {
                                 int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
                                 cout << " OutputBoardSize " << dim.outputBoardSize << " resultsize " << resultsSize << endl;
                                 int biasWeightsSize = numOutPlanes;
-                                Propagate *p1 = Propagate::instanceSpecific( 1, &cl, dim, new LinearActivation() );
+                                Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new LinearActivation() );
                                 float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-                                Propagate *p2 = Propagate::instanceSpecific( 3, &cl, dim, new LinearActivation() );
+                                Propagate *p2 = Propagate::instanceSpecific( 3, cl, dim, new LinearActivation() );
                                 float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
                                 cout << " batchSize " + toString(batchSize ) +
                                     " inputBoardSize " + toString(inputBoardSize ) +
@@ -676,6 +710,10 @@ TEST( SLOW_testpropagate, compare ) {
             }
         }
     }
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
+    delete cl;
 }
 
 TEST( testpropagate, softmax ) {
@@ -733,6 +771,7 @@ TEST( testpropagate, softmax ) {
 
     delete[] input;
     delete[] expected;
+    delete net;
 }
 
 TEST( testpropagate, softmax_byplane ) {
@@ -791,6 +830,7 @@ TEST( testpropagate, softmax_byplane ) {
 
     delete[] input;
     delete[] expected;
+    delete net;
 }
 
 

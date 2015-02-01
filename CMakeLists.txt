@@ -45,9 +45,16 @@ foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
 endforeach()
 
-add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp 
+add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp
+    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 link_libraries( OpenCLHelper )
+
+add_executable( gpuinfo OpenCLHelper/gpuinfo.cpp OpenCLHelper/thirdparty/clew/src/clew.c 
+    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp )
+if( ON_LINUX )
+target_link_libraries( gpuinfo dl )
+endif()
 
 add_library( ClConvolve SHARED ${CLConvolve_sources_prefixed} )
 #    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
@@ -163,12 +170,13 @@ add_custom_target(
     clfiles
     cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
 )
+add_dependencies( ClConvolve clfiles )
 else()
-add_custom_target( 
-    clfiles
-    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
-)
+# no idea how to fix this, for Windows.  If you have any ideas, please send a pull request :-)
+#add_custom_target( 
+#    clfiles
+#    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
+#)
 endif()
 
-add_dependencies( ClConvolve clfiles )
 

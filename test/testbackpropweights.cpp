@@ -176,8 +176,8 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     memset( weights, 0, sizeof( float ) * max( dim.filtersSize, 20 ) );
     memset( biasWeights, 0, sizeof(float) * 10 );
 
-    OpenCLHelper cl;
-    BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceForTest( &cl, dim );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceForTest( cl, dim );
     backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
     delete backpropWeightsImpl;
     
@@ -193,6 +193,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     delete[] results;
     delete[] weights;
     delete[] biasWeights;
+    delete cl;
 }
 
 TEST( testbackpropweights, backprop_weights_2 ) {
@@ -401,7 +402,7 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     int batchSize = 1;
     const float learningRate = 1;
 
-    OpenCLHelper cl;
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
     int resultsSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
@@ -420,10 +421,10 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     memset( weights0, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
 
-    CLWrapper *errorsWrap = cl.wrap( 10000, errors );
-    CLWrapper *inputWrap = cl.wrap( 10000, inputData );
-    CLWrapper *weights0Wrap = cl.wrap( 10000, weights0 );
-    CLWrapper *weights1Wrap = cl.wrap( 10000, weights1 );
+    CLWrapper *errorsWrap = cl->wrap( 10000, errors );
+    CLWrapper *inputWrap = cl->wrap( 10000, inputData );
+    CLWrapper *weights0Wrap = cl->wrap( 10000, weights0 );
+    CLWrapper *weights1Wrap = cl->wrap( 10000, weights1 );
 
     for( int i = 0 * dim.inputBoardSize; i < dim.inputBoardSize * dim.inputBoardSize; i+= dim.inputBoardSize * 4 ) {
         inputData[i] = 3;
@@ -468,11 +469,11 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     weights0Wrap->copyToDevice();
     weights1Wrap->copyToDevice();
     
-    BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, &cl, dim );
+    BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, cl, dim );
     backpropWeightsImpl0->debug = true;
     backpropWeightsImpl0->backpropWeights( batchSize, learningRate,
         errorsWrap, inputWrap, weights0Wrap, 0 );
-    BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 3, &cl, dim );
+    BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 3, cl, dim );
     backpropWeightsImpl1->debug = true;
     backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
         errorsWrap, inputWrap, weights1Wrap, 0 );
@@ -525,6 +526,7 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
         }
         cout << endl;
     }
+    delete cl;
 }
 
 class CompareSpecificArgs {
@@ -626,13 +628,13 @@ namespace testbackpropweights {
         WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 99 );
         WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 0, 99 );
 
-        OpenCLHelper cl;
+        OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
         
-        BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( args._instance0, &cl, dim );
+        BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( args._instance0, cl, dim );
         backpropWeightsImpl1->debug = true;
         backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
             errors, inputData, weights1, biasWeights1 );
-        BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( args._instance1, &cl, dim );
+        BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( args._instance1, cl, dim );
         backpropWeightsImpl2->debug = true;
         backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
             errors, inputData, weights2, biasWeights2 );
@@ -679,6 +681,8 @@ namespace testbackpropweights {
         delete[] weights2;
         delete[] errors;
         delete[] inputData;
+
+        delete cl;
     }
 
     TEST( SLOW_testbackpropweights, compare_specific ) {
