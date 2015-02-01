@@ -41,7 +41,7 @@ NeuralNet::NeuralNet() {
 }
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
     cout << "NeuralNet(planes,boardsize)" << endl;
-    cl = new OpenCLHelper();
+    cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
         ->numPlanes( numPlanes )->boardSize( boardSize );
     maker->insert();
