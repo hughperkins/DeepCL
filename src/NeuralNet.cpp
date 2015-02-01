@@ -35,7 +35,7 @@ using namespace std;
 
 NeuralNet::NeuralNet() {
     cout << "NeuralNet()" << endl;
-    cl = new OpenCLHelper();
+    cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, boardSize );
 //    maker->insert();
 }
