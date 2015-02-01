@@ -49,6 +49,11 @@ add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
 link_libraries( OpenCLHelper )
 
+add_executable( gpuinfo OpenCLHelper/gpuinfo.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
+if( ON_LINUX )
+target_link_libraries( gpuinfo dl )
+endif()
+
 add_library( ClConvolve SHARED ${CLConvolve_sources_prefixed} )
 #    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
 #    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp

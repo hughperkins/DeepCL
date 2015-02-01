@@ -37,6 +37,7 @@ Contents
     - [Pre-requisites](#pre-requisites-1)
     - [Procedure](#procedure-1)
   - [Linking](#linking)
+  - [What if it doesn't run?](#what-if-it-doesnt-run)
 - [Testing](#testing)
   - [Correctness checking](#correctness-checking)
   - [Unit-testing](#unit-testing)
@@ -409,6 +410,14 @@ You will need:
 - *.cl files
 
 The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.
+
+## What if it doesn't run?
+
+* Check if you have an OpenCL-enabled device on your system
+  * ideally a GPU, or accelerator, since there is no attempt to optimize ClConvolve for CPUs (at least, not currently, could change, feel free to submit a pull request :-) )
+* Try running `gpuinfo` (from [OpenCLHelper](https://github.com/hughperkins/OpenCLHelper), but built as part of this project too, for ease of use )
+  * it should output at least one OpenCL-enabled device
+  * if it doesn't, then you need to make sure you have an OpenCL-enabled device, and that appropriate drivers are installed, and that the ICD is configured appropriately (registry in Windows, and `/etc/OpenCL/vendors` in linux)
 
 # Testing
 
