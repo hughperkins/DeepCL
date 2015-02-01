@@ -31,6 +31,8 @@
 *.app
 
 build/
+build-win32/
+build-win64/
 
 data/mnist
 data/kgsgo
