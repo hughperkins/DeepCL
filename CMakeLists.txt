@@ -169,10 +169,11 @@ add_custom_target(
     cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
 )
 else()
-add_custom_target( 
-    clfiles
-    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
-)
+# no idea how to fix this, for Windows.  If you have any ideas, please send a pull request :-)
+#add_custom_target( 
+#    clfiles
+#    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
+#)
 endif()
 
 add_dependencies( ClConvolve clfiles )
