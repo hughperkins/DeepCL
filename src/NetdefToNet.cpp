@@ -69,6 +69,9 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             vector<string> splitPoolDef = split( baseLayerDef, "mp" );
             int poolingSize = atoi( splitPoolDef[1] );
             net->poolingMaker()->poolingSize(poolingSize)->insert();
+        } else if( baseLayerDef.find("rp") != string::npos ) {
+            int patchSize = atoi( split( baseLayerDef, "rp" )[1] );
+            net->randomPatchesMaker()->patchSize( patchSize )->insert();
         } else if( baseLayerDef.find("n") != string::npos ) {
             vector<string> fullDef = split( baseLayerDef, "n" );
             int numPlanes = atoi( fullDef[0] );

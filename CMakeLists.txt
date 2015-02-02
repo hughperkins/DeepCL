@@ -40,6 +40,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     PoolingPropagate.cpp PoolingPropagateCpu.cpp PoolingLayer.cpp PoolingBackprop.cpp
     PoolingBackpropCpu.cpp PoolingPropagateGpuNaive.cpp BackpropWeights2ScratchLarge.cpp
     BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
+    RandomPatches.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})

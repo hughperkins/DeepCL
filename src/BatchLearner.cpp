@@ -50,6 +50,7 @@ template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchS
 }
 
 template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testData, int *testLabels ) {
+    net->setTraining( false );
     NetAction<T> *action = new NetPropagateBatch<T>();
     int numRight = batchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
     delete action;
@@ -57,6 +58,7 @@ template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testD
 }
 
 template< typename T > EpochResult BatchLearner<T>::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
+    net->setTraining( true );
     NetAction<T> *action = new NetLearnLabeledBatch<T>( learningRate );
     EpochResult epochResult = batchedNetAction( batchSize, Ntrain, trainData, trainLabels, action );
     delete action;

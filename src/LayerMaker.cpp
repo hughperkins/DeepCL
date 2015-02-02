@@ -15,6 +15,7 @@
 #include "CrossEntropyLoss.h"
 #include "PoolingLayer.h"
 #include "NormalizationLayer.h"
+#include "RandomPatches.h"
 
 #include "LayerMaker.h"
 
@@ -100,6 +101,10 @@ Layer *NormalizationLayerMaker::instance() const {
     Layer *layer = new NormalizationLayer( previousLayer, this );
     return layer;
 }
+Layer *RandomPatchesMaker::instance() const {
+    Layer *layer = new RandomPatches( previousLayer, this );
+    return layer;
+}
 
 int ConvolutionalMaker::getOutputBoardSize() const {
     if( previousLayer == 0 ) {
@@ -135,6 +140,15 @@ int NormalizationLayerMaker::getOutputPlanes() const {
     return previousLayer->getOutputPlanes();
 }
 int NormalizationLayerMaker::getBiased() const {
+    return false;
+}
+int RandomPatchesMaker::getOutputBoardSize() const {
+    return previousLayer->getOutputBoardSize();
+}
+int RandomPatchesMaker::getOutputPlanes() const {
+    return previousLayer->getOutputPlanes();
+}
+int RandomPatchesMaker::getBiased() const {
     return false;
 }
 

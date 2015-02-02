@@ -92,6 +92,25 @@ public:
     virtual Layer *instance() const;
 };
 
+class RandomPatchesMaker : public LayerMaker {
+public:
+    int _patchSize;
+    int _padZeros;
+    RandomPatchesMaker( NeuralNet *net, Layer *previousLayer ) :
+        LayerMaker( net, previousLayer ),
+        _padZeros(0),
+        _patchSize(0) {
+    }
+    RandomPatchesMaker *patchSize( int _patchSize ) {
+        this->_patchSize = _patchSize;
+        return this;
+    }
+    virtual int getOutputBoardSize() const;
+    virtual int getOutputPlanes() const;
+    virtual int getBiased() const;
+    virtual Layer *instance() const;
+};
+
 class PoolingMaker : public LayerMaker {
 public:
 //    Layer *previousLayer;

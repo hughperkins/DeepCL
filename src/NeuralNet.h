@@ -20,6 +20,7 @@
 class OpenCLHelper;
 class ConvolutionalMaker;
 class LayerMaker;
+class RandomTranslatorMaker;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -28,6 +29,7 @@ class ClConvolve_EXPORT NeuralNet {
 public:
     std::vector< Layer *> layers;
     OpenCLHelper *cl;
+    int isTraining = true;
 
     // [[[cog
     // import cog_addheaders
@@ -44,6 +46,7 @@ public:
     ConvolutionalMaker *convolutionalMaker();
     PoolingMaker *poolingMaker();
     NormalizationLayerMaker *normalizationMaker();
+    RandomPatchesMaker *randomPatchesMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();
@@ -59,6 +62,7 @@ public:
     Layer *getLastLayer();
     Layer *addLayer( LayerMaker *maker );
     void setBatchSize( int batchSize );
+    void setTraining( bool training );
     float doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels );
     float doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels, int *p_totalCorrect );
     float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults );

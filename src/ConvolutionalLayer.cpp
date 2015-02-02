@@ -51,7 +51,7 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
 //        numPlanes, filterSize, padZeros, biased );
     propagateimpl = Propagate::instance( cl, dim, activationFunction );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
-    if( layerIndex > 1 ) {
+    if( previousLayer->needsBackProp() ) {
         backpropErrorsImpl = BackpropErrorsv2::instance( cl, dim, previousLayer->getActivationFunction() );
     }
 
@@ -359,7 +359,7 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
 //        }
         weOwnErrorsWrapper = true;
     }
-    if( layerIndex > 1 ) {
+    if( previousLayer->needsBackProp() ) {
         backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + ::toString( layerIndex ) );
     }

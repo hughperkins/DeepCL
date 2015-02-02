@@ -4,6 +4,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#pragma once
+
 #include <random>
 #include <chrono>
 
@@ -24,6 +26,9 @@ public:
     }
     static float uniform() {
         return instance()->random() / (float)std::mt19937::max();
+    }
+    static int uniformInt( int minvalue, int maxvalue ) {
+        return ( instance()->random() % ( maxvalue - minvalue + 1 ) ) + minvalue;
     }
 };
 

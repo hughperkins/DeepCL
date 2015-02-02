@@ -76,6 +76,9 @@ PoolingMaker *NeuralNet::poolingMaker() {
 NormalizationLayerMaker *NeuralNet::normalizationMaker() {
     return new NormalizationLayerMaker( this, getLastLayer() );
 }
+RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
+    return new RandomPatchesMaker( this, getLastLayer() );
+}
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
 }
@@ -135,6 +138,11 @@ void NeuralNet::setBatchSize( int batchSize ) {
         (*it)->setBatchSize( batchSize );
     }
 }
+void NeuralNet::setTraining( bool training ) {
+    for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
+        (*it)->setTraining( training );
+    }
+}
 float NeuralNet::doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels ) {
     return doEpochFromLabels( learningRate, batchSize, numImages, images, labels, 0 );
 }
@@ -145,6 +153,7 @@ float NeuralNet::doEpochFromLabels( float learningRate, int batchSize, int numIm
         THROW("You need to add a IAcceptsLabels as the last layer, in order to use doEpochFromLabels");
     }
     setBatchSize( batchSize );
+    setTraining( true );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     float loss = 0;
     int total = 0;
@@ -175,6 +184,7 @@ float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, floa
         THROW("You need to add a LossLayer as the last layer of the network");
     }
     setBatchSize( batchSize );
+    setTraining( true );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     float loss = 0;
     int total = 0;
@@ -202,6 +212,7 @@ int NeuralNet::calcNumRight( int const *labels ) {
 }
 float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
     setBatchSize( batchSize );
+    setTraining( true );
     int numBatches = ( numImages + batchSize - 1 ) / batchSize;
     std::cout << "numBatches: " << numBatches << std::endl;
     float loss = 0;
@@ -267,10 +278,12 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
     }
 }
 template< typename T > void NeuralNet::learnBatch( float learningRate, T const*images, float const *expectedResults ) {
+    setTraining( true );
     propagate( images);
     backProp( learningRate, expectedResults );
 }
 template< typename T > void NeuralNet::learnBatchFromLabels( float learningRate, T const*images, int const *labels ) {
+    setTraining( true );
     propagate( images);
     backPropFromLabels( learningRate, labels );
 }

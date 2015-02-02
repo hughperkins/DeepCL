@@ -7,64 +7,19 @@ using namespace std;
 
 Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     previousLayer( previousLayer ),
+    training( false ),
     nextLayer( 0 ),
-//    numPlanes( maker->getNumPlanes() ),
-//    boardSize( maker->getBoardSize() ),
-//    boardSizeSquared( boardSize * boardSize ),
-//    results(0),
-//    weights(0),
-//    biasWeights(0),
-//    biased(maker->getBiased()),
-//    activationFunction( maker->getActivationFunction() ),
-//    upstreamBoardSize( previousLayer == 0 ? 0 : previousLayer->boardSize ),
-//    upstreamNumPlanes( previousLayer == 0 ? 0 : previousLayer->numPlanes ),
-//    upstreamBoardSizeSquared( upstreamBoardSize * upstreamBoardSize ),
     layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 )
-//    weOwnResults(false)
      {
     if( previousLayer != 0 ) {
         previousLayer->nextLayer = this;
     }
 }
-//Layer::Layer( Layer *previousLayer, ExpectedValuesLayerMaker const*maker ) :
-//        previousLayer( previousLayer ),
-//        nextLayer(0),
-//        numPlanes( previousLayer->numPlanes ),
-//        boardSize( previousLayer->boardSize ),
-//        boardSizeSquared( previousLayer->boardSizeSquared ),
-//        results(0),
-//        weights(0),
-//        biasWeights(0),
-//        biased(false),
-////        activationFunction(0),
-//        upstreamBoardSize(previousLayer->boardSize),
-//        upstreamNumPlanes( previousLayer->numPlanes),
-//        upstreamBoardSizeSquared( previousLayer->boardSizeSquared ),
-//        layerIndex( previousLayer->layerIndex + 1 ),
-//        weOwnResults(false) {
-//    if( previousLayer != 0 ) {
-//        previousLayer->nextLayer = this;
-//        this->results = previousLayer->results;
-//    }
-//}
 VIRTUAL Layer::~Layer() {
-//    if( results != 0 && weOwnResults ) {
-//         delete[] results;
-//    }
-//    if( weights != 0 ) {
-//        delete[] weights;
-//    }
-//    if( biasWeights != 0 ) {
-//        delete[] biasWeights;
-//    }
-//    if( activationFunction != 0 ) {
-//        delete activationFunction;
-//    }
 }
-//    inline float activationFn( float value ) {
-//        //return 1.7159 * tanh( value );
-//        return tanh( value );
-//    }
+VIRTUAL void Layer::setTraining( bool training ) {
+    this->training = training;
+}
 // used to set up internal buffers and stuff
 VIRTUAL void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");

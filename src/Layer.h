@@ -21,37 +21,11 @@
 
 class Layer {
 public:
-//    int batchStart;
-//    int batchEnd;
-
     Layer *previousLayer;
     Layer *nextLayer;
-//    const int numPlanes;
-//    const int boardSize;
-//    const bool biased;
-//    ActivationFunction const *const activationFunction;
-//    const int upstreamBoardSize;
-//    const int upstreamNumPlanes;
     const int layerIndex;
-//    bool weOwnResults;
+    bool training;
 
-//    const int boardSizeSquared;
-//    const int upstreamBoardSizeSquared;
-
-//    int batchSize;
-
-//    virtual bool needErrorsBackprop() = 0;
-
-    // results structured like [imageid][outputplane][outputrow][outputcol]
-//    inline int getResultIndex( int n, int plane, int row, int col ) const {
-//        return ( ( ( n * numPlanes ) + plane ) * boardSize + row ) * boardSize + col;
-//    }
-//    inline float getResult( int n, int plane, int row, int col ) const {
-//        return results[getResultIndex( n, plane,row,col)];
-//    }
-//    inline int getResultsSizePerExample() const {
-//        return numPlanes * boardSize * boardSize;
-//    }
     virtual float * getResults() = 0;
 
     // [[[cog
@@ -61,6 +35,7 @@ public:
     // generated, using cog:
     Layer( Layer *previousLayer, LayerMaker const*maker );
     VIRTUAL ~Layer();
+    VIRTUAL void setTraining( bool training );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL bool providesErrorsForUpstreamWrapper() const;
     VIRTUAL float *getErrorsForUpstream();
