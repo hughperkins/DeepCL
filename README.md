@@ -80,7 +80,7 @@ Example usage:
 ```bash
 ./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
 ```
-... in order to learn mnist, using the same neural net architecture as used in the [convjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
 ./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
@@ -180,7 +180,7 @@ Example usage:
 ./idx-to-mat ../data/mnist train
 ./idx-to-mat ../data/mnist t10k
 ```
-* Run as per the [convjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
+* Run as per the [convnetjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
 ./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
 ```
@@ -581,7 +581,7 @@ Dates are dates of code change / commit, rather than date merged into master, or
     * lenet-5 has RBF layers at the end
     * lenet-5 has multiple of these RBF and fully-connected layers at the end
     * lenet-5 is not using max-pooling but something more like average-pooling, and it has an activation function applied (sigmoid)
-  * added the mnist training config from [convjs](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
+  * added the mnist training config from [convnetjs](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
   * noticed we are actually in January, not December, and updated the name of the month in this section appropriately :-P
 * 23rd January:
   * created `testmnist-mpi`, to experiment with using mpi to parallelize across multiple compute nodes (which must each have a GPU, which GPUs must ideally each be the same model/specifications)
