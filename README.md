@@ -115,6 +115,7 @@ Example usage:
 * during testing, the patch will be cut from the centre of each image
 * can reduce over-training, and thus give better test accuracies
 * put one `RP` layer just after the normalization layer.
+* eg you can try, on MNIST, `netdef=rp24-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
 
 ## Pre-processing
 
