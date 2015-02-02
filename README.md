@@ -109,6 +109,13 @@ Example usage:
 ./clconvolve1 netdef=8c5{tanh,padzeros}-mp2-16c5{tanh,padzeros}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
 ```
 
+## Additional layer types
+
+* `RP24` means a random patch layer, which will cut a 24x24 patch from a random position in each incoming image, and send that to its output
+* during testing, the patch will be cut from the centre of each image
+* can reduce over-training, and thus give better test accuracies
+* put one `RP` layer just after the normalization layer.
+
 ## Pre-processing
 
 * Note that the datasets must be in the NORB .mat format specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) page
@@ -230,6 +237,16 @@ NeuralNet *net = new NeuralNet();
 net->inputMaker<float>()->numPlanes(10)->boardSize(19)->insert();
 net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation )->insert();
 // other layers here...
+```
+
+## Random patch layer
+
+* You can add a random patch layer, to cut a patch from each image, in a random location, and train against that
+* You need to specify the patch size, eg on minst, which is 28x28 images, you might use a patch size of 24
+* During training the patch location is chosen randomly, per image, per epoch
+* During testing, the patch is cut from the centre of the image
+```c++
+net->randomPatchMaker()->patchSize(24)->insert();
 ```
 
 ## Convolutional layers
