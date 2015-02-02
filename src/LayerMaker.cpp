@@ -16,6 +16,7 @@
 #include "PoolingLayer.h"
 #include "NormalizationLayer.h"
 #include "RandomPatches.h"
+#include "RandomTranslations.h"
 
 #include "LayerMaker.h"
 
@@ -105,6 +106,10 @@ Layer *RandomPatchesMaker::instance() const {
     Layer *layer = new RandomPatches( previousLayer, this );
     return layer;
 }
+Layer *RandomTranslationsMaker::instance() const {
+    Layer *layer = new RandomTranslations( previousLayer, this );
+    return layer;
+}
 
 int ConvolutionalMaker::getOutputBoardSize() const {
     if( previousLayer == 0 ) {
@@ -143,12 +148,22 @@ int NormalizationLayerMaker::getBiased() const {
     return false;
 }
 int RandomPatchesMaker::getOutputBoardSize() const {
-    return previousLayer->getOutputBoardSize();
+    return _patchSize;
 }
 int RandomPatchesMaker::getOutputPlanes() const {
     return previousLayer->getOutputPlanes();
 }
 int RandomPatchesMaker::getBiased() const {
+    return false;
+}
+
+int RandomTranslationsMaker::getOutputBoardSize() const {
+    return previousLayer->getOutputBoardSize();
+}
+int RandomTranslationsMaker::getOutputPlanes() const {
+    return previousLayer->getOutputPlanes();
+}
+int RandomTranslationsMaker::getBiased() const {
     return false;
 }
 

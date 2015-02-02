@@ -79,6 +79,9 @@ NormalizationLayerMaker *NeuralNet::normalizationMaker() {
 RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
     return new RandomPatchesMaker( this, getLastLayer() );
 }
+RandomTranslationsMaker *NeuralNet::randomTranslationsMaker() {
+    return new RandomTranslationsMaker( this, getLastLayer() );
+}
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
 }

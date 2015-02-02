@@ -14,9 +14,9 @@ class CLWrapper;
 class PoolingPropagate;
 class PoolingBackprop;
 
-class RandomPatches : public Layer {
+class RandomTranslations : public Layer {
 public:
-    const int patchSize;
+    const int translateSize;
     const int numPlanes;
     const int inputBoardSize;
 
@@ -32,8 +32,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    RandomPatches( Layer *previousLayer, RandomPatchesMaker const*maker );
-    VIRTUAL ~RandomPatches();
+    RandomTranslations( Layer *previousLayer, RandomTranslationsMaker const*maker );
+    VIRTUAL ~RandomTranslations();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();

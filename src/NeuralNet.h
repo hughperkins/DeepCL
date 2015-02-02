@@ -47,6 +47,7 @@ public:
     PoolingMaker *poolingMaker();
     NormalizationLayerMaker *normalizationMaker();
     RandomPatchesMaker *randomPatchesMaker();
+    RandomTranslationsMaker *randomTranslationsMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();

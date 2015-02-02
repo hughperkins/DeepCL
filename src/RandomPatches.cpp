@@ -21,10 +21,9 @@ using namespace std;
 RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker const*maker ) :
         Layer( previousLayer, maker ),
         patchSize( maker->_patchSize ),
-        padZeros( maker->_padZeros ),
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputBoardSize( previousLayer->getOutputBoardSize() ),
-        outputBoardSize( maker->_padZeros ? previousLayer->getOutputBoardSize() : maker->_patchSize ),
+        outputBoardSize( maker->_patchSize ),
         results(0),
         batchSize(0),
         allocatedSize(0) {
@@ -38,9 +37,6 @@ RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker const*mak
     }
     if( previousLayer->needsBackProp() ) {
         throw runtime_error("Error: RandomPatches layer does not provide backprop currently, so you cannot put it after a layer that needs backprop");
-    }
-    if( padZeros ) {
-        throw runtime_error( "RandomPatches layer, padzeros not supported yet (though please create an issue, on github, if this is something you want)" );
     }
 }
 VIRTUAL RandomPatches::~RandomPatches() {
@@ -103,33 +99,29 @@ VIRTUAL void RandomPatches::propagate() {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             float *upstreamBoard = upstreamResults + ( n * numPlanes + plane ) * inputBoardSize * inputBoardSize;
             float *outputBoard = results + ( n * numPlanes + plane ) * outputBoardSize * outputBoardSize;
-            if( padZeros ) {
-                throw runtime_error("padzeros not supported currently in randomtranslations layer");
-            } else {
-                // in this case, the destination is always exactly the same
-                // only the source patch location changes
-        //        const int rowOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-        //        const int colOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-                int patchMargin = inputBoardSize - outputBoardSize;
-                int patchRow = patchMargin / 2;
-                int patchCol = patchMargin / 2;
-                if( training ) {
-                    patchRow = MyRandom::instance()->uniformInt( 0, patchMargin );
-                    patchCol = MyRandom::instance()->uniformInt( 0, patchMargin );
-                }
-        //        cout << "patch pos " << patchRow << "," << patchCol << endl;
-                for( int outRow = 0; outRow < outputBoardSize; outRow++ ) {
-                    const int inRow = outRow + patchRow;
-                    memcpy( &(outputBoard[ outRow * outputBoardSize ]), 
-                        &(upstreamBoard[ inRow * inputBoardSize + patchCol ]),
-                        patchSize * sizeof(float) );
-                }        
+            // in this case, the destination is always exactly the same
+            // only the source patch location changes
+    //        const int rowOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
+    //        const int colOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
+            int patchMargin = inputBoardSize - outputBoardSize;
+            int patchRow = patchMargin / 2;
+            int patchCol = patchMargin / 2;
+            if( training ) {
+                patchRow = MyRandom::instance()->uniformInt( 0, patchMargin );
+                patchCol = MyRandom::instance()->uniformInt( 0, patchMargin );
             }
+    //        cout << "patch pos " << patchRow << "," << patchCol << endl;
+            for( int outRow = 0; outRow < outputBoardSize; outRow++ ) {
+                const int inRow = outRow + patchRow;
+                memcpy( &(outputBoard[ outRow * outputBoardSize ]), 
+                    &(upstreamBoard[ inRow * inputBoardSize + patchCol ]),
+                    patchSize * sizeof(float) );
+            }        
         }
     }
 }
 VIRTUAL std::string RandomPatches::asString() const {
-    return "RandomPatches{ inputPlanes=" + toString(numPlanes) + " inputBoardSize=" + toString(inputBoardSize) + " patchSize=" + toString( patchSize ) + " padZeros=" + toString(padZeros) + " }";
+    return "RandomPatches{ inputPlanes=" + toString(numPlanes) + " inputBoardSize=" + toString(inputBoardSize) + " patchSize=" + toString( patchSize ) + " }";
 }
 
 

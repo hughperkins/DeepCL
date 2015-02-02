@@ -247,9 +247,20 @@ net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation 
 * You can add a random patch layer, to cut a patch from each image, in a random location, and train against that
 * You need to specify the patch size, eg on minst, which is 28x28 images, you might use a patch size of 24
 * During training the patch location is chosen randomly, per image, per epoch
+* Size of output image from this layer is the size of the patch
 * During testing, the patch is cut from the centre of the image
 ```c++
 net->randomPatchMaker()->patchSize(24)->insert();
+```
+
+## Random translations layer
+
+* You can add a random translations layer, to randomly translate each input image by a random amount, during training
+* During testing, no translation is done
+* If you put eg `translateSize(2)`, then the translation amount will be chosen uniformly from the set `{-2,-1,0,1,2}`, for each axis.
+* Output image from this layer is same size as input image
+```c++
+net->randomTranslationsMaker()->translateSize(2)->insert();
 ```
 
 ## Convolutional layers
@@ -540,7 +551,7 @@ What's done / what's planned
     * ~~translation and scaling by mean and standard deviation~~ done
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
-  * randomly translating input layer?
+  * ~~randomly translating input layer?~~ done
   * mpi so can run over several gpus, spread across multiple hosts???
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
   * generalization to non-square images
@@ -554,6 +565,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 3rd Februrary:
+  * added RandomTranslations layer
 * 2nd February:
   * added RandomPatches layer
 * 1st Februrary:

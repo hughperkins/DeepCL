@@ -95,14 +95,29 @@ public:
 class RandomPatchesMaker : public LayerMaker {
 public:
     int _patchSize;
-    int _padZeros;
     RandomPatchesMaker( NeuralNet *net, Layer *previousLayer ) :
         LayerMaker( net, previousLayer ),
-        _padZeros(0),
         _patchSize(0) {
     }
     RandomPatchesMaker *patchSize( int _patchSize ) {
         this->_patchSize = _patchSize;
+        return this;
+    }
+    virtual int getOutputBoardSize() const;
+    virtual int getOutputPlanes() const;
+    virtual int getBiased() const;
+    virtual Layer *instance() const;
+};
+
+class RandomTranslationsMaker : public LayerMaker {
+public:
+    int _translateSize;
+    RandomTranslationsMaker( NeuralNet *net, Layer *previousLayer ) :
+        LayerMaker( net, previousLayer ),
+        _translateSize(0) {
+    }
+    RandomTranslationsMaker *translateSize( int _translateSize ) {
+        this->_translateSize = _translateSize;
         return this;
     }
     virtual int getOutputBoardSize() const;
