@@ -11,6 +11,7 @@ Contents
 - [ClConvolve](#clconvolve)
 - [Commandline usage](#commandline-usage)
   - [Additional net-def options](#additional-net-def-options)
+  - [Additional layer types](#additional-layer-types)
   - [Pre-processing](#pre-processing)
   - [Weight persistence](#weight-persistence)
   - [Command-line options](#command-line-options)
@@ -21,6 +22,7 @@ Contents
   - [Create a net](#create-a-net)
   - [Add an input layer](#add-an-input-layer)
   - [Normalization layer](#normalization-layer)
+  - [Random patch layer](#random-patch-layer)
   - [Convolutional layers](#convolutional-layers)
   - [Fully connected layers](#fully-connected-layers)
   - [Max-pooling layers](#max-pooling-layers)
@@ -552,6 +554,10 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 2nd February:
+  * added RandomPatches layer
+* 1st Februrary:
+  * builds and runs on Windows
 * 31st January:
   * added NormalizationLayer
   * templated InputLayer, for different input array types, which simplifies BatchLearner class
