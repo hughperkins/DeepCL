@@ -10,6 +10,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Trainable.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -18,7 +20,7 @@
 class NeuralNet;
 
 // This handles grouping several NeuralNets into one single MultiNet
-class ClConvolve_EXPORT MultiNet {
+class ClConvolve_EXPORT MultiNet : public Trainable {
     std::vector<NeuralNet * > nets;
 
 public:

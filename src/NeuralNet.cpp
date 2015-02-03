@@ -164,9 +164,18 @@ int NeuralNet::calcNumRight( int const *labels ) {
     }
     return acceptsLabels->calcNumRight( labels );
 }
-template< typename T > void NeuralNet::propagate( T const*images) {
+void NeuralNet::propagate( float const*images) {
     // forward...
-    dynamic_cast<InputLayer<T> *>(layers[0])->in( images );
+    dynamic_cast<InputLayer<float> *>(layers[0])->in( images );
+    for( int layerId = 0; layerId < layers.size(); layerId++ ) {
+        StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
+        layers[layerId]->propagate();
+        StatefulTimer::setPrefix("" );
+    }
+}
+void NeuralNet::propagate( unsigned char const*images) {
+    // forward...
+    dynamic_cast<InputLayer<unsigned char> *>(layers[0])->in( images );
     for( int layerId = 0; layerId < layers.size(); layerId++ ) {
         StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
         layers[layerId]->propagate();
@@ -200,16 +209,26 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
         StatefulTimer::setPrefix("" );
     }
 }
-template< typename T > void NeuralNet::learnBatch( float learningRate, T const*images, float const *expectedResults ) {
-    setTraining( true );
-    propagate( images);
-    backProp( learningRate, expectedResults );
-}
-template< typename T > void NeuralNet::learnBatchFromLabels( float learningRate, T const*images, int const *labels ) {
-    setTraining( true );
-    propagate( images);
-    backPropFromLabels( learningRate, labels );
-}
+//void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
+//    setTraining( true );
+//    propagate( images);
+//    backProp( learningRate, expectedResults );
+//}
+//void NeuralNet::learnBatch( float learningRate, unsigned char const*images, float const *expectedResults ) {
+//    setTraining( true );
+//    propagate( images);
+//    backProp( learningRate, expectedResults );
+//}
+//void NeuralNet::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
+//    setTraining( true );
+//    propagate( images);
+//    backPropFromLabels( learningRate, labels );
+//}
+//void NeuralNet::learnBatchFromLabels( float learningRate, unsigned char const*images, int const *labels ) {
+//    setTraining( true );
+//    propagate( images);
+//    backPropFromLabels( learningRate, labels );
+//}
 int NeuralNet::getNumLayers() {
     return (int)layers.size();
 }
@@ -251,11 +270,11 @@ void NeuralNet::printOutput() {
 
 template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
 template ClConvolve_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
-template ClConvolve_EXPORT void NeuralNet::propagate(unsigned char const*images);
-template ClConvolve_EXPORT void NeuralNet::propagate(float const*images);
-template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels);
-template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels);
-template ClConvolve_EXPORT void NeuralNet::learnBatch<unsigned char>(float learningRate, unsigned char const*images, float const *expectedResults );
-template ClConvolve_EXPORT void NeuralNet::learnBatch<float>(float learningRate, float const *images, float const *expectedResults );
+//template ClConvolve_EXPORT void NeuralNet::propagate(unsigned char const*images);
+//template ClConvolve_EXPORT void NeuralNet::propagate(float const*images);
+//template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels);
+//template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels);
+//template ClConvolve_EXPORT void NeuralNet::learnBatch<unsigned char>(float learningRate, unsigned char const*images, float const *expectedResults );
+//template ClConvolve_EXPORT void NeuralNet::learnBatch<float>(float learningRate, float const *images, float const *expectedResults );
 
 

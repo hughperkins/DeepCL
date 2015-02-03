@@ -14,7 +14,7 @@
 #include "EpochMaker.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
-#include "ITrainable.h"
+#include "Trainable.h"
 
 #include "DllImportExport.h"
 
@@ -26,7 +26,7 @@ class RandomTranslatorMaker;
 #define VIRTUAL virtual
 #define STATIC static
 
-class ClConvolve_EXPORT NeuralNet : public ITrainable {
+class ClConvolve_EXPORT NeuralNet : public Trainable {
 public:
     std::vector< Layer *> layers;
     OpenCLHelper *cl;
@@ -67,11 +67,10 @@ public:
     void setBatchSize( int batchSize );
     void setTraining( bool training );
     int calcNumRight( int const *labels );
-    template< typename T > void propagate( T const*images);
+    void propagate( float const*images);
+    void propagate( unsigned char const*images);
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);
-    template< typename T > void learnBatch( float learningRate, T const*images, float const *expectedResults );
-    template< typename T > void learnBatchFromLabels( float learningRate, T const*images, int const *labels );
     int getNumLayers();
     float const *getResults( int layer ) const;
     int getInputCubeSize() const;
