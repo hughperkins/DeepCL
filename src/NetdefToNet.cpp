@@ -23,7 +23,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             optionsDef = split( splitLayerDef[1], "}" )[0];
             splitOptionsDef = split( optionsDef, "," );
         }
-        cout << "optionsDef: " << optionsDef << endl;
+//        cout << "optionsDef: " << optionsDef << endl;
         if( baseLayerDef.find("c") != string::npos ) {
             vector<string> splitConvDef = split( baseLayerDef, "c" );
             int numFilters = atoi( splitConvDef[0] );
@@ -33,7 +33,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             int padZeros = 0;
             for( int i = 0; i < splitOptionsDef.size(); i++ ) {
                 string optionDef = splitOptionsDef[i];
-                cout << "optionDef: " << optionDef << endl;
+//                cout << "optionDef: " << optionDef << endl;
                 vector<string> splitOptionDef = split( optionDef, "=");
                 string optionName = splitOptionDef[0];
                 if( splitOptionDef.size() == 2 ) {
