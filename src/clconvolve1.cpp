@@ -24,7 +24,7 @@ using namespace std;
 /* [[[cog
     # These are used in the later cog sections in this file:
     strings = [ 'dataDir', 'trainSet', 'testSet', 'netDef', 'restartableFilename', 'normalization' ]
-    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable' ]
+    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
         'datadir': 'data directory',
@@ -40,7 +40,8 @@ using namespace std;
         'restartable': 'weights are persistent?',
         'restartablefilename': 'filename to store weights',
         'normalization': '[stddev|maxmin]',
-        'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?'
+        'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
+        'dumptimings': 'dump detailed timings each epoch?'
     }
 *///]]]
 // [[[end]]]
@@ -68,6 +69,7 @@ public:
     int batchSize = 0;
     int numEpochs = 0;
     int restartable = 0;
+    int dumpTimings = 0;
     float learningRate = 0.0f;
     float annealLearningRate = 0.0f;
     float normalizationNumStds = 0.0f;
@@ -88,6 +90,7 @@ public:
         learningRate = 0.002f;
         annealLearningRate = 1.0f;
         normalizationNumStds = 2.0f;
+        dumpTimings = 0;
     }
     string getTrainingString() {
         string configString = "";
@@ -171,6 +174,7 @@ void go(Config config) {
     netLearner.setTestingData( Ntest, testData, testLabels );
     netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
     netLearner.setBatchSize( config.batchSize );
+    netLearner.setDumpTimings( config.dumpTimings );
     WeightsWriter weightsWriter( net, &config );
     if( config.restartable ) {
         netLearner.addPostEpochAction( &weightsWriter );
@@ -211,6 +215,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
     cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
+    cout << "    dumptimings=[dump detailed timings each epoch?] (" << config.dumpTimings << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
@@ -267,6 +272,8 @@ int main( int argc, char *argv[] ) {
                 config.numEpochs = atoi( value );
             } else if( key == "restartable" ) {
                 config.restartable = atoi( value );
+            } else if( key == "dumptimings" ) {
+                config.dumpTimings = atoi( value );
             } else if( key == "learningrate" ) {
                 config.learningRate = atof( value );
             } else if( key == "anneallearningrate" ) {

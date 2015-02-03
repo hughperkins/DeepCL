@@ -37,6 +37,8 @@ public:
     float learningRate;
     float annealLearningRate;
 
+    bool dumpTimings;
+
     int startEpoch;
     int numEpochs;
 
@@ -51,6 +53,7 @@ public:
     void setTrainingData( int Ntrain, T *trainData, int *trainLabels );
     void setTestingData( int Ntest, T *testData, int *testLabels );
     void setSchedule( int numEpochs );
+    void setDumpTimings( bool dumpTimings );
     void setSchedule( int numEpochs, int startEpoch );
     void setBatchSize( int batchSize );
     VIRTUAL ~NetLearner();

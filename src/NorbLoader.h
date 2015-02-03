@@ -11,99 +11,29 @@
 #include "stringhelper.h"
 #include "FileHelper.h"
 
-using namespace std;
+#define VIRTUAL virtual
+#define STATIC static
 
 class NorbLoader {
 public:
-    // you need to delete[] this yourself, after use
-    static unsigned char *loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int maxN = 0 ) {
-        char*headerBytes = FileHelper::readBinaryChunk( filepath, 0, 6 * 4 );
-        unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
 
-        int magic = headerValues[0];
-        std::cout << "magic: " << magic << std::endl;
-        if( magic != 0x1e3d4c55 ) {
-            throw std::runtime_error("magic value doesnt match expections: " + toString(magic) );
-        }
-        int ndim = headerValues[1];
-        int N = headerValues[2];
-        int numPlanes = headerValues[3];
-        int boardSize = headerValues[4];
-        int boardSizeRepeated = headerValues[5];
-        std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
-        checkSame( "boardSize", boardSize, boardSizeRepeated );
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.add()
+    // ]]]
+    // generated, using cog:
+    STATIC unsigned char *loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize );
+    STATIC unsigned char *loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int maxN );
+    STATIC int *loadLabels( std::string filepath, int Ntoget );
+    STATIC void writeImages( std::string filepath, unsigned char *images, int N, int numPlanes, int boardSize );
+    STATIC void writeLabels( std::string filepath, int *labels, int N );
 
-        if( maxN > 0 ) {
-            N = min( maxN, N );
-        }
-        int totalLinearSize = N * numPlanes * boardSize * boardSize;
-        char *imagesDataSigned = FileHelper::readBinaryChunk( filepath, 6 * 4, totalLinearSize );
-        unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
-
-        *p_N = N;
-        *p_numPlanes = numPlanes;
-        *p_boardSize = boardSize;
-        return imagesDataUnsigned;
-    }
-    // you need to delete[] this yourself, after use
-    static int *loadLabels( std::string filepath, int Ntoget ) {
-        char*headerBytes = FileHelper::readBinaryChunk( filepath, 0, 6 * 5 );
-        unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
-
-        int magic = headerValues[0];
-        std::cout << "magic: " << magic << std::endl;
-        if( magic != 0x1e3d4c54 ) {
-            throw std::runtime_error("magic value doesnt match expections: " + toString(magic) + " expected: " + toString( 0x1e3d4c54 ) );
-        }
-        int ndim = headerValues[1];
-        int N = headerValues[2];
-        checkSame( "ndim", 1, ndim );
-        if( Ntoget > N ) {
-            throw runtime_error("error: you asked for " + toString( Ntoget ) + " labels, but only found: " + toString( N ) );
-        }
-        N = Ntoget;
-
-        int totalLinearSize = N;
-        char *labelsAsByteArray = FileHelper::readBinaryChunk( filepath, 5 * 4, totalLinearSize * 4 );
-        int *labels = reinterpret_cast< int *>(labelsAsByteArray);
-        return labels;
-    }
-    static void writeImages( std::string filepath, unsigned char *images, int N, int numPlanes, int boardSize ) {
-        int totalLinearSize = N * numPlanes * boardSize * boardSize;
-
-        long imagesFilesize = totalLinearSize + 6 * 4; // magic, plus num dimensions, plus 4 dimensions
-        char *imagesDataSigned = new char[ imagesFilesize ];
-        unsigned int *imagesDataInt = reinterpret_cast< unsigned int *>( imagesDataSigned );
-        unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
-        imagesDataInt[0] = 0x1e3d4c55;
-        imagesDataInt[1] = 4;
-        imagesDataInt[2] = N;
-        imagesDataInt[3] = numPlanes;
-        imagesDataInt[4] = boardSize;
-        imagesDataInt[5] = boardSize;
-        memcpy( imagesDataUnsigned + 6 * sizeof(int), images, totalLinearSize * sizeof( unsigned char ) );
-        FileHelper::writeBinary( filepath, imagesDataSigned, imagesFilesize );
-    }
-    static void writeLabels( std::string filepath, int *labels, int N ) {
-        int totalLinearSize = N;
-
-        long imagesFilesize = totalLinearSize * 4 + 5 * 4; // magic, plus num dimensions, plus 3 dimensions
-        char *imagesDataSigned = new char[ imagesFilesize ];
-        unsigned int *imagesDataInt = reinterpret_cast< unsigned int *>( imagesDataSigned );
-        unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
-        imagesDataInt[0] = 0x1e3d4c54;
-        imagesDataInt[1] = 1;
-        imagesDataInt[2] = N;
-        imagesDataInt[3] = 1;
-        imagesDataInt[4] = 1;
-        memcpy( imagesDataUnsigned + 5 * sizeof(int), labels, totalLinearSize * sizeof( int ) );
-        FileHelper::writeBinary( filepath, imagesDataSigned, imagesFilesize );
-    }
+    // [[[end]]]
 
 protected:
     static void checkSame( std::string name, int one, int two ) {
         if( one != two ) {
-            throw runtime_error( "Error, didnt match: " + name + " " + toString(one) + " != " + toString(two ) );
+            throw std::runtime_error( "Error, didnt match: " + name + " " + toString(one) + " != " + toString(two ) );
         }
     }
 };

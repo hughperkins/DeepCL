@@ -34,13 +34,13 @@ using namespace std;
 #define STATIC
 
 NeuralNet::NeuralNet() {
-    cout << "NeuralNet()" << endl;
+//    cout << "NeuralNet()" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, boardSize );
 //    maker->insert();
 }
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
-    cout << "NeuralNet(planes,boardsize)" << endl;
+//    cout << "NeuralNet(planes,boardsize)" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
         ->numPlanes( numPlanes )->boardSize( boardSize );
@@ -308,9 +308,7 @@ float const *NeuralNet::getResults() const {
 void NeuralNet::print() {
     int i = 0; 
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        std::cout << "layer " << i << ":" << std::endl;
-        //(*it)->print();
-        cout << (*it)->asString() << endl;
+        std::cout << "layer " << i << ":" << (*it)->asString() << endl;
         i++;
     }
 }

@@ -170,7 +170,7 @@ Example usage:
 | numepochs=20 | train for this many epochs |
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
 | normalization=maxmin | can choose maxmin or stddev.  Default is stddev |
-| normalizationnumstds=2 | how many standard deviations from mean should be +1/-2?  Default is 2 |
+| normalizationnumstds=2 | how many standard deviations from mean should be +1/-1?  Default is 2 |
 
 # Validation against standard datasets
 
@@ -562,6 +562,8 @@ What's done / what's planned
   * ~~create a 'transforming input' layer, to handle things like:~~ done
     * ~~conversion from `unsigned char *` to `float *`~~ done
     * ~~translation and scaling by mean and standard deviation~~ done
+  * testing result averaged over several propagations (used in conjunction with `rp`)
+  * sparse connectivity between feature maps in adjacent layers
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
   * ~~randomly translating input layer?~~ done
