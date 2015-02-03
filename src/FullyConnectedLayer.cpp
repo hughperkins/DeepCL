@@ -24,7 +24,7 @@ FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMa
                         ->biased( maker->_biased )
                         ->fn( maker->getActivationFunction() );
     convolutionalLayer = new ConvolutionalLayer( previousLayer, convolutionalMaker );
-    delete convolutionalMaker;
+//    delete convolutionalMaker;
 }
 
 VIRTUAL FullyConnectedLayer::~FullyConnectedLayer() {

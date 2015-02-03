@@ -10,6 +10,8 @@
 #include "AccuracyHelper.h"
 #include "test/myasserts.h"
 #include "StatefulTimer.h"
+#include "BatchLearner.h"
+#include "NetLearner.h"
 
 using namespace std;
 
@@ -34,39 +36,16 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_unbiased_tanh ) {
     net->squareLossMaker()->insert();
     float weights1[] = {0.382147, -1.77522};
     net->initWeights(1, weights1);
-//    float lastWeights[2];
-//    memcpy( lastWeights, weights1, sizeof(float) * 2 );
-//    float lastLoss = 0;
+
+    BatchLearner<float> batchLearner( net );
     for( int epoch = 0; epoch < 50; epoch++ ) {
-        net->epochMaker()
-            ->learningRate(learningRate)
-            ->batchSize(batchSize)
-            ->numExamples(batchSize)
-            ->inputData(data)
-            ->expectedOutputs(expectedResults)
-            ->run();
-        //net->print();
-//        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
-//        float sumWeightsDiffSquared = 0;
-//        for( int i = 0; i < 2; i++ ) {
-//            float diff = lastWeights[i] - net->layers[1]->getWeights()[i];
-//            sumWeightsDiffSquared += diff * diff;
-//        }
-//        memcpy( lastWeights, net->layers[1]->getWeights(), sizeof(float) * 2 );
-//        float thisLoss = net->calcLoss(expectedResults);
-//        float lossDiff = lastLoss - thisLoss;
-//        cout << "sumWeightsDiffSquared " << sumWeightsDiffSquared / learningRate << endl;
-//        cout << "losschange " << ( lossDiff ) << endl;
-//        lastLoss = thisLoss;
+        batchLearner.runEpochFromExpected( learningRate, batchSize, batchSize, data, expectedResults );
         if( epoch % 10 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-    //        net->print();
             float const*results = net->getResults();
             AccuracyHelper::printAccuracy( 2, 2, labels, results );
         }
     }
-//    net->print();
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
@@ -104,39 +83,16 @@ TEST( testsimpleconvolvenet, boardsize1_planes2_filters2_tanh ) {
     float biasweights1[] = {-1.00181, 0.891056};
     net->initWeights(1, weights1);
     net->initBiasWeights(1, biasweights1);
-//    float lastWeights[2];
-//    memcpy( lastWeights, weights1, sizeof(float) * 2 );
-//    float lastLoss = 0;
+
+    BatchLearner<float> batchLearner( net );
     for( int epoch = 0; epoch < 30; epoch++ ) {
-        net->epochMaker()
-            ->learningRate(learningRate)
-            ->batchSize(batchSize)
-            ->numExamples(batchSize)
-            ->inputData(data)
-            ->expectedOutputs(expectedResults)
-            ->run();
-        //net->print();
-//        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
-//        float sumWeightsDiffSquared = 0;
-//        for( int i = 0; i < 2; i++ ) {
-//            float diff = lastWeights[i] - net->layers[1]->getWeights()[i];
-//            sumWeightsDiffSquared += diff * diff;
-//        }
-//        memcpy( lastWeights, net->layers[1]->getWeights(), sizeof(float) * 2 );
-//        float thisLoss = net->calcLoss(expectedResults);
-//        float lossDiff = thisLoss - lastLoss;
-//        cout << "sumWeightsDiffSquared " << sumWeightsDiffSquared / learningRate << endl;
-//        cout << "losschange " << ( lossDiff / batchSize ) << endl;
-//        lastLoss = thisLoss;
+        batchLearner.runEpochFromExpected( learningRate, batchSize, batchSize, data, expectedResults );
         if( epoch % 10 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
-    //        net->print();
             float const*results = net->getResults();
             AccuracyHelper::printAccuracy( 2, 2, labels, results );
         }
     }
-//    net->print();
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
@@ -193,14 +149,9 @@ TEST( testsimpleconvolvenet, boardsize3_n4_filtersize3_tanh ) {
     net->initWeights(1, weights1);
     net->initBiasWeights(1, biasWeights1 );
     float const*results = 0;
+    BatchLearner<float> batchLearner( net );
     for( int epoch = 0; epoch < 15; epoch++ ) {
-        net->epochMaker()
-            ->learningRate(0.4f)
-            ->batchSize(4)
-            ->numExamples(4)
-            ->inputData(data)
-            ->expectedOutputs(expectedResults)
-            ->run();
+        batchLearner.runEpochFromExpected( 0.4f, 4, 4, data, expectedResults );
 //        net->printWeightsAsCode();
 //        net->printBiasWeightsAsCode();
         if( epoch % 5 == 0 ) {
@@ -241,14 +192,9 @@ TEST( testsimpleconvolvenet, boardsize1_2planes_filtersize1_relu ) {
     float weights1[] = {-0.380177, -1.5738};
     float biasWeights1[] = {0.5, 0.0606055};
     net->initWeights( 1, weights1, biasWeights1 );
+    BatchLearner<float> batchLearner( net );
     for( int epoch = 0; epoch < 5; epoch++ ) {
-        net->epochMaker()
-            ->learningRate(1.2f)
-            ->batchSize(2)
-            ->numExamples(2)
-            ->inputData(data)
-            ->expectedOutputs(expectedResults)
-            ->run();
+        batchLearner.runEpochFromExpected( 1.2f, 2, 2, data, expectedResults );
         if( epoch % 5 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
 //            net->print();

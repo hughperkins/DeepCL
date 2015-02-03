@@ -66,11 +66,7 @@ public:
     Layer *addLayer( LayerMaker *maker );
     void setBatchSize( int batchSize );
     void setTraining( bool training );
-    float doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels );
-    float doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels, int *p_totalCorrect );
-    float doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults );
     int calcNumRight( int const *labels );
-    float doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect );
     template< typename T > void propagate( T const*images);
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);

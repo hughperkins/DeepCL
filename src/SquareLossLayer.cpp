@@ -67,9 +67,9 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
     if( errors != 0 ) {
         delete[] errors;
     }
-    errors = new float[ batchSize * previousLayer->getResultsSize() ];
     this->batchSize = batchSize;
     allocatedSize = batchSize;
+    errors = new float[ batchSize * previousLayer->getResultsSize() ];
 }
 VIRTUAL void SquareLossLayer::calcErrors( float const*expectedResults ) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();

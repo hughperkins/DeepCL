@@ -95,7 +95,6 @@ void test( TestArgs args ) {
     }
     net->print();
     net->setBatchSize(args.batchSize);
-
     mt19937 random;
     random.seed(0); // so always gives same results
     const int inputsSize = net->getInputCubeSize() * args.batchSize;

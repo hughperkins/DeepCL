@@ -6,6 +6,7 @@
 
 #include "NormalizationHelper.h"
 #include "NeuralNet.h"
+#include "AccuracyHelper.h"
 
 #include "BatchLearner.h"
 
@@ -17,12 +18,12 @@ using namespace std;
 #define VIRTUAL
 
 template< typename T>
-void NetLearnLabeledBatch<T>::run( NeuralNet *net, T *batchData, int *batchLabels ) {
+void NetLearnLabeledBatch<T>::run( NeuralNet *net, T *batchData, int const*batchLabels ) {
     net->learnBatchFromLabels( learningRate, batchData, batchLabels );
 }
 
 template< typename T>
-void NetPropagateBatch<T>::run( NeuralNet *net, T *batchData, int *batchLabels ) {
+void NetPropagateBatch<T>::run( NeuralNet *net, T *batchData, int const*batchLabels ) {
     net->propagate( batchData );
 }
 
@@ -30,7 +31,7 @@ template< typename T > BatchLearner<T>::BatchLearner( NeuralNet *net ) :
     net( net ) {
 }
 
-template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchSize, int N, T *data, int *labels, NetAction<T> *netAction ) {
+template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction ) {
     int numRight = 0;
     float loss = 0;
     net->setBatchSize( batchSize );
@@ -49,7 +50,7 @@ template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchS
     return epochResult;
 }
 
-template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testData, int *testLabels ) {
+template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testData, int const*testLabels ) {
     net->setTraining( false );
     NetAction<T> *action = new NetPropagateBatch<T>();
     int numRight = batchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
@@ -57,13 +58,52 @@ template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testD
     return numRight;
 }
 
-template< typename T > EpochResult BatchLearner<T>::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int *trainLabels ) {
+template< typename T > EpochResult BatchLearner<T>::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int const*trainLabels ) {
     net->setTraining( true );
     NetAction<T> *action = new NetLearnLabeledBatch<T>( learningRate );
     EpochResult epochResult = batchedNetAction( batchSize, Ntrain, trainData, trainLabels, action );
     delete action;
     return epochResult;
 }
+
+template< typename T > float BatchLearner<T>::runEpochFromExpected( float learningRate, int batchSize, int N, T *data, float *expectedResults ) {
+    net->setTraining( true );
+    float loss = 0;
+    net->setBatchSize( batchSize );
+    const int numBatches = (N + batchSize - 1 ) / batchSize;
+    const int inputCubeSize = net->getInputCubeSize();
+    const int outputCubeSize = net->getOutputCubeSize();
+    for( int batch = 0; batch < numBatches; batch++ ) {
+        int batchStart = batch * batchSize;
+        if( batch == numBatches - 1 ) {
+            net->setBatchSize( N - batchStart );
+        }
+        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedResults[batchStart * outputCubeSize]) );
+        loss += net->calcLoss( &( expectedResults[batchStart * outputCubeSize]) );
+    }
+    return loss;
+}
+
+//template< typename T > EpochResult BatchLearner<T>::runEpochFromExpectedWithLabels( float learningRate, int batchSize, int Ntrain, T *trainData, float *expectedValues, int *labels ) {
+//    net->setTraining( true );
+//    int numRight = 0;
+//    float loss = 0;
+//    net->setBatchSize( batchSize );
+//    const int numBatches = (N + batchSize - 1 ) / batchSize;
+//    const int inputCubeSize = net->getInputCubeSize();
+//    const int outputCubeSize = net->getOutputCubeSize();
+//    for( int batch = 0; batch < numBatches; batch++ ) {
+//        int batchStart = batch * batchSize;
+//        if( batch == numBatches - 1 ) {
+//            net->setBatchSize( N - batchStart );
+//        }
+//        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedResults[batchStart * outputCubeSize]) );
+//        loss += net->calcLoss( &( expectedResults[batchStart * outputCubeSize]) );
+//        numRight += AccuracyHelper::calcNumRight( thisBatchSize, net->getLayerLayer()->getOutputPlanes(), &( labels[ batchStart] ), net->getResults() );
+//    }
+//    EpochResult epochResult( loss, numRight );
+//    return epochResult;
+//}
 
 template class BatchLearner<unsigned char>;
 template class BatchLearner<float>;

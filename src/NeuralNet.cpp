@@ -157,103 +157,12 @@ void NeuralNet::setTraining( bool training ) {
         (*it)->setTraining( training );
     }
 }
-float NeuralNet::doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels ) {
-    return doEpochFromLabels( learningRate, batchSize, numImages, images, labels, 0 );
-}
-float NeuralNet::doEpochFromLabels( float learningRate, int batchSize, int numImages, float const* images, int const *labels, int *p_totalCorrect ) {
-//        Timer timer;
-    IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
-    if( acceptsLabels == 0 ) {
-        THROW("You need to add a IAcceptsLabels as the last layer, in order to use doEpochFromLabels");
-    }
-    setBatchSize( batchSize );
-    setTraining( true );
-    int numBatches = ( numImages + batchSize - 1 ) / batchSize;
-    float loss = 0;
-    int total = 0;
-    int numRight = 0;
-    int numLabelsPerExample = acceptsLabels->getNumLabelsPerExample();
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int batchStart = batch * batchSize;
-        int thisBatchSize = batchSize;
-        if( batch == numBatches - 1 ) {
-            thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
-                                                         // so last batch size is: 2 = 5 - 3
-            setBatchSize( thisBatchSize );
-        }
-        learnBatchFromLabels( learningRate, &(images[batchStart*getInputCubeSize()]), &(labels[batchStart * numLabelsPerExample]) );
-        loss += acceptsLabels->calcLossFromLabels( &(labels[batchStart * numLabelsPerExample]) );
-        if( p_totalCorrect != 0 ) {
-            numRight += acceptsLabels->calcNumRight( &(labels[batchStart * numLabelsPerExample]) );
-        }
-    }
-    if( p_totalCorrect != 0 ) {
-        *p_totalCorrect = numRight;
-    }
-    return loss;
-}
-float NeuralNet::doEpoch( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults ) {
-//        Timer timer;
-    if( dynamic_cast<LossLayer*>(getLastLayer()) == 0 ) {
-        THROW("You need to add a LossLayer as the last layer of the network");
-    }
-    setBatchSize( batchSize );
-    setTraining( true );
-    int numBatches = ( numImages + batchSize - 1 ) / batchSize;
-    float loss = 0;
-    int total = 0;
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int batchStart = batch * batchSize;
-        int thisBatchSize = batchSize;
-        if( batch == numBatches - 1 ) {
-            thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
-                                                         // so last batch size is: 2 = 5 - 3
-            setBatchSize( thisBatchSize );
-        }
-//            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
-//             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-        learnBatch( learningRate, &(images[batchStart*getInputCubeSize()]), &(expectedResults[batchStart*getOutputCubeSize()]) );
-        loss += calcLoss( &(expectedResults[batchStart*getOutputCubeSize()]) );
-    }
-    return loss;
-}
 int NeuralNet::calcNumRight( int const *labels ) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
     if( acceptsLabels == 0 ) {
         THROW("You need to add a IAcceptsLabels as the last layer, in order to use calcNumRight");
     }
     return acceptsLabels->calcNumRight( labels );
-}
-float NeuralNet::doEpochWithCalcTrainingAccuracy( float learningRate, int batchSize, int numImages, float const* images, float const *expectedResults, int const *labels, int *p_totalCorrect ) {
-    setBatchSize( batchSize );
-    setTraining( true );
-    int numBatches = ( numImages + batchSize - 1 ) / batchSize;
-    std::cout << "numBatches: " << numBatches << std::endl;
-    float loss = 0;
-    int numRight = 0;
-    int total = 0;
-    if( getLastLayer()->getOutputBoardSize() != 1 ) {
-        THROW("Last layer should have board size of 1, and number of planes equal number of categories, if you want to measure training accuracy");
-    }
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int batchStart = batch * batchSize;
-        int thisBatchSize = batchSize;
-        if( batch == numBatches - 1 ) {
-            thisBatchSize = numImages - batchStart;  // eg, we have 5 images, and batchsize is 3
-                                                         // so last batch size is: 2 = 5 - 3
-            setBatchSize( thisBatchSize );
-        }
-//            std::cout << " batch " << batch << " start " << batchStart << " inputsizeperex " << getInputSizePerExample() <<
-//             " resultssizeperex " << getResultsSizePerExample() << std::endl;
-        learnBatch( learningRate, &(images[batchStart*getInputCubeSize()]), &(expectedResults[batchStart*getOutputCubeSize()]) );
-        StatefulTimer::timeCheck("after batch forward-backward prop");
-        numRight += AccuracyHelper::calcNumRight( thisBatchSize, getLastLayer()->getOutputPlanes(), &(labels[batchStart]), getResults() );
-        StatefulTimer::timeCheck("after batch calc training num right");
-        loss += calcLoss( &(expectedResults[batchStart*getOutputCubeSize()]) );
-        StatefulTimer::timeCheck("after batch calc loss");
-    }
-    *p_totalCorrect = numRight;
-    return loss;
 }
 template< typename T > void NeuralNet::propagate( T const*images) {
     // forward...
@@ -346,5 +255,7 @@ template ClConvolve_EXPORT void NeuralNet::propagate(unsigned char const*images)
 template ClConvolve_EXPORT void NeuralNet::propagate(float const*images);
 template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels);
 template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels);
+template ClConvolve_EXPORT void NeuralNet::learnBatch<unsigned char>(float learningRate, unsigned char const*images, float const *expectedResults );
+template ClConvolve_EXPORT void NeuralNet::learnBatch<float>(float learningRate, float const *images, float const *expectedResults );
 
 
