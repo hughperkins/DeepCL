@@ -52,6 +52,17 @@ NeuralNet::~NeuralNet() {
     }
     delete cl;
 }
+NeuralNet *NeuralNet::clone() {
+    NeuralNet *copy = new NeuralNet();
+    Layer *previousLayer = 0;
+    for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
+        LayerMaker const*maker = (*it)->maker;
+        LayerMaker const*makerCopy = maker->clone( copy, previousLayer );
+        Layer *layerCopy = makerCopy->instance();
+        copy->layers.push_back( layerCopy );
+        previousLayer = layerCopy;
+    }
+}
 OpenCLHelper *NeuralNet::getCl() {
     return cl;
 }

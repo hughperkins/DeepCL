@@ -20,6 +20,8 @@ public:
     virtual void run( int epoch ) = 0;
 };
 
+// handles learning the neural net, ie running multiple epochs,
+// using a BatchLearner, to learn each epoch
 template<typename T>
 class ClConvolve_EXPORT NetLearner {
 public:

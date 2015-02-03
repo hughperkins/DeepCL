@@ -51,6 +51,9 @@ public:
     virtual void run( NeuralNet *net, T *batchData, int *batchLabels );
 };
 
+// this handles learning one single epoch, breaking up the incoming training or testing
+// data into batches, which are then sent to the NeuralNet for forward and backward
+// propagation.
 template< typename T>
 class ClConvolve_EXPORT BatchLearner {
 public:

@@ -14,6 +14,7 @@
 #include "EpochMaker.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
+#include "ITrainable.h"
 
 #include "DllImportExport.h"
 
@@ -25,7 +26,7 @@ class RandomTranslatorMaker;
 #define VIRTUAL virtual
 #define STATIC static
 
-class ClConvolve_EXPORT NeuralNet {
+class ClConvolve_EXPORT NeuralNet : public ITrainable {
 public:
     std::vector< Layer *> layers;
     OpenCLHelper *cl;
@@ -39,6 +40,7 @@ public:
     NeuralNet();
     NeuralNet( int numPlanes, int boardSize );
     ~NeuralNet();
+    NeuralNet *clone();
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
     template< typename T >InputLayerMaker<T> *inputMaker();

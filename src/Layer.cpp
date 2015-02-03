@@ -9,6 +9,7 @@ Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     previousLayer( previousLayer ),
     training( false ),
     nextLayer( 0 ),
+    maker( maker ),
     layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 )
      {
     if( previousLayer != 0 ) {
@@ -16,6 +17,7 @@ Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     }
 }
 VIRTUAL Layer::~Layer() {
+    delete maker;
 }
 VIRTUAL void Layer::setTraining( bool training ) {
     this->training = training;

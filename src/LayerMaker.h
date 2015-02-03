@@ -37,6 +37,7 @@ public:
 //    }
     virtual Layer *insert();
     virtual Layer *instance() const = 0;
+    virtual LayerMaker *clone( NeuralNet *cloneNet, Layer *clonePreviousLayer ) const = 0;
 };
 
 template< typename T > class InputLayerMaker : public LayerMaker {
@@ -67,6 +68,7 @@ public:
     }
     virtual Layer *instance() const;
     virtual Layer *insert();
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class NormalizationLayerMaker : public LayerMaker {
@@ -90,6 +92,7 @@ public:
     virtual int getOutputPlanes() const;
     virtual int getBiased() const;
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class RandomPatchesMaker : public LayerMaker {
@@ -107,6 +110,7 @@ public:
     virtual int getOutputPlanes() const;
     virtual int getBiased() const;
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class RandomTranslationsMaker : public LayerMaker {
@@ -124,6 +128,7 @@ public:
     virtual int getOutputPlanes() const;
     virtual int getBiased() const;
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class PoolingMaker : public LayerMaker {
@@ -146,6 +151,7 @@ public:
     virtual int getOutputPlanes() const;
     virtual int getBiased() const;
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class LossLayerMaker : public LayerMaker {
@@ -165,6 +171,7 @@ public:
         LossLayerMaker( net, previousLayer ) {
     }
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class CrossEntropyLossMaker : public LossLayerMaker {
@@ -173,6 +180,7 @@ public:
         LossLayerMaker( net, previousLayer ) {
     }
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 // by default, it will be per-plane
@@ -192,6 +200,7 @@ public:
         this->_perPlane = true;
         return this;
     }
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class FullyConnectedMaker : public LayerMaker {
@@ -256,6 +265,7 @@ public:
     }
     virtual Layer *insert();
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 
 class ConvolutionalMaker : public LayerMaker {
@@ -332,5 +342,6 @@ public:
     }
     virtual Layer *insert();
     virtual Layer *instance() const;
+    virtual LayerMaker *clone( NeuralNet *net, Layer *previousLayer ) const;
 };
 

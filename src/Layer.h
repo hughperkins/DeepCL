@@ -26,7 +26,10 @@ public:
     const int layerIndex;
     bool training;
 
+    LayerMaker const*maker;
+
     virtual float * getResults() = 0;
+//    virtual Layer *clone() = 0;
 
     // [[[cog
     // import cog_addheaders
