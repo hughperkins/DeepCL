@@ -69,8 +69,8 @@ OpenCL library to train deep convolutional networks
 
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
-- obtained 99.0% test accuracy on MNIST, using `netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
-  - epoch time 16.7 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
+- obtained 99.4% test accuracy on MNIST, using `netdef=rt2-16c5{padzeros}-mp2-24c5{padzeros}-mp3-150n-10n`
+  - epoch time 31.5 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
 - obtained 91.7% test accuracy (99.996% training accuracy) on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, using `netdef=8c5-mp4-24c6-mp3-80c6-5n`
   - epoch time 76 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
 
@@ -121,8 +121,7 @@ Example usage:
 * `RP24` means a random patch layer, which will cut a 24x24 patch from a random position in each incoming image, and send that to its output
 * during testing, the patch will be cut from the centre of each image
 * can reduce over-training, and thus give better test accuracies
-* image size output by this layer is the same as the patch size
-* put one `RP` layer just after the normalization layer.
+* image size output by this layer equals the the patch size
 * eg you can try, on MNIST, `netdef=rp24-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
 
 ### Random translations
@@ -131,7 +130,6 @@ Example usage:
 * Can specify any non-negative integer, less than the image size
 * Image size is unchanged by this layer
 * During testing, no translation is done
-* If you want to use, put one `RT` layer just after the normalization layer.
 * eg you can try, on MNIST, `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
 
 ## Pre-processing
