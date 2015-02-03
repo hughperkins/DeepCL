@@ -121,12 +121,15 @@ Example usage:
 * `RP24` means a random patch layer, which will cut a 24x24 patch from a random position in each incoming image, and send that to its output
 * during testing, the patch will be cut from the centre of each image
 * can reduce over-training, and thus give better test accuracies
+* image size output by this layer is the same as the patch size
 * put one `RP` layer just after the normalization layer.
 * eg you can try, on MNIST, `netdef=rp24-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
 
 ### Random translations
 
-* `RT2` means a random translations layer, which will translate the image randomly during training, up to the amount specified, in either direction, along both axes
+* `RT2` means a random translations layer, which will translate the image randomly during training, up to 2 pixels, in either direction, along both axes
+* Can specify any non-negative integer, less than the image size
+* Image size is unchanged by this layer
 * During testing, no translation is done
 * If you want to use, put one `RT` layer just after the normalization layer.
 * eg you can try, on MNIST, `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
