@@ -123,6 +123,7 @@ Example usage:
 * can reduce over-training, and thus give better test accuracies
 * image size output by this layer equals the the patch size
 * eg you can try, on MNIST, `netdef=rp24-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
+* example paper using this approach: [ImageNet Classification with Deep Convolutional Networks](http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks)
 
 ### Random translations
 
@@ -131,6 +132,7 @@ Example usage:
 * Image size is unchanged by this layer
 * During testing, no translation is done
 * eg you can try, on MNIST, `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
+* example paper using this approach: [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf)
 
 ## Pre-processing
 

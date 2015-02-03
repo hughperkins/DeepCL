@@ -14,3 +14,13 @@ mean: 98.78%, se: 0.04%
 Using ./clconvolve1 datadir=../data/mnist trainset=train testset=t10k learningrate=0.002 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n , v1.5:
 99.02 98.96 99.01 99.1
 
+ ./clconvolve1 netdef=rt2-16c5{padzeros}-mp2-32c5{padzeros}-mp3-150n-10n learningrate=0.002 numepochs=100 anneallearningrate=0.96
+ep12 99.35:99.338
+ep15 99.36:99.43
+ep20 99.49:99.56
+ep25 99.52:99.637
+ep30 99.56:99.688   99.31:99.62
+ep35 99.52:99.77    99.43:99.65
+ep40 99.47:99.77
+ep50
+
