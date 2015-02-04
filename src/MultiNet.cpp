@@ -38,6 +38,21 @@ VIRTUAL MultiNet::~MultiNet() {
         delete (*it);
     }    
 }
+VIRTUAL int MultiNet::getInputCubeSize() const {
+    return trainables[0]->getInputCubeSize();
+}
+VIRTUAL int MultiNet::getOutputCubeSize() const {
+    return trainables[0]->getOutputCubeSize();
+}
+VIRTUAL int MultiNet::getResultsSize() const {
+    return trainables[0]->getResultsSize();
+}
+VIRTUAL int MultiNet::getOutputPlanes() const {
+    return trainables[0]->getOutputPlanes();
+}
+VIRTUAL int MultiNet::getOutputBoardSize() const {
+    return trainables[0]->getOutputBoardSize();
+}
 VIRTUAL LossLayerMaker *MultiNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
     return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) );
 }

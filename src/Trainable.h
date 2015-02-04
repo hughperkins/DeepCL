@@ -31,6 +31,8 @@ public:
     virtual LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const = 0;
     virtual int getOutputPlanes() const = 0;
     virtual int getOutputBoardSize() const = 0;
+    virtual int getInputCubeSize() const = 0;
+    virtual int getOutputCubeSize() const = 0;
 
     // [[[cog
     // import cog_addheaders

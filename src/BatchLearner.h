@@ -11,6 +11,7 @@
 #include <stdexcept>
 
 class NeuralNet;
+class Trainable;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -30,7 +31,7 @@ public:
 template< typename T>
 class ClConvolve_EXPORT NetAction {
 public:
-    virtual void run( NeuralNet *net, T *batchData, int const*batchLabels ) = 0;
+    virtual void run( Trainable *net, T *batchData, int const*batchLabels ) = 0;
 };
 
 template< typename T>
@@ -40,7 +41,7 @@ public:
     NetLearnLabeledBatch( float learningRate ) :
         learningRate( learningRate ) {
     }
-    virtual void run( NeuralNet *net, T *batchData, int const*batchLabels );
+    virtual void run( Trainable *net, T *batchData, int const*batchLabels );
 };
 
 template< typename T>
@@ -48,7 +49,7 @@ class ClConvolve_EXPORT NetPropagateBatch : public NetAction<T> {
 public:
     NetPropagateBatch() {
     }
-    virtual void run( NeuralNet *net, T *batchData, int const*batchLabels );
+    virtual void run( Trainable *net, T *batchData, int const*batchLabels );
 };
 
 // this handles learning one single epoch, breaking up the incoming training or testing
@@ -57,14 +58,14 @@ public:
 template< typename T>
 class ClConvolve_EXPORT BatchLearner {
 public:
-    NeuralNet *net; // NOT owned by us, dont delete
+    Trainable *net; // NOT owned by us, dont delete
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
-    BatchLearner( NeuralNet *net );
+    BatchLearner( Trainable *net );
     EpochResult batchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction );
     int test( int batchSize, int N, T *testData, int const*testLabels );
     EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int const*trainLabels );

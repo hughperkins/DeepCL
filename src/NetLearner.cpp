@@ -8,6 +8,7 @@
 #include "Timer.h"
 #include "BatchLearner.h"
 #include "NeuralNet.h"
+#include "Trainable.h"
 
 #include "NetLearner.h"
 
@@ -18,7 +19,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-template< typename T > NetLearner<T>::NetLearner( NeuralNet *net ) :
+template< typename T > NetLearner<T>::NetLearner( Trainable *net ) :
         net( net ) {
     batchSize = 128;
     annealLearningRate = 1.0f;

@@ -7,6 +7,7 @@
 #include "NormalizationHelper.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
+#include "Trainable.h"
 
 #include "BatchLearner.h"
 
@@ -18,16 +19,16 @@ using namespace std;
 #define VIRTUAL
 
 template< typename T>
-void NetLearnLabeledBatch<T>::run( NeuralNet *net, T *batchData, int const*batchLabels ) {
+void NetLearnLabeledBatch<T>::run( Trainable *net, T *batchData, int const*batchLabels ) {
     net->learnBatchFromLabels( learningRate, batchData, batchLabels );
 }
 
 template< typename T>
-void NetPropagateBatch<T>::run( NeuralNet *net, T *batchData, int const*batchLabels ) {
+void NetPropagateBatch<T>::run( Trainable *net, T *batchData, int const*batchLabels ) {
     net->propagate( batchData );
 }
 
-template< typename T > BatchLearner<T>::BatchLearner( NeuralNet *net ) :
+template< typename T > BatchLearner<T>::BatchLearner( Trainable *net ) :
     net( net ) {
 }
 

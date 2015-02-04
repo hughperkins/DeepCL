@@ -39,6 +39,11 @@ public:
     // generated, using cog:
     MultiNet( int numNets, NeuralNet *model );
     VIRTUAL ~MultiNet();
+    VIRTUAL int getInputCubeSize() const;
+    VIRTUAL int getOutputCubeSize() const;
+    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getOutputBoardSize() const;
     VIRTUAL LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const;
     VIRTUAL float calcLoss(float const *expectedValues );
     VIRTUAL float calcLossFromLabels(int const *labels );

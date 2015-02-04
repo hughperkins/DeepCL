@@ -18,13 +18,14 @@
 #include "BatchLearner.h"
 #include "NetdefToNet.h"
 #include "NetLearner.h"
+#include "MultiNet.h"
 
 using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
     strings = [ 'dataDir', 'trainSet', 'testSet', 'netDef', 'restartableFilename', 'normalization' ]
-    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings' ]
+    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
         'datadir': 'data directory',
@@ -41,7 +42,8 @@ using namespace std;
         'restartablefilename': 'filename to store weights',
         'normalization': '[stddev|maxmin]',
         'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
-        'dumptimings': 'dump detailed timings each epoch?'
+        'dumptimings': 'dump detailed timings each epoch?',
+        'multinet': 'number of Mcdnn columns to train'
     }
 *///]]]
 // [[[end]]]
@@ -70,6 +72,7 @@ public:
     int numEpochs = 0;
     int restartable = 0;
     int dumpTimings = 0;
+    int multiNet = 0;
     float learningRate = 0.0f;
     float annealLearningRate = 0.0f;
     float normalizationNumStds = 0.0f;
@@ -91,6 +94,7 @@ public:
         annealLearningRate = 1.0f;
         normalizationNumStds = 2.0f;
         dumpTimings = 0;
+        multiNet = 1;
     }
     string getTrainingString() {
         string configString = "";
@@ -169,7 +173,14 @@ void go(Config config) {
     timer.timeCheck("before learning start");
     StatefulTimer::timeCheck("START");
 
-    NetLearner<unsigned char> netLearner( net );
+    Trainable *trainable = net;
+    MultiNet *multiNet = 0;
+    if( config.multiNet > 1 ) {
+        multiNet = new MultiNet( config.multiNet, net );
+        trainable = multiNet;
+    }
+//    } else {
+    NetLearner<unsigned char> netLearner( trainable );
     netLearner.setTrainingData( Ntrain, trainData, trainLabels );
     netLearner.setTestingData( Ntest, testData, testLabels );
     netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
@@ -180,7 +191,11 @@ void go(Config config) {
         netLearner.addPostEpochAction( &weightsWriter );
     }
     netLearner.learn( config.learningRate, config.annealLearningRate );
+//    }
 
+    if( multiNet != 0 ) {
+        delete multiNet;
+    }
     delete net;
 
     delete[] trainData;
@@ -216,6 +231,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
     cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
     cout << "    dumptimings=[dump detailed timings each epoch?] (" << config.dumpTimings << ")" << endl;
+    cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
@@ -274,6 +290,8 @@ int main( int argc, char *argv[] ) {
                 config.restartable = atoi( value );
             } else if( key == "dumptimings" ) {
                 config.dumpTimings = atoi( value );
+            } else if( key == "multinet" ) {
+                config.multiNet = atoi( value );
             } else if( key == "learningrate" ) {
                 config.learningRate = atof( value );
             } else if( key == "anneallearningrate" ) {

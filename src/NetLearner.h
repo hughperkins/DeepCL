@@ -12,6 +12,7 @@
 #define STATIC static
 
 class NeuralNet;
+class Trainable;
 
 #include "DllImportExport.h"
 
@@ -25,7 +26,7 @@ public:
 template<typename T>
 class ClConvolve_EXPORT NetLearner {
 public:
-    NeuralNet *net;
+    Trainable *net;
 
     int Ntrain;
     int Ntest;
@@ -51,7 +52,7 @@ public:
     // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
-    NetLearner( NeuralNet *net );
+    NetLearner( Trainable *net );
     void setTrainingData( int Ntrain, T *trainData, int *trainLabels );
     void setTestingData( int Ntest, T *testData, int *testLabels );
     void setSchedule( int numEpochs );
