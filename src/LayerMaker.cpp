@@ -22,6 +22,13 @@
 
 using namespace std;
 
+template< typename T > Layer *InputLayerMaker<T>::createLayer( Layer *previousLayer ) {
+    return new InputLayer<T>( this );
+}
+Layer *RandomPatchesMaker::createLayer( Layer *previousLayer ) {
+    return new RandomPatches( previousLayer, this );
+}
+
 Layer *LayerMaker::insert() {
     Layer *layer = net->addLayer( this );
     return layer;
@@ -57,24 +64,24 @@ Layer *LayerMaker::insert() {
 //    return layer;
 //}
 
-template< typename T>
-LayerMaker *InputLayerMaker<T>::clone( Layer *previousLayer ) const {
-    InputLayerMaker<T> *maker = new InputLayerMaker<T>( 0 );
-    maker->_numPlanes = _numPlanes;
-    maker->_boardSize = _boardSize;
-    return maker;
-}
+//template< typename T>
+//InputLayerMaker<T> InputLayerMaker<T>::clone() const {
+//    InputLayerMaker<T> maker = *this;
+////    maker->_numPlanes = _numPlanes;
+////    maker->_boardSize = _boardSize;
+//    return maker;
+//}
 LayerMaker *NormalizationLayerMaker::clone( Layer *previousLayer ) const {
     NormalizationLayerMaker *maker = new NormalizationLayerMaker( 0, previousLayer );
     maker->_translate = _translate;
     maker->_scale = _scale;
     return maker;
 }
-LayerMaker *RandomPatchesMaker::clone( Layer *previousLayer ) const {
-    RandomPatchesMaker *maker = new RandomPatchesMaker( 0, previousLayer );
-    maker->_patchSize = _patchSize;
-    return maker;
-}
+//LayerMaker *RandomPatchesMaker::clone( Layer *previousLayer ) const {
+//    RandomPatchesMaker *maker = new RandomPatchesMaker( 0, previousLayer );
+//    maker->_patchSize = _patchSize;
+//    return maker;
+//}
 LayerMaker *RandomTranslationsMaker::clone( Layer *previousLayer ) const {
     RandomTranslationsMaker *maker = new RandomTranslationsMaker( 0, previousLayer );
     maker->_translateSize = _translateSize;
@@ -153,24 +160,24 @@ Layer *ConvolutionalMaker::instance() const {
     Layer *layer = new ConvolutionalLayer( previousLayer, this );
     return layer;
 }
-template< typename T > Layer *InputLayerMaker<T>::instance() const {
-    if( _numPlanes == 0 ) {
-        throw runtime_error("Must provide ->numPlanes(planes)");
-    }
-    if( _boardSize == 0 ) {
-        throw runtime_error("Must provide ->boardSize(boardSize)");
-    }
-    Layer *layer = new InputLayer<T>( 0, this );
-    return layer;
-}
+//template< typename T > Layer *InputLayerMaker<T>::instance() const {
+//    if( _numPlanes == 0 ) {
+//        throw runtime_error("Must provide ->numPlanes(planes)");
+//    }
+//    if( _boardSize == 0 ) {
+//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    }
+//    Layer *layer = new InputLayer<T>( 0, this );
+//    return layer;
+//}
 Layer *NormalizationLayerMaker::instance() const {
     Layer *layer = new NormalizationLayer( previousLayer, this );
     return layer;
 }
-Layer *RandomPatchesMaker::instance() const {
-    Layer *layer = new RandomPatches( previousLayer, this );
-    return layer;
-}
+//Layer *RandomPatchesMaker::instance() const {
+//    Layer *layer = new RandomPatches( previousLayer, this );
+//    return layer;
+//}
 Layer *RandomTranslationsMaker::instance() const {
     Layer *layer = new RandomTranslations( previousLayer, this );
     return layer;
@@ -212,15 +219,15 @@ int NormalizationLayerMaker::getOutputPlanes() const {
 int NormalizationLayerMaker::getBiased() const {
     return false;
 }
-int RandomPatchesMaker::getOutputBoardSize() const {
-    return _patchSize;
-}
-int RandomPatchesMaker::getOutputPlanes() const {
-    return previousLayer->getOutputPlanes();
-}
-int RandomPatchesMaker::getBiased() const {
-    return false;
-}
+//int RandomPatchesMaker::getOutputBoardSize() const {
+//    return _patchSize;
+//}
+//int RandomPatchesMaker::getOutputPlanes() const {
+//    return previousLayer->getOutputPlanes();
+//}
+//int RandomPatchesMaker::getBiased() const {
+//    return false;
+//}
 
 int RandomTranslationsMaker::getOutputBoardSize() const {
     return previousLayer->getOutputBoardSize();

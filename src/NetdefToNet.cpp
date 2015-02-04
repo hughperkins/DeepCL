@@ -71,7 +71,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             net->poolingMaker()->poolingSize(poolingSize)->insert();
         } else if( baseLayerDef.find("rp") != string::npos ) {
             int patchSize = atoi( split( baseLayerDef, "rp" )[1] );
-            net->randomPatchesMaker()->patchSize( patchSize )->insert();
+            net->addLayer( RandomPatchesMaker::instance()->patchSize( patchSize ) );
         } else if( baseLayerDef.find("rt") != string::npos ) {
             int translateSize = atoi( split( baseLayerDef, "rt" )[1] );
             net->randomTranslationsMaker()->translateSize( translateSize )->insert();

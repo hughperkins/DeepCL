@@ -15,7 +15,7 @@
 using namespace std;
 
 NeuralNet *NeuralNetMould::instance() {
-    cout << "neuralnetmould::instance boardsize " << _boardSize << " numPlanes " << _numPlanes << endl;
+//    cout << "neuralnetmould::instance boardsize " << _boardSize << " numPlanes " << _numPlanes << endl;
     if( _numPlanes != 0 || _boardSize != 0 ) {
         if( _numPlanes == 0 ) {
             throw runtime_error("Must provide ->planes(planes)");

@@ -32,7 +32,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    RandomPatches( Layer *previousLayer, RandomPatchesMaker const*maker );
+    RandomPatches( Layer *previousLayer, RandomPatchesMaker const *maker );
     VIRTUAL ~RandomPatches();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();

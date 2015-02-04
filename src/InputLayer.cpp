@@ -11,14 +11,14 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-template< typename T > InputLayer<T>::InputLayer( Layer *previousLayer, InputLayerMaker<T> const*maker ) :
-       Layer( previousLayer, maker ),
+template< typename T > InputLayer<T>::InputLayer( InputLayerMaker<T> *maker ) :
+       Layer( 0, 0 ),
     batchSize(0),
     allocatedSize(0),
     input(0),
     results(0),
-    outputPlanes( maker->getOutputPlanes() ),
-    outputBoardSize( maker->getOutputBoardSize() ) {
+    outputPlanes( maker->_numPlanes ),
+    outputBoardSize( maker->_boardSize ) {
 }
 template< typename T > VIRTUAL InputLayer<T>::~InputLayer() {
 }

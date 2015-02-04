@@ -39,7 +39,7 @@ public:
     // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
-    InputLayer( Layer *previousLayer, InputLayerMaker<T> const*maker );
+    InputLayer( InputLayerMaker<T> *maker );
     VIRTUAL ~InputLayer();
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();

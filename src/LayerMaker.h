@@ -13,10 +13,91 @@
 
 class NeuralNet;
 class Layer;
+class OpenCLHelper;
 
 class SquareLossLayer;
 class CrossEntropyLayer;
 class SoftMaxLayer;
+
+class LayerMaker2 {
+public:
+    OpenCLHelper *cl; // NOT owned by us
+    LayerMaker2() :
+        cl(0) {
+    }
+    void setCl( OpenCLHelper *cl ) {
+        this->cl = cl;
+    }
+    virtual Layer *createLayer( Layer *previousLayer ) = 0;
+};
+
+template< typename T > class InputLayerMaker : public LayerMaker2 {
+public:
+    int _numPlanes;
+    int _boardSize;
+    InputLayerMaker() :
+//            LayerMaker( net, 0 ),
+            _numPlanes(0),
+            _boardSize(0) {
+    }
+    InputLayerMaker *numPlanes( int _numPlanes ) {
+        this->_numPlanes = _numPlanes;
+        return this;
+    }    
+    InputLayerMaker *boardSize( int _boardSize ) {
+        this->_boardSize = _boardSize;
+        return this;
+    }    
+//    virtual int getOutputBoardSize() const {
+//        return _boardSize;
+//    }
+//    virtual int getOutputPlanes() const {
+//        return _numPlanes;
+//    }
+//    virtual int getBiased() const {
+//        return false;
+//    }
+    static InputLayerMaker *instance() {
+        return new InputLayerMaker();
+//        InputLayerMaker maker; 
+//        return maker;
+    }    
+//    virtual Layer *insert();
+    virtual InputLayerMaker *clone() const {
+        InputLayerMaker *thisClone = new InputLayerMaker();
+        memcpy( thisClone, this, sizeof( InputLayerMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
+};
+class RandomPatchesMaker : public LayerMaker2 {
+public:
+    int _patchSize;
+    RandomPatchesMaker() :
+//        LayerMaker( net, previousLayer ),
+        _patchSize(0) {
+    }
+    RandomPatchesMaker *patchSize( int _patchSize ) {
+        this->_patchSize = _patchSize;
+        return this;
+    }
+//    virtual int getOutputBoardSize() const;
+//    virtual int getOutputPlanes() const;
+//    virtual int getBiased() const;
+//    virtual Layer *instance() const;
+    static RandomPatchesMaker *instance() {
+//        RandomPatchesMaker maker; 
+//        return maker;
+        return new RandomPatchesMaker();
+    }    
+    virtual RandomPatchesMaker *clone() const {
+        RandomPatchesMaker *thisClone = new RandomPatchesMaker();
+        memcpy( thisClone, this, sizeof( RandomPatchesMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
+};
+
 
 class LayerMaker {
 public:
@@ -32,43 +113,12 @@ public:
         net( net ),
         previousLayer( previousLayer ) {
     }
-//    void setPreviousLayer( Layer *previousLayer ) {
-//        this->previousLayer = previousLayer;
-//    }
+    void setPreviousLayer( Layer *previousLayer ) {
+        this->previousLayer = previousLayer;
+    }
     virtual Layer *insert();
     virtual Layer *instance() const = 0;
     virtual LayerMaker *clone( Layer *clonePreviousLayer ) const = 0;
-};
-
-template< typename T > class InputLayerMaker : public LayerMaker {
-public:
-    int _numPlanes;
-    int _boardSize;
-    InputLayerMaker( NeuralNet *net) :
-            LayerMaker( net, 0 ),
-            _numPlanes(0),
-            _boardSize(0) {
-    }
-    InputLayerMaker *numPlanes( int _numPlanes ) {
-        this->_numPlanes = _numPlanes;
-        return this;
-    }    
-    InputLayerMaker *boardSize( int _boardSize ) {
-        this->_boardSize = _boardSize;
-        return this;
-    }    
-    virtual int getOutputBoardSize() const {
-        return _boardSize;
-    }
-    virtual int getOutputPlanes() const {
-        return _numPlanes;
-    }
-    virtual int getBiased() const {
-        return false;
-    }
-    virtual Layer *instance() const;
-//    virtual Layer *insert();
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
 };
 
 class NormalizationLayerMaker : public LayerMaker {
@@ -86,24 +136,6 @@ public:
     }
     NormalizationLayerMaker *scale( float _scale ) {
         this->_scale = _scale;
-        return this;
-    }
-    virtual int getOutputBoardSize() const;
-    virtual int getOutputPlanes() const;
-    virtual int getBiased() const;
-    virtual Layer *instance() const;
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
-};
-
-class RandomPatchesMaker : public LayerMaker {
-public:
-    int _patchSize;
-    RandomPatchesMaker( NeuralNet *net, Layer *previousLayer ) :
-        LayerMaker( net, previousLayer ),
-        _patchSize(0) {
-    }
-    RandomPatchesMaker *patchSize( int _patchSize ) {
-        this->_patchSize = _patchSize;
         return this;
     }
     virtual int getOutputBoardSize() const;

@@ -22,6 +22,7 @@ class OpenCLHelper;
 class ConvolutionalMaker;
 class LayerMaker;
 class RandomTranslatorMaker;
+template< typename T> class InputLayerMaker;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -43,12 +44,11 @@ public:
     NeuralNet *clone();
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
-    template< typename T >InputLayerMaker<T> *inputMaker();
+    void addLayer( LayerMaker2 *maker );
     FullyConnectedMaker *fullyConnectedMaker();
     ConvolutionalMaker *convolutionalMaker();
     PoolingMaker *poolingMaker();
     NormalizationLayerMaker *normalizationMaker();
-    RandomPatchesMaker *randomPatchesMaker();
     RandomTranslationsMaker *randomTranslationsMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();

@@ -58,7 +58,8 @@ int main(int argc, char *argv[] ) {
 //    int numBatches = min( 8, N / batchSize );
 
     NeuralNet *net = NeuralNet::maker()->instance();
-    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
+//    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
+    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->boardSize(boardSize) );
     net->normalizationMaker()->translate(-0.3f)->scale(1.0f)->insert();
     for( int i = 0; i < 2; i++ ) {
         net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros()->insert();

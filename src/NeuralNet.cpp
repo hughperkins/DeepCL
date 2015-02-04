@@ -40,11 +40,15 @@ NeuralNet::NeuralNet() {
 //    maker->insert();
 }
 NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
-//    cout << "NeuralNet(planes,boardsize)" << endl;
+//    cout << "NeuralNet( " << numPlanes << ", " << boardSize << " )" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
-        ->numPlanes( numPlanes )->boardSize( boardSize );
-    maker->insert();
+//    InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
+//        ->numPlanes( numPlanes )->boardSize( boardSize );
+//    maker->insert();
+//    InputLayerMaker<float> *maker = In;
+//    maker;
+    addLayer( InputLayerMaker<float>::instance()->numPlanes( numPlanes )->boardSize( boardSize ) );
+//    print();
 }
 NeuralNet::~NeuralNet() {
     for( int i = 0; i < layers.size(); i++ ) {
@@ -69,12 +73,23 @@ OpenCLHelper *NeuralNet::getCl() {
 STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
-template< typename T >InputLayerMaker<T> *NeuralNet::inputMaker() {
-    if( layers.size() != 0 ) {
-        throw runtime_error("Already added an InputLayer to this net");
-    }
-    return new InputLayerMaker<T>( this );
+//template< typename T > void NeuralNet::insert( InputLayerMaker<T> inputLayerMaker ) {
+////    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " boardSize " << inputLayerMaker._boardSize << endl;
+//    InputLayer<T> *inputLayer = new InputLayer<T>( inputLayerMaker );
+//    layers.push_back( inputLayer );
+//}
+void NeuralNet::addLayer( LayerMaker2 *maker ) {
+//    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " boardSize " << inputLayerMaker._boardSize << endl;
+    maker->setCl( cl );
+    Layer *layer = maker->createLayer( getLastLayer() );
+    layers.push_back( layer );
 }
+//template< typename T >InputLayerMaker<T> *NeuralNet::inputMaker() {
+//    if( layers.size() != 0 ) {
+//        throw runtime_error("Already added an InputLayer to this net");
+//    }
+//    return new InputLayerMaker<T>( this );
+//}
 FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
     return new FullyConnectedMaker( this, getLastLayer() );
 }
@@ -87,9 +102,9 @@ PoolingMaker *NeuralNet::poolingMaker() {
 NormalizationLayerMaker *NeuralNet::normalizationMaker() {
     return new NormalizationLayerMaker( this, getLastLayer() );
 }
-RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
-    return new RandomPatchesMaker( this, getLastLayer() );
-}
+//RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
+//    return new RandomPatchesMaker( this, getLastLayer() );
+//}
 RandomTranslationsMaker *NeuralNet::randomTranslationsMaker() {
     return new RandomTranslationsMaker( this, getLastLayer() );
 }
@@ -264,7 +279,9 @@ void NeuralNet::printOutput() {
     }
 }
 
-template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
-template ClConvolve_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
+//template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
+//template ClConvolve_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
 
+//template ClConvolve_EXPORT void NeuralNet::append( InputLayerMaker<unsigned char> inputLayerMaker );
+//template ClConvolve_EXPORT void NeuralNet::append( InputLayerMaker<float> inputLayerMaker );
 

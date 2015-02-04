@@ -17,7 +17,9 @@ Layer::Layer( Layer *previousLayer, LayerMaker const*maker ) :
     }
 }
 VIRTUAL Layer::~Layer() {
-    delete maker;
+    if( maker != 0 ) {
+        delete maker;
+    }
 }
 VIRTUAL void Layer::setTraining( bool training ) {
     this->training = training;
