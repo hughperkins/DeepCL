@@ -15,7 +15,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-SoftMaxLayer::SoftMaxLayer(  Layer *previousLayer, SoftMaxMaker const *maker  ) :
+SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker const *maker ) :
     LossLayer( previousLayer, maker ),
         allocatedSize( 0 ),
         errorsForUpstream( 0 ),
@@ -36,9 +36,6 @@ VIRTUAL SoftMaxLayer::~SoftMaxLayer() {
 VIRTUAL float *SoftMaxLayer::getResults() {
     return results;
 }
-//VIRTUAL bool SoftMaxLayer::needErrorsBackprop() {
-//    return true;
-//}
 VIRTUAL float *SoftMaxLayer::getErrorsForUpstream() {
     return errorsForUpstream;
 }
@@ -192,10 +189,6 @@ VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
 }
 VIRTUAL int SoftMaxLayer::getPersistSize() const {
     return 0;
-}
-VIRTUAL void SoftMaxLayer::persistToArray(float *array) {
-}
-VIRTUAL void SoftMaxLayer::unpersistFromArray(float const*array) {
 }
 VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");

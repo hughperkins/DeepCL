@@ -17,11 +17,18 @@
 
 #include "DllImportExport.h"
 
+class LossLayer;
+
 class NeuralNet;
 
 // This handles grouping several NeuralNets into one single MultiNet
 class ClConvolve_EXPORT MultiNet : public Trainable {
-    std::vector<NeuralNet * > nets;
+    std::vector<Trainable * > trainables;
+    float *results;
+    int batchSize;
+    int allocatedSize;
+    InputLayer<float> *proxyInputLayer; // used to feed in output from children, to give to lossLayer
+    LossLayer *lossLayer;
 
 public:
 
@@ -31,6 +38,19 @@ public:
     // ]]]
     // generated, using cog:
     MultiNet( int numNets, NeuralNet *model );
+    VIRTUAL ~MultiNet();
+    VIRTUAL LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const;
+    VIRTUAL float calcLoss(float const *expectedValues );
+    VIRTUAL float calcLossFromLabels(int const *labels );
+    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void setTraining( bool training );
+    VIRTUAL int calcNumRight( int const *labels );
+    void propagateToOurselves();
+    VIRTUAL void propagate( float const*images);
+    VIRTUAL void propagate( unsigned char const*images);
+    VIRTUAL void backPropFromLabels( float learningRate, int const *labels);
+    VIRTUAL void backProp( float learningRate, float const *expectedResults);
+    VIRTUAL float const *getResults() const;
 
     // [[[end]]]
 };

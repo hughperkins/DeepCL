@@ -12,8 +12,12 @@
 
 #include "DllImportExport.h"
 
+class LossLayerMaker;
+class Layer;
+
 class ClConvolve_EXPORT Trainable {
 public:
+    virtual int getResultsSize() const = 0;
     virtual float calcLoss(float const *expectedValues ) = 0;
     virtual float calcLossFromLabels(int const *labels ) = 0;
     virtual void setBatchSize( int batchSize ) = 0;
@@ -23,7 +27,10 @@ public:
     virtual void propagate( unsigned char const*images) = 0;
     virtual void backPropFromLabels( float learningRate, int const *labels) = 0;
     virtual void backProp( float learningRate, float const *expectedResults) = 0;
-    virtual float const *getResults( int layer ) const = 0;
+    virtual float const *getResults() const = 0;
+    virtual LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const = 0;
+    virtual int getOutputPlanes() const = 0;
+    virtual int getOutputBoardSize() const = 0;
 
     // [[[cog
     // import cog_addheaders

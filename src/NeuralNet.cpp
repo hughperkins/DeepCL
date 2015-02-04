@@ -57,7 +57,7 @@ NeuralNet *NeuralNet::clone() {
     Layer *previousLayer = 0;
     for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         LayerMaker const*maker = (*it)->maker;
-        LayerMaker const*makerCopy = maker->clone( copy, previousLayer );
+        LayerMaker const*makerCopy = maker->clone( previousLayer );
         Layer *layerCopy = makerCopy->instance();
         copy->layers.push_back( layerCopy );
         previousLayer = layerCopy;
@@ -131,17 +131,30 @@ float NeuralNet::calcLossFromLabels(int const *labels ) {
 EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
+VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
+    LossLayer const*lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
+    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) ) ;
+}
 template< typename T > InputLayer<T> *NeuralNet::getFirstLayer() {
     return dynamic_cast<InputLayer<T> *>( layers[0] );
 }
 Layer *NeuralNet::getLastLayer() {
     return layers[layers.size() - 1];
 }
+Layer const*NeuralNet::getLastLayer() const {
+    return layers[layers.size() - 1];
+}
+VIRTUAL int NeuralNet::getOutputPlanes() const {
+    return getLastLayer()->getOutputPlanes();
+}
+VIRTUAL int NeuralNet::getOutputBoardSize() const {
+    return getLastLayer()->getOutputBoardSize();
+}
 Layer *NeuralNet::addLayer( LayerMaker *maker ) {
-    Layer *previousLayer = 0;
-    if( layers.size() > 0 ) {
-        previousLayer = layers[ layers.size() - 1 ];
-    }
+//    Layer *previousLayer = 0;
+//    if( layers.size() > 0 ) {
+//        previousLayer = layers[ layers.size() - 1 ];
+//    }
 //    maker->setPreviousLayer( previousLayer );
     Layer *layer = maker->instance();
     layers.push_back( layer );
@@ -209,26 +222,6 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
         StatefulTimer::setPrefix("" );
     }
 }
-//void NeuralNet::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
-//    setTraining( true );
-//    propagate( images);
-//    backProp( learningRate, expectedResults );
-//}
-//void NeuralNet::learnBatch( float learningRate, unsigned char const*images, float const *expectedResults ) {
-//    setTraining( true );
-//    propagate( images);
-//    backProp( learningRate, expectedResults );
-//}
-//void NeuralNet::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
-//    setTraining( true );
-//    propagate( images);
-//    backPropFromLabels( learningRate, labels );
-//}
-//void NeuralNet::learnBatchFromLabels( float learningRate, unsigned char const*images, int const *labels ) {
-//    setTraining( true );
-//    propagate( images);
-//    backPropFromLabels( learningRate, labels );
-//}
 int NeuralNet::getNumLayers() {
     return (int)layers.size();
 }
@@ -243,6 +236,9 @@ int NeuralNet::getOutputCubeSize() const {
 }
 float const *NeuralNet::getResults() const {
     return getResults( (int)layers.size() - 1 );
+}
+VIRTUAL int NeuralNet::getResultsSize() const {
+    return getLastLayer()->getResultsSize();
 }
 void NeuralNet::print() {
     int i = 0; 
@@ -270,11 +266,5 @@ void NeuralNet::printOutput() {
 
 template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
 template ClConvolve_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
-//template ClConvolve_EXPORT void NeuralNet::propagate(unsigned char const*images);
-//template ClConvolve_EXPORT void NeuralNet::propagate(float const*images);
-//template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<unsigned char>(float learningRate, unsigned char const*images, int const *labels);
-//template ClConvolve_EXPORT void NeuralNet::learnBatchFromLabels<float>(float learningRate, float const *images, int const *labels);
-//template ClConvolve_EXPORT void NeuralNet::learnBatch<unsigned char>(float learningRate, unsigned char const*images, float const *expectedResults );
-//template ClConvolve_EXPORT void NeuralNet::learnBatch<float>(float learningRate, float const *images, float const *expectedResults );
 
 

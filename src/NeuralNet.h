@@ -61,8 +61,12 @@ public:
     float calcLoss(float const *expectedValues );
     float calcLossFromLabels(int const *labels );
     EpochMaker *epochMaker();
+    VIRTUAL LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const;
     template< typename T > InputLayer<T> *getFirstLayer();
     Layer *getLastLayer();
+    Layer const*getLastLayer() const;
+    VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getOutputBoardSize() const;
     Layer *addLayer( LayerMaker *maker );
     void setBatchSize( int batchSize );
     void setTraining( bool training );
@@ -76,6 +80,7 @@ public:
     int getInputCubeSize() const;
     int getOutputCubeSize() const;
     float const *getResults() const;
+    VIRTUAL int getResultsSize() const;
     void print();
     void printWeights();
     void printOutput();

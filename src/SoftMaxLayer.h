@@ -34,7 +34,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SoftMaxLayer(  Layer *previousLayer, SoftMaxMaker const *maker  );
+    SoftMaxLayer( Layer *previousLayer, SoftMaxMaker const *maker );
     VIRTUAL ~SoftMaxLayer();
     VIRTUAL float *getResults();
     VIRTUAL float *getErrorsForUpstream();
@@ -45,8 +45,6 @@ public:
     VIRTUAL void calcErrors( float const *expectedValues );
     VIRTUAL int getNumLabelsPerExample();
     VIRTUAL int getPersistSize() const;
-    VIRTUAL void persistToArray(float *array);
-    VIRTUAL void unpersistFromArray(float const*array);
     VIRTUAL int calcNumRight( int const*labels );
     VIRTUAL void propagate();
     VIRTUAL void backPropErrors( float learningRate );
