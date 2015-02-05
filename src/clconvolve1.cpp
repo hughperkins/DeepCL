@@ -150,7 +150,7 @@ void go(Config config) {
     NeuralNet *net = new NeuralNet();
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
     net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->boardSize(boardSize) );
-    net->normalizationMaker()->translate(-mean)->scale(1.0f / stdDev)->insert();
+    net->addLayer( NormalizationLayerMaker::instance()->translate(-mean)->scale(1.0f / stdDev) );
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;
     }

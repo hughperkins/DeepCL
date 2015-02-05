@@ -4,6 +4,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#include "NormalizationLayerMaker.h"
+
 #include "NormalizationLayer.h"
 
 using namespace std;
@@ -16,8 +18,8 @@ NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayer
     batchSize(0),
     allocatedSize(0),
     results(0),
-    outputPlanes( maker->getOutputPlanes() ),
-    outputBoardSize( maker->getOutputBoardSize() ),
+    outputPlanes( previousLayer->getOutputPlanes() ),
+    outputBoardSize( previousLayer->getOutputBoardSize() ),
     translate( maker->_translate ),
     scale( maker->_scale ) {
 }

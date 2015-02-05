@@ -106,9 +106,9 @@ FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
 PoolingMaker *NeuralNet::poolingMaker() {
     return new PoolingMaker( this, getLastLayer() );
 }
-NormalizationLayerMaker *NeuralNet::normalizationMaker() {
-    return new NormalizationLayerMaker( this, getLastLayer() );
-}
+//NormalizationLayerMaker *NeuralNet::normalizationMaker() {
+//    return new NormalizationLayerMaker( this, getLastLayer() );
+//}
 //RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
 //    return new RandomPatchesMaker( this, getLastLayer() );
 //}

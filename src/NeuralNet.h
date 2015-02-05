@@ -19,6 +19,7 @@
 #include "ConvolutionalMaker.h"
 #include "RandomTranslationsMaker.h"
 #include "RandomPatchesMaker.h"
+#include "NormalizationLayerMaker.h"
 
 #include "DllImportExport.h"
 
@@ -51,7 +52,6 @@ public:
     void addLayer( LayerMaker2 *maker );
     FullyConnectedMaker *fullyConnectedMaker();
     PoolingMaker *poolingMaker();
-    NormalizationLayerMaker *normalizationMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();

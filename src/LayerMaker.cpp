@@ -65,12 +65,12 @@ Layer *LayerMaker::insert() {
 ////    maker->_boardSize = _boardSize;
 //    return maker;
 //}
-LayerMaker *NormalizationLayerMaker::clone( Layer *previousLayer ) const {
-    NormalizationLayerMaker *maker = new NormalizationLayerMaker( 0, previousLayer );
-    maker->_translate = _translate;
-    maker->_scale = _scale;
-    return maker;
-}
+//LayerMaker *NormalizationLayerMaker::clone( Layer *previousLayer ) const {
+//    NormalizationLayerMaker *maker = new NormalizationLayerMaker( 0, previousLayer );
+//    maker->_translate = _translate;
+//    maker->_scale = _scale;
+//    return maker;
+//}
 //LayerMaker *RandomPatchesMaker::clone( Layer *previousLayer ) const {
 //    RandomPatchesMaker *maker = new RandomPatchesMaker( 0, previousLayer );
 //    maker->_patchSize = _patchSize;
@@ -154,10 +154,10 @@ Layer *PoolingMaker::instance() const {
 //    Layer *layer = new InputLayer<T>( 0, this );
 //    return layer;
 //}
-Layer *NormalizationLayerMaker::instance() const {
-    Layer *layer = new NormalizationLayer( previousLayer, this );
-    return layer;
-}
+//Layer *NormalizationLayerMaker::instance() const {
+//    Layer *layer = new NormalizationLayer( previousLayer, this );
+//    return layer;
+//}
 //Layer *RandomPatchesMaker::instance() const {
 //    Layer *layer = new RandomPatches( previousLayer, this );
 //    return layer;
@@ -194,15 +194,15 @@ int PoolingMaker::getOutputPlanes() const {
 int PoolingMaker::getBiased() const {
     return false;
 }
-int NormalizationLayerMaker::getOutputBoardSize() const {
-    return previousLayer->getOutputBoardSize();
-}
-int NormalizationLayerMaker::getOutputPlanes() const {
-    return previousLayer->getOutputPlanes();
-}
-int NormalizationLayerMaker::getBiased() const {
-    return false;
-}
+//int NormalizationLayerMaker::getOutputBoardSize() const {
+//    return previousLayer->getOutputBoardSize();
+//}
+//int NormalizationLayerMaker::getOutputPlanes() const {
+//    return previousLayer->getOutputPlanes();
+//}
+//int NormalizationLayerMaker::getBiased() const {
+//    return false;
+//}
 //int RandomPatchesMaker::getOutputBoardSize() const {
 //    return _patchSize;
 //}

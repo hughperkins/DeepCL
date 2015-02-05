@@ -10,4 +10,30 @@
 
 #include "LayerMaker.h"
 
+class NormalizationLayerMaker : public LayerMaker2 {
+public:
+    float _translate;
+    float _scale;
+    NormalizationLayerMaker() :
+        _translate(0.0f),
+        _scale( 1.0f ) {
+    }
+    NormalizationLayerMaker *translate( float _translate ) {
+        this->_translate = _translate;
+        return this;
+    }
+    NormalizationLayerMaker *scale( float _scale ) {
+        this->_scale = _scale;
+        return this;
+    }
+    static NormalizationLayerMaker *instance() {
+        return new NormalizationLayerMaker();
+    }
+    virtual NormalizationLayerMaker *clone() const {
+        NormalizationLayerMaker *thisClone = new NormalizationLayerMaker();
+        memcpy( thisClone, this, sizeof( NormalizationLayerMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
+};
 

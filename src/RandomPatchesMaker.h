@@ -22,7 +22,7 @@ public:
     }
     static RandomPatchesMaker *instance() {
         return new RandomPatchesMaker();
-    }    
+    }
     virtual RandomPatchesMaker *clone() const {
         RandomPatchesMaker *thisClone = new RandomPatchesMaker();
         memcpy( thisClone, this, sizeof( RandomPatchesMaker ) );

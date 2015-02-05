@@ -12,6 +12,8 @@
 
 #define VIRTUAL virtual
 
+class NormalizationLayerMaker;
+
 class NormalizationLayer : public Layer, IHasToString {
 public:
     const float translate; // apply translate first
