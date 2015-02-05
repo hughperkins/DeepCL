@@ -28,7 +28,7 @@ public:
     virtual void backPropFromLabels( float learningRate, int const *labels) = 0;
     virtual void backProp( float learningRate, float const *expectedResults) = 0;
     virtual float const *getResults() const = 0;
-    virtual LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const = 0;
+    virtual LossLayerMaker *cloneLossLayerMaker() const = 0;
     virtual int getOutputPlanes() const = 0;
     virtual int getOutputBoardSize() const = 0;
     virtual int getInputCubeSize() const = 0;

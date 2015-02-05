@@ -61,7 +61,7 @@ public:
     float calcLoss(float const *expectedValues );
     float calcLossFromLabels(int const *labels );
     EpochMaker *epochMaker();
-    VIRTUAL LossLayerMaker *cloneLossLayerMaker( Layer *clonePreviousLayer ) const;
+    VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
     template< typename T > InputLayer<T> *getFirstLayer();
     Layer *getLastLayer();
     Layer const*getLastLayer() const;

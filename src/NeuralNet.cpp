@@ -162,7 +162,7 @@ float NeuralNet::calcLossFromLabels(int const *labels ) {
 EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
-VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
+VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker() const {
     LossLayer const *lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
     if( lossLayer == 0 ) {
         throw runtime_error("error: last layer must be a losslayer");

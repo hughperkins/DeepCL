@@ -35,7 +35,7 @@ MultiNet::MultiNet( int numNets, NeuralNet *model ) :
     inputLayerMaker->numPlanes( trainables[0]->getOutputPlanes() );
     inputLayerMaker->boardSize( trainables[0]->getOutputBoardSize() );
     proxyInputLayer = new InputLayer<float>( inputLayerMaker );
-    lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker(proxyInputLayer)->createLayer(proxyInputLayer) );
+    lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker()->createLayer(proxyInputLayer) );
 }
 VIRTUAL MultiNet::~MultiNet() {
     if( proxyInputLayer != 0 ) {
@@ -66,7 +66,7 @@ VIRTUAL int MultiNet::getOutputPlanes() const {
 VIRTUAL int MultiNet::getOutputBoardSize() const {
     return trainables[0]->getOutputBoardSize();
 }
-VIRTUAL LossLayerMaker *MultiNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
+VIRTUAL LossLayerMaker *MultiNet::cloneLossLayerMaker() const {
     throw runtime_error("need to implement MultiNet::cloneLossLayerMaker :-)" );
 //    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) );
 }
@@ -106,6 +106,8 @@ VIRTUAL void MultiNet::setBatchSize( int batchSize ) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
         (*it)->setBatchSize( batchSize );
     }
+    proxyInputLayer->setBatchSize( batchSize );
+    lossLayer->setBatchSize( batchSize );
     // now ourselves :-)
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;
@@ -124,6 +126,12 @@ VIRTUAL void MultiNet::setTraining( bool training ) {
     }
 }
 VIRTUAL int MultiNet::calcNumRight( int const *labels ) {
+//    cout << proxyInputLayer->asString() << endl;
+//    cout << lossLayer->asString() << endl;
+//    proxyInputLayer->in( trainables[0]->getResults() );
+//    return dynamic_cast< SoftMaxLayer *>( lossLayer )->calcNumRight( labels );
+//    return trainables[0]->calcNumRight( labels );
+
     // call getResults(), then work out the predictions, then compare with the labels
     // or, use a losslayer?
     // depends on the configuration of the softmax layer too, ie per-plane or not
@@ -150,7 +158,8 @@ void MultiNet::propagateToOurselves() {
     for( int i = 0; i < resultsSize; i++ ) {
         results[i] /= numChildren;
     }
-    proxyInputLayer->in( results );
+    memcpy( dynamic_cast< SoftMaxLayer * >( lossLayer )->results, results, sizeof(float) * lossLayer->getResultsSize() );
+//    proxyInputLayer->in( results );
 }
 VIRTUAL void MultiNet::propagate( float const*images) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
