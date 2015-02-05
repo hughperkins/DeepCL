@@ -12,7 +12,7 @@ using namespace std;
 #define VIRTUAL 
 
 template< typename T > InputLayer<T>::InputLayer( InputLayerMaker<T> *maker ) :
-       Layer( 0, 0 ),
+       Layer( 0, maker ),
     batchSize(0),
     allocatedSize(0),
     input(0),

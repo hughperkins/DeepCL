@@ -28,6 +28,9 @@ template< typename T > Layer *InputLayerMaker<T>::createLayer( Layer *previousLa
 Layer *RandomPatchesMaker::createLayer( Layer *previousLayer ) {
     return new RandomPatches( previousLayer, this );
 }
+Layer *RandomTranslationsMaker::createLayer( Layer *previousLayer ) {
+    return new RandomTranslations( previousLayer, this );
+}
 
 Layer *LayerMaker::insert() {
     Layer *layer = net->addLayer( this );
@@ -82,11 +85,11 @@ LayerMaker *NormalizationLayerMaker::clone( Layer *previousLayer ) const {
 //    maker->_patchSize = _patchSize;
 //    return maker;
 //}
-LayerMaker *RandomTranslationsMaker::clone( Layer *previousLayer ) const {
-    RandomTranslationsMaker *maker = new RandomTranslationsMaker( 0, previousLayer );
-    maker->_translateSize = _translateSize;
-    return maker;
-}
+//LayerMaker *RandomTranslationsMaker::clone( Layer *previousLayer ) const {
+//    RandomTranslationsMaker *maker = new RandomTranslationsMaker( 0, previousLayer );
+//    maker->_translateSize = _translateSize;
+//    return maker;
+//}
 LayerMaker *PoolingMaker::clone( Layer *previousLayer ) const {
     PoolingMaker *maker = new PoolingMaker( 0, previousLayer );
     maker->_poolingSize = _poolingSize;
@@ -178,10 +181,10 @@ Layer *NormalizationLayerMaker::instance() const {
 //    Layer *layer = new RandomPatches( previousLayer, this );
 //    return layer;
 //}
-Layer *RandomTranslationsMaker::instance() const {
-    Layer *layer = new RandomTranslations( previousLayer, this );
-    return layer;
-}
+//Layer *RandomTranslationsMaker::instance() const {
+//    Layer *layer = new RandomTranslations( previousLayer, this );
+//    return layer;
+//}
 
 int ConvolutionalMaker::getOutputBoardSize() const {
     if( previousLayer == 0 ) {
@@ -229,15 +232,15 @@ int NormalizationLayerMaker::getBiased() const {
 //    return false;
 //}
 
-int RandomTranslationsMaker::getOutputBoardSize() const {
-    return previousLayer->getOutputBoardSize();
-}
-int RandomTranslationsMaker::getOutputPlanes() const {
-    return previousLayer->getOutputPlanes();
-}
-int RandomTranslationsMaker::getBiased() const {
-    return false;
-}
+//int RandomTranslationsMaker::getOutputBoardSize() const {
+//    return previousLayer->getOutputBoardSize();
+//}
+//int RandomTranslationsMaker::getOutputPlanes() const {
+//    return previousLayer->getOutputPlanes();
+//}
+//int RandomTranslationsMaker::getBiased() const {
+//    return false;
+//}
 
 template class InputLayerMaker<float>;
 template class InputLayerMaker<unsigned char>;

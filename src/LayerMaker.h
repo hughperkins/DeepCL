@@ -19,7 +19,12 @@ class SquareLossLayer;
 class CrossEntropyLayer;
 class SoftMaxLayer;
 
-class LayerMaker2 {
+class LayerMakerAny {
+    virtual void foo() { // just to maek it polymorphic...
+    }
+};
+
+class LayerMaker2 : public LayerMakerAny {
 public:
     OpenCLHelper *cl; // NOT owned by us
     LayerMaker2() :
@@ -74,20 +79,13 @@ class RandomPatchesMaker : public LayerMaker2 {
 public:
     int _patchSize;
     RandomPatchesMaker() :
-//        LayerMaker( net, previousLayer ),
         _patchSize(0) {
     }
     RandomPatchesMaker *patchSize( int _patchSize ) {
         this->_patchSize = _patchSize;
         return this;
     }
-//    virtual int getOutputBoardSize() const;
-//    virtual int getOutputPlanes() const;
-//    virtual int getBiased() const;
-//    virtual Layer *instance() const;
     static RandomPatchesMaker *instance() {
-//        RandomPatchesMaker maker; 
-//        return maker;
         return new RandomPatchesMaker();
     }    
     virtual RandomPatchesMaker *clone() const {
@@ -97,9 +95,30 @@ public:
     }
     virtual Layer *createLayer( Layer *previousLayer );
 };
+class RandomTranslationsMaker : public LayerMaker2 {
+public:
+    int _translateSize;
+    RandomTranslationsMaker() :
+        _translateSize(0) {
+    }
+    static RandomTranslationsMaker *instance() {
+        return new RandomTranslationsMaker();
+    }    
+    RandomTranslationsMaker *translateSize( int _translateSize ) {
+        this->_translateSize = _translateSize;
+        return this;
+    }
+    virtual RandomTranslationsMaker *clone() const {
+        RandomTranslationsMaker *thisClone = new RandomTranslationsMaker();
+        memcpy( thisClone, this, sizeof( RandomTranslationsMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
+};
 
 
-class LayerMaker {
+
+class LayerMaker : public LayerMakerAny {
 public:
     Layer *previousLayer;
     NeuralNet *net; // only used for 'insert'
@@ -136,24 +155,6 @@ public:
     }
     NormalizationLayerMaker *scale( float _scale ) {
         this->_scale = _scale;
-        return this;
-    }
-    virtual int getOutputBoardSize() const;
-    virtual int getOutputPlanes() const;
-    virtual int getBiased() const;
-    virtual Layer *instance() const;
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
-};
-
-class RandomTranslationsMaker : public LayerMaker {
-public:
-    int _translateSize;
-    RandomTranslationsMaker( NeuralNet *net, Layer *previousLayer ) :
-        LayerMaker( net, previousLayer ),
-        _translateSize(0) {
-    }
-    RandomTranslationsMaker *translateSize( int _translateSize ) {
-        this->_translateSize = _translateSize;
         return this;
     }
     virtual int getOutputBoardSize() const;

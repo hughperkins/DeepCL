@@ -26,7 +26,7 @@ public:
     const int layerIndex;
     bool training;
 
-    LayerMaker const*maker;
+    LayerMakerAny const*maker;
 
     virtual float * getResults() = 0;
 //    virtual Layer *clone() = 0;
@@ -36,7 +36,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Layer( Layer *previousLayer, LayerMaker const*maker );
+    Layer( Layer *previousLayer, LayerMakerAny const*maker );
     VIRTUAL ~Layer();
     VIRTUAL void setTraining( bool training );
     VIRTUAL void setBatchSize( int batchSize );

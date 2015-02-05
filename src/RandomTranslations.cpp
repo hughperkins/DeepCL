@@ -28,11 +28,11 @@ RandomTranslations::RandomTranslations( Layer *previousLayer, RandomTranslations
         batchSize(0),
         allocatedSize(0) {
     if( inputBoardSize == 0 ) {
-        maker->net->print();
+//        maker->net->print();
         throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input board size is 0" );
     }
     if( outputBoardSize == 0 ) {
-        maker->net->print();
+//        maker->net->print();
         throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output board size is 0" );
     }
     if( previousLayer->needsBackProp() ) {

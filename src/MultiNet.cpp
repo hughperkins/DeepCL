@@ -54,7 +54,8 @@ VIRTUAL int MultiNet::getOutputBoardSize() const {
     return trainables[0]->getOutputBoardSize();
 }
 VIRTUAL LossLayerMaker *MultiNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
-    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) );
+    throw runtime_error("need to implement MultiNet::cloneLossLayerMaker :-)" );
+//    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) );
 }
 VIRTUAL float MultiNet::calcLoss(float const *expectedValues ) {
     float loss = lossLayer->calcLoss( expectedValues );

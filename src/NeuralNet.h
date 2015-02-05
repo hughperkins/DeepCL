@@ -49,7 +49,6 @@ public:
     ConvolutionalMaker *convolutionalMaker();
     PoolingMaker *poolingMaker();
     NormalizationLayerMaker *normalizationMaker();
-    RandomTranslationsMaker *randomTranslationsMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();

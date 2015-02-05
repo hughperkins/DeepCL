@@ -19,7 +19,7 @@ using namespace std;
 #define STATIC
 
 RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker const *maker ) :
-        Layer( previousLayer, 0 ),
+        Layer( previousLayer, maker ),
         patchSize( maker->_patchSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputBoardSize( previousLayer->getOutputBoardSize() ),

@@ -74,7 +74,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             net->addLayer( RandomPatchesMaker::instance()->patchSize( patchSize ) );
         } else if( baseLayerDef.find("rt") != string::npos ) {
             int translateSize = atoi( split( baseLayerDef, "rt" )[1] );
-            net->randomTranslationsMaker()->translateSize( translateSize )->insert();
+            net->addLayer( RandomTranslationsMaker::instance()->translateSize( translateSize ) );
         } else if( baseLayerDef.find("n") != string::npos ) {
             vector<string> fullDef = split( baseLayerDef, "n" );
             int numPlanes = atoi( fullDef[0] );

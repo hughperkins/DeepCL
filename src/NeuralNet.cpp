@@ -60,11 +60,17 @@ NeuralNet *NeuralNet::clone() {
     NeuralNet *copy = new NeuralNet();
     Layer *previousLayer = 0;
     for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        LayerMaker const*maker = (*it)->maker;
-        LayerMaker const*makerCopy = maker->clone( previousLayer );
-        Layer *layerCopy = makerCopy->instance();
-        copy->layers.push_back( layerCopy );
-        previousLayer = layerCopy;
+        LayerMakerAny const*maker = (*it)->maker;
+        LayerMaker const*maker1 = dynamic_cast< LayerMaker const*>( maker );
+        LayerMaker2 const*maker2 = dynamic_cast< LayerMaker2 const*>( maker );
+        if( maker1 != 0 ) {
+            LayerMaker const*makerCopy = maker1->clone( previousLayer );
+            Layer *layerCopy = makerCopy->instance();
+            copy->layers.push_back( layerCopy );
+            previousLayer = layerCopy;
+        } else {
+            throw runtime_error("not implemetned yet, layermaker2 clone");
+        }
     }
 }
 OpenCLHelper *NeuralNet::getCl() {
@@ -105,9 +111,9 @@ NormalizationLayerMaker *NeuralNet::normalizationMaker() {
 //RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
 //    return new RandomPatchesMaker( this, getLastLayer() );
 //}
-RandomTranslationsMaker *NeuralNet::randomTranslationsMaker() {
-    return new RandomTranslationsMaker( this, getLastLayer() );
-}
+//RandomTranslationsMaker *NeuralNet::randomTranslationsMaker() {
+//    return new RandomTranslationsMaker( this, getLastLayer() );
+//}
 SquareLossMaker *NeuralNet::squareLossMaker() {
     return new SquareLossMaker( this, getLastLayer() );
 }
@@ -147,8 +153,9 @@ EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
 VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
-    LossLayer const*lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
-    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) ) ;
+    throw runtime_error("need to implement neuralnet::clonelosslayermaker :-)" );
+//    LossLayer const*lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
+//    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) ) ;
 }
 template< typename T > InputLayer<T> *NeuralNet::getFirstLayer() {
     return dynamic_cast<InputLayer<T> *>( layers[0] );
