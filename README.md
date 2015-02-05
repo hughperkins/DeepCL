@@ -241,15 +241,15 @@ Example usage:
 * You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
 ```c++
 NeuralNet *net = new NeuralNet();
-net->inputMaker<unsigned char>()->numPlanes(1)->boardSize(28)->insert();
-net->normalizationMaker()->translate( -mean )->scale( 1.0f / standardDeviation )->insert();
-net->convolutionalMaker()->numFilters(8)->filterSize(5)->relu()->biased()->insert();
-net->poolingMaker()->poolingSize(2)->insert();
-net->convolutionalMaker()->numFilters(16)->filterSize(5)->relu()->biased()->insert();
-net->poolingMaker()->poolingSize(3)->insert();
-net->fullyConnectedMaker()->numPlanes(150)->boardSize(1)->tanh()->biased()->insert();
-net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased()->insert();
-net->softMaxLossMaker()->insert();
+net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(1)->boardSize(28) );
+net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
+net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
+net->addLayer( PoolingMaker::instance()->poolingSize(2) );
+net->addLayer( ConvolutionalMaker::instance()->numFilters(16)->filterSize(5)->relu()->biased() );
+net->addLayer( PoolingMaker::instance()->poolingSize(3) );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(150)->boardSize(1)->tanh()->biased() );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->boardSize(1)->linear()->biased() );
+net->addLayer( SoftMaxLossMaker::instance() );
 net->print();
 ```
 * The following sections will detail the various layers available, and the options available for each layer type
@@ -268,11 +268,11 @@ NeuralNet *net = new NeuralNet();
 * You need exactly one input layer
 * This is templated, so you can feed it an array of `unsigned char *`, or `float *`, later, as you wish.  If you want to feed in data as `float *`, then do:
 ```c++
-net->inputMaker<float>()->numPlanes(10)->boardSize(19)->insert();
+net->addLayer( InputMaker<float>::instance()->numPlanes(10)->boardSize(19) );
 ```
 * If you want to feed in data as `unsigned char *`, then do:
 ```c++
-net->inputMaker<unsigned char>()->numPlanes(10)->boardSize(19)->insert();
+net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(10)->boardSize(19) );
 ```
 * You need to set the number of input planes, and the board size.
 
@@ -281,8 +281,8 @@ net->inputMaker<unsigned char>()->numPlanes(10)->boardSize(19)->insert();
 * You can add a normalization layer, to translate and scale input data.  Put it just after the input layer, like this:
 ```c++
 NeuralNet *net = new NeuralNet();
-net->inputMaker<float>()->numPlanes(10)->boardSize(19)->insert();
-net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation )->insert();
+net->addLayer( InputMaker<float>::instance()->numPlanes(10)->boardSize(19) );
+net->addLayer( NormalizationMaker::instance()->translate( - mean )->scale( 1.0f / standardDeviation ) );
 // other layers here...
 ```
 
@@ -294,7 +294,7 @@ net->normalizationMaker()->translate( - mean )->scale( 1.0f / standardDeviation 
 * Size of output image from this layer is the size of the patch
 * During testing, the patch is cut from the centre of the image
 ```c++
-net->randomPatchMaker()->patchSize(24)->insert();
+net->addLayer( RandomPatchMaker::instance()->patchSize(24) );
 ```
 
 ## Random translations layer
@@ -304,14 +304,14 @@ net->randomPatchMaker()->patchSize(24)->insert();
 * If you put eg `translateSize(2)`, then the translation amount will be chosen uniformly from the set `{-2,-1,0,1,2}`, for each axis.
 * Output image from this layer is same size as input image
 ```c++
-net->randomTranslationsMaker()->translateSize(2)->insert();
+net->addLayer( RandomTranslationsMaker::instance()->translateSize(2) );
 ```
 
 ## Convolutional layers
 
 Eg:
 ```c++
-net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased() );
 ```
 
 * You can change the number of filters, and their size.  If you want, you can use any of the following options:
@@ -330,7 +330,7 @@ net->ConvolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->inse
 
 eg:
 ```c++
-net->fullyConnectedMaker()->numPlanes(2)->boardSize(28)->insert();
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(2)->boardSize(28) );
 ```
 
 Available options:
@@ -346,21 +346,21 @@ Available options:
 ## Max-pooling layers
 
 ```c++
-net->poolingMaker()->poolingSize(2)->insert();
+net->addLayer( PoolingMaker::instance()->poolingSize(2) );
 ```
 * By default, if the input board size is not an exact multiple of the poolingsize, the extra margin will be ignored
 * You can specify `padZeros` to include this margin:
 ```c++
-net->poolingMaker()->poolingSize(2)->padZeros()->insert();
+net->addLayer( PoolingMaker::instance()->poolingSize(2)->padZeros() );
 ```
 
 ## Loss layer
 
 You need to add exactly one loss layer, as the last layer of the net.  The following loss layers are available:
 ```c++
-net->squareLossMaker()->insert();
-net->crossEntropyLossMaker()->insert();
-net->softMaxLossLayer()->insert();
+net->addLayer( SquareLossMaker::instance() );
+net->addLayer( CrossEntropyMaker::instance() );
+net->addLayer( SoftMaxLayer::instance() );
 ```
 * if your outputs are categorial, 1-of-N, then softMaxLossLayer is probably what you want
 * otherwise, you can choose square loss, or cross-entropy loss:
