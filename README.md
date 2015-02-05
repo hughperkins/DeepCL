@@ -15,6 +15,7 @@ Contents
     - [Random patches](#random-patches)
     - [Random translations](#random-translations)
   - [Pre-processing](#pre-processing)
+  - [Multi-column deep neural network "MultiNet"](#multi-column-deep-neural-network-multinet)
   - [Weight persistence](#weight-persistence)
   - [Command-line options](#command-line-options)
 - [Validation against standard datasets](#validation-against-standard-datasets)
@@ -66,6 +67,28 @@ OpenCL library to train deep convolutional networks
 - C++
 - OpenCL
 - Deep convolutional
+
+Functionalities:
+* convolutional layers
+* max-pooling
+* normalization layer
+* random translations, as in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf)
+* random patches, as in [ImageNet Classification with Deep Convolutional Networks](http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks)
+* multinet, ie Multi-column deep convolutional network, [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
+* simple command-line network specification, as per notation in [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf)
+* pad-zeros possible for convolutional layer
+* various activation functions available:
+  * tanh
+  * scaled tanh (1.7519 * tanh(2/3x) )
+  * linear
+  * sigmoid
+  * relu
+  * softmax
+* fully-connected layers
+* various loss layers available:
+  * square loss
+  * cross-entropy
+  * multinomial cross-entropy (synonymous with multinomial logistic, etc)
 
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
@@ -149,6 +172,11 @@ Example usage:
 ./prepare-norb
 ```
 
+## Multi-column deep neural network "MultiNet"
+
+* You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
+* Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
+
 ## Weight persistence
 
 * If we're going to train for hours or days, we probably want to make sure that if our process gets interrupted, we don't lose our training so far
@@ -173,6 +201,7 @@ Example usage:
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
 | normalization=maxmin | can choose maxmin or stddev.  Default is stddev |
 | normalizationnumstds=2 | how many standard deviations from mean should be +1/-1?  Default is 2 |
+| multinet=3 | train 3 networks at the same time, and predict using average output from all 3, can put any integer greater than 1 |
 
 # Validation against standard datasets
 
