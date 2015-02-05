@@ -108,7 +108,7 @@ VIRTUAL void RandomTranslations::propagate() {
             const int outColOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
 //            const int outStartRow = outRowOffset > 0 ? rowOffset : 0;
 //            const int outEndRow = outputBoardSize - 1  + ( outColOffset < 0 ? outColOffset : 0 );
-            const int rowCopyLength = outputBoardSize - abs<int>( outColOffset );
+            const int rowCopyLength = outputBoardSize - abs( outColOffset );
             const int outColStart = outColOffset > 0 ? outColOffset : 0;
             const int inColStart = outColOffset > 0 ? 0 : - outColOffset;
             for( int inRow = 0; inRow < inputBoardSize; inRow++ ) {
