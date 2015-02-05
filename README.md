@@ -92,7 +92,7 @@ Functionalities:
 
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
-- obtained 99.4% test accuracy on MNIST, using `netdef=rt2-16c5{padzeros}-mp2-24c5{padzeros}-mp3-150n-10n`
+- obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n numepochs=20 multinet=6 learningrate=0.002`
   - epoch time 31.5 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
 - obtained 91.7% test accuracy (99.996% training accuracy) on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, using `netdef=8c5-mp4-24c6-mp3-80c6-5n`
   - epoch time 76 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
