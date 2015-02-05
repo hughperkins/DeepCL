@@ -152,7 +152,7 @@ void go(Config config) {
     for( int i = 0; i < config.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros) );
     }
-    net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased) );
     net->softMaxLossMaker()->insert();
     net->setBatchSize(config.batchSize);
     net->print();

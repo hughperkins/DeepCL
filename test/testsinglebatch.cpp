@@ -87,10 +87,10 @@ void test( TestArgs args ) {
         }
     }
     if( args.softMax ) {
-        net->fullyConnectedMaker()->numPlanes(args.numFilters)->boardSize(1)->linear()->biased()->insert();
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->linear()->biased() );
         net->softMaxLossMaker()->insert();
     } else {
-        net->fullyConnectedMaker()->numPlanes(args.numFilters)->boardSize(1)->tanh()->biased()->insert();
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->tanh()->biased() );
         net->squareLossMaker()->insert();
     }
     net->print();
@@ -210,7 +210,7 @@ void testLabelled( TestArgs args ) {
             net->poolingMaker()->poolingSize( args.poolingSize )->insert();
         }
     }
-    net->fullyConnectedMaker()->numPlanes(args.numCats)->boardSize(1)->linear()->biased()->insert();
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numCats)->boardSize(1)->linear()->biased() );
     net->softMaxLossMaker()->insert();
     net->print();
     net->setBatchSize(args.batchSize);

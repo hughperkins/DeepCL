@@ -87,14 +87,14 @@ LayerMaker *PoolingMaker::clone( Layer *previousLayer ) const {
     maker->_padZeros = _padZeros;
     return maker;
 }
-LayerMaker *FullyConnectedMaker::clone( Layer *previousLayer ) const {
-    FullyConnectedMaker *maker = new FullyConnectedMaker( 0, previousLayer );
-    maker->_numPlanes = _numPlanes;
-    maker->_boardSize = _boardSize;
-    maker->_biased = _biased;
-    maker->_activationFunction = _activationFunction;
-    return maker;
-}
+//LayerMaker *FullyConnectedMaker::clone( Layer *previousLayer ) const {
+//    FullyConnectedMaker *maker = new FullyConnectedMaker( 0, previousLayer );
+//    maker->_numPlanes = _numPlanes;
+//    maker->_boardSize = _boardSize;
+//    maker->_biased = _biased;
+//    maker->_activationFunction = _activationFunction;
+//    return maker;
+//}
 LayerMaker *SquareLossMaker::clone( Layer *previousLayer ) const {
     SquareLossMaker *maker = new SquareLossMaker( 0, previousLayer );
     return maker;
@@ -118,16 +118,16 @@ LayerMaker *SoftMaxMaker::clone( Layer *previousLayer ) const {
 //    return maker;
 //}
 
-Layer *FullyConnectedMaker::instance() const {
-    if( _numPlanes == 0 ) {
-        throw runtime_error("Must provide ->planes(planes)");
-    }
-    if( _boardSize == 0 ) {
-        throw runtime_error("Must provide ->boardSize(boardSize)");
-    }
-    Layer *layer = new FullyConnectedLayer( net->cl, previousLayer, this );
-    return layer;
-}
+//Layer *FullyConnectedMaker::instance() const {
+//    if( _numPlanes == 0 ) {
+//        throw runtime_error("Must provide ->planes(planes)");
+//    }
+//    if( _boardSize == 0 ) {
+//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    }
+//    Layer *layer = new FullyConnectedLayer( net->cl, previousLayer, this );
+//    return layer;
+//}
 Layer *SquareLossMaker::instance() const {
     SquareLossLayer *layer = new SquareLossLayer( previousLayer, this );
     return layer;

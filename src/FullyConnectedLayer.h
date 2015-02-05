@@ -9,6 +9,8 @@
 #include "Layer.h"
 #include "ConvolutionalLayer.h"
 
+class FullyConnectedMaker;
+
 #define VIRTUAL virtual
 #define STATIC static
 

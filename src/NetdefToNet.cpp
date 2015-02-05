@@ -79,9 +79,9 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             vector<string> fullDef = split( baseLayerDef, "n" );
             int numPlanes = atoi( fullDef[0] );
             if( i == splitNetDef.size() - 1 ) {
-                net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->linear()->biased()->insert();
+                net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->linear()->biased() );
             } else {
-                net->fullyConnectedMaker()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased()->insert();
+                net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased() );
             }
         } else {
             cout << "network definition " << baseLayerDef << " not recognised" << endl;

@@ -5,6 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "NeuralNet.h"
+#include "FullyConnectedMaker.h"
 
 #include "FullyConnectedLayer.h"
 
@@ -15,14 +16,14 @@ using namespace std;
 
 FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker const*maker ) :
         Layer( previousLayer, maker ),
-        numPlanes( maker->getOutputPlanes() ),
-        boardSize( maker->getOutputBoardSize() ),
-        fn( maker->getActivationFunction() ) {
+        numPlanes( maker->_numPlanes ),
+        boardSize( maker->_boardSize ),
+        fn( maker->_activationFunction ) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * boardSize * boardSize )
                       ->filterSize( previousLayer->getOutputBoardSize() )
                         ->biased( maker->_biased )
-                        ->fn( maker->getActivationFunction() );
+                        ->fn( maker->_activationFunction );
     convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
 //    delete convolutionalMaker;
 }

@@ -66,7 +66,7 @@ int main(int argc, char *argv[] ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(16)->filterSize(5)->relu()->biased()->padZeros() );
 //        net->poolingMaker()->poolingSize(2)->insert();
     }
-    net->fullyConnectedMaker()->numPlanes(boardSizeSquared)->boardSize(1)->linear()->biased()->insert();
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(boardSizeSquared)->boardSize(1)->linear()->biased() );
     net->softMaxLossMaker()->insert();
     net->print();
 

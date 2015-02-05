@@ -97,9 +97,9 @@ void NeuralNet::addLayer( LayerMaker2 *maker ) {
 //    }
 //    return new InputLayerMaker<T>( this );
 //}
-FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
-    return new FullyConnectedMaker( this, getLastLayer() );
-}
+//FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
+//    return new FullyConnectedMaker( this, getLastLayer() );
+//}
 //ConvolutionalMaker *NeuralNet::convolutionalMaker() {
 //    return new ConvolutionalMaker( this, getLastLayer() );
 //}

@@ -20,6 +20,7 @@
 #include "RandomTranslationsMaker.h"
 #include "RandomPatchesMaker.h"
 #include "NormalizationLayerMaker.h"
+#include "FullyConnectedMaker.h"
 
 #include "DllImportExport.h"
 
@@ -50,7 +51,6 @@ public:
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
     void addLayer( LayerMaker2 *maker );
-    FullyConnectedMaker *fullyConnectedMaker();
     PoolingMaker *poolingMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
