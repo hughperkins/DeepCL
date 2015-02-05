@@ -18,7 +18,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-RandomTranslations::RandomTranslations( Layer *previousLayer, RandomTranslationsMaker const*maker ) :
+RandomTranslations::RandomTranslations( Layer *previousLayer, RandomTranslationsMaker *maker ) :
         Layer( previousLayer, maker ),
         translateSize( maker->_translateSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),

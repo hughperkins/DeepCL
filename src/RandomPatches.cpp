@@ -18,7 +18,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker const *maker ) :
+RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker *maker ) :
         Layer( previousLayer, maker ),
         patchSize( maker->_patchSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),

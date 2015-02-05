@@ -36,7 +36,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SoftMaxLayer( Layer *previousLayer, SoftMaxMaker const *maker );
+    SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker );
     VIRTUAL ~SoftMaxLayer();
     VIRTUAL float *getResults();
     VIRTUAL float *getErrorsForUpstream();

@@ -59,20 +59,29 @@ NeuralNet::~NeuralNet() {
 }
 NeuralNet *NeuralNet::clone() {
     NeuralNet *copy = new NeuralNet();
-    Layer *previousLayer = 0;
+//    Layer *previousLayer = 0;
     for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        LayerMaker2 const*maker = (*it)->maker;
+        LayerMaker2 *maker = (*it)->maker;
+
+        LayerMaker2 *makerCopy = maker->clone();
+//        Layer *layerCopy  = makerCopy->createLayer( previousLayer );
+        copy->addLayer( makerCopy );
+//        previousLayer = layerCopy;
+
 //        LayerMaker const*maker1 = dynamic_cast< LayerMaker const*>( maker );
-        LayerMaker2 const*maker2 = dynamic_cast< LayerMaker2 const*>( maker );
+//        LayerMaker2 const*maker2 = dynamic_cast< LayerMaker2 const*>( maker );
 //        if( maker1 != 0 ) {
 //            LayerMaker const*makerCopy = maker1->clone( previousLayer );
 //            Layer *layerCopy = makerCopy->instance();
 //            copy->layers.push_back( layerCopy );
 //            previousLayer = layerCopy;
 //        } else {
-            throw runtime_error("not implemetned yet, layermaker2 clone");
+//            throw runtime_error("not implemetned yet, layermaker2 clone");
 //        }
     }
+    copy->print();
+    cout << "outputboardsize: " << copy->getOutputBoardSize() << endl;
+    return copy;
 }
 OpenCLHelper *NeuralNet::getCl() {
     return cl;
@@ -154,7 +163,12 @@ EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
 VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker( Layer *clonePreviousLayer ) const {
-    throw runtime_error("need to implement neuralnet::clonelosslayermaker :-)" );
+    LossLayer const *lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
+    if( lossLayer == 0 ) {
+        throw runtime_error("error: last layer must be a losslayer");
+    }
+    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone() );
+//    throw runtime_error("need to implement neuralnet::clonelosslayermaker :-)" );
 //    LossLayer const*lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
 //    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) ) ;
 }

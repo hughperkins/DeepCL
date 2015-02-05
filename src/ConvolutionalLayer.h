@@ -94,7 +94,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker const*maker );
+    ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker *maker );
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL float *getErrorsForUpstream();

@@ -15,7 +15,7 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-SquareLossLayer::SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker ) :
+SquareLossLayer::SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker ) :
         LossLayer( previousLayer, maker ),
         errors( 0 ),
         allocatedSize( 0 ) {

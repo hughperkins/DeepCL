@@ -28,7 +28,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SquareLossLayer( Layer *previousLayer, SquareLossMaker const*maker );
+    SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker );
     VIRTUAL ~SquareLossLayer();
     VIRTUAL float*getErrorsForUpstream();
     VIRTUAL float calcLoss( float const *expected );

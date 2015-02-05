@@ -18,7 +18,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    LossLayer( Layer *previousLayer, LossLayerMaker const*maker );
+    LossLayer( Layer *previousLayer, LossLayerMaker *maker );
     VIRTUAL void propagate();
     VIRTUAL bool needsBackProp();
     VIRTUAL float *getResults();

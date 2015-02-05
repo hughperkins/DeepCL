@@ -13,7 +13,7 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-LossLayer::LossLayer( Layer *previousLayer, LossLayerMaker const*maker ) :
+LossLayer::LossLayer( Layer *previousLayer, LossLayerMaker *maker ) :
         Layer( previousLayer, maker ) {
 }
 VIRTUAL void LossLayer::propagate() {

@@ -5,7 +5,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-Layer::Layer( Layer *previousLayer, LayerMaker2 const*maker ) :
+Layer::Layer( Layer *previousLayer, LayerMaker2 *maker ) :
     previousLayer( previousLayer ),
     training( false ),
     nextLayer( 0 ),

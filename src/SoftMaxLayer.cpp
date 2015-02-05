@@ -16,7 +16,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker const *maker ) :
+SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker ) :
     LossLayer( previousLayer, maker ),
         allocatedSize( 0 ),
         errorsForUpstream( 0 ),

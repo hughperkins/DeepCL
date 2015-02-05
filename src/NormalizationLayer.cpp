@@ -13,7 +13,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker const*maker ) :
+NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker ) :
        Layer( previousLayer, maker ),
     batchSize(0),
     allocatedSize(0),

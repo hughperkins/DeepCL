@@ -34,6 +34,7 @@ public:
         this->cl = cl;
     }
     virtual Layer *createLayer( Layer *previousLayer ) = 0;
+    virtual LayerMaker2 *clone() const = 0;
 };
 
 //class LayerMaker : public LayerMakerAny {

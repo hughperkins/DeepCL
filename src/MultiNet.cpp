@@ -21,8 +21,13 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-MultiNet::MultiNet( int numNets, NeuralNet *model ) {
-    trainables.push_back( model );
+MultiNet::MultiNet( int numNets, NeuralNet *model ) :
+        results( 0 ),
+        allocatedSize( 0 ),
+        batchSize( 0 ),
+        proxyInputLayer( 0 ),
+        lossLayer( 0 ) {
+//    trainables.push_back( model );
     for( int i = 0; i < numNets; i++ ) {
         trainables.push_back( model->clone() );
     }
@@ -33,8 +38,15 @@ MultiNet::MultiNet( int numNets, NeuralNet *model ) {
     lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker(proxyInputLayer)->createLayer(proxyInputLayer) );
 }
 VIRTUAL MultiNet::~MultiNet() {
-    delete proxyInputLayer;
-    delete lossLayer;
+    if( proxyInputLayer != 0 ) {
+        delete proxyInputLayer;
+    }
+    if( lossLayer != 0 ) {
+        delete lossLayer;
+    }
+    if( results != 0 ) {
+        delete[] results;
+    }
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
         delete (*it);
     }    

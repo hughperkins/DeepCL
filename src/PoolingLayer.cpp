@@ -19,7 +19,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker const*maker ) :
+PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker *maker ) :
         Layer( previousLayer, maker ),
         padZeros( maker->_padZeros ),
         poolingSize( maker->_poolingSize ),

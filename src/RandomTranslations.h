@@ -35,7 +35,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    RandomTranslations( Layer *previousLayer, RandomTranslationsMaker const*maker );
+    RandomTranslations( Layer *previousLayer, RandomTranslationsMaker *maker );
     VIRTUAL ~RandomTranslations();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();

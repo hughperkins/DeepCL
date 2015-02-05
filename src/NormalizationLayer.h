@@ -41,7 +41,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker const*maker );
+    NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker );
     VIRTUAL ~NormalizationLayer();
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();

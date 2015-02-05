@@ -14,7 +14,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker const*maker ) :
+FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes( maker->_numPlanes ),
         boardSize( maker->_boardSize ),

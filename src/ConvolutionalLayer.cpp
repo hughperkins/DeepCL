@@ -17,7 +17,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker const*maker ) :
+ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker *maker ) :
         Layer( previousLayer, maker ),
 //        filterSize( maker->_filterSize ),
 //        filterSizeSquared( filterSize * filterSize ),

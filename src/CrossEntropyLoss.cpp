@@ -14,7 +14,7 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-CrossEntropyLoss::CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker const*maker ) :
+CrossEntropyLoss::CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker ) :
         LossLayer( previousLayer, maker ),
         errors( 0 ),
         allocatedSize( 0 ) {

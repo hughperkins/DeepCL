@@ -50,7 +50,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker const*maker );
+    PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker *maker );
     VIRTUAL ~PoolingLayer();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
