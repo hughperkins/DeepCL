@@ -19,8 +19,8 @@ using namespace std;
 
 void testNumerically( float learningRate, int batchSize, int boardSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros)->insert();
-    net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros)->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
     net->squareLossMaker()->insert();
     net->setBatchSize( batchSize );
 
@@ -166,9 +166,9 @@ float *test( int boardSize ) {
 */
 // we want to test calcerrors for layer 2 in a network like:
 //    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-//    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-//    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-//    net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased(config.biased)->insert();
+//    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+//    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+//    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased(config.biased)->insert();
 //TEST( testbackproperrors, DISABLED_board28 ) {
 //    float *errorsForUpstream = test(28);
 //    EXPECT_FLOAT_NEAR( -1.66007, errorsForUpstream[68268] );

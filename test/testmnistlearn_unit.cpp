@@ -142,7 +142,7 @@ void go(Config config) {
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased)->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased) );
     net->squareLossMaker()->insert();
 
 //    if( FileHelper::exists("weights.dat" ) ){

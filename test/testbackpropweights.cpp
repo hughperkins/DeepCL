@@ -26,7 +26,7 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
 
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(numPlanes)->boardSize(boardSize) );
-    net->convolutionalMaker()->numFilters(1)->filterSize(filterSize)->biased(0)->tanh()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->tanh() );
     net->squareLossMaker()->insert();
     net->setBatchSize( batchSize );
 

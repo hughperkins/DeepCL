@@ -161,9 +161,15 @@ template< typename T > InputLayer<T> *NeuralNet::getFirstLayer() {
     return dynamic_cast<InputLayer<T> *>( layers[0] );
 }
 Layer *NeuralNet::getLastLayer() {
+    if( layers.size() == 0 ) {
+        return 0;
+    }
     return layers[layers.size() - 1];
 }
 Layer const*NeuralNet::getLastLayer() const {
+    if( layers.size() == 0 ) {
+        return 0;
+    }
     return layers[layers.size() - 1];
 }
 VIRTUAL int NeuralNet::getOutputPlanes() const {
