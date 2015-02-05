@@ -22,25 +22,6 @@
 
 using namespace std;
 
-template< typename T > Layer *InputLayerMaker<T>::createLayer( Layer *previousLayer ) {
-    return new InputLayer<T>( this );
-}
-Layer *RandomPatchesMaker::createLayer( Layer *previousLayer ) {
-    return new RandomPatches( previousLayer, this );
-}
-Layer *RandomTranslationsMaker::createLayer( Layer *previousLayer ) {
-    return new RandomTranslations( previousLayer, this );
-}
-Layer *ConvolutionalMaker::createLayer( Layer *previousLayer ) {
-    if( _numFilters == 0 ) {
-        throw runtime_error("Must provide ->numFilters(numFilters)");
-    }
-    if( _filterSize == 0 ) {
-        throw runtime_error("Must provide ->filterSize(filterSize)");
-    }
-    Layer *layer = new ConvolutionalLayer( cl, previousLayer, this );
-    return layer;
-}
 
 Layer *LayerMaker::insert() {
     Layer *layer = net->addLayer( this );
@@ -242,6 +223,4 @@ int NormalizationLayerMaker::getBiased() const {
 //    return false;
 //}
 
-template class InputLayerMaker<float>;
-template class InputLayerMaker<unsigned char>;
 

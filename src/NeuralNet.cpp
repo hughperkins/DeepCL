@@ -21,6 +21,7 @@
 #include "LossLayer.h"
 #include "IAcceptsLabels.h"
 #include "ExceptionMacros.h"
+#include "InputLayerMaker.h"
 
 #include "NeuralNet.h"
 

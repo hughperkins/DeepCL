@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "Layer.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -13,6 +15,7 @@ class CLKernel;
 class CLWrapper;
 class PoolingPropagate;
 class PoolingBackprop;
+class RandomPatchesMaker;
 
 class RandomPatches : public Layer {
 public:

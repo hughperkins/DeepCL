@@ -7,8 +7,8 @@
 #include <stdexcept>
 
 #include "Layer.h"
-
 #include "NeuralNet.h"
+#include "InputLayerMaker.h"
 
 #include "NeuralNetMould.h"
 

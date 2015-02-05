@@ -15,6 +15,10 @@
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
 #include "Trainable.h"
+#include "InputLayerMaker.h"
+#include "ConvolutionalMaker.h"
+#include "RandomTranslationsMaker.h"
+#include "RandomPatchesMaker.h"
 
 #include "DllImportExport.h"
 

@@ -10,6 +10,7 @@
 #include "SoftMaxLayer.h"
 #include "InputLayer.h"
 #include "LayerMaker.h"
+#include "InputLayerMaker.h"
 
 #include "MultiNet.h"
 

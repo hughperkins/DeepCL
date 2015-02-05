@@ -9,10 +9,13 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+#include "Layer.h"
+
 class CLKernel;
 class CLWrapper;
 class PoolingPropagate;
 class PoolingBackprop;
+class RandomTranslationsMaker;
 
 class RandomTranslations : public Layer {
 public:

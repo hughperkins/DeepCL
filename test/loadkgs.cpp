@@ -12,6 +12,7 @@
 #include "NeuralNet.h"
 //#include "AccuracyHelper.h"
 //#include "BoardHelper.h"
+#include "InputLayerMaker.h"
 #include "BatchLearner.h"
 #include "KgsLoader.h"
 

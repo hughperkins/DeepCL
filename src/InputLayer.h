@@ -10,6 +10,8 @@
 #include "ActivationFunction.h"
 #include "stringhelper.h"
 
+template<typename T> class InputLayerMaker;
+
 #define VIRTUAL virtual
 
 template< typename T >

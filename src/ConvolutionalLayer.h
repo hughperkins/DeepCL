@@ -21,6 +21,7 @@
 class Propagate;
 class BackpropErrorsv2;
 class BackpropWeights2;
+class ConvolutionalMaker;
 
 class ConvolutionalLayer : public Layer {
 public:
