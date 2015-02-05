@@ -6,6 +6,7 @@
 
 #include "StatefulTimer.h"
 
+#include "LayerMaker.h"
 #include "SoftMaxLayer.h"
 
 using namespace std;

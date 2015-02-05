@@ -27,7 +27,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
-    net->squareLossMaker()->insert();
+    net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
     int inputSize = net->layers[0]->getResultsSize();

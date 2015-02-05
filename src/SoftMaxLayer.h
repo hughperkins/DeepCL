@@ -10,6 +10,8 @@
 #include "LossLayer.h"
 #include "IAcceptsLabels.h"
 
+class SoftMaxMaker;
+
 #define VIRTUAL virtual
 #define STATIC static
 

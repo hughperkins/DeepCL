@@ -22,11 +22,21 @@
 
 using namespace std;
 
-
-Layer *LayerMaker::insert() {
-    Layer *layer = net->addLayer( this );
-    return layer;
+Layer *SquareLossMaker::createLayer( Layer *previousLayer ) {
+    return new SquareLossLayer( previousLayer, this );
 }
+Layer *CrossEntropyLossMaker::createLayer( Layer *previousLayer ) {
+    return new CrossEntropyLoss( previousLayer, this );
+}
+Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
+    return new SoftMaxLayer( previousLayer, this );
+}
+
+
+//Layer *LayerMaker::insert() {
+//    Layer *layer = net->addLayer( this );
+//    return layer;
+//}
 //Layer *FullyConnectedMaker::insert() {
 //    if( _numPlanes == 0 ) {
 //        throw runtime_error("Must provide ->planes(planes)");
@@ -95,19 +105,19 @@ Layer *LayerMaker::insert() {
 //    maker->_activationFunction = _activationFunction;
 //    return maker;
 //}
-LayerMaker *SquareLossMaker::clone( Layer *previousLayer ) const {
-    SquareLossMaker *maker = new SquareLossMaker( 0, previousLayer );
-    return maker;
-}
-LayerMaker *CrossEntropyLossMaker::clone( Layer *previousLayer ) const {
-    CrossEntropyLossMaker *maker = new CrossEntropyLossMaker( 0, previousLayer );
-    return maker;
-}
-LayerMaker *SoftMaxMaker::clone( Layer *previousLayer ) const {
-    SoftMaxMaker *maker = new SoftMaxMaker( 0, previousLayer );
-    maker->_perPlane = _perPlane;
-    return maker;
-}
+//LayerMaker *SquareLossMaker::clone( Layer *previousLayer ) const {
+//    SquareLossMaker *maker = new SquareLossMaker( 0, previousLayer );
+//    return maker;
+//}
+//LayerMaker *CrossEntropyLossMaker::clone( Layer *previousLayer ) const {
+//    CrossEntropyLossMaker *maker = new CrossEntropyLossMaker( 0, previousLayer );
+//    return maker;
+//}
+//LayerMaker *SoftMaxMaker::clone( Layer *previousLayer ) const {
+//    SoftMaxMaker *maker = new SoftMaxMaker( 0, previousLayer );
+//    maker->_perPlane = _perPlane;
+//    return maker;
+//}
 //LayerMaker *ConvolutionalMaker::clone( Layer *previousLayer ) const {
 //    ConvolutionalMaker *maker = new ConvolutionalMaker( 0, previousLayer );
 //    maker->_numFilters = _numFilters;
@@ -128,18 +138,18 @@ LayerMaker *SoftMaxMaker::clone( Layer *previousLayer ) const {
 //    Layer *layer = new FullyConnectedLayer( net->cl, previousLayer, this );
 //    return layer;
 //}
-Layer *SquareLossMaker::instance() const {
-    SquareLossLayer *layer = new SquareLossLayer( previousLayer, this );
-    return layer;
-}
-Layer *CrossEntropyLossMaker::instance() const {
-    CrossEntropyLoss *layer = new CrossEntropyLoss( previousLayer, this );
-    return layer;
-}
-Layer *SoftMaxMaker::instance() const {
-    Layer *layer = new SoftMaxLayer( previousLayer, this );
-    return layer;
-}
+//Layer *SquareLossMaker::instance() const {
+//    SquareLossLayer *layer = new SquareLossLayer( previousLayer, this );
+//    return layer;
+//}
+//Layer *CrossEntropyLossMaker::instance() const {
+//    CrossEntropyLoss *layer = new CrossEntropyLoss( previousLayer, this );
+//    return layer;
+//}
+//Layer *SoftMaxMaker::instance() const {
+//    Layer *layer = new SoftMaxLayer( previousLayer, this );
+//    return layer;
+//}
 //Layer *PoolingMaker::instance() const {
 //    Layer *layer = new PoolingLayer( previousLayer, this );
 //    return layer;
@@ -176,15 +186,15 @@ Layer *SoftMaxMaker::instance() const {
 //    return boardSize;
 //}
 
-int LossLayerMaker::getOutputBoardSize() const {
-    return previousLayer->getOutputBoardSize();
-}
-int LossLayerMaker::getOutputPlanes() const {
-    return previousLayer->getOutputPlanes();
-}
-int LossLayerMaker::getBiased() const {
-    return previousLayer->getBiased();
-}
+//int LossLayerMaker::getOutputBoardSize() const {
+//    return previousLayer->getOutputBoardSize();
+//}
+//int LossLayerMaker::getOutputPlanes() const {
+//    return previousLayer->getOutputPlanes();
+//}
+//int LossLayerMaker::getBiased() const {
+//    return previousLayer->getBiased();
+//}
 //int PoolingMaker::getOutputBoardSize() const {
 //    return previousLayer->getOutputBoardSize() / _poolingSize;
 //}

@@ -19,12 +19,12 @@ class SquareLossLayer;
 class CrossEntropyLayer;
 class SoftMaxLayer;
 
-class LayerMakerAny {
-    virtual void foo() { // just to maek it polymorphic...
-    }
-};
+//class LayerMakerAny {
+//    virtual void foo() { // just to maek it polymorphic...
+//    }
+//};
 
-class LayerMaker2 : public LayerMakerAny {
+class LayerMaker2 {
 public:
     OpenCLHelper *cl; // NOT owned by us
     LayerMaker2() :
@@ -36,55 +36,63 @@ public:
     virtual Layer *createLayer( Layer *previousLayer ) = 0;
 };
 
-class LayerMaker : public LayerMakerAny {
-public:
-    Layer *previousLayer;
-    NeuralNet *net; // only used for 'insert'
-    virtual int getOutputBoardSize() const = 0;
-    virtual int getOutputPlanes() const = 0;
-    virtual int getBiased() const = 0;
-    virtual ActivationFunction const*getActivationFunction() const {
-        throw std::runtime_error("getactivationfunction not impelmented for this maker type");
-    }
-    LayerMaker( NeuralNet *net, Layer *previousLayer ) :
-        net( net ),
-        previousLayer( previousLayer ) {
-    }
-    void setPreviousLayer( Layer *previousLayer ) {
-        this->previousLayer = previousLayer;
-    }
-    virtual Layer *insert();
-    virtual Layer *instance() const = 0;
-    virtual LayerMaker *clone( Layer *clonePreviousLayer ) const = 0;
-};
+//class LayerMaker : public LayerMakerAny {
+//public:
+//    Layer *previousLayer;
+//    NeuralNet *net; // only used for 'insert'
+//    virtual int getOutputBoardSize() const = 0;
+//    virtual int getOutputPlanes() const = 0;
+//    virtual int getBiased() const = 0;
+//    virtual ActivationFunction const*getActivationFunction() const {
+//        throw std::runtime_error("getactivationfunction not impelmented for this maker type");
+//    }
+//    LayerMaker( NeuralNet *net, Layer *previousLayer ) :
+//        net( net ),
+//        previousLayer( previousLayer ) {
+//    }
+//    void setPreviousLayer( Layer *previousLayer ) {
+//        this->previousLayer = previousLayer;
+//    }
+//    virtual Layer *insert();
+//    virtual Layer *instance() const = 0;
+//    virtual LayerMaker *clone( Layer *clonePreviousLayer ) const = 0;
+//};
 
-class LossLayerMaker : public LayerMaker {
+class LossLayerMaker : public LayerMaker2 {
 public:
 //    Layer *previousLayer;
-    LossLayerMaker( NeuralNet *net, Layer *previousLayer ) :
-        LayerMaker( net, previousLayer ) {
+    LossLayerMaker() {
     }
-    virtual int getOutputBoardSize() const;
-    virtual int getOutputPlanes() const;
-    virtual int getBiased() const;
 };
 
 class SquareLossMaker : public LossLayerMaker {
 public:
-    SquareLossMaker( NeuralNet *net, Layer *previousLayer ) :
-        LossLayerMaker( net, previousLayer ) {
+    SquareLossMaker() {
     }
-    virtual Layer *instance() const;
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
+    static SquareLossMaker *instance() {
+        return new SquareLossMaker();
+    }
+    virtual SquareLossMaker *clone() const {
+        SquareLossMaker *thisClone = new SquareLossMaker();
+        memcpy( thisClone, this, sizeof( SquareLossMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
 };
 
 class CrossEntropyLossMaker : public LossLayerMaker {
 public:
-    CrossEntropyLossMaker( NeuralNet *net, Layer *previousLayer ) :
-        LossLayerMaker( net, previousLayer ) {
+    CrossEntropyLossMaker() {
     }
-    virtual Layer *instance() const;
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
+    static CrossEntropyLossMaker *instance() {
+        return new CrossEntropyLossMaker();
+    }
+    virtual CrossEntropyLossMaker *clone() const {
+        CrossEntropyLossMaker *thisClone = new CrossEntropyLossMaker();
+        memcpy( thisClone, this, sizeof( CrossEntropyLossMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
 };
 
 // by default, it will be per-plane
@@ -92,10 +100,8 @@ public:
 class SoftMaxMaker : public LossLayerMaker {
 public:
     bool _perPlane = false;
-    SoftMaxMaker( NeuralNet *net, Layer *previousLayer ) :
-        LossLayerMaker( net, previousLayer ) {
+    SoftMaxMaker() {
     }
-    virtual Layer *instance() const;
     SoftMaxMaker *perColumn() {
         this->_perPlane = false;
         return this;
@@ -104,7 +110,15 @@ public:
         this->_perPlane = true;
         return this;
     }
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
+    static SoftMaxMaker *instance() {
+        return new SoftMaxMaker();
+    }
+    virtual SoftMaxMaker *clone() const {
+        SoftMaxMaker *thisClone = new SoftMaxMaker();
+        memcpy( thisClone, this, sizeof( SoftMaxMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
 };
 
 

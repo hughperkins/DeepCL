@@ -61,17 +61,17 @@ NeuralNet *NeuralNet::clone() {
     NeuralNet *copy = new NeuralNet();
     Layer *previousLayer = 0;
     for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        LayerMakerAny const*maker = (*it)->maker;
-        LayerMaker const*maker1 = dynamic_cast< LayerMaker const*>( maker );
+        LayerMaker2 const*maker = (*it)->maker;
+//        LayerMaker const*maker1 = dynamic_cast< LayerMaker const*>( maker );
         LayerMaker2 const*maker2 = dynamic_cast< LayerMaker2 const*>( maker );
-        if( maker1 != 0 ) {
-            LayerMaker const*makerCopy = maker1->clone( previousLayer );
-            Layer *layerCopy = makerCopy->instance();
-            copy->layers.push_back( layerCopy );
-            previousLayer = layerCopy;
-        } else {
+//        if( maker1 != 0 ) {
+//            LayerMaker const*makerCopy = maker1->clone( previousLayer );
+//            Layer *layerCopy = makerCopy->instance();
+//            copy->layers.push_back( layerCopy );
+//            previousLayer = layerCopy;
+//        } else {
             throw runtime_error("not implemetned yet, layermaker2 clone");
-        }
+//        }
     }
 }
 OpenCLHelper *NeuralNet::getCl() {
@@ -115,15 +115,15 @@ void NeuralNet::addLayer( LayerMaker2 *maker ) {
 //RandomTranslationsMaker *NeuralNet::randomTranslationsMaker() {
 //    return new RandomTranslationsMaker( this, getLastLayer() );
 //}
-SquareLossMaker *NeuralNet::squareLossMaker() {
-    return new SquareLossMaker( this, getLastLayer() );
-}
-CrossEntropyLossMaker *NeuralNet::crossEntropyLossMaker() {
-    return new CrossEntropyLossMaker( this, getLastLayer() );
-}
-SoftMaxMaker *NeuralNet::softMaxLossMaker() {
-    return new SoftMaxMaker( this, getLastLayer() );
-}
+//SquareLossMaker *NeuralNet::squareLossMaker() {
+//    return new SquareLossMaker( this, getLastLayer() );
+//}
+//CrossEntropyLossMaker *NeuralNet::crossEntropyLossMaker() {
+//    return new CrossEntropyLossMaker( this, getLastLayer() );
+//}
+//SoftMaxMaker *NeuralNet::softMaxLossMaker() {
+//    return new SoftMaxMaker( this, getLastLayer() );
+//}
 void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {
     initWeights( layerIndex, weights );
     initBiasWeights( layerIndex, biasWeights );
@@ -179,16 +179,16 @@ VIRTUAL int NeuralNet::getOutputPlanes() const {
 VIRTUAL int NeuralNet::getOutputBoardSize() const {
     return getLastLayer()->getOutputBoardSize();
 }
-Layer *NeuralNet::addLayer( LayerMaker *maker ) {
-//    Layer *previousLayer = 0;
-//    if( layers.size() > 0 ) {
-//        previousLayer = layers[ layers.size() - 1 ];
-//    }
-//    maker->setPreviousLayer( previousLayer );
-    Layer *layer = maker->instance();
-    layers.push_back( layer );
-    return layer;
-}
+//Layer *NeuralNet::addLayer( LayerMaker *maker ) {
+////    Layer *previousLayer = 0;
+////    if( layers.size() > 0 ) {
+////        previousLayer = layers[ layers.size() - 1 ];
+////    }
+////    maker->setPreviousLayer( previousLayer );
+//    Layer *layer = maker->instance();
+//    layers.push_back( layer );
+//    return layer;
+//}
 void NeuralNet::setBatchSize( int batchSize ) {
     for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         (*it)->setBatchSize( batchSize );

@@ -22,6 +22,7 @@
 #include "NormalizationLayerMaker.h"
 #include "FullyConnectedMaker.h"
 #include "PoolingMaker.h"
+#include "LayerMaker.h"
 
 #include "DllImportExport.h"
 
@@ -52,9 +53,6 @@ public:
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
     void addLayer( LayerMaker2 *maker );
-    SquareLossMaker *squareLossMaker();
-    CrossEntropyLossMaker *crossEntropyLossMaker();
-    SoftMaxMaker *softMaxLossMaker();
     void initWeights( int layerIndex, float *weights, float *biasWeights );
     void initWeights( int layerIndex, float *weights );
     void initBiasWeights( int layerIndex, float *weights );
@@ -69,7 +67,6 @@ public:
     Layer const*getLastLayer() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputBoardSize() const;
-    Layer *addLayer( LayerMaker *maker );
     void setBatchSize( int batchSize );
     void setTraining( bool training );
     int calcNumRight( int const *labels );

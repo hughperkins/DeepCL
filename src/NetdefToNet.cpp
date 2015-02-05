@@ -88,7 +88,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             return false;
         }
     }
-    net->softMaxLossMaker()->insert();
+    net->addLayer( SoftMaxMaker::instance() );
     return true;
 }
 

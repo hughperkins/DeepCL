@@ -10,6 +10,8 @@
 #include "LossLayer.h"
 #include "ActivationFunction.h"
 
+class SquareLossMaker;
+
 #define VIRTUAL virtual
 #define STATIC static
 

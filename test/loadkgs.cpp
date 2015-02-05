@@ -67,7 +67,7 @@ int main(int argc, char *argv[] ) {
 //        net->poolingMaker()->poolingSize(2)->insert();
     }
     net->addLayer( FullyConnectedMaker::instance()->numPlanes(boardSizeSquared)->boardSize(1)->linear()->biased() );
-    net->softMaxLossMaker()->insert();
+    net->addLayer( SoftMaxMaker::instance() );;
     net->print();
 
     int numBatches = ( Ntrain + batchSize - 1 ) / batchSize;

@@ -153,7 +153,7 @@ void go(Config config) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros) );
     }
     net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased) );
-    net->softMaxLossMaker()->insert();
+    net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize(config.batchSize);
     net->print();
 

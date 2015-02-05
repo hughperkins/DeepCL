@@ -30,7 +30,7 @@ MultiNet::MultiNet( int numNets, NeuralNet *model ) {
     inputLayerMaker->numPlanes( trainables[0]->getOutputPlanes() );
     inputLayerMaker->boardSize( trainables[0]->getOutputBoardSize() );
     proxyInputLayer = new InputLayer<float>( inputLayerMaker );
-    lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker(proxyInputLayer)->instance() );
+    lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker(proxyInputLayer)->createLayer(proxyInputLayer) );
 }
 VIRTUAL MultiNet::~MultiNet() {
     delete proxyInputLayer;

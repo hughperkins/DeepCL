@@ -140,7 +140,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     ldc.applyAndGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
-    net->squareLossMaker()->insert();
+    net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
@@ -165,7 +165,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     ldc.applyOrGate();
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
-    net->squareLossMaker()->insert();
+    net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedResults)->run();
@@ -242,7 +242,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
-    net->squareLossMaker()->insert();
+    net->addLayer( SquareLossMaker::instance() );;
     cout << "hand-setting weights..." << endl;
     net->initWeights( 1, layer1weights, layer1bias );
     net->initWeights( 2, layer2weights, layer2bias );

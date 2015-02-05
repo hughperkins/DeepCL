@@ -6,6 +6,7 @@
 
 #include "SquareLossLayer.h"
 #include "LossLayer.h"
+#include "LayerMaker.h"
 
 using namespace std;
 

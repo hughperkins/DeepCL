@@ -718,7 +718,7 @@ TEST( SLOW_testpropagate, compare ) {
 
 TEST( testpropagate, softmax ) {
     NeuralNet *net = NeuralNet::maker()->boardSize(1)->planes(4)->instance();
-    net->softMaxLossMaker()->insert();
+    net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
     float *input = new float[net->layers[0]->getOutputPlanes()];
     input[0] = 0;
@@ -776,7 +776,7 @@ TEST( testpropagate, softmax ) {
 
 TEST( testpropagate, softmax_byplane ) {
     NeuralNet *net = NeuralNet::maker()->boardSize(2)->planes(1)->instance();
-    net->softMaxLossMaker()->perPlane()->insert();
+    net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
     int boardSizeSquared = net->layers[0]->getOutputBoardSize() * net->layers[0]->getOutputBoardSize();
     float *input = new float[boardSizeSquared];
