@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2014,2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -81,12 +81,12 @@ Layer *LayerMaker::insert() {
 //    maker->_translateSize = _translateSize;
 //    return maker;
 //}
-LayerMaker *PoolingMaker::clone( Layer *previousLayer ) const {
-    PoolingMaker *maker = new PoolingMaker( 0, previousLayer );
-    maker->_poolingSize = _poolingSize;
-    maker->_padZeros = _padZeros;
-    return maker;
-}
+//LayerMaker *PoolingMaker::clone( Layer *previousLayer ) const {
+//    PoolingMaker *maker = new PoolingMaker( 0, previousLayer );
+//    maker->_poolingSize = _poolingSize;
+//    maker->_padZeros = _padZeros;
+//    return maker;
+//}
 //LayerMaker *FullyConnectedMaker::clone( Layer *previousLayer ) const {
 //    FullyConnectedMaker *maker = new FullyConnectedMaker( 0, previousLayer );
 //    maker->_numPlanes = _numPlanes;
@@ -140,10 +140,10 @@ Layer *SoftMaxMaker::instance() const {
     Layer *layer = new SoftMaxLayer( previousLayer, this );
     return layer;
 }
-Layer *PoolingMaker::instance() const {
-    Layer *layer = new PoolingLayer( previousLayer, this );
-    return layer;
-}
+//Layer *PoolingMaker::instance() const {
+//    Layer *layer = new PoolingLayer( previousLayer, this );
+//    return layer;
+//}
 //template< typename T > Layer *InputLayerMaker<T>::instance() const {
 //    if( _numPlanes == 0 ) {
 //        throw runtime_error("Must provide ->numPlanes(planes)");
@@ -185,15 +185,15 @@ int LossLayerMaker::getOutputPlanes() const {
 int LossLayerMaker::getBiased() const {
     return previousLayer->getBiased();
 }
-int PoolingMaker::getOutputBoardSize() const {
-    return previousLayer->getOutputBoardSize() / _poolingSize;
-}
-int PoolingMaker::getOutputPlanes() const {
-    return previousLayer->getOutputPlanes();
-}
-int PoolingMaker::getBiased() const {
-    return false;
-}
+//int PoolingMaker::getOutputBoardSize() const {
+//    return previousLayer->getOutputBoardSize() / _poolingSize;
+//}
+//int PoolingMaker::getOutputPlanes() const {
+//    return previousLayer->getOutputPlanes();
+//}
+//int PoolingMaker::getBiased() const {
+//    return false;
+//}
 //int NormalizationLayerMaker::getOutputBoardSize() const {
 //    return previousLayer->getOutputBoardSize();
 //}

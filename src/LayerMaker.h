@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2014,2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -56,30 +56,6 @@ public:
     virtual Layer *insert();
     virtual Layer *instance() const = 0;
     virtual LayerMaker *clone( Layer *clonePreviousLayer ) const = 0;
-};
-
-
-class PoolingMaker : public LayerMaker {
-public:
-//    Layer *previousLayer;
-    int _poolingSize = 2;
-    bool _padZeros = false;
-    PoolingMaker( NeuralNet *net, Layer *previousLayer ) :
-        LayerMaker( net, previousLayer ) {
-    }
-    PoolingMaker *poolingSize( int _poolingSize ) {
-        this->_poolingSize = _poolingSize;
-        return this;
-    }
-    PoolingMaker *padZeros() {
-        this->_padZeros = true;
-        return this;
-    }
-    virtual int getOutputBoardSize() const;
-    virtual int getOutputPlanes() const;
-    virtual int getBiased() const;
-    virtual Layer *instance() const;
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
 };
 
 class LossLayerMaker : public LayerMaker {

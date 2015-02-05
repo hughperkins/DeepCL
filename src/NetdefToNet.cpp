@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -68,7 +68,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
         } else if( baseLayerDef.find("mp") != string::npos ) {
             vector<string> splitPoolDef = split( baseLayerDef, "mp" );
             int poolingSize = atoi( splitPoolDef[1] );
-            net->poolingMaker()->poolingSize(poolingSize)->insert();
+            net->addLayer( PoolingMaker::instance()->poolingSize(poolingSize) );
         } else if( baseLayerDef.find("rp") != string::npos ) {
             int patchSize = atoi( split( baseLayerDef, "rp" )[1] );
             net->addLayer( RandomPatchesMaker::instance()->patchSize( patchSize ) );

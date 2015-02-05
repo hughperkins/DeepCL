@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "Layer.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -13,6 +15,8 @@ class CLKernel;
 class CLWrapper;
 class PoolingPropagate;
 class PoolingBackprop;
+
+class PoolingMaker;
 
 class PoolingLayer : public Layer {
 public:
@@ -46,7 +50,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingLayer( Layer *previousLayer, PoolingMaker const*maker );
+    PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker const*maker );
     VIRTUAL ~PoolingLayer();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();

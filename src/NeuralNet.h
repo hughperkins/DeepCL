@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -21,6 +21,7 @@
 #include "RandomPatchesMaker.h"
 #include "NormalizationLayerMaker.h"
 #include "FullyConnectedMaker.h"
+#include "PoolingMaker.h"
 
 #include "DllImportExport.h"
 
@@ -51,7 +52,6 @@ public:
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
     void addLayer( LayerMaker2 *maker );
-    PoolingMaker *poolingMaker();
     SquareLossMaker *squareLossMaker();
     CrossEntropyLossMaker *crossEntropyLossMaker();
     SoftMaxMaker *softMaxLossMaker();

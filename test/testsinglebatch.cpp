@@ -83,7 +83,7 @@ void test( TestArgs args ) {
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased() );
         if( args.poolingSize > 0 ) {
-            net->poolingMaker()->poolingSize( args.poolingSize )->insert();
+            net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
         }
     }
     if( args.softMax ) {
@@ -207,7 +207,7 @@ void testLabelled( TestArgs args ) {
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased() );
         if( args.poolingSize > 0 ) {
-            net->poolingMaker()->poolingSize( args.poolingSize )->insert();
+            net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
         }
     }
     net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numCats)->boardSize(1)->linear()->biased() );
