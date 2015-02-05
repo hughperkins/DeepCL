@@ -603,7 +603,7 @@ What's done / what's planned
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
   * generalization to non-square images
   * ~~generalization to larger images~~ kind of done, ish, for NORB
-  * drop-out
+  * drop-out ... or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?
   * Python bindings?
   * ~~max-pooling?~~ done
   * ~~read network from a config file?~~ soft of done with the `netdef` syntax
@@ -612,6 +612,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 5th February:
+  * added multinet: multi-column networks
 * 3rd Februrary:
   * added RandomTranslations layer
 * 2nd February:
