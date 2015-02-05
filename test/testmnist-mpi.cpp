@@ -150,7 +150,7 @@ void go(Config config) {
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->boardSize(boardSize) );
     for( int i = 0; i < config.numLayers; i++ ) {
-        net->convolutionalMaker()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros)->insert();
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(config.numFilters)->filterSize(config.filterSize)->relu()->biased()->padZeros(config.padZeros) );
     }
     net->fullyConnectedMaker()->numPlanes(10)->boardSize(1)->linear()->biased(config.biased)->insert();
     net->softMaxLossMaker()->insert();

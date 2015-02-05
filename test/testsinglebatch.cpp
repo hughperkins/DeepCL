@@ -81,7 +81,7 @@ public:
 void test( TestArgs args ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
-        net->convolutionalMaker()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased()->insert();
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased() );
         if( args.poolingSize > 0 ) {
             net->poolingMaker()->poolingSize( args.poolingSize )->insert();
         }
@@ -205,7 +205,7 @@ TEST( testsinglebatch, boardsize28_filtersize5 ) {
 void testLabelled( TestArgs args ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
-        net->convolutionalMaker()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased()->insert();
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased() );
         if( args.poolingSize > 0 ) {
             net->poolingMaker()->poolingSize( args.poolingSize )->insert();
         }
@@ -325,9 +325,9 @@ TEST( testsinglebatch, detailedregression ) {
     const float learningRate = 0.1f;
 
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
     net->setBatchSize(batchSize);
 
     mt19937 random;
@@ -568,9 +568,9 @@ TEST( SLOW_testsinglebatch, perf ) {
     const float learningRate = 0.1f;
 
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
 //    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
 //    net->getLastLayer()->nextLayer = expectedValuesLayer;
 //    net->layers.push_back( expectedValuesLayer );
@@ -629,9 +629,9 @@ TEST( testsinglebatch, perf19 ) {
 
     const int boardSize = 19;
     NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->convolutionalMaker()->numFilters(10)->filterSize(boardSize - 4 * 2 )->tanh()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(boardSize - 4 * 2 )->tanh()->biased()->insert();
 //    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
 //    net->getLastLayer()->nextLayer = expectedValuesLayer;
 //    net->layers.push_back( expectedValuesLayer );
@@ -691,9 +691,9 @@ TEST( SLOW_testsinglebatch, perf19_depth12 ) {
     const int boardSize = 19;
     NeuralNet *net = NeuralNet::maker()->planes(32)->boardSize(boardSize)->instance();
     for( int i = 0; i < 12; i++ ) {
-        net->convolutionalMaker()->numFilters(128)->filterSize(3)->relu()->padZeros()->biased()->insert();
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(128)->filterSize(3)->relu()->padZeros()->biased()->insert();
     }
-    net->convolutionalMaker()->numFilters(19*19)->filterSize(19)->tanh()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(19*19)->filterSize(19)->tanh()->biased()->insert();
 //    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
 //    net->getLastLayer()->nextLayer = expectedValuesLayer;
 //    net->layers.push_back( expectedValuesLayer );

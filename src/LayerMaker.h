@@ -53,21 +53,9 @@ public:
         this->_boardSize = _boardSize;
         return this;
     }    
-//    virtual int getOutputBoardSize() const {
-//        return _boardSize;
-//    }
-//    virtual int getOutputPlanes() const {
-//        return _numPlanes;
-//    }
-//    virtual int getBiased() const {
-//        return false;
-//    }
     static InputLayerMaker *instance() {
         return new InputLayerMaker();
-//        InputLayerMaker maker; 
-//        return maker;
     }    
-//    virtual Layer *insert();
     virtual InputLayerMaker *clone() const {
         InputLayerMaker *thisClone = new InputLayerMaker();
         memcpy( thisClone, this, sizeof( InputLayerMaker ) );
@@ -111,6 +99,77 @@ public:
     virtual RandomTranslationsMaker *clone() const {
         RandomTranslationsMaker *thisClone = new RandomTranslationsMaker();
         memcpy( thisClone, this, sizeof( RandomTranslationsMaker ) );
+        return thisClone;
+    }
+    virtual Layer *createLayer( Layer *previousLayer );
+};
+class ConvolutionalMaker : public LayerMaker2 {
+public:
+    int _numFilters;
+    int _filterSize;
+    bool _padZeros;
+    int _biased;
+    ActivationFunction const *_activationFunction;
+    ConvolutionalMaker() :
+            _numFilters(0),
+            _filterSize(0),
+            _padZeros(false),
+        _activationFunction( new TanhActivation() ) {
+    }
+    static ConvolutionalMaker *instance() {
+        return new ConvolutionalMaker();
+    }    
+    ConvolutionalMaker *numFilters(int numFilters) {
+        this->_numFilters = numFilters;
+        return this;
+    }    
+    ConvolutionalMaker *filterSize(int filterSize) {
+        this->_filterSize = filterSize;
+        return this;
+    }    
+    ConvolutionalMaker *padZeros() {
+        this->_padZeros = true;
+        return this;
+    }    
+    ConvolutionalMaker *padZeros( bool value ) {
+        this->_padZeros = value;
+        return this;
+    }    
+    ConvolutionalMaker *biased() {
+        this->_biased = true;
+        return this;
+    }    
+    ConvolutionalMaker *biased(int _biased) {
+        this->_biased = _biased;
+        return this;
+    }    
+    ConvolutionalMaker *tanh() {
+        delete this->_activationFunction;
+        this->_activationFunction = new TanhActivation();
+        return this;
+    }
+    ConvolutionalMaker *relu() {
+        delete this->_activationFunction;
+        this->_activationFunction = new ReluActivation();
+        return this;
+    }
+    ConvolutionalMaker *sigmoid() {
+        delete this->_activationFunction;
+        this->_activationFunction = new SigmoidActivation();
+        return this;
+    }
+    ConvolutionalMaker *linear() {
+        delete this->_activationFunction;
+        this->_activationFunction = new LinearActivation();
+        return this;
+    }
+    ConvolutionalMaker *fn(ActivationFunction const*_fn) {
+        this->_activationFunction = _fn;
+        return this;
+    }
+    virtual ConvolutionalMaker *clone() const {
+        ConvolutionalMaker *thisClone = new ConvolutionalMaker();
+        memcpy( thisClone, this, sizeof( ConvolutionalMaker ) ); // this will copy the activationfunction pointer too
         return thisClone;
     }
     virtual Layer *createLayer( Layer *previousLayer );
@@ -301,80 +360,4 @@ public:
     virtual LayerMaker *clone( Layer *previousLayer ) const;
 };
 
-class ConvolutionalMaker : public LayerMaker {
-public:
-    int _numFilters;
-    int _filterSize;
-    bool _padZeros;
-    int _biased;
-    ActivationFunction const *_activationFunction;
-    ConvolutionalMaker( NeuralNet *net, Layer *previousLayer ) :
-            LayerMaker( net, previousLayer ),
-            _numFilters(0),
-            _filterSize(0),
-            _padZeros(false),
-        _activationFunction( new TanhActivation() ) {
-    }
-    virtual int getOutputBoardSize() const;
-    virtual int getOutputPlanes() const {
-        return _numFilters;
-    }
-    virtual int getBiased() const {
-        return _biased;
-    }
-    virtual ActivationFunction const*getActivationFunction() const {
-        return _activationFunction;
-    }
-    ConvolutionalMaker *numFilters(int numFilters) {
-        this->_numFilters = numFilters;
-        return this;
-    }    
-    ConvolutionalMaker *filterSize(int filterSize) {
-        this->_filterSize = filterSize;
-        return this;
-    }    
-    ConvolutionalMaker *padZeros() {
-        this->_padZeros = true;
-        return this;
-    }    
-    ConvolutionalMaker *padZeros( bool value ) {
-        this->_padZeros = value;
-        return this;
-    }    
-    ConvolutionalMaker *biased() {
-        this->_biased = true;
-        return this;
-    }    
-    ConvolutionalMaker *biased(int _biased) {
-        this->_biased = _biased;
-        return this;
-    }    
-    ConvolutionalMaker *tanh() {
-        delete this->_activationFunction;
-        this->_activationFunction = new TanhActivation();
-        return this;
-    }
-    ConvolutionalMaker *relu() {
-        delete this->_activationFunction;
-        this->_activationFunction = new ReluActivation();
-        return this;
-    }
-    ConvolutionalMaker *sigmoid() {
-        delete this->_activationFunction;
-        this->_activationFunction = new SigmoidActivation();
-        return this;
-    }
-    ConvolutionalMaker *linear() {
-        delete this->_activationFunction;
-        this->_activationFunction = new LinearActivation();
-        return this;
-    }
-    ConvolutionalMaker *fn(ActivationFunction const*_fn) {
-        this->_activationFunction = _fn;
-        return this;
-    }
-//    virtual Layer *insert();
-    virtual Layer *instance() const;
-    virtual LayerMaker *clone( Layer *previousLayer ) const;
-};
 

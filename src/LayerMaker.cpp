@@ -31,6 +31,16 @@ Layer *RandomPatchesMaker::createLayer( Layer *previousLayer ) {
 Layer *RandomTranslationsMaker::createLayer( Layer *previousLayer ) {
     return new RandomTranslations( previousLayer, this );
 }
+Layer *ConvolutionalMaker::createLayer( Layer *previousLayer ) {
+    if( _numFilters == 0 ) {
+        throw runtime_error("Must provide ->numFilters(numFilters)");
+    }
+    if( _filterSize == 0 ) {
+        throw runtime_error("Must provide ->filterSize(filterSize)");
+    }
+    Layer *layer = new ConvolutionalLayer( cl, previousLayer, this );
+    return layer;
+}
 
 Layer *LayerMaker::insert() {
     Layer *layer = net->addLayer( this );
@@ -117,15 +127,15 @@ LayerMaker *SoftMaxMaker::clone( Layer *previousLayer ) const {
     maker->_perPlane = _perPlane;
     return maker;
 }
-LayerMaker *ConvolutionalMaker::clone( Layer *previousLayer ) const {
-    ConvolutionalMaker *maker = new ConvolutionalMaker( 0, previousLayer );
-    maker->_numFilters = _numFilters;
-    maker->_filterSize = _filterSize;
-    maker->_padZeros = _padZeros;
-    maker->_biased = _biased;
-    maker->_activationFunction = _activationFunction;
-    return maker;
-}
+//LayerMaker *ConvolutionalMaker::clone( Layer *previousLayer ) const {
+//    ConvolutionalMaker *maker = new ConvolutionalMaker( 0, previousLayer );
+//    maker->_numFilters = _numFilters;
+//    maker->_filterSize = _filterSize;
+//    maker->_padZeros = _padZeros;
+//    maker->_biased = _biased;
+//    maker->_activationFunction = _activationFunction;
+//    return maker;
+//}
 
 Layer *FullyConnectedMaker::instance() const {
     if( _numPlanes == 0 ) {
@@ -134,7 +144,7 @@ Layer *FullyConnectedMaker::instance() const {
     if( _boardSize == 0 ) {
         throw runtime_error("Must provide ->boardSize(boardSize)");
     }
-    Layer *layer = new FullyConnectedLayer( previousLayer, this );
+    Layer *layer = new FullyConnectedLayer( net->cl, previousLayer, this );
     return layer;
 }
 Layer *SquareLossMaker::instance() const {
@@ -151,16 +161,6 @@ Layer *SoftMaxMaker::instance() const {
 }
 Layer *PoolingMaker::instance() const {
     Layer *layer = new PoolingLayer( previousLayer, this );
-    return layer;
-}
-Layer *ConvolutionalMaker::instance() const {
-    if( _numFilters == 0 ) {
-        throw runtime_error("Must provide ->numFilters(numFilters)");
-    }
-    if( _filterSize == 0 ) {
-        throw runtime_error("Must provide ->filterSize(filterSize)");
-    }
-    Layer *layer = new ConvolutionalLayer( previousLayer, this );
     return layer;
 }
 //template< typename T > Layer *InputLayerMaker<T>::instance() const {
@@ -186,14 +186,14 @@ Layer *NormalizationLayerMaker::instance() const {
 //    return layer;
 //}
 
-int ConvolutionalMaker::getOutputBoardSize() const {
-    if( previousLayer == 0 ) {
-        throw std::runtime_error("convolutional network must be attached to a parent layer");
-    }
-    int evenPadding = _filterSize % 2 == 0 ? 1 : 0;
-    int boardSize = _padZeros ? previousLayer->getOutputBoardSize() + evenPadding : previousLayer->getOutputBoardSize() - _filterSize + 1;
-    return boardSize;
-}
+//int ConvolutionalMaker::getOutputBoardSize() const {
+//    if( previousLayer == 0 ) {
+//        throw std::runtime_error("convolutional network must be attached to a parent layer");
+//    }
+//    int evenPadding = _filterSize % 2 == 0 ? 1 : 0;
+//    int boardSize = _padZeros ? previousLayer->getOutputBoardSize() + evenPadding : previousLayer->getOutputBoardSize() - _filterSize + 1;
+//    return boardSize;
+//}
 
 int LossLayerMaker::getOutputBoardSize() const {
     return previousLayer->getOutputBoardSize();

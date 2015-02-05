@@ -13,17 +13,17 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-FullyConnectedLayer::FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const*maker ) :
+FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker const*maker ) :
         Layer( previousLayer, maker ),
         numPlanes( maker->getOutputPlanes() ),
         boardSize( maker->getOutputBoardSize() ),
         fn( maker->getActivationFunction() ) {
-    ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker( maker->net, previousLayer );
+    ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * boardSize * boardSize )
                       ->filterSize( previousLayer->getOutputBoardSize() )
                         ->biased( maker->_biased )
                         ->fn( maker->getActivationFunction() );
-    convolutionalLayer = new ConvolutionalLayer( previousLayer, convolutionalMaker );
+    convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
 //    delete convolutionalMaker;
 }
 

@@ -17,7 +17,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker ) :
+ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker const*maker ) :
         Layer( previousLayer, maker ),
 //        filterSize( maker->_filterSize ),
 //        filterSizeSquared( filterSize * filterSize ),
@@ -33,10 +33,10 @@ ConvolutionalLayer::ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker
         weights(0),
         biasWeights(0),
         errorsForUpstreamCopiedToHost( false ),
-        cl( maker->net->getCl() ),
+        cl( cl ),
         batchSize( batchSize ),
         backpropErrorsImpl(0),
-        activationFunction( maker->getActivationFunction() ) {
+        activationFunction( maker->_activationFunction ) {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
         .setInputBoardSize( previousLayer->getOutputBoardSize() )
         .setNumFilters( maker->_numFilters )

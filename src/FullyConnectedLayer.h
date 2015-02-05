@@ -26,7 +26,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    FullyConnectedLayer( Layer *previousLayer, FullyConnectedMaker const*maker );
+    FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker const*maker );
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getOutputBoardSize() const;

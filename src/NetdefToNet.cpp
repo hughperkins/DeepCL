@@ -64,7 +64,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
                     return false;
                 }
             }
-            net->convolutionalMaker()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->padZeros( padZeros )->biased()->insert();
+            net->addLayer( ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->padZeros( padZeros )->biased() );
         } else if( baseLayerDef.find("mp") != string::npos ) {
             vector<string> splitPoolDef = split( baseLayerDef, "mp" );
             int poolingSize = atoi( splitPoolDef[1] );

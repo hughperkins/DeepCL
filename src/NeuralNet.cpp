@@ -99,9 +99,9 @@ void NeuralNet::addLayer( LayerMaker2 *maker ) {
 FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
     return new FullyConnectedMaker( this, getLastLayer() );
 }
-ConvolutionalMaker *NeuralNet::convolutionalMaker() {
-    return new ConvolutionalMaker( this, getLastLayer() );
-}
+//ConvolutionalMaker *NeuralNet::convolutionalMaker() {
+//    return new ConvolutionalMaker( this, getLastLayer() );
+//}
 PoolingMaker *NeuralNet::poolingMaker() {
     return new PoolingMaker( this, getLastLayer() );
 }

@@ -46,7 +46,6 @@ public:
     STATIC NeuralNetMould *maker();
     void addLayer( LayerMaker2 *maker );
     FullyConnectedMaker *fullyConnectedMaker();
-    ConvolutionalMaker *convolutionalMaker();
     PoolingMaker *poolingMaker();
     NormalizationLayerMaker *normalizationMaker();
     SquareLossMaker *squareLossMaker();
