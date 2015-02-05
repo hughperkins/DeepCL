@@ -9,8 +9,9 @@
 #include <cstring>
 
 #include "LayerMaker.h"
+#include "DllImportExport.h"
 
-class RandomPatchesMaker : public LayerMaker2 {
+class ClConvolve_EXPORT RandomPatchesMaker : public LayerMaker2 {
 public:
     int _patchSize;
     RandomPatchesMaker() :

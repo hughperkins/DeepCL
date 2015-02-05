@@ -10,8 +10,9 @@
 
 #include "LayerMaker.h"
 #include "ActivationFunction.h"
+#include "DllImportExport.h"
 
-class FullyConnectedMaker : public LayerMaker2 {
+class ClConvolve_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:
     int _numPlanes;
     int _boardSize;

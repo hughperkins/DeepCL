@@ -9,6 +9,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "DllImportExport.h"
 #include "ActivationFunction.h"
 
 class NeuralNet;
@@ -24,7 +25,7 @@ class SoftMaxLayer;
 //    }
 //};
 
-class LayerMaker2 {
+class ClConvolve_EXPORT LayerMaker2 {
 public:
     OpenCLHelper *cl; // NOT owned by us
     LayerMaker2() :
@@ -59,14 +60,14 @@ public:
 //    virtual LayerMaker *clone( Layer *clonePreviousLayer ) const = 0;
 //};
 
-class LossLayerMaker : public LayerMaker2 {
+class ClConvolve_EXPORT LossLayerMaker : public LayerMaker2 {
 public:
 //    Layer *previousLayer;
     LossLayerMaker() {
     }
 };
 
-class SquareLossMaker : public LossLayerMaker {
+class ClConvolve_EXPORT SquareLossMaker : public LossLayerMaker {
 public:
     SquareLossMaker() {
     }
@@ -81,7 +82,7 @@ public:
     virtual Layer *createLayer( Layer *previousLayer );
 };
 
-class CrossEntropyLossMaker : public LossLayerMaker {
+class ClConvolve_EXPORT CrossEntropyLossMaker : public LossLayerMaker {
 public:
     CrossEntropyLossMaker() {
     }
@@ -98,7 +99,7 @@ public:
 
 // by default, it will be per-plane
 // can switch to be per-column
-class SoftMaxMaker : public LossLayerMaker {
+class ClConvolve_EXPORT SoftMaxMaker : public LossLayerMaker {
 public:
     bool _perPlane = false;
     SoftMaxMaker() {

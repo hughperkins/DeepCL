@@ -11,10 +11,12 @@
 #include "stringhelper.h"
 #include "FileHelper.h"
 
+#include "DllImportExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
-class NorbLoader {
+class ClConvolve_EXPORT NorbLoader {
 public:
 
     // [[[cog

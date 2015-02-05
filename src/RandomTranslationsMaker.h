@@ -9,8 +9,9 @@
 #include <cstring>
 
 #include "LayerMaker.h"
+#include "DllImportExport.h"
 
-class RandomTranslationsMaker : public LayerMaker2 {
+class ClConvolve_EXPORT RandomTranslationsMaker : public LayerMaker2 {
 public:
     int _translateSize;
     RandomTranslationsMaker() :
