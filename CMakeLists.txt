@@ -133,7 +133,7 @@ add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
 add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
-
+add_executable( printmat test/printMat.cpp src/stringhelper.cpp )
 add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
 
 if( MPI_AVAILABLE )

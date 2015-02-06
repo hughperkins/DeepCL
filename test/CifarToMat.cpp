@@ -24,6 +24,7 @@ void doTestFiles( string dir ) {
 
     int N = CifarLoader::getNumExamples( cifarFilename );
     int imagesSize = CifarLoader::getImagesSize( cifarFilename );
+    cout << "num examples: " << N << " imagesSize " << imagesSize << endl;
     unsigned char *images = new unsigned char[imagesSize];
     int *labels = new int[ N ];
     CifarLoader::load( cifarFilename, images, labels );

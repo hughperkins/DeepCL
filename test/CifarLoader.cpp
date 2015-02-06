@@ -23,14 +23,14 @@ int CifarLoader::getImagesSize( std::string filepath ) { // you can use this to 
 void CifarLoader::load( std::string filepath, unsigned char *images, int *labels ) { // you need to pre-allocate these arrays
     int numExamples = getNumExamples( filepath );
     long fileSize;
-    char *bytes = FileHelper::readBinary    ( filepath, &fileSize );
+    char *bytes = FileHelper::readBinary( filepath, &fileSize );
     unsigned char *ubytes = reinterpret_cast< unsigned char * >( bytes );
     for( int n = 0; n < numExamples; n++ ) {
         unsigned char *labelimage = ubytes + n * ( 32 * 32 * 3 + 1 );
         unsigned char *p_label = labelimage;
         unsigned char *image = labelimage + 1;
         labels[n] = *p_label;
-        unsigned char *targetCube = images + ( 32 * 32 * 3 );
+        unsigned char *targetCube = images + n * ( 32 * 32 * 3 );
         memcpy( targetCube, image, 32 * 32 * 3 );
     }
 }
