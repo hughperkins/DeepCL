@@ -28,13 +28,6 @@ public:
     }
 
     static long getFilesize( std::string filepath ) {
-//        std::ifstream file( filepath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
-//        if(!file.is_open()) {
-//            throw std::runtime_error(filepath);
-//        }
-//        long filesize = file.tellg();
-//        file.close();
-//        return filesize;
         std::ifstream in( localizePath( filepath ).c_str(), std::ifstream::ate | std::ifstream::binary);
         return static_cast<long>( in.tellg() ); 
     }
