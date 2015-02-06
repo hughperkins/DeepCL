@@ -605,6 +605,7 @@ What's done / what's planned
   * ~~generalization to larger images~~ kind of done, ish, for NORB
   * drop-out ... or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?
   * Python bindings?
+  * scaling? rotations? mirroring?
   * ~~max-pooling?~~ done
   * ~~read network from a config file?~~ soft of done with the `netdef` syntax
 
