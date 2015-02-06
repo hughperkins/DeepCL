@@ -21,7 +21,7 @@
 using namespace std;
 
 void prepareTraining( string norbDir ) {
-    int N, numPlanes, boardSize, boardSizeRepeated;
+    int N, numPlanes, boardSize;
     unsigned char *training = NorbLoader::loadImages( norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat", &N, &numPlanes, &boardSize );
     int *labels = NorbLoader::loadLabels( norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat", N );
     // create random sequence of examples
@@ -56,7 +56,7 @@ void prepareTraining( string norbDir ) {
 }
 
 void prepareTest( string norbDir, int numSamples ) {
-    int N, numPlanes, boardSize, boardSizeRepeated;
+    int N, numPlanes, boardSize;
     string testingStem = "smallnorb-5x01235x9x18x6x2x96x96-testing";
     unsigned char *training = NorbLoader::loadImages( norbDir + "/" + testingStem + "-dat.mat", &N, &numPlanes, &boardSize );
     int *labels = NorbLoader::loadLabels( norbDir + "/" + testingStem + "-cat.mat", N );

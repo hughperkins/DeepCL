@@ -6,7 +6,7 @@ public:
         float rangesize = sqrt(12.0f / (float)fanin) ;
     //        float uniformrand = random() / (float)random.max();     
         float uniformrand = MyRandom::uniform();   
-        float result = rangesize * ( uniformrand - 0.5 );
+        float result = rangesize * ( uniformrand - 0.5f );
         return result;
     }
 };

@@ -206,7 +206,7 @@ static int **loadBoard( std::string filepath, int *p_boardSize ) {
     //int **board = 0;
    std::string thisline;
    f >> thisline;
-   *p_boardSize = thisline.length();
+   *p_boardSize = (int)thisline.length();
    if( *p_boardSize == 0 ) {
       std::cout << "boardhelper::loadBoard. error: boardsize 0, " << filepath << std::endl;
       throw "boardhelper::loadBoard. error: boardsize 0 " + filepath;

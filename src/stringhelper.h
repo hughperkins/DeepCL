@@ -35,7 +35,7 @@ std::string toString(T val ) { // not terribly efficient, but works...
 std::vector<std::string> split(const std::string &str, const std::string &separator = " " );
 std::string trim( const std::string &target );
 
-inline double atof( std::string stringvalue ) {
+inline float atof( std::string stringvalue ) {
    return std::atof(stringvalue.c_str());
 }
 inline int atoi( std::string stringvalue ) {
