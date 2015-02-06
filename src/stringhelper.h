@@ -36,7 +36,7 @@ std::vector<std::string> split(const std::string &str, const std::string &separa
 std::string trim( const std::string &target );
 
 inline float atof( std::string stringvalue ) {
-   return std::atof(stringvalue.c_str());
+   return (float)std::atof(stringvalue.c_str());
 }
 inline int atoi( std::string stringvalue ) {
    return std::atoi(stringvalue.c_str());
