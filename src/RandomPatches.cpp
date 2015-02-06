@@ -10,6 +10,7 @@
 #include "Layer.h"
 #include "RandomPatches.h"
 #include "MyRandom.h"
+#include "PatchExtractor.h"
 
 using namespace std;
 
@@ -85,39 +86,15 @@ VIRTUAL bool RandomPatches::hasResultsWrapper() const {
 }
 VIRTUAL void RandomPatches::propagate() {
     float *upstreamResults = previousLayer->getResults();
-//    if( !training ) {
-////        cout << "testing, no translation" << endl;
-//        int linearSize = getResultsSize();
-//        memcpy( results, upstreamResults, linearSize * sizeof(float) );
-//        return;
-//    }
-//    cout << "training => translating" << endl;
-//    if( padZeros ) {
-//        memset( results, 0, sizeof(float) * getResultsSize() );
-//    }
     for( int n = 0; n < batchSize; n++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            float *upstreamBoard = upstreamResults + ( n * numPlanes + plane ) * inputBoardSize * inputBoardSize;
-            float *outputBoard = results + ( n * numPlanes + plane ) * outputBoardSize * outputBoardSize;
-            // in this case, the destination is always exactly the same
-            // only the source patch location changes
-    //        const int rowOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-    //        const int colOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-            int patchMargin = inputBoardSize - outputBoardSize;
-            int patchRow = patchMargin / 2;
-            int patchCol = patchMargin / 2;
-            if( training ) {
-                patchRow = MyRandom::instance()->uniformInt( 0, patchMargin );
-                patchCol = MyRandom::instance()->uniformInt( 0, patchMargin );
-            }
-    //        cout << "patch pos " << patchRow << "," << patchCol << endl;
-            for( int outRow = 0; outRow < outputBoardSize; outRow++ ) {
-                const int inRow = outRow + patchRow;
-                memcpy( &(outputBoard[ outRow * outputBoardSize ]), 
-                    &(upstreamBoard[ inRow * inputBoardSize + patchCol ]),
-                    patchSize * sizeof(float) );
-            }        
+        int patchMargin = inputBoardSize - outputBoardSize;
+        int patchRow = patchMargin / 2;
+        int patchCol = patchMargin / 2;
+        if( training ) {
+            patchRow = MyRandom::instance()->uniformInt( 0, patchMargin );
+            patchCol = MyRandom::instance()->uniformInt( 0, patchMargin );
         }
+        PatchExtractor::extractPatch( n, numPlanes, inputBoardSize, patchSize, patchRow, patchCol, upstreamResults, results );
     }
 }
 VIRTUAL std::string RandomPatches::asString() const {

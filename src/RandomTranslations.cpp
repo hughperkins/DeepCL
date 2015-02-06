@@ -10,6 +10,7 @@
 #include "Layer.h"
 #include "RandomTranslations.h"
 #include "MyRandom.h"
+#include "Translator.h"
 
 using namespace std;
 
@@ -85,42 +86,14 @@ VIRTUAL bool RandomTranslations::hasResultsWrapper() const {
 }
 VIRTUAL void RandomTranslations::propagate() {
     float *upstreamResults = previousLayer->getResults();
-//    if( !training ) {
-////        cout << "testing, no translation" << endl;
-//        int linearSize = getResultsSize();
-//        memcpy( results, upstreamResults, linearSize * sizeof(float) );
-//        return;
-//    }
-//    cout << "training => translating" << endl;
-//    if( padZeros ) {
-//        memset( results, 0, sizeof(float) * getResultsSize() );
-//    }
     if( !training ) {
         memcpy( results, upstreamResults, sizeof(float) * getResultsSize() );
         return;
     }
-    memset( results, 0, sizeof(float) * getResultsSize() );
     for( int n = 0; n < batchSize; n++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            float *upstreamBoard = upstreamResults + ( n * numPlanes + plane ) * inputBoardSize * inputBoardSize;
-            float *outputBoard = results + ( n * numPlanes + plane ) * outputBoardSize * outputBoardSize;
-            const int outRowOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-            const int outColOffset = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-//            const int outStartRow = outRowOffset > 0 ? rowOffset : 0;
-//            const int outEndRow = outputBoardSize - 1  + ( outColOffset < 0 ? outColOffset : 0 );
-            const int rowCopyLength = outputBoardSize - abs( outColOffset );
-            const int outColStart = outColOffset > 0 ? outColOffset : 0;
-            const int inColStart = outColOffset > 0 ? 0 : - outColOffset;
-            for( int inRow = 0; inRow < inputBoardSize; inRow++ ) {
-                const int outRow = inRow + outRowOffset;
-                if( outRow < 0 || outRow >= outputBoardSize - 1 ) {
-                    continue;
-                }
-                memcpy( &(outputBoard[ outRow * outputBoardSize + outColStart ]), 
-                    &(upstreamBoard[ inRow * inputBoardSize + inColStart ]),
-                    rowCopyLength * sizeof(float) );
-            }        
-        }
+        const int translateRows = MyRandom::instance()->uniformInt( - translateSize, translateSize );
+        const int translateCols = MyRandom::instance()->uniformInt( - translateSize, translateSize );
+        Translator::translate( n, numPlanes, inputBoardSize, translateRows, translateCols, upstreamResults, results );
     }
 }
 VIRTUAL std::string RandomTranslations::asString() const {
