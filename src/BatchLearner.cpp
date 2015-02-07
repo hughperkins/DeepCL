@@ -20,16 +20,19 @@ using namespace std;
 
 template< typename T>
 void NetLearnLabeledBatch<T>::run( Trainable *net, T *batchData, int const*batchLabels ) {
+//    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
     net->learnBatchFromLabels( learningRate, batchData, batchLabels );
 }
 
 template< typename T>
 void NetPropagateBatch<T>::run( Trainable *net, T *batchData, int const*batchLabels ) {
+//    cout << "NetPropagateBatch" << endl;
     net->propagate( batchData );
 }
 
 template< typename T>
 void NetBackpropBatch<T>::run( Trainable *net, T *batchData, int const*batchLabels ) {
+//    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
     net->backPropFromLabels( learningRate, batchLabels );
 }
 
@@ -40,17 +43,21 @@ template< typename T > BatchLearner<T>::BatchLearner( Trainable *net ) :
 template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction ) {
     int numRight = 0;
     float loss = 0;
+    int thisBatchSize = batchSize;
     net->setBatchSize( batchSize );
     int numBatches = (N + batchSize - 1 ) / batchSize;
     int inputCubeSize = net->getInputCubeSize();
     for( int batch = 0; batch < numBatches; batch++ ) {
         int batchStart = batch * batchSize;
         if( batch == numBatches - 1 ) {
-            net->setBatchSize( N - batchStart );
+            thisBatchSize = N - batchStart;
+            net->setBatchSize( thisBatchSize );
         }
         netAction->run( net, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
         loss += net->calcLossFromLabels( &(labels[batchStart]) );
-        numRight += net->calcNumRight( &(labels[batchStart]) );
+        int thisNumRight = net->calcNumRight( &(labels[batchStart]) );
+        numRight += thisNumRight;
+//        cout << "batchlearner batch=" << batch << " thisbatchsize=" << thisBatchSize << " thisnumright " << thisNumRight << " numright=" << numRight << " batchstart=" << batchStart << endl;
     }
     EpochResult epochResult( loss, numRight );
     return epochResult;

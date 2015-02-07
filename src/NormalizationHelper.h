@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <iostream>
 
 template<typename T>
 class Statistics {
@@ -25,19 +26,21 @@ public:
 class NormalizationHelper {
 public:
     template<typename T>
-    static void updateStatistics( T *Y, int length, Statistics<T> *statistics ) {
+    static void updateStatistics( T *Y, int length, int cubeSize, Statistics<T> *statistics ) {
         float thisSumY = 0;
         float thisSumYSquared = 0;
         T thisMin = Y[0];
         T thisMax = Y[0];
-        for( int i = 0; i < length; i++ ) {
+        for( int i = 0; i < length * cubeSize; i++ ) {
             float thisValue = Y[i];
             thisSumY += thisValue;
             thisSumYSquared += (float)thisValue * (float)thisValue;
             thisMin = thisValue < thisMin ? thisValue : thisMin;
             thisMax = thisValue > thisMax ? thisValue : thisMax;
+//            std::cout << "Y[i] " << (int)Y[i] << std::endl;
+//            std::cout << "updatestatistics " << i << " thissumy=" << thisSumY << " thisSumYSquared=" << thisSumYSquared << std::endl;
         }
-        statistics->count += length;
+        statistics->count += length * cubeSize;
         statistics->maxY = thisMax > statistics->maxY ? thisMax : statistics->maxY;
         statistics->minY = thisMin < statistics->minY ? thisMin : statistics->minY;
         statistics->sumY += thisSumY;

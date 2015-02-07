@@ -47,6 +47,22 @@ public:
         return data;
     }
 
+    // need to allocate targetArray yourself, beforehand
+    static void readBinaryChunk( char *targetArray, std::string filepath, long start, long length ) {
+        std::string localPath = localizePath( filepath );
+        std::ifstream file( localPath.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+        if(!file.is_open()) {
+            throw std::runtime_error("failed to open file: " + localPath);
+        }
+        file.seekg( start, std::ios::beg );
+//        char *data = new char[length];
+        if(!file.read( targetArray, length )) {
+            throw std::runtime_error("failed to read from " + localPath );
+        }
+        file.close();
+//        return data;
+    }
+
     static void writeBinary( std::string filepath, char*data, long filesize ) {
         std::string localPath = localizePath( filepath );
         std::ofstream file( localPath.c_str(), std::ios::out | std::ios::binary );

@@ -50,21 +50,21 @@ STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int 
 STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
     int N, numPlanes, boardSize;
     // I know, this could be optimized a bit, to remove the intermediate arrays...
-    unsigned char *loadedImages = loadImages( trainFilepath, &N, &numPlanes, &boardSize, startN + numExamples );
+    loadImages( images, trainFilepath, &N, &numPlanes, &boardSize, startN, numExamples );
 //    int totalLinearSize = numExamples  * numPlanes * boardSize * boardSize;
-    memcpy( images, loadedImages + startN * numPlanes * boardSize * boardSize, numExamples * numPlanes * boardSize * boardSize * sizeof( unsigned char ) );
-    int *loadedLabels = loadLabels( replace( trainFilepath, "-dat.mat","-cat.mat"), startN + numExamples );
-    memcpy( labels, loadedLabels + startN, sizeof( int ) * numExamples );
-    delete []loadedImages;
-    delete[] loadedLabels;
+//    memcpy( images, loadedImages + startN * numPlanes * boardSize * boardSize, numExamples * numPlanes * boardSize * boardSize * sizeof( unsigned char ) );
+    loadLabels( labels, replace( trainFilepath, "-dat.mat","-cat.mat"), startN, numExamples );
+//    memcpy( labels, loadedLabels + startN, sizeof( int ) * numExamples );
+//    delete []loadedImages;
+//    delete[] loadedLabels;
 }
 
-STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
-    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0 );
-}
+//STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
+//    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, 0 );
+//}
 
-// you need to delete[] this yourself, after use
-STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int maxN ) {
+// you need to allocate this yourself, before use
+STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int startN, int numExamples ) {
     char*headerBytes = FileHelper::readBinaryChunk( filepath, 0, 6 * 4 );
     unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
 
@@ -81,20 +81,29 @@ STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, in
 //    std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
     checkSame( "boardSize", boardSize, boardSizeRepeated );
 
-    if( maxN > 0 ) {
-        N = min( maxN, N );
+    if( numExamples > 0 && numExamples > ( N - startN ) ) {
+        throw runtime_error("You requested " + toString( numExamples ) + " but there are only " + toString( N - startN ) + " avialalbe after start N " + toString( startN ) );
     }
-    int totalLinearSize = N * numPlanes * boardSize * boardSize;
-    char *imagesDataSigned = FileHelper::readBinaryChunk( filepath, 6 * 4, totalLinearSize );
-    unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
+    if( numExamples == 0 ) {
+        numExamples = N - startN;
+    }
+//    if( maxN > 0 ) {
+//        N = min( maxN, N );
+//    }
+    long fileStartPos = 6 * 4 + (long)startN * numPlanes * boardSize * boardSize;
+    long fileReadLength = (long)numExamples * numPlanes * boardSize * boardSize;
+    char *imagesAsCharArray = reinterpret_cast< char *>(images );
+//    cout << "images, filestartpos " << fileStartPos << " readlength " << fileReadLength << endl;
+    FileHelper::readBinaryChunk( imagesAsCharArray, filepath, fileStartPos, fileReadLength );
+//    unsigned char *imagesDataUnsigned = reinterpret_cast< unsigned char *>(imagesDataSigned);
 
     *p_N = N;
     *p_numPlanes = numPlanes;
     *p_boardSize = boardSize;
-    return imagesDataUnsigned;
+//    return imagesDataUnsigned;
 }
-// you need to delete[] this yourself, after use
-STATIC int *NorbLoader::loadLabels( std::string filepath, int Ntoget ) {
+// you need to allocate this yourself, before use
+STATIC void NorbLoader::loadLabels( int *labels, std::string filepath, int startN, int numExamples ) {
     char*headerBytes = FileHelper::readBinaryChunk( filepath, 0, 6 * 5 );
     unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
 
@@ -106,15 +115,22 @@ STATIC int *NorbLoader::loadLabels( std::string filepath, int Ntoget ) {
     int ndim = headerValues[1];
     int N = headerValues[2];
 //    checkSame( "ndim", 1, ndim );
-    if( Ntoget > N ) {
-        throw runtime_error("error: you asked for " + toString( Ntoget ) + " labels, but only found: " + toString( N ) );
+    if( numExamples > 0 && numExamples > ( N - startN ) ) {
+        throw runtime_error("You requested " + toString( numExamples ) + " but there are only " + toString( N - startN ) + " avialalbe after start N " + toString( startN ) );
     }
-    N = Ntoget;
+    if( numExamples == 0 ) {
+        numExamples = N - startN;
+    }
+//    N = Ntoget;
 
-    int totalLinearSize = N;
-    char *labelsAsByteArray = FileHelper::readBinaryChunk( filepath, 5 * 4, totalLinearSize * 4 );
-    int *labels = reinterpret_cast< int *>(labelsAsByteArray);
-    return labels;
+//    int totalLinearSize = N;
+    char *labelsAsCharArray = reinterpret_cast< char *>( labels );
+    long fileStartPos = 5 * 4 + (long)startN * 4;
+    long fileReadLength = (long)numExamples * 4;
+//    cout << "labels file read start " << fileStartPos << " length " << fileReadLength << endl;
+    FileHelper::readBinaryChunk( labelsAsCharArray, filepath, fileStartPos, fileReadLength );
+//    int *labels = reinterpret_cast< int *>(labelsAsByteArray);
+//    return labels;
 }
 STATIC void NorbLoader::writeImages( std::string filepath, unsigned char *images, int N, int numPlanes, int boardSize ) {
     int totalLinearSize = N * numPlanes * boardSize * boardSize;

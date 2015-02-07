@@ -21,13 +21,13 @@ public:
         data(data),
         labels(labels) { // have to provide appropriate buffers for this
     }
-    virtual void processBatch( int batchSize ) = 0;
+    virtual void processBatch( int batchSize, int cubeSize ) = 0;
 };
 
 class BatchProcess {
 public:
     template< typename T>
-    static void run(std::string filepath, int startN, int batchSize, int totalN, BatchAction<T> *batchAction);
+    static void run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<T> *batchAction);
 };
 
 template< typename T >
@@ -37,8 +37,8 @@ public:
     NormalizeGetStdDev( T *data, int *labels ) :
         BatchAction<T>::BatchAction( data, labels ) {
     }
-    virtual void processBatch( int batchSize ) {
-        NormalizationHelper::updateStatistics( this->data, batchSize, &statistics );
+    virtual void processBatch( int batchSize, int cubeSize ) {
+        NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );
     }
     void calcMeanStdDev( float *p_mean, float *p_stdDev ) {
         NormalizationHelper::calcMeanAndStdDev( &statistics, p_mean, p_stdDev );
@@ -52,8 +52,8 @@ public:
     NormalizeGetMinMax( T *data, int *labels ) :
         BatchAction<T>( data, labels ) {
     }
-    virtual void processBatch( int batchSize ) {
-        NormalizationHelper::updateStatistics( this->data, batchSize, &statistics );
+    virtual void processBatch( int batchSize, int cubeSize ) {
+        NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );
     }
     void calcMinMaxTransform( float *p_translate, float *p_scale ) {
         // add this to our values to center

@@ -193,14 +193,14 @@ void go(Config config) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
             NormalizeGetStdDev<unsigned char> normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run<unsigned char>( config.trainFile, 0, config.batchSize, Ntrain, &normalizeGetStdDev );
+            BatchProcess::run<unsigned char>( config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
             cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
             NormalizeGetMinMax<unsigned char> normalizeGetMinMax( trainData, trainLabels );
-            BatchProcess::run( config.trainFile, 0, config.batchSize, Ntrain, &normalizeGetMinMax );
+            BatchProcess::run( config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetMinMax );
             normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
         } else {
             cout << "Error: Unknown normalization: " << config.normalization << endl;

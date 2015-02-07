@@ -28,9 +28,10 @@ template< typename T > EpochResult BatchLearnerOnDemand<T>::batchedNetAction( st
     int numRight = 0;
     float loss = 0;
     int fileBatchSize = batchSize * fileReadBatches;
+    fileBatchSize = fileBatchSize > N ? N : fileBatchSize;
     int inputCubeSize = net->getInputCubeSize();
-    T *dataBuffer = new T[ fileReadBatches *  batchSize * inputCubeSize ];
-    int *labelsBuffer = new int[ fileReadBatches * batchSize * inputCubeSize ];
+    T *dataBuffer = new T[ fileBatchSize * inputCubeSize ];
+    int *labelsBuffer = new int[ fileBatchSize * inputCubeSize ];
     int numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
     int thisFileBatchSize = fileBatchSize;
     BatchLearner<unsigned char> batchLearner( net );
@@ -40,9 +41,11 @@ template< typename T > EpochResult BatchLearnerOnDemand<T>::batchedNetAction( st
             thisFileBatchSize = N - fileBatchStart;
         }
         GenericLoader::load( filepath, dataBuffer, labelsBuffer, fileBatchStart, thisFileBatchSize );
-        EpochResult epochResult = batchLearner.batchedNetAction( batchSize, fileBatchSize, dataBuffer, labelsBuffer, netAction );
+//        GenericLoader::load( filepath, dataBuffer, labelsBuffer );
+        EpochResult epochResult = batchLearner.batchedNetAction( batchSize, thisFileBatchSize, dataBuffer, labelsBuffer, netAction );
         loss += epochResult.loss;
         numRight += epochResult.numRight;
+//        cout << "fileBatch " << fileBatch << " batchSize " << batchSize << " filebatchsize " << fileBatchSize << " filebatchStart " << fileBatchStart << " thisFileBatchSize " << thisFileBatchSize << " numRight " << epochResult.numRight << endl;
     }
     EpochResult epochResult( loss, numRight );
     delete[] dataBuffer;
