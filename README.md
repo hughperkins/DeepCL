@@ -600,22 +600,22 @@ What's done / what's planned
   * unit-tests for forward propagation
   * numerical validation for backward propagation
 * Planned, short-term:
-  * ~~softmax activation function~~ done
-  * ~~cross entropy loss~~ done
-  * ~~multinomial cross entropy loss~~ done
+  * ~~softmax activation function~~ DONE
+  * ~~cross entropy loss~~ DONE
+  * ~~multinomial cross entropy loss~~ DONE
   * get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * symmetric filters
   * skip, as described in [Ciresan et al, 2011](http://arxiv.org/pdf/1102.0183v1.pdf)
   * fuse convolutional and max-pooling layers, so can optimize more
-  * ~~create a 'transforming input' layer, to handle things like:~~ done
-    * ~~conversion from `unsigned char *` to `float *`~~ done
-    * ~~translation and scaling by mean and standard deviation~~ done
+  * ~~create a 'transforming input' layer, to handle things like:~~ DONE
+    * ~~conversion from `unsigned char *` to `float *`~~ DONE
+    * ~~translation and scaling by mean and standard deviation~~ DONE
   * testing result averaged over several propagations (used in conjunction with `rp`)
   * sparse connectivity between feature maps in adjacent layers
-  * ~~MCDNN?~~ done
+  * ~~MCDNN?~~ DONE
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
-  * ~~randomly translating input layer?~~ done
+  * ~~randomly translating input layer?~~ DONE
   * mpi so can run over several gpus, spread across multiple hosts???
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
   * generalization to non-square images
@@ -623,7 +623,7 @@ What's done / what's planned
   * drop-out ... or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?
   * Python bindings?
   * scaling? rotations? mirroring?
-  * ~~max-pooling?~~ done
+  * ~~max-pooling?~~ DONE
   * ~~read network from a config file?~~ soft of done with the `netdef` syntax
 
 Recent changes
