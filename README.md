@@ -612,7 +612,7 @@ What's done / what's planned
     * ~~translation and scaling by mean and standard deviation~~ done
   * testing result averaged over several propagations (used in conjunction with `rp`)
   * sparse connectivity between feature maps in adjacent layers
-  * MCDNN?
+  * ~~MCDNN?~~ done
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
   * ~~randomly translating input layer?~~ done
