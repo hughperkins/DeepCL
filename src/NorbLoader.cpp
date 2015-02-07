@@ -55,6 +55,8 @@ STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, 
     memcpy( images, loadedImages + startN * numPlanes * boardSize * boardSize, numExamples * numPlanes * boardSize * boardSize * sizeof( unsigned char ) );
     int *loadedLabels = loadLabels( replace( trainFilepath, "-dat.mat","-cat.mat"), startN + numExamples );
     memcpy( labels, loadedLabels + startN, sizeof( int ) * numExamples );
+    delete []loadedImages;
+    delete[] loadedLabels;
 }
 
 STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {

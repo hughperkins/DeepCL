@@ -328,6 +328,7 @@ int main( int argc, char *argv[] ) {
         } else {
             string key = splitkeyval[0];
             string value = splitkeyval[1];
+//            cout << "key [" << key << "]" << endl;
             // [[[cog
             // cog.outl('// generated using cog:')
             // cog.outl('if( false ) {')

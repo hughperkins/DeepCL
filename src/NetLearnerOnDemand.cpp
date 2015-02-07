@@ -84,6 +84,7 @@ template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate, fl
     for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
         float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
         EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, batchSize, Ntrain );
+        cout << "dumpTimings " << dumpTimings << endl;
         if( dumpTimings ) {
             StatefulTimer::dump(true);
         }

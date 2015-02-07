@@ -48,8 +48,11 @@ template< typename T > EpochResult BatchLearnerOnDemand<T>::batchedNetAction( st
             thisBatchSize = N - batchStart;
             net->setBatchSize( thisBatchSize );
         }
+//        cout << "batch " << batch << " batchSize " << batchSize << " N " << N << " thisbatchsize " << thisBatchSize << endl;
         GenericLoader::load( filepath, dataBuffer, labelsBuffer, batchStart, thisBatchSize );
+//        cout << "loaded from file " << endl;
         netAction->run( net, dataBuffer, labelsBuffer );
+//        cout << "trained" << endl;
         loss += net->calcLossFromLabels( labelsBuffer );
         numRight += net->calcNumRight( labelsBuffer );
     }

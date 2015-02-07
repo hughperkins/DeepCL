@@ -9,6 +9,7 @@
 #include "NorbLoader.h"
 #include "FileHelper.h"
 #include "Kgsv2Loader.h"
+#include "StatefulTimer.h"
 
 #include "GenericLoader.h"
 
@@ -42,6 +43,7 @@ STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *image
 }
 
 STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
+    StatefulTimer::timeCheck("GenericLoader::load start");
     char *headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 1024 );
     char type[1025];
     strncpy( type, headerBytes, 4 );
@@ -49,14 +51,15 @@ STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *image
     unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
     if( string(type) == "mlv2" ) {
 //        cout << "Loading as a Kgsv2 file" << endl;
-        return Kgsv2Loader::load( trainFilepath, images, labels, startN, numExamples );
+        Kgsv2Loader::load( trainFilepath, images, labels, startN, numExamples );
     } else if( headerInts[0] == 0x1e3d4c55 ) {
 //        cout << "Loading as a Norb mat file" << endl;
-        return NorbLoader::load( trainFilepath, images, labels, startN, numExamples );
+        NorbLoader::load( trainFilepath, images, labels, startN, numExamples );
     } else {
         cout << "headstring" << type << endl;
         throw runtime_error("Filetype of " + trainFilepath + " not recognised" );
     }
+    StatefulTimer::timeCheck("GenericLoader::load end");
 }
 
 
