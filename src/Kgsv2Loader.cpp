@@ -88,17 +88,18 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
         int label = record[5] + 256 * record[4];
 //        int label = record[2+4] + 256 * record[2+3];
 //        cout << "label bytes: " << (int)record[2] << " " << (int)record[3] << " " << (int)record[4] << " " << (int)record[5] << endl;
-        cout << "label: " << label << endl;
+//        cout << "label: " << label << endl;
         labels[n] = label;
         unsigned char *recordImage = record + 6;
         int bitPos = 0;
         int intraRecordPos = 0;
         unsigned char thisrecordbyte = recordImage[ intraRecordPos ];
         for( int plane = 0; plane < numPlanes; plane++ ) {
+            unsigned char *dataPlane = data + ( (long)n * numPlanes + plane ) * boardSizeSquared;
             for( int intraBoardPos = 0; intraBoardPos < boardSizeSquared; intraBoardPos++ ) {
                 unsigned char thisbyte = ( thisrecordbyte >> ( 7 - bitPos ) ) & 1;
 //                cout << "thisbyte: " << (int)thisbyte << endl;
-                data[ ( n * numPlanes + plane ) * boardSizeSquared + intraBoardPos ] = thisbyte * 255;
+                dataPlane[ intraBoardPos ] = thisbyte * 255;
                 bitPos++;
                 if( bitPos == 8 ) {
                     bitPos = 0;

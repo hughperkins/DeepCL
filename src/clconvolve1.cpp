@@ -26,7 +26,8 @@ using namespace std;
 /* [[[cog
     # These are used in the later cog sections in this file:
     strings = [ 'trainFile', 'validateFile', 'netDef', 'restartableFilename', 'normalization' ]
-    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet' ]
+    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet',
+        'loadOnDemand' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
         'trainfile': 'path to training data file',
@@ -42,8 +43,9 @@ using namespace std;
         'restartablefilename': 'filename to store weights',
         'normalization': '[stddev|maxmin]',
         'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
-        'dumptimings': 'dump detailed timings each epoch?',
-        'multinet': 'number of Mcdnn columns to train'
+        'dumptimings': 'dump detailed timings each epoch? [1|0]',
+        'multinet': 'number of Mcdnn columns to train',
+        'loadondemand': 'load data on demand [1|0]'
     }
 *///]]]
 // [[[end]]]
@@ -72,6 +74,7 @@ public:
     int restartable = 0;
     int dumpTimings = 0;
     int multiNet = 0;
+    int loadOnDemand = 0;
     float learningRate = 0.0f;
     float annealLearningRate = 0.0f;
     float normalizationNumStds = 0.0f;
@@ -115,6 +118,72 @@ public:
     }
 };
 
+template< typename T >
+class BatchAction {
+public:
+    T *data;
+    int *labels;
+    BatchAction( T *data, int *labels ) :
+        data(data),
+        labels(labels) { // have to provide appropriate buffers for this
+    }
+    virtual void processBatch( int batchSize ) = 0;
+};
+
+template< typename T >
+class NormalizeGetStdDev : public BatchAction<T> {
+public:
+    Statistics<T> statistics; 
+    NormalizeGetStdDev( T *data, int *labels ) :
+        BatchAction<T>::BatchAction( data, labels ) {
+    }
+    virtual void processBatch( int batchSize ) {
+        NormalizationHelper::updateStatistics( this->data, batchSize, &statistics );
+    }
+    void calcMeanStdDev( float *p_mean, float *p_stdDev ) {
+        NormalizationHelper::calcMeanAndStdDev( &statistics, p_mean, p_stdDev );
+    }
+};
+
+template< typename T >
+class NormalizeGetMinMax : public BatchAction<T> {
+public:
+    Statistics<T> statistics; 
+    NormalizeGetMinMax( T *data, int *labels ) :
+        BatchAction<T>( data, labels ) {
+    }
+    virtual void processBatch( int batchSize ) {
+        NormalizationHelper::updateStatistics( this->data, batchSize, &statistics );
+    }
+    void calcMinMaxTransform( float *p_translate, float *p_scale ) {
+        // add this to our values to center
+        *p_translate = - ( statistics.maxY - statistics.minY ) / 2.0f;
+        // multiply our values by this to scale to -1 / +1 range
+        *p_scale = 1.0f / ( statistics.maxY - statistics.minY );
+    }
+};
+
+class BatchProcess {
+public:
+    template< typename T>
+    static void run(std::string filepath, int startN, int batchSize, int totalN, BatchAction<T> *batchAction) {
+        int numBatches = ( totalN + batchSize - 1 ) / batchSize;
+        int thisBatchSize = batchSize;
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            int batchStart = batch * batchSize;
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = totalN - batchStart;
+                cout << "size of last batch: " << thisBatchSize << endl;
+            }
+            GenericLoader::load( filepath, batchAction->data, batchAction->labels, batchStart, thisBatchSize );
+            batchAction->processBatch( thisBatchSize );
+        }
+    }
+};
+
+//void calcMeanStdDev( std::string filepath, int N, float *p_mean, float *p_stdDev ) {
+//}
+
 void go(Config config) {
     Timer timer;
 
@@ -123,36 +192,83 @@ void go(Config config) {
     int numPlanes;
     int boardSize;
 
+    unsigned char *trainData = 0;
+    unsigned char *testData = 0;
+    int *trainLabels = 0;
+    int *testLabels = 0;
+
+    int trainAllocateN = 0;
+    int testAllocateN = 0;
+
     int totalLinearSize;
     GenericLoader::getDimensions( config.trainFile, &Ntrain, &numPlanes, &boardSize, &totalLinearSize );
-    unsigned char *trainData = new unsigned char[ config.numTrain * numPlanes * boardSize * boardSize ];
-    int *trainLabels = new int[config.numTrain];    
-    GenericLoader::load( config.trainFile, trainData, trainLabels, 0, config.numTrain );
+    Ntrain = config.numTrain == 0 ? Ntrain : config.numTrain;
+//    long allocateSize = (long)Ntrain * numPlanes * boardSize * boardSize;
+    cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " boardSize " << boardSize << endl;
+    if( config.loadOnDemand ) {
+        trainAllocateN = config.batchSize; // can improve this later
+    } else {
+        trainAllocateN = Ntrain;
+    }
+    trainData = new unsigned char[ (long)trainAllocateN * numPlanes * boardSize * boardSize ];
+    trainLabels = new int[trainAllocateN];
+    if( !config.loadOnDemand ) {
+        GenericLoader::load( config.trainFile, trainData, trainLabels, 0, Ntrain );
+    }
 
     GenericLoader::getDimensions( config.validateFile, &Ntest, &numPlanes, &boardSize, &totalLinearSize );
-    unsigned char *testData = new unsigned char[ config.numTest * numPlanes * boardSize * boardSize ];
-    int *testLabels = new int[config.numTest];    
-    GenericLoader::load( config.validateFile, testData, testLabels, 0, config.numTest );
+    Ntest = config.numTest == 0 ? Ntest : config.numTest;
+    if( config.loadOnDemand ) {
+        testAllocateN = config.batchSize; // can improve this later
+    } else {
+        testAllocateN = Ntest;
+    }
+    testData = new unsigned char[ (long)testAllocateN * numPlanes * boardSize * boardSize ];
+    testLabels = new int[testAllocateN];    
+    if( !config.loadOnDemand ) {
+        GenericLoader::load( config.validateFile, testData, testLabels, 0, Ntest );
+    }
     
-//    unsigned char *trainData = NorbLoader::loadImages( config.trainFile, &Ntrain, &numPlanes, &boardSize, config.numTrain );
-//    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
-//    int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
-//    int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
     timer.timeCheck("after load images");
 
     const int inputCubeSize = numPlanes * boardSize * boardSize;
-    float mean;
-    float stdDev;
-    if( config.normalization == "stddev" ) {
-        NormalizationHelper::getMeanAndStdDev( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
-        stdDev *= config.normalizationNumStds;
-    } else if( config.normalization == "maxmin" ) {
-        NormalizationHelper::getMinMax( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+    float translate;
+    float scale;
+    if( !config.loadOnDemand ) {
+        if( config.normalization == "stddev" ) {
+            float mean, stdDev;
+            NormalizationHelper::getMeanAndStdDev( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+            cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+            translate = - mean;
+            scale = 1.0f / stdDev / config.normalizationNumStds;
+        } else if( config.normalization == "maxmin" ) {
+            float mean, stdDev;
+            NormalizationHelper::getMinMax( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+            translate = - mean;
+            scale = 1.0f / stdDev;
+        } else {
+            cout << "Error: Unknown normalization: " << config.normalization << endl;
+            return;
+        }
     } else {
-        cout << "Error: Unknown normalization: " << config.normalization << endl;
-        return;
+        if( config.normalization == "stddev" ) {
+            float mean, stdDev;
+            NormalizeGetStdDev<unsigned char> normalizeGetStdDev( trainData, trainLabels ); 
+            BatchProcess::run<unsigned char>( config.trainFile, 0, config.batchSize, Ntrain, &normalizeGetStdDev );
+            normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
+            cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+            translate = - mean;
+            scale = 1.0f / stdDev / config.normalizationNumStds;
+        } else if( config.normalization == "maxmin" ) {
+            NormalizeGetMinMax<unsigned char> normalizeGetMinMax( trainData, trainLabels );
+            BatchProcess::run( config.trainFile, 0, config.batchSize, Ntrain, &normalizeGetMinMax );
+            normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
+        } else {
+            cout << "Error: Unknown normalization: " << config.normalization << endl;
+            return;
+        }
     }
-    cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+    cout << " board norm translate " << translate << " scale " << scale << endl;
     timer.timeCheck("after getting stats");
 
     const int numToTrain = Ntrain;
@@ -160,7 +276,7 @@ void go(Config config) {
     NeuralNet *net = new NeuralNet();
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
     net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->boardSize(boardSize) );
-    net->addLayer( NormalizationLayerMaker::instance()->translate(-mean)->scale(1.0f / stdDev) );
+    net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;
     }
@@ -240,8 +356,9 @@ void printUsage( char *argv[], Config config ) {
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
     cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
-    cout << "    dumptimings=[dump detailed timings each epoch?] (" << config.dumpTimings << ")" << endl;
+    cout << "    dumptimings=[dump detailed timings each epoch? [1|0]] (" << config.dumpTimings << ")" << endl;
     cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
+    cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
@@ -300,6 +417,8 @@ int main( int argc, char *argv[] ) {
                 config.dumpTimings = atoi( value );
             } else if( key == "multinet" ) {
                 config.multiNet = atoi( value );
+            } else if( key == "loadondemand" ) {
+                config.loadOnDemand = atoi( value );
             } else if( key == "learningrate" ) {
                 config.learningRate = atof( value );
             } else if( key == "anneallearningrate" ) {

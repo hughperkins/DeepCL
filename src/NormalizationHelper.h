@@ -7,9 +7,49 @@
 #pragma once
 
 #include <algorithm>
+#include <cstring>
+
+template<typename T>
+class Statistics {
+public:
+    int count;
+    T maxY;
+    T minY;
+    float sumY;
+    float sumYSquared;
+    Statistics() {
+        memset( this, 0, sizeof( Statistics ) );
+    }
+};
 
 class NormalizationHelper {
 public:
+    template<typename T>
+    static void updateStatistics( T *Y, int length, Statistics<T> *statistics ) {
+        float thisSumY = 0;
+        float thisSumYSquared = 0;
+        T thisMin = Y[0];
+        T thisMax = Y[0];
+        for( int i = 0; i < length; i++ ) {
+            float thisValue = Y[i];
+            thisSumY += thisValue;
+            thisSumYSquared += (float)thisValue * (float)thisValue;
+            thisMin = thisValue < thisMin ? thisValue : thisMin;
+            thisMax = thisValue > thisMax ? thisValue : thisMax;
+        }
+        statistics->count += length;
+        statistics->maxY = thisMax > statistics->maxY ? thisMax : statistics->maxY;
+        statistics->minY = thisMin < statistics->minY ? thisMin : statistics->minY;
+        statistics->sumY += thisSumY;
+        statistics->sumYSquared += thisSumYSquared;
+    }
+
+    template<typename T>
+    static void calcMeanAndStdDev( Statistics<T> *statistics, float *p_mean, float *p_stdDev ) {
+        *p_mean = (float)statistics->sumY / statistics->count;
+        *p_stdDev = sqrt( ( statistics->sumYSquared - statistics->sumY * statistics->sumY / statistics->count ) / (statistics->count - 1 ) );
+    }
+
     template<typename T>
     static void getMeanAndStdDev( T *data, int length, float *p_mean, float *p_stdDev ) {
         // get mean of the dataset, and stddev
