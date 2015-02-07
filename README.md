@@ -628,6 +628,10 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 7th Februrary:
+  * added support for kgs go v2 format [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+  * added loadondemand, which makes it possible to read a file in chunks, as learning proceeds, reducing memory requirements
+  * created `GenericLoader.cpp`, which can auto-detect file types, given the path of the images file
 * 5th February:
   * added multinet: multi-column networks
 * 3rd Februrary:
