@@ -234,6 +234,9 @@ void go(Config config) {
     }
 
     timer.timeCheck("before learning start");
+    if( config.dumpTimings ) {
+        StatefulTimer::dump( true );
+    }
     StatefulTimer::timeCheck("START");
 
     Trainable *trainable = net;
