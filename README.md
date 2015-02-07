@@ -569,6 +569,11 @@ What if I want to contribute myself?
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
 cmake configuration, then a lot of manual editing will no longer be necessary :-)
 
+Forums
+======
+
+[http://www.hughperkins.com/clconvolvebb](http://www.hughperkins.com/clconvolvebb)
+
 What's done / what's planned
 ============================
 
