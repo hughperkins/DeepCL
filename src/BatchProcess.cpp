@@ -12,6 +12,8 @@
 
 #include "BatchProcess.h"
 
+#include "DllImportExport.h"
+
 using namespace std;
 
 template< typename T>
@@ -31,5 +33,5 @@ void BatchProcess::run(std::string filepath, int startN, int batchSize, int tota
     }
 }
 
-template void BatchProcess::run<unsigned char>( std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<unsigned char> *batchAction);
+template ClConvolve_EXPORT void BatchProcess::run<unsigned char>( std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<unsigned char> *batchAction);
 
