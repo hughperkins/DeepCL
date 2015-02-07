@@ -157,6 +157,11 @@ Example usage:
 * eg you can try, on MNIST, `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
 * example paper using this approach: [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf)
 
+## Multi-column deep neural network "MultiNet"
+
+* You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
+* Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
+
 ## Pre-processing
 
 * Note that the datasets must be in the NORB .mat format specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) page
@@ -172,10 +177,14 @@ Example usage:
 ./prepare-norb
 ```
 
-## Multi-column deep neural network "MultiNet"
+## File types
 
-* You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
-* Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
+* Using the new `GenericLoader.cpp`, it's possible to automatically detect various filetypes
+* When specifying a training or validation file, if there is both a labels and an images file, then specify the images file, and the labels file will be detected automatically
+* Currently, the following filetypes are supported:
+  * Norb .mat format
+  * kgs go v2 format, [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+* As long as the format has a header section, there's no particular reason why it couldnt be supported
 
 ## Weight persistence
 
@@ -189,9 +198,6 @@ Example usage:
 
 | Option | Description |
 |----|----|
-| ~~datadir=../data/mnist~~ | ~~path of directory with data in~~ |
-| ~~trainset=training-shuffled~~ | ~~filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem~~ |
-| ~~testset=testing-sampled~~ | ~~filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem~~ |
 | trainfile=../data/mnist/train-dat.mat | path to the train data file, the one with the images in.  Note that the labels file will be searched for automatically, based on the data filename and type, eg in this case `../data/mnist/train-cat.mat' |
 | validationfile=../data/mnist/validate-dat.mat | path to the validation data file, the one with the images in.  Note that the labels file will be searched for automatically, based on the data filename and type, eg in this case `../data/mnist/validate-cat.mat' |
 | numtrain=1000 | only uses the first 1000 training samples |
@@ -204,6 +210,8 @@ Example usage:
 | normalization=maxmin | can choose maxmin or stddev.  Default is stddev |
 | normalizationnumstds=2 | how many standard deviations from mean should be +1/-1?  Default is 2 |
 | multinet=3 | train 3 networks at the same time, and predict using average output from all 3, can put any integer greater than 1 |
+| loadondemand=1 | Load the file in chunks, as learning proceeds, to reduce memory requirements. Default 0 |
+| filebatchsize=50 | When loadondemand=1, load this many batches at a time.  Numbers larger than 1 increase efficiency of disk reads, speeding up learning, but use up more memory |
 
 # Validation against standard datasets
 
