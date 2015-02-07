@@ -57,8 +57,9 @@ template< typename T > void NetLearnerOnDemand<T>::setSchedule( int numEpochs, i
     this->startEpoch = startEpoch;
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setBatchSize( int batchSize ) {
+template< typename T > void NetLearnerOnDemand<T>::setBatchSize( int fileReadBatches, int batchSize ) {
     this->batchSize = batchSize;
+    this->fileReadBatches = fileReadBatches;
 }
 
 template< typename T > VIRTUAL NetLearnerOnDemand<T>::~NetLearnerOnDemand() {
@@ -83,7 +84,7 @@ template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate, fl
     Timer timer;
     for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
         float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
-        EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, batchSize, Ntrain );
+        EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, fileReadBatches, batchSize, Ntrain );
         cout << "dumpTimings " << dumpTimings << endl;
         if( dumpTimings ) {
             StatefulTimer::dump(true);
@@ -93,7 +94,7 @@ template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate, fl
         timer.timeCheck("after epoch " + toString(epoch ) );
         cout << "annealed learning rate: " << annealedLearningRate << " training loss: " << epochResult.loss << endl;
         cout << " train accuracy: " << epochResult.numRight << "/" << Ntrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
-        int testNumRight = batchLearnerOnDemand.test( testFilepath, batchSize, Ntest );
+        int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
         cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
         timer.timeCheck("after tests");
         for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {

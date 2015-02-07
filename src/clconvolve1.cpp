@@ -29,7 +29,7 @@ using namespace std;
     # These are used in the later cog sections in this file:
     strings = [ 'trainFile', 'validateFile', 'netDef', 'restartableFilename', 'normalization' ]
     ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet',
-        'loadOnDemand' ]
+        'loadOnDemand', 'fileReadBatches' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
         'trainfile': 'path to training data file',
@@ -47,7 +47,8 @@ using namespace std;
         'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
         'dumptimings': 'dump detailed timings each epoch? [1|0]',
         'multinet': 'number of Mcdnn columns to train',
-        'loadondemand': 'load data on demand [1|0]'
+        'loadondemand': 'load data on demand [1|0]',
+        'filereadbatches': 'how many batches to read from file each time? (for loadondemand=1)'
     }
 *///]]]
 // [[[end]]]
@@ -77,6 +78,7 @@ public:
     int dumpTimings = 0;
     int multiNet = 0;
     int loadOnDemand = 0;
+    int fileReadBatches = 0;
     float learningRate = 0.0f;
     float annealLearningRate = 0.0f;
     float normalizationNumStds = 0.0f;
@@ -99,6 +101,7 @@ public:
         normalizationNumStds = 2.0f;
         dumpTimings = 0;
         multiNet = 1;
+        fileReadBatches = 50;
     }
     string getTrainingString() {
         string configString = "";
@@ -251,7 +254,7 @@ void go(Config config) {
         netLearner.setTrainingData( config.trainFile, Ntrain );
         netLearner.setTestingData( config.validateFile, Ntest );
         netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
-        netLearner.setBatchSize( config.batchSize );
+        netLearner.setBatchSize( config.fileReadBatches, config.batchSize );
         netLearner.setDumpTimings( config.dumpTimings );
         WeightsWriter weightsWriter( net, &config );
         if( config.restartable ) {
@@ -312,6 +315,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    dumptimings=[dump detailed timings each epoch? [1|0]] (" << config.dumpTimings << ")" << endl;
     cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
+    cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
@@ -373,6 +377,8 @@ int main( int argc, char *argv[] ) {
                 config.multiNet = atoi( value );
             } else if( key == "loadondemand" ) {
                 config.loadOnDemand = atoi( value );
+            } else if( key == "filereadbatches" ) {
+                config.fileReadBatches = atoi( value );
             } else if( key == "learningrate" ) {
                 config.learningRate = atof( value );
             } else if( key == "anneallearningrate" ) {

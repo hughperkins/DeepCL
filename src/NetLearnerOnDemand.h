@@ -41,6 +41,7 @@ public:
 //    int *testLabels;
 
     int batchSize;
+    int fileReadBatches;
 
     float learningRate;
     float annealLearningRate;
@@ -63,7 +64,7 @@ public:
     void setSchedule( int numEpochs );
     void setDumpTimings( bool dumpTimings );
     void setSchedule( int numEpochs, int startEpoch );
-    void setBatchSize( int batchSize );
+    void setBatchSize( int fileReadBatches, int batchSize );
     VIRTUAL ~NetLearnerOnDemand();
     VIRTUAL void addPostEpochAction( PostEpochAction *action );
     void learn( float learningRate );

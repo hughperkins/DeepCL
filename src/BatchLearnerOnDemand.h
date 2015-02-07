@@ -20,40 +20,6 @@ class Trainable;
 
 #include "DllImportExport.h"
 
-//class ClConvolve_EXPORT EpochResult {
-//public:
-//    float loss;
-//    int numRight;
-//    EpochResult( float loss, int numRight ) :
-//        loss( loss ),
-//        numRight( numRight ) {
-//    }
-//};
-
-//template< typename T>
-//class ClConvolve_EXPORT NetAction {
-//public:
-//    virtual void run( Trainable *net, T *batchData, int const*batchLabels ) = 0;
-//};
-
-//template< typename T>
-//class ClConvolve_EXPORT NetLearnLabeledBatch : public NetAction<T> {
-//public:
-//    float learningRate;
-//    NetLearnLabeledBatch( float learningRate ) :
-//        learningRate( learningRate ) {
-//    }
-//    virtual void run( Trainable *net, T *batchData, int const*batchLabels );
-//};
-
-//template< typename T>
-//class ClConvolve_EXPORT NetPropagateBatch : public NetAction<T> {
-//public:
-//    NetPropagateBatch() {
-//    }
-//    virtual void run( Trainable *net, T *batchData, int const*batchLabels );
-//};
-
 // this handles learning one single epoch, breaking up the incoming training or testing
 // data into batches, which are then sent to the NeuralNet for forward and backward
 // propagation.
@@ -68,9 +34,9 @@ public:
     // ]]]
     // generated, using cog:
     BatchLearnerOnDemand( Trainable *net );
-    EpochResult batchedNetAction( std::string filepath, int batchSize, int N, NetAction<T> *netAction );
-    int test( std::string filepath, int batchSize, int Ntest );
-    EpochResult runEpochFromLabels( float learningRate, std::string filepath, int batchSize, int Ntrain );
+    EpochResult batchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction<T> *netAction );
+    int test( std::string filepath, int fileReadBatches, int batchSize, int Ntest );
+    EpochResult runEpochFromLabels( float learningRate, std::string filepath, int fileReadBatches, int batchSize, int Ntrain );
 
     // [[[end]]]
 };

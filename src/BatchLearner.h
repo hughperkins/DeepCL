@@ -52,6 +52,16 @@ public:
     virtual void run( Trainable *net, T *batchData, int const*batchLabels );
 };
 
+template< typename T>
+class ClConvolve_EXPORT NetBackpropBatch : public NetAction<T> {
+public:
+    float learningRate;
+    NetBackpropBatch( float learningRate ) :
+        learningRate( learningRate ) {
+    }
+    virtual void run( Trainable *net, T *batchData, int const*batchLabels );
+};
+
 // this handles learning one single epoch, breaking up the incoming training or testing
 // data into batches, which are then sent to the NeuralNet for forward and backward
 // propagation.
@@ -68,6 +78,8 @@ public:
     BatchLearner( Trainable *net );
     EpochResult batchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction );
     int test( int batchSize, int N, T *testData, int const*testLabels );
+    int propagateForTrain( int batchSize, int N, T *data, int const*labels );
+    EpochResult backprop( float learningRate, int batchSize, int N, T *data, int const*labels );
     EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int const*trainLabels );
     float runEpochFromExpected( float learningRate, int batchSize, int N, T *data, float *expectedResults );
 

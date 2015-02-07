@@ -28,6 +28,11 @@ void NetPropagateBatch<T>::run( Trainable *net, T *batchData, int const*batchLab
     net->propagate( batchData );
 }
 
+template< typename T>
+void NetBackpropBatch<T>::run( Trainable *net, T *batchData, int const*batchLabels ) {
+    net->backPropFromLabels( learningRate, batchLabels );
+}
+
 template< typename T > BatchLearner<T>::BatchLearner( Trainable *net ) :
     net( net ) {
 }
@@ -57,6 +62,22 @@ template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testD
     int numRight = batchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
     delete action;
     return numRight;
+}
+
+template< typename T > int BatchLearner<T>::propagateForTrain( int batchSize, int N, T *data, int const*labels ) {
+    net->setTraining( true );
+    NetAction<T> *action = new NetPropagateBatch<T>();
+    int numRight = batchedNetAction( batchSize, N, data, labels, action ).numRight;
+    delete action;
+    return numRight;
+}
+
+template< typename T > EpochResult BatchLearner<T>::backprop( float learningRate, int batchSize, int N, T *data, int const*labels ) {
+    net->setTraining( true );
+    NetAction<T> *action = new NetBackpropBatch<T>( learningRate );
+    EpochResult epochResult = batchedNetAction( batchSize, N, data, labels, action );
+    delete action;
+    return epochResult;
 }
 
 template< typename T > EpochResult BatchLearner<T>::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int const*trainLabels ) {
