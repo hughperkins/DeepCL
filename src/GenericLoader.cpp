@@ -20,7 +20,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_boardSize, int *p_imagesLinearSize ) {
+STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_boardSize ) {
     char *headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 1024 );
     char type[1025];
     strncpy( type, headerBytes, 4 );
@@ -28,10 +28,10 @@ STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numE
     unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
     if( string(type) == "mlv2" ) {
 //        cout << "Loading as a Kgsv2 file" << endl;
-        return Kgsv2Loader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_boardSize, p_imagesLinearSize );
+        return Kgsv2Loader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_boardSize );
     } else if( headerInts[0] == 0x1e3d4c55 ) {
 //        cout << "Loading as a Norb mat file" << endl;
-        return NorbLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_boardSize, p_imagesLinearSize );
+        return NorbLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_boardSize );
     } else {
         cout << "headstring" << type << endl;
         throw runtime_error("Filetype of " + trainFilepath + " not recognised" );

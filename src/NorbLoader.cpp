@@ -20,7 +20,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int *p_numPlanes, int *p_boardSize, int *p_imagesLinearSize ) {
+STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
     char*headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 6 * 4 );
     unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
 
@@ -40,11 +40,15 @@ STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int 
 //    if( maxN > 0 ) {
 //        N = min( maxN, N );
 //    }
-    int totalLinearSize = N * numPlanes * boardSize * boardSize;
+//    int totalLinearSize = N * numPlanes * boardSize * boardSize;
     *p_N = N;
     *p_numPlanes = numPlanes;
     *p_boardSize = boardSize;
-    *p_imagesLinearSize = totalLinearSize;
+//    *p_imagesLinearSize = totalLinearSize;
+}
+
+STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, int *labels ) {
+    load( trainFilepath, images, labels, 0, 0 );
 }
 
 STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
@@ -62,6 +66,27 @@ STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, 
 //STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
 //    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, 0 );
 //}
+
+STATIC int *NorbLoader::loadLabels( std::string labelsfilepath, int numExamples ) {
+    int *labels = new int[numExamples];
+    loadLabels( labels, labelsfilepath, 0, numExamples );
+    return labels;
+}
+
+STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
+    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, 0 );
+}
+
+STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int numExamples ) {
+    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, numExamples );
+}
+
+STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int startN, int numExamples ) {
+    getDimensions( filepath, p_N, p_numPlanes, p_boardSize );
+    unsigned char *images = new unsigned char[ (long)numExamples * *p_numPlanes * *p_boardSize * *p_boardSize ];
+    loadImages( images, filepath, p_N, p_numPlanes, p_boardSize, startN, numExamples );
+    return images;
+}
 
 // you need to allocate this yourself, before use
 STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int startN, int numExamples ) {

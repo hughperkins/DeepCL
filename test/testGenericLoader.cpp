@@ -12,8 +12,8 @@ void go( string trainFilepath, int startN, int numExamples ) {
     int N;
     int numPlanes;
     int boardSize;
-    int totalSize;
-    GenericLoader::getDimensions( trainFilepath, &N, &numPlanes, &boardSize, &totalSize );
+//    int totalSize;
+    GenericLoader::getDimensions( trainFilepath, &N, &numPlanes, &boardSize );
     cout << "N " << N << " numplanes " << numPlanes << " boardSize " << boardSize << endl;
     unsigned char *images = new unsigned char[ numExamples * numPlanes * boardSize * boardSize ];
     int *labels = new int[ numExamples ];

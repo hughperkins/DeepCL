@@ -13,6 +13,7 @@ void go( string dataDir, string setName, int n, int patchSize, int patchRow, int
     int boardSize;
     unsigned char *imagesUchar = NorbLoader::loadImages( dataDir + "/" + setName + "-dat.mat", &N, &numPlanes, &boardSize, n + 1 );
     cout << "n " << n << " N " << N << endl;
+    N = n + 1;
     float *images = new float[ N * numPlanes * boardSize * boardSize ];
     for( int i = 0; i < N * numPlanes * boardSize * boardSize; i++ ) {
         images[i] = imagesUchar[i];

@@ -22,8 +22,13 @@ using namespace std;
 
 void prepareTraining( string norbDir ) {
     int N, numPlanes, boardSize;
-    unsigned char *training = NorbLoader::loadImages( norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat", &N, &numPlanes, &boardSize );
-    int *labels = NorbLoader::loadLabels( norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat", N );
+    string imagesFilePath = norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat";
+    string labelsFilePath = norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat";
+    NorbLoader::getDimensions( imagesFilePath, &N, &numPlanes, &boardSize );
+    unsigned char *training = new unsigned char[ N * numPlanes * boardSize * boardSize ];
+    int *labels = new int[ N ];
+    NorbLoader::load( imagesFilePath, training, labels );
+//    int *labels = NorbLoader::loadLabels( labelsFilePath, N );
     // create random sequence of examples
     vector<int> sequence;
     sequence.reserve(N);

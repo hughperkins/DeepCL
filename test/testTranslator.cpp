@@ -11,7 +11,12 @@ void go( string dataDir, string setName, int n, int translateRows, int translate
     int N;
     int numPlanes;
     int boardSize;
-    unsigned char *imagesUchar = NorbLoader::loadImages( dataDir + "/" + setName + "-dat.mat", &N, &numPlanes, &boardSize, n + 1 );
+    string filePath = dataDir + "/" + setName + "-dat.mat";
+    NorbLoader::getDimensions( filePath, &N, &numPlanes, &boardSize );
+    N = n + 1;
+    unsigned char *imagesUchar = new unsigned char[ N * numPlanes * boardSize * boardSize ];
+    int *labels = new int[ N ];
+    NorbLoader::load( filePath, imagesUchar, labels, 0, N );
     cout << "n " << n << " N " << N << endl;
     float *images = new float[ N * numPlanes * boardSize * boardSize ];
     for( int i = 0; i < N * numPlanes * boardSize * boardSize; i++ ) {

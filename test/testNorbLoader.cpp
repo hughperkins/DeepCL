@@ -27,6 +27,7 @@ TEST( SLOW_testNorbLoader, loadall ) {
     string trainingFilename = "training-shuffled";
 //    string trainingFilename = "testing-sampled";
 
+    NorbLoader::getDimensions( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &boardSize );
     unsigned char *images = NorbLoader::loadImages( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &boardSize );
     int *labels = NorbLoader::loadLabels( norbDataDir + "/" + trainingFilename + "-cat.mat", N );
     cout << "labels here, please open testNorbLoader.png, and compare" << endl;

@@ -21,7 +21,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int *p_totalImagesLinearSize ) {
+STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
     char *headerBytes = FileHelper::readBinaryChunk( filepath, 0, 1024 );
     headerBytes[1023] = 0;
     string headerString = string( headerBytes );
@@ -39,7 +39,7 @@ STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_n
     *p_N = N;
     *p_numPlanes = numPlanes;
     *p_boardSize = boardSize;
-    *p_totalImagesLinearSize = N * numPlanes * boardSize * boardSize;
+//    *p_totalImagesLinearSize = N * numPlanes * boardSize * boardSize;
 }
 
 //STATIC int Kgsv2Loader::getNumRecords( std::string filepath ) {
@@ -61,8 +61,8 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
     int N;
     int boardSize;
     int numPlanes;
-    int imagesSize;
-    getDimensions( filepath, &N, &numPlanes, &boardSize, &imagesSize );
+//    int imagesSize;
+    getDimensions( filepath, &N, &numPlanes, &boardSize );
     if( numRecords == 0 ) {
         numRecords = N - startRecord;
     }

@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC void getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int *p_totalImagesLinearSize );
+    STATIC void getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize );
     STATIC void load( std::string filepath, unsigned char *data, int *labels );
     STATIC void load( std::string filepath, unsigned char *data, int *labels, int startRecord, int numRecords );
     STATIC int getRecordSize( int numPlanes, int boardSize );

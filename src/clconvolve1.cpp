@@ -139,8 +139,8 @@ void go(Config config) {
     int trainAllocateN = 0;
     int testAllocateN = 0;
 
-    int totalLinearSize;
-    GenericLoader::getDimensions( config.trainFile, &Ntrain, &numPlanes, &boardSize, &totalLinearSize );
+//    int totalLinearSize;
+    GenericLoader::getDimensions( config.trainFile, &Ntrain, &numPlanes, &boardSize );
     Ntrain = config.numTrain == 0 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * boardSize * boardSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " boardSize " << boardSize << endl;
@@ -155,7 +155,7 @@ void go(Config config) {
         GenericLoader::load( config.trainFile, trainData, trainLabels, 0, Ntrain );
     }
 
-    GenericLoader::getDimensions( config.validateFile, &Ntest, &numPlanes, &boardSize, &totalLinearSize );
+    GenericLoader::getDimensions( config.validateFile, &Ntest, &numPlanes, &boardSize );
     Ntest = config.numTest == 0 ? Ntest : config.numTest;
     if( config.loadOnDemand ) {
         testAllocateN = config.batchSize; // can improve this later
