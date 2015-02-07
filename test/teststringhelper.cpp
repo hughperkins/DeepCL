@@ -43,3 +43,8 @@ TEST( teststringhelper, tolower ) {
     EXPECT_EQ( "3fafef4fad", toLower( mystring ) );
 }
 
+TEST( teststringhelper, replace ) {
+    string mystring = "hellonewworld";
+    EXPECT_EQ( "hellocoolworld", replace( mystring, "new", "cool" ) );
+}
+

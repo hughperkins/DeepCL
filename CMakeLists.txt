@@ -43,7 +43,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
     Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
     RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
-    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp
+    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
@@ -149,6 +149,7 @@ if( LIBPNGPP_AVAILABLE)
     add_executable( printmat test/printMat.cpp src/stringhelper.cpp )
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/stringhelper.cpp src/PatchExtractor.cpp )
     add_executable( testtranslator test/testTranslator.cpp src/stringhelper.cpp src/Translator.cpp )
+    add_executable( testgenericloader test/testGenericLoader.cpp src/stringhelper.cpp )
 endif(LIBPNGPP_AVAILABLE)
 
 if( ON_LINUX )

@@ -52,16 +52,7 @@ inline std::string getToken( std::string targetstring, int tokenIndexFromZero, s
    }
 }
 
-inline std::string toLower(std::string in ) {
-     int len = static_cast<int>( in.size() );
-     char *buffer = new char[len + 1];
-     for( int i = 0; i < len; i++ ) {
-        char thischar = in[i];
-        thischar = tolower(thischar);
-        buffer[i] = thischar;
-    }
-    buffer[len] = 0;
-    std::string result = std::string(buffer);
-    delete[] buffer;
-    return result;
-}
+std::string replace( std::string targetString, std::string oldValue, std::string newValue );
+
+std::string toLower(std::string in );
+

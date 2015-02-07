@@ -20,6 +20,43 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
+STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int *p_numPlanes, int *p_boardSize, int *p_imagesLinearSize ) {
+    char*headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 6 * 4 );
+    unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
+
+    int magic = headerValues[0];
+//    std::cout << "magic: " << magic << std::endl;
+    if( magic != 0x1e3d4c55 ) {
+        throw std::runtime_error("magic value doesnt match expections: " + toString(magic) );
+    }
+    int ndim = headerValues[1];
+    int N = headerValues[2];
+    int numPlanes = headerValues[3];
+    int boardSize = headerValues[4];
+    int boardSizeRepeated = headerValues[5];
+//    std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
+    checkSame( "boardSize", boardSize, boardSizeRepeated );
+
+//    if( maxN > 0 ) {
+//        N = min( maxN, N );
+//    }
+    int totalLinearSize = N * numPlanes * boardSize * boardSize;
+    *p_N = N;
+    *p_numPlanes = numPlanes;
+    *p_boardSize = boardSize;
+    *p_imagesLinearSize = totalLinearSize;
+}
+
+STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
+    int N, numPlanes, boardSize;
+    // I know, this could be optimized a bit, to remove the intermediate arrays...
+    unsigned char *loadedImages = loadImages( trainFilepath, &N, &numPlanes, &boardSize, startN + numExamples );
+//    int totalLinearSize = numExamples  * numPlanes * boardSize * boardSize;
+    memcpy( images, loadedImages + startN * numPlanes * boardSize * boardSize, numExamples * numPlanes * boardSize * boardSize * sizeof( unsigned char ) );
+    int *loadedLabels = loadLabels( replace( trainFilepath, "-dat.mat","-cat.mat"), startN + numExamples );
+    memcpy( labels, loadedLabels + startN, sizeof( int ) * numExamples );
+}
+
 STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
     return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0 );
 }

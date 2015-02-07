@@ -47,3 +47,24 @@ string trim( const string &target ) {
    return target.substr(startpos, endpos-startpos + 1 );
 }
 
+string replace( string targetString, string oldValue, string newValue ) {
+    size_t pos = targetString.find( oldValue );
+    if( pos == string::npos ) {
+        return targetString;
+    }
+    return targetString.replace( pos, oldValue.length(), newValue );
+}
+
+std::string toLower(std::string in ) {
+     int len = static_cast<int>( in.size() );
+     char *buffer = new char[len + 1];
+     for( int i = 0; i < len; i++ ) {
+        char thischar = in[i];
+        thischar = tolower(thischar);
+        buffer[i] = thischar;
+    }
+    buffer[len] = 0;
+    std::string result = std::string(buffer);
+    delete[] buffer;
+    return result;
+}

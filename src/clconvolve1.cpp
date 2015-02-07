@@ -7,7 +7,8 @@
 
 #include <iostream>
 
-#include "NorbLoader.h"
+//#include "NorbLoader.h"
+#include "GenericLoader.h"
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "stringhelper.h"
@@ -24,13 +25,12 @@ using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
-    strings = [ 'dataDir', 'trainSet', 'testSet', 'netDef', 'restartableFilename', 'normalization' ]
+    strings = [ 'trainFile', 'validateFile', 'netDef', 'restartableFilename', 'normalization' ]
     ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
-        'datadir': 'data directory',
-        'trainset': '[training-shuffled|testing-sampled|other set name]',
-        'testset': '[training-shuffled|testing-sampled|other set name]',
+        'trainfile': 'path to training data file',
+        'validatefile': 'path to validation data file',
         'numtrain': 'num training examples',
         'numtest': 'num test examples]',
         'batchsize': 'batch size',
@@ -60,9 +60,8 @@ public:
     //    cog.outl( 'float ' + name + ' = 0.0f;')
     // ]]]
     // generated using cog:
-    string dataDir = "";
-    string trainSet = "";
-    string testSet = "";
+    string trainFile = "";
+    string validateFile = "";
     string netDef = "";
     string restartableFilename = "";
     string normalization = "";
@@ -80,11 +79,11 @@ public:
 
     Config() {
         netDef = "8C5-MP2-16C5-MP3-10N";
-        dataDir = "../data/mnist";
-        testSet = "t10k";
+//        dataDir = "../data/mnist";
+        trainFile = "../data/mnist/train-dat.mat";
+        validateFile = "../data/mnist/t10k-dat.mat";
         restartableFilename = "weights.dat";
         normalization = "stddev";
-        trainSet = "train";
         batchSize = 128;
         numTest = 0;
         restartable = 0;
@@ -98,7 +97,7 @@ public:
     }
     string getTrainingString() {
         string configString = "";
-        configString += "netDef=" + netDef + " dataDir=" + dataDir + " trainSet=" + trainSet;
+        configString += "netDef=" + netDef + " trainFile=" + trainFile;
         return configString;
     }
 };
@@ -124,10 +123,21 @@ void go(Config config) {
     int numPlanes;
     int boardSize;
 
-    unsigned char *trainData = NorbLoader::loadImages( config.dataDir + "/" + config.trainSet + "-dat.mat", &Ntrain, &numPlanes, &boardSize, config.numTrain );
-    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
-    int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
-    int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
+    int totalLinearSize;
+    GenericLoader::getDimensions( config.trainFile, &Ntrain, &numPlanes, &boardSize, &totalLinearSize );
+    unsigned char *trainData = new unsigned char[ config.numTrain * numPlanes * boardSize * boardSize ];
+    int *trainLabels = new int[config.numTrain];    
+    GenericLoader::load( config.trainFile, trainData, trainLabels, 0, config.numTrain );
+
+    GenericLoader::getDimensions( config.validateFile, &Ntest, &numPlanes, &boardSize, &totalLinearSize );
+    unsigned char *testData = new unsigned char[ config.numTest * numPlanes * boardSize * boardSize ];
+    int *testLabels = new int[config.numTest];    
+    GenericLoader::load( config.validateFile, testData, testLabels, 0, config.numTest );
+    
+//    unsigned char *trainData = NorbLoader::loadImages( config.trainFile, &Ntrain, &numPlanes, &boardSize, config.numTrain );
+//    unsigned char *testData = NorbLoader::loadImages( config.dataDir + "/" + config.testSet + "-dat.mat", &Ntest, &numPlanes, &boardSize, config.numTest );
+//    int *trainLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.trainSet + "-cat.mat", Ntrain );
+//    int *testLabels = NorbLoader::loadLabels( config.dataDir + "/" + config.testSet + "-cat.mat", Ntest );
     timer.timeCheck("after load images");
 
     const int inputCubeSize = numPlanes * boardSize * boardSize;
@@ -220,9 +230,8 @@ void printUsage( char *argv[], Config config ) {
     //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
     // ]]]
     // generated using cog:
-    cout << "    datadir=[data directory] (" << config.dataDir << ")" << endl;
-    cout << "    trainset=[[training-shuffled|testing-sampled|other set name]] (" << config.trainSet << ")" << endl;
-    cout << "    testset=[[training-shuffled|testing-sampled|other set name]] (" << config.testSet << ")" << endl;
+    cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
+    cout << "    validatefile=[path to validation data file] (" << config.validateFile << ")" << endl;
     cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
     cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
     cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
@@ -267,12 +276,10 @@ int main( int argc, char *argv[] ) {
             // ]]]
             // generated using cog:
             if( false ) {
-            } else if( key == "datadir" ) {
-                config.dataDir = value;
-            } else if( key == "trainset" ) {
-                config.trainSet = value;
-            } else if( key == "testset" ) {
-                config.testSet = value;
+            } else if( key == "trainfile" ) {
+                config.trainFile = value;
+            } else if( key == "validatefile" ) {
+                config.validateFile = value;
             } else if( key == "netdef" ) {
                 config.netDef = value;
             } else if( key == "restartablefilename" ) {

@@ -24,6 +24,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    STATIC void getDimensions( std::string trainFilepath, int *p_N, int *p_numPlanes, int *p_boardSize, int *p_imagesLinearSize );
+    STATIC void load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples );
     STATIC unsigned char *loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize );
     STATIC unsigned char *loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int maxN );
     STATIC int *loadLabels( std::string filepath, int Ntoget );

@@ -189,9 +189,11 @@ Example usage:
 
 | Option | Description |
 |----|----|
-| datadir=../data/mnist | path of directory with data in |
-| trainset=training-shuffled | filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem |
-| testset=testing-sampled | filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem |
+| ~~datadir=../data/mnist~~ | ~~path of directory with data in~~ |
+| ~~trainset=training-shuffled~~ | ~~filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem~~ |
+| ~~testset=testing-sampled~~ | ~~filename stem of `-dat.mat` and `-cat.mat` files.  Note that `-dat.mat` and `-cat.mat` will be appended automatically to this stem~~ |
+| trainfile=../data/mnist/train-dat.mat | path to the train data file, the one with the images in.  Note that the labels file will be searched for automatically, based on the data filename and type, eg in this case `../data/mnist/train-cat.mat' |
+| validationfile=../data/mnist/validate-dat.mat | path to the validation data file, the one with the images in.  Note that the labels file will be searched for automatically, based on the data filename and type, eg in this case `../data/mnist/validate-cat.mat' |
 | numtrain=1000 | only uses the first 1000 training samples |
 | numtest=1000 | only uses the first 1000 testing samples |
 | netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
