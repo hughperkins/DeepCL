@@ -44,6 +44,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
     RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
     PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
+    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})

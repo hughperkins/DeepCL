@@ -147,7 +147,7 @@ STATIC int Kgsv2Loader::getRecordSize( int numPlanes, int boardSize ) {
     int numBits = numPlanes * boardSize * boardSize;
     int numBytes = ( numBits + 8 - 1 ) / 8;
     recordSize += numBytes;
-    cout << "numBits " << numBits << " numBytes " << numBytes << " recordSize " << recordSize << endl;
+//    cout << "numBits " << numBits << " numBytes " << numBytes << " recordSize " << recordSize << endl;
     return recordSize;
 }
 

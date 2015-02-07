@@ -26,10 +26,10 @@ STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numE
     type[4] = 0;
     unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
     if( string(type) == "mlv2" ) {
-        cout << "Loading as a Kgsv2 file" << endl;
+//        cout << "Loading as a Kgsv2 file" << endl;
         return Kgsv2Loader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_boardSize, p_imagesLinearSize );
     } else if( headerInts[0] == 0x1e3d4c55 ) {
-        cout << "Loading as a Norb mat file" << endl;
+//        cout << "Loading as a Norb mat file" << endl;
         return NorbLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_boardSize, p_imagesLinearSize );
     } else {
         cout << "headstring" << type << endl;
@@ -48,10 +48,10 @@ STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *image
     type[4] = 0;
     unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
     if( string(type) == "mlv2" ) {
-        cout << "Loading as a Kgsv2 file" << endl;
+//        cout << "Loading as a Kgsv2 file" << endl;
         return Kgsv2Loader::load( trainFilepath, images, labels, startN, numExamples );
     } else if( headerInts[0] == 0x1e3d4c55 ) {
-        cout << "Loading as a Norb mat file" << endl;
+//        cout << "Loading as a Norb mat file" << endl;
         return NorbLoader::load( trainFilepath, images, labels, startN, numExamples );
     } else {
         cout << "headstring" << type << endl;
