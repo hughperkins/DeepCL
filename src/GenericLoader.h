@@ -11,11 +11,13 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "DllImportExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
 // not so generic, since only handles unsigned char for now :-P  But it's a start :-)
-class GenericLoader {
+class ClConvolve_EXPORT GenericLoader {
 public:
     // [[[cog
     // import cog_addheaders

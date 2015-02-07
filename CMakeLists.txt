@@ -165,8 +165,6 @@ thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
-add_executable( loadkgs test/loadkgs.cpp src/stringhelper.cpp test/KgsLoader.cpp )
-target_link_libraries( loadkgs ClConvolve )
 target_link_libraries( testmnist-mpi ClConvolve )
 target_link_libraries( unittests ClConvolve )
 

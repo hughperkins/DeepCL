@@ -12,6 +12,8 @@
 
 #include "NormalizationHelper.h"
 
+#include "DllImportExport.h"
+
 template< typename T >
 class BatchAction {
 public:
@@ -24,7 +26,7 @@ public:
     virtual void processBatch( int batchSize, int cubeSize ) = 0;
 };
 
-class BatchProcess {
+class ClConvolve_EXPORT BatchProcess {
 public:
     template< typename T>
     static void run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<T> *batchAction);
