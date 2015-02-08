@@ -108,23 +108,23 @@ Example usage:
   * `300N` means a fully connected layer with 300 hidden units
 * Thus, you can do, for example:
 ```bash
-./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
+./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 dataset=mnist
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainfile=training-shuffled-dat.mat validatefile=testing-sampled-dat.mat
+./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 dataset=norb
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainfile=training-shuffled-dat.mat validatefile=testing-sampled-dat.mat
+./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 dataset=norb
 ```
 
 ## Additional net-def options
 
 * You can add additional options in `{}` brackets after each layer, eg:
 ```bash
-./clconvolve1 netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
+./clconvolve1 netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 * Options currently available:
   * For convolution layers:
@@ -136,7 +136,7 @@ Example usage:
     * `padzeros` (or simply `z`)
 * can be combined, comma-separated (no spaces), eg:
 ```bash
-./clconvolve1 netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
+./clconvolve1 netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 
 ## Additional layer types
@@ -233,7 +233,7 @@ Example usage:
 ```
 * Run training, eg, based on LeCun's lenet-7:
 ```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.00001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
+./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.00001 dataset=norb
 ```
 * On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, this has epoch time of 76 seconds, and reaches test accuracy of around 91.7% after around 200 epochs (train accuracy 99.996%!)
 
@@ -247,12 +247,12 @@ Example usage:
 ```
 * Run as per the [convnetjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 * Actually, I think the following gives slightly better test accuracy, about 99.0%, using 17.2seconds per epoch:
 ```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
+./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 dataset=mnist
 ```
 
 # Neural Net API
