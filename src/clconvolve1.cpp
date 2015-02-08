@@ -27,11 +27,12 @@ using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
-    strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'weightsFile', 'normalization' ]
+    strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'weightsFile', 'normalization', 'dataset' ]
     ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'loadWeights', 'dumpTimings', 'multiNet',
         'loadOnDemand', 'fileReadBatches' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
+        'dataset': 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]',
         'datadir': 'directory to search for train and validate files',
         'trainfile': 'path to training data file',
         'validatefile': 'path to validation data file',
@@ -72,6 +73,7 @@ public:
     string netDef = "";
     string weightsFile = "";
     string normalization = "";
+    string dataset = "";
     int numTrain = 0;
     int numTest = 0;
     int batchSize = 0;
@@ -318,6 +320,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
     cout << "    weightsfile=[load weights from weights file at startup?] (" << config.weightsFile << ")" << endl;
     cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
+    cout << "    dataset=[choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]] (" << config.dataset << ")" << endl;
     cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
     cout << "    numtest=[num test examples]] (" << config.numTest << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
@@ -374,6 +377,8 @@ int main( int argc, char *argv[] ) {
                 config.weightsFile = value;
             } else if( key == "normalization" ) {
                 config.normalization = value;
+            } else if( key == "dataset" ) {
+                config.dataset = value;
             } else if( key == "numtrain" ) {
                 config.numTrain = atoi( value );
             } else if( key == "numtest" ) {
@@ -408,6 +413,33 @@ int main( int argc, char *argv[] ) {
                 return -1;
             }
         }
+    }
+    string dataset = toLower( config.dataset );
+    if( dataset != "" ) {
+        if( dataset == "mnist" ) {
+            config.dataDir = "../data/mnist";
+            config.trainFile = "train-dat.mat";
+            config.validateFile = "t10k-dat.mat";
+        } else if( dataset == "norb" ) {
+            config.dataDir = "../data/norb";
+            config.trainFile = "training-shuffled-dat.mat";
+            config.validateFile = "testing-sampled-dat.mat";
+        } else if( dataset == "cifar10" ) {
+            config.dataDir = "../data/cifar10";
+            config.trainFile = "train-dat.mat";
+            config.validateFile = "test-dat.mat";
+        } else if( dataset == "kgsgo" ) {
+            config.dataDir = "../data/kgsgo";
+            config.trainFile = "kgsgo-train10k-v2.dat";
+            config.validateFile = "kgsgo-test-v2.dat";
+        } else {
+            cout << "dataset " << dataset << " not known.  please choose from: mnist, norb, cifar10, kgsgo" << endl;
+            return -1;
+        }
+        cout << "Using dataset " << dataset << ":" << endl;
+        cout << "   datadir: " << config.dataDir << ":" << endl;
+        cout << "   trainfile: " << config.trainFile << ":" << endl;
+        cout << "   validatefile: " << config.validateFile << ":" << endl;
     }
     try {
         go( config );
