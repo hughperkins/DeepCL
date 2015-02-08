@@ -216,6 +216,7 @@ Example usage:
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
 | normalization=maxmin | can choose maxmin or stddev.  Default is stddev |
 | normalizationnumstds=2 | how many standard deviations from mean should be +1/-1?  Default is 2 |
+| normalizationexamples=50000 | how many examples to read, to determine normalization values |
 | multinet=3 | train 3 networks at the same time, and predict using average output from all 3, can put any integer greater than 1 |
 | loadondemand=1 | Load the file in chunks, as learning proceeds, to reduce memory requirements. Default 0 |
 | filebatchsize=50 | When loadondemand=1, load this many batches at a time.  Numbers larger than 1 increase efficiency of disk reads, speeding up learning, but use up more memory |

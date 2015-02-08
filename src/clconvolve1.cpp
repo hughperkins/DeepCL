@@ -29,7 +29,7 @@ using namespace std;
     # These are used in the later cog sections in this file:
     strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'weightsFile', 'normalization', 'dataset' ]
     ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'loadWeights', 'dumpTimings', 'multiNet',
-        'loadOnDemand', 'fileReadBatches' ]
+        'loadOnDemand', 'fileReadBatches', 'normalizationExamples' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
         'dataset': 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]',
@@ -50,7 +50,8 @@ using namespace std;
         'dumptimings': 'dump detailed timings each epoch? [1|0]',
         'multinet': 'number of Mcdnn columns to train',
         'loadondemand': 'load data on demand [1|0]',
-        'filereadbatches': 'how many batches to read from file each time? (for loadondemand=1)'
+        'filereadbatches': 'how many batches to read from file each time? (for loadondemand=1)',
+        'normalizationexamples': 'number of examples to read to determine normalization parameters'
     }
 *///]]]
 // [[[end]]]
@@ -83,6 +84,7 @@ public:
     int multiNet = 0;
     int loadOnDemand = 0;
     int fileReadBatches = 0;
+    int normalizationExamples = 0;
     float learningRate = 0.0f;
     float annealLearningRate = 0.0f;
     float normalizationNumStds = 0.0f;
@@ -101,6 +103,7 @@ public:
         loadWeights = 0;
         numTrain = 0;
         numEpochs = 12;
+        normalizationExamples = 10000;
         learningRate = 0.002f;
         annealLearningRate = 1.0f;
         normalizationNumStds = 2.0f;
@@ -178,16 +181,17 @@ void go(Config config) {
     const int inputCubeSize = numPlanes * boardSize * boardSize;
     float translate;
     float scale;
+    int normalizationExamples = config.normalizationExamples > Ntrain ? Ntrain : config.normalizationExamples;
     if( !config.loadOnDemand ) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
-            NormalizationHelper::getMeanAndStdDev( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+            NormalizationHelper::getMeanAndStdDev( trainData, normalizationExamples * inputCubeSize, &mean, &stdDev );
             cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
             float mean, stdDev;
-            NormalizationHelper::getMinMax( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
+            NormalizationHelper::getMinMax( trainData, normalizationExamples * inputCubeSize, &mean, &stdDev );
             translate = - mean;
             scale = 1.0f / stdDev;
         } else {
@@ -198,14 +202,14 @@ void go(Config config) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
             NormalizeGetStdDev<unsigned char> normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run<unsigned char>( config.dataDir + "/" + config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetStdDev );
+            BatchProcess::run<unsigned char>( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
             cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
             NormalizeGetMinMax<unsigned char> normalizeGetMinMax( trainData, trainLabels );
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetMinMax );
+            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
             normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
         } else {
             cout << "Error: Unknown normalization: " << config.normalization << endl;
@@ -328,6 +332,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
+    cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
@@ -395,6 +400,8 @@ int main( int argc, char *argv[] ) {
                 config.loadOnDemand = atoi( value );
             } else if( key == "filereadbatches" ) {
                 config.fileReadBatches = atoi( value );
+            } else if( key == "normalizationexamples" ) {
+                config.normalizationExamples = atoi( value );
             } else if( key == "learningrate" ) {
                 config.learningRate = atof( value );
             } else if( key == "anneallearningrate" ) {
