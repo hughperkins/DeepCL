@@ -55,6 +55,8 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
                         fn = new LinearActivation();
                     } else if( optionName == "padzeros" ) {
                         padZeros = 1;
+                    } else if( optionName == "z" ) {
+                        padZeros = 1;
                     } else {
                         cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
                         return false;

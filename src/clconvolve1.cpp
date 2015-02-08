@@ -27,11 +27,12 @@ using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
-    strings = [ 'trainFile', 'validateFile', 'netDef', 'restartableFilename', 'normalization' ]
+    strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'restartableFilename', 'normalization' ]
     ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet',
         'loadOnDemand', 'fileReadBatches' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
+        'datadir': 'directory to search for train and validate files',
         'trainfile': 'path to training data file',
         'validatefile': 'path to validation data file',
         'numtrain': 'num training examples',
@@ -65,6 +66,7 @@ public:
     //    cog.outl( 'float ' + name + ' = 0.0f;')
     // ]]]
     // generated using cog:
+    string dataDir = "";
     string trainFile = "";
     string validateFile = "";
     string netDef = "";
@@ -85,10 +87,11 @@ public:
     // [[[end]]]
 
     Config() {
-        netDef = "8C5-MP2-16C5-MP3-10N";
+        netDef = "RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N";
 //        dataDir = "../data/mnist";
-        trainFile = "../data/mnist/train-dat.mat";
-        validateFile = "../data/mnist/t10k-dat.mat";
+        dataDir = "../data/mnist";
+        trainFile = "train-dat.mat";
+        validateFile = "t10k-dat.mat";
         restartableFilename = "weights.dat";
         normalization = "stddev";
         batchSize = 128;
@@ -140,7 +143,7 @@ void go(Config config) {
     int testAllocateN = 0;
 
 //    int totalLinearSize;
-    GenericLoader::getDimensions( config.trainFile, &Ntrain, &numPlanes, &boardSize );
+    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &boardSize );
     Ntrain = config.numTrain == 0 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * boardSize * boardSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " boardSize " << boardSize << endl;
@@ -152,10 +155,10 @@ void go(Config config) {
     trainData = new unsigned char[ (long)trainAllocateN * numPlanes * boardSize * boardSize ];
     trainLabels = new int[trainAllocateN];
     if( !config.loadOnDemand ) {
-        GenericLoader::load( config.trainFile, trainData, trainLabels, 0, Ntrain );
+        GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
     }
 
-    GenericLoader::getDimensions( config.validateFile, &Ntest, &numPlanes, &boardSize );
+    GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &boardSize );
     Ntest = config.numTest == 0 ? Ntest : config.numTest;
     if( config.loadOnDemand ) {
         testAllocateN = config.batchSize; // can improve this later
@@ -165,7 +168,7 @@ void go(Config config) {
     testData = new unsigned char[ (long)testAllocateN * numPlanes * boardSize * boardSize ];
     testLabels = new int[testAllocateN];    
     if( !config.loadOnDemand ) {
-        GenericLoader::load( config.validateFile, testData, testLabels, 0, Ntest );
+        GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
     }
     
     timer.timeCheck("after load images");
@@ -193,14 +196,14 @@ void go(Config config) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
             NormalizeGetStdDev<unsigned char> normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run<unsigned char>( config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetStdDev );
+            BatchProcess::run<unsigned char>( config.dataDir + "/" + config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
             cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
             NormalizeGetMinMax<unsigned char> normalizeGetMinMax( trainData, trainLabels );
-            BatchProcess::run( config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetMinMax );
+            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetMinMax );
             normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
         } else {
             cout << "Error: Unknown normalization: " << config.normalization << endl;
@@ -251,8 +254,8 @@ void go(Config config) {
 //    } else {
     if( config.loadOnDemand ) {
         NetLearnerOnDemand<unsigned char> netLearner( trainable );
-        netLearner.setTrainingData( config.trainFile, Ntrain );
-        netLearner.setTestingData( config.validateFile, Ntest );
+        netLearner.setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
+        netLearner.setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
         netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
         netLearner.setBatchSize( config.fileReadBatches, config.batchSize );
         netLearner.setDumpTimings( config.dumpTimings );
@@ -281,11 +284,18 @@ void go(Config config) {
     }
     delete net;
 
-    delete[] trainData;
-    delete[] testData;
-    delete[] testLabels;
-    delete[] trainLabels;
-
+    if( trainData != 0 ) {
+        delete[] trainData;
+    }
+    if( testData != 0 ) {
+        delete[] testData;
+    }
+    if( testLabels != 0 ) {
+        delete[] testLabels;
+    }
+    if( trainLabels != 0 ) {
+        delete[] trainLabels;
+    }
 }
 
 void printUsage( char *argv[], Config config ) {
@@ -302,6 +312,7 @@ void printUsage( char *argv[], Config config ) {
     //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
     // ]]]
     // generated using cog:
+    cout << "    datadir=[directory to search for train and validate files] (" << config.dataDir << ")" << endl;
     cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
     cout << "    validatefile=[path to validation data file] (" << config.validateFile << ")" << endl;
     cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
@@ -351,6 +362,8 @@ int main( int argc, char *argv[] ) {
             // ]]]
             // generated using cog:
             if( false ) {
+            } else if( key == "datadir" ) {
+                config.dataDir = value;
             } else if( key == "trainfile" ) {
                 config.trainFile = value;
             } else if( key == "validatefile" ) {

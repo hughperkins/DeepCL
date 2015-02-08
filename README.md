@@ -108,35 +108,35 @@ Example usage:
   * `300N` means a fully connected layer with 300 hidden units
 * Thus, you can do, for example:
 ```bash
-./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
+./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 datadir=../data/norb trainfile=training-shuffled-dat.mat validatefile=testing-sampled-dat.mat
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainset=training-shuffled testset=testing-sampled
+./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 datadir=../data/norb trainfile=training-shuffled-dat.mat validatefile=testing-sampled-dat.mat
 ```
 
 ## Additional net-def options
 
 * You can add additional options in `{}` brackets after each layer, eg:
 ```bash
-./clconvolve1 netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
 ```
 * Options currently available:
   * For convolution layers:
-    * sigmoid
-    * tanh
-    * scaledtanh (ie, 1.7159f * tanh( 0.66667f * x ) )
-    * linear
-    * relu (default)
-    * padzeros
+    * `sigmoid`
+    * `tanh`
+    * `scaledtanh` (ie, 1.7159f * tanh( 0.66667f * x ) )
+    * `linear`
+    * `relu` (default)
+    * `padzeros` (or simply `z`)
 * can be combined, comma-separated (no spaces), eg:
 ```bash
-./clconvolve1 netdef=8c5{tanh,padzeros}-mp2-16c5{tanh,padzeros}-mp3-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
 ```
 
 ## Additional layer types
@@ -200,8 +200,9 @@ Example usage:
 
 | Option | Description |
 |----|----|
-| trainfile=../data/mnist/train-dat.mat | path to the train data file, the one with the images in.  Note that the labels file will be searched for automatically, based on the data filename and type, eg in this case `../data/mnist/train-cat.mat' |
-| validationfile=../data/mnist/validate-dat.mat | path to the validation data file, the one with the images in.  Note that the labels file will be searched for automatically, based on the data filename and type, eg in this case `../data/mnist/validate-cat.mat' |
+| datadir=../data/mnist | path to data files |
+| trainfile=train-dat.mat | name of training data file, the one with the images in.  Note that the labels file will be determined automatically, based on the data filename and type, eg in this case `train-cat.mat` |
+| validationfile=validate-dat.mat | name of the validation data file, the one with the images in.  Note that the labels file will be determined automatically, based on the data filename and type, eg in this case `validate-cat.mat` |
 | numtrain=1000 | only uses the first 1000 training samples |
 | numtest=1000 | only uses the first 1000 testing samples |
 | netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
@@ -245,7 +246,7 @@ Example usage:
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 * Actually, I think the following gives slightly better test accuracy, about 99.0%, using 17.2seconds per epoch:
 ```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 datadir=../data/mnist trainset=train testset=t10k
+./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 datadir=../data/mnist trainfile=train-dat.mat validatefile=t10k-dat.mat
 ```
 
 # Neural Net API
