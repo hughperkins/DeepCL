@@ -191,10 +191,13 @@ Example usage:
 ## Weight persistence
 
 * If we're going to train for hours or days, we probably want to make sure that if our process gets interrupted, we don't lose our training so far
-* Simply specify option `restartable=1`, and all progress will be stored after each epoch!
-* The epoch number, annealed learning rate, and all weights, will be stored in a restart-file, by default called `weights.dat`
-* If the training options change which affect learning, meaning `netdef`, `datadir`, or `trainset`, and a restart-file already exist, and `restartable=1` was specified, then ClConvolve will refuse to go on, and request you to either use a non-existing filename, or check the options used
-* You can set the restart filename with option `restartablefilename`.
+* By default, weights will be written to `weights.dat`, after each epoch
+* If you specify option `loadweights=1`, the weights will be loadeded at the start
+* You can change the weights file with option `weightsfile=somefilename.dat`
+* If you specify option `loadweights=1`:
+  * the `netdef`, the `datadir`, and the `trainfile` will be compared to that used to generate the current weights file: if any of them are different, then ClConvolve will refuse to carry on, so that you don't overwrite the weights file inadvertently
+    * If you need something like, ClConvolve prompts you, showing the differences, and asks if you want to continue, then please raise an issue, and I will add this in
+  * Note that the epoch number will continue from the weights.dat file, so make sure to increase `numepochs` appropriately, otherwise ClConvolve will start, load the weights file, and then exit again, since all epochs have been finished :-P
 
 ## Command-line options
 
@@ -215,6 +218,8 @@ Example usage:
 | multinet=3 | train 3 networks at the same time, and predict using average output from all 3, can put any integer greater than 1 |
 | loadondemand=1 | Load the file in chunks, as learning proceeds, to reduce memory requirements. Default 0 |
 | filebatchsize=50 | When loadondemand=1, load this many batches at a time.  Numbers larger than 1 increase efficiency of disk reads, speeding up learning, but use up more memory |
+| weightsfile=weights.dat | file to store weights in, after each epoch.  If blank, then weights not stored |
+| loadweights=1 | load weights at start, from weightsfile.  Current training config, ie netdef and trainingfile, should match that used to create the weightsfile.  Note that epoch number will continue from file, so make sure to increase numepochs sufficiently |
 
 # Validation against standard datasets
 
