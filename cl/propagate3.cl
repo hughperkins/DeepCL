@@ -72,13 +72,15 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int i = 0; i < numUpstreamsPerThread; i++ ) {
-            int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gInputBoardSizeSquared ) {
-                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
-            }
-        }
-        barrier(CLK_LOCAL_MEM_FENCE);
+//        for( int i = 0; i < numUpstreamsPerThread; i++ ) {
+//            int thisOffset = workgroupSize * i + localId;
+//            if( thisOffset < gInputBoardSizeSquared ) {
+//                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+//            }
+//        }
+        event_t e = async_work_group_copy(_upstreamBoard, images + thisUpstreamBoardOffset, gInputBoardSizeSquared, 0);
+        wait_group_events(1, &e);
+//        barrier(CLK_LOCAL_MEM_FENCE);
         int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
         if( localId < gOutputBoardSizeSquared ) {
             for( int u = minu; u <= maxu; u++ ) {
