@@ -30,6 +30,7 @@ public:
 
     virtual float * getResults() = 0;
 //    virtual Layer *clone() = 0;
+    virtual int getPersistSize() const = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -63,7 +64,6 @@ public:
     VIRTUAL void backProp( float learningRate );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL int getPersistSize() const;
     VIRTUAL void persistToArray(float *array);
     VIRTUAL void unpersistFromArray(float const*array);
     VIRTUAL void setWeights(float *weights, float *biasWeights);

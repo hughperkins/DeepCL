@@ -34,6 +34,9 @@ VIRTUAL float *NormalizationLayer::getResults() {
 VIRTUAL ActivationFunction const *NormalizationLayer::getActivationFunction() {
     return new LinearActivation();
 }
+VIRTUAL int NormalizationLayer::getPersistSize() const {
+    return 0;
+}
 VIRTUAL bool NormalizationLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }

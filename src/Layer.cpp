@@ -131,9 +131,9 @@ VIRTUAL int Layer::getWeightsSize() const {
 VIRTUAL int Layer::getBiasWeightsSize() const {
     throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
 }
-VIRTUAL int Layer::getPersistSize() const {
-    throw std::runtime_error("getPersistSize not implemented for this layertype, layerindex " + toString(layerIndex ) );
-}
+//VIRTUAL int Layer::getPersistSize() const {
+//    throw std::runtime_error("getPersistSize not implemented for this layertype, layerindex " + toString(layerIndex ) );
+//}
 VIRTUAL void Layer::persistToArray(float *array) {
     throw std::runtime_error("persistToArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }

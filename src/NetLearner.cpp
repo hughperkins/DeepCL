@@ -58,9 +58,9 @@ template< typename T > void NetLearner<T>::setBatchSize( int batchSize ) {
 }
 
 template< typename T > VIRTUAL NetLearner<T>::~NetLearner() {
-    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
-        delete (*it);
-    }
+//    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
+//        delete (*it);
+//    }
 }
 
 template< typename T > VIRTUAL void NetLearner<T>::addPostEpochAction( PostEpochAction *action ) {

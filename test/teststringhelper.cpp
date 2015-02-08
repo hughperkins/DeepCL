@@ -48,3 +48,23 @@ TEST( teststringhelper, replace ) {
     EXPECT_EQ( "hellocoolworld", replace( mystring, "new", "cool" ) );
 }
 
+TEST( teststringhelper, strcpy_safe ) {
+    char const*source = "hello123";
+    char dest[1024];
+    memset( dest, 99, 1024 ); // ie, not zero :-)
+    strcpy_safe( dest, source, 100 );
+    string target = string(dest);
+    EXPECT_EQ( "hello123", target );
+    EXPECT_EQ( 0, dest[8] );
+    EXPECT_EQ( 99, dest[9] );
+    EXPECT_EQ( '3', dest[7] );
+
+    memset( dest, 99, 1024 ); // ie, not zero :-)
+    strcpy_safe( dest, source, 3 );
+    target = string(dest);
+    EXPECT_EQ( "hel", target );
+    EXPECT_EQ( 0, dest[3] );
+    EXPECT_EQ( 99, dest[4] );
+    EXPECT_EQ( 'l', dest[2] );
+}
+

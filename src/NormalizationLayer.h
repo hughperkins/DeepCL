@@ -45,6 +45,7 @@ public:
     VIRTUAL ~NormalizationLayer();
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();
+    VIRTUAL int getPersistSize() const;
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;

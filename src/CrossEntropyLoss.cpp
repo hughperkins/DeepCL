@@ -27,6 +27,9 @@ VIRTUAL CrossEntropyLoss::~CrossEntropyLoss(){
 VIRTUAL float*CrossEntropyLoss::getErrorsForUpstream() {
     return errors;
 }
+VIRTUAL int CrossEntropyLoss::getPersistSize() const {
+    return 0;
+}
 //VIRTUAL float*CrossEntropyLoss::getDerivLossBySumForUpstream() {
 //    return errors;
 //}

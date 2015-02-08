@@ -33,6 +33,9 @@ template< typename T > VIRTUAL ActivationFunction const *InputLayer<T>::getActiv
 template< typename T > VIRTUAL bool InputLayer<T>::needsBackProp() {
     return false;
 }
+template< typename T > VIRTUAL int InputLayer<T>::getPersistSize() const {
+    return 0;
+}
 template< typename T > VIRTUAL void InputLayer<T>::printOutput() const {
     if( results == 0 ) {
          return;

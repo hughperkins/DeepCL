@@ -68,3 +68,16 @@ std::string toLower(std::string in ) {
     delete[] buffer;
     return result;
 }
+
+void strcpy_safe( char *destination, char const*source, int maxLength ) {
+    int i = 0;
+    for( i = 0; i < maxLength; i++ ) {
+        destination[i] = source[i];
+        if( source[i] == 0 ) {
+            break;
+        }
+    }
+    destination[i] = 0;
+}
+
+

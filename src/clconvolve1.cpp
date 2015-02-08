@@ -12,7 +12,7 @@
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "stringhelper.h"
-//#include "FileHelper.h"
+#include "FileHelper.h"
 #include "StatefulTimer.h"
 #include "WeightsPersister.h"
 #include "NormalizationHelper.h"
@@ -27,8 +27,8 @@ using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
-    strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'restartableFilename', 'normalization' ]
-    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'restartable', 'dumpTimings', 'multiNet',
+    strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'weightsFile', 'normalization' ]
+    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'loadWeights', 'dumpTimings', 'multiNet',
         'loadOnDemand', 'fileReadBatches' ]
     floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
     descriptions = {
@@ -42,8 +42,8 @@ using namespace std;
         'netdef': 'network definition',
         'learningrate': 'learning rate, a float value',
         'anneallearningrate': 'multiply learning rate by this, each epoch',
-        'restartable': 'weights are persistent?',
-        'restartablefilename': 'filename to store weights',
+        'loadweights': 'weights are persistent?',
+        'weightsfile': 'load weights from weights file at startup?',
         'normalization': '[stddev|maxmin]',
         'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
         'dumptimings': 'dump detailed timings each epoch? [1|0]',
@@ -70,13 +70,13 @@ public:
     string trainFile = "";
     string validateFile = "";
     string netDef = "";
-    string restartableFilename = "";
+    string weightsFile = "";
     string normalization = "";
     int numTrain = 0;
     int numTest = 0;
     int batchSize = 0;
     int numEpochs = 0;
-    int restartable = 0;
+    int loadWeights = 0;
     int dumpTimings = 0;
     int multiNet = 0;
     int loadOnDemand = 0;
@@ -92,11 +92,11 @@ public:
         dataDir = "../data/mnist";
         trainFile = "train-dat.mat";
         validateFile = "t10k-dat.mat";
-        restartableFilename = "weights.dat";
+        weightsFile = "weights.dat";
         normalization = "stddev";
         batchSize = 128;
         numTest = 0;
-        restartable = 0;
+        loadWeights = 0;
         numTrain = 0;
         numEpochs = 12;
         learningRate = 0.002f;
@@ -122,7 +122,7 @@ public:
         config( config ) {
     }
     virtual void run( int epoch ) {
-        WeightsPersister::persistWeights( config->restartableFilename, config->getTrainingString(), net, epoch + 1, 0, 0, 0, 0 );
+        WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch + 1, 0, 0, 0, 0 );
     }
 };
 
@@ -230,10 +230,10 @@ void go(Config config) {
     float restartAnnealedLearningRate = 0;
     int restartNumRight = 0;
     float restartLoss = 0;
-    if( config.restartable ) {
-        afterRestart = WeightsPersister::loadWeights( config.restartableFilename, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
-        if( !afterRestart && FileHelper::exists( config.restartableFilename ) ) {
-            cout << "Weights file " << config.restartableFilename << " exists, but doesnt match training options provided => aborting" << endl;
+    if( config.loadWeights && config.weightsFile != "" ) {
+        afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
+        if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
+            cout << "Weights file " << config.weightsFile << " exists, but doesnt match training options provided => aborting" << endl;
             cout << "Please either check the training options, or choose a weights file that doesnt exist yet" << endl;
             return;
         }
@@ -260,7 +260,7 @@ void go(Config config) {
         netLearner.setBatchSize( config.fileReadBatches, config.batchSize );
         netLearner.setDumpTimings( config.dumpTimings );
         WeightsWriter weightsWriter( net, &config );
-        if( config.restartable ) {
+        if( config.weightsFile != "" ) {
             netLearner.addPostEpochAction( &weightsWriter );
         }
         netLearner.learn( config.learningRate, config.annealLearningRate );
@@ -272,7 +272,7 @@ void go(Config config) {
         netLearner.setBatchSize( config.batchSize );
         netLearner.setDumpTimings( config.dumpTimings );
         WeightsWriter weightsWriter( net, &config );
-        if( config.restartable ) {
+        if( config.weightsFile != "" ) {
             netLearner.addPostEpochAction( &weightsWriter );
         }
         netLearner.learn( config.learningRate, config.annealLearningRate );
@@ -316,13 +316,13 @@ void printUsage( char *argv[], Config config ) {
     cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
     cout << "    validatefile=[path to validation data file] (" << config.validateFile << ")" << endl;
     cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
-    cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
+    cout << "    weightsfile=[load weights from weights file at startup?] (" << config.weightsFile << ")" << endl;
     cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
     cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
     cout << "    numtest=[num test examples]] (" << config.numTest << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
-    cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
+    cout << "    loadweights=[weights are persistent?] (" << config.loadWeights << ")" << endl;
     cout << "    dumptimings=[dump detailed timings each epoch? [1|0]] (" << config.dumpTimings << ")" << endl;
     cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
@@ -370,8 +370,8 @@ int main( int argc, char *argv[] ) {
                 config.validateFile = value;
             } else if( key == "netdef" ) {
                 config.netDef = value;
-            } else if( key == "restartablefilename" ) {
-                config.restartableFilename = value;
+            } else if( key == "weightsfile" ) {
+                config.weightsFile = value;
             } else if( key == "normalization" ) {
                 config.normalization = value;
             } else if( key == "numtrain" ) {
@@ -382,8 +382,8 @@ int main( int argc, char *argv[] ) {
                 config.batchSize = atoi( value );
             } else if( key == "numepochs" ) {
                 config.numEpochs = atoi( value );
-            } else if( key == "restartable" ) {
-                config.restartable = atoi( value );
+            } else if( key == "loadweights" ) {
+                config.loadWeights = atoi( value );
             } else if( key == "dumptimings" ) {
                 config.dumpTimings = atoi( value );
             } else if( key == "multinet" ) {

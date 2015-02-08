@@ -45,7 +45,7 @@ public:
     int startEpoch;
     int numEpochs;
 
-    std::vector<PostEpochAction *> postEpochActions;
+    std::vector<PostEpochAction *> postEpochActions; // note: we DONT own these, dont delete, caller owns
 
     // [[[cog
     // import cog_addheaders

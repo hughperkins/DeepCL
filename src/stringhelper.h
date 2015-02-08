@@ -56,3 +56,5 @@ std::string replace( std::string targetString, std::string oldValue, std::string
 
 std::string toLower(std::string in );
 
+void strcpy_safe( char *destination, char const*source, int maxLength );
+

@@ -29,6 +29,7 @@ public:
     CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker );
     VIRTUAL ~CrossEntropyLoss();
     VIRTUAL float*getErrorsForUpstream();
+    VIRTUAL int getPersistSize() const;
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void calcErrors( float const*expectedResults );

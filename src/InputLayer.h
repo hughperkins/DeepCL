@@ -46,6 +46,7 @@ public:
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL bool needsBackProp();
+    VIRTUAL int getPersistSize() const;
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
     void in( T const*images );
