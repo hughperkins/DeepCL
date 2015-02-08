@@ -134,7 +134,8 @@ add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
 add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
-add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
+#add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
+# target_link_libraries( testmnist-mpi ClConvolve )
 
 #if( MPI_AVAILABLE )
     #add_definitions(-DMPI_AVAILABLE)
@@ -165,7 +166,6 @@ thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
-# target_link_libraries( testmnist-mpi ClConvolve )
 target_link_libraries( unittests ClConvolve )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
