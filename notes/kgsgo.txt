@@ -101,8 +101,49 @@ test accuracy: 1597/10000 15.97%
 after tests 26617 ms
 wrote weights to file, filesize 23397KB
 
---------------------
+=========================
+./clconvolve1 dataset=kgsgo numtrain=1000000 numtest=10000 netdef=8c5{z}-mp2-16c5{z}-mp3-500n-361n loadondemand=1 dumptimings=1
+Using device: GRID K520
+layer 0:InputLayer<unsigned char>{ outputPlanes 7 outputBoardSize 19 }
+layer 1:NormalizationLayer { outputPlanes=7 outputBoardSize=19 translate=-12.3682 scale=0.00912738 }
+layer 2:ConvolutionalLayer{ LayerDimensions{ inputPlanes=7 inputBoardSize=19 numFilters=8 filterSize=5 outputBoardSize=19 padZeros=1 biased=1 skip=0} RELU }
+layer 3:PoolingLayer{ inputPlanes=8 inputBoardSize=19 poolingSize=2 }
+layer 4:ConvolutionalLayer{ LayerDimensions{ inputPlanes=8 inputBoardSize=9 numFilters=16 filterSize=5 outputBoardSize=9 padZeros=1 biased=1 skip=0} RELU }
+layer 5:PoolingLayer{ inputPlanes=16 inputBoardSize=9 poolingSize=3 }
+layer 6:FullyConnectedLayer{ numPlanes=500 boardSize=1 TANH }
+layer 7:FullyConnectedLayer{ numPlanes=361 boardSize=1 LINEAR }
+layer 8:SoftMaxLayer{ perPlane=0 numPlanes=361 boardSize=1 }
+before learning start 1691 ms
+StatefulTimer readings:
+   GenericLoader::load start: 78ms
+dumpTimings 1
+StatefulTimer readings:
+   GenericLoader::load end: 3910ms
+   START: 1691ms
+   layer2     propagate layer 2, copied to device: 1ms
+   layer2 BackpropWeights2Scratch end: 23618ms
+   layer2 Propagate3::propagate after call propagate: 8030ms
+   layer2 backprop(): start, layer 2: 7818ms
+   layer2 backproperrors(): updated weights, layer 2: 189ms
+   layer3 PoolingPropagateGpuNaive::propagate start: 35ms
+   layer4 BackpropErrorsv2Naive end: 7812ms
+   layer4 BackpropWeights2Scratch end: 15625ms
+   layer4 Propagate3::propagate after call propagate: 4ms
+   layer6 BackpropErrorsv2Naive end: 537ms
+   layer6 BackpropWeights2Scratch end: 70312ms
+   layer6 Propagate1::propagate after call propagate: 23437ms
+   layer7 BackpropErrorsv2Naive end: 6706ms
+   layer7 BackpropWeights2Scratch end: 953125ms
+   layer7 Propagate1::propagate after call propagate: 70312ms
+   layer7 backproperrors(): updated weights, layer 7: 278ms
+   layer8 end SoftMaxLayer propagate: 7813ms
 
+after epoch 1 1.26485e+06 ms
+annealed learning rate: 0.002 training loss: 5.3467e+06
+ train accuracy: 22584/1000000 2.2584%
+test accuracy: 401/10000 4.01%
+after tests 1417 ms
+wrote weights to file, filesize 1011KB
 
 
 

@@ -17,10 +17,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Propagate1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
     VIRTUAL ~Propagate1();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper );
+    Propagate1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
 
     // [[[end]]]
 };

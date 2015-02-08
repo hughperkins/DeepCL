@@ -15,21 +15,6 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
-            {
-    // [[[cog
-    // import stringify
-    // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
-    // ]]]
-    // [[[end]]]
-    std::string options = "-D " + fn->getDefineName();
-    options += dim.buildOptionsString();
-//    kernel = cl->buildKernel( "propagate.cl", "propagate_3_by_n_outplane", options );
-    kernel = cl->buildKernel( "propagate.cl", "propagate_4_by_n_outplane_smallercache", options );
-
-//    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
-}
 VIRTUAL Propagate4::~Propagate4() {
     delete kernel;
 }
@@ -51,5 +36,198 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
     StatefulTimer::timeCheck("Propagate4::propagate after call propagate");
+}
+Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
+        Propagate( cl, dim, fn )
+            {
+    std::string options = "-D " + fn->getDefineName();
+    options += dim.buildOptionsString();
+    // [[[cog
+    // import stringify
+    // stringify.write_kernel2( "kernel", "cl/propagate4.cl", "propagate_4_by_n_outplane_smallercache", 'options' )
+    // ]]]
+    const char * kernelSource =  
+    "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
+    "// expected defines:\n" 
+    "// one of: [ TANH | RELU | LINEAR ]\n" 
+    "// BIASED (or not)\n" 
+    "\n" 
+    "#ifdef TANH\n" 
+    "#define ACTIVATION_FUNCTION(output) (tanh(output))\n" 
+    "#elif defined SCALEDTANH\n" 
+    "#define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))\n" 
+    "#elif SIGMOID\n" 
+    "#define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
+    "#elif defined RELU\n" 
+    "#define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
+    "#elif defined LINEAR\n" 
+    "#define ACTIVATION_FUNCTION(output) (output)\n" 
+    "#endif\n" 
+    "\n" 
+    "#ifdef gOutputBoardSize // for previous tests that dont define it\n" 
+    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
+    "// workgroup id organized like: [imageid][outplane]\n" 
+    "// local id organized like: [outrow][outcol]\n" 
+    "// each thread iterates over: [upstreamplane][filterrow][filtercol]\n" 
+    "// number workgroups = 32\n" 
+    "// one filter plane takes up 5 * 5 * 4 = 100 bytes\n" 
+    "// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)\n" 
+    "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
+    "// results are organized like [imageid][filterid][row][col]\n" 
+    "void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,\n" 
+    "global const float *images, global const float *filters,\n" 
+    "#ifdef BIASED\n" 
+    "global const float*biases,\n" 
+    "#endif\n" 
+    "global float *results,\n" 
+    "local float *_upstreamBoard, local float *_filterCube ) {\n" 
+    "const int globalId = get_global_id(0);\n" 
+    "\n" 
+    "const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;\n" 
+    "\n" 
+    "const int workgroupId = get_group_id(0);\n" 
+    "const int workgroupSize = get_local_size(0);\n" 
+    "const int n = workgroupId / gNumFilters;\n" 
+    "const int outPlane = workgroupId % gNumFilters;\n" 
+    "\n" 
+    "const int localId = get_local_id(0);\n" 
+    "const int outputRow = localId / gOutputBoardSize;\n" 
+    "const int outputCol = localId % gOutputBoardSize;\n" 
+    "\n" 
+    "const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;\n" 
+    "const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;\n" 
+    "const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;\n" 
+    "const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;\n" 
+    "\n" 
+    "const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "\n" 
+    "float sum = 0;\n" 
+    "for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
+    "int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
+    "barrier(CLK_LOCAL_MEM_FENCE);\n" 
+    "for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
+    "int thisOffset = workgroupSize * i + localId;\n" 
+    "if( thisOffset < gInputBoardSizeSquared ) {\n" 
+    "_upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
+    "}\n" 
+    "}\n" 
+    "const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;\n" 
+    "for( int i = 0; i < numFilterPixelsPerThread; i++ ) {\n" 
+    "int thisOffset = workgroupSize * i + localId;\n" 
+    "if( thisOffset < gFilterSizeSquared ) {\n" 
+    "_filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];\n" 
+    "}\n" 
+    "}\n" 
+    "barrier(CLK_LOCAL_MEM_FENCE);\n" 
+    "if( localId < gOutputBoardSizeSquared ) {\n" 
+    "for( int u = minu; u <= maxu; u++ ) {\n" 
+    "int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
+    "int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "for( int v = minv; v <= maxv; v++ ) {\n" 
+    "int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "}\n" 
+    "}\n" 
+    "}\n" 
+    "}\n" 
+    "#ifdef BIASED\n" 
+    "sum += biases[outPlane];\n" 
+    "#endif\n" 
+    "// results are organized like [imageid][filterid][row][col]\n" 
+    "int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
+    "if( localId < gOutputBoardSizeSquared ) {\n" 
+    "results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
+    "//        results[resultIndex ] = 123;\n" 
+    "}\n" 
+    "}\n" 
+    "#endif\n" 
+    "#endif\n" 
+    "\n" 
+    "#ifdef gOutBoardSize // for previous tests that dont define it\n" 
+    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
+    "// workgroupid [n][outputplane]\n" 
+    "// localid: [filterrow][filtercol]\n" 
+    "//  each thread iterates over: [inplane]\n" 
+    "// this kernel assumes:\n" 
+    "//   padzeros == 0 (mandatory)\n" 
+    "//   filtersize == inputboardsize (mandatory)\n" 
+    "//   filtersize >> outputboardsize\n" 
+    "#if gFilterSize == gInputBoardSize && gPadZeros == 0\n" 
+    "void kernel propagate_filter_matches_inboard( const int batchSize,\n" 
+    "global const float *images, global const float *filters,\n" 
+    "#ifdef BIASED\n" 
+    "global const float*biases,\n" 
+    "#endif\n" 
+    "global float *results,\n" 
+    "local float *_upstreamBoard, local float *_filterBoard ) {\n" 
+    "const int globalId = get_global_id(0);\n" 
+    "\n" 
+    "const int workgroupId = get_group_id(0);\n" 
+    "const int workgroupSize = get_local_size(0);\n" 
+    "const int n = workgroupId / gNumOutPlanes;\n" 
+    "const int outPlane = workgroupId % gNumOutPlanes;\n" 
+    "\n" 
+    "const int localId = get_local_id(0);\n" 
+    "const int filterRow = localId / gFilterSize;\n" 
+    "const int filterCol = localId % gFilterSize;\n" 
+    "\n" 
+    "float sum = 0;\n" 
+    "for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {\n" 
+    "int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;\n" 
+    "barrier(CLK_LOCAL_MEM_FENCE);\n" 
+    "for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
+    "int thisOffset = workgroupSize * i + localId;\n" 
+    "if( thisOffset < gUpstreamBoardSizeSquared ) {\n" 
+    "_upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
+    "}\n" 
+    "}\n" 
+    "const int filterGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;\n" 
+    "for( int i = 0; i < numFilterPixelsPerThread; i++ ) {\n" 
+    "int thisOffset = workgroupSize * i + localId;\n" 
+    "if( thisOffset < gFilterSizeSquared ) {\n" 
+    "_filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];\n" 
+    "}\n" 
+    "}\n" 
+    "barrier(CLK_LOCAL_MEM_FENCE);\n" 
+    "if( localId < gOutBoardSizeSquared ) {\n" 
+    "for( int u = minu; u <= maxu; u++ ) {\n" 
+    "int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "int inputboardrowoffset = inputRow * gUpstreamBoardSize;\n" 
+    "int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "for( int v = minv; v <= maxv; v++ ) {\n" 
+    "int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "}\n" 
+    "}\n" 
+    "}\n" 
+    "}\n" 
+    "#ifdef BIASED\n" 
+    "sum += biases[outPlane];\n" 
+    "#endif\n" 
+    "// results are organized like [imageid][filterid][row][col]\n" 
+    "int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;\n" 
+    "if( localId < gOutBoardSizeSquared ) {\n" 
+    "results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
+    "//        results[resultIndex ] = 123;\n" 
+    "}\n" 
+    "}\n" 
+    "#endif\n" 
+    "#endif\n" 
+    "#endif\n" 
+    "\n" 
+    "";
+    kernel = cl->buildKernelFromString( kernelSource, "propagate_4_by_n_outplane_smallercache", options, "cl/propagate4.cl" );
+    // [[[end]]]
+//    kernel = cl->buildKernel( "propagate.cl", "propagate_3_by_n_outplane", options );
+//    kernel = cl->buildKernel( "propagate4.cl", "propagate_4_by_n_outplane_smallercache", options );
+
+//    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 
