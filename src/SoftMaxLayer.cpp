@@ -145,6 +145,11 @@ VIRTUAL void SoftMaxLayer::calcErrorsFromLabels( int const *labels ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 errorsForUpstream[boardOffset + plane] = results[boardOffset + plane];
             }
+            if( label >= numPlanes ) {
+                throw runtime_error("Label " + toString( label ) + " exceeds number of softmax planes " + toString( numPlanes ) );
+            } else if( label < 0 ) {
+                throw runtime_error("Label " + toString( label ) + " negative" );
+            }
             errorsForUpstream[boardOffset + label] -= 1;
         }
     }

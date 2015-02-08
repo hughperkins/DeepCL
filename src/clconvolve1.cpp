@@ -253,7 +253,6 @@ void go(Config config) {
         multiNet = new MultiNet( config.multiNet, net );
         trainable = multiNet;
     }
-//    } else {
     if( config.loadOnDemand ) {
         NetLearnerOnDemand<unsigned char> netLearner( trainable );
         netLearner.setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
@@ -279,7 +278,6 @@ void go(Config config) {
         }
         netLearner.learn( config.learningRate, config.annealLearningRate );
     }
-//    }
 
     if( multiNet != 0 ) {
         delete multiNet;

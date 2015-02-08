@@ -35,9 +35,9 @@ def add():
     cog.outl( '// generated, using cog:' )
     while( line != '' ):
        # cog.outl(line)
-       if( line.strip().find("/*") == 0 ):
+       if( line.strip().find("/*") >= 0 ):
            in_multiline_comment = True
-       if( line.strip().find("*/") == 0 ):
+       if( line.strip().find("*/") >= 0 ):
            in_multiline_comment = False
        if not in_multiline_comment:
            if( in_header or line.find( classname + '::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ) and line.find( ";" ) < 0:
@@ -76,9 +76,9 @@ def add_templated():
     cog.outl( '// generated, using cog:' )
     while( line != '' ):
        # cog.outl(line)
-       if( line.strip().find("/*") == 0 ):
+       if( line.strip().find("/*") >= 0 ):
            in_multiline_comment = True
-       if( line.strip().find("*/") == 0 ):
+       if( line.strip().find("*/") >= 0 ):
            in_multiline_comment = False
        if not in_multiline_comment:
            if( in_header or line.find( classname + '<T>::' ) >= 0 and line.find("(") >= 0 and line.strip().find("//") != 0 ) and line.find( ";" ) < 0:

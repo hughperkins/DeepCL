@@ -90,6 +90,9 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
 //        cout << "label bytes: " << (int)record[2] << " " << (int)record[3] << " " << (int)record[4] << " " << (int)record[5] << endl;
 //        cout << "label: " << label << endl;
         labels[n] = label;
+        if( label < 0 ) {
+            throw runtime_error("Error: label " + toString(labels) + " is negative");
+        }
         unsigned char *recordImage = record + 6;
         int bitPos = 0;
         int intraRecordPos = 0;
@@ -109,6 +112,7 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
             }
         }
     }
+    delete[] kgsData;
 //    return numRecords;
 }
 
