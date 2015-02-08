@@ -36,6 +36,10 @@ void kernel calcErrorsForUpstream(
     const int upstreamPlane = upstreamBoard2dId % gInputPlanes;
     const int n = upstreamBoard2dId / gInputPlanes;
 
+    if( n >= batchSize ) {
+        return;
+    }
+
     const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputBoardSize - 1) );
     const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
     const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputBoardSize -1) );

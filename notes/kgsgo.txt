@@ -51,6 +51,56 @@ test accuracy: 1356/10000 13.56%
 after tests 27058 ms
 wrote weights to file, filesize 23397KB
 
+....
+
+StatefulTimer readings:
+   GenericLoader::load end: 429ms
+   GenericLoader::load start: 30ms
+   layer2 BackpropWeights2Scratch end: 5468ms
+   layer2 Propagate3::propagate after call propagate: 4296ms
+   layer2 backproperrors(): updated weights, layer 2: 1ms
+   layer3     propagate layer 3, START: 1ms
+   layer3 BackpropErrorsv2Naive end: 35156ms
+   layer3 BackpropWeights2Scratch end: 21875ms
+   layer3 Propagate3::propagate after call propagate: 19764ms
+   layer4 BackpropErrorsv2Naive end: 35156ms
+   layer4 BackpropWeights2Scratch end: 59372ms
+   layer4 Propagate1::propagate after call propagate: 255969ms
+   layer5 BackpropWeights2Scratch end: 95313ms
+   layer5 Propagate1::propagate after call propagate: 7735ms
+   layer6 end SoftMaxLayer propagate: 859ms
+
+after epoch 8 520427 ms
+annealed learning rate: 0.002 training loss: 209379
+ train accuracy: 48990/100000 48.99%
+test accuracy: 1627/10000 16.27%
+after tests 26316 ms
+wrote weights to file, filesize 23397KB
+dumpTimings 1
+StatefulTimer readings:
+   GenericLoader::load end: 429ms
+   GenericLoader::load start: 30ms
+   layer2 BackpropWeights2Scratch end: 5489ms
+   layer2 Propagate3::propagate after call propagate: 4297ms
+   layer2 backproperrors(): updated weights, layer 2: 4ms
+   layer3     propagate layer 3, START: 6ms
+   layer3 BackpropErrorsv2Naive end: 35156ms
+   layer3 BackpropWeights2Scratch end: 21875ms
+   layer3 Propagate3::propagate after call propagate: 19764ms
+   layer4 BackpropErrorsv2Naive end: 35156ms
+   layer4 BackpropWeights2Scratch end: 59367ms
+   layer4 Propagate1::propagate after call propagate: 255631ms
+   layer5 BackpropWeights2Scratch end: 95313ms
+   layer5 Propagate1::propagate after call propagate: 7735ms
+   layer6 end SoftMaxLayer propagate: 859ms
+
+after epoch 9 520529 ms
+annealed learning rate: 0.002 training loss: 192940
+ train accuracy: 51639/100000 51.639%
+test accuracy: 1597/10000 15.97%
+after tests 26617 ms
+wrote weights to file, filesize 23397KB
+
 --------------------
 
 
