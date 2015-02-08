@@ -37,6 +37,7 @@ build-win64/
 data/mnist
 data/kgsgo
 data/norb
+data/cifar10
 
 # vi
 *.swp
