@@ -1,5 +1,4 @@
-./clconvolve1 dataset=kgsgo numtr
-ain=100000 numtest=10000 loadondemand=1 netdef=32c5{z}-32c5{z}-500n-361n
+./clconvolve1 dataset=kgsgo numtrain=100000 numtest=10000 loadondemand=1 netdef=32c5{z}-32c5{z}-500n-361n
 Using dataset kgsgo:
    datadir: ../data/kgsgo:
    trainfile: kgsgo-train10k-v2.dat:
@@ -100,6 +99,12 @@ annealed learning rate: 0.002 training loss: 192940
 test accuracy: 1597/10000 15.97%
 after tests 26617 ms
 wrote weights to file, filesize 23397KB
+
+========================
+
+./clconvolve1 dataset=kgsgo numtrain=1000000 numtest=10000 loadondemand=1 netdef=32c5{z}-32c5{z}-500n-361n dumptimings=1 weightsfile=weights-2x32-1M.dat
+
+
 
 =========================
 ./clconvolve1 dataset=kgsgo numtrain=1000000 numtest=10000 netdef=8c5{z}-mp2-16c5{z}-mp3-500n-361n loadondemand=1 dumptimings=1

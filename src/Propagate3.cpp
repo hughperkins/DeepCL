@@ -50,6 +50,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate3.cl", "propagate_3_by_n_outplane", 'options' )
     // ]]]
+    // generated using cog:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 

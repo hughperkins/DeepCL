@@ -14,6 +14,7 @@ def write_kernel( var_name, kernel_filename ):
 
 def write_kernel2( kernelVarName, kernel_filename, kernelName, options ):
     # cog.outl( 'string kernelFilename = "'  + kernel_filename + '";' )
+    cog.outl( '// generated using cog:' )
     f = open( '../' + kernel_filename, 'r')
     line = f.readline()
     cog.outl( 'const char * kernelSource =  ' )
