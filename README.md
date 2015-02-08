@@ -611,10 +611,10 @@ What's done / what's planned
   * ~~softmax activation function~~ DONE
   * ~~cross entropy loss~~ DONE
   * ~~multinomial cross entropy loss~~ DONE
-  * ~~get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)~~ DONE:
-    * created GenericLoader, which automatically detects filetype
-    * created Kgsv2Loader, which handles kgsgo v2 data files
-    * added loadondemand, so can load data as we go, during learning, rather than trying to load the entire dataset in one go
+  * ~~get working with [kgs go data](https://github.com/hughperkins/kgsgo-dataset-preprocessor)~~ DONE
+    * ~~created GenericLoader, which automatically detects filetype~~
+    * ~~created Kgsv2Loader, which handles kgsgo v2 data files~~
+    * ~~added loadondemand, so can load data as we go, during learning, rather than trying to load the entire dataset in one go~~
   * symmetric filters
   * skip, as described in [Ciresan et al, 2011](http://arxiv.org/pdf/1102.0183v1.pdf)
   * fuse convolutional and max-pooling layers, so can optimize more
