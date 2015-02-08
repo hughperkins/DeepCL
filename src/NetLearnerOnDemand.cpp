@@ -63,9 +63,9 @@ template< typename T > void NetLearnerOnDemand<T>::setBatchSize( int fileReadBat
 }
 
 template< typename T > VIRTUAL NetLearnerOnDemand<T>::~NetLearnerOnDemand() {
-    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
-        delete (*it);
-    }
+//    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
+//        delete (*it);
+//    }
 }
 
 template< typename T > VIRTUAL void NetLearnerOnDemand<T>::addPostEpochAction( PostEpochAction *action ) {
