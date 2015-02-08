@@ -81,6 +81,7 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     delete errorsForUpstreamWrapper;
     delete errorsWrapper;
     delete weightsWrapper;
+    delete inputDataWrapper;
 //    if( dim.biased ) {
 //        delete biasWeightsWrapper;
 //    }

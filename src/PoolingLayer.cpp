@@ -75,7 +75,7 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-        if( resultsWrapper != 0 ) {
+    if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
     if( results != 0 ) {

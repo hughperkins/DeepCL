@@ -62,6 +62,7 @@ VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int 
     selectorsWrapper->copyToHost();
     errorsForUpstreamWrapper->copyToHost();
 
+    delete errorsWrapper;
     delete selectorsWrapper;
     delete errorsForUpstreamWrapper;
 }
