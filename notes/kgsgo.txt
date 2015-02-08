@@ -1,0 +1,51 @@
+./clconvolve1 dataset=kgsgo numtr
+ain=100000 numtest=10000 loadondemand=1 netdef=32c5{z}-32c5{z}-500n-361n
+Using dataset kgsgo:
+   datadir: ../data/kgsgo:
+   trainfile: kgsgo-train10k-v2.dat:
+   validatefile: kgsgo-test-v2.dat:
+Ntrain 100000 numPlanes 7 boardSize 19
+after load images 0 ms
+ board stats mean 12.3231 stdDev 54.6854
+ board norm translate -12.3231 scale 0.00914321
+after getting stats 1516 ms
+Using NVIDIA Corporation platform: NVIDIA CUDA
+Using device: GRID K520
+layer 0:InputLayer<unsigned char>{ outputPlanes 7 outputBoardSize 19 }
+layer 1:NormalizationLayer { outputPlanes=7 outputBoardSize=19 translate=-12.3231 scale=0.00914321 }
+layer 2:ConvolutionalLayer{ LayerDimensions{ inputPlanes=7 inputBoardSize=19 numFilters=32 filterSize=5 outputBoardSize=19 padZeros=1 biased=1 skip=0} RELU }
+layer 3:ConvolutionalLayer{ LayerDimensions{ inputPlanes=32 inputBoardSize=19 numFilters=32 filterSize=5 outputBoardSize=19 padZeros=1 biased=1 skip=0} RELU }
+layer 4:FullyConnectedLayer{ numPlanes=500 boardSize=1 TANH }
+layer 5:FullyConnectedLayer{ numPlanes=361 boardSize=1 LINEAR }
+layer 6:SoftMaxLayer{ perPlane=0 numPlanes=361 boardSize=1 }
+before learning start 3966 ms
+dumpTimings 0
+
+after epoch 1 523749 ms
+annealed learning rate: 0.002 training loss: 566106
+ train accuracy: 780/100000 0.78%
+test accuracy: 159/10000 1.59%
+after tests 26644 ms
+wrote weights to file, filesize 23397KB
+dumpTimings 0
+
+after epoch 2 523248 ms
+annealed learning rate: 0.002 training loss: 534925
+ train accuracy: 2725/100000 2.725%
+test accuracy: 535/10000 5.35%
+after tests 26786 ms
+wrote weights to file, filesize 23397KB
+dumpTimings 0
+
+after epoch 3 523196 ms
+annealed learning rate: 0.002 training loss: 463241
+ train accuracy: 11616/100000 11.616%
+test accuracy: 1245/10000 12.45%
+after tests 26820 ms
+wrote weights to file, filesize 23397KB
+
+--------------------
+
+
+
+
