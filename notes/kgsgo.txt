@@ -44,6 +44,13 @@ test accuracy: 1245/10000 12.45%
 after tests 26820 ms
 wrote weights to file, filesize 23397KB
 
+after epoch 4 523956 ms
+annealed learning rate: 0.002 training loss: 382691
+ train accuracy: 22498/100000 22.498%
+test accuracy: 1356/10000 13.56%
+after tests 27058 ms
+wrote weights to file, filesize 23397KB
+
 --------------------
 
 
