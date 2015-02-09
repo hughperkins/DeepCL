@@ -46,6 +46,7 @@ TEST( testreduce, sumboards_cpu ) {
     float *sums = new float[numBoards];
     StatefulTimer::timeCheck("setup boards");
 
+    float totalSum = 0;
     for( int it = 0; it < numIts; it++ ) {
         for( int plane = 0; plane < numBoards; plane++ ) {
             float sum = 0;
@@ -57,14 +58,12 @@ TEST( testreduce, sumboards_cpu ) {
         }
         StatefulTimer::timeCheck("cpu time");
         // sum all, to ensure no compilation shortcutting
-        float totalSum = 0;
         for( int i = 0; i < numBoards; i++ ) {
             totalSum += sums[i];
         }
-        cout << "totalSum: " << totalSum << " ";
         StatefulTimer::timeCheck("totalsum");
     }
-    cout << endl;
+    cout << "totalSum: " << totalSum << endl;
     StatefulTimer::dump(true);
 
     delete[] input;
@@ -103,8 +102,8 @@ TEST( testreduce, sumboards_threadperboard ) {
 
 //    Timer timer;
     int totalLinearSize = numBoards * boardSize * boardSize;
-    cout << "totalLinearSize " << totalLinearSize << endl;
-    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
+//    cout << "totalLinearSize " << totalLinearSize << endl;
+//    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
     float *input = new float[ totalLinearSize ];
     StatefulTimer::timeCheck("allocated memory");
     float *sums = new float[numBoards];
@@ -119,6 +118,7 @@ TEST( testreduce, sumboards_threadperboard ) {
     StatefulTimer::timeCheck("setup boards");
 
     CLKernel *kernel = cl->buildKernel("../prototyping/testreduce.cl" ,"sum_threadperboard" );
+    float totalSum = 0;
     for( int it = 0; it < numIts; it++ ) {        
         kernel->in( inputWrapper )->out( sumsWrapper )->in( numBoards )->in( boardSize );
         int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -128,11 +128,10 @@ TEST( testreduce, sumboards_threadperboard ) {
         StatefulTimer::timeCheck("gpu time");
 
         // sum all, to ensure no compilation shortcutting
-        float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
-        cout << "totalSum: " << totalSum << " ";
+        totalSum += sumSums_singlethread( cl, sumsWrapper, numBoards );
         StatefulTimer::timeCheck("totalsum time" );
     }
-    cout << endl;
+    cout << "totalSum: " << totalSum << endl;
     StatefulTimer::dump(true);
 
     delete kernel;
@@ -153,8 +152,8 @@ TEST( testreduce, sumboards_threadperrow ) {
 
 //    Timer timer;
     int totalLinearSize = numBoards * boardSize * boardSize;
-    cout << "totalLinearSize " << totalLinearSize << endl;
-    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
+//    cout << "totalLinearSize " << totalLinearSize << endl;
+//    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
     float *input = new float[ totalLinearSize ];
     StatefulTimer::timeCheck("allocated memory");
     float *sums = new float[numBoards];
@@ -172,6 +171,7 @@ TEST( testreduce, sumboards_threadperrow ) {
     StatefulTimer::timeCheck("setup boards");
 
     CLKernel *kernel = cl->buildKernel("../prototyping/testreduce.cl" ,"sum_sumrow" );
+    float totalSum = 0;
     for( int it = 0; it < numIts; it++ ) {        
         kernel->in( inputWrapper )->out( rowSumsWrapper )->in( numBoards * boardSize )->in( boardSize );
         int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -187,11 +187,10 @@ TEST( testreduce, sumboards_threadperrow ) {
         StatefulTimer::timeCheck("gpu 2 time");
 
         // sum all, to ensure no compilation shortcutting
-        float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
-        cout << "totalSum: " << totalSum << " ";
+        totalSum += sumSums_singlethread( cl, sumsWrapper, numBoards );
         StatefulTimer::timeCheck("totalsum time" );
     }
-    cout << endl;
+    cout << "totalSum: " << totalSum << endl;
     StatefulTimer::dump(true);
 
     delete kernel;
@@ -212,8 +211,8 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel ) {
 
 //    Timer timer;
     int totalLinearSize = numBoards * boardSize * boardSize;
-    cout << "totalLinearSize " << totalLinearSize << endl;
-    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
+//    cout << "totalLinearSize " << totalLinearSize << endl;
+//    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
     float *input = new float[ totalLinearSize ];
     StatefulTimer::timeCheck("allocated memory");
     float *sums = new float[numBoards];
@@ -231,6 +230,7 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel ) {
     StatefulTimer::timeCheck("setup boards");
 
     CLKernel *kernel = cl->buildKernel("../prototyping/testreduce.cl" ,"sum_workgroupperboard_threadperpixel" );
+    float totalSum = 0;
     for( int it = 0; it < numIts; it++ ) {     
         setupBoards( cl, inputWrapper, numBoards, boardSize );
         StatefulTimer::timeCheck("setup boards");
@@ -249,11 +249,10 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel ) {
 //        StatefulTimer::timeCheck("gpu 2 time");
 
         // sum all, to ensure no compilation shortcutting
-        float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
-        cout << "totalSum: " << totalSum << " ";
+        totalSum += sumSums_singlethread( cl, sumsWrapper, numBoards );
         StatefulTimer::timeCheck("totalsum time" );
     }
-    cout << endl;
+    cout << "totalSum: " << totalSum << endl;
     StatefulTimer::dump(true);
 
     delete kernel;
@@ -274,8 +273,8 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel_local ) {
 
 //    Timer timer;
     int totalLinearSize = numBoards * boardSize * boardSize;
-    cout << "totalLinearSize " << totalLinearSize << endl;
-    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
+//    cout << "totalLinearSize " << totalLinearSize << endl;
+//    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
     float *input = new float[ totalLinearSize ];
     StatefulTimer::timeCheck("allocated memory");
     float *sums = new float[numBoards];
@@ -293,6 +292,7 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel_local ) {
     StatefulTimer::timeCheck("setup boards");
 
     CLKernel *kernel = cl->buildKernel("../prototyping/testreduce.cl" ,"sum_workgroupperboard_threadperpixel_local" );
+    float totalSum = 0;
     for( int it = 0; it < numIts; it++ ) {     
         setupBoards( cl, inputWrapper, numBoards, boardSize );
         StatefulTimer::timeCheck("setup boards");
@@ -311,11 +311,11 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel_local ) {
 //        StatefulTimer::timeCheck("gpu 2 time");
 
         // sum all, to ensure no compilation shortcutting
-        float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
-        cout << "totalSum: " << totalSum << " ";
+        totalSum += sumSums_singlethread( cl, sumsWrapper, numBoards );
         StatefulTimer::timeCheck("totalsum time" );
     }
-    cout << endl;
+    cout << "totalSum: " << totalSum << endl;
+//    cout << endl;
     StatefulTimer::dump(true);
 
     delete kernel;
