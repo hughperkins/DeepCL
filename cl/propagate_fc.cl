@@ -22,9 +22,13 @@
 
 #ifdef gOutBoardSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-// workgroupid [n]
-// localid: [outputplane]
-//  each thread iterates over: [inputplane]
+// workgroupid 
+// localid: 
+//  each thread is assigned to: one row, of one output plane
+//  workgroup is assigned to: same row, from each output plane
+//  each thread iterates over: [n]
+// local memory: one row from each output, = 128 * 19 * 4 = 9.8KB
+//             1 * input row = "0.076KB"
 // this kernel assumes:
 //   padzeros == 0 (mandatory)
 //   filtersize == inputboardsize (mandatory)
@@ -32,7 +36,7 @@
 //   filtersize == 19
 //   outputBoardSize == 1
 //   lots of outplanes, hundreds, but less than max work groupsize, eg 350, 500, 361
-//   lots of inplanes, eg 32
+//   lots of inplanes, eg 32-128
 //   inputboardsize around 19, not too small
 #if gFilterSize == gInputBoardSize && gPadZeros == 0
 void kernel propagate_fc( const int batchSize,

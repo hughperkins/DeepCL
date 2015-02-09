@@ -47,6 +47,23 @@ kernel void sum_sumrow( global const float *boards, global float *sums, const in
     sums[globalId] = sum;
 }
 
+kernel void sum_workgroupperboard_sumrow( global const float *boards, global float *sums, const int boardSize ) {
+    int localId = get_local_id(0);
+    int workgroupSize = get_local_size(0);
+    int workgroupId = get_group_id(0);
+    int globalId = get_global_id(0);
+//    if( globalId > numRows ) {
+//        return;
+//    }
+    float sum = 0;
+    const int boardSizeSquared = boardSize * boardSize;
+    global float const*thisrow = boards + workgroupId * boardSizeSquared + localId * boardSize;
+    for( int i = 0; i < boardSize; i++ ) {
+        sum += thisrow[i];
+    }
+    sums[workgroupId * boardSize + localId] = sum;
+}
+
 kernel void sum_workgroupperboard_threadperpixel( global float *boards, global float *sums, const int numBoards, const int boardSize, const int power2WorkgroupSize ) {
     int localId = get_local_id(0);
     int workgroupSize = get_local_size(0);
