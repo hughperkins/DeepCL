@@ -33,3 +33,17 @@ kernel void sumSums_singlethread( global const float *sums, global float *sum, c
     sum[0] = thissum;
 }
 
+kernel void sum_sumrow( global const float *boards, global float *sums, const int numRows, const int rowSize ) {
+    int globalId = get_global_id(0);
+    if( globalId > numRows ) {
+        return;
+    }
+    float sum = 0;
+//    const int boardSizeSquared = boardSize * boardSize;
+    global float const*thisrow = boards + rowSize * globalId;
+    for( int i = 0; i < rowSize; i++ ) {
+        sum += thisrow[i];
+    }
+    sums[globalId] = sum;
+}
+

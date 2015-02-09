@@ -106,10 +106,6 @@ TEST( testreduce, sumboards_threadperboard ) {
     cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
     float *input = new float[ totalLinearSize ];
     StatefulTimer::timeCheck("allocated memory");
-//    WeightRandomizer::randomize( input, totalLinearSize / 10 );
-//    for( int i = 0; i < totalLinearSize; i++ ) {
-//        input[i] = ( i % 231 ) / 231.0f;
-//    }
     float *sums = new float[numBoards];
 
     CLWrapper *inputWrapper = cl->wrap( totalLinearSize, input );
@@ -129,6 +125,64 @@ TEST( testreduce, sumboards_threadperboard ) {
         kernel->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
         StatefulTimer::timeCheck("gpu time");
+
+        // sum all, to ensure no compilation shortcutting
+        float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
+        cout << "totalSum: " << totalSum << endl;
+        StatefulTimer::timeCheck("totalsum time" );
+    }
+    StatefulTimer::dump(true);
+
+    delete kernel;
+
+    delete inputWrapper;
+    delete sumsWrapper;
+
+    delete[] input;
+    delete[] sums;
+
+    delete cl;
+}
+
+TEST( testreduce, sumboards_threadperrow ) {
+    const int boardSizeSquared = boardSize * boardSize;
+
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+
+//    Timer timer;
+    int totalLinearSize = numBoards * boardSize * boardSize;
+    cout << "totalLinearSize " << totalLinearSize << endl;
+    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
+    float *input = new float[ totalLinearSize ];
+    StatefulTimer::timeCheck("allocated memory");
+    float *sums = new float[numBoards];
+
+    CLWrapper *inputWrapper = cl->wrap( totalLinearSize, input );
+    inputWrapper->createOnDevice();
+    float *rowsums = new float[numBoards * boardSize];
+    CLWrapper *rowSumsWrapper = cl->wrap( numBoards * boardSize, rowsums );
+    rowSumsWrapper->createOnDevice();
+    CLWrapper *sumsWrapper = cl->wrap( numBoards, sums );
+    sumsWrapper->createOnDevice();
+
+    setupBoards( cl, inputWrapper, numBoards, boardSize );
+
+    StatefulTimer::timeCheck("setup boards");
+
+    CLKernel *kernel = cl->buildKernel("../prototyping/testreduce.cl" ,"sum_sumrow" );
+    for( int it = 0; it < numIts; it++ ) {        
+        kernel->in( inputWrapper )->out( rowSumsWrapper )->in( numBoards * boardSize )->in( boardSize );
+        int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+        int numWorkgroups = ( numBoards * boardSize + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+        kernel->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+        cl->finish();
+        StatefulTimer::timeCheck("gpu time");
+
+        kernel->in( rowSumsWrapper )->out( sumsWrapper )->in( numBoards )->in( boardSize );
+        numWorkgroups = ( numBoards + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+        kernel->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+        cl->finish();
+        StatefulTimer::timeCheck("gpu 2 time");
 
         // sum all, to ensure no compilation shortcutting
         float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
