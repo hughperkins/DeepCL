@@ -10,6 +10,8 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
+OPTION(PROTOTYPING "Only for devs." OFF)
+
 #find_package(MPI QUIET)
 #if( MPI_FOUND )
 #    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." ON)
@@ -165,6 +167,12 @@ add_executable( unittests ${UNITTEST_SOURCES}
 thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
+
+if( PROTOTYPING )
+    add_executable( prototyping prototyping/testreduce.cpp src/stringhelper.cpp thirdparty/gtest/gtest_main.cc )
+    target_link_libraries( prototyping gtest )
+    target_include_directories( prototyping PRIVATE thirdparty/gtest )
+endif( PROTOTYPING )
 
 target_link_libraries( unittests ClConvolve )
 

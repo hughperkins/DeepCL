@@ -103,7 +103,37 @@ wrote weights to file, filesize 23397KB
 ========================
 
 ./clconvolve1 dataset=kgsgo numtrain=1000000 numtest=10000 loadondemand=1 netdef=32c5{z}-32c5{z}-500n-361n dumptimings=1 weightsfile=weights-2x32-1M.dat
+after epoch 6 5.23319e+06 ms
+annealed learning rate: 0.002 training lo
+ss: 3.66686e+06
+ train accuracy: 252598/1000000 25.2598%
+test accuracy: 2114/10000 21.14%
+after tests 26756 ms
+wrote weights to file, filesize 23397KB
+dumpTimings 1
+StatefulTimer readings:
+   GenericLoader::load end: 3945ms
+   GenericLoader::load start: 30ms
+   layer2 BackpropWeights2Scratch end: 54831ms
+   layer2 Propagate3::propagate after call propagate: 39504ms
+   layer2 backproperrors(): updated weights, layer 2: 76ms
+   layer3     propagate layer 3, START: 58ms
+   layer3 BackpropErrorsv2Naive end: 351562ms
+   layer3 BackpropWeights2Scratch end: 218750ms
+   layer3 Propagate3::propagate after call propagate: 181483ms
+   layer4 BackpropErrorsv2Naive end: 351563ms
+   layer4 BackpropWeights2Scratch end: 593689ms
+   layer4 Propagate1::propagate after call propagate: 2.37882e+06ms
+   layer5 BackpropWeights2Scratch end: 953125ms
+   layer5 Propagate1::propagate after call propagate: 71015ms
+   layer6 end SoftMaxLayer propagate: 7892ms
 
+after epoch 7 5.23498e+06 ms
+annealed learning rate: 0.002 training loss: 3.72707e+06
+ train accuracy: 245663/1000000 24.5663%
+test accuracy: 2071/10000 20.71%
+after tests 26953 ms
+wrote weights to file, filesize 23397K
 
 
 =========================
@@ -201,6 +231,31 @@ annealed learning rate: 0.002 training loss: 4.99184e+06
  train accuracy: 49264/1000000 4.9264%
 test accuracy: 520/10000 5.2%
 after tests 1416 ms
+wrote weights to file, filesize 1011KB
+===============
+
+./clconvolve1 dataset=kgsgo numtrain=1000000 numtest=10000 netdef=8c5{z}-mp2-16c5{z}-mp3-500n-361n loadondemand=1 weightsfile=weights-kgs-mnistarch-1M.dat loadweights=1 numepochs=30
+after epoch 10 1.26236e+06 ms
+annealed learning rate: 0.002 training loss: 4.95002e+06
+ train accuracy: 62291/1000000 6.2291%
+test accuracy: 554/10000 5.54%
+after tests 1412 ms
+wrote weights to file, filesize 1011KB
+dumpTimings 0
+
+after epoch 11 1.26243e+06 ms
+annealed learning rate: 0.002 training loss: 4.95816e+06
+ train accuracy: 62087/1000000 6.2087%
+test accuracy: 603/10000 6.03%
+after tests 1409 ms
+wrote weights to file, filesize 1011KB
+dumpTimings 0
+
+after epoch 29 1.26235e+06 ms
+annealed learning rate: 0.002 training loss: 5.19091e+06
+ train accuracy: 41212/1000000 4.1212%
+test accuracy: 457/10000 4.57%
+after tests 1410 ms
 wrote weights to file, filesize 1011KB
 
 
