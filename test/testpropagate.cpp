@@ -833,4 +833,43 @@ TEST( testpropagate, softmax_byplane ) {
     delete net;
 }
 
+TEST( testpropagate, kgsgo_fc500 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 500 ).setFilterSize( 19 )
+        .setPadZeros( false ).setBiased( true );    
+
+    int inputsSize = batchSize * dim.inputCubeSize;
+    int filtersSize = dim.filtersSize;
+    int biasSize = dim.numFilters;
+    int inputsAllocated = std::max( inputsSize, 10000 );
+    int filtersAllocated = std::max( filtersSize, 10000 );
+    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    float *inputs = new float[ inputsAllocated ];
+    float *filters = new float[ filtersAllocated ];
+    float *biasFilters = new float[ biasFiltersAllocated ];
+
+    memset( inputs, 0, sizeof(float) * inputsAllocated );
+    memset( filters, 0, sizeof(float) * filtersAllocated );
+    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
+
+    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
+    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
+        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+        delete[] results1;
+    }
+    StatefulTimer::dump(true);
+
+    delete p1;
+    delete cl;
+    delete[] inputs;
+    delete[] filters;
+    delete[] biasFilters;
+}
+
 
