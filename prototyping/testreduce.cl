@@ -47,7 +47,7 @@ kernel void sum_sumrow( global const float *boards, global float *sums, const in
     sums[globalId] = sum;
 }
 
-kernel void sum_workgroupperboard_threadperpixel_local( global float *boards, global float *sums, const int numBoards, const int boardSize, const int power2WorkgroupSize ) {
+kernel void sum_workgroupperboard_threadperpixel( global float *boards, global float *sums, const int numBoards, const int boardSize, const int power2WorkgroupSize ) {
     int localId = get_local_id(0);
     int workgroupSize = get_local_size(0);
     int workgroupId = get_group_id(0);
@@ -63,18 +63,26 @@ kernel void sum_workgroupperboard_threadperpixel_local( global float *boards, gl
     if( localId == 0 ) {
         sums[workgroupId] = board[0];
     }
+}
 
-
-//    int globalId = get_global_id(0);
-//    if( globalId > numBoards * boardSize * boardSize ) {
-//        return;
-//    }
-//    float sum = 0;
-//    const int boardSizeSquared = boardSize * boardSize;
-//    global float const*thisBoard = boards + boardSizeSquared * globalId;
-//    for( int i = 0; i < boardSizeSquared; i++ ) {
-//        sum += thisBoard[i];
-//    }
-//    sums[globalId] = sum;
+kernel void sum_workgroupperboard_threadperpixel_local( global float *boards, global float *sums, local float *_sumBoard, const int numBoards, const int boardSize, const int power2WorkgroupSize ) {
+    int localId = get_local_id(0);
+    int workgroupSize = get_local_size(0);
+    int workgroupId = get_group_id(0);
+    const int boardSizeSquared = boardSize * boardSize;
+    global float *board = boards + workgroupId * boardSizeSquared;
+    if( localId < boardSizeSquared ) {
+        _sumBoard[localId] = board[localId];
+    }
+    for( int offset = ( power2WorkgroupSize >> 1 ); offset > 0; offset >>= 1 ) {
+        bool docopy = localId < offset && localId + offset < boardSizeSquared;
+        if( docopy ) {
+            _sumBoard[localId] = _sumBoard[localId] + _sumBoard[localId + offset];
+        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+    }
+    if( localId == 0 ) {
+        sums[workgroupId] = _sumBoard[0];
+    }
 }
 

@@ -205,6 +205,68 @@ TEST( testreduce, sumboards_threadperrow ) {
     delete cl;
 }
 
+TEST( testreduce, sum_workgroupperboard_threadperpixel ) {
+    const int boardSizeSquared = boardSize * boardSize;
+
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+
+//    Timer timer;
+    int totalLinearSize = numBoards * boardSize * boardSize;
+    cout << "totalLinearSize " << totalLinearSize << endl;
+    cout << "memory " << ( totalLinearSize * 4 / 1024 / 1024 ) << "MB" << endl;
+    float *input = new float[ totalLinearSize ];
+    StatefulTimer::timeCheck("allocated memory");
+    float *sums = new float[numBoards];
+
+    CLWrapper *inputWrapper = cl->wrap( totalLinearSize, input );
+    inputWrapper->createOnDevice();
+    float *rowsums = new float[numBoards * boardSize];
+//    CLWrapper *rowSumsWrapper = cl->wrap( numBoards * boardSize, rowsums );
+//    rowSumsWrapper->createOnDevice();
+    CLWrapper *sumsWrapper = cl->wrap( numBoards, sums );
+    sumsWrapper->createOnDevice();
+
+    setupBoards( cl, inputWrapper, numBoards, boardSize );
+
+    StatefulTimer::timeCheck("setup boards");
+
+    CLKernel *kernel = cl->buildKernel("../prototyping/testreduce.cl" ,"sum_workgroupperboard_threadperpixel" );
+    for( int it = 0; it < numIts; it++ ) {     
+        setupBoards( cl, inputWrapper, numBoards, boardSize );
+        StatefulTimer::timeCheck("setup boards");
+
+        // ( global float *boards, global float *sums, const int numBoards, const int boardSize   
+        kernel->in( inputWrapper )->out( sumsWrapper )->in( numBoards )->in( boardSize )
+            ->in( OpenCLHelper::getNextPower2( boardSize * boardSize ) );
+        kernel->run_1d( numBoards * boardSize * boardSize, boardSize * boardSize );
+        cl->finish();
+        StatefulTimer::timeCheck("gpu time");
+
+//        kernel->in( rowSumsWrapper )->out( sumsWrapper )->in( numBoards )->in( boardSize );
+//        numWorkgroups = ( numBoards + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+//        kernel->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+//        cl->finish();
+//        StatefulTimer::timeCheck("gpu 2 time");
+
+        // sum all, to ensure no compilation shortcutting
+        float totalSum = sumSums_singlethread( cl, sumsWrapper, numBoards );
+        cout << "totalSum: " << totalSum << " ";
+        StatefulTimer::timeCheck("totalsum time" );
+    }
+    cout << endl;
+    StatefulTimer::dump(true);
+
+    delete kernel;
+
+    delete inputWrapper;
+    delete sumsWrapper;
+
+    delete[] input;
+    delete[] sums;
+
+    delete cl;
+}
+
 TEST( testreduce, sum_workgroupperboard_threadperpixel_local ) {
     const int boardSizeSquared = boardSize * boardSize;
 
@@ -236,7 +298,7 @@ TEST( testreduce, sum_workgroupperboard_threadperpixel_local ) {
         StatefulTimer::timeCheck("setup boards");
 
         // ( global float *boards, global float *sums, const int numBoards, const int boardSize   
-        kernel->in( inputWrapper )->out( sumsWrapper )->in( numBoards )->in( boardSize )
+        kernel->in( inputWrapper )->out( sumsWrapper )->localFloats(boardSize * boardSize)->in( numBoards )->in( boardSize )
             ->in( OpenCLHelper::getNextPower2( boardSize * boardSize ) );
         kernel->run_1d( numBoards * boardSize * boardSize, boardSize * boardSize );
         cl->finish();
