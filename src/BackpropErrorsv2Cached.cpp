@@ -46,7 +46,11 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
 
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
+    errorsForUpstreamWrapper->copyToHost();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after first kernel" );
+    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
+        cout << "efu[" << i << "]=" << errorsForUpstream[i] << endl;
+    }
 
 //    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( errorsForUpstreamWrapper )->in( inputDataWrapper );
 //    applyActivationDeriv->run_1d(globalSize, workgroupSize);
@@ -54,6 +58,10 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
     applyActivationDeriv->run_1d(globalSize, workgroupSize);
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after applyActivationDeriv" );
+    errorsForUpstreamWrapper->copyToHost();
+    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
+        cout << "efu2[" << i << "]=" << errorsForUpstream[i] << endl;
+    }
     
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached end" );
 }
@@ -88,9 +96,13 @@ BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimension
     "// note: currently doesnt use bias as input.  thats probably an error?\n" 
     "// inputs: errors :convolve: filters => errorsForUpstream\n" 
     "//\n" 
+    "// global:\n" 
+    "// errors: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4\n" 
+    "// weights: [filterId][upstreamplane][filterRow][filterCol] 32 * 32 * 5 * 5 * 4\n" 
     "// per workgroup:\n" 
     "// errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB\n" 
     "// weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB\n" 
+    "// errorsforupstream: [n][upstreamPlane][upstreamRow][upstreamCol]\n" 
     "void kernel calcErrorsForUpstreamCached(\n" 
     "        const int batchSize,\n" 
     "        global const float *errorsGlobal,\n" 
