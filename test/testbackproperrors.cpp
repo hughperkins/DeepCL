@@ -186,7 +186,6 @@ TEST( SLOW_testbackproperrors, perf_kgsgo_32c5 ) {
     ActivationFunction *fn = new ReluActivation();
 
     measurePerf( 1, batchSize, dim, fn );
-
 }
 
 void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
