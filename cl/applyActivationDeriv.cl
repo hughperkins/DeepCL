@@ -33,7 +33,9 @@ void kernel applyActivationDeriv(
         const int N,
         global float *target, global const float *source ) {
     int globalId = get_global_id(0);
-    target[globalId] *= ACTIVATION_DERIV( source[globalId] );
+    if( globalId < N ) {
+        target[globalId] *= ACTIVATION_DERIV( source[globalId] );
+    }
   //  target[globalId] *= source[globalId];
 }
 #endif
