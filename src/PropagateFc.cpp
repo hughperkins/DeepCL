@@ -21,7 +21,7 @@ VIRTUAL PropagateFc::~PropagateFc() {
     delete kernel1;
     delete kernel_reduce;
     delete kernel_activate;
-    delete kPerElementAdd;
+    delete kPerElementTiledAdd;
 }
 VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("PropagateFc::propagate begin");
@@ -114,7 +114,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     // stringify.write_kernel2( "kernel1", "cl/propagate_fc.cl", "propagate_fc_workgroup_perrow", 'options' )
     // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
     // stringify.write_kernel2( "kernel_activate", "cl/activate.cl", "activate", 'options' )
-    // stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
+    // # stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
     // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
     // generated using cog:
@@ -427,34 +427,6 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "\n" 
     "";
     kernel_activate = cl->buildKernelFromString( kernel_activateSource, "activate", options, "cl/activate.cl" );
-    // generated using cog:
-    const char * kPerElementAddSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "// adds source to target\n" 
-    "// tiles source as necessary, according to tilingSize\n" 
-    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId % tilingSize];\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kPerElementAdd = cl->buildKernelFromString( kPerElementAddSource, "per_element_add", options, "cl/per_element_add.cl" );
     // generated using cog:
     const char * kPerElementTiledAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 

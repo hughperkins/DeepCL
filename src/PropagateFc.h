@@ -13,7 +13,7 @@ public:
     CLKernel *kernel1;
     CLKernel *kernel_reduce;
     CLKernel *kernel_activate;
-    CLKernel *kPerElementAdd;
+//    CLKernel *kPerElementAdd;
     CLKernel *kPerElementTiledAdd;
     // [[[cog
     // import cog_addheaders
