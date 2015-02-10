@@ -19,7 +19,7 @@ def write_kernel2( kernelVarName, kernel_filename, kernelName, options ):
     line = f.readline()
     cog.outl( 'const char * ' + kernelVarName + 'Source =  ' )
     while( line != '' ):
-        cog.outl( '"' + line.strip().replace('\\','\\\\').replace('"', '\\"') + '\\n" ' )
+        cog.outl( '"' + line.rstrip().replace('\\','\\\\').replace('"', '\\"') + '\\n" ' )
         line = f.readline()
     cog.outl( '"";')
     f.close()
