@@ -155,7 +155,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFu
 
     StatefulTimer::timeCheck("after init");
     BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim, fn );
-    for( int it = 0; it < 20; it++ ) {
+    for( int it = 0; it < 40; it++ ) {
         backpropErrorsImpl->backpropErrors( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
             errorsForUpstreamWrapper );
