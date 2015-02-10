@@ -308,6 +308,19 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
 
 }
 
+TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini2 ) {
+    int batchSize = 1;
+    int boardSize = 2;
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputBoardSize(boardSize).setNumFilters( 1 ).setFilterSize( boardSize )
+        .setPadZeros( true ).setBiased( true );
+    cout << dim.buildOptionsString() << endl;
+    ActivationFunction *fn = new ReluActivation();
+
+    compareSpecific( 1, 2, batchSize, dim, fn );
+
+}
+
 /*
 float *test( int boardSize ) {
     const int batchSize = 128;

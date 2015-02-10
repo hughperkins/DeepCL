@@ -15,9 +15,13 @@
 // note: currently doesnt use bias as input.  thats probably an error?
 // inputs: errors :convolve: filters => errorsForUpstream
 //
+// global:
+// errors: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4
+// weights: [filterId][upstreamplane][filterRow][filterCol] 32 * 32 * 5 * 5 * 4
 // per workgroup:
 // errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
 // weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
+// errorsforupstream: [n][upstreamPlane][upstreamRow][upstreamCol]
 void kernel calcErrorsForUpstreamCached( 
         const int batchSize,
         global const float *errorsGlobal,
