@@ -67,6 +67,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
+    StatefulTimer::timeCheck("PropagateFc::propagate after reduce1");
 
     // reduce over input planes 
     kernel_reduce->in(batchSize * dim.numFilters)->in( dim.numInputPlanes )
@@ -75,6 +76,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
+    StatefulTimer::timeCheck("PropagateFc::propagate after reduce2");
 
     kernel_activate->in( batchSize * dim.numFilters )
         ->inout( resultsWrapper );
@@ -82,6 +84,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
+    StatefulTimer::timeCheck("PropagateFc::propagate after activate");
 
     delete results2Wrapper;
     delete[] results2;
