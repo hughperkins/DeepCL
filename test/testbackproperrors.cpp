@@ -143,6 +143,11 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFu
     float *input = new float[inputSize];
     float *errors = new float[errorsSize];
     float *weights = new float[weightsSize];
+
+    WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( errors, errorsSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( weights, weightsSize, -0.1f, 0.1f );
+
     float *errorsForUpstream = new float[errorsForUpstreamSize];
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *errorsWrapper = cl->wrap( errorsSize, errors );
@@ -195,16 +200,23 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     int errorsSize = dim.outputCubeSize * batchSize;
     int weightsSize = dim.filtersSize;
     int errorsForUpstreamSize = dim.inputCubeSize * batchSize;
+
     float *input = new float[inputSize];
     float *errors = new float[errorsSize];
     float *weights = new float[weightsSize];
     float *errorsForUpstream0 = new float[errorsForUpstreamSize];
     float *errorsForUpstream1 = new float[errorsForUpstreamSize];
+
+    WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( errors, errorsSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( weights, weightsSize, -0.1f, 0.1f );
+
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *errorsWrapper = cl->wrap( errorsSize, errors );
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, weights );
     CLWrapper *errorsForUpstreamWrapper0 = cl->wrap( errorsForUpstreamSize, errorsForUpstream0 );
     CLWrapper *errorsForUpstreamWrapper1 = cl->wrap( errorsForUpstreamSize, errorsForUpstream1 );
+
     inputWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
@@ -276,6 +288,18 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );  
+    cout << dim.buildOptionsString() << endl;  
+    ActivationFunction *fn = new ReluActivation();
+
+    compareSpecific( 0, 1, batchSize, dim, fn );
+
+}
+
+TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
+    int batchSize = 4;
+    LayerDimensions dim;
+    dim.setInputPlanes( 2 ).setInputBoardSize(3).setNumFilters( 2 ).setFilterSize( 3 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();

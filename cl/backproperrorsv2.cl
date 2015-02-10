@@ -73,7 +73,18 @@ void kernel calcErrorsForUpstream(
             }
         }
     }
-    errorsForUpstream[globalId] = sumWeightTimesOutError * inputDeriv;
+    errorsForUpstream[globalId] = sumWeightTimesOutError;
+    //errorsForUpstream[globalId] = sumWeightTimesOutError * inputDeriv;
+}
+#endif
+
+#ifdef ACTIVATION_DERIV
+void kernel broadcast_multiply( 
+        const int N,
+        global float *target, global const float *source ) {
+    int globalId = get_global_id(0);
+//    float inputDeriv = ACTIVATION_DERIV( inputDataValue );
+    target[globalId] *= ACTIVATION_DERIV( source[globalId] );
 }
 #endif
 
