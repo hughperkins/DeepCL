@@ -47,11 +47,11 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
     float const*errorsForUpstream = (float *)errorsForUpstreamWrapper->getHostArray();
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
-    errorsForUpstreamWrapper->copyToHost();
+//    errorsForUpstreamWrapper->copyToHost();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after first kernel" );
-    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
-        cout << "efu[" << i << "]=" << errorsForUpstream[i] << endl;
-    }
+//    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
+//        cout << "efu[" << i << "]=" << errorsForUpstream[i] << endl;
+//    }
 
 //    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( errorsForUpstreamWrapper )->in( inputDataWrapper );
 //    applyActivationDeriv->run_1d(globalSize, workgroupSize);
@@ -59,10 +59,10 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
     applyActivationDeriv->run_1d(globalSize, workgroupSize);
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after applyActivationDeriv" );
-    errorsForUpstreamWrapper->copyToHost();
-    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
-        cout << "efu2[" << i << "]=" << errorsForUpstream[i] << endl;
-    }
+//    errorsForUpstreamWrapper->copyToHost();
+//    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
+//        cout << "efu2[" << i << "]=" << errorsForUpstream[i] << endl;
+//    }
     
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached end" );
 }

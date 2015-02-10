@@ -25,7 +25,8 @@ using namespace std;
 
 STATIC BackpropErrorsv2 *BackpropErrorsv2::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn ) {
     if( square( dim.inputBoardSize ) <= cl->getMaxWorkgroupSize() ) {
-        return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
+//        return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
+        return new BackpropErrorsv2Cached( cl, dim, upstreamFn );
     } else {
         return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
     }
