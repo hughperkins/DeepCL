@@ -43,7 +43,8 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
 //    int workgroupsize = cl->getMaxWorkgroupSize();
 //    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //    kernel->run_1d(globalSize, workgroupsize);
-
+    
+    float const*errorsForUpstream = (float *)errorsForUpstreamWrapper->getHostArray();
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
     errorsForUpstreamWrapper->copyToHost();
