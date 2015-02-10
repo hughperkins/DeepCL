@@ -26,7 +26,10 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
-    if( square( dim.outputBoardSize ) < 32 || square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
+    if( dim.filterSize == dim.inputBoardSize && dim.padZeros == false && dim.numFilters >= 64
+        && dim.filterSize >= 11 ) {
+        return new PropagateFc( cl, dim, fn );
+    } else if( square( dim.outputBoardSize ) < 32 || square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
         return new Propagate1( cl, dim, fn );
     } else {
         return new Propagate3( cl, dim, fn );
