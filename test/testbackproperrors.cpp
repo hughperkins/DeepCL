@@ -190,7 +190,7 @@ TEST( SLOW_testbackproperrors, perf_kgsgo_32c5 ) {
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();
 
-    measurePerf( 1, batchSize, dim, fn );
+    measurePerf( 2, batchSize, dim, fn );
 }
 
 void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
@@ -292,7 +292,7 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific( 0, 1, batchSize, dim, fn );
+    compareSpecific( 1, 2, batchSize, dim, fn );
 
 }
 
@@ -304,7 +304,7 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific( 0, 1, batchSize, dim, fn );
+    compareSpecific( 1, 2, batchSize, dim, fn );
 
 }
 

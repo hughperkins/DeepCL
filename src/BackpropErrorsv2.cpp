@@ -11,6 +11,7 @@
 
 #include "BackpropErrorsv2Cpu.h"
 #include "BackpropErrorsv2Naive.h"
+#include "BackpropErrorsv2Cached.h"
 
 #include "BackpropErrorsv2.h"
 
@@ -38,6 +39,9 @@ STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceSpecific( int idx, OpenCLHelp
     }
     if( idx == 1 ) {
         return new BackpropErrorsv2Naive( cl, layerDimensions, upstreamFn );
+    }
+    if( idx == 2 ) {
+        return new BackpropErrorsv2Cached( cl, layerDimensions, upstreamFn );
     }
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
