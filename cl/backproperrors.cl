@@ -82,6 +82,10 @@ void kernel calcErrorsForUpstream(
 // - _filterBoard. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
 // inputs: errors :convolve: filters => errorsForUpstream
+//
+// per workgroup:
+// errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
+// weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
 #ifdef gOutputBoardSize // for previous tests that dont define it
 void kernel calcErrorsForUpstreamCached( 
         const int batchSize,

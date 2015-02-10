@@ -21,6 +21,9 @@
 #endif
 
 // globalid as: [n][upstreamPlane][upstreamrow][upstreamcol]
+// inputdata: [n][upstreamPlane][upstreamrow][upstreamcol] 128 * 32 * 19 * 19 * 4 = 6MB
+// errors: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4 = 6MB
+// weights: [filterId][inputPlane][filterRow][filterCol] 32 * 32 * 5 * 5 * 4 = 409KB
 #ifdef ACTIVATION_DERIV
 void kernel calcErrorsForUpstream( 
         const int batchSize,

@@ -133,6 +133,57 @@ TEST( testbackproperrors, checknumerically_boardsize5_filter3_relu ) {
     testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, fn, padZeros );
 }
 
+TEST( SLOW_testbackproperrors, kgsgo_32c5 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );  
+    cout << dim.buildOptionsString() << endl;  
+    ActivationFunction *fn = new ReluActivation();
+
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+
+    int inputSize = dim.inputCubeSize * batchSize;
+    int errorsSize = dim.outputCubeSize * batchSize;
+    int weightsSize = dim.filtersSize;
+    int errorsForUpstreamSize = dim.inputCubeSize * batchSize;
+    float *input = new float[inputSize];
+    float *errors = new float[errorsSize];
+    float *weights = new float[weightsSize];
+    float *errorsForUpstream = new float[errorsForUpstreamSize];
+    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
+    CLWrapper *errorsWrapper = cl->wrap( errorsSize, errors );
+    CLWrapper *weightsWrapper = cl->wrap( weightsSize, weights );
+    CLWrapper *errorsForUpstreamWrapper = cl->wrap( errorsForUpstreamSize, errorsForUpstream );
+    inputWrapper->copyToDevice();
+    errorsWrapper->copyToDevice();
+    weightsWrapper->copyToDevice();
+    errorsForUpstreamWrapper->createOnDevice();
+
+    StatefulTimer::timeCheck("after init");
+    BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceSpecific( 1, cl, dim, fn );
+    for( int it = 0; it < 10; it++ ) {
+        backpropErrorsImpl->backpropErrors( batchSize, 
+            inputWrapper, errorsWrapper, weightsWrapper,
+            errorsForUpstreamWrapper );
+    }
+    StatefulTimer::timeCheck("after backprop");
+    StatefulTimer::dump(true);
+
+    delete errorsForUpstreamWrapper;
+    delete weightsWrapper;
+    delete inputWrapper;
+    delete errorsWrapper;
+
+    delete[] errors;
+    delete[] weights;
+    delete[] input;
+    delete[] errorsForUpstream;
+
+    delete backpropErrorsImpl;
+    delete cl;
+}
+
 /*
 float *test( int boardSize ) {
     const int batchSize = 128;

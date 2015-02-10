@@ -20,7 +20,7 @@
     #define ACTIVATION_FUNCTION(output) (output)
 #endif
 
-#ifdef gOutputBoardSize // for previous tests that dont define it
+//#ifdef gOutputBoardSize // for previous tests that dont define it
 // concept:
 //  we want to share each input example across multiple filters
 //   but an entire filter plane is 19*19*4 = 1.4KB
@@ -55,9 +55,9 @@
 #if (gFilterSize == gInputBoardSize) && (gPadZeros == 0)
 void kernel propagate_fc_workgroup_perrow( const int batchSize,
     global const float *images, global const float *filters, 
-        #ifdef BIASED
-            global const float*biases, 
-        #endif
+//        #ifdef BIASED
+//            global const float*biases, 
+//        #endif
     global float *results1,
     local float *_imageRow, local float *_filterRows ) {
     const int globalId = get_global_id(0);
@@ -82,9 +82,9 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
     for( int i = 0; i < gFilterSize; i++ ) {
         _threadFilterRow[i] = filterRow[i];
     }
-    #ifdef BIASED
-    const float bias = biases[filterId];
-    #endif
+//    #ifdef BIASED
+//    const float bias = biases[filterId];
+//    #endif
     const int loopsPerExample = ( gInputBoardSize + workgroupSize - 1 ) / workgroupSize;
     // now loop over examples...
     for( int n = 0; n < batchSize; n++ ) {
@@ -109,9 +109,9 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
         for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
             sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];
         }
-        #ifdef BIASED
-        sum += bias;
-        #endif
+//        #ifdef BIASED
+//        sum += bias;
+//        #endif
         // note: dont activate yet, since need to reduce again
         // results structured as: [n][filter][inputplane][filterrow], need to reduce again after
         if( localId < gNumFilters ) {
@@ -122,37 +122,7 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
     }
 }
 #endif
-#endif
-
-kernel void reduce_segments( const int numSegments, const int segmentLength, 
-        global float const *in, global float* out ) {
-    const int globalId = get_global_id(0);
-    const int localId = get_local_id(0);
-//    const int workgroupId = get_group_id(0);
-//    const int localSegment = localId / segmentLength;
-    const int segmentId = globalId;
-
-    if( segmentId >= numSegments ) {
-        return;
-    }
-
-    float sum = 0;
-    global const float *segment = in + segmentId * segmentLength;
-    for( int i = 0; i < segmentLength; i++ ) {
-        sum += segment[i];
-    }
-    out[segmentId] = sum;
-}
-
-#ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void activate( const int N, global float *inout ) {
-    const int globalId = get_global_id(0);
-    if( globalId >= N ) {
-        return;
-    }
-    inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );
-}
-#endif
+//#endif
 
 // each thread handles one filter, ie globalId as [n][inputplane][filterId]
 // results1: [n][inputplane][filter][filterrow]

@@ -662,11 +662,19 @@ TEST( SLOW_testpropagate, comparespecific ) {
     compareSpecific( 1, dim, new LinearActivation(), 1, 3 );
 }
 
-TEST( SLOW_testpropagate, comparespecific_fc500 ) {
+TEST( SLOW_testpropagate, comparespecific_fc500unbiased ) {
     LayerDimensions dim;
     const int boardSize = 19;
     dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
         .setPadZeros( false ).setBiased( false );    
+    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
+}
+
+TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
+    LayerDimensions dim;
+    const int boardSize = 19;
+    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
+        .setPadZeros( false ).setBiased( true );    
     compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
 }
 
