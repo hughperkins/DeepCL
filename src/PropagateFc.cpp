@@ -66,8 +66,8 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     int maxglobalId = batchSize * dim.numFilters * dim.numInputPlanes;
 //    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-    numWorkgroups = ( maxglobalId + 32 - 1 ) / 32;
-    kernel_reduce->run_1d( numWorkgroups * 32, 32 );
+    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
+    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
     cl->finish();
     StatefulTimer::timeCheck("PropagateFc::propagate after reduce1");
 
