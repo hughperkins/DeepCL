@@ -618,24 +618,31 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
     cout << dim << endl;
     bool same = true;
     for( int i = 0; i < max( 20, resultsSize ); i++ ) {
-        cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
         if( i < resultsSize ) {
-            if( abs( results1[i] - results2[i] ) <= 0.000001 ) {
-                cout << " SAME";
+            if( abs( results1[i] - results2[i] ) < 0.000001 || abs( results1[i] - results2[i] ) <= 0.001 * max( abs( results1[i] ), abs( results2[i] ) ) ) {
+                if( i < 20 ) {
+                    cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
+                    cout << " SAME";
+                }
             } else {
+                cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
                 cout << " DIFF";
                 same = false;
             }
         } else {
-            cout << "     ";
+             if( i < 20 ) {
+                 cout << "     ";
+             }
         }
-        cout << "  || " << results2[100+i] ;
-        cout << "  || " << results2[200+i] ;
-        cout << "  || " << results2[300+i] ;
-        cout << "  || " << results2[400+i] ;
-        cout << "  || " << results2[500+i] ;
-        cout << "  || " << results2[600+i] ;
-        cout << "  || " << results2[700+i] << endl;
+        if( i < 20 ) {
+            cout << "  || " << results2[100+i] ;
+            cout << "  || " << results2[200+i] ;
+            cout << "  || " << results2[300+i] ;
+            cout << "  || " << results2[400+i] ;
+            cout << "  || " << results2[500+i] ;
+            cout << "  || " << results2[600+i] ;
+            cout << "  || " << results2[700+i] << endl;
+        }
     }
     EXPECT_EQ( true, same );
     delete[] results1;
@@ -657,7 +664,8 @@ TEST( SLOW_testpropagate, comparespecific ) {
 
 TEST( SLOW_testpropagate, comparespecific_fc500 ) {
     LayerDimensions dim;
-    dim.setInputPlanes( 2 ).setInputBoardSize(1).setNumFilters( 2 ).setFilterSize( 1 )
+    const int boardSize = 19;
+    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
         .setPadZeros( false ).setBiased( false );    
     compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
 }

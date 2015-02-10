@@ -113,15 +113,45 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
         sum += bias;
         #endif
         // note: dont activate yet, since need to reduce again
-        // results structured as: [n][inputplane][filter][filterrow], need to reduce again after
+        // results structured as: [n][filter][inputplane][filterrow], need to reduce again after
         if( localId < gNumFilters ) {
-            results1[ n * gNumInputPlanes * gNumFilters * gFilterSize 
-                + inputPlaneId * gNumFilters * gFilterSize 
-                + filterId * gFilterSize + filterRowId ] = sum;
+            results1[ n * gNumInputPlanes * gNumFilters * gFilterSize
+                + inputPlaneId * gFilterSize
+                + filterId * gNumInputPlanes * gFilterSize + filterRowId ] = sum;
         }
     }
 }
 #endif
+#endif
+
+kernel void reduce_segments( const int numSegments, const int segmentLength, 
+        global float const *in, global float* out ) {
+    const int globalId = get_global_id(0);
+    const int localId = get_local_id(0);
+//    const int workgroupId = get_group_id(0);
+//    const int localSegment = localId / segmentLength;
+    const int segmentId = globalId;
+
+    if( segmentId >= numSegments ) {
+        return;
+    }
+
+    float sum = 0;
+    global const float *segment = in + segmentId * segmentLength;
+    for( int i = 0; i < segmentLength; i++ ) {
+        sum += segment[i];
+    }
+    out[segmentId] = sum;
+}
+
+#ifdef ACTIVATION_FUNCTION // protect against not defined
+kernel void activate( const int N, global float *inout ) {
+    const int globalId = get_global_id(0);
+    if( globalId >= N ) {
+        return;
+    }
+    inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );
+}
 #endif
 
 // each thread handles one filter, ie globalId as [n][inputplane][filterId]

@@ -11,8 +11,8 @@
 class PropagateFc : public Propagate {
 public:
     CLKernel *kernel1;
-    CLKernel *kernel2;
-    CLKernel *kernel3;
+    CLKernel *kernel_reduce;
+    CLKernel *kernel_activate;
 
     // [[[cog
     // import cog_addheaders
