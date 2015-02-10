@@ -55,7 +55,7 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
 
 //    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( errorsForUpstreamWrapper )->in( inputDataWrapper );
 //    applyActivationDeriv->run_1d(globalSize, workgroupSize);
-    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( errorsForUpstreamWrapper )->in( inputDataWrapper );
+    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->inout( errorsForUpstreamWrapper )->in( inputDataWrapper );
     applyActivationDeriv->run_1d(globalSize, workgroupSize);
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after applyActivationDeriv" );
