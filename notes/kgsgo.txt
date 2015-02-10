@@ -258,4 +258,27 @@ test accuracy: 457/10000 4.57%
 after tests 1410 ms
 wrote weights to file, filesize 1011KB
 
+==================
+
+after adding propagatefc:
+ ./clconvolve1 dataset=kgsgo numtrain=10000 numtest=10000 loadondemand=1 netdef=32c5{z}-32c5{z}-500n-361n dumptimings=1
+dumpTimings 1
+StatefulTimer readings:
+   GenericLoader::load end: 44ms
+   START: 324ms
+   layer2     propagate layer 2, START: 1ms
+   layer2 BackpropWeights2Scratch end: 548ms
+   layer2 Propagate3::propagate after call propagate: 391ms
+   layer3 BackpropErrorsv2Naive end: 3437ms
+   layer3 BackpropWeights2Scratch end: 2187ms
+   layer3 Propagate3::propagate after call propagate: 1796ms
+   layer4 BackpropErrorsv2Naive end: 3515ms
+   layer4 BackpropWeights2Scratch end: 5937ms
+   layer4 PropagateFc::propagate after first kernel: 2396ms
+   layer4 PropagateFc::propagate after reduce1: 625ms
+   layer4 PropagateFc::propagate after reduce2: 78ms
+   layer4 PropagateFc::propagate end: 22ms
+   layer5 BackpropWeights2Scratch end: 9532ms
+   layer5 Propagate1::propagate after call propagate: 703ms
+   layer6 end SoftMaxLayer propagate: 78ms
 
