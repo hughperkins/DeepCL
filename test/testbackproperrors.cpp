@@ -133,14 +133,7 @@ TEST( testbackproperrors, checknumerically_boardsize5_filter3_relu ) {
     testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, fn, padZeros );
 }
 
-TEST( SLOW_testbackproperrors, kgsgo_32c5 ) {
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );  
-    cout << dim.buildOptionsString() << endl;  
-    ActivationFunction *fn = new ReluActivation();
-
+void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
@@ -161,7 +154,7 @@ TEST( SLOW_testbackproperrors, kgsgo_32c5 ) {
     errorsForUpstreamWrapper->createOnDevice();
 
     StatefulTimer::timeCheck("after init");
-    BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceSpecific( 1, cl, dim, fn );
+    BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim, fn );
     for( int it = 0; it < 10; it++ ) {
         backpropErrorsImpl->backpropErrors( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
@@ -182,6 +175,114 @@ TEST( SLOW_testbackproperrors, kgsgo_32c5 ) {
 
     delete backpropErrorsImpl;
     delete cl;
+}
+
+TEST( SLOW_testbackproperrors, perf_kgsgo_32c5 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );  
+    cout << dim.buildOptionsString() << endl;  
+    ActivationFunction *fn = new ReluActivation();
+
+    measurePerf( 1, batchSize, dim, fn );
+
+}
+
+void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+
+    int inputSize = dim.inputCubeSize * batchSize;
+    int errorsSize = dim.outputCubeSize * batchSize;
+    int weightsSize = dim.filtersSize;
+    int errorsForUpstreamSize = dim.inputCubeSize * batchSize;
+    float *input = new float[inputSize];
+    float *errors = new float[errorsSize];
+    float *weights = new float[weightsSize];
+    float *errorsForUpstream0 = new float[errorsForUpstreamSize];
+    float *errorsForUpstream1 = new float[errorsForUpstreamSize];
+    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
+    CLWrapper *errorsWrapper = cl->wrap( errorsSize, errors );
+    CLWrapper *weightsWrapper = cl->wrap( weightsSize, weights );
+    CLWrapper *errorsForUpstreamWrapper0 = cl->wrap( errorsForUpstreamSize, errorsForUpstream0 );
+    CLWrapper *errorsForUpstreamWrapper1 = cl->wrap( errorsForUpstreamSize, errorsForUpstream1 );
+    inputWrapper->copyToDevice();
+    errorsWrapper->copyToDevice();
+    weightsWrapper->copyToDevice();
+    errorsForUpstreamWrapper0->createOnDevice();
+    errorsForUpstreamWrapper1->createOnDevice();
+
+    BackpropErrorsv2 *bp0 = BackpropErrorsv2::instanceSpecific( instance0, cl, dim, fn );
+    BackpropErrorsv2 *bp1 = BackpropErrorsv2::instanceSpecific( instance1, cl, dim, fn );
+    
+    bp0->backpropErrors( batchSize, 
+            inputWrapper, errorsWrapper, weightsWrapper,
+            errorsForUpstreamWrapper0 );
+    bp1->backpropErrors( batchSize, 
+            inputWrapper, errorsWrapper, weightsWrapper,
+            errorsForUpstreamWrapper1 );
+
+    errorsForUpstreamWrapper0->copyToHost();
+    errorsForUpstreamWrapper1->copyToHost();
+
+    int resultsSize = errorsForUpstreamSize;
+    cout << dim << endl;
+    bool same = true;
+    for( int i = 0; i < max( 20, resultsSize ); i++ ) {
+        if( i < resultsSize ) {
+            if( abs( errorsForUpstream0[i] - errorsForUpstream1[i] ) < 0.000001 || abs( errorsForUpstream0[i] - errorsForUpstream1[i] ) <= 0.001 * max( abs( errorsForUpstream0[i] ), abs( errorsForUpstream1[i] ) ) ) {
+                if( i < 20 ) {
+                    cout << "results[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
+                    cout << " SAME";
+                }
+            } else {
+                cout << "results[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
+                cout << " DIFF";
+                same = false;
+            }
+        } else {
+             if( i < 20 ) {
+                 cout << "     ";
+             }
+        }
+        if( i < 20 ) {
+            cout << "  || " << errorsForUpstream1[100+i] ;
+            cout << "  || " << errorsForUpstream1[200+i] ;
+            cout << "  || " << errorsForUpstream1[300+i] ;
+            cout << "  || " << errorsForUpstream1[400+i] ;
+            cout << "  || " << errorsForUpstream1[500+i] ;
+            cout << "  || " << errorsForUpstream1[600+i] ;
+            cout << "  || " << errorsForUpstream1[700+i] << endl;
+        }
+    }
+    EXPECT_EQ( true, same );
+
+    delete inputWrapper;
+    delete errorsWrapper;
+    delete weightsWrapper;
+    delete errorsForUpstreamWrapper0;
+    delete errorsForUpstreamWrapper1;
+
+    delete[] errorsForUpstream0;
+    delete[] errorsForUpstream1;
+    delete bp0;
+    delete bp1;
+    delete cl;
+    delete[] input;
+    delete[] errors;
+    delete[] weights;
+}
+
+TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );  
+    cout << dim.buildOptionsString() << endl;  
+    ActivationFunction *fn = new ReluActivation();
+
+    compareSpecific( 0, 1, batchSize, dim, fn );
+
 }
 
 /*
