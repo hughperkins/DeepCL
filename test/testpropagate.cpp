@@ -577,47 +577,50 @@ TEST( testpropagate, mnist_finallayer ) {
     delete[] biasFilters;
 }
 
-TEST( SLOW_testpropagate, comparespecific ) {
+//TEST( SLOW_testpropagate, comparespecific ) {
+void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    float *inputs = new float[ 10000 ];
-    float *filters = new float[10000 ];
-    float *biasFilters = new float[10000];
 
-    memset( inputs, 0, sizeof(float) * 10000 );
-    memset( filters, 0, sizeof(float) * 10000 );
-    memset( biasFilters, 0, sizeof(float) * 10000 );
+    int inputsSize = batchSize * dim.inputCubeSize;
+    int filtersSize = dim.filtersSize;
+    int biasSize = dim.numFilters;
+    int inputsAllocated = std::max( inputsSize, 10000 );
+    int filtersAllocated = std::max( filtersSize, 10000 );
+    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    float *inputs = new float[ inputsAllocated ];
+    float *filters = new float[ filtersAllocated ];
+    float *biasFilters = new float[ biasFiltersAllocated ];
 
-    int batchSize = 1;
-    LayerDimensions dim;
-//    dim.setInputPlanes( 2 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 5 )
-//        .setPadZeros( true ).setBiased( false );    
-    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( false );    
+    memset( inputs, 0, sizeof(float) * inputsAllocated );
+    memset( filters, 0, sizeof(float) * filtersAllocated );
+    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
 
-    inputs[0] = 2;
-//    inputs[4] = 7;
-//    inputs[5] = 1;
-    inputs[25] = 3;
-    inputs[49] = 2;
+//    inputs[0] = 2.0f;
+//    inputs[1] = 4.0f;
+    inputs[4] = 4.0f;
+//    inputs[dim.inputB + 0] = 3.0f;
+    inputs[dim.inputCubeSize + 0] = 3.0f;
 
-//    filters[0] = 5;
-//    filters[1] = 3;
-//    filters[5] = 4;
-    filters[24] = 11;
-    filters[25] = 2;
+//    filters[0] = 3.0f;
+//    filters[1] = 5.0f;
+    filters[4] = 5.0f;
+
+    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
       
-    Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new LinearActivation() );
+    Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
     float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-    Propagate *p2 = Propagate::instanceSpecific( 3, cl, dim, new LinearActivation() );
+    Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim, fn );
     float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
 
     int resultsSize = batchSize * dim.outputCubeSize;
     cout << dim << endl;
     bool same = true;
-    for( int i = 0; i < max( 50, resultsSize ); i++ ) {
+    for( int i = 0; i < max( 20, resultsSize ); i++ ) {
         cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
         if( i < resultsSize ) {
-            if( results1[i] == results2[i] ) {
+            if( abs( results1[i] - results2[i] ) <= 0.000001 ) {
                 cout << " SAME";
             } else {
                 cout << " DIFF";
@@ -643,6 +646,20 @@ TEST( SLOW_testpropagate, comparespecific ) {
     delete[] inputs;
     delete[] filters;
     delete[] biasFilters;
+}
+
+TEST( SLOW_testpropagate, comparespecific ) {
+    LayerDimensions dim;
+    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( false );    
+    compareSpecific( 1, dim, new LinearActivation(), 1, 3 );
+}
+
+TEST( SLOW_testpropagate, comparespecific_fc500 ) {
+    LayerDimensions dim;
+    dim.setInputPlanes( 2 ).setInputBoardSize(1).setNumFilters( 2 ).setFilterSize( 1 )
+        .setPadZeros( false ).setBiased( false );    
+    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
 }
 
 TEST( SLOW_testpropagate, compare ) {
@@ -842,7 +859,8 @@ TEST( testpropagate, kgsgo_fc500 ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 500 ).setFilterSize( 19 )
-        .setPadZeros( false ).setBiased( true );    
+        .setPadZeros( false ).setBiased( true );  
+    cout << dim.buildOptionsString() << endl;  
 
     int inputsSize = batchSize * dim.inputCubeSize;
     int filtersSize = dim.filtersSize;
@@ -863,7 +881,7 @@ TEST( testpropagate, kgsgo_fc500 ) {
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
+    Propagate *p1 = Propagate::instanceSpecific( 5, cl, dim, new TanhActivation() );
     for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;

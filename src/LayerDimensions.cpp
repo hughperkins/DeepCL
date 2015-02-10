@@ -26,19 +26,21 @@ string LayerDimensions::buildOptionsString() {
     if( biased ) {
          options += " -D BIASED";
     }
+    options += " -D gNumInputPlanes=" + toString(inputPlanes);
+    options += " -D gInputPlanes=" + toString(inputPlanes);
     options += " -D gInputBoardSize=" + toString(inputBoardSize);
     options += " -D gInputBoardSizeSquared=" + toString(square(inputBoardSize));
+    options += " -D gNumFilters=" + toString(numFilters);
     options += " -D gFilterSize=" + toString(filterSize);
+    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
     options += " -D gFilterSizeSquared=" + toString(square(filterSize));
+    options += " -D gNumOutputPlanes=" + toString(numFilters);
+    options += " -D gOutputPlanes=" + toString(numFilters);
     options += " -D gOutputBoardSize=" + toString(outputBoardSize);
     options += " -D gOutputBoardSizeSquared=" + toString(square(outputBoardSize));
     options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
-    options += " -D gNumFilters=" + toString(numFilters);
-    options += " -D gOutputPlanes=" + toString(numFilters);
     options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
     options += " -D gEven=" + toString(filterSize % 2 == 0 ? 1 : 0);
-    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
-    options += " -D gInputPlanes=" + toString(inputPlanes);
     options += " -D gSkip=" + toString(skip);
     return options;
 }

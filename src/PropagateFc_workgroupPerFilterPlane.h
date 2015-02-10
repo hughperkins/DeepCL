@@ -8,20 +8,19 @@
 
 #include "Propagate.h"
 
-class PropagateFc : public Propagate {
+class PropagateFc_workgroupPerFilterPlane : public Propagate {
 public:
     CLKernel *kernel1;
     CLKernel *kernel2;
-    CLKernel *kernel3;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~PropagateFc();
+    VIRTUAL ~PropagateFc_workgroupPerFilterPlane();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper );
-    PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
+    PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
 
     // [[[end]]]
 };

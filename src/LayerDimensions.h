@@ -19,6 +19,7 @@ public:
     int inputCubeSize;
     int filtersSize;
     int outputCubeSize;
+    int numInputPlanes;
 
     int halfFilterSize;
 
@@ -76,6 +77,7 @@ public:
         return *this;
     }
     void deriveOthers() {
+        this->numInputPlanes = inputPlanes;
         this->isEven = filterSize % 2 == 0;
         outputBoardSize = padZeros ? 
                 ( filterSize % 2 == 0 ? inputBoardSize / ( skip + 1 ) + 1 : inputBoardSize / ( skip + 1 ) ) :
