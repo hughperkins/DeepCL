@@ -51,7 +51,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     int globalSize = workgroupSize * numWorkgroups;
 /////    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel1->run_1d( globalSize, workgroupSize );
-    cl->finish();
+    //cl->finish();
     StatefulTimer::timeCheck("PropagateFc::propagate after first kernel");
 
 //    results1Wrapper->copyToHost();
@@ -68,18 +68,18 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
 //    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
     kernel_reduce->run_1d( numWorkgroups * 64, 64 );
-    cl->finish();
+    //cl->finish();
     StatefulTimer::timeCheck("PropagateFc::propagate after reduce1");
 
     // reduce over input planes 
     kernel_reduce->in(batchSize * dim.numFilters)->in( dim.numInputPlanes )
         ->in( results2Wrapper )->out( resultsWrapper );
-//    maxglobalId = batchSize * dim.numFilters;
-//    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+    maxglobalId = batchSize * dim.numFilters;
+    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
-    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
-    cl->finish();
+//    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
+//    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
+  //  cl->finish();
     StatefulTimer::timeCheck("PropagateFc::propagate after reduce2");
 
     kernel_activate->in( batchSize * dim.numFilters )
@@ -87,7 +87,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     maxglobalId = batchSize * dim.numFilters;
     numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-    cl->finish();
+   // cl->finish();
     StatefulTimer::timeCheck("PropagateFc::propagate after activate");
 
     delete results2Wrapper;
