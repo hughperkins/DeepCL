@@ -642,6 +642,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 10th February:
+  * increased speed of fully-connected propagation by 5-8 times :-)
 * 7th Februrary:
   * added support for kgs go v2 format [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
   * added loadondemand, which makes it possible to read a file in chunks, as learning proceeds, reducing memory requirements
