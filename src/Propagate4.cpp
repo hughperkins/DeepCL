@@ -21,7 +21,20 @@ VIRTUAL Propagate4::~Propagate4() {
 VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("Propagate4::propagate start");
+
+    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
+    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+    int pixelsPerThread = 1;
+    while( workgroupsize > maxWorkgroupSize ) {
+        workgroupsize >>= 1;
+        pixelsPerThread <<= 1;
+    }
+    int numWorkgroups = dim.numFilters * batchSize;
+    int globalSize = workgroupsize * numWorkgroups;
+//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+
     kernel->in(batchSize);
+    kernel->in( pixelsPerThread );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
@@ -29,11 +42,8 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 //    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
     kernel->localFloats( square( dim.filterSize ) );
+    kernel->localFloats( pixelsPerThread );
 
-    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
-    int numWorkgroups = dim.numFilters * batchSize;
-    int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
     StatefulTimer::timeCheck("Propagate4::propagate after call propagate");
@@ -82,34 +92,30 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
     "// results are organized like [imageid][filterid][row][col]\n" 
     "void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,\n" 
+    "    const int pixelsPerThread,\n" 
     "      global const float *images, global const float *filters,\n" 
     "        #ifdef BIASED\n" 
     "            global const float*biases,\n" 
     "        #endif\n" 
     "    global float *results,\n" 
-    "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
+    "    local float *_upstreamBoard, local float *_filterCube, local float *_perPixelSums ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;\n" 
     "\n" 
+    "    const int localId = get_local_id(0);\n" 
     "    const int workgroupId = get_group_id(0);\n" 
     "    const int workgroupSize = get_local_size(0);\n" 
     "    const int n = workgroupId / gNumFilters;\n" 
     "    const int outPlane = workgroupId % gNumFilters;\n" 
     "\n" 
-    "    const int localId = get_local_id(0);\n" 
-    "    const int outputRow = localId / gOutputBoardSize;\n" 
-    "    const int outputCol = localId % gOutputBoardSize;\n" 
-    "\n" 
-    "    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;\n" 
-    "    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;\n" 
-    "    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;\n" 
-    "    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;\n" 
-    "\n" 
     "    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "\n" 
-    "    float sum = 0;\n" 
+    "    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {\n" 
+    "        _perPixelSums[pixel] = 0.0f;\n" 
+    "    }\n" 
+    "\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
     "        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
@@ -127,26 +133,45 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            }\n" 
     "        }\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        if( localId < gOutputBoardSizeSquared ) {\n" 
-    "            for( int u = minu; u <= maxu; u++ ) {\n" 
-    "                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
-    "                int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
-    "                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "                for( int v = minv; v <= maxv; v++ ) {\n" 
-    "                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
-    "                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "\n" 
+    "        for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {\n" 
+    "            const int virtualLocalId = localId + pixel * workgroupSize;\n" 
+    "\n" 
+    "            const int outputRow = virtualLocalId / gOutputBoardSize;\n" 
+    "            const int outputCol = virtualLocalId % gOutputBoardSize;\n" 
+    "\n" 
+    "            const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;\n" 
+    "            const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;\n" 
+    "            const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;\n" 
+    "            const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;\n" 
+    "\n" 
+    "            float thissum = 0;\n" 
+    "            if( virtualLocalId < gOutputBoardSizeSquared ) {\n" 
+    "                for( int u = minu; u <= maxu; u++ ) {\n" 
+    "                    int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "                    int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
+    "                    int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "                    for( int v = minv; v <= maxv; v++ ) {\n" 
+    "                        int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "                        thissum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "                    }\n" 
     "                }\n" 
     "            }\n" 
+    "            _perPixelSums[pixel] += thissum;\n" 
     "        }\n" 
     "    }\n" 
-    "    #ifdef BIASED\n" 
-    "        sum += biases[outPlane];\n" 
-    "    #endif\n" 
-    "    // results are organized like [imageid][filterid][row][col]\n" 
-    "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
-    "    if( localId < gOutputBoardSizeSquared ) {\n" 
-    "        results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
-    "//        results[resultIndex ] = 123;\n" 
+    "    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {\n" 
+    "        const int virtualLocalId = localId + pixel * workgroupSize;\n" 
+    "        if( virtualLocalId < gOutputBoardSizeSquared ) {\n" 
+    "            float sum = _perPixelSums[pixel];\n" 
+    "            #ifdef BIASED\n" 
+    "                sum += biases[outPlane];\n" 
+    "            #endif\n" 
+    "            // results are organized like [imageid][filterid][row][col]\n" 
+    "            int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + virtualLocalId;\n" 
+    "            results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
+    "        //        results[resultIndex ] = 123;\n" 
+    "        }\n" 
     "    }\n" 
     "}\n" 
     "#endif\n" 

@@ -31,34 +31,30 @@
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
 // results are organized like [imageid][filterid][row][col]
 void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
+    const int pixelsPerThread,
       global const float *images, global const float *filters, 
         #ifdef BIASED
             global const float*biases, 
         #endif
     global float *results,
-    local float *_upstreamBoard, local float *_filterCube ) {
+    local float *_upstreamBoard, local float *_filterCube, local float *_perPixelSums ) {
     const int globalId = get_global_id(0);
 
     const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
 
+    const int localId = get_local_id(0);
     const int workgroupId = get_group_id(0);
     const int workgroupSize = get_local_size(0);
     const int n = workgroupId / gNumFilters;
     const int outPlane = workgroupId % gNumFilters;
 
-    const int localId = get_local_id(0);
-    const int outputRow = localId / gOutputBoardSize;
-    const int outputCol = localId % gOutputBoardSize;
-
-    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
-    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
-
     const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
     const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
-    float sum = 0;
+    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
+        _perPixelSums[pixel] = 0.0f;
+    }
+
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -76,26 +72,45 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( localId < gOutputBoardSizeSquared ) {
-            for( int u = minu; u <= maxu; u++ ) {
-                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
-                int inputboardrowoffset = inputRow * gInputBoardSize;
-                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-                for( int v = minv; v <= maxv; v++ ) {
-                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
-                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+
+        for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
+            const int virtualLocalId = localId + pixel * workgroupSize;
+
+            const int outputRow = virtualLocalId / gOutputBoardSize;
+            const int outputCol = virtualLocalId % gOutputBoardSize;
+
+            const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
+            const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
+            const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
+            const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
+
+            float thissum = 0;
+            if( virtualLocalId < gOutputBoardSizeSquared ) {
+                for( int u = minu; u <= maxu; u++ ) {
+                    int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+                    int inputboardrowoffset = inputRow * gInputBoardSize;
+                    int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+                    for( int v = minv; v <= maxv; v++ ) {
+                        int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                        thissum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                    }
                 }
             }
+            _perPixelSums[pixel] += thissum;
         }
     }
-    #ifdef BIASED
-        sum += biases[outPlane];
-    #endif
-    // results are organized like [imageid][filterid][row][col]
-    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
-    if( localId < gOutputBoardSizeSquared ) {
-        results[resultIndex ] = ACTIVATION_FUNCTION(sum);
-//        results[resultIndex ] = 123;
+    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
+        const int virtualLocalId = localId + pixel * workgroupSize;
+        if( virtualLocalId < gOutputBoardSizeSquared ) {
+            float sum = _perPixelSums[pixel];
+            #ifdef BIASED
+                sum += biases[outPlane];
+            #endif
+            // results are organized like [imageid][filterid][row][col]
+            int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + virtualLocalId;
+            results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+        //        results[resultIndex ] = 123;
+        }
     }
 }
 #endif
