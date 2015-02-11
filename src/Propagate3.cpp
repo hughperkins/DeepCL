@@ -19,17 +19,19 @@ using namespace std;
 
 VIRTUAL Propagate3::~Propagate3() {
     delete kernel;
+    delete repeatedAdd;
     delete activate;
 }
 VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("Propagate3::propagate begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+    int maxglobalId = 0;
 
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWeightsWrapper );
+//    if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
 //    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
@@ -43,9 +45,21 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     cl->finish();
     StatefulTimer::timeCheck("Propagate3::propagate after kernel1");
 
+    if( dim.biased ) {
+        repeatedAdd->in( batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize )
+            ->in( dim.numFilters )
+            ->in( dim.outputBoardSize * dim.outputBoardSize )
+            ->inout( resultsWrapper )->in( biasWeightsWrapper );
+        maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
+        numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+        repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+        cl->finish();
+        StatefulTimer::timeCheck("Propagate3::propagate after repeatedAdd");
+    }
+
     activate->in( batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize )
         ->inout( resultsWrapper );
-    int maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
+    maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
@@ -63,6 +77,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate3.cl", "propagate_3_by_n_outplane", 'options' )
+    // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
     // generated using cog:
@@ -74,23 +89,9 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
     "// expected defines:\n" 
-    "// one of: [ TANH | RELU | LINEAR ]\n" 
     "// BIASED (or not)\n" 
     "\n" 
-    "#ifdef TANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) (tanh(output))\n" 
-    "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))\n" 
-    "#elif SIGMOID\n" 
-    "    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
-    "#elif defined RELU\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
-    "#elif defined LINEAR\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output)\n" 
-    "#endif\n" 
-    "\n" 
     "#ifdef gOutputBoardSize // for previous tests that dont define it\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
     "// workgroup id organized like: [imageid][outplane]\n" 
     "// local id organized like: [outrow][outcol]\n" 
     "// each thread iterates over: [upstreamplane][filterrow][filtercol]\n" 
@@ -101,9 +102,9 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "// results are organized like [imageid][filterid][row][col]\n" 
     "void kernel propagate_3_by_n_outplane( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
-    "        #ifdef BIASED\n" 
-    "            global const float*biases,\n" 
-    "        #endif\n" 
+    "//        #ifdef BIASED\n" 
+    "//            global const float*biases,\n" 
+    "//        #endif\n" 
     "    global float *results,\n" 
     "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
@@ -161,22 +162,55 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            }\n" 
     "        }\n" 
     "    }\n" 
-    "    #ifdef BIASED\n" 
-    "        sum += biases[outPlane];\n" 
-    "    #endif\n" 
+    "//    #ifdef BIASED\n" 
+    "//        sum += biases[outPlane];\n" 
+    "//    #endif\n" 
     "    // results are organized like [imageid][filterid][row][col]\n" 
     "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
     "    if( localId < gOutputBoardSizeSquared ) {\n" 
-    "//        results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
     "        results[resultIndex ] = sum;\n" 
     "    }\n" 
-    "\n" 
     "}\n" 
-    "#endif\n" 
     "#endif\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagate_3_by_n_outplane", options, "cl/propagate3.cl" );
+    // generated using cog:
+    const char * repeatedAddSource =  
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
+    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[globalId];\n" 
+    "}\n" 
+    "\n" 
+    "// adds source to target\n" 
+    "// tiles source as necessary, according to tilingSize\n" 
+    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[globalId % tilingSize];\n" 
+    "}\n" 
+    "\n" 
+    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
+    "}\n" 
+    "\n" 
+    "";
+    repeatedAdd = cl->buildKernelFromString( repeatedAddSource, "repeated_add", options, "cl/per_element_add.cl" );
     // generated using cog:
     const char * activateSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 

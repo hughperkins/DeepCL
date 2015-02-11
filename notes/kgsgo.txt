@@ -351,4 +351,15 @@ StatefulTimer readings:
    Propagate::propagate after copied to device: 40ms
    Propagate::propagate after copytohost: 35ms
 
+after factorize acdtivate from propagate3.cl:
+[ RUN      ] SLOW_testpropagate.perf_kgsgo_64c7
+ -D BIASED -D gNumInputPlanes=64 -D gInputPlanes=64 -D gInputBoardSize=19 -D gInputBoardSizeSquared=361 -D gNumFilters=64 -D gFilterSize=7 -D gHalfFilterSize=3 -D gFilterSizeSquared=49 -D gNumOutputPlanes=64 -D gOutputPlanes=64 -D gOutputBoardSize=19 -D gOutputBoardSizeSquared=361 -D gPadZeros=1 -D gMargin=3 -D gEven=0 -D gSkip=0
+Using NVIDIA Corporation platform: NVIDIA CUDA
+Using device: GRID K520
+StatefulTimer readings:
+   Propagate3::propagate after kernel1: 1505ms
+   Propagate::propagate after copied to device: 34ms
+   Propagate::propagate after copytohost: 39ms
+
+
 

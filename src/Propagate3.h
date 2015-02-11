@@ -5,6 +5,7 @@
 class Propagate3 : public Propagate {
 public:
     CLKernel *kernel;
+    CLKernel *repeatedAdd;
     CLKernel *activate;
 
     // [[[cog

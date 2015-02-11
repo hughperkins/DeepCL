@@ -22,3 +22,11 @@ kernel void per_element_tiled_add( const int N, const int tilingSize, global flo
     target[globalId] += source[globalId % tilingSize];
 }
 
+kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {
+    const int globalId = get_global_id(0);
+    if( globalId >= N ) {
+        return;
+    }
+    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];
+}
+

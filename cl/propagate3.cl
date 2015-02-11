@@ -5,23 +5,9 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR ]
 // BIASED (or not)
 
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
-#elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
-#elif SIGMOID
-    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) (output)
-#endif
-
 #ifdef gOutputBoardSize // for previous tests that dont define it
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [imageid][outplane]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [upstreamplane][filterrow][filtercol]
@@ -32,9 +18,9 @@
 // results are organized like [imageid][filterid][row][col]
 void kernel propagate_3_by_n_outplane( const int batchSize,
       global const float *images, global const float *filters, 
-        #ifdef BIASED
-            global const float*biases, 
-        #endif
+//        #ifdef BIASED
+//            global const float*biases, 
+//        #endif
     global float *results,
     local float *_upstreamBoard, local float *_filterCube ) {
     const int globalId = get_global_id(0);
@@ -92,17 +78,14 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
             }
         }
     }
-    #ifdef BIASED
-        sum += biases[outPlane];
-    #endif
+//    #ifdef BIASED
+//        sum += biases[outPlane];
+//    #endif
     // results are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
     if( localId < gOutputBoardSizeSquared ) {
-//        results[resultIndex ] = ACTIVATION_FUNCTION(sum);
         results[resultIndex ] = sum;
     }
-
 }
-#endif
 #endif
 

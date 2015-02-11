@@ -453,6 +453,14 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "    target[globalId] += source[globalId % tilingSize];\n" 
     "}\n" 
     "\n" 
+    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
+    "}\n" 
+    "\n" 
     "";
     kPerElementTiledAdd = cl->buildKernelFromString( kPerElementTiledAddSource, "per_element_tiled_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
