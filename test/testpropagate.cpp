@@ -937,11 +937,19 @@ TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
     testPerf( 5, batchSize, dim, new TanhActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_kgsgo_64c7 ) {
+TEST( SLOW_testpropagate, perf_kgsgo_64c7_3 ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
         .setPadZeros( true ).setBiased( true );  
     testPerf( 3, batchSize, dim, new TanhActivation() );
+}
+
+TEST( SLOW_testpropagate, perf_kgsgo_64c7_6 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
+        .setPadZeros( true ).setBiased( true );  
+    testPerf( 6, batchSize, dim, new TanhActivation() );
 }
 
