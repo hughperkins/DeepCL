@@ -689,7 +689,7 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
     const int boardSize = 19;
     dim.setInputPlanes( 64 ).setInputBoardSize(boardSize).setNumFilters( 64 ).setFilterSize( 7 )
         .setPadZeros( true ).setBiased( true );    
-    compareSpecific( 128, dim, new ReluActivation(), 1, 3 );
+    compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
 }
 
 TEST( SLOW_testpropagate, compare ) {

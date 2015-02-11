@@ -21,6 +21,10 @@ public:
     int outputCubeSize;
     int numInputPlanes;
 
+    int outputBoardSizeSquared;
+    int filterSizeSquared;
+    int inputBoardSizeSquared;
+
     int halfFilterSize;
 
     LayerDimensions() {
@@ -82,9 +86,14 @@ public:
         outputBoardSize = padZeros ? 
                 ( filterSize % 2 == 0 ? inputBoardSize / ( skip + 1 ) + 1 : inputBoardSize / ( skip + 1 ) ) :
                 ( inputBoardSize - filterSize ) / ( skip + 1 ) + 1;
-        inputCubeSize = inputPlanes * inputBoardSize * inputBoardSize;
-        filtersSize = inputPlanes * numFilters * filterSize * filterSize;
-        outputCubeSize = numFilters * outputBoardSize * outputBoardSize;
+
+        inputBoardSizeSquared = inputBoardSize * inputBoardSize;
+        filterSizeSquared = filterSize * filterSize;
+        outputBoardSizeSquared = outputBoardSize * outputBoardSize;
+
+        inputCubeSize = inputPlanes * inputBoardSizeSquared;
+        filtersSize = inputPlanes * numFilters * filterSizeSquared;
+        outputCubeSize = numFilters * outputBoardSizeSquared;
 
         halfFilterSize = filterSize >> 1;
     }

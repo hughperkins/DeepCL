@@ -15,6 +15,7 @@
 #include "Propagate3.h"
 #include "Propagate4.h"
 #include "PropagateFc.h"
+#include "PropagateByInputPlane.h"
 #include "StatefulTimer.h"
 
 using namespace std;
@@ -51,6 +52,8 @@ STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerD
         return new Propagate4( cl, layerDimensions, fn );
     } else if( idx == 5 ) {
         return new PropagateFc( cl, layerDimensions, fn );
+    } else if( idx == 6 ) {
+        return new PropagateByInputPlane( cl, layerDimensions, fn );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for index " + toString(idx) );
     }
