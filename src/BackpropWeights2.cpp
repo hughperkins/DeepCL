@@ -25,6 +25,9 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+    if( dim.inputBoardSize - dim.filterSize < 4 ) {
+        return new BackpropWeights2Naive( cl, dim );
+    }
     if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
             && dim.inputBoardSize <= 32 ) { // if inputboardsize too big, we run out of local memory
         return new BackpropWeights2Scratch( cl, dim );
