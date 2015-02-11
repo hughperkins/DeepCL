@@ -4,10 +4,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// expected defines:
-// BIASED (or not)
-
-#ifdef gOutputBoardSize // for previous tests that dont define it
 // workgroup id organized like: [imageid][outplane]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [upstreamplane][filterrow][filtercol]
@@ -18,9 +14,6 @@
 // results are organized like [imageid][filterid][row][col]
 void kernel propagate_3_by_n_outplane( const int batchSize,
       global const float *images, global const float *filters, 
-//        #ifdef BIASED
-//            global const float*biases, 
-//        #endif
     global float *results,
     local float *_upstreamBoard, local float *_filterCube ) {
     const int globalId = get_global_id(0);
@@ -78,14 +71,10 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
             }
         }
     }
-//    #ifdef BIASED
-//        sum += biases[outPlane];
-//    #endif
     // results are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
     if( localId < gOutputBoardSizeSquared ) {
         results[resultIndex ] = sum;
     }
 }
-#endif
 
