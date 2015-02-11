@@ -694,6 +694,28 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
     compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
 }
 
+TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7_args ) {
+    LayerDimensions dim;
+    int batchSize = 128;
+    int boardSize = 19;
+    int filterSize = 7;
+    int inputPlanes = 64;
+    int numFilters = 64;
+    int instance0 = 1;
+    int instance1 = 3;
+    TestArgsParser::arg( "instance0", &instance0 );
+    TestArgsParser::arg( "instance1", &instance1 );
+    TestArgsParser::arg( "boardsize", &boardSize );
+    TestArgsParser::arg( "batchsize", &batchSize );
+    TestArgsParser::arg( "filtersize", &filterSize );
+    TestArgsParser::arg( "inputplanes", &inputPlanes );
+    TestArgsParser::arg( "numfilters", &numFilters );
+    TestArgsParser::go();
+    dim.setInputPlanes( inputPlanes ).setInputBoardSize(boardSize).setNumFilters( numFilters ).setFilterSize( filterSize )
+        .setPadZeros( true ).setBiased( true );    
+    compareSpecific( 128, dim, new ReluActivation(), instance0, instance1 );
+}
+
 TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
     LayerDimensions dim;
     const int boardSize = 9;

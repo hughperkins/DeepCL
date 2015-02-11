@@ -20,6 +20,7 @@ VIRTUAL Propagate4::~Propagate4() {
 }
 VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {
+    StatefulTimer::timeCheck("Propagate4::propagate start");
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
@@ -32,7 +33,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
     StatefulTimer::timeCheck("Propagate4::propagate after call propagate");
@@ -154,9 +155,5 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagate_4_by_n_outplane_smallercache", options, "cl/propagate4.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "propagate.cl", "propagate_3_by_n_outplane", options );
-//    kernel = cl->buildKernel( "propagate4.cl", "propagate_4_by_n_outplane_smallercache", options );
-
-//    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 
