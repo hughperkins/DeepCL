@@ -613,8 +613,10 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
       
     Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
     float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+    StatefulTimer::dump(true);
     Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim, fn );
     float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
+    StatefulTimer::dump(true);
 
     int resultsSize = batchSize * dim.outputCubeSize;
     cout << dim << endl;
