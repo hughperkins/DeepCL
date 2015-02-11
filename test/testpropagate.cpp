@@ -942,10 +942,9 @@ TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
 TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
     int instance = 3;
     int batchSize = 128;
-    TestArgsParser argsParser(GtestGlobals::instance()->argc, GtestGlobals::instance()->argv );
-    argsParser.arg( "instance", &instance );
-    argsParser.arg( "batchsize", &batchSize );
-    argsParser.go();
+    TestArgsParser::arg( "instance", &instance );
+    TestArgsParser::arg( "batchsize", &batchSize );
+    TestArgsParser::go();
     LayerDimensions dim;
     dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
         .setPadZeros( true ).setBiased( true );  

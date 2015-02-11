@@ -8,22 +8,28 @@
 #include <stdexcept>
 
 #include "stringhelper.h"
+#include "GtestGlobals.h"
 
 #include "TestArgsParser.h"
 
 using namespace std;
 
-void TestArgsParser::arg( std::string key, int *p_value ) {
+TestArgsParser::TestArgsParser() :
+    argc(GtestGlobals::instance()->argc),
+    argv(GtestGlobals::instance()->argv) {
+}
+void TestArgsParser::_arg( std::string key, int *p_value ) {
     args.push_back( new ArgInt( key, p_value ) );
 }
-void TestArgsParser::printAvailableKeys() {
+void TestArgsParser::_printAvailableKeys() {
     cout << "Available keys:" << endl;
     for( vector< Arg * >::iterator it = args.begin(); it != args.end(); it++ ) {
         cout << "   " << (*it)->key << endl;
     }
 }
-void TestArgsParser::go() {
+void TestArgsParser::_go() {
     if( argc == 2 && string( argv[1] ) == "--help" ) {
+        _printAvailableKeys();
         return;
     }
     for( int i = 1; i < argc; i++ ) {
@@ -42,7 +48,7 @@ void TestArgsParser::go() {
             }
         }
         if( !found ) {
-            printAvailableKeys();
+            _printAvailableKeys();
             cout << endl;
             throw runtime_error("key [" + key + "] not found");
         }
@@ -50,6 +56,17 @@ void TestArgsParser::go() {
 }
 void ArgInt::apply( std::string stringValue ) {
     *p_int = atoi( stringValue );
+}
+TestArgsParser *TestArgsParser::instance() {
+    static TestArgsParser *thisInstance = new TestArgsParser();
+    return thisInstance;
+}
+void TestArgsParser::arg( std::string key, int *p_value ) {
+    instance()->_arg( key, p_value );
+}
+void TestArgsParser::go() {
+    instance()->_go();
+    instance()->args.clear();
 }
 
 

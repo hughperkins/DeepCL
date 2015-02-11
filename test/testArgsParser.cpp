@@ -15,9 +15,31 @@ using namespace std;
 
 TEST( testArgsParser, basic ) {
     int myvalue = 3;
-    TestArgsParser argsParser(GtestGlobals::instance()->argc, GtestGlobals::instance()->argv );
-    argsParser.arg( "myvalue", &myvalue );
-    argsParser.go();
+    TestArgsParser argsParser;
+    argsParser._arg( "myvalue", &myvalue );
+    argsParser._go();
+    cout << "myvalue: " << myvalue << endl;
+}
+
+TEST( testArgsParser, static ) {
+    int myvalue = 3;
+    TestArgsParser::arg( "myvalue", &myvalue );
+    TestArgsParser::go();
+    cout << "myvalue: " << myvalue << endl;
+
+    myvalue = 3;
+    bool threw = false;
+    try {
+        TestArgsParser::go();
+    } catch( runtime_error e ) {
+        threw = true;
+    }
+    EXPECT_EQ( true, threw );
+//    cout << "myvalue: " << myvalue << endl;
+
+    myvalue = 3;
+    TestArgsParser::arg( "myvalue", &myvalue );
+    TestArgsParser::go();
     cout << "myvalue: " << myvalue << endl;
 }
 

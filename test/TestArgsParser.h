@@ -8,6 +8,10 @@
 
 #include <vector>
 
+// call TestArgsParser::arg( keyName, &receivingvariable ); for each argumnet you want to receive
+// then call TestArgsParser::go() to do parsing
+// go will reset the list of arguments after, so available for next test etc.
+
 class Arg {
 public:
     std::string key;
@@ -36,8 +40,12 @@ public:
         argc( argc ),
         argv( argv ) {
     }
-    void arg( std::string key, int *p_value );
-    void go();
-    void printAvailableKeys();
+    TestArgsParser();
+    void _arg( std::string key, int *p_value );
+    void _go();
+    void _printAvailableKeys();
+    static TestArgsParser *instance();
+    static void arg( std::string key, int *p_value );
+    static void go();
 };
 
