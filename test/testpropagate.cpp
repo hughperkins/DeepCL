@@ -10,6 +10,8 @@
 
 #include "test/myasserts.h"
 #include "test/WeightRandomizer.h"
+#include "test/GtestGlobals.h"
+#include "test/TestArgsParser.h"
 
 #include <iostream>
 #include <iomanip>
@@ -937,19 +939,24 @@ TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
     testPerf( 5, batchSize, dim, new TanhActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_kgsgo_64c7_3 ) {
+TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
+    int instance = 3;
     int batchSize = 128;
+    TestArgsParser argsParser(GtestGlobals::instance()->argc, GtestGlobals::instance()->argv );
+    argsParser.arg( "instance", &instance );
+    argsParser.arg( "batchsize", &batchSize );
+    argsParser.go();
     LayerDimensions dim;
     dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
         .setPadZeros( true ).setBiased( true );  
-    testPerf( 3, batchSize, dim, new TanhActivation() );
+    testPerf( instance, batchSize, dim, new TanhActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_kgsgo_64c7_6 ) {
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
-        .setPadZeros( true ).setBiased( true );  
-    testPerf( 6, batchSize, dim, new TanhActivation() );
-}
+//TEST( SLOW_testpropagate, perf_kgsgo_64c7_6 ) {
+//    int batchSize = 128;
+//    LayerDimensions dim;
+//    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
+//        .setPadZeros( true ).setBiased( true );  
+//    testPerf( 6, batchSize, dim, new TanhActivation() );
+//}
 

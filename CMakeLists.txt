@@ -124,7 +124,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
- test/teststringhelper.cpp 
+ test/teststringhelper.cpp test/testGtestGlobals.cpp test/testArgsParser.cpp
  src/stringhelper.cpp
  )
 #
@@ -163,9 +163,10 @@ target_link_libraries( gtest pthread)
 else()
 add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
+target_include_directories( gtest PRIVATE thirdparty/gtest )
 
-add_executable( unittests ${UNITTEST_SOURCES}
-thirdparty/gtest/gtest_main.cc test/myasserts.cpp )
+add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp test/myasserts.cpp
+    test/TestArgsParser.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
