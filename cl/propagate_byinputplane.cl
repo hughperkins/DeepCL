@@ -29,7 +29,7 @@ void kernel propagate_byinputplane( const int batchSize,
 
     const int inputPlaneId = workgroupId;
     const int numLoops = ( gNumFilters * gOutputBoardSize + workgroupSize - 1 ) / workgroupSize;
-    const int numFilterCopyLoops = ( gOutputBoardSize + gFilterSizeSquared - 1 ) / gFilterSizeSquared;
+    const int numFilterCopyLoops = ( gFilterSizeSquared + gOutputBoardSize - 1 ) / gOutputBoardSize;
     const int numImageCopyLoops = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
     for( int loop = 0; loop < numLoops; loop++ ) {
         const int loopLocalId = localId + loop * workgroupSize;
@@ -48,6 +48,7 @@ void kernel propagate_byinputplane( const int batchSize,
                     _localFilterPlane[ offset ] = globalFilterPlane[ offset ];
                 }
             }
+//            results[offset] = _localFilterPlane[ offset ];
         }
         // loop over n ...
         for( int n = 0; n < batchSize; n++ ) {
@@ -71,14 +72,14 @@ void kernel propagate_byinputplane( const int batchSize,
                     #else
                     int inRow = outRow + filterRow;
                     #endif
-                    bool rowOk = inRow >= 0 && inRow < gInputBoardSize;
+                    bool rowOk = ( inRow >= 0 ) && ( inRow < gInputBoardSize );
                     for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
                         #if gPadZeros == 1
                         int inCol = outCol + filterCol - gHalfFilterSize;
                         #else
                         int inCol = outCol + filterCol;
                         #endif
-                        bool process = rowOk && inCol >= 0 && inCol < gInputBoardSize;
+                        bool process = rowOk && ( inCol >= 0 ) && ( inCol < gInputBoardSize );
                         if( process ) {
                             float imageValue = _inputPlane[ inRow * gInputBoardSize + inCol ];
                             float filterValue = _localFilterPlane[ filterRow * gFilterSize + filterCol ];
@@ -94,7 +95,9 @@ void kernel propagate_byinputplane( const int batchSize,
                         * gOutputBoardSize + outCol )
                         * gNumInputPlanes + inputPlaneId;
                     results[resultIndex] = sum;
+//                    results[resultIndex] = outRow;
                 }
+//                results[localId] = _localFilterPlane[localId];
             }
         }
     }

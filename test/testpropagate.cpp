@@ -692,6 +692,14 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
     compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
 }
 
+TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
+    LayerDimensions dim;
+    const int boardSize = 9;
+    dim.setInputPlanes( 4 ).setInputBoardSize(boardSize).setNumFilters( 4 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( false );    
+    compareSpecific( 4, dim, new ReluActivation(), 1, 6 );
+}
+
 TEST( SLOW_testpropagate, compare ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     float *inputs = new float[ 10000 ];

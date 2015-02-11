@@ -51,7 +51,11 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
 //    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+//    results1Wrapper->copyToHost();
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate after kernel1");
+//    for( int i = 0; i < results1Size; i++ ) {
+//        cout << "results1[" << i << "]=" << results1[i] << endl;
+//    }
 
     reduceSegments->in( batchSize * dim.numFilters * dim.outputBoardSizeSquared )->in( dim.numInputPlanes )->in( results1Wrapper )->out( resultsWrapper );
     maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
@@ -132,7 +136,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "    const int inputPlaneId = workgroupId;\n" 
     "    const int numLoops = ( gNumFilters * gOutputBoardSize + workgroupSize - 1 ) / workgroupSize;\n" 
-    "    const int numFilterCopyLoops = ( gOutputBoardSize + gFilterSizeSquared - 1 ) / gFilterSizeSquared;\n" 
+    "    const int numFilterCopyLoops = ( gFilterSizeSquared + gOutputBoardSize - 1 ) / gOutputBoardSize;\n" 
     "    const int numImageCopyLoops = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
     "        const int loopLocalId = localId + loop * workgroupSize;\n" 
@@ -151,6 +155,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "                    _localFilterPlane[ offset ] = globalFilterPlane[ offset ];\n" 
     "                }\n" 
     "            }\n" 
+    "//            results[offset] = _localFilterPlane[ offset ];\n" 
     "        }\n" 
     "        // loop over n ...\n" 
     "        for( int n = 0; n < batchSize; n++ ) {\n" 
@@ -174,14 +179,14 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "                    #else\n" 
     "                    int inRow = outRow + filterRow;\n" 
     "                    #endif\n" 
-    "                    bool rowOk = inRow >= 0 && inRow < gInputBoardSize;\n" 
+    "                    bool rowOk = ( inRow >= 0 ) && ( inRow < gInputBoardSize );\n" 
     "                    for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {\n" 
     "                        #if gPadZeros == 1\n" 
     "                        int inCol = outCol + filterCol - gHalfFilterSize;\n" 
     "                        #else\n" 
     "                        int inCol = outCol + filterCol;\n" 
     "                        #endif\n" 
-    "                        bool process = rowOk && inCol >= 0 && inCol < gInputBoardSize;\n" 
+    "                        bool process = rowOk && ( inCol >= 0 ) && ( inCol < gInputBoardSize );\n" 
     "                        if( process ) {\n" 
     "                            float imageValue = _inputPlane[ inRow * gInputBoardSize + inCol ];\n" 
     "                            float filterValue = _localFilterPlane[ filterRow * gFilterSize + filterCol ];\n" 
@@ -197,7 +202,9 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "                        * gOutputBoardSize + outCol )\n" 
     "                        * gNumInputPlanes + inputPlaneId;\n" 
     "                    results[resultIndex] = sum;\n" 
+    "//                    results[resultIndex] = outRow;\n" 
     "                }\n" 
+    "//                results[localId] = _localFilterPlane[localId];\n" 
     "            }\n" 
     "        }\n" 
     "    }\n" 
