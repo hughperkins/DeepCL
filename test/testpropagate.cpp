@@ -617,6 +617,7 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
     int resultsSize = batchSize * dim.outputCubeSize;
     cout << dim << endl;
     bool same = true;
+    int numDiff = 0;
     for( int i = 0; i < max( 20, resultsSize ); i++ ) {
         if( i < resultsSize ) {
             if( abs( results1[i] - results2[i] ) < 0.000001 || abs( results1[i] - results2[i] ) <= 0.001 * max( abs( results1[i] ), abs( results2[i] ) ) ) {
@@ -628,6 +629,7 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
                 cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
                 cout << " DIFF";
                 same = false;
+                numDiff++;
             }
         } else {
              if( i < 20 ) {
@@ -642,6 +644,10 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
             cout << "  || " << results2[500+i] ;
             cout << "  || " << results2[600+i] ;
             cout << "  || " << results2[700+i] << endl;
+        }
+        if( numDiff > 30 ) {
+            cout << "..." << endl;
+            break;
         }
     }
     EXPECT_EQ( true, same );
@@ -676,6 +682,14 @@ TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
     dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
         .setPadZeros( false ).setBiased( true );    
     compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
+}
+
+TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
+    LayerDimensions dim;
+    const int boardSize = 19;
+    dim.setInputPlanes( 64 ).setInputBoardSize(boardSize).setNumFilters( 64 ).setFilterSize( 7 )
+        .setPadZeros( true ).setBiased( true );    
+    compareSpecific( 128, dim, new ReluActivation(), 1, 3 );
 }
 
 TEST( SLOW_testpropagate, compare ) {
