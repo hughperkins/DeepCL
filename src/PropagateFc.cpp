@@ -106,6 +106,13 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
         Propagate( cl, dim, fn )
             {
 
+    if( dim.inputBoardSize != dim.filterSize ) {
+        throw runtime_error("For PropagateFc, filtersize and inputboardsize must be identical");
+    }
+    if( dim.padZeros ) {
+        throw runtime_error("For PropagateFc, padzeros must be disabled");
+    }
+
     std::string options = "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
 
