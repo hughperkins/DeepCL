@@ -306,3 +306,38 @@ StatefulTimer readings:
    layer7 end SoftMaxLayer propagate: 78ms
 after epoch 1 48646 ms
 
+==========================
+
+./clconvolve1 dataset=kgsgo numtrain=10000 numtest=10000 loadondemand=1 netdef=64c7{z}-64c5{z}-64c5{z}-48c5{z}-48c5{z}-32c5{z}-32c5{z}-361n dumptimings=1
+StatefulTimer readings:
+   GenericLoader::load end: 48ms
+   START: 11945ms
+   layer10 end SoftMaxLayer propagate: 78ms
+   layer2     propagate layer 2, START: 1ms
+   layer2 BackpropWeights2Scratch end: 1746ms
+   layer2 Propagate3::propagate after call propagate: 1327ms
+   layer3 BackpropErrorsv2Cached after first kernel: 7343ms
+   layer3 BackpropWeights2Scratch end: 8828ms
+   layer3 Propagate3::propagate after call propagate: 7140ms
+   layer4 BackpropErrorsv2Cached after first kernel: 7343ms
+   layer4 BackpropWeights2Scratch end: 8828ms
+   layer4 Propagate3::propagate after call propagate: 7136ms
+   layer5 BackpropErrorsv2Cached after first kernel: 5468ms
+   layer5 BackpropWeights2Scratch end: 6640ms
+   layer5 Propagate3::propagate after call propagate: 5379ms
+   layer6 BackpropErrorsv2Cached after first kernel: 4062ms
+   layer6 BackpropWeights2Scratch end: 4843ms
+   layer6 Propagate3::propagate after call propagate: 4062ms
+   layer7 BackpropErrorsv2Cached after first kernel: 2734ms
+   layer7 BackpropWeights2Scratch end: 3204ms
+   layer7 Propagate3::propagate after call propagate: 2657ms
+   layer8 BackpropErrorsv2Cached after first kernel: 1797ms
+   layer8 BackpropWeights2Scratch end: 2187ms
+   layer8 Propagate3::propagate after call propagate: 1796ms
+   layer9 BackpropErrorsv2Naive after first kernel: 2656ms
+   layer9 BackpropWeights2Naive end: 1328ms
+   layer9 PropagateFc::propagate after first kernel: 2038ms
+   layer9 PropagateFc::propagate after reduce1: 468ms
+after epoch 1 102586 ms
+
+
