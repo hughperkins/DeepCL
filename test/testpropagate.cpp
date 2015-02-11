@@ -871,11 +871,7 @@ TEST( testpropagate, softmax_byplane ) {
     delete net;
 }
 
-TEST( testpropagate, kgsgo_fc500 ) {
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 500 ).setFilterSize( 19 )
-        .setPadZeros( false ).setBiased( true );  
+void testPerf( int instance, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
     cout << dim.buildOptionsString() << endl;  
 
     int inputsSize = batchSize * dim.inputCubeSize;
@@ -897,7 +893,7 @@ TEST( testpropagate, kgsgo_fc500 ) {
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instanceSpecific( 5, cl, dim, new TanhActivation() );
+    Propagate *p1 = Propagate::instanceSpecific( instance, cl, dim, fn );
     for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
         float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
         delete[] results1;
@@ -911,4 +907,19 @@ TEST( testpropagate, kgsgo_fc500 ) {
     delete[] biasFilters;
 }
 
+TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 500 ).setFilterSize( 19 )
+        .setPadZeros( false ).setBiased( true );  
+    testPerf( 5, batchSize, dim, new TanhActivation() );
+}
+
+TEST( SLOW_testpropagate, perf_kgsgo_64c7 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
+        .setPadZeros( true ).setBiased( true );  
+    testPerf( 3, batchSize, dim, new TanhActivation() );
+}
 

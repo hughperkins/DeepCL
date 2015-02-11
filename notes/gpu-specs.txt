@@ -1,0 +1,13 @@
+grid k520:
+- 1536 cuda cores
+- clock 800 MHz
+- memory clock (effective) 6.0GHz
+- memory bandwidth: 192.26GB/sec
+
+gtx 780:
+- 2304 cuda cores
+- clock 900MHz
+- memory speed 6.0Gbps
+- memory bandwidth 288.4GB/sec
+
+
