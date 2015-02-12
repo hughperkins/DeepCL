@@ -8,6 +8,8 @@ class NeuralNet;
 #define VIRTUAL virtual
 #define STATIC static
 
+#include "DllImportExport.h"
+
 // whilst this class is portable, the weights files created totally are not (ie: endianness)
 // but okish for now... (since it's not like weights files tend to be shared around much, and
 // if they are, then the quickly-written file created by this could be converted by another
@@ -15,7 +17,7 @@ class NeuralNet;
 // target usage for this class:
 // - quickly snapshotting the weights after each epoch, therefore should be:
 //    - fast, low IO :-)
-class WeightsPersister {
+class ClConvolve_EXPORT WeightsPersister {
 public:
     
     // [[[cog

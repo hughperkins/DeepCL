@@ -6,7 +6,7 @@
 
 from __future__ import absolute_import, print_function
 
-import copy, getopt, hashlib, imp, os, re, shlex, sys, traceback
+import copy, getopt, hashlib, imp, os, re, shlex, sys, traceback, glob
 from .backward import PY3, StringIO, string_types, to_bytes
 
 __all__ = ['Cog', 'CogUsageError']
@@ -632,6 +632,10 @@ class Cog(Redirectable):
         finally:
             self.restoreIncludePath()
 
+    def processWildcards(self, sFile ):
+        for sMatchingFile in glob.glob( sFile ):
+            self.processOneFile( sMatchingFile )
+
     def processFileList(self, sFileList):
         """ Process the files in a file list.
         """
@@ -663,7 +667,7 @@ class Cog(Redirectable):
                 raise CogUsageError("Can't use -o with @file")
             self.processFileList(args[0][1:])
         else:
-            self.processOneFile(args[0])
+            self.processWildcards(args[0])
 
         self.options = saved_options
 

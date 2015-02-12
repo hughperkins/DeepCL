@@ -23,7 +23,7 @@ def add():
 
     infile = cog.inFile
     cppfile = infile.replace('.h','.cpp')
-    splitinfile = infile.split('/')
+    splitinfile = infile.replace('\\','/').split('/')
     infilename = splitinfile[ len(splitinfile) - 1 ]
     classname = infilename.replace('.h','')
     # cog.outl( '// classname: ' + classname )
@@ -64,7 +64,7 @@ def add_templated():
 
     infile = cog.inFile
     cppfile = infile.replace('.h','.cpp')
-    splitinfile = infile.split('/')
+    splitinfile = infile.replace('\\','/').split('/')
     infilename = splitinfile[ len(splitinfile) - 1 ]
     classname = infilename.replace('.h','')
     # cog.outl( '// classname: ' + classname )
