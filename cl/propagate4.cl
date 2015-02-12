@@ -85,8 +85,8 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 
-//        for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
-        int pixel = 0;
+        for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
+//        int pixel = 0;
             const int virtualLocalId = localId + pixel * workgroupSize;
 
             float thissum = 0;
@@ -103,7 +103,7 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
             }
             _myPixelSums[pixel] += thissum;
 //            if( globalId == 0 ) results[0] = _upstreamBoard[pixel];
-//        }
+        }
     }
 //    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
         int pixel = 0;
