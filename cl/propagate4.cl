@@ -57,6 +57,15 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
         _myPixelSums[pixel] = 0.0f;
     }
 
+
+    const int outputRow = localId / gOutputBoardSize;
+    const int outputCol = localId % gOutputBoardSize;
+
+    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
+    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
+    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
+    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
+
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -77,14 +86,6 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
 
         for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
             const int virtualLocalId = localId + pixel * workgroupSize;
-
-            const int outputRow = virtualLocalId / gOutputBoardSize;
-            const int outputCol = virtualLocalId % gOutputBoardSize;
-
-            const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-            const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
-            const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-            const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
 
             float thissum = 0;
             if( virtualLocalId < gOutputBoardSizeSquared ) {
