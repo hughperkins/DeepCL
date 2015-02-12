@@ -51,7 +51,8 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
     const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
-    local float *_myPixelSums = _pixelSums + pixelsPerThread * localId;
+    //local float *_myPixelSums = _pixelSums + pixelsPerThread * localId;
+    local float *_myPixelSums = _pixelSums;
 
     for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
         _myPixelSums[pixel] = 0.0f;
