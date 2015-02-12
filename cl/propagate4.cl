@@ -51,8 +51,8 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
     const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
-    //local float *_myPixelSums = _pixelSums + pixelsPerThread * localId;
-    local float *_myPixelSums = _pixelSums;
+    local float *_myPixelSums = _pixelSums + pixelsPerThread * localId;
+    //local float *_myPixelSums = _pixelSums;
 
     for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
         _myPixelSums[pixel] = 0.0f;
@@ -87,7 +87,6 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
 
   //      for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
         int pixel = 0;
-        while( pixel < pixelsPerThread ) {
             const int virtualLocalId = localId + pixel * workgroupSize;
 
             float thissum = 0;
@@ -103,7 +102,6 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
                 }
             }
             _myPixelSums[pixel] += thissum;
-            pixel++;
 //            if( globalId == 0 ) results[0] = _upstreamBoard[pixel];
         }
     }
