@@ -610,6 +610,9 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
     WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+    for( int i = 0; i < 4; i++ ) {
+        cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
+    }
       
     Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
     float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
@@ -714,8 +717,8 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7_args ) {
     TestArgsParser::arg( "numfilters", &numFilters );
     TestArgsParser::go();
     dim.setInputPlanes( inputPlanes ).setInputBoardSize(boardSize).setNumFilters( numFilters ).setFilterSize( filterSize )
-        .setPadZeros( true ).setBiased( true );    
-    compareSpecific( 128, dim, new ReluActivation(), instance0, instance1 );
+        .setPadZeros( true ).setBiased( false );    
+    compareSpecific( batchSize, dim, new LinearActivation(), instance0, instance1 );
 }
 
 TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {

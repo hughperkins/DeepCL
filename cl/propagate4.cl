@@ -37,7 +37,7 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
             global const float*biases, 
         #endif
     global float *results,
-    local float *_upstreamBoard, local float *_filterCube, local float *_perPixelSums ) {
+    local float *_upstreamBoard, local float *_filterCube, local float *_pixelSums ) {
     const int globalId = get_global_id(0);
 
     const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
@@ -51,8 +51,10 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
     const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
+    local float *_myPixelSums = _pixelSums + pixelsPerThread * localId;
+
     for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
-        _perPixelSums[pixel] = 0.0f;
+        _myPixelSums[pixel] = 0.0f;
     }
 
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
@@ -96,20 +98,22 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
                     }
                 }
             }
-            _perPixelSums[pixel] += thissum;
+            _myPixelSums[pixel] += thissum;
+//            if( globalId == 0 ) results[0] = _upstreamBoard[pixel];
         }
     }
     for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
         const int virtualLocalId = localId + pixel * workgroupSize;
         if( virtualLocalId < gOutputBoardSizeSquared ) {
-            float sum = _perPixelSums[pixel];
+            float sum = _myPixelSums[pixel];
             #ifdef BIASED
                 sum += biases[outPlane];
             #endif
             // results are organized like [imageid][filterid][row][col]
             int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + virtualLocalId;
             results[resultIndex ] = ACTIVATION_FUNCTION(sum);
-        //        results[resultIndex ] = 123;
+            // results[resultIndex ] = 123;
+            //if( globalId == 0 ) results[0] += 0.000001f + _perPixelSums[0];
         }
     }
 }

@@ -31,7 +31,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     }
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
 
     kernel->in(batchSize);
     kernel->in( pixelsPerThread );
@@ -42,7 +42,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 //    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
     kernel->localFloats( square( dim.filterSize ) );
-    kernel->localFloats( pixelsPerThread );
+    kernel->localFloats( pixelsPerThread * workgroupsize );
 
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
@@ -98,7 +98,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            global const float*biases,\n" 
     "        #endif\n" 
     "    global float *results,\n" 
-    "    local float *_upstreamBoard, local float *_filterCube, local float *_perPixelSums ) {\n" 
+    "    local float *_upstreamBoard, local float *_filterCube, local float *_pixelSums ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;\n" 
@@ -112,8 +112,10 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "\n" 
+    "    local float *_myPixelSums = _pixelSums + pixelsPerThread * localId;\n" 
+    "\n" 
     "    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {\n" 
-    "        _perPixelSums[pixel] = 0.0f;\n" 
+    "        _myPixelSums[pixel] = 0.0f;\n" 
     "    }\n" 
     "\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
@@ -157,20 +159,22 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "                    }\n" 
     "                }\n" 
     "            }\n" 
-    "            _perPixelSums[pixel] += thissum;\n" 
+    "            _myPixelSums[pixel] += thissum;\n" 
+    "//            if( globalId == 0 ) results[0] = _upstreamBoard[pixel];\n" 
     "        }\n" 
     "    }\n" 
     "    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {\n" 
     "        const int virtualLocalId = localId + pixel * workgroupSize;\n" 
     "        if( virtualLocalId < gOutputBoardSizeSquared ) {\n" 
-    "            float sum = _perPixelSums[pixel];\n" 
+    "            float sum = _myPixelSums[pixel];\n" 
     "            #ifdef BIASED\n" 
     "                sum += biases[outPlane];\n" 
     "            #endif\n" 
     "            // results are organized like [imageid][filterid][row][col]\n" 
     "            int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + virtualLocalId;\n" 
     "            results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
-    "        //        results[resultIndex ] = 123;\n" 
+    "            // results[resultIndex ] = 123;\n" 
+    "            //if( globalId == 0 ) results[0] += 0.000001f + _perPixelSums[0];\n" 
     "        }\n" 
     "    }\n" 
     "}\n" 
