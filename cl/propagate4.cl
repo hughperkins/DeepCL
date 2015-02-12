@@ -105,7 +105,7 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
 //            if( globalId == 0 ) results[0] = _upstreamBoard[pixel];
        // }
     }
-//    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
+    for( int pixel = 0; pixel < pixelsPerThread; pixel++ ) {
         int pixel = 0;
         const int virtualLocalId = localId + pixel * workgroupSize;
         if( virtualLocalId < gOutputBoardSizeSquared ) {
@@ -119,7 +119,7 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
             // results[resultIndex ] = 123;
             //if( globalId == 0 ) results[0] += 0.000001f + _perPixelSums[0];
         }
-//    }
+    }
 }
 #endif
 #endif
