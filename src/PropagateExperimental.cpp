@@ -67,6 +67,8 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
+    "// from propagate4.cl\n" 
+    "\n" 
     "// expected defines:\n" 
     "// one of: [ TANH | RELU | LINEAR ]\n" 
     "// BIASED (or not)\n" 
