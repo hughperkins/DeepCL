@@ -16,6 +16,7 @@
 #include "Propagate4.h"
 #include "PropagateFc.h"
 #include "PropagateByInputPlane.h"
+#include "PropagateExperimental.h"
 #include "StatefulTimer.h"
 
 using namespace std;
@@ -54,8 +55,29 @@ STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerD
         return new PropagateFc( cl, layerDimensions, fn );
     } else if( idx == 6 ) {
         return new PropagateByInputPlane( cl, layerDimensions, fn );
+    } else if( idx == 99 ) {
+        return new PropagateExperimental( cl, layerDimensions, fn );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for index " + toString(idx) );
+    }
+}
+STATIC Propagate *Propagate::instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+    if( name == "cpu" ) {
+        return new PropagateCpu( cl, layerDimensions, fn );
+    } else if( name == "prop1" ) {
+        return new Propagate1( cl, layerDimensions, fn );
+    } else if( name == "prop3" ) {
+        return new Propagate3( cl, layerDimensions, fn );
+    } else if( name == "prop4" ) {
+        return new Propagate4( cl, layerDimensions, fn );
+    } else if( name == "fc" ) {
+        return new PropagateFc( cl, layerDimensions, fn );
+    } else if( name == "byinplane" ) {
+        return new PropagateByInputPlane( cl, layerDimensions, fn );
+    } else if( name == "exp" ) {
+        return new PropagateExperimental( cl, layerDimensions, fn );
+    } else {
+        throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for name " + name );
     }
 }
 Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :

@@ -604,29 +604,34 @@ namespace testbackpropweights {
         int weightsSize = dim.filtersSize;
         int biasWeightsSize = dim.numFilters;
 
+        int resultsAllocated = max( 10000, resultsSize );
+        int inputAllocated = max( 10000, inputSize );
+        int weightsAllocated = max( 10000, weightsSize );
+        int biasWeightsAllocated = max( 10000, biasWeightsSize );
+
         cout << "numweights: " << weightsSize << endl;
 
-        float *biasWeights1 = new float[ biasWeightsSize ];
-        float *biasWeights2 = new float[ biasWeightsSize ];
-        memset( biasWeights1, 0, sizeof(float) * biasWeightsSize );
-        memset( biasWeights2, 0, sizeof(float) * biasWeightsSize );
+        float *biasWeights1 = new float[ biasWeightsAllocated ];
+        float *biasWeights2 = new float[ biasWeightsAllocated ];
+        memset( biasWeights1, 0, sizeof(float) * biasWeightsAllocated );
+        memset( biasWeights2, 0, sizeof(float) * biasWeightsAllocated );
 
-        float *errors = new float[max(10000, resultsSize )];
-        float *inputData = new float[max(10000, inputSize )];
-        float *weights1 = new float[max(10000, weightsSize ) ];
-        float *weights2 = new float[max(10000, weightsSize ) ];
+        float *errors = new float[resultsAllocated];
+        float *inputData = new float[inputAllocated];
+        float *weights1 = new float[weightsAllocated];
+        float *weights2 = new float[weightsAllocated];
 
-        memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
-        memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
-        memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
-        memset( weights2, 0, sizeof(float) * max(10000, weightsSize ) );
+        memset( errors, 0, sizeof(float) * resultsAllocated );
+        memset( inputData, 0, sizeof(float) * inputAllocated );
+        memset( weights1, 0, sizeof(float) * weightsAllocated );
+        memset( weights2, 0, sizeof(float) * weightsAllocated );
 
       //  WeightRandomizer::randomize( errors, max(10000, resultsSize ), -0.1f, 0.1f );
     //    WeightRandomizer::randomize( results, max( 10000, resultsSize), 1, 2 );
       //  WeightRandomizer::randomize( inputData, max(10000, inputSize ), -0.3f, 0.7f );
 
-        WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 99 );
-        WeightRandomizer::randomizeInts( inputData, max(10000, inputSize ), 0, 99 );
+        WeightRandomizer::randomizeInts( errors, resultsAllocated, 0, 99 );
+        WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
 
         OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
         
@@ -683,6 +688,18 @@ namespace testbackpropweights {
         delete[] inputData;
 
         delete cl;
+    }
+
+    TEST( testbackpropweights, compare_instance3_smaller2 ) {
+        LayerDimensions dim;
+        dim.setInputBoardSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
+            .setBiased( 0 ).setPadZeros( 0 );
+        int batchSize = 1;
+        const float learningRate = 1;
+        compareSpecific( CompareSpecificArgs::instance()
+            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
+            .filterSize( 6 ).biased( 0 ).padZeros( false )
+            .instance0(0).instance1(3) );
     }
 
     TEST( SLOW_testbackpropweights, compare_specific ) {

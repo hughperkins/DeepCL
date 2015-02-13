@@ -22,6 +22,13 @@ TEST( testArgsParser, basic ) {
 }
 
 TEST( testArgsParser, static ) {
+    GtestGlobals::instance()->argc = 2;
+    GtestGlobals::instance()->argv = new char *[2];
+    GtestGlobals::instance()->argv[0] = new char[255];    
+    GtestGlobals::instance()->argv[1] = new char[255];    
+    strcpy_safe( GtestGlobals::instance()->argv[0], "./unittests", 20 );
+    strcpy_safe( GtestGlobals::instance()->argv[1], "myvalue=5", 20 );
+
     int myvalue = 3;
     TestArgsParser::arg( "myvalue", &myvalue );
     TestArgsParser::go();

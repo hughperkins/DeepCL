@@ -26,6 +26,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
     // ]]]
     // [[[end]]]
+//    cout << "dim: " << dim << endl;
     std::string options = dim.buildOptionsString();
 
     //  gInputStripeMarginRows => basically equal to gHalfFilterSize

@@ -7,6 +7,7 @@
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
 #include "Propagate.h"
+#include "ActivationFunction.h"
 
 #include "test/myasserts.h"
 #include "test/WeightRandomizer.h"
@@ -699,7 +700,7 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
     compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
 }
 
-TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7_args ) {
+TEST( SLOW_testpropagate, compare ) {
     LayerDimensions dim;
     int batchSize = 128;
     int boardSize = 19;
@@ -708,6 +709,7 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7_args ) {
     int numFilters = 64;
     int instance0 = 1;
     int instance1 = 3;
+    string activationName = "tanh";
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::arg( "boardsize", &boardSize );
@@ -715,10 +717,12 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7_args ) {
     TestArgsParser::arg( "filtersize", &filterSize );
     TestArgsParser::arg( "inputplanes", &inputPlanes );
     TestArgsParser::arg( "numfilters", &numFilters );
+    TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::go();
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
     dim.setInputPlanes( inputPlanes ).setInputBoardSize(boardSize).setNumFilters( numFilters ).setFilterSize( filterSize )
         .setPadZeros( true ).setBiased( false );    
-    compareSpecific( batchSize, dim, new LinearActivation(), instance0, instance1 );
+    compareSpecific( batchSize, dim, fn, instance0, instance1 );
 }
 
 TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
@@ -729,81 +733,81 @@ TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
     compareSpecific( 4, dim, new ReluActivation(), 1, 6 );
 }
 
-TEST( SLOW_testpropagate, compare ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    float *inputs = new float[ 10000 ];
-    float *filters = new float[10000 ];
-    float *biasFilters = new float[10000];
-    WeightRandomizer::randomize( inputs, 10000 );
-    WeightRandomizer::randomize( filters, 10000 );
-    WeightRandomizer::randomize( biasFilters, 10000 );
-    for( int batchSize = 1; batchSize <= 1; batchSize += 3 ) {
-        for( int inputBoardSize = 5; inputBoardSize <= 5; inputBoardSize++ ) {
-            for( int numInputPlanes = 2; numInputPlanes <= 2; numInputPlanes++ ) {
-                for( int numFilters = 1; numFilters <= 1; numFilters++ ) {
-                    for( int filterSize = 5; filterSize <= 5; filterSize++ ) {
-                        for( int biased = 0; biased <= 1; biased++ ) {
-                            for( int padZeros = 1; padZeros <= 1; padZeros++ ) {
-                                int numInPlanes = numInputPlanes;
-                                int numOutPlanes = numFilters;
-                                LayerDimensions dim( numInputPlanes, inputBoardSize,
-                                    numFilters, filterSize, padZeros == 1, biased == 1 );          
-                                int inBoardSize = inputBoardSize;
-                                int inputSize = batchSize * numInPlanes * inBoardSize * inBoardSize;
-                                int resultsSize = batchSize * numOutPlanes * dim.outputBoardSize * dim.outputBoardSize;
-                                int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
-                                cout << " OutputBoardSize " << dim.outputBoardSize << " resultsize " << resultsSize << endl;
-                                int biasWeightsSize = numOutPlanes;
-                                Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new LinearActivation() );
-                                float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-                                Propagate *p2 = Propagate::instanceSpecific( 3, cl, dim, new LinearActivation() );
-                                float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
-                                cout << " batchSize " + toString(batchSize ) +
-                                    " inputBoardSize " + toString(inputBoardSize ) +
-                                    " numInputPlanes=" + toString(numInputPlanes) +
-                                    " numFilters=" + toString(numFilters) +
-                                    " filterSize=" + toString(filterSize) +
-                                    " biased=" + toString(biased) +
-                                    " padZeros=" + toString(padZeros) << endl;
-                                for( int i = 0; i < resultsSize; i++ ) {
-                                    if( results1[i] != results2[i] ) {
-                                        cout << "mismatch, i = " + toString(i) + 
-                                            " batchSize " + toString(batchSize ) +
-                                            " inputBoardSize " + toString(inputBoardSize ) +
-                                            " numInputPlanes=" + toString(numInputPlanes) +
-                                            " numFilters=" + toString(numFilters) +
-                                            " filterSize=" + toString(filterSize) +
-                                            " biased=" + toString(biased) +
-                                            " padZeros=" + toString(padZeros) << endl;
-                                        for( int i = 0; i < 2 * resultsSize; i++ ) {
-                                            cout << "results[" << i << "]=" << results1[i] << " " << results2[i] << std::endl;
-                                        }
-                                        throw std::runtime_error("mismatch, i = " + toString(i) + 
-                                            " batchSize " + toString(batchSize ) +
-                                            " inputBoardSize " + toString(inputBoardSize ) +
-                                            " numInputPlanes=" + toString(numInputPlanes) +
-                                            " numFilters=" + toString(numFilters) +
-                                            " filterSize=" + toString(filterSize) +
-                                            " biased=" + toString(biased) +
-                                            " padZeros=" + toString(padZeros) );
-                                    }
-                                }
-                                delete[] results1;
-                                delete[] results2;
-                                delete p1;
-                                delete p2;
-                            }
-                        }
-                     }
-                }
-            }
-        }
-    }
-    delete[] inputs;
-    delete[] filters;
-    delete[] biasFilters;
-    delete cl;
-}
+//TEST( SLOW_testpropagate, compare ) {
+//    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+//    float *inputs = new float[ 10000 ];
+//    float *filters = new float[10000 ];
+//    float *biasFilters = new float[10000];
+//    WeightRandomizer::randomize( inputs, 10000 );
+//    WeightRandomizer::randomize( filters, 10000 );
+//    WeightRandomizer::randomize( biasFilters, 10000 );
+//    for( int batchSize = 1; batchSize <= 1; batchSize += 3 ) {
+//        for( int inputBoardSize = 5; inputBoardSize <= 5; inputBoardSize++ ) {
+//            for( int numInputPlanes = 2; numInputPlanes <= 2; numInputPlanes++ ) {
+//                for( int numFilters = 1; numFilters <= 1; numFilters++ ) {
+//                    for( int filterSize = 5; filterSize <= 5; filterSize++ ) {
+//                        for( int biased = 0; biased <= 1; biased++ ) {
+//                            for( int padZeros = 1; padZeros <= 1; padZeros++ ) {
+//                                int numInPlanes = numInputPlanes;
+//                                int numOutPlanes = numFilters;
+//                                LayerDimensions dim( numInputPlanes, inputBoardSize,
+//                                    numFilters, filterSize, padZeros == 1, biased == 1 );          
+//                                int inBoardSize = inputBoardSize;
+//                                int inputSize = batchSize * numInPlanes * inBoardSize * inBoardSize;
+//                                int resultsSize = batchSize * numOutPlanes * dim.outputBoardSize * dim.outputBoardSize;
+//                                int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
+//                                cout << " OutputBoardSize " << dim.outputBoardSize << " resultsize " << resultsSize << endl;
+//                                int biasWeightsSize = numOutPlanes;
+//                                Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new LinearActivation() );
+//                                float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
+//                                Propagate *p2 = Propagate::instanceSpecific( 3, cl, dim, new LinearActivation() );
+//                                float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
+//                                cout << " batchSize " + toString(batchSize ) +
+//                                    " inputBoardSize " + toString(inputBoardSize ) +
+//                                    " numInputPlanes=" + toString(numInputPlanes) +
+//                                    " numFilters=" + toString(numFilters) +
+//                                    " filterSize=" + toString(filterSize) +
+//                                    " biased=" + toString(biased) +
+//                                    " padZeros=" + toString(padZeros) << endl;
+//                                for( int i = 0; i < resultsSize; i++ ) {
+//                                    if( results1[i] != results2[i] ) {
+//                                        cout << "mismatch, i = " + toString(i) + 
+//                                            " batchSize " + toString(batchSize ) +
+//                                            " inputBoardSize " + toString(inputBoardSize ) +
+//                                            " numInputPlanes=" + toString(numInputPlanes) +
+//                                            " numFilters=" + toString(numFilters) +
+//                                            " filterSize=" + toString(filterSize) +
+//                                            " biased=" + toString(biased) +
+//                                            " padZeros=" + toString(padZeros) << endl;
+//                                        for( int i = 0; i < 2 * resultsSize; i++ ) {
+//                                            cout << "results[" << i << "]=" << results1[i] << " " << results2[i] << std::endl;
+//                                        }
+//                                        throw std::runtime_error("mismatch, i = " + toString(i) + 
+//                                            " batchSize " + toString(batchSize ) +
+//                                            " inputBoardSize " + toString(inputBoardSize ) +
+//                                            " numInputPlanes=" + toString(numInputPlanes) +
+//                                            " numFilters=" + toString(numFilters) +
+//                                            " filterSize=" + toString(filterSize) +
+//                                            " biased=" + toString(biased) +
+//                                            " padZeros=" + toString(padZeros) );
+//                                    }
+//                                }
+//                                delete[] results1;
+//                                delete[] results2;
+//                                delete p1;
+//                                delete p2;
+//                            }
+//                        }
+//                     }
+//                }
+//            }
+//        }
+//    }
+//    delete[] inputs;
+//    delete[] filters;
+//    delete[] biasFilters;
+//    delete cl;
+//}
 
 TEST( testpropagate, softmax ) {
     NeuralNet *net = NeuralNet::maker()->boardSize(1)->planes(4)->instance();

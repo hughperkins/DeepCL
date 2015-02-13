@@ -82,7 +82,7 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
 
     CLWrapper *weightsWrapper = 0;
     if( debug ) {
-        weightsWrapper = cl->wrap(std::max(10000, dim.filtersSize ), filters );
+        weightsWrapper = cl->wrap( std::max(10000, dim.filtersSize ), filters );
     } else {
         weightsWrapper = cl->wrap( dim.filtersSize, filters );
     }

@@ -21,6 +21,9 @@ TestArgsParser::TestArgsParser() :
 void TestArgsParser::_arg( std::string key, int *p_value ) {
     args.push_back( new ArgInt( key, p_value ) );
 }
+void TestArgsParser::_arg( std::string key, std::string *p_value ) {
+    args.push_back( new ArgString( key, p_value ) );
+}
 void TestArgsParser::_printAvailableKeys() {
     cout << "Available keys:" << endl;
     for( vector< Arg * >::iterator it = args.begin(); it != args.end(); it++ ) {
@@ -57,11 +60,17 @@ void TestArgsParser::_go() {
 void ArgInt::apply( std::string stringValue ) {
     *p_int = atoi( stringValue );
 }
+void ArgString::apply( std::string stringValue ) {
+    *p_value = stringValue;
+}
 TestArgsParser *TestArgsParser::instance() {
     static TestArgsParser *thisInstance = new TestArgsParser();
     return thisInstance;
 }
 void TestArgsParser::arg( std::string key, int *p_value ) {
+    instance()->_arg( key, p_value );
+}
+void TestArgsParser::arg( std::string key, std::string *p_value ) {
     instance()->_arg( key, p_value );
 }
 void TestArgsParser::go() {
