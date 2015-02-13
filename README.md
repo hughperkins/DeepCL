@@ -644,6 +644,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 13th February:
+  * created PropagateAuto, which tries each kernel once, for one batch, and then picks the fastest
 * 10th February:
   * increased speed of fully-connected propagation by 5-8 times :-)
 * 7th Februrary:
