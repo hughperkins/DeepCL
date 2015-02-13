@@ -67,12 +67,11 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
         if( Propagate::plausiblyOptimal( thisIndex, batchSize, dim, fn ) ) {
             Propagate *candidate = 0;
             try {
-                cout << "PropagateAuto: trying propagate instance " << thisIndex << " ... " << endl;
                 candidate = Propagate::instanceSpecific( thisIndex, cl, dim, fn );
                 instances[thisIndex] = candidate;
                 valid[thisIndex] = true;
             } catch( runtime_error &e ) {
-                cout << "PropagateAuto: ... invalid, or something went wrong: " << e.what() << endl;
+                cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << ": this instance cant be used: " << e.what() << endl;
                 valid[thisIndex] = false;
             }
             if( valid[thisIndex] ) {
@@ -80,10 +79,10 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
                 try {
                     candidate->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, resultsWrapper );
                     milliseconds[thisIndex] = timer.lap();
-                    cout << "PropagateAuto: ... time: " << milliseconds[thisIndex] << "ms" << endl;
+                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch( runtime_error &e ) {
-                    cout << "PropagateAuto: ... invalid, or something went wrong: " << e.what() << endl;
+                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " this instance cant be used: " << e.what() << endl;
                     valid[thisIndex] = false;
                     delete instances[thisIndex];
                     instances[thisIndex] = 0;
@@ -92,7 +91,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
         }
     }
     if( chosenIndex == -1 ) {
-        cout << "PropagateAuto::propagate choosing best instance, based on measured times..." << endl;
+//        cout << StatefulTimer::instance()->prefix + "PropagateAuto::propagate choosing best instance, based on measured times..." << endl;
         int bestIndex = -1;
         int bestTime = 0;
         for( int i = 0; i < num; i++ ) {
@@ -110,10 +109,10 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
             }
         }
         if( bestIndex != -1 ) {
-            cout << "PropagateAuto: selected index: " << bestIndex << endl;
+            cout << StatefulTimer::instance()->prefix << "PropagateAuto: selected index: " << bestIndex << endl;
             this->chosenIndex = bestIndex;
         } else {
-            throw runtime_error("No valid propagate implementations found" );
+            throw runtime_error(StatefulTimer::instance()->prefix + "No valid propagate implementations found" );
         }
     }
 //    cout << "PropagateAuto::propagate using instance index: " << chosenIndex << endl;

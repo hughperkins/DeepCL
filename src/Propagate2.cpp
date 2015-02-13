@@ -43,6 +43,10 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
         Propagate( cl, dim, fn )
             {
+    if( square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
+        throw runtime_error("cannot use propagate2, since outputboardsize * outputboardsize > maxworkgroupsize");
+    }
+
     std::string options = "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
     // [[[cog

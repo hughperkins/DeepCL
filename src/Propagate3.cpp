@@ -71,6 +71,10 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
         Propagate( cl, dim, fn )
             {
 
+    if( square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
+        throw runtime_error("cannot use propagate3, since outputboardsize * outputboardsize > maxworkgroupsize");
+    }
+
     std::string options = "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
 
