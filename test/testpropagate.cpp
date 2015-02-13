@@ -13,6 +13,7 @@
 #include "test/WeightRandomizer.h"
 #include "test/GtestGlobals.h"
 #include "test/TestArgsParser.h"
+#include "test/DimFromArgs.h"
 
 #include <iostream>
 #include <iomanip>
@@ -741,13 +742,14 @@ TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
     int instance = 3;
     int batchSize = 128;
     int N = 1000;
+    LayerDimensions dim;
+    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
+        .setPadZeros( true ).setBiased( true );  
+    DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance", &instance );
     TestArgsParser::arg( "n", &N );
     TestArgsParser::arg( "batchsize", &batchSize );
     TestArgsParser::go();
-    LayerDimensions dim;
-    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
-        .setPadZeros( true ).setBiased( true );  
     testPerf( instance, N, batchSize, dim, new TanhActivation() );
 }
 

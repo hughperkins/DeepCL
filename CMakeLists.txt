@@ -126,7 +126,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp test/testArgsParser.cpp
- src/stringhelper.cpp
+ src/stringhelper.cpp test/DimFromArgs.cpp
  )
 #
 #

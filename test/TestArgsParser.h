@@ -30,6 +30,15 @@ public:
     }
     virtual void apply( std::string stringValue );
 };
+class ArgBool : public Arg {
+    bool *p_value;
+public:
+    ArgBool( std::string key, bool *p_value ) :
+        Arg( key ),
+        p_value( p_value ) {
+    }
+    virtual void apply( std::string stringValue );
+};
 
 class ArgString : public Arg {
     std::string *p_value;
@@ -53,11 +62,13 @@ public:
     TestArgsParser();
     void _arg( std::string key, int *p_value );
     void _arg( std::string key, std::string *p_value );
+    void _arg( std::string key, bool *p_value );
     void _go();
     void _printAvailableKeys();
     static TestArgsParser *instance();
     static void arg( std::string key, int *p_value );
     static void arg( std::string key, std::string *p_value );
+    static void arg( std::string key, bool *p_value );
     static void go();
 };
 
