@@ -19,6 +19,15 @@ string cmdline;
 GTEST_API_ int main(int argc, char **argv) {
     // add filter on slow by default
     bool deleteargv = false;
+    // add filter= option, easier to type than --gtest_filter= ...
+    if( argc >= 2 && split( string( argv[1] ), "=" )[0] == "filter" ) {
+        // replace with "--gtest_filter=..."
+        string newarg = string("--gtest_filter=") + split( string( argv[1] ), "=" )[1];
+        char *newargchar = new char[ newarg.length() + 1 ];
+        strcpy_safe( newargchar, newarg.c_str(), newarg.length() );
+        argv[1] = newargchar;
+    }
+    // default to -SLOW*
     if( argc == 1 ) {
         char **newargv = new char *[argc + 1];
         int newargc = argc + 1;
@@ -35,11 +44,11 @@ GTEST_API_ int main(int argc, char **argv) {
         deleteargv = true;
     }
 //    cout << "argc " << argc << endl;
-//    cout << "args:";
-//    for( int i = 0; i < argc; i++ ) {
-//        cout << " " << argv[i];
-//    }
-//    cout << endl;
+    cout << "args:";
+    for( int i = 0; i < argc; i++ ) {
+        cout << " " << argv[i];
+    }
+    cout << endl;
     testing::InitGoogleTest(&argc, argv);
     GtestGlobals::instance()->argc = argc;
     GtestGlobals::instance()->argv = argv;
