@@ -690,58 +690,58 @@ namespace testbackpropweights {
         delete cl;
     }
 
-    TEST( testbackpropweights, compare_instance3_smaller2 ) {
-        LayerDimensions dim;
-        dim.setInputBoardSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
-            .setBiased( 0 ).setPadZeros( 0 );
-        int batchSize = 1;
-        const float learningRate = 1;
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
-            .filterSize( 6 ).biased( 0 ).padZeros( false )
-            .instance0(0).instance1(3) );
-    }
+//    TEST( testbackpropweights, compare_instance3_smaller2 ) {
+//        LayerDimensions dim;
+//        dim.setInputBoardSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
+//            .setBiased( 0 ).setPadZeros( 0 );
+//        int batchSize = 1;
+//        const float learningRate = 1;
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
+//            .filterSize( 6 ).biased( 0 ).padZeros( false )
+//            .instance0(0).instance1(3) );
+//    }
 
-    TEST( SLOW_testbackpropweights, compare_specific ) {
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 128 ).inputPlanes( 32 ).inputBoardSize( 19 ).numFilters( 32 )
-            .filterSize( 3 ).biased( 0 ).padZeros( false )
-            .instance0(1).instance1(3) );
-    }
+//    TEST( SLOW_testbackpropweights, compare_specific ) {
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 128 ).inputPlanes( 32 ).inputBoardSize( 19 ).numFilters( 32 )
+//            .filterSize( 3 ).biased( 0 ).padZeros( false )
+//            .instance0(1).instance1(3) );
+//    }
 
-    TEST( SLOW_testbackpropweights, compare_specific_96board ) {
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 128 ).inputPlanes( 2 ).inputBoardSize( 96 ).numFilters( 8 )
-            .filterSize( 6 ).biased( 1 ).padZeros( false )
-            .instance0(0).instance1(3) );
-    }
+//    TEST( SLOW_testbackpropweights, compare_specific_96board ) {
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 128 ).inputPlanes( 2 ).inputBoardSize( 96 ).numFilters( 8 )
+//            .filterSize( 6 ).biased( 1 ).padZeros( false )
+//            .instance0(0).instance1(3) );
+//    }
 
-    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller ) {
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 48 ).numFilters( 1 )
-            .filterSize( 2 ).biased( 1 ).padZeros( false )
-            .instance0(0).instance1(3) );
-    }
+//    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller ) {
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 48 ).numFilters( 1 )
+//            .filterSize( 2 ).biased( 1 ).padZeros( false )
+//            .instance0(0).instance1(3) );
+//    }
 
-    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller2 ) {
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
-            .filterSize( 4 ).biased( 0 ).padZeros( false )
-            .instance0(0).instance1(3) );
-    }
+//    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller2 ) {
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
+//            .filterSize( 4 ).biased( 0 ).padZeros( false )
+//            .instance0(0).instance1(3) );
+//    }
 
-    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller3 ) {
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
-            .filterSize( 6 ).biased( false ).padZeros( false )
-            .instance0(0).instance1(3) );
-    }
+//    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller3 ) {
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 1 ).inputPlanes( 1 ).inputBoardSize( 96 ).numFilters( 1 )
+//            .filterSize( 6 ).biased( false ).padZeros( false )
+//            .instance0(0).instance1(3) );
+//    }
 
-    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller4 ) {
-        compareSpecific( CompareSpecificArgs::instance()
-            .batchSize( 1 ).inputPlanes( 2 ).inputBoardSize( 96 ).numFilters( 8 )
-            .filterSize( 4 ).biased( 1 ).padZeros( false )
-            .instance0(0).instance1(3) );
-    }
+//    TEST( SLOW_testbackpropweights, compare_specific_96board_smaller4 ) {
+//        compareSpecific( CompareSpecificArgs::instance()
+//            .batchSize( 1 ).inputPlanes( 2 ).inputBoardSize( 96 ).numFilters( 8 )
+//            .filterSize( 4 ).biased( 1 ).padZeros( false )
+//            .instance0(0).instance1(3) );
+//    }
 }
 

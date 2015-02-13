@@ -391,196 +391,6 @@ TEST( testpropagate, test3 ) {
     delete cl;
 }
 
-TEST( testpropagate, boardsize19 ) {
-    int batchSize = 128;
-    int numInPlanes = 16;
-    int numOutPlanes = 16;
-    int inBoardSize = 19;
-    int outBoardSize = 19;
-    int filterSize = 5;
-    int padZeros = 1;
-
-    int inputSize = batchSize * numInPlanes * inBoardSize * inBoardSize;
-    int resultsSize = batchSize * numOutPlanes * outBoardSize * outBoardSize;
-    int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
-    int biasWeightsSize = numOutPlanes;
-    float *inputs = new float[ inputSize ];
-    float *filters = new float[weightsSize ];
-    float *biasFilters = new float[biasWeightsSize];
-    
-    WeightRandomizer::randomize( inputs, inputSize );
-    WeightRandomizer::randomize( filters, weightsSize );
-    WeightRandomizer::randomize( biasFilters, biasWeightsSize );
-
-    int outputBoardSize = 0;
-    Timer timer;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagateImpl = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inBoardSize, 
-        numOutPlanes, filterSize, padZeros == 1, true ), new ReluActivation() );
-    for( int i = 0; i < 10; i++ ) {
-        float *results = propagateImpl->propagate( 
-            batchSize, inputs, filters, biasFilters );
-    }
-    StatefulTimer::dump(true);
-    timer.timeCheck("propagate time");
-    delete propagateImpl;
-    delete cl;
-}
-
-TEST( testpropagate, mnist_firstconvlayer ) {
-    float *inputs = new float[ 10000 ];
-    float *filters = new float[10000 ];
-    float *biasFilters = new float[10000];
-
-    memset( inputs, 0, sizeof(float) * 10000 );
-    memset( filters, 0, sizeof(float) * 10000 );
-    memset( biasFilters, 0, sizeof(float) * 10000 );
-
-    WeightRandomizer::randomize( inputs, 10000, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, 10000, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, 10000, -0.1f, 0.1f );
-
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = new ReluActivation();
-
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instance( cl, dim, fn );
-    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
-        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-        delete[] results1;
-    }
-    StatefulTimer::dump(true);
-
-    delete p1;
-    delete cl;
-    delete[] inputs;
-    delete[] filters;
-    delete[] biasFilters;
-}
-
-TEST( SLOW_testpropagate, mnist_intlayers_128ex ) {
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = new ReluActivation();
-
-    int inputsSize = batchSize * dim.inputCubeSize;
-    int filtersSize = dim.filtersSize;
-    int biasSize = dim.numFilters;
-    int inputsAllocated = std::max( inputsSize, 10000 );
-    int filtersAllocated = std::max( filtersSize, 10000 );
-    int biasFiltersAllocated = std::max( biasSize, 10000 );
-    float *inputs = new float[ inputsAllocated ];
-    float *filters = new float[ filtersAllocated ];
-    float *biasFilters = new float[ biasFiltersAllocated ];
-
-    memset( inputs, 0, sizeof(float) * inputsAllocated );
-    memset( filters, 0, sizeof(float) * filtersAllocated );
-    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
-
-    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
-
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instance( cl, dim, fn );
-    for( int i = 0; i < (128+batchSize - 1) / batchSize; i++ ) {
-        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-        delete[] results1;
-    }
-    StatefulTimer::dump(true);
-
-    delete p1;
-    delete cl;
-    delete[] inputs;
-    delete[] filters;
-    delete[] biasFilters;
-}
-
-TEST( SLOW_testpropagate, mnist_intlayers_1024ex ) {
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = new ReluActivation();
-
-    int inputsSize = batchSize * dim.inputCubeSize;
-    int filtersSize = dim.filtersSize;
-    int biasSize = dim.numFilters;
-    int inputsAllocated = std::max( inputsSize, 10000 );
-    int filtersAllocated = std::max( filtersSize, 10000 );
-    int biasFiltersAllocated = std::max( biasSize, 10000 );
-    float *inputs = new float[ inputsAllocated ];
-    float *filters = new float[ filtersAllocated ];
-    float *biasFilters = new float[ biasFiltersAllocated ];
-
-    memset( inputs, 0, sizeof(float) * inputsAllocated );
-    memset( filters, 0, sizeof(float) * filtersAllocated );
-    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
-
-    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
-
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instance( cl, dim, fn );
-    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
-        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-        delete[] results1;
-    }
-    StatefulTimer::dump(true);
-
-    delete p1;
-    delete cl;
-    delete[] inputs;
-    delete[] filters;
-    delete[] biasFilters;
-}
-
-TEST( testpropagate, mnist_finallayer ) {
-    int batchSize = 128;
-    LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 10 ).setFilterSize( 28 )
-        .setPadZeros( false ).setBiased( true );    
-
-    int inputsSize = batchSize * dim.inputCubeSize;
-    int filtersSize = dim.filtersSize;
-    int biasSize = dim.numFilters;
-    int inputsAllocated = std::max( inputsSize, 10000 );
-    int filtersAllocated = std::max( filtersSize, 10000 );
-    int biasFiltersAllocated = std::max( biasSize, 10000 );
-    float *inputs = new float[ inputsAllocated ];
-    float *filters = new float[ filtersAllocated ];
-    float *biasFilters = new float[ biasFiltersAllocated ];
-
-    memset( inputs, 0, sizeof(float) * inputsAllocated );
-    memset( filters, 0, sizeof(float) * filtersAllocated );
-    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
-
-    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
-
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
-    for( int i = 0; i < (1024+batchSize - 1) / batchSize; i++ ) {
-        float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-        delete[] results1;
-    }
-    StatefulTimer::dump(true);
-
-    delete p1;
-    delete cl;
-    delete[] inputs;
-    delete[] filters;
-    delete[] biasFilters;
-}
-
-//TEST( SLOW_testpropagate, comparespecific ) {
 void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -669,38 +479,38 @@ void compareSpecific( int batchSize, LayerDimensions dim, ActivationFunction *fn
     delete[] biasFilters;
 }
 
-TEST( SLOW_testpropagate, comparespecific ) {
-    LayerDimensions dim;
-    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( false );    
-    compareSpecific( 1, dim, new LinearActivation(), 1, 3 );
-}
+//TEST( SLOW_testpropagate, comparespecific ) {
+//    LayerDimensions dim;
+//    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
+//        .setPadZeros( true ).setBiased( false );    
+//    compareSpecific( 1, dim, new LinearActivation(), 1, 3 );
+//}
 
-TEST( SLOW_testpropagate, comparespecific_fc500unbiased ) {
-    LayerDimensions dim;
-    const int boardSize = 19;
-    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
-        .setPadZeros( false ).setBiased( false );    
-    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
-}
+//TEST( SLOW_testpropagate, comparespecific_fc500unbiased ) {
+//    LayerDimensions dim;
+//    const int boardSize = 19;
+//    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
+//        .setPadZeros( false ).setBiased( false );    
+//    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
+//}
 
-TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
-    LayerDimensions dim;
-    const int boardSize = 19;
-    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
-        .setPadZeros( false ).setBiased( true );    
-    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
-}
+//TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
+//    LayerDimensions dim;
+//    const int boardSize = 19;
+//    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
+//        .setPadZeros( false ).setBiased( true );    
+//    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
+//}
 
-TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
-    LayerDimensions dim;
-    const int boardSize = 19;
-    dim.setInputPlanes( 64 ).setInputBoardSize(boardSize).setNumFilters( 64 ).setFilterSize( 7 )
-        .setPadZeros( true ).setBiased( true );    
-    compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
-}
+//TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
+//    LayerDimensions dim;
+//    const int boardSize = 19;
+//    dim.setInputPlanes( 64 ).setInputBoardSize(boardSize).setNumFilters( 64 ).setFilterSize( 7 )
+//        .setPadZeros( true ).setBiased( true );    
+//    compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
+//}
 
-TEST( SLOW_testpropagate, compare ) {
+TEST( SLOW_testpropagate, compare_args ) {
     LayerDimensions dim;
     int batchSize = 128;
     int boardSize = 19;
@@ -725,88 +535,12 @@ TEST( SLOW_testpropagate, compare ) {
     compareSpecific( batchSize, dim, fn, instance0, instance1 );
 }
 
-TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
-    LayerDimensions dim;
-    const int boardSize = 9;
-    dim.setInputPlanes( 4 ).setInputBoardSize(boardSize).setNumFilters( 4 ).setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( false );    
-    compareSpecific( 4, dim, new ReluActivation(), 1, 6 );
-}
-
-//TEST( SLOW_testpropagate, compare ) {
-//    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    float *inputs = new float[ 10000 ];
-//    float *filters = new float[10000 ];
-//    float *biasFilters = new float[10000];
-//    WeightRandomizer::randomize( inputs, 10000 );
-//    WeightRandomizer::randomize( filters, 10000 );
-//    WeightRandomizer::randomize( biasFilters, 10000 );
-//    for( int batchSize = 1; batchSize <= 1; batchSize += 3 ) {
-//        for( int inputBoardSize = 5; inputBoardSize <= 5; inputBoardSize++ ) {
-//            for( int numInputPlanes = 2; numInputPlanes <= 2; numInputPlanes++ ) {
-//                for( int numFilters = 1; numFilters <= 1; numFilters++ ) {
-//                    for( int filterSize = 5; filterSize <= 5; filterSize++ ) {
-//                        for( int biased = 0; biased <= 1; biased++ ) {
-//                            for( int padZeros = 1; padZeros <= 1; padZeros++ ) {
-//                                int numInPlanes = numInputPlanes;
-//                                int numOutPlanes = numFilters;
-//                                LayerDimensions dim( numInputPlanes, inputBoardSize,
-//                                    numFilters, filterSize, padZeros == 1, biased == 1 );          
-//                                int inBoardSize = inputBoardSize;
-//                                int inputSize = batchSize * numInPlanes * inBoardSize * inBoardSize;
-//                                int resultsSize = batchSize * numOutPlanes * dim.outputBoardSize * dim.outputBoardSize;
-//                                int weightsSize = numInPlanes * numOutPlanes * filterSize * filterSize;    
-//                                cout << " OutputBoardSize " << dim.outputBoardSize << " resultsize " << resultsSize << endl;
-//                                int biasWeightsSize = numOutPlanes;
-//                                Propagate *p1 = Propagate::instanceSpecific( 1, cl, dim, new LinearActivation() );
-//                                float *results1 = p1->propagate( batchSize, inputs, filters, biasFilters );
-//                                Propagate *p2 = Propagate::instanceSpecific( 3, cl, dim, new LinearActivation() );
-//                                float *results2 = p2->propagate( batchSize, inputs, filters, biasFilters );
-//                                cout << " batchSize " + toString(batchSize ) +
-//                                    " inputBoardSize " + toString(inputBoardSize ) +
-//                                    " numInputPlanes=" + toString(numInputPlanes) +
-//                                    " numFilters=" + toString(numFilters) +
-//                                    " filterSize=" + toString(filterSize) +
-//                                    " biased=" + toString(biased) +
-//                                    " padZeros=" + toString(padZeros) << endl;
-//                                for( int i = 0; i < resultsSize; i++ ) {
-//                                    if( results1[i] != results2[i] ) {
-//                                        cout << "mismatch, i = " + toString(i) + 
-//                                            " batchSize " + toString(batchSize ) +
-//                                            " inputBoardSize " + toString(inputBoardSize ) +
-//                                            " numInputPlanes=" + toString(numInputPlanes) +
-//                                            " numFilters=" + toString(numFilters) +
-//                                            " filterSize=" + toString(filterSize) +
-//                                            " biased=" + toString(biased) +
-//                                            " padZeros=" + toString(padZeros) << endl;
-//                                        for( int i = 0; i < 2 * resultsSize; i++ ) {
-//                                            cout << "results[" << i << "]=" << results1[i] << " " << results2[i] << std::endl;
-//                                        }
-//                                        throw std::runtime_error("mismatch, i = " + toString(i) + 
-//                                            " batchSize " + toString(batchSize ) +
-//                                            " inputBoardSize " + toString(inputBoardSize ) +
-//                                            " numInputPlanes=" + toString(numInputPlanes) +
-//                                            " numFilters=" + toString(numFilters) +
-//                                            " filterSize=" + toString(filterSize) +
-//                                            " biased=" + toString(biased) +
-//                                            " padZeros=" + toString(padZeros) );
-//                                    }
-//                                }
-//                                delete[] results1;
-//                                delete[] results2;
-//                                delete p1;
-//                                delete p2;
-//                            }
-//                        }
-//                     }
-//                }
-//            }
-//        }
-//    }
-//    delete[] inputs;
-//    delete[] filters;
-//    delete[] biasFilters;
-//    delete cl;
+//TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
+//    LayerDimensions dim;
+//    const int boardSize = 9;
+//    dim.setInputPlanes( 4 ).setInputBoardSize(boardSize).setNumFilters( 4 ).setFilterSize( 5 )
+//        .setPadZeros( true ).setBiased( false );    
+//    compareSpecific( 4, dim, new ReluActivation(), 1, 6 );
 //}
 
 TEST( testpropagate, softmax ) {
@@ -967,7 +701,39 @@ TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 500 ).setFilterSize( 19 )
         .setPadZeros( false ).setBiased( true );  
-    testPerf( 5, batchSize, dim, new TanhActivation() );
+    testPerf( -1, batchSize, dim, new TanhActivation() );
+}
+
+TEST( SLOW_testpropagate, perf_mnist_firstconvlayer ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    testPerf( -1, batchSize, dim, new ReluActivation() );
+}
+
+TEST( SLOW_testpropagate, perf_mnist_intlayers_128ex ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    testPerf( -1, batchSize, dim, new ReluActivation() );
+}
+
+TEST( SLOW_testpropagate, perf_mnist_intlayers_1024ex ) {
+    int batchSize = 1024;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    testPerf( -1, batchSize, dim, new ReluActivation() );
+}
+
+TEST( SLOW_testpropagate, perf_mnist_finallayer ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 10 ).setFilterSize( 28 )
+        .setPadZeros( false ).setBiased( true );    
+    testPerf( -1, batchSize, dim, new ReluActivation() );
 }
 
 TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
@@ -981,12 +747,4 @@ TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
         .setPadZeros( true ).setBiased( true );  
     testPerf( instance, batchSize, dim, new TanhActivation() );
 }
-
-//TEST( SLOW_testpropagate, perf_kgsgo_64c7_6 ) {
-//    int batchSize = 128;
-//    LayerDimensions dim;
-//    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
-//        .setPadZeros( true ).setBiased( true );  
-//    testPerf( 6, batchSize, dim, new TanhActivation() );
-//}
 

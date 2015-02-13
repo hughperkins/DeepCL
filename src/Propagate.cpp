@@ -43,6 +43,8 @@ STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions laye
 STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
         return new PropagateCpu( cl, layerDimensions, fn );
+    } else if( idx == -1 ) {
+        return instance( cl, layerDimensions, fn );
     } else if( idx == 1 ) {
         return new Propagate1( cl, layerDimensions, fn );
     } else if( idx == 2 ) {
