@@ -35,6 +35,13 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     float *results1 = new float[results1Size];
     CLWrapper *results1Wrapper = cl->wrap( results1Size, results1 );
 
+    int MBAllocRequired = batchSize * dim.numFilters * dim.outputBoardSizeSquared * dim.numInputPlanes * 4 / 1024 / 1024;
+    if( MBAllocRequired >= cl->getMaxAllocSizeMB() ) {
+        throw runtime_error( "memallocsize too small to use this kernel on this device.  Need: " + 
+            toString( MBAllocRequired ) + "MB, but only have: " + 
+            toString( cl->getMaxAllocSizeMB() ) + "MB max alloc size" );
+    }
+
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);

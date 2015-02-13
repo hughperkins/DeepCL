@@ -17,6 +17,7 @@
 #include "PropagateFc.h"
 #include "PropagateByInputPlane.h"
 #include "PropagateExperimental.h"
+#include "PropagateAuto.h"
 #include "StatefulTimer.h"
 
 using namespace std;
@@ -40,11 +41,26 @@ STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, Act
 STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     return new Propagate1( cl, layerDimensions, fn );
 }
+STATIC int Propagate::getNumImplementations() {
+    return 7;
+}
+STATIC bool Propagate::plausiblyOptimal( int index, int batchSize, LayerDimensions dim, ActivationFunction const*fn ) {
+    if( index == 0 ) { 
+        return false;
+    }
+    if( index > 6 ) {
+        return false;
+    }
+    return true;
+}
 STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
     if( idx == 0 ) {
         return new PropagateCpu( cl, layerDimensions, fn );
     } else if( idx == -1 ) {
         return instance( cl, layerDimensions, fn );
+    } else if( idx == -2 ) {
+        cout << "Propagate::instanceSpeicfic, choosing: PropagateAuto" << endl;
+        return new PropagateAuto( cl, layerDimensions, fn );
     } else if( idx == 1 ) {
         return new Propagate1( cl, layerDimensions, fn );
     } else if( idx == 2 ) {
