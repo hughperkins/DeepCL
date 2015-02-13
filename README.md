@@ -560,7 +560,7 @@ make unittests
 ./unittests --gtest_filter=-*SLOW*
 ```
 * Actually, by default, with no arguments, the argument `--gtest_filter=-SLOW*` will be appended automatically
-* Also, rather than having to type `--gtest_filter=[something]`, you can just type `filter=[something]`, as long as this is the first argument in the commandline
+* Also, rather than having to type `--gtest_filter=[something]`, you can just type `tests=[something]`, and this will be converted into `--gtest_filter=[something]` automatically
 
 Formulae notes
 ==============

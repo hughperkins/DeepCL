@@ -20,12 +20,16 @@ GTEST_API_ int main(int argc, char **argv) {
     // add filter on slow by default
     bool deleteargv = false;
     // add filter= option, easier to type than --gtest_filter= ...
-    if( argc >= 2 && split( string( argv[1] ), "=" )[0] == "filter" ) {
-        // replace with "--gtest_filter=..."
-        string newarg = string("--gtest_filter=") + split( string( argv[1] ), "=" )[1];
-        char *newargchar = new char[ newarg.length() + 1 ];
-        strcpy_safe( newargchar, newarg.c_str(), newarg.length() );
-        argv[1] = newargchar;
+    for( int i = 1; i < argc; i++ ) {
+//    if( argc >= 2 && ( split( string( argv[1] ), "=" )[0] == "filter"
+//        || split( string( argv[1] ), "=" )[0] == "gfilter" ) ) {
+        if( split( string( argv[i] ), "=" )[0] == "tests" ) {
+            // replace with "--gtest_filter=..."
+            string newarg = string("--gtest_filter=") + split( string( argv[i] ), "=" )[1];
+            char *newargchar = new char[ newarg.length() + 1 ];
+            strcpy_safe( newargchar, newarg.c_str(), newarg.length() );
+            argv[i] = newargchar;
+        }
     }
     // default to -SLOW*
     if( argc == 1 ) {
