@@ -22,14 +22,14 @@
 
 #ifdef gOutputBoardSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-// workgroup id organized like: [imageid][outplane]
+// workgroup id organized like: [n][filterid]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [upstreamplane][filterrow][filtercol]
 // number workgroups = 32
 // one filter plane takes up 5 * 5 * 4 = 100 bytes
 // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
-// results are organized like [imageid][filterid][row][col]
+// results are organized like [n][filterid][outrow][outcol]
 void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     const int pixelsPerThread,
       global const float *images, global const float *filters, 
@@ -98,7 +98,9 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     #endif
     // results are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + effectiveLocalId;
-    results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+    if( localId < gOutputBoardSizeSquared ) {
+        results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+    }
     // results[resultIndex ] = 123;
     //if( globalId == 0 ) results[0] += 0.000001f + _perPixelSums[0];
 }

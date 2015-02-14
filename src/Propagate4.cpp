@@ -31,7 +31,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     }
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
+    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
 
     kernel->in(batchSize);
     kernel->in( pixelsPerThread );
@@ -39,7 +39,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-//    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
+    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
     kernel->localFloats( square( dim.filterSize ) );
 //    kernel->localFloats( pixelsPerThread * workgroupsize );
@@ -83,14 +83,14 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "\n" 
     "#ifdef gOutputBoardSize // for previous tests that dont define it\n" 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "// workgroup id organized like: [imageid][outplane]\n" 
+    "// workgroup id organized like: [n][filterid]\n" 
     "// local id organized like: [outrow][outcol]\n" 
     "// each thread iterates over: [upstreamplane][filterrow][filtercol]\n" 
     "// number workgroups = 32\n" 
     "// one filter plane takes up 5 * 5 * 4 = 100 bytes\n" 
     "// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)\n" 
     "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
-    "// results are organized like [imageid][filterid][row][col]\n" 
+    "// results are organized like [n][filterid][outrow][outcol]\n" 
     "void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,\n" 
     "    const int pixelsPerThread,\n" 
     "      global const float *images, global const float *filters,\n" 
@@ -159,7 +159,9 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "    #endif\n" 
     "    // results are organized like [imageid][filterid][row][col]\n" 
     "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + effectiveLocalId;\n" 
-    "    results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
+    "    if( localId < gOutputBoardSizeSquared ) {\n" 
+    "        results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
+    "    }\n" 
     "    // results[resultIndex ] = 123;\n" 
     "    //if( globalId == 0 ) results[0] += 0.000001f + _perPixelSums[0];\n" 
     "}\n" 
