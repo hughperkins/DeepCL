@@ -55,7 +55,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     }
     int numWorkgroups = dim.numInputPlanes;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+    cout << "propagatebyinputplane numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " numinputplanes=" << dim.numInputPlanes << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
 //    results1Wrapper->copyToHost();
