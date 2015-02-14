@@ -62,6 +62,7 @@ void kernel propagate_byinputplane( const int batchSize,
             }
             barrier(CLK_LOCAL_MEM_FENCE);
             // calc results for each [outrow][outcol]
+            bool filterPlaneOk = filterId < gNumFilters;
             for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
                 float sum = 0;
                 for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
@@ -69,13 +70,13 @@ void kernel propagate_byinputplane( const int batchSize,
                     #if gPadZeros == 1
                         inRow -= gHalfFilterSize;
                     #endif
-                    bool rowOk = ( inRow >= 0 ) && ( inRow < gInputBoardSize );
+                    bool rowOk = filterPlaneOk && inRow >= 0 && inRow < gInputBoardSize;
                     for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
                         int inCol = outCol + filterCol;
                         #if gPadZeros == 1
                             inCol -= gHalfFilterSize;
                         #endif
-                        bool process = rowOk && ( inCol >= 0 ) && ( inCol < gInputBoardSize );
+                        bool process = rowOk && inCol >= 0 && inCol < gInputBoardSize;
                         if( process ) {
                             float imageValue = _inputPlane[ inRow * gInputBoardSize + inCol ];
                             float filterValue = _localFilterPlane[ filterRow * gFilterSize + filterCol ];
@@ -91,6 +92,7 @@ void kernel propagate_byinputplane( const int batchSize,
                         * gOutputBoardSize + outCol )
                         * gNumInputPlanes + inputPlaneId;
                     results[resultIndex] = sum;
+                    //if( globalId == 2 ) results[0] = resultIndex;
 //                    results[resultIndex] = outRow;
                 }
 //                results[localId] = _localFilterPlane[localId];
