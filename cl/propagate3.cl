@@ -18,8 +18,6 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
     local float *_upstreamBoard, local float *_filterCube ) {
     const int globalId = get_global_id(0);
 
-//    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
-
     const int workgroupId = get_group_id(0);
     const int workgroupSize = get_local_size(0);
     const int n = workgroupId / gNumFilters;
@@ -60,11 +58,17 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
         barrier(CLK_LOCAL_MEM_FENCE);
         int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
         for( int u = minu; u <= maxu; u++ ) {
-            int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+            int inputRow = outputRow + u;
+            #if gPadZeros == 0
+                inputRow += gHalfFilterSize;
+            #endif
             int inputboardrowoffset = inputRow * gInputBoardSize;
             int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
             for( int v = minv; v <= maxv; v++ ) {
-                int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                int inputCol = outputCol + v;
+                #if gPadZeros == 0
+                    inputCol += gHalfFilterSize;
+                #endif
                 if( localId < gOutputBoardSizeSquared ) {
                     sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                 }

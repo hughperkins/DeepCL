@@ -505,6 +505,91 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
     delete[] biasFilters;
 }
 
+// first, compare the slow, but probably correct, cpu version, with propagate1
+// propagate1 is slow-ish, but faster than cpu, and simple, so more likely to be correct
+// then compare propagate1 with each other type
+TEST( testpropagate, compare_0_1_biased_nopad ) {
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 1;
+    int N = 4;
+    string activationName = "tanh";
+    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+        .setFilterSize( 5 )
+        .setPadZeros( false ).setBiased( true );    
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+    compareSpecific( N, batchSize, dim, fn, 0, 1 );
+}
+
+TEST( testpropagate, compare_0_1_biased_pad ) {
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 1;
+    int N = 4;
+    string activationName = "tanh";
+    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+        .setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+    compareSpecific( N, batchSize, dim, fn, 0, 1 );
+}
+
+TEST( testpropagate, compare_1_n_biased_nopad ) {
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 1;
+    int N = 4;
+    string activationName = "tanh";
+    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+        .setFilterSize( 5 )
+        .setPadZeros( false ).setBiased( true );    
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+    for( int instance = 2; instance <= 6; instance++ ) {
+        if( instance == 5 ) {
+            continue; // propagatefc, cant use for inputboardsize != filtersize
+        }
+        cout << "instance: " << instance << endl;
+        compareSpecific( N, batchSize, dim, fn, 1, instance );
+    }
+}
+
+TEST( testpropagate, compare_1_n_biased_pad ) {
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 1;
+    int N = 4;
+    string activationName = "tanh";
+    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+        .setFilterSize( 5 )
+        .setPadZeros( true ).setBiased( true );    
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+    for( int instance = 2; instance <= 6; instance++ ) {
+        if( instance == 5 ) {
+            continue; // propagatefc, cant use for inputboardsize != filtersize
+        }
+        cout << "instance: " << instance << endl;
+        compareSpecific( N, batchSize, dim, fn, 1, instance );
+    }
+}
+
+TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, since fc wont work with pad
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 1;
+    int N = 4;
+    string activationName = "tanh";
+    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+        .setFilterSize( 19 )
+        .setPadZeros( false ).setBiased( true );    
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+    compareSpecific( N, batchSize, dim, fn, 1, 5 );
+}
+
 //TEST( SLOW_testpropagate, comparespecific ) {
 //    LayerDimensions dim;
 //    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
