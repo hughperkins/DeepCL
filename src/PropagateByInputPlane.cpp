@@ -31,7 +31,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
 
     // [n][filterId][outRow][outCol][inputPlane]
     int results1Size = batchSize * dim.numFilters * dim.outputBoardSizeSquared * dim.numInputPlanes;
-    cout << "results1size: " << results1Size << endl;
+//    cout << "results1size: " << results1Size << endl;
     float *results1 = new float[results1Size];
     CLWrapper *results1Wrapper = cl->wrap( results1Size, results1 );
 
