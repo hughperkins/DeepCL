@@ -20,7 +20,7 @@ void kernel propagate_byinputplane( const int batchSize,
       global const float *images, global const float *filters, 
     global float *results,
     local float *_inputPlane, local float *_filterPlanes ) {
-    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
+//    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
 
     const int globalId = get_global_id(0);
     const int workgroupId = get_group_id(0);
@@ -43,12 +43,10 @@ void kernel propagate_byinputplane( const int batchSize,
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numFilterCopyLoops; i++ ) {
             const int offset = i * gOutputBoardSize + outRow;
-            if( filterId < gNumFilters ) {
-                if( offset < gFilterSizeSquared ) {
-                    _localFilterPlane[ offset ] = globalFilterPlane[ offset ];
-                }
+            bool process = filterId < gNumFilters && offset < gFilterSizeSquared;
+            if( process ) {
+                _localFilterPlane[ offset ] = globalFilterPlane[ offset ];
             }
-//            results[offset] = _localFilterPlane[ offset ];
         }
         // loop over n ...
         for( int n = 0; n < batchSize; n++ ) {
@@ -67,17 +65,15 @@ void kernel propagate_byinputplane( const int batchSize,
             for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
                 float sum = 0;
                 for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
-                    #if gPadZeros == 1
-                    int inRow = outRow + filterRow - gHalfFilterSize;
-                    #else
                     int inRow = outRow + filterRow;
+                    #if gPadZeros == 1
+                        inRow -= gHalfFilterSize;
                     #endif
                     bool rowOk = ( inRow >= 0 ) && ( inRow < gInputBoardSize );
                     for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
-                        #if gPadZeros == 1
-                        int inCol = outCol + filterCol - gHalfFilterSize;
-                        #else
                         int inCol = outCol + filterCol;
+                        #if gPadZeros == 1
+                            inCol -= gHalfFilterSize;
                         #endif
                         bool process = rowOk && ( inCol >= 0 ) && ( inCol < gInputBoardSize );
                         if( process ) {

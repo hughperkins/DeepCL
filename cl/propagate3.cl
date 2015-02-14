@@ -59,18 +59,20 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
-        if( localId < gOutputBoardSizeSquared ) {
-            for( int u = minu; u <= maxu; u++ ) {
-                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
-                int inputboardrowoffset = inputRow * gInputBoardSize;
-                int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-                for( int v = minv; v <= maxv; v++ ) {
-                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+        for( int u = minu; u <= maxu; u++ ) {
+            int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+            int inputboardrowoffset = inputRow * gInputBoardSize;
+            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+            for( int v = minv; v <= maxv; v++ ) {
+                int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                if( localId < gOutputBoardSizeSquared ) {
                     sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                 }
             }
         }
     }
+
+
     // results are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
     if( localId < gOutputBoardSizeSquared ) {

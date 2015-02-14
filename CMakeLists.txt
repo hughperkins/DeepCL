@@ -48,7 +48,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
-    PropagateExperimental.cpp PropagateAuto.cpp
+    PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})

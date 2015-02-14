@@ -8,6 +8,9 @@
 
 #include "Propagate.h"
 
+#define STATIC static
+#define VIRTUAL virtual
+
 class PropagateFc : public Propagate {
 public:
     CLKernel *kernel1;
@@ -15,6 +18,7 @@ public:
     CLKernel *kernel_activate;
 //    CLKernel *kPerElementAdd;
     CLKernel *kPerElementTiledAdd;
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()

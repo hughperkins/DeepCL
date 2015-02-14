@@ -45,6 +45,14 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     cl->finish();
     StatefulTimer::timeCheck("Propagate3::propagate after kernel1");
 
+//    {
+//        resultsWrapper->copyToHost();
+//        float const *results = reinterpret_cast< float const *>( resultsWrapper->getHostArray() );
+//        for( int i = 0; i < min( 64, resultsWrapper->size() ); i++ ) {
+//            cout << "results[" << i << "]=" << results[i] << endl;
+//        }
+//    }
+
     if( dim.biased ) {
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize )
             ->in( dim.numFilters )
@@ -147,18 +155,20 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "        }\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        int filterBoardOffset = upstreamPlane * gFilterSizeSquared;\n" 
-    "        if( localId < gOutputBoardSizeSquared ) {\n" 
-    "            for( int u = minu; u <= maxu; u++ ) {\n" 
-    "                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
-    "                int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
-    "                int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "                for( int v = minv; v <= maxv; v++ ) {\n" 
-    "                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "        for( int u = minu; u <= maxu; u++ ) {\n" 
+    "            int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "            int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
+    "            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "            for( int v = minv; v <= maxv; v++ ) {\n" 
+    "                int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
+    "                if( localId < gOutputBoardSizeSquared ) {\n" 
     "                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
     "                }\n" 
     "            }\n" 
     "        }\n" 
     "    }\n" 
+    "\n" 
+    "\n" 
     "    // results are organized like [imageid][filterid][row][col]\n" 
     "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
     "    if( localId < gOutputBoardSizeSquared ) {\n" 

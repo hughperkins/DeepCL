@@ -22,7 +22,7 @@ void DimFromArgs::arg( LayerDimensions *p_dim ) {
     TestArgsParser::arg( "filtersize", &(p_dim->filterSize) );
     TestArgsParser::arg( "padzeros", &(p_dim->padZeros) );
     TestArgsParser::arg( "biased", &(p_dim->biased) );
-    p_dim->deriveOthers();
+//    cout << "DimFromArgs::arg() " << *p_dim << endl;
 }
 
 

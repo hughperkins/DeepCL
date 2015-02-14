@@ -80,23 +80,7 @@ public:
         deriveOthers();
         return *this;
     }
-    void deriveOthers() {
-        this->numInputPlanes = inputPlanes;
-        this->isEven = filterSize % 2 == 0;
-        outputBoardSize = padZeros ? 
-                ( filterSize % 2 == 0 ? inputBoardSize / ( skip + 1 ) + 1 : inputBoardSize / ( skip + 1 ) ) :
-                ( inputBoardSize - filterSize ) / ( skip + 1 ) + 1;
-
-        inputBoardSizeSquared = inputBoardSize * inputBoardSize;
-        filterSizeSquared = filterSize * filterSize;
-        outputBoardSizeSquared = outputBoardSize * outputBoardSize;
-
-        inputCubeSize = inputPlanes * inputBoardSizeSquared;
-        filtersSize = inputPlanes * numFilters * filterSizeSquared;
-        outputCubeSize = numFilters * outputBoardSizeSquared;
-
-        halfFilterSize = filterSize >> 1;
-    }
+    void deriveOthers();
     std::string buildOptionsString();
 };
 

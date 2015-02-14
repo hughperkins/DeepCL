@@ -21,6 +21,25 @@ ostream &operator<<( ostream &os, const LayerDimensions &dim ) {
     return os;
 }
 
+void LayerDimensions::deriveOthers() {
+    this->numInputPlanes = inputPlanes;
+    this->isEven = filterSize % 2 == 0;
+    this->outputBoardSize = padZeros ? 
+            ( filterSize % 2 == 0 ? inputBoardSize / ( skip + 1 ) + 1 : inputBoardSize / ( skip + 1 ) ) :
+            ( inputBoardSize - filterSize ) / ( skip + 1 ) + 1;
+
+    this->inputBoardSizeSquared = inputBoardSize * inputBoardSize;
+    this->filterSizeSquared = filterSize * filterSize;
+    this->outputBoardSizeSquared = outputBoardSize * outputBoardSize;
+
+    this->inputCubeSize = inputPlanes * inputBoardSizeSquared;
+    this->filtersSize = inputPlanes * numFilters * filterSizeSquared;
+    this->outputCubeSize = numFilters * outputBoardSizeSquared;
+
+    this->halfFilterSize = filterSize >> 1;
+//    cout << "deriveOthers()" << *this << endl;
+}
+
 string LayerDimensions::buildOptionsString() {
     string options = "";
     if( biased ) {

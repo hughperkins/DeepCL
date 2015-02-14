@@ -132,6 +132,7 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
     int allocatedResultsSize = std::max(5000, outputDataSize );
     float *results = new float[allocatedResultsSize];
     CLWrapper *resultsWrapper = cl->wrap( allocatedResultsSize, results );
+    cl->finish();
 
     StatefulTimer::timeCheck("Propagate::propagate after copied to device");
     propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,

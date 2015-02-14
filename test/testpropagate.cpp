@@ -393,6 +393,7 @@ TEST( testpropagate, test3 ) {
 }
 
 void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
+    cout << dim << endl;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
     int inputsSize = N * dim.inputCubeSize;
@@ -422,7 +423,7 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
     WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
-    for( int i = 0; i < 4; i++ ) {
+    for( int i = 0; i < 8; i++ ) {
         cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
 
@@ -434,26 +435,29 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
     Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
     Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim, fn );
 
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int thisBatchSize = batchSize;
-        if( batch == numBatches - 1 ) {
-            thisBatchSize = N - batch * batchSize;
+    for( int instance = 0; instance < 2; instance++ ) {
+        Propagate *thisPropagate = 0;
+        float *thisResults = 0;
+        if( instance == 0 ) { 
+            thisPropagate = p1;
+            thisResults = results1;
         }
-        float *results1temp = p1->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters );
-        memcpy( results1 + batch * batchSize * dim.outputCubeSize, results1temp, thisBatchSize * dim.outputCubeSize );
-        delete[] results1temp;
-    }
-    StatefulTimer::dump(true);
-    for( int batch = 0; batch < numBatches; batch++ ) {
-        int thisBatchSize = batchSize;
-        if( batch == numBatches - 1 ) {
-            thisBatchSize = N - batch * batchSize;
+        if( instance == 1 ) {
+            thisPropagate = p2;
+            thisResults = results2;
         }
-        float *results2temp = p2->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters );
-        memcpy( results2 + batch * batchSize * dim.outputCubeSize, results2temp, thisBatchSize * dim.outputCubeSize );
-        delete[] results2temp;
+        for( int batch = 0; batch < numBatches; batch++ ) {
+            int thisBatchSize = batchSize;
+            if( batch == numBatches - 1 ) {
+                thisBatchSize = N - batch * batchSize;
+            }
+            cout << "batch " << batch << " batchsize " << thisBatchSize << endl;
+            float *resultstemp = thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters );
+            memcpy( thisResults + batch * batchSize * dim.outputCubeSize, resultstemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
+            delete[] resultstemp;
+        }
+        StatefulTimer::dump(true);
     }
-    StatefulTimer::dump(true);
 
     cout << dim << endl;
     bool same = true;
@@ -535,27 +539,32 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
 TEST( SLOW_testpropagate, compare_args ) {
     LayerDimensions dim;
     int batchSize = 128;
-    int boardSize = 19;
-    int filterSize = 7;
-    int inputPlanes = 64;
-    int numFilters = 64;
+//    int boardSize = 19;
+//    int filterSize = 7;
+//    int inputPlanes = 64;
+//    int numFilters = 64;
     int instance0 = 1;
     int instance1 = 3;
     int N = 128;
     string activationName = "tanh";
+    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 )
+        .setFilterSize( 7 )
+        .setPadZeros( true ).setBiased( false );    
+
     TestArgsParser::arg( "n", &N );
+    DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
-    TestArgsParser::arg( "boardsize", &boardSize );
+//    TestArgsParser::arg( "boardsize", &boardSize );
     TestArgsParser::arg( "batchsize", &batchSize );
-    TestArgsParser::arg( "filtersize", &filterSize );
-    TestArgsParser::arg( "inputplanes", &inputPlanes );
-    TestArgsParser::arg( "numfilters", &numFilters );
+//    TestArgsParser::arg( "filtersize", &filterSize );
+//    TestArgsParser::arg( "inputplanes", &inputPlanes );
+//    TestArgsParser::arg( "numfilters", &numFilters );
     TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::go();
+    dim.deriveOthers();
+
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    dim.setInputPlanes( inputPlanes ).setInputBoardSize(boardSize).setNumFilters( numFilters ).setFilterSize( filterSize )
-        .setPadZeros( true ).setBiased( false );    
     compareSpecific( N, batchSize, dim, fn, instance0, instance1 );
 }
 
