@@ -83,6 +83,7 @@ public:
     void print();
     void printWeights();
     void printOutput();
+    std::string asString();
 
     // [[[end]]]
 };

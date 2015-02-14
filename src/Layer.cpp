@@ -49,10 +49,10 @@ VIRTUAL CLWrapper *Layer::getResultsWrapper() {
 VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
     throw std::runtime_error("getActivationFunction not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-VIRTUAL int Layer::getResultsSize() const {
-    throw std::runtime_error("getResultsSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
- //     return numPlanes * boardSize * boardSize * batchSize;
-}
+//VIRTUAL int Layer::getResultsSize() const {
+//    throw std::runtime_error("getResultsSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+// //     return numPlanes * boardSize * boardSize * batchSize;
+//}
 VIRTUAL int Layer::getOutputCubeSize() const {
     throw std::runtime_error("getOutputCubeSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
  //     return numPlanes * boardSize * boardSize * batchSize;

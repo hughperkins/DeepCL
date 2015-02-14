@@ -31,6 +31,7 @@ public:
     virtual float * getResults() = 0;
 //    virtual Layer *clone() = 0;
     virtual int getPersistSize() const = 0;
+    virtual int getResultsSize() const = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -48,7 +49,6 @@ public:
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL ActivationFunction const*getActivationFunction();
-    VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputBoardSize() const;

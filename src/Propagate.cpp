@@ -29,7 +29,8 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
-    return new PropagateAuto( cl, dim, fn );
+    //return new PropagateAuto( cl, dim, fn );
+    return new Propagate1( cl, dim, fn );
 
 //    if( dim.filterSize == dim.inputBoardSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {

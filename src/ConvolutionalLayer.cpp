@@ -34,7 +34,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         biasWeights(0),
         errorsForUpstreamCopiedToHost( false ),
         cl( cl ),
-        batchSize( batchSize ),
+        batchSize( 0 ),
         backpropErrorsImpl(0),
         activationFunction( maker->_activationFunction ) {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
@@ -246,6 +246,9 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     }
 }
 VIRTUAL void ConvolutionalLayer::propagate() {
+    if( batchSize == 0 ) {
+        throw runtime_error("Need to call setBatchSize(size) before calling propagate etc");
+    }
 //    if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
 ////        propagate2();
 //    } else {

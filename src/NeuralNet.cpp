@@ -284,11 +284,12 @@ VIRTUAL int NeuralNet::getResultsSize() const {
     return getLastLayer()->getResultsSize();
 }
 void NeuralNet::print() {
-    int i = 0; 
-    for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        std::cout << "layer " << i << ":" << (*it)->asString() << endl;
-        i++;
-    }
+    cout << this->asString();
+//    int i = 0; 
+//    for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
+//        std::cout << "layer " << i << ":" << (*it)->asString() << endl;
+//        i++;
+//    }
 }
 void NeuralNet::printWeights() {
     int i = 0; 
@@ -305,6 +306,15 @@ void NeuralNet::printOutput() {
         (*it)->printOutput();
         i++;
     }
+}
+std::string NeuralNet::asString() {
+    std::string result = "";
+    int i = 0; 
+    for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
+        result += "layer " + toString( i ) + ":" + (*it)->asString() + "\n";
+        i++;
+    }    
+    return result;
 }
 
 //template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();

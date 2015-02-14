@@ -78,26 +78,11 @@ public:
 };
 
 //void test( int batchSize, float learningRate, int boardSize, int numLayers, int filterSize, int numFilters ) {
-void test( TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
-    for( int i = 0; i < args.numLayers; i++ ) {
-        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased() );
-        if( args.poolingSize > 0 ) {
-            net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
-        }
-    }
-    if( args.softMax ) {
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->linear()->biased() );
-        net->addLayer( SoftMaxMaker::instance() );
-    } else {
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->tanh()->biased() );
-        net->addLayer( SquareLossMaker::instance() );;
-    }
-    net->print();
-    net->setBatchSize(args.batchSize);
+void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
+    net->setBatchSize( batchSize );
     mt19937 random;
     random.seed(0); // so always gives same results
-    const int inputsSize = net->getInputCubeSize() * args.batchSize;
+    const int inputsSize = net->getInputCubeSize() * batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
@@ -108,8 +93,11 @@ void test( TestArgs args ) {
         expectedResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-    for (int layerIndex = 1; layerIndex <= args.numLayers; layerIndex++ ) {
-        ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
+    for (int layerIndex = 1; layerIndex < net->getNumLayers(); layerIndex++ ) {
+        ConvolutionalLayer *layer = dynamic_cast< ConvolutionalLayer * >( net->layers[layerIndex] );
+        if( layer == 0 ) {
+            continue;
+        }
         int weightsSize = layer->getWeightsSize();
 //        cout << "weightsSize, layer " << 1 << "= " << weightsSize << endl;
         for( int i = 0; i < weightsSize; i++ ) {
@@ -129,37 +117,38 @@ void test( TestArgs args ) {
     WeightsPersister::copyNetWeightsToArray( net, lastWeights );
 //    cout << "learningRate: " << args.learningRate << endl;
     float lastloss = 0;
-    for( int i = 0; i < args.numEpochs; i++ ) {
+    for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedResults );
         net->propagate( inputData );
-        net->backProp( args.learningRate, expectedResults );
+        net->backProp( learningRate, expectedResults );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int i = 0; i < weightsTotalSize; i++ ) {
             float thisdiff = currentWeights[i] - lastWeights[i];
             sumsquaredweightsdiff += thisdiff * thisdiff;
         }
-        float lossChangeFromW = (sumsquaredweightsdiff/args.learningRate);
+        float lossChangeFromW = (sumsquaredweightsdiff/learningRate);
         float thisloss = net->calcLoss( expectedResults ) ;
         float lossChange = (lastloss - thisloss );
-//        cout << "loss " << thisloss << " loss diff " << lossChange << endl;
-//        cout << "compare:" << endl;
+//        cout << "i=" << i << endl;
+////        cout << "loss " << thisloss << " loss diff " << lossChange << endl;
+////        cout << "compare:" << endl;
 //        cout << "    losschangefromw " << lossChangeFromW << endl;
 //        cout << "    actual loss change " << lossChange << endl;
         if( isnan( lossChange ) ) {
-            cout << "compare:" << endl;
+            cout << "compare i=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
             EXPECT_TRUE( !isnan( lossChange ) );
         }
         if( lossChange / lossChangeFromW > 1.3f ) {
-            cout << "compare:" << endl;
+            cout << "compare i=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
             cout << "loss: " << lastloss << " -> " << thisloss << endl;
             EXPECT_EQ( lossChange, lossChangeFromW );
         } else if( lossChangeFromW / lossChange > 1.3f ) {
-            cout << "compare:" << endl;
+            cout << "compare i=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
             cout << "loss: " << lastloss << " -> " << thisloss << endl;
@@ -179,26 +168,45 @@ void test( TestArgs args ) {
     delete[]lastWeights;
     delete[] expectedResults;
     delete[] inputData;
+}
+
+void test( ActivationFunction *fn, TestArgs args ) {
+    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
+    for( int i = 0; i < args.numLayers; i++ ) {
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->fn(fn)->biased() );
+        if( args.poolingSize > 0 ) {
+            net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
+        }
+    }
+    if( args.softMax ) {
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->linear()->biased() );
+        net->addLayer( SoftMaxMaker::instance() );
+    } else {
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->tanh()->biased() );
+        net->addLayer( SquareLossMaker::instance() );;
+    }
+    net->print();
+    test( args.learningRate, args.numEpochs, args.batchSize, net );
     delete net;
 }
 
 TEST( testsinglebatch, boardsize5_filtersize3_batchsize2 ) {
-    test( TestArgs::instance().BatchSize(2).LearningRate(0.01f).BoardSize(5).NumLayers(1)
+    test( new LinearActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.00001f).BoardSize(5).NumLayers(1)
             .FilterSize(3).NumFilters(5).NumEpochs(20) );
 }
 
 TEST( testsinglebatch, boardsize5_filtersize3_batchsize2_10filters ) {
-    test( TestArgs::instance().BatchSize(2).LearningRate(0.01f).BoardSize(5).NumLayers(1)
+    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.01f).BoardSize(5).NumLayers(1)
             .FilterSize(3).NumFilters(10).NumEpochs(100) );
 }
 
 TEST( testsinglebatch, boardsize28 ) {
-    test( TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(28).NumLayers(1)
+    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(28).NumLayers(1)
             .FilterSize(3).NumFilters(10).NumEpochs(100) );
 }
 
 TEST( testsinglebatch, boardsize28_filtersize5 ) {
-    test( TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(28).NumLayers(1)
+    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(28).NumLayers(1)
             .FilterSize(5).NumFilters(10).NumEpochs(100) );
 }
 
@@ -265,9 +273,9 @@ void testLabelled( TestArgs args ) {
         float lossChange = (lastloss - thisloss );
 //        cout << "loss " << thisloss << " loss diff " << lossChange << endl;
         if( i > 0 ) {
-            cout << "compare:" << endl;
-            cout << "    losschangefromw " << lossChangeFromW << endl;
-            cout << "    actual loss change " << lossChange << endl;
+//            cout << "compare:" << endl;
+//            cout << "    losschangefromw " << lossChangeFromW << endl;
+//            cout << "    actual loss change " << lossChange << endl;
             if( isnan( lossChange ) ) {
                 cout << "epoch " << i << endl;
                 cout << "compare:" << endl;

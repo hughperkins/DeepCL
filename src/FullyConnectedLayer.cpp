@@ -18,7 +18,8 @@ FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer
         Layer( previousLayer, maker ),
         numPlanes( maker->_numPlanes ),
         boardSize( maker->_boardSize ),
-        fn( maker->_activationFunction ) {
+        fn( maker->_activationFunction ),
+        batchSize(0) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * boardSize * boardSize )
                       ->filterSize( previousLayer->getOutputBoardSize() )
