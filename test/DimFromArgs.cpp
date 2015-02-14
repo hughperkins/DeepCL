@@ -17,6 +17,7 @@ using namespace std;
 
 void DimFromArgs::arg( LayerDimensions *p_dim ) {
     TestArgsParser::arg( "inputplanes", &(p_dim->inputPlanes) );
+    TestArgsParser::arg( "numinputplanes", &(p_dim->inputPlanes) );
     TestArgsParser::arg( "inputboardsize", &(p_dim->inputBoardSize) );
     TestArgsParser::arg( "numfilters", &(p_dim->numFilters) );
     TestArgsParser::arg( "filtersize", &(p_dim->filterSize) );
