@@ -590,6 +590,18 @@ TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, sinc
     compareSpecific( N, batchSize, dim, fn, 1, 5 );
 }
 
+TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since fc wont work with pad
+    LayerDimensions dim;
+    int batchSize = 4;
+    int N = 4;
+    string activationName = "tanh";
+    dim.setInputPlanes( 10 ).setInputBoardSize(24).setNumFilters( 10 )
+        .setFilterSize( 24 )
+        .setPadZeros( false ).setBiased( true );    
+    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+    compareSpecific( N, batchSize, dim, fn, 1, 4 );
+}
+
 //TEST( SLOW_testpropagate, comparespecific ) {
 //    LayerDimensions dim;
 //    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
