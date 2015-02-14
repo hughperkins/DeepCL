@@ -47,7 +47,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     kernel->input( weightsWrapper);
     kernel->output( results1Wrapper );
     kernel->localFloats( square( dim.inputBoardSize ) );
-    kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
+    kernel->localFloats( square( dim.filterSize ) * dim.numFilters );
 
     int workgroupsize = std::max( 32, dim.numFilters * dim.outputBoardSize ); // no point in wasting threads....
     while( workgroupsize > cl->getMaxWorkgroupSize() ) {
