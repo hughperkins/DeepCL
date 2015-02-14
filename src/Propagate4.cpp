@@ -31,7 +31,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     }
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
     int globalSize = workgroupsize * numWorkgroups;
-    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
+//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
 
     kernel->in(batchSize);
     kernel->in( pixelsPerThread );
@@ -39,7 +39,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
+//    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
     kernel->localFloats( square( dim.filterSize ) );
 //    kernel->localFloats( pixelsPerThread * workgroupsize );
