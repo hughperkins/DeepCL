@@ -77,21 +77,22 @@ int main( int argc, char *argv[] ) {
     }
     cout << "best blocking: inperblock=" << bestInPerBlock << " outperblock=" << bestOutPerBlock << " cost=" << bestCost << endl;
 
-//    int blockRows = floor( sqrt( filterPlanesPerWorkgroup ) );
-//    int blockCols = ( filterPlanesPerWorkgroup + blockRows - 1 ) / blockRows;
-//    int blockLocalRows = 
-//    int numWorkgroups = ( inputPlanes * numFilters + filterPlanesPerWorkgroup - 1 ) / filterPlanesPerWorkgroup;
+    int inPerBlock = bestInPerBlock;
+    int outPerBlock = bestOutPerBlock;
+    int numInBlocks = ( dim.inputPlanes + inPerBlock - 1 ) / inPerBlock;
+    int numOutBlocks = ( dim.numFilters + outPerBlock - 1 ) / outPerBlock;
+    int numWorkgroups = numInBlocks * numOutBlocks;
 //    cout << "numWorkgroups=" << numWorkgroups << " blockRows=" << blockRows << " blockCols=" << blockCols << endl;
-//    for( int w = 0; w < numWorkgroups; w++ ) {
-////        cout << "workgroup: " << w << endl;
-//        int blockRow = w / blockCols;
-//        int blockCol = w % blockCols;
-//        cout << "workgroup=" << w << " blockRow=" << blockRow << " blockCol=" << blockCol << endl;
+    for( int w = 0; w < numWorkgroups; w++ ) {
+//        cout << "workgroup: " << w << endl;
+        int inBlockId = w / numOutBlocks;
+        int outBlockId = w % numOutBlocks;
+        cout << "workgroup=" << w << " inBlockId=" << inBlockId << " outBlockId=" << outBlockId << endl;
 ////        int ifoffset = w * filterPlanesPerWorkgroup;
 ////        for( int i = 0; i < filterPlanesPerWorkgroup; i++ ) {
 ////            //cout << ifPairs[ ifoffset + i].first << ","  << ifPairs[ ifoffset + i].second << endl;
 ////        }
-//    }
+    }
 }
 
 // eg layers of 32c5
