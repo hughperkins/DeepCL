@@ -92,11 +92,17 @@ void kernel propagate_2_by_outplane( const int batchSize,
             int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
             if( localId < gOutputBoardSizeSquared ) {
                 for( int u = minu; u <= maxu; u++ ) {
-                    int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+                    int inputRow = outputRow + u;
+                    #if gPadZeros == 0
+                         inputRow += gHalfFilterSize;
+                    #endif
                     int inputboardrowoffset = inputRow * gInputBoardSize;
                     int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
                     for( int v = minv; v <= maxv; v++ ) {
-                        int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
+                        int inputCol = outputCol + v;
+                        #if gPadZeros == 0
+                             inputCol += gHalfFilterSize;
+                        #endif
                         sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                     }
                 }
