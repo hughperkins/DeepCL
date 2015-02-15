@@ -21,31 +21,25 @@ VIRTUAL PropagateExperimental::~PropagateExperimental() {
 VIRTUAL void PropagateExperimental::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("PropagateExperimental::propagate start");
-
-    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    int pixelsPerThread = 1;
-    while( workgroupsize > maxWorkgroupSize ) {
-        workgroupsize >>= 1;
-        pixelsPerThread <<= 1;
-    }
-    int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
-    int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
+    int maxglobalId = 0;
 
     kernel->in(batchSize);
-    kernel->in( pixelsPerThread );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWeightsWrapper );
+//    if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
 //    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
     kernel->localFloats( square( dim.inputBoardSize ) );
-    kernel->localFloats( square( dim.filterSize ) );
-//    kernel->localFloats( pixelsPerThread * workgroupsize );
+    kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
 
+    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
+    int numWorkgroups = dim.numFilters * batchSize;
+    int globalSize = workgroupsize * numWorkgroups;
+//    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+
     StatefulTimer::timeCheck("PropagateExperimental::propagate after call propagate");
 }
 PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
