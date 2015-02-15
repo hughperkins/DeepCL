@@ -9,6 +9,7 @@
 
 #include "OpenCLHelper.h"
 #include "stringhelper.h"
+#include "StatefulTimer.h"
 
 #include "PoolingBackpropCpu.h"
 
@@ -51,6 +52,7 @@ VIRTUAL int PoolingBackprop::getResultsSize(int batchSize) {
     return batchSize * numPlanes * outputBoardSize * outputBoardSize;
 }
 VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream ) {
+    StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper start" );
     CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
     CLWrapper *selectorsWrapper = cl->wrap( getResultsSize(batchSize), selectors );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
@@ -65,6 +67,7 @@ VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int 
     delete errorsWrapper;
     delete selectorsWrapper;
     delete errorsForUpstreamWrapper;
+    StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper end" );
 }
 VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
     throw runtime_error("PoolingBackprop::backpropErrors wrappers not implemented" );

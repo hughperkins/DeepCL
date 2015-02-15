@@ -10,6 +10,7 @@
 
 #include "OpenCLHelper.h"
 #include "PoolingBackprop.h"
+#include "StatefulTimer.h"
 
 #include "PoolingBackpropCpu.h"
 
@@ -45,6 +46,8 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, 
 }
 VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, 
         CLWrapper *errorsForUpstreamWrapper ) {
+    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors start" );
+
     errorsWrapper->copyToHost();
     selectorsWrapper->copyToHost();
 
@@ -60,5 +63,6 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *error
 
     delete[] errorsForUpstream;
     
+    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors end" );
 }
 

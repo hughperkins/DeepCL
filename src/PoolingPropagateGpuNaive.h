@@ -22,9 +22,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
     VIRTUAL ~PoolingPropagateGpuNaive();
     VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
+    PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
 
     // [[[end]]]
 };

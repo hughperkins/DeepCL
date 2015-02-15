@@ -315,7 +315,7 @@ TEST( testpropagate, test2 ) {
     dataWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
 
-    CLKernel *convolve = cl->buildKernel( "propagate1.cl", "convolve_imagecubes_float2", "-D TANH" );
+    CLKernel *convolve = cl->buildKernel( "../cl/propagate1.cl", "convolve_imagecubes_float2", "-D TANH" );
 //    CLKernel *tanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
 
     for( int it = 0; it < 100; it ++ ) {

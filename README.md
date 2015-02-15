@@ -502,9 +502,10 @@ Note:
 
 You will need:
 - libClConvolve.so (or ClConvolve.dll)
-- *.cl files
+- ~~*.cl files~~ No longer needed :-)  They're included inside the dll/so now.
+  - (except for unittests, which should be run from inside a subdirectory of the git cloned root directory, eg from the `build`, `build-win32` or `build-win64` directory.)
 
-The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.
+~~The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.~~
 
 ## What if it doesn't run?
 
@@ -644,6 +645,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 15th February:
+  * removed runtime dependency on *.cl files
 * 13th February:
   * created PropagateAuto, which tries each kernel once, for one batch, and then picks the fastest
 * 10th February:

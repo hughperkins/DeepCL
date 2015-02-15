@@ -17,9 +17,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropWeights2ScratchLarge( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2ScratchLarge();
     VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
+    BackpropWeights2ScratchLarge( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };
