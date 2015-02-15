@@ -175,6 +175,7 @@ if( PROTOTYPING )
     add_executable( prototyping prototyping/testreduce.cpp src/stringhelper.cpp thirdparty/gtest/gtest_main.cc )
     target_link_libraries( prototyping gtest )
     target_include_directories( prototyping PRIVATE thirdparty/gtest )
+    add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
 endif( PROTOTYPING )
 
 target_link_libraries( unittests ClConvolve )
