@@ -15,7 +15,7 @@
 #elif SIGMOID
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
+    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0.0f )
 #elif defined LINEAR
     #define ACTIVATION_FUNCTION(output) (output)
 #endif

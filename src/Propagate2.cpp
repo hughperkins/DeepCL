@@ -72,7 +72,7 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "#elif SIGMOID\n" 
     "    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
     "#elif defined RELU\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
+    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0.0f )\n" 
     "#elif defined LINEAR\n" 
     "    #define ACTIVATION_FUNCTION(output) (output)\n" 
     "#endif\n" 
