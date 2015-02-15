@@ -35,7 +35,7 @@ STATIC int WeightsPersister::getTotalNumWeights( NeuralNet *net ) {
 }
 STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *target ) {
     int pos = 0;
-    for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+    for( int layerIdx = 1; layerIdx < (int)net->layers.size(); layerIdx++ ) {
         Layer *layer = net->layers[layerIdx];
         int persistSize = layer->getPersistSize();
         if( persistSize > 0 ) {
@@ -46,7 +46,7 @@ STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *targ
 }
 STATIC void WeightsPersister::copyArrayToNetWeights( float const*source, NeuralNet *net ) {
     int pos = 0;
-    for( int layerIdx = 1; layerIdx < net->layers.size(); layerIdx++ ) {
+    for( int layerIdx = 1; layerIdx < (int)net->layers.size(); layerIdx++ ) {
     Layer *layer = net->layers[layerIdx];
         int persistSize = layer->getPersistSize();
         if( persistSize > 0 ) {
