@@ -52,7 +52,7 @@ NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
 //    print();
 }
 NeuralNet::~NeuralNet() {
-    for( int i = 0; i < layers.size(); i++ ) {
+    for( int i = 0; i < (int)layers.size(); i++ ) {
         delete layers[i];
     }
     delete cl;
@@ -144,12 +144,12 @@ void NeuralNet::initBiasWeights( int layerIndex, float *weights ) {
     layers[layerIndex]->initBiasWeights( weights );
 }
 void NeuralNet::printWeightsAsCode() {
-    for( int layer = 1; layer < layers.size(); layer++ ) {
+    for( int layer = 1; layer < (int)layers.size(); layer++ ) {
         layers[layer]->printWeightsAsCode();
     }
 }
 void NeuralNet::printBiasWeightsAsCode() {
-    for( int layer = 1; layer < layers.size(); layer++ ) {
+    for( int layer = 1; layer < (int)layers.size(); layer++ ) {
         layers[layer]->printBiasWeightsAsCode();
     }
 }
@@ -223,7 +223,7 @@ int NeuralNet::calcNumRight( int const *labels ) {
 void NeuralNet::propagate( float const*images) {
     // forward...
     dynamic_cast<InputLayer<float> *>(layers[0])->in( images );
-    for( int layerId = 0; layerId < layers.size(); layerId++ ) {
+    for( int layerId = 0; layerId < (int)layers.size(); layerId++ ) {
         StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
         layers[layerId]->propagate();
         StatefulTimer::setPrefix("" );
@@ -232,7 +232,7 @@ void NeuralNet::propagate( float const*images) {
 void NeuralNet::propagate( unsigned char const*images) {
     // forward...
     dynamic_cast<InputLayer<unsigned char> *>(layers[0])->in( images );
-    for( int layerId = 0; layerId < layers.size(); layerId++ ) {
+    for( int layerId = 0; layerId < (int)layers.size(); layerId++ ) {
         StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
         layers[layerId]->propagate();
         StatefulTimer::setPrefix("" );
