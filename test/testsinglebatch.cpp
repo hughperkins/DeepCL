@@ -123,7 +123,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
         net->backProp( learningRate, expectedResults );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
-        for( int i = 0; i < weightsTotalSize; i++ ) {
+        for( int j = 0; j < weightsTotalSize; j++ ) {
             float thisdiff = currentWeights[i] - lastWeights[i];
             sumsquaredweightsdiff += thisdiff * thisdiff;
         }
@@ -264,7 +264,7 @@ void testLabelled( TestArgs args ) {
         net->backPropFromLabels( args.learningRate, labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
-        for( int i = 0; i < weightsTotalSize; i++ ) {
+        for( int j = 0; j < weightsTotalSize; j++ ) {
             float thisdiff = currentWeights[i] - lastWeights[i];
             sumsquaredweightsdiff += thisdiff * thisdiff;
         }
