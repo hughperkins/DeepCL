@@ -87,8 +87,8 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
     weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-    cout << "backpropweights2::backpropweights resultsSize=" << resultsSize << " inputSize=" << inputSize << 
-        " weightSize=" << weightsSize << endl;
+//    cout << "backpropweights2::backpropweights resultsSize=" << resultsSize << " inputSize=" << inputSize << 
+//        " weightSize=" << weightsSize << endl;
 
     CLWrapper *biasWeightsWrapper = 0;
     if( dim.biased ) {

@@ -25,13 +25,13 @@ BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions 
     // ]]]
     // [[[end]]]
     std::string options = dim.buildOptionsString();
-    cout << "backpropweights2naive: building kernel" << endl;
+//    cout << "backpropweights2naive: building kernel" << endl;
     kernel = cl->buildKernel( "backpropweights2.cl", "backprop_floats", options );
-    cout << "kernel: " << kernel << endl;
+//    cout << "kernel: " << kernel << endl;
 //    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options );
 }
 VIRTUAL BackpropWeights2Naive::~BackpropWeights2Naive() {
-    cout << "~backpropweights2naive: deleting kernel" << endl;
+//    cout << "~backpropweights2naive: deleting kernel" << endl;
     delete kernel;
 }
 VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {

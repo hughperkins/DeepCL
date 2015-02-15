@@ -593,131 +593,150 @@ public:
 };
 
 namespace testbackpropweights {
-    void compareSpecific( float learningRate, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
-//        const int batchSize = args._batchSize;
-//        LayerDimensions dim;
-//        dim.setInputPlanes( args._inputPlanes ).setInputBoardSize( args._inputBoardSize )
-//            .setNumFilters( args._numFilters ).setFilterSize( args._filterSize )
-//            .setBiased( args._biased ).setPadZeros( args._padZeros );
 
-//        int learningRate = 1.0f;
+void compareSpecific( float learningRate, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
 
-        int resultsSize = batchSize * dim.outputCubeSize;
-        int inputSize = batchSize * dim.inputCubeSize;
-        int weightsSize = dim.filtersSize;
-        int biasWeightsSize = dim.numFilters;
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int weightsSize = dim.filtersSize;
+    int biasWeightsSize = dim.numFilters;
 
-        int resultsAllocated = max( 10000, resultsSize );
-        int inputAllocated = max( 10000, inputSize );
-        int weightsAllocated = max( 10000, weightsSize );
-        int biasWeightsAllocated = max( 10000, biasWeightsSize );
+    int resultsAllocated = max( 10000, resultsSize );
+    int inputAllocated = max( 10000, inputSize );
+    int weightsAllocated = max( 10000, weightsSize );
+    int biasWeightsAllocated = max( 10000, biasWeightsSize );
 
-        cout << "numweights: " << weightsSize << endl;
+    cout << "numweights: " << weightsSize << endl;
 
-        float *biasWeights1 = new float[ biasWeightsAllocated ];
-        float *biasWeights2 = new float[ biasWeightsAllocated ];
-        memset( biasWeights1, 0, sizeof(float) * biasWeightsAllocated );
-        memset( biasWeights2, 0, sizeof(float) * biasWeightsAllocated );
+    float *biasWeights1 = new float[ biasWeightsAllocated ];
+    float *biasWeights2 = new float[ biasWeightsAllocated ];
+    memset( biasWeights1, 0, sizeof(float) * biasWeightsAllocated );
+    memset( biasWeights2, 0, sizeof(float) * biasWeightsAllocated );
 
-        float *errors = new float[resultsAllocated];
-        float *inputData = new float[inputAllocated];
-        float *weights1 = new float[weightsAllocated];
-        float *weights2 = new float[weightsAllocated];
+    float *errors = new float[resultsAllocated];
+    float *inputData = new float[inputAllocated];
+    float *weights1 = new float[weightsAllocated];
+    float *weights2 = new float[weightsAllocated];
 
-        memset( errors, 0, sizeof(float) * resultsAllocated );
-        memset( inputData, 0, sizeof(float) * inputAllocated );
-        memset( weights1, 0, sizeof(float) * weightsAllocated );
-        memset( weights2, 0, sizeof(float) * weightsAllocated );
+    memset( errors, 0, sizeof(float) * resultsAllocated );
+    memset( inputData, 0, sizeof(float) * inputAllocated );
+    memset( weights1, 0, sizeof(float) * weightsAllocated );
+    memset( weights2, 0, sizeof(float) * weightsAllocated );
 
-      //  WeightRandomizer::randomize( errors, max(10000, resultsSize ), -0.1f, 0.1f );
-    //    WeightRandomizer::randomize( results, max( 10000, resultsSize), 1, 2 );
-      //  WeightRandomizer::randomize( inputData, max(10000, inputSize ), -0.3f, 0.7f );
+    WeightRandomizer::randomize( errors, resultsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( inputData, inputAllocated, -0.3f, 0.7f );
 
-        WeightRandomizer::randomizeInts( errors, resultsAllocated, 0, 99 );
-        WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
+//    WeightRandomizer::randomizeInts( errors, resultsAllocated, 0, 99 );
+//    WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
 
-        OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-        
-        BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( instance0, cl, dim );
-        BackpropWeights2Naive *wn = dynamic_cast< BackpropWeights2Naive * >( backpropWeightsImpl1 );
-        CLKernel *kernel = wn->kernel;
-//        kernel->in(1.2f);
-        backpropWeightsImpl1->debug = true;
-        backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
-            errors, inputData, weights1, biasWeights1 );
-        BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( instance1, cl, dim );
-        backpropWeightsImpl2->debug = true;
-        backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
-            errors, inputData, weights2, biasWeights2 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    
+    Timer timer;
+    int instances[2];
+    instances[0] = instance0;
+    instances[1] = instance1;
+    float *weightsByInstance[2];
+    weightsByInstance[0] = weights1;
+    weightsByInstance[1] = weights2;
+    float *biasWeightsByInstance[2];
+    biasWeightsByInstance[0] = biasWeights1;
+    biasWeightsByInstance[1] = biasWeights2;
+    for( int instance = 0; instance < 2; instance++ ) {
+        BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceSpecific( instances[instance], cl, dim );
+        backpropWeightsImpl->debug = true;
+        timer.timeCheck("instance " + toString( instance ) + " compile" );
+        backpropWeightsImpl->backpropWeights( batchSize, learningRate,
+            errors, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
+        timer.timeCheck("instance " + toString( instance ) );
+        delete backpropWeightsImpl;
+    }
 
-        cout << dim << endl;
-        for( int i = 0; i < 25; i++ ) {
-            cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
-            if( i < weightsSize ) {
-                if( abs( weights1[i] - weights2[i] ) <= abs(weights1[i]) / 10000.0f ) {
-                    cout << " SAME";
-                } else {
-                    cout << " DIFF";
-                }
+    cout << dim << endl;
+    for( int i = 0; i < 25; i++ ) {
+        cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
+        if( i < weightsSize ) {
+            if( abs( weights1[i] - weights2[i] ) <= abs(weights1[i]) / 10000.0f ) {
+                cout << " SAME";
             } else {
-                cout << "     ";
+                cout << " DIFF";
             }
-            cout << "  || " << weights2[100+i] ;
-            cout << "  || " << weights2[200+i] ;
-            cout << "  || " << weights2[300+i] ;
-            cout << "  || " << weights2[400+i] ;
-            cout << "  || " << weights2[500+i] ;
-            cout << "  || " << weights2[600+i] ;
-            cout << "  || " << weights2[700+i] << endl;
+        } else {
+            cout << "     ";
         }
-        bool same = true;
-        int errCount = 0;
-        for( int i = 0; i < weightsSize; i++ ) {
-            if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
-                cout << "DIFF: i " << i << " " << weights1[i] << " != " << weights2[i] << endl;
+        cout << "  || " << weights2[100+i] ;
+        cout << "  || " << weights2[200+i] ;
+        cout << "  || " << weights2[300+i] ;
+        cout << "  || " << weights2[400+i] ;
+        cout << "  || " << weights2[500+i] ;
+        cout << "  || " << weights2[600+i] ;
+        cout << "  || " << weights2[700+i] << endl;
+    }
+    bool same = true;
+    int errCount = 0;
+    for( int i = 0; i < weightsSize; i++ ) {
+        if( abs( weights1[i] - weights2[i] ) > 0.001 * max( abs( weights1[i] ), abs( weights2[i] ) ) ) {
+//        if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
+            cout << "DIFF: weights i " << i << " " << weights1[i] << " != " << weights2[i] << endl;
+            same = false;
+            errCount++;
+            if( errCount == 5 ) {
+                cout << " ... " << endl;
+                break;
+            }
+        }
+    }
+    if( dim.biased ) {
+        errCount = 0;
+        for( int i = 0; i < biasWeightsSize; i++ ) {
+            if( abs( biasWeights1[i] - biasWeights2[i] ) > 0.001 * max( abs( biasWeights1[i] ), abs( biasWeights2[i] ) ) ) {
+    //        if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
+                cout << "DIFF: biasWeights i " << i << " " << biasWeights1[i] << " != " << biasWeights2[i] << endl;
                 same = false;
                 errCount++;
                 if( errCount == 5 ) {
-                    cout << " ... " << endl;
+                    cout << " etc ... " << endl;
                     break;
                 }
             }
         }
-        EXPECT_EQ( true, same );
-
-        delete backpropWeightsImpl1;
-        delete backpropWeightsImpl2;
-
-        delete[] weights1;
-        delete[] weights2;
-        delete[] errors;
-        delete[] inputData;
-
-        delete cl;
     }
+    EXPECT_EQ( true, same );
 
-    TEST( SLOW_testbackpropweights, compare_args ) {
-        int instance0 = 1;
-        int instance1 = 3;
-        LayerDimensions dim;
-        dim.setInputBoardSize( 28 ).setInputPlanes( 1 ).setNumFilters( 8 ).setFilterSize( 5 )
-            .setBiased( 1 ).setPadZeros( 1 );
-        int batchSize = 1;
+//    delete backpropWeightsImpl1;
+//    delete backpropWeightsImpl2;
+
+    delete[] weights1;
+    delete[] weights2;
+    delete[] errors;
+    delete[] inputData;
+
+    delete cl;
+}
+
+TEST( SLOW_testbackpropweights, compare_args ) {
+    int instance0 = 1;
+    int instance1 = 3;
+    LayerDimensions dim;
+    dim.setInputBoardSize( 28 ).setInputPlanes( 1 ).setNumFilters( 8 ).setFilterSize( 5 )
+        .setBiased( 1 ).setPadZeros( 1 );
+    int batchSize = 4;
+    int N = batchSize;
 //        string activationName = "tanh";
-        float learningRate = 1.0f;
+    float learningRate = 1.0f;
 
-        DimFromArgs::arg( &dim );
-        TestArgsParser::arg( "instance0", &instance0 );
-        TestArgsParser::arg( "instance1", &instance1 );
-        TestArgsParser::arg( "batchsize", &batchSize );
+    DimFromArgs::arg( &dim );
+    TestArgsParser::arg( "instance0", &instance0 );
+    TestArgsParser::arg( "instance1", &instance1 );
+    TestArgsParser::arg( "n", &N );
+    TestArgsParser::arg( "batchsize", &batchSize );
 //        TestArgsParser::arg( "activation", &activationName );
-        TestArgsParser::arg( "learningrate", &learningRate );
-        TestArgsParser::go();
-        dim.deriveOthers();
+    TestArgsParser::arg( "learningrate", &learningRate );
+    TestArgsParser::go();
+    dim.deriveOthers();
 //        ActivationFunction *fn = ActivationFunction::fromName( activationName );
 
-        compareSpecific( learningRate, batchSize, dim, instance0, instance1 );        
-    }
+    compareSpecific( learningRate, N, batchSize, dim, instance0, instance1 );        
+}
 
 //    TEST( testbackpropweights, compare_instance3_smaller2 ) {
 //        LayerDimensions dim;
@@ -772,5 +791,51 @@ namespace testbackpropweights {
 //            .filterSize( 4 ).biased( 1 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
+
+void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
+
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int inputSize = batchSize * dim.inputCubeSize;
+    int weightsSize = dim.filtersSize;
+    int biasWeightsSize = dim.numFilters;
+
+    int resultsAllocated = resultsSize;
+    int inputAllocated = inputSize;
+    int weightsAllocated = weightsSize;
+    int biasWeightsAllocated = biasWeightsSize;
+
+    cout << "numweights: " << weightsSize << endl;
+
+    float *biasWeights = new float[ biasWeightsAllocated ];
+    memset( biasWeights, 0, sizeof(float) * biasWeightsAllocated );
+
+    float *errors = new float[resultsAllocated];
+    float *inputData = new float[inputAllocated];
+    float *weights = new float[weightsAllocated];
+
+    memset( errors, 0, sizeof(float) * resultsAllocated );
+    memset( inputData, 0, sizeof(float) * inputAllocated );
+    memset( weights, 0, sizeof(float) * weightsAllocated );
+
+    WeightRandomizer::randomizeInts( errors, resultsAllocated, 0, 99 );
+    WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
+
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    
+    BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceSpecific( instance, cl, dim );
+    Timer timer;
+    backpropWeightsImpl->backpropWeights( batchSize, 1.0f,
+        errors, inputData, weights, biasWeights );
+    timer.timeCheck("backprop time");
+
+    delete backpropWeightsImpl;
+
+    delete[] weights;
+    delete[] errors;
+    delete[] inputData;
+
+    delete cl;
+}
+
 }
 

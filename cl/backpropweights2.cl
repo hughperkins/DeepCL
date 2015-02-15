@@ -147,13 +147,12 @@ void kernel backprop_floats_withscratch_dobias(
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weights[ workgroupId * gFilterSizeSquared + localId ] += - learningRateMultiplier * thiswchange;
-//        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
+        weights[ workgroupId * gFilterSizeSquared + localId ] -= learningRateMultiplier * thiswchange;
     }
 #ifdef BIASED
     bool writeBias = upstreamPlane == 0 && localId == 0;
     if( writeBias ) {
-        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
+        biasWeights[outPlane] -= learningRateMultiplier * thisbiaschange;
     }
 #endif
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
