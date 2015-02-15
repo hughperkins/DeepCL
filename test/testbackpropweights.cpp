@@ -596,8 +596,8 @@ namespace testbackpropweights {
 
 void compareSpecific( float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
 
-    int resultsSize = N * dim.outputCubeSize;
-    int inputSize = N * dim.inputCubeSize;
+    int resultsSize = batchSize * dim.outputCubeSize;
+    int inputSize = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasWeightsSize = dim.numFilters;
 
@@ -640,10 +640,9 @@ void compareSpecific( float learningRate, int its, int batchSize, LayerDimension
     float *biasWeightsByInstance[2];
     biasWeightsByInstance[0] = biasWeights1;
     biasWeightsByInstance[1] = biasWeights2;
-    BackpropWeights2 instanceObjects[2];
+    BackpropWeights2 *instanceObjects[2];
     instanceObjects[0] = BackpropWeights2::instanceSpecific( instance0, cl, dim );
     instanceObjects[1] = BackpropWeights2::instanceSpecific( instance1, cl, dim );
-    int numBatches = ( N + batchSize - 1 ) / batchSize;
     for( int instance = 0; instance < 2; instance++ ) {
         Timer timer;
         BackpropWeights2 *backpropWeightsImpl = instanceObjects[instance];
