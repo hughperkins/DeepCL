@@ -280,11 +280,16 @@ TEST( testpropagate, boardsize3 ) {
 
 TEST( testpropagate, test2 ) {
     int batchSize = 2;
-    int numOutPlanes = 2;
-    int numInPlanes = 1;
-    int boardSize = 3;
-    int filterWidth = 3;
-    int padZeros = 0;
+
+//    int numOutPlanes = 2;
+//    int numInPlanes = 1;
+//    int boardSize = 3;
+//    int filterWidth = 3;
+//    int padZeros = 0;
+   
+    LayerDimensions dim;
+    dim.setNumFilters(2).setNumInputPlanes(1).setInputBoardSize(3).setFilterSize(3)
+        .setPadZeros(false).setBiased(false);
 
     float data[] = { 0, 0, 0,
                        -0.5f, 0.5f, 0,
@@ -307,44 +312,51 @@ TEST( testpropagate, test2 ) {
  };
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    float *results = new float[512];
+//    float *results = new float[512];
 
-    CLWrapper *dataWrapper = cl->wrap( batchSize * 9, data );
-    CLWrapper *weightsWrapper = cl->wrap( numOutPlanes * 9, filter1 );
-    CLWrapper *resultsWrapper = cl->wrap( 512, results );
-    dataWrapper->copyToDevice();
-    weightsWrapper->copyToDevice();
+    float *biases = 0;
 
-    CLKernel *convolve = cl->buildKernel( "../cl/propagate1.cl", "convolve_imagecubes_float2", "-D TANH" );
+//    CLWrapper *dataWrapper = cl->wrap( batchSize * 9, data );
+//    CLWrapper *weightsWrapper = cl->wrap( numOutPlanes * 9, filter1 );
+//    CLWrapper *resultsWrapper = cl->wrap( 512, results );
+//    dataWrapper->copyToDevice();
+//    weightsWrapper->copyToDevice();
+
+//    CLKernel *convolve = cl->buildKernel( "../cl/propagate1.cl", "convolve_imagecubes_float2", "-D TANH" );
 //    CLKernel *tanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
 
-    for( int it = 0; it < 100; it ++ ) {
-        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
-           ->in( padZeros );
-        convolve->input( dataWrapper );
-        convolve->input( weightsWrapper);
-        convolve->output( resultsWrapper );
-        int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
-        int workgroupsize = cl->getMaxWorkgroupSize();
-        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-        convolve->run_1d( globalSize, workgroupsize );
+//    for( int it = 0; it < 100; it ++ ) {
 
-        resultsWrapper->copyToHost();
+    Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
+    float *results = propagate->propagate( batchSize, data, filter1, biases );
+
+//        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+//           ->in( padZeros );
+//        convolve->input( dataWrapper );
+//        convolve->input( weightsWrapper);
+//        convolve->output( resultsWrapper );
+//        int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
+//        int workgroupsize = cl->getMaxWorkgroupSize();
+//        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+////        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//        convolve->run_1d( globalSize, workgroupsize );
+
+//        resultsWrapper->copyToHost();
 
 //        for( int i = 0; i < 20; i++ ) {
 //            cout << "results[" << i << "]=" << results[i] << endl;
 //        }
-        assertEquals( -0.202616f, results[0], 0.0001f );
-        assertEquals( 0.143989f, results[1], 0.0001f );
-        assertEquals( 0.202616f, results[2], 0.0001f );
-        assertEquals( -0.143989f, results[3], 0.0001f );
-    }
-    cout << "test2 ok" << endl;
-    delete convolve;
-    delete resultsWrapper;
-    delete weightsWrapper;
-    delete dataWrapper;
+        EXPECT_FLOAT_NEAR( -0.202616f, results[0] );
+        EXPECT_FLOAT_NEAR( 0.143989f, results[1] );
+        EXPECT_FLOAT_NEAR( 0.202616f, results[2] );
+        EXPECT_FLOAT_NEAR( -0.143989f, results[3] );
+//    }
+//    cout << "test2 ok" << endl;
+    delete propagate;
+//    delete convolve;
+//    delete resultsWrapper;
+//    delete weightsWrapper;
+//    delete dataWrapper;
     delete[] results;
     delete cl;
 }

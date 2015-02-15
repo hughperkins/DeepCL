@@ -50,6 +50,11 @@ public:
         deriveOthers();
         return *this;
     }
+    LayerDimensions &setNumInputPlanes( int _planes ) {
+        this->inputPlanes = _planes;
+        deriveOthers();
+        return *this;
+    }
     LayerDimensions &setInputBoardSize( int inputBoardSize ) {
         this->inputBoardSize = inputBoardSize;
         deriveOthers();
