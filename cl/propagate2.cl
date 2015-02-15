@@ -42,7 +42,7 @@ void kernel propagate_2_by_outplane( const int batchSize,
     local float *_upstreamBoard, local float *_filterCube ) {
     const int globalId = get_global_id(0);
 
-    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
+//    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
 
     const int workgroupId = get_group_id(0);
     const int workgroupSize = get_local_size(0);
@@ -53,9 +53,9 @@ void kernel propagate_2_by_outplane( const int batchSize,
     const int outputCol = localId % gOutputBoardSize;
 
     const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
+    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
     const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
+    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
 
     const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
