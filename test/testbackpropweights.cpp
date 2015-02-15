@@ -631,9 +631,9 @@ void compareSpecific( float learningRate, int its, int batchSize, LayerDimension
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     
-//    int instances[2];
-//    instances[0] = instance0;
-//    instances[1] = instance1;
+    int instances[2];
+    instances[0] = instance0;
+    instances[1] = instance1;
     float *weightsByInstance[2];
     weightsByInstance[0] = weights1;
     weightsByInstance[1] = weights2;
@@ -651,7 +651,7 @@ void compareSpecific( float learningRate, int its, int batchSize, LayerDimension
             backpropWeightsImpl->backpropWeights( batchSize, learningRate,
                 errors, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
         }
-        timer.timeCheck("instance " + toString( instance ) + " backpropweights" );
+        timer.timeCheck("instance " + toString( instances[instance] ) + " backpropweights" );
 //        delete backpropWeightsImpl;
     }
     delete instanceObjects[0];
