@@ -41,6 +41,13 @@ VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float lear
     int globalSize = workgroupsize * numWorkgroups;
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
+    int localMemRequiredKB = ( square( dim.outputBoardSize ) * 4 + square( dim.inputBoardSize ) * 4 ) / 1024 + 1;
+    if( localMemRequiredKB >= cl->getLocalMemorySizeKB() ) {
+        throw runtime_error( "local memory too small to use this kernel on this device.  Need: " + 
+            toString( localMemRequiredKB ) + "KB, but only have: " + 
+            toString( cl->getLocalMemorySizeKB() ) + "KB local memory" );
+    }
+
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
     kernel

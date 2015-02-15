@@ -652,11 +652,7 @@ TEST( SLOW_testpropagate, compare_args ) {
     DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
-//    TestArgsParser::arg( "boardsize", &boardSize );
     TestArgsParser::arg( "batchsize", &batchSize );
-//    TestArgsParser::arg( "filtersize", &filterSize );
-//    TestArgsParser::arg( "inputplanes", &inputPlanes );
-//    TestArgsParser::arg( "numfilters", &numFilters );
     TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::go();
     dim.deriveOthers();

@@ -11,11 +11,14 @@
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
 #include "BackpropWeights2.h"
+#include "BackpropWeights2Naive.h"
 
 #include "test/myasserts.h"
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 #include "test/WeightRandomizer.h"
+#include "test/DimFromArgs.h"
+#include "test/TestArgsParser.h"
 
 using namespace std;
 
@@ -590,14 +593,14 @@ public:
 };
 
 namespace testbackpropweights {
-    void compareSpecific( CompareSpecificArgs args ) {
-        const int batchSize = args._batchSize;
-        LayerDimensions dim;
-        dim.setInputPlanes( args._inputPlanes ).setInputBoardSize( args._inputBoardSize )
-            .setNumFilters( args._numFilters ).setFilterSize( args._filterSize )
-            .setBiased( args._biased ).setPadZeros( args._padZeros );
+    void compareSpecific( float learningRate, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
+//        const int batchSize = args._batchSize;
+//        LayerDimensions dim;
+//        dim.setInputPlanes( args._inputPlanes ).setInputBoardSize( args._inputBoardSize )
+//            .setNumFilters( args._numFilters ).setFilterSize( args._filterSize )
+//            .setBiased( args._biased ).setPadZeros( args._padZeros );
 
-        int learningRate = 1.0f;
+//        int learningRate = 1.0f;
 
         int resultsSize = batchSize * dim.outputCubeSize;
         int inputSize = batchSize * dim.inputCubeSize;
@@ -635,11 +638,14 @@ namespace testbackpropweights {
 
         OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
         
-        BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( args._instance0, cl, dim );
+        BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( instance0, cl, dim );
+        BackpropWeights2Naive *wn = dynamic_cast< BackpropWeights2Naive * >( backpropWeightsImpl1 );
+        CLKernel *kernel = wn->kernel;
+//        kernel->in(1.2f);
         backpropWeightsImpl1->debug = true;
         backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
             errors, inputData, weights1, biasWeights1 );
-        BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( args._instance1, cl, dim );
+        BackpropWeights2 *backpropWeightsImpl2 = BackpropWeights2::instanceSpecific( instance1, cl, dim );
         backpropWeightsImpl2->debug = true;
         backpropWeightsImpl2->backpropWeights( batchSize, learningRate, 
             errors, inputData, weights2, biasWeights2 );
@@ -688,6 +694,29 @@ namespace testbackpropweights {
         delete[] inputData;
 
         delete cl;
+    }
+
+    TEST( SLOW_testbackpropweights, compare_args ) {
+        int instance0 = 1;
+        int instance1 = 3;
+        LayerDimensions dim;
+        dim.setInputBoardSize( 28 ).setInputPlanes( 1 ).setNumFilters( 8 ).setFilterSize( 5 )
+            .setBiased( 1 ).setPadZeros( 1 );
+        int batchSize = 1;
+//        string activationName = "tanh";
+        float learningRate = 1.0f;
+
+        DimFromArgs::arg( &dim );
+        TestArgsParser::arg( "instance0", &instance0 );
+        TestArgsParser::arg( "instance1", &instance1 );
+        TestArgsParser::arg( "batchsize", &batchSize );
+//        TestArgsParser::arg( "activation", &activationName );
+        TestArgsParser::arg( "learningrate", &learningRate );
+        TestArgsParser::go();
+        dim.deriveOthers();
+//        ActivationFunction *fn = ActivationFunction::fromName( activationName );
+
+        compareSpecific( learningRate, batchSize, dim, instance0, instance1 );        
     }
 
 //    TEST( testbackpropweights, compare_instance3_smaller2 ) {

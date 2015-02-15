@@ -1,3 +1,9 @@
+// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
 #include "BackpropWeights2Naive.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -19,10 +25,13 @@ BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions 
     // ]]]
     // [[[end]]]
     std::string options = dim.buildOptionsString();
+    cout << "backpropweights2naive: building kernel" << endl;
     kernel = cl->buildKernel( "backpropweights2.cl", "backprop_floats", options );
+    cout << "kernel: " << kernel << endl;
 //    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options );
 }
 VIRTUAL BackpropWeights2Naive::~BackpropWeights2Naive() {
+    cout << "~backpropweights2naive: deleting kernel" << endl;
     delete kernel;
 }
 VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {

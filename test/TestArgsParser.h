@@ -20,13 +20,21 @@ public:
     }
     virtual void apply( std::string stringValue ) = 0;
 };
-
 class ArgInt : public Arg {
     int *p_int;
 public:
     ArgInt( std::string key, int *p_int ) :
         Arg( key ),
         p_int( p_int ) {
+    }
+    virtual void apply( std::string stringValue );
+};
+class ArgFloat : public Arg {
+    float *p_value;
+public:
+    ArgFloat( std::string key, float *p_value ) :
+        Arg( key ),
+        p_value( p_value ) {
     }
     virtual void apply( std::string stringValue );
 };
@@ -39,7 +47,6 @@ public:
     }
     virtual void apply( std::string stringValue );
 };
-
 class ArgString : public Arg {
     std::string *p_value;
 public:
@@ -63,12 +70,14 @@ public:
     void _arg( std::string key, int *p_value );
     void _arg( std::string key, std::string *p_value );
     void _arg( std::string key, bool *p_value );
+    void _arg( std::string key, float *p_value );
     void _go();
     void _printAvailableKeys();
     static TestArgsParser *instance();
     static void arg( std::string key, int *p_value );
     static void arg( std::string key, std::string *p_value );
     static void arg( std::string key, bool *p_value );
+    static void arg( std::string key, float *p_value );
     static void go();
 };
 

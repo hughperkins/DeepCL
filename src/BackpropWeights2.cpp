@@ -74,19 +74,21 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
 
 //    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputBoardSize * dim.outputBoardSize );
 
-    CLWrapper *derivLossBySumWrapper = cl->wrap( batchSize * dim.outputCubeSize, derivLossBySum );
+    int resultsSize = batchSize * dim.outputCubeSize;
+    CLWrapper *derivLossBySumWrapper = cl->wrap( resultsSize, derivLossBySum );
     derivLossBySumWrapper->copyToDevice();
 
-    CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
+    int inputSize = batchSize * dim.inputCubeSize;
+    CLWrapper *inputDataWrapper = cl->wrap( inputSize, inputData );
     inputDataWrapper->copyToDevice();
 
     CLWrapper *weightsWrapper = 0;
-    if( debug ) {
-        weightsWrapper = cl->wrap( std::max(10000, dim.filtersSize ), filters );
-    } else {
-        weightsWrapper = cl->wrap( dim.filtersSize, filters );
-    }
+    int weightsSize = debug ? std::max(10000, dim.filtersSize ) : dim.filtersSize;
+    weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
+
+    cout << "backpropweights2::backpropweights resultsSize=" << resultsSize << " inputSize=" << inputSize << 
+        " weightSize=" << weightsSize << endl;
 
     CLWrapper *biasWeightsWrapper = 0;
     if( dim.biased ) {
