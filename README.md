@@ -502,8 +502,7 @@ Note:
 
 You will need:
 - libClConvolve.so (or ClConvolve.dll)
-- ~~*.cl files~~ No longer needed :-)  They're included inside the dll/so now.
-  - (except for unittests, which should be run from inside a subdirectory of the git cloned root directory, eg from the `build`, `build-win32` or `build-win64` directory.)
+- ~~*.cl files~~ *.cl files no longer needed at runtime :-)  They're packaged inside the dll/so now.
 
 ~~The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.~~
 
