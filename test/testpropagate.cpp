@@ -158,7 +158,7 @@ TEST( testpropagate, boardsize2_padzeros ) {
 
     expectedResults[3] = 0.5f*0.4f;
     expectedResults[4] = 0.5f*(-0.5f)+0.4f*(0.3f);
-    expectedResults[5] = 0.3 * (-0.5f); 
+    expectedResults[5] = 0.3f * (-0.5f); 
 
     expectedResults[6] = 0; expectedResults[7] = 0; expectedResults[8] = 0;
 
@@ -297,11 +297,11 @@ TEST( testpropagate, test2 ) {
 };
 
     float filter1[] = { 0, 0, 0,
-                          0.300809, -0.11011, 0,
+                          0.300809f, -0.11011f, 0,
                          0, 0, 0,
 
                         0, 0, 0,
-                          0.0570846, 0.347077, 0,
+                          0.0570846f, 0.347077f, 0,
                          0,0,0
 
  };
@@ -335,10 +335,10 @@ TEST( testpropagate, test2 ) {
 //        for( int i = 0; i < 20; i++ ) {
 //            cout << "results[" << i << "]=" << results[i] << endl;
 //        }
-        assertEquals( -0.202616f, results[0], 0.0001 );
-        assertEquals( 0.143989f, results[1], 0.0001 );
-        assertEquals( 0.202616f, results[2], 0.0001 );
-        assertEquals( -0.143989f, results[3], 0.0001 );
+        assertEquals( -0.202616f, results[0], 0.0001f );
+        assertEquals( 0.143989f, results[1], 0.0001f );
+        assertEquals( 0.202616f, results[2], 0.0001f );
+        assertEquals( -0.143989f, results[3], 0.0001f );
     }
     cout << "test2 ok" << endl;
     delete convolve;
@@ -357,12 +357,12 @@ TEST( testpropagate, test3 ) {
     int outBoardSize = 1;
     int filterSize = 1;
     int padZeros = 0;
-    float data[] = {0.1,0.2,
-                    0.3,0.4,
-                    0.5,0.6,
-                    0.7,0.8};
-    float filter[] = {0.2,0.3,
-                     0.5,0.7};
+    float data[] = {0.1f,0.2f,
+                    0.3f,0.4f,
+                    0.5f,0.6f,
+                    0.7f,0.8f};
+    float filter[] = {0.2f,0.3f,
+                     0.5f,0.7f};
 
     int outputBoardSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
@@ -371,22 +371,22 @@ TEST( testpropagate, test3 ) {
     float *results = propagate->propagate( 
         batchSize, data, filter, 0 );        
 
-    float expectedResults[] = {0.2*0.1+0.3*0.2,
-                               0.5*0.1+0.7*0.2,
+    float expectedResults[] = {0.2f*0.1f+0.3f*0.2f,
+                               0.5f*0.1f+0.7f*0.2f,
 
-                               0.2*0.3+0.3*0.4,
-                               0.5*0.3+0.7*0.4,
+                               0.2f*0.3f+0.3f*0.4f,
+                               0.5f*0.3f+0.7f*0.4f,
 
-                                0.2*0.5+0.3*0.6,
-                               0.5*0.5+0.7*0.6,
+                                0.2f*0.5f+0.3f*0.6f,
+                               0.5f*0.5f+0.7f*0.6f,
  
-                              0.2*0.7+0.3*0.8,
-                               0.5*0.7+0.7*0.8
+                              0.2f*0.7f+0.3f*0.8f,
+                               0.5f*0.7f+0.7f*0.8f
   };
    for( int i = 0; i < 8; i++ ) {
 //      cout << " checking result " << i << endl;
 //        cout << "results[" << i << "]=" << results[i] << endl;
-      assertEquals( expectedResults[i], results[i], 0.0001);
+      assertEquals( expectedResults[i], results[i], 0.0001f);
    }
     delete propagate;
     delete cl;
@@ -464,7 +464,7 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     int numDiff = 0;
     for( int i = 0; i < max( 20, resultsSize ); i++ ) {
         if( i < resultsSize ) {
-            if( abs( results1[i] - results2[i] ) < 0.000001 || abs( results1[i] - results2[i] ) <= 0.001 * max( abs( results1[i] ), abs( results2[i] ) ) ) {
+            if( abs( results1[i] - results2[i] ) < 0.000001f || abs( results1[i] - results2[i] ) <= 0.001f * max( abs( results1[i] ), abs( results2[i] ) ) ) {
                 if( i < 20 ) {
                     if( debug ) cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
                     if( debug ) cout << " SAME";
