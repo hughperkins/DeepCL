@@ -48,10 +48,10 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     // let's try one quarter :-)
     int localWeCanUse = availableLocal / 4;
     numStripes = ( localMemoryRequirementsFullImage + localWeCanUse - 1 ) / localWeCanUse;
-    cout << "numStripes: " << numStripes << endl;
+//    cout << "numStripes: " << numStripes << endl;
     // make it a power of 2
     numStripes = OpenCLHelper::getNextPower2( numStripes );
-    cout << "numStripes: " << numStripes << endl;
+//    cout << "numStripes: " << numStripes << endl;
 
     int inputStripeMarginRows = dim.filterSize - 1;
     int inputStripeInnerNumRows = dim.inputBoardSize / numStripes;

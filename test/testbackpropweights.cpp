@@ -595,6 +595,7 @@ public:
 namespace testbackpropweights {
 
 void compareSpecific( float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
+    cout << dim << endl;
 
     int resultsSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
@@ -606,7 +607,7 @@ void compareSpecific( float learningRate, int its, int batchSize, LayerDimension
     int weightsAllocated = max( 10000, weightsSize );
     int biasWeightsAllocated = max( 10000, biasWeightsSize );
 
-    cout << "numweights: " << weightsSize << endl;
+//    cout << "numweights: " << weightsSize << endl;
 
     float *biasWeights1 = new float[ biasWeightsAllocated ];
     float *biasWeights2 = new float[ biasWeightsAllocated ];
