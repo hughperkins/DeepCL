@@ -46,12 +46,12 @@ void test( int boardSize, int filterSize, int numPlanes, int batchSize ) {
     WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, net->layers[1]->getWeights(), weightsSize, -0.1f, 0.1f );
     dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToDevice();
-    for( int i = 0; i < inputSize; i++ ) {
-        cout << "inputData[" << i << "]=" << inputData[i] << endl;
-    }
-    for( int i = 0; i < resultsSize; i++ ) {
-        cout << "expectedResults[" << i << "]=" << expectedResults[i] << endl;
-    }
+//    for( int i = 0; i < inputSize; i++ ) {
+//        cout << "inputData[" << i << "]=" << inputData[i] << endl;
+//    }
+//    for( int i = 0; i < resultsSize; i++ ) {
+//        cout << "expectedResults[" << i << "]=" << expectedResults[i] << endl;
+//    }
 
     float *weightsBefore = new float[weightsSize];
     float const*currentWeights = net->layers[1]->getWeights();
@@ -184,9 +184,9 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
     delete backpropWeightsImpl;
     
-    for( int i = 0; i < 20; i++ ) {
-        cout << "weights[" << i << "]=" << weights[i] << endl;
-    }
+//    for( int i = 0; i < 20; i++ ) {
+//        cout << "weights[" << i << "]=" << weights[i] << endl;
+//    }
     for( int i = 0; i < dim.filtersSize; i++ ) {
         if( expectedResults[i] != -999 && expectedResults[i] != weights[i] ) {
             cout << "mismatch for i " << i << endl;
@@ -594,7 +594,7 @@ public:
 
 namespace testbackpropweights {
 
-void compareSpecific( float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
+void compareSpecific( bool debug, float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
 
     int resultsSize = batchSize * dim.outputCubeSize;
@@ -662,20 +662,20 @@ void compareSpecific( float learningRate, int its, int batchSize, LayerDimension
         cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
         if( i < weightsSize ) {
             if( abs( weights1[i] - weights2[i] ) <= abs(weights1[i]) / 10000.0f ) {
-                cout << " SAME";
+                if( debug ) cout << " SAME";
             } else {
                 cout << " DIFF";
             }
         } else {
-            cout << "     ";
+            if( debug ) cout << "     ";
         }
-        cout << "  || " << weights2[100+i] ;
-        cout << "  || " << weights2[200+i] ;
-        cout << "  || " << weights2[300+i] ;
-        cout << "  || " << weights2[400+i] ;
-        cout << "  || " << weights2[500+i] ;
-        cout << "  || " << weights2[600+i] ;
-        cout << "  || " << weights2[700+i] << endl;
+        if( debug ) cout << "  || " << weights2[100+i] ;
+        if( debug ) cout << "  || " << weights2[200+i] ;
+        if( debug ) cout << "  || " << weights2[300+i] ;
+        if( debug ) cout << "  || " << weights2[400+i] ;
+        if( debug ) cout << "  || " << weights2[500+i] ;
+        if( debug ) cout << "  || " << weights2[600+i] ;
+        if( debug ) cout << "  || " << weights2[700+i] << endl;
     }
     bool same = true;
     int errCount = 0;
@@ -720,6 +720,7 @@ void compareSpecific( float learningRate, int its, int batchSize, LayerDimension
 }
 
 TEST( SLOW_testbackpropweights, compare_args ) {
+    bool debug = false;
     int instance0 = 1;
     int instance1 = 3;
     LayerDimensions dim;
@@ -731,6 +732,7 @@ TEST( SLOW_testbackpropweights, compare_args ) {
     float learningRate = 1.0f;
 
     DimFromArgs::arg( &dim );
+    TestArgsParser::arg( "debug", &debug );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::arg( "its", &its );
@@ -741,7 +743,7 @@ TEST( SLOW_testbackpropweights, compare_args ) {
     dim.deriveOthers();
 //        ActivationFunction *fn = ActivationFunction::fromName( activationName );
 
-    compareSpecific( learningRate, its, batchSize, dim, instance0, instance1 );        
+    compareSpecific( debug, learningRate, its, batchSize, dim, instance0, instance1 );        
 }
 
 //    TEST( testbackpropweights, compare_instance3_smaller2 ) {

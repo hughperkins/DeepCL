@@ -392,7 +392,7 @@ TEST( testpropagate, test3 ) {
     delete cl;
 }
 
-void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
+void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
     cout << dim << endl;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -424,7 +424,7 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
     for( int i = 0; i < 8; i++ ) {
-        cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
+        if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
 
     int resultsSize = N * dim.outputCubeSize;
@@ -466,8 +466,8 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
         if( i < resultsSize ) {
             if( abs( results1[i] - results2[i] ) < 0.000001 || abs( results1[i] - results2[i] ) <= 0.001 * max( abs( results1[i] ), abs( results2[i] ) ) ) {
                 if( i < 20 ) {
-                    cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
-                    cout << " SAME";
+                    if( debug ) cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
+                    if( debug ) cout << " SAME";
                 }
             } else {
                 cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
@@ -477,17 +477,17 @@ void compareSpecific( int N, int batchSize, LayerDimensions dim, ActivationFunct
             }
         } else {
              if( i < 20 ) {
-                 cout << "     ";
+                 if( debug ) cout << "     ";
              }
         }
         if( i < 20 ) {
-            cout << "  || " << results2[100+i] ;
-            cout << "  || " << results2[200+i] ;
-            cout << "  || " << results2[300+i] ;
-            cout << "  || " << results2[400+i] ;
-            cout << "  || " << results2[500+i] ;
-            cout << "  || " << results2[600+i] ;
-            cout << "  || " << results2[700+i] << endl;
+            if( debug ) cout << "  || " << results2[100+i] ;
+            if( debug ) cout << "  || " << results2[200+i] ;
+            if( debug ) cout << "  || " << results2[300+i] ;
+            if( debug ) cout << "  || " << results2[400+i] ;
+            if( debug ) cout << "  || " << results2[500+i] ;
+            if( debug ) cout << "  || " << results2[600+i] ;
+            if( debug ) cout << "  || " << results2[700+i] << endl;
         }
         if( numDiff > 30 ) {
             cout << "..." << endl;
@@ -519,7 +519,7 @@ TEST( testpropagate, compare_0_1_biased_nopad ) {
         .setFilterSize( 5 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( N, batchSize, dim, fn, 0, 1 );
+    compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
 }
 
 TEST( testpropagate, compare_0_1_biased_pad ) {
@@ -533,7 +533,7 @@ TEST( testpropagate, compare_0_1_biased_pad ) {
         .setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( N, batchSize, dim, fn, 0, 1 );
+    compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
 }
 
 TEST( testpropagate, compare_1_n_biased_nopad ) {
@@ -552,7 +552,7 @@ TEST( testpropagate, compare_1_n_biased_nopad ) {
             continue; // propagatefc, cant use for inputboardsize != filtersize
         }
         cout << "instance: " << instance << endl;
-        compareSpecific( N, batchSize, dim, fn, 1, instance );
+        compareSpecific( false, N, batchSize, dim, fn, 1, instance );
     }
 }
 
@@ -572,7 +572,7 @@ TEST( testpropagate, compare_1_n_biased_pad ) {
             continue; // propagatefc, cant use for inputboardsize != filtersize
         }
         cout << "instance: " << instance << endl;
-        compareSpecific( N, batchSize, dim, fn, 1, instance );
+        compareSpecific( false, N, batchSize, dim, fn, 1, instance );
     }
 }
 
@@ -587,7 +587,7 @@ TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, sinc
         .setFilterSize( 19 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( N, batchSize, dim, fn, 1, 5 );
+    compareSpecific( false, N, batchSize, dim, fn, 1, 5 );
 }
 
 TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since fc wont work with pad
@@ -599,7 +599,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
         .setFilterSize( 24 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( N, batchSize, dim, fn, 1, 4 );
+    compareSpecific( false, N, batchSize, dim, fn, 1, 4 );
 }
 
 //TEST( SLOW_testpropagate, comparespecific ) {
@@ -643,6 +643,7 @@ TEST( SLOW_testpropagate, compare_args ) {
     int instance0 = 1;
     int instance1 = 3;
     int N = 128;
+    bool debug = false;
     string activationName = "tanh";
     dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 )
         .setFilterSize( 7 )
@@ -652,13 +653,14 @@ TEST( SLOW_testpropagate, compare_args ) {
     DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
+    TestArgsParser::arg( "debug", &debug );
     TestArgsParser::arg( "batchsize", &batchSize );
     TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::go();
     dim.deriveOthers();
 
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( N, batchSize, dim, fn, instance0, instance1 );
+    compareSpecific( debug, N, batchSize, dim, fn, instance0, instance1 );
 }
 
 //TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
