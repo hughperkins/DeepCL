@@ -9,7 +9,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 #include "ActivationFunction.h"
 
 class NeuralNet;

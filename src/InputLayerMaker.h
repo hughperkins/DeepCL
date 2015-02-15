@@ -9,7 +9,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 #include "LayerMaker.h"
 
 template< typename T > class ClConvolve_EXPORT InputLayerMaker : public LayerMaker2 {

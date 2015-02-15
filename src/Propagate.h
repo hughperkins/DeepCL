@@ -13,7 +13,7 @@
 #include "OpenCLHelper.h"
 #include "ActivationFunction.h"
 #include "LayerDimensions.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 using namespace std;
 

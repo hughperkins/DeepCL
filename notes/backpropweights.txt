@@ -1,5 +1,14 @@
 layer 3:ConvolutionalLayer{ LayerDimensions{ inputPlanes=1 inputBoardSize=28 numFilters=8 filterSize=5 outputBoardSize=28 padZeros=1 biased=1 skip=0} RELU }
 
+./clconvolve dumptimings=1
+StatefulTimer readings:
+   layer3 BackpropWeights2Scratch end: 5625ms
+   layer4 PoolingBackpropCpu::backpropErrors end: 947ms
+   layer5 BackpropErrorsv2Cached after first kernel: 469ms
+   layer5 BackpropWeights2Scratch end: 2344ms
+   layer5 Propagate4::propagate after call propagate: 547ms
+   layer6 PoolingBackpropCpu::backpropErrors end: 23ms
+
 
 on aws, ./clconvolve dumptimings=1 numtrain=12800
 LayerDimensions{ inputPlanes=1 inputBoardSize=28 numFilters=8 filterSize=5 outputBoardSize=28 padZeros=1 biased=1 skip=0}

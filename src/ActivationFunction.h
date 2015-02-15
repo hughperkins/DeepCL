@@ -10,7 +10,9 @@
 #include <stdexcept>
 #include <cmath>
 
-class ActivationFunction {
+#include "ClConvolveDllExport.h"
+
+class ClConvolve_EXPORT ActivationFunction {
 public:
     virtual float calc( float value ) const { throw std::runtime_error("calc not implemented"); };
     virtual float calcDerivative( float output ) const { throw std::runtime_error("calcDerivative not implemented"); };

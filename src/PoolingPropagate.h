@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 #define VIRTUAL virtual
 #define STATIC static

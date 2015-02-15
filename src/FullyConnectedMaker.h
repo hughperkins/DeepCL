@@ -10,7 +10,7 @@
 
 #include "LayerMaker.h"
 #include "ActivationFunction.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class ClConvolve_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:

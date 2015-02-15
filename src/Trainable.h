@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class LossLayerMaker;
 class Layer;

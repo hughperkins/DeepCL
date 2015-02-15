@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class NeuralNet;
 

@@ -12,7 +12,7 @@
 
 #include "NormalizationHelper.h"
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 template< typename T >
 class BatchAction {

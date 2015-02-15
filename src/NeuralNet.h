@@ -24,7 +24,7 @@
 #include "PoolingMaker.h"
 #include "LayerMaker.h"
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class OpenCLHelper;
 class ConvolutionalMaker;

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "LayerMaker.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class ClConvolve_EXPORT PoolingMaker : public LayerMaker2 {
 public:

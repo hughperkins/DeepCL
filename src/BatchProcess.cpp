@@ -12,7 +12,7 @@
 
 #include "BatchProcess.h"
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 using namespace std;
 

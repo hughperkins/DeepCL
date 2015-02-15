@@ -12,7 +12,7 @@
 #include "OpenCLHelper.h"
 #include "ActivationFunction.h"
 #include "LayerDimensions.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 #define STATIC static
 #define VIRTUAL virtual

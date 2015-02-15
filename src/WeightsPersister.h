@@ -8,7 +8,7 @@ class NeuralNet;
 #define VIRTUAL virtual
 #define STATIC static
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 // whilst this class is portable, the weights files created totally are not (ie: endianness)
 // but okish for now... (since it's not like weights files tend to be shared around much, and

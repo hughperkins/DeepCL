@@ -14,7 +14,7 @@
 #include "ActivationFunction.h"
 #include "Propagate.h"
 #include "LayerDimensions.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 using namespace std;
 

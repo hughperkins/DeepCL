@@ -16,7 +16,7 @@ class Trainable;
 #define VIRTUAL virtual
 #define STATIC static
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class ClConvolve_EXPORT EpochResult {
 public:

@@ -18,7 +18,7 @@ class Trainable;
 #define VIRTUAL virtual
 #define STATIC static
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 // this handles learning one single epoch, breaking up the incoming training or testing
 // data into batches, which are then sent to the NeuralNet for forward and backward

@@ -16,7 +16,7 @@
 class NeuralNet;
 class Trainable;
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 //class ClConvolve_EXPORT PostEpochAction {
 //public:

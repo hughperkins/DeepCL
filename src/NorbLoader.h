@@ -11,7 +11,7 @@
 #include "stringhelper.h"
 #include "FileHelper.h"
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 #define VIRTUAL virtual
 #define STATIC static

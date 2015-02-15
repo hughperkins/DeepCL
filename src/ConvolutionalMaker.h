@@ -9,7 +9,7 @@
 #include <cstring>
 
 #include "ActivationFunction.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 #include "LayerMaker.h"
 

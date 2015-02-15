@@ -9,7 +9,7 @@
 #include <cstring>
 
 #include "LayerMaker.h"
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class ClConvolve_EXPORT NormalizationLayerMaker : public LayerMaker2 {
 public:

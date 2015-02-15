@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 class NeuralNet;
 

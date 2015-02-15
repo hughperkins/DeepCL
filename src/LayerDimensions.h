@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "DllImportExport.h"
+#include "ClConvolveDllExport.h"
 
 inline int square( int value ) {
     return value * value;
