@@ -594,10 +594,10 @@ public:
 
 namespace testbackpropweights {
 
-void compareSpecific( float learningRate, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
+void compareSpecific( float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
 
-    int resultsSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int resultsSize = N * dim.outputCubeSize;
+    int inputSize = N * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasWeightsSize = dim.numFilters;
 
@@ -631,26 +631,32 @@ void compareSpecific( float learningRate, int N, int batchSize, LayerDimensions 
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     
-    Timer timer;
-    int instances[2];
-    instances[0] = instance0;
-    instances[1] = instance1;
+//    int instances[2];
+//    instances[0] = instance0;
+//    instances[1] = instance1;
     float *weightsByInstance[2];
     weightsByInstance[0] = weights1;
     weightsByInstance[1] = weights2;
     float *biasWeightsByInstance[2];
     biasWeightsByInstance[0] = biasWeights1;
     biasWeightsByInstance[1] = biasWeights2;
+    BackpropWeights2 instanceObjects[2];
+    instanceObjects[0] = BackpropWeights2::instanceSpecific( instance0, cl, dim );
+    instanceObjects[1] = BackpropWeights2::instanceSpecific( instance1, cl, dim );
+    int numBatches = ( N + batchSize - 1 ) / batchSize;
     for( int instance = 0; instance < 2; instance++ ) {
-        BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceSpecific( instances[instance], cl, dim );
+        Timer timer;
+        BackpropWeights2 *backpropWeightsImpl = instanceObjects[instance];
         backpropWeightsImpl->debug = true;
-        timer.timeCheck("instance " + toString( instance ) + " compile" );
-        backpropWeightsImpl->backpropWeights( batchSize, learningRate,
-            errors, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
-        timer.timeCheck("instance " + toString( instance ) );
-        delete backpropWeightsImpl;
+        for( int it = 0; it < its; it++ ) {
+            backpropWeightsImpl->backpropWeights( batchSize, learningRate,
+                errors, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
+        }
+        timer.timeCheck("instance " + toString( instance ) + " backpropweights" );
+//        delete backpropWeightsImpl;
     }
-
+    delete instanceObjects[0];
+    delete instanceObjects[1];
     cout << dim << endl;
     for( int i = 0; i < 25; i++ ) {
         cout << "weights[" << i << "]=" << weights1[i] << " " << weights2[i];
@@ -720,14 +726,14 @@ TEST( SLOW_testbackpropweights, compare_args ) {
     dim.setInputBoardSize( 28 ).setInputPlanes( 1 ).setNumFilters( 8 ).setFilterSize( 5 )
         .setBiased( 1 ).setPadZeros( 1 );
     int batchSize = 4;
-    int N = batchSize;
+    int its = 1;
 //        string activationName = "tanh";
     float learningRate = 1.0f;
 
     DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
-    TestArgsParser::arg( "n", &N );
+    TestArgsParser::arg( "its", &its );
     TestArgsParser::arg( "batchsize", &batchSize );
 //        TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::arg( "learningrate", &learningRate );
@@ -735,7 +741,7 @@ TEST( SLOW_testbackpropweights, compare_args ) {
     dim.deriveOthers();
 //        ActivationFunction *fn = ActivationFunction::fromName( activationName );
 
-    compareSpecific( learningRate, N, batchSize, dim, instance0, instance1 );        
+    compareSpecific( learningRate, its, batchSize, dim, instance0, instance1 );        
 }
 
 //    TEST( testbackpropweights, compare_instance3_smaller2 ) {
