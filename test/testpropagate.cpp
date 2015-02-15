@@ -690,10 +690,10 @@ TEST( testpropagate, softmax ) {
         EXPECT_GE( 1, results[i] );
     }
     EXPECT_FLOAT_NEAR( 1.0f, sum );
-    EXPECT_FLOAT_NEAR( exp(0)/(exp(0)+exp(1)+exp(3)+exp(2)), results[0] );
-    EXPECT_FLOAT_NEAR( exp(1)/(exp(0)+exp(1)+exp(3)+exp(2)), results[1] );
-    EXPECT_FLOAT_NEAR( exp(3)/(exp(0)+exp(1)+exp(3)+exp(2)), results[2] );
-    EXPECT_FLOAT_NEAR( exp(2)/(exp(0)+exp(1)+exp(3)+exp(2)), results[3] );
+    EXPECT_FLOAT_NEAR( (float)( exp(0)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[0] );
+    EXPECT_FLOAT_NEAR( (float)( exp(1)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[1] );
+    EXPECT_FLOAT_NEAR( (float)( exp(3)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[2] );
+    EXPECT_FLOAT_NEAR( (float)( exp(2)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[3] );
 
     float *expected = new float[net->layers[0]->getOutputPlanes()];
     memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
@@ -749,10 +749,10 @@ TEST( testpropagate, softmax_byplane ) {
         EXPECT_GE( 1, results[i] );
     }
     EXPECT_FLOAT_NEAR( 1.0f, sum );
-    EXPECT_FLOAT_NEAR( exp(0)/(exp(0)+exp(1)+exp(3)+exp(2)), results[0] );
-    EXPECT_FLOAT_NEAR( exp(1)/(exp(0)+exp(1)+exp(3)+exp(2)), results[1] );
-    EXPECT_FLOAT_NEAR( exp(3)/(exp(0)+exp(1)+exp(3)+exp(2)), results[2] );
-    EXPECT_FLOAT_NEAR( exp(2)/(exp(0)+exp(1)+exp(3)+exp(2)), results[3] );
+    EXPECT_FLOAT_NEAR( (float)( exp(0)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[0] );
+    EXPECT_FLOAT_NEAR( (float)( exp(1)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[1] );
+    EXPECT_FLOAT_NEAR( (float)( exp(3)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[2] );
+    EXPECT_FLOAT_NEAR( (float)( exp(2)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[3] );
 
     float *expected = new float[boardSizeSquared];
     memset( expected, 0, sizeof(float) * boardSizeSquared );
