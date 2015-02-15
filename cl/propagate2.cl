@@ -52,10 +52,17 @@ void kernel propagate_2_by_outplane( const int batchSize,
     const int outputRow = localId / gOutputBoardSize;
     const int outputCol = localId % gOutputBoardSize;
 
-    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
-    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
+    #if gPadZeros == 1
+        const int minu = max( -gHalfFilterSize, -outputRow );
+        const int maxu = min( gHalfFilterSize, gOutputBoardSize - 1 - outputRow ) - gEven;
+        const int minv = max( -gHalfFilterSize, -outputCol );
+        const int maxv = min( gHalfFilterSize, gOutputBoardSize - 1 - outputCol ) - gEven;
+    #else
+        const int minu = -gHalfFilterSize;
+        const int maxu = gHalfFilterSize - gEven;
+        const int minv = -gHalfFilterSize;
+        const int maxv = gHalfFilterSize - gEven;
+    #endif
 
     const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
