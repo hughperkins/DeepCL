@@ -4,6 +4,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+// concept: each workgroup handles convolving one input example with one filtercube
+// and writing out one single output plane
+//
 // workgroup id organized like: [imageid][outplane]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [upstreamplane][filterrow][filtercol]
