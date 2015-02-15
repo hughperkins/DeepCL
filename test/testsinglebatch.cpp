@@ -117,6 +117,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     WeightsPersister::copyNetWeightsToArray( net, lastWeights );
 //    cout << "learningRate: " << args.learningRate << endl;
     float lastloss = 0;
+    bool allOk = true;
     for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedResults );
         net->propagate( inputData );
@@ -124,7 +125,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
-            float thisdiff = currentWeights[i] - lastWeights[i];
+            float thisdiff = currentWeights[j] - lastWeights[j];
             sumsquaredweightsdiff += thisdiff * thisdiff;
         }
         float lossChangeFromW = (sumsquaredweightsdiff/learningRate);
@@ -136,23 +137,26 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 //        cout << "    losschangefromw " << lossChangeFromW << endl;
 //        cout << "    actual loss change " << lossChange << endl;
         if( isnan( lossChange ) ) {
-            cout << "compare i=" << i << " :" << endl;
+            cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
-            EXPECT_TRUE( !isnan( lossChange ) );
+            allOk = false;
+//            EXPECT_TRUE( !isnan( lossChange ) );
         }
         if( lossChange / lossChangeFromW > 1.3f ) {
-            cout << "compare i=" << i << " :" << endl;
+            cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
-            cout << "loss: " << lastloss << " -> " << thisloss << endl;
-            EXPECT_EQ( lossChange, lossChangeFromW );
+//            cout << "loss: " << lastloss << " -> " << thisloss << endl;
+//            EXPECT_EQ( lossChange, lossChangeFromW );
+            allOk = false;
         } else if( lossChangeFromW / lossChange > 1.3f ) {
-            cout << "compare i=" << i << " :" << endl;
+            cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
-            cout << "loss: " << lastloss << " -> " << thisloss << endl;
-            EXPECT_EQ( lossChange, lossChangeFromW );
+//            cout << "loss: " << lastloss << " -> " << thisloss << endl;
+//            EXPECT_EQ( lossChange, lossChangeFromW );
+            allOk = false;
         }
         lastloss =thisloss;
 //        memcpy( lastWeights1, currentWeights1, sizeof(float) * weights1Size );
@@ -160,6 +164,8 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
+
+    EXPECT_EQ( true, allOk );
 
     float *results = (float*)(net->getResults());
 //    Sampler::printSamples( "net->getResults()", resultsSize, (float*)results );
@@ -265,7 +271,7 @@ void testLabelled( TestArgs args ) {
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
-            float thisdiff = currentWeights[i] - lastWeights[i];
+            float thisdiff = currentWeights[j] - lastWeights[j];
             sumsquaredweightsdiff += thisdiff * thisdiff;
         }
         float lossChangeFromW = (sumsquaredweightsdiff/args.learningRate);
