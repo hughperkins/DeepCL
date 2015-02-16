@@ -36,8 +36,7 @@ void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, flo
 
     CLWrapper *biasWeightsWrapper = 0;
     if( dim.biased ) {
-        int biasWeightsWrapperSize = dim.numFilters;
-        biasWeightsWrapper = prop->cl->wrap( biasWeightsWrapperSize, biases );
+        biasWeightsWrapper = prop->cl->wrap( dim.numFilters, biases );
         biasWeightsWrapper->copyToDevice();
     }
 

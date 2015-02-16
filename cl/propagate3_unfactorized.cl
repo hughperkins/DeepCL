@@ -36,10 +36,10 @@
 #ifdef ACTIVATION_FUNCTION
 void kernel propagate( const int batchSize,
       global const float *images, global const float *filters, 
-    global float *results,
     #ifdef BIASED
         global const float*biases,
     #endif
+    global float *results,
     local float *_upstreamBoard, local float *_filterCube ) {
     const int globalId = get_global_id(0);
 
