@@ -79,7 +79,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
                 try {
                     candidate->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, resultsWrapper );
                     milliseconds[thisIndex] = timer.lap();
-                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+//                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch( runtime_error &e ) {
                     cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " this instance cant be used: " << e.what() << endl;
@@ -91,13 +91,15 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
         }
     }
     if( chosenIndex == -1 ) {
-//        cout << StatefulTimer::instance()->prefix + "PropagateAuto::propagate choosing best instance, based on measured times..." << endl;
+        cout << StatefulTimer::instance()->prefix + "PropagateAuto::propagate choosing best instance:" << endl;
         int bestIndex = -1;
         int bestTime = 0;
         for( int i = 0; i < num; i++ ) {
             if( !valid[i] ) {
+                cout << "   instance " << i << ": cannot be used" << endl;
                 continue;
             }
+            cout << "   instance " << i << ": " << milliseconds[i] << "ms" << endl;
             if( bestIndex == -1 ) {
                 bestIndex = i;
                 bestTime = milliseconds[i];
@@ -109,7 +111,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
             }
         }
         if( bestIndex != -1 ) {
-            cout << StatefulTimer::instance()->prefix << "PropagateAuto: selected index: " << bestIndex << endl;
+            cout << "   selected: instance " << bestIndex << endl;
             this->chosenIndex = bestIndex;
         } else {
             throw runtime_error(StatefulTimer::instance()->prefix + "No valid propagate implementations found" );
