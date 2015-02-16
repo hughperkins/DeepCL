@@ -51,7 +51,7 @@ STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions laye
     return new Propagate1( cl, layerDimensions, fn );
 }
 STATIC int Propagate::getNumImplementations() {
-    return 7;
+    return 8;
 }
 STATIC bool Propagate::plausiblyOptimal( int index, int batchSize, LayerDimensions dim, ActivationFunction const*fn ) {
     if( index == 0 ) { 
