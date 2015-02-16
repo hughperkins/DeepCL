@@ -447,6 +447,7 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
     Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim, fn );
 
+//    float *resultstemps[2];
     for( int instance = 0; instance < 2; instance++ ) {
         Propagate *thisPropagate = 0;
         float *thisResults = 0;
@@ -466,6 +467,10 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
             cout << "batch " << batch << " batchsize " << thisBatchSize << endl;
             float *resultstemp = thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters );
             memcpy( thisResults + batch * batchSize * dim.outputCubeSize, resultstemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
+            memset( resultstemp, 123, thisBatchSize * dim.outputCubeSize * sizeof(float) ); // so kernel
+                // cant just reuse the work of previous propagate :-)
+//            resultstemps[instance] = 
+            StatefulTimer::timeCheck("after memset");
             delete[] resultstemp;
         }
         StatefulTimer::dump(true);

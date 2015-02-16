@@ -41,6 +41,7 @@ void kernel propagate( const int batchSize,
         global const float*biases,
     #endif
     local float *_upstreamBoard, local float *_filterCube ) {
+    return;
     const int globalId = get_global_id(0);
 
     const int workgroupId = get_group_id(0);
