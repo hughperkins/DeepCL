@@ -79,7 +79,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
                 try {
                     candidate->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, resultsWrapper );
                     milliseconds[thisIndex] = timer.lap();
-//                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch( runtime_error &e ) {
                     cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " this instance cant be used: " << e.what() << endl;
