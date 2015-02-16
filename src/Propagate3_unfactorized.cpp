@@ -19,8 +19,8 @@ using namespace std;
 
 VIRTUAL Propagate3_unfactorized::~Propagate3_unfactorized() {
     delete kernel;
-    delete repeatedAdd;
-    delete activate;
+//    delete repeatedAdd;
+//    delete activate;
 }
 VIRTUAL void Propagate3_unfactorized::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {

@@ -5,8 +5,8 @@
 class Propagate3_unfactorized : public Propagate {
 public:
     CLKernel *kernel;
-    CLKernel *repeatedAdd;
-    CLKernel *activate;
+//    CLKernel *repeatedAdd;
+//    CLKernel *activate;
 
     // [[[cog
     // import cog_addheaders

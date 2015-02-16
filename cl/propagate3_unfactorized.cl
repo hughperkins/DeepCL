@@ -102,7 +102,9 @@ void kernel propagate( const int batchSize,
     }
 
     #ifdef BIASED
-        sum += biases[outPlane];
+        if( outPlane < gNumFilters ) {
+            sum += biases[outPlane];
+        }
     #endif
 
     // results are organized like [imageid][filterid][row][col]
