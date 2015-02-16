@@ -13,6 +13,7 @@
 #include "Propagate1.h"
 #include "Propagate2.h"
 #include "Propagate3.h"
+#include "Propagate3_unfactorized.h"
 #include "Propagate4.h"
 #include "PropagateFc.h"
 #include "PropagateByInputPlane.h"
@@ -56,7 +57,7 @@ STATIC bool Propagate::plausiblyOptimal( int index, int batchSize, LayerDimensio
     if( index == 0 ) { 
         return false;
     }
-    if( index > 6 ) {
+    if( index > 7 ) {
         return false;
     }
     return true;
@@ -81,6 +82,8 @@ STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerD
         return new PropagateFc( cl, layerDimensions, fn );
     } else if( idx == 6 ) {
         return new PropagateByInputPlane( cl, layerDimensions, fn );
+    } else if( idx == 7 ) {
+        return new Propagate3_unfactorized( cl, layerDimensions, fn );
     } else if( idx == 99 ) {
         return new PropagateExperimental( cl, layerDimensions, fn );
     } else {

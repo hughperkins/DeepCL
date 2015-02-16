@@ -26,7 +26,7 @@ ostream &operator<<( ostream &os, Dimensions const &dim ) {
     return os;
 }
 
-int calcCost( Dimensions &dim, int inPerBlock, int outPerBlock ) {
+int calcCost1( Dimensions &dim, int inPerBlock, int outPerBlock ) {
     int numInBlocks = ( dim.inputPlanes + inPerBlock - 1 ) / inPerBlock;
     int numOutBlocks = ( dim.numFilters + outPerBlock - 1 ) / outPerBlock;
     int numWorkgroups = numInBlocks * numOutBlocks;
@@ -39,6 +39,26 @@ int calcCost( Dimensions &dim, int inPerBlock, int outPerBlock ) {
         << " numWorkgroups=" << numWorkgroups << " costperworkgroup=" << costPerWorkgroup
         << " total=" << totalCost << endl;
     return totalCost;
+}
+
+int calcCost2( Dimensions &dim, int inPerBlock, int outPerBlock ) {
+    int numInBlocks = ( dim.inputPlanes + inPerBlock - 1 ) / inPerBlock;
+    int numOutBlocks = ( dim.numFilters + outPerBlock - 1 ) / outPerBlock;
+    int numWorkgroups = numInBlocks * numOutBlocks;
+    int costPerWorkgroup = // we will have to load one inp lane, then each of out planes, then load another
+                 // in plane, and repeat, so... :
+        numInBlocks * numOutBlocks;
+//    cout << "  numInBlocks=" << numInBlocks << " numOutBlocks=" << numOutBlocks 
+//        << " numWorkgroups=" << numWorkgroups << " costperworkgroup=" << costPerWorkgroup << endl;
+    int totalCost = numWorkgroups * costPerWorkgroup;
+    cout << "  numInBlocks=" << numInBlocks << " numOutBlocks=" << numOutBlocks 
+        << " numWorkgroups=" << numWorkgroups << " costperworkgroup=" << costPerWorkgroup
+        << " total=" << totalCost << endl;
+    return totalCost;
+}
+
+int calcCost( Dimensions &dim, int inPerBlock, int outPerBlock ) {
+    return calcCost2( dim, inPerBlock, outPerBlock );
 }
 
 int main( int argc, char *argv[] ) {
