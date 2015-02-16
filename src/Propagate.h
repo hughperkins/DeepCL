@@ -47,6 +47,7 @@ public:
     STATIC Propagate *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
     Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn );
     VIRTUAL float * propagate( int batchSize, float *inputData, float *filters, float *biases );
+    VIRTUAL void propagate( int batchSize, float *inputData, float *filters, float *biases, float *results );
 
     // [[[end]]]
 

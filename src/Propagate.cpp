@@ -115,6 +115,12 @@ Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, Activat
         fn( fn ) {
 }
 VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {
+    float *results = new float[batchSize * dim.outputCubeSize];
+    propagate( batchSize, inputData, filters, biases, results );
+    return results;
+}
+// must allocate results yourself before the call
+VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases, float *results ) {
     StatefulTimer::timeCheck("Propagate::propagate begin");
     int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = cl->wrap( inputDataSize, inputData );
@@ -131,11 +137,12 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
         biasWeightsWrapper->copyToDevice();
     }
 
-    int outputDataSize = batchSize * dim.outputCubeSize;
+//    int outputDataSize = batchSize * dim.outputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
-    int allocatedResultsSize = std::max(5000, outputDataSize );
-    float *results = new float[allocatedResultsSize];
-    CLWrapper *resultsWrapper = cl->wrap( allocatedResultsSize, results );
+//    int allocatedResultsSize = std::max(5000, outputDataSize );
+//    int allocatedResultsSize = outputDataSize;
+//    float *results = new float[allocatedResultsSize];
+    CLWrapper *resultsWrapper = cl->wrap( batchSize * dim.outputCubeSize, results );
     cl->finish();
 
     StatefulTimer::timeCheck("Propagate::propagate after copied to device");
@@ -155,6 +162,6 @@ VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *fi
         delete biasWeightsWrapper;
     }
 
-    return results;
+//    return results;
 }
 

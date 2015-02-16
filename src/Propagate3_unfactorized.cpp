@@ -106,7 +106,6 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
     "        global const float*biases,\n" 
     "    #endif\n" 
     "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
-    "    return;\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "    const int workgroupId = get_group_id(0);\n" 
