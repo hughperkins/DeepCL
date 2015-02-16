@@ -79,7 +79,6 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
         }
     }
 
-
     // results are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
     if( localId < gOutputBoardSizeSquared ) {

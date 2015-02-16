@@ -88,177 +88,176 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/propagate3.cl", "propagate_3_by_n_outplane", 'options' )
-    // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
-    // stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
+    // stringify.write_kernel3( "kernel", "cl/propagate3.cl", "propagate_3_by_n_outplane", 'options' )
+    // stringify.write_kernel3( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
+    // stringify.write_kernel3( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
     // generated using cog:
-    const char * kernelSource =  
-    "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// concept: each workgroup handles convolving one input example with one filtercube\n" 
-    "// and writing out one single output plane\n" 
-    "//\n" 
-    "// workgroup id organized like: [imageid][outplane]\n" 
-    "// local id organized like: [outrow][outcol]\n" 
-    "// each thread iterates over: [upstreamplane][filterrow][filtercol]\n" 
-    "// number workgroups = 32\n" 
-    "// one filter plane takes up 5 * 5 * 4 = 100 bytes\n" 
-    "// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)\n" 
-    "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
-    "// results are organized like [imageid][filterid][row][col]\n" 
-    "void kernel propagate_3_by_n_outplane( const int batchSize,\n" 
-    "      global const float *images, global const float *filters,\n" 
-    "    global float *results,\n" 
-    "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "\n" 
-    "    const int workgroupId = get_group_id(0);\n" 
-    "    const int workgroupSize = get_local_size(0);\n" 
-    "    const int n = workgroupId / gNumFilters;\n" 
-    "    const int outPlane = workgroupId % gNumFilters;\n" 
-    "\n" 
-    "    const int localId = get_local_id(0);\n" 
-    "    const int outputRow = localId / gOutputBoardSize;\n" 
-    "    const int outputCol = localId % gOutputBoardSize;\n" 
-    "\n" 
-    "    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;\n" 
-    "    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;\n" 
-    "    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;\n" 
-    "    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;\n" 
-    "\n" 
-    "    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
-    "\n" 
-    "    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
-    "    const int filterCubeGlobalOffset = outPlane * filterCubeLength;\n" 
-    "    const int numPixelsPerThread = ( filterCubeLength + workgroupSize - 1 ) / workgroupSize;\n" 
-    "    for( int i = 0; i < numPixelsPerThread; i++ ) {\n" 
-    "        int thisOffset = localId + i * workgroupSize;\n" 
-    "        if( thisOffset < filterCubeLength ) {\n" 
-    "            _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];\n" 
-    "        }\n" 
-    "    }\n" 
-    "    // dont need a barrier, since we'll just run behind the barrier from the upstream board download\n" 
-    "\n" 
-    "    float sum = 0;\n" 
-    "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
-    "        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
-    "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
-    "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gInputBoardSizeSquared ) {\n" 
-    "                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
-    "            }\n" 
-    "        }\n" 
-    "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        int filterBoardOffset = upstreamPlane * gFilterSizeSquared;\n" 
-    "        for( int u = minu; u <= maxu; u++ ) {\n" 
-    "            int inputRow = outputRow + u;\n" 
-    "            #if gPadZeros == 0\n" 
-    "                inputRow += gHalfFilterSize;\n" 
-    "            #endif\n" 
-    "            int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
-    "            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "            for( int v = minv; v <= maxv; v++ ) {\n" 
-    "                int inputCol = outputCol + v;\n" 
-    "                #if gPadZeros == 0\n" 
-    "                    inputCol += gHalfFilterSize;\n" 
-    "                #endif\n" 
-    "                if( localId < gOutputBoardSizeSquared ) {\n" 
-    "                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
-    "                }\n" 
-    "            }\n" 
-    "        }\n" 
-    "    }\n" 
-    "\n" 
-    "\n" 
-    "    // results are organized like [imageid][filterid][row][col]\n" 
-    "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
-    "    if( localId < gOutputBoardSizeSquared ) {\n" 
-    "        results[resultIndex ] = sum;\n" 
-    "    }\n" 
-    "}\n" 
-    "\n" 
-    "";
+    const char * kernelSource =  R"DELIM(
+
+    // Copyright Hugh Perkins 2014, 2015 hughperkins at gmail
+    //
+    // This Source Code Form is subject to the terms of the Mozilla Public License,
+    // v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    // obtain one at http://mozilla.org/MPL/2.0/.
+
+    // concept: each workgroup handles convolving one input example with one filtercube
+    // and writing out one single output plane
+    //
+    // workgroup id organized like: [imageid][outplane]
+    // local id organized like: [outrow][outcol]
+    // each thread iterates over: [upstreamplane][filterrow][filtercol]
+    // number workgroups = 32
+    // one filter plane takes up 5 * 5 * 4 = 100 bytes
+    // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
+    // all filter cubes = 3.2KB * 32 = 102KB (too big)
+    // results are organized like [imageid][filterid][row][col]
+    void kernel propagate_3_by_n_outplane( const int batchSize,
+          global const float *images, global const float *filters,
+        global float *results,
+        local float *_upstreamBoard, local float *_filterCube ) {
+        const int globalId = get_global_id(0);
+
+        const int workgroupId = get_group_id(0);
+        const int workgroupSize = get_local_size(0);
+        const int n = workgroupId / gNumFilters;
+        const int outPlane = workgroupId % gNumFilters;
+
+        const int localId = get_local_id(0);
+        const int outputRow = localId / gOutputBoardSize;
+        const int outputCol = localId % gOutputBoardSize;
+
+        const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
+        const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
+        const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
+        const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
+
+        const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+
+        const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
+        const int filterCubeGlobalOffset = outPlane * filterCubeLength;
+        const int numPixelsPerThread = ( filterCubeLength + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numPixelsPerThread; i++ ) {
+            int thisOffset = localId + i * workgroupSize;
+            if( thisOffset < filterCubeLength ) {
+                _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];
+            }
+        }
+        // dont need a barrier, since we'll just run behind the barrier from the upstream board download
+
+        float sum = 0;
+        for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
+            int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
+            barrier(CLK_LOCAL_MEM_FENCE);
+            for( int i = 0; i < numUpstreamsPerThread; i++ ) {
+                int thisOffset = workgroupSize * i + localId;
+                if( thisOffset < gInputBoardSizeSquared ) {
+                    _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+                }
+            }
+            barrier(CLK_LOCAL_MEM_FENCE);
+            int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
+            for( int u = minu; u <= maxu; u++ ) {
+                int inputRow = outputRow + u;
+                #if gPadZeros == 0
+                    inputRow += gHalfFilterSize;
+                #endif
+                int inputboardrowoffset = inputRow * gInputBoardSize;
+                int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+                for( int v = minv; v <= maxv; v++ ) {
+                    int inputCol = outputCol + v;
+                    #if gPadZeros == 0
+                        inputCol += gHalfFilterSize;
+                    #endif
+                    if( localId < gOutputBoardSizeSquared ) {
+                        sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                    }
+                }
+            }
+        }
+
+        // results are organized like [imageid][filterid][row][col]
+        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
+        if( localId < gOutputBoardSizeSquared ) {
+            results[resultIndex ] = sum;
+        }
+    }
+
+    )DELIM";
     kernel = cl->buildKernelFromString( kernelSource, "propagate_3_by_n_outplane", options, "cl/propagate3.cl" );
     // generated using cog:
-    const char * repeatedAddSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "// adds source to target\n" 
-    "// tiles source as necessary, according to tilingSize\n" 
-    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId % tilingSize];\n" 
-    "}\n" 
-    "\n" 
-    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
-    "}\n" 
-    "\n" 
-    "";
+    const char * repeatedAddSource =  R"DELIM(
+
+    // Copyright Hugh Perkins 2015 hughperkins at gmail
+    //
+    // This Source Code Form is subject to the terms of the Mozilla Public License,
+    // v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    // obtain one at http://mozilla.org/MPL/2.0/.
+
+    kernel void per_element_add( const int N, global float *target, global const float *source ) {
+        const int globalId = get_global_id(0);
+        if( globalId >= N ) {
+            return;
+        }
+        target[globalId] += source[globalId];
+    }
+
+    // adds source to target
+    // tiles source as necessary, according to tilingSize
+    kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {
+        const int globalId = get_global_id(0);
+        if( globalId >= N ) {
+            return;
+        }
+        target[globalId] += source[globalId % tilingSize];
+    }
+
+    kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {
+        const int globalId = get_global_id(0);
+        if( globalId >= N ) {
+            return;
+        }
+        target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];
+    }
+
+    )DELIM";
     repeatedAdd = cl->buildKernelFromString( repeatedAddSource, "repeated_add", options, "cl/per_element_add.cl" );
     // generated using cog:
-    const char * activateSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// expected defines:\n" 
-    "// one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH ]\n" 
-    "\n" 
-    "#ifdef TANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) (tanh(output))\n" 
-    "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))\n" 
-    "#elif SIGMOID\n" 
-    "    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
-    "#elif defined RELU\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
-    "#elif defined LINEAR\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output)\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void activate( const int N, global float *inout ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "";
+    const char * activateSource =  R"DELIM(
+
+    // Copyright Hugh Perkins 2015 hughperkins at gmail
+    //
+    // This Source Code Form is subject to the terms of the Mozilla Public License,
+    // v. 2.0. If a copy of the MPL was not distributed with this file, You can
+    // obtain one at http://mozilla.org/MPL/2.0/.
+
+    // expected defines:
+    // one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH ]
+
+    #ifdef TANH
+        #define ACTIVATION_FUNCTION(output) (tanh(output))
+    #elif defined SCALEDTANH
+        #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
+    #elif SIGMOID
+        #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
+    #elif defined RELU
+        #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
+    #elif defined LINEAR
+        #define ACTIVATION_FUNCTION(output) (output)
+    #endif
+
+    #ifdef ACTIVATION_FUNCTION // protect against not defined
+    kernel void activate( const int N, global float *inout ) {
+        const int globalId = get_global_id(0);
+        if( globalId >= N ) {
+            return;
+        }
+        inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );
+    }
+    #endif
+
+    )DELIM";
     activate = cl->buildKernelFromString( activateSource, "activate", options, "cl/activate.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "propagate3.cl", "propagate_3_by_n_outplane", options );
-
-//    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", "-D " + fn->getDefineName() );
 }
 
