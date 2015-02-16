@@ -114,6 +114,7 @@ Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, Activat
         cl( cl ),
         fn( fn ) {
 }
+// you own the returned results array, and are responsible for deleting it
 VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {
     float *results = new float[batchSize * dim.outputCubeSize];
     propagate( batchSize, inputData, filters, biases, results );

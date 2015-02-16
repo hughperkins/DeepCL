@@ -25,6 +25,41 @@ using namespace std;
 
 #include "test/gtest_supp.h"
 
+void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *results ) {
+    int inputDataSize = batchSize * dim.inputCubeSize;
+    CLWrapper *dataWrapper = prop->cl->wrap( inputDataSize, inputData );
+    dataWrapper->copyToDevice();
+
+    int weightsSize = dim.filtersSize;
+    CLWrapper *weightsWrapper = prop->cl->wrap( weightsSize, filters );
+    weightsWrapper->copyToDevice();
+
+    CLWrapper *biasWeightsWrapper = 0;
+    if( dim.biased ) {
+        int biasWeightsWrapperSize = dim.numFilters;
+        biasWeightsWrapper = prop->cl->wrap( biasWeightsWrapperSize, biases );
+        biasWeightsWrapper->copyToDevice();
+    }
+
+    CLWrapper *resultsWrapper = prop->cl->wrap( batchSize * dim.outputCubeSize, results );
+    memset( results, 99, sizeof(float) * batchSize * dim.outputCubeSize );
+    resultsWrapper->copyToDevice(); // so we can wipe it...
+
+    StatefulTimer::timeCheck("testpropagate: after data wrapper processing");
+    prop->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
+            resultsWrapper );
+//    StatefulTimer::timeCheck("Propagate::propagate after call propagate");
+    resultsWrapper->copyToHost();
+//    StatefulTimer::timeCheck("Propagate::propagate after copytohost");
+    delete resultsWrapper;
+
+    delete dataWrapper;
+    delete weightsWrapper;
+    if( dim.biased ) {
+        delete biasWeightsWrapper;
+    }
+}
+
 TEST( testpropagate, boardsize2_nopadzeros ) {
     int batchSize = 2;
     int numInPlanes = 1; int boardSize = 2;
@@ -466,11 +501,12 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
             }
             cout << "batch " << batch << " batchsize " << thisBatchSize << endl;
             float *resultstemp = new float[thisBatchSize * dim.outputCubeSize * sizeof(float)];
-            memset( resultstemp, 123, thisBatchSize * dim.outputCubeSize * sizeof(float) ); // so kernel
+//            memset( resultstemp, 123, thisBatchSize * dim.outputCubeSize * sizeof(float) ); // so kernel
                 // cant just reuse the work of previous propagate :-)
 //            resultstemps[instance] = 
-            StatefulTimer::timeCheck("after memset");
-            thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, resultstemp );
+//            StatefulTimer::timeCheck("after memset");
+            propagateWithWipe( thisPropagate, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, resultstemp );
+//            thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, resultstemp );
             memcpy( thisResults + batch * batchSize * dim.outputCubeSize, resultstemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
             delete[] resultstemp;
         }
