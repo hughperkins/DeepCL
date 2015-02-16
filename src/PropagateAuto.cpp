@@ -71,7 +71,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
                 instances[thisIndex] = candidate;
                 valid[thisIndex] = true;
             } catch( runtime_error &e ) {
-//                cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << ": this instance cant be used: " << e.what() << endl;
+                cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << ": this instance cant be used: " << e.what() << endl;
                 valid[thisIndex] = false;
             }
             if( valid[thisIndex] ) {
