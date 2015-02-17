@@ -53,8 +53,6 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
     options += " -DgPoolingSize=" + toString( poolingSize );
     options += " -DgNumPlanes=" + toString( numPlanes );
 
-//    cout << "propagate options: " << options << endl;
-
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/pooling.cl", "propagateNaive", 'options' )

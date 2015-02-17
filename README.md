@@ -588,6 +588,19 @@ What if I want to contribute myself?
 * You need Python installed and available for this to work.  You don't need python just to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
 cmake configuration, then a lot of manual editing will no longer be necessary :-)
+* You might wonder why I use cog to include the GPU kernels rather than using any of the following options:
+  * raw strings `R"DELIM( ... )DELIM"
+  * some kind of `stringify` include macro
+* ... and the answer is:
+  * if one uses raw strings directly in the code, then the line numbers in kernel compile error messages are wrong
+  * if one uses cog to generate raw strings, rather than quoted strings, then it's not obvious which parts of the .cpp file are cog-generated, and which are directly maintainable (rather than maintaining via the .cl file)
+* You might wonder why I use `float *` rather than `vector<float>`, and the answer is:
+  * the arrays are all fixed-size, so the flexibility of being able to redimension is plausibly just additional danger
+  * being able to obtain the size easily could be admittedly useful, but generally the size is obvious from the dimensions we need to pass around for the kernels etc anyway
+* You might wonder why I use `cog` rather than just using some snazzy c++ IDE, and the answer is:
+  * if I use `cog`, I can code comfortably using gedit, and that seems stable and works ok for me :-)
+* You might wonder why I target OpenCL rather than just using cuda-conv, caffe etc, and the answer is:
+  * I think that more open standards and increased competition is a good thing, for us users, and I like to feel I can contribute to this in some small way :-)
 
 Forums
 ======
@@ -644,6 +657,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 17th February:
+  * migrated max-pooling backprop to gpu
 * 15th February:
   * removed runtime dependency on *.cl files
 * 13th February:

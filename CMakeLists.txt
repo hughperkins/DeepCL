@@ -50,7 +50,6 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
     PoolingBackpropGpuNaive.cpp
-    ../test/PrintBuffer.cpp ../test/CopyBuffer.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})

@@ -13,8 +13,6 @@
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
-//#include "test/PrintBuffer.h"
-
 #include "PoolingBackpropGpuNaive.h"
 
 using namespace std;
@@ -30,12 +28,8 @@ VIRTUAL PoolingBackpropGpuNaive::~PoolingBackpropGpuNaive() {
 }
 VIRTUAL void PoolingBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, 
         CLWrapper *errorsForUpstreamWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "PoolingBackpropGpuNaive::backpropErrors( CLWrapper * )" << endl;
-//    cout << "PoolingBackpropGpuNaive::backpropErrors" << endl;
-    StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backpropErrors start" );
 
-//    cout << "PoolingBackpropGpuNaive::backpropErrors selectorswrapper:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputBoardSize, outputBoardSize );
+    StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backpropErrors start" );
 
     // first, memset errors to 0 ...
     kMemset->out( errorsForUpstreamWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputBoardSize * inputBoardSize );
@@ -45,9 +39,6 @@ VIRTUAL void PoolingBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *
     kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-//    cout << "PoolingBackpropGpuNaive::backpropErrors selectorswrapper after memset...:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputBoardSize, outputBoardSize );
-
     kernel->in( batchSize )->inout( errorsWrapper )->in( selectorsWrapper )->in( errorsForUpstreamWrapper );
     globalSize = batchSize * numPlanes * outputBoardSize * outputBoardSize;
     workgroupSize = 64;
@@ -55,21 +46,6 @@ VIRTUAL void PoolingBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-//    cout << "PoolingBackpropGpuNaive::backpropErrors selectorswrapper after kernel:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputBoardSize, outputBoardSize );
-
-//    errorsForUpstreamWrapper->copyToHost();
-//    float const*errorsForUpstream = reinterpret_cast< float const *>( errorsForUpstreamWrapper->getHostArray() );
-//    cout << "inputboardsize " << inputBoardSize << " outputboardsize " << outputBoardSize << endl;
-//    for( int i = 0; i < inputBoardSize * inputBoardSize; i++ ) {
-////        cout << "errorsForUpstreamWrapper[" << i << "]=" << errorsForUpstream[i] << endl;
-//        if( i % inputBoardSize == 0 ) {
-//            cout << endl;
-//        }
-//        cout << errorsForUpstream[i] << " ";
-//    }
-//            cout << endl;
-    
     StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backpropErrors end" );
 }
 PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
