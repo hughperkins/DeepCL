@@ -597,6 +597,7 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
 * You might wonder why I use `float *` rather than `vector<float>`, and the answer is:
   * the arrays are all fixed-size, so the flexibility of being able to redimension is plausibly just additional danger
   * being able to obtain the size easily could be admittedly useful, but generally the size is obvious from the dimensions we need to pass around for the kernels etc anyway
+  * most of the bugs I get are in the kernels, the c++ bits seems relatively easy by comparison :-)
 * You might wonder why I use `cog` rather than just using some snazzy c++ IDE, and the answer is:
   * if I use `cog`, I can code comfortably using gedit, and that seems stable and works ok for me :-)
 * You might wonder why I target OpenCL rather than just using cuda-conv, caffe etc, and the answer is:
