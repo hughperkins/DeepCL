@@ -215,7 +215,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     CLWrapper *selectorsWrapper = cl->wrap( outputSize, selectors );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
-    WeightRandomizer::randomize( input, inputSize );
+    WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
 
     memset( selectors, 99, sizeof(int) * outputSize );
     memset( output, 99, sizeof(int) * outputSize );

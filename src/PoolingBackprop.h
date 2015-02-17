@@ -24,6 +24,7 @@ public:
     const int poolingSize;
 
     const int outputBoardSize;
+//    const int poolingSizeSquared;
 
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n

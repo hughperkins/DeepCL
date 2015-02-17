@@ -14,6 +14,8 @@
 
 #include "PoolingPropagateGpuNaive.h"
 
+//#include "test/PrintBuffer.h"
+
 using namespace std;
 
 #undef VIRTUAL
@@ -25,14 +27,19 @@ VIRTUAL PoolingPropagateGpuNaive::~PoolingPropagateGpuNaive() {
     delete kernel;
 }
 VIRTUAL void PoolingPropagateGpuNaive::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "PoolingPropagateGpuNaive::propagate( CLWrapper * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::propagate start" );
 
     kernel->input( batchSize )->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
     int globalSize = batchSize * numPlanes * outputBoardSize * outputBoardSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+//    cout << "PoolingPropagateGpuNaive::propagate batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
+
+//    cout << "PoolingPropagateGpuNaive::propagate selectorswrapper:" << endl;
+//    PrintBuffer::printInts( cl, selectorsWrapper, outputBoardSize, outputBoardSize );
 
     StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::propagate end" );
 }
@@ -45,6 +52,8 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
     options += " -DgInputBoardSizeSquared=" + toString( inputBoardSize * inputBoardSize );
     options += " -DgPoolingSize=" + toString( poolingSize );
     options += " -DgNumPlanes=" + toString( numPlanes );
+
+//    cout << "propagate options: " << options << endl;
 
     // [[[cog
     // import stringify
@@ -96,6 +105,7 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
     "    }\n" 
     "    output[ globalId ] = maxValue;\n" 
     "    selectors[ globalId ] = selector;\n" 
+    "//    selectors[globalId] = 123;\n" 
     "}\n" 
     "\n" 
     "";

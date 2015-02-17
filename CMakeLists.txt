@@ -49,6 +49,8 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
+    PoolingBackpropGpuNaive.cpp
+    ../test/PrintBuffer.cpp ../test/CopyBuffer.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
@@ -126,7 +128,8 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp test/testArgsParser.cpp
- src/stringhelper.cpp test/DimFromArgs.cpp
+ src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
+ test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp
  )
 #
 #
@@ -177,6 +180,7 @@ if( PROTOTYPING )
     target_include_directories( prototyping PRIVATE thirdparty/gtest )
     add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
     add_executable( testrawstring prototyping/testRawString.cpp )
+    add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
 endif( PROTOTYPING )
 
 target_link_libraries( unittests ClConvolve )

@@ -55,6 +55,14 @@ STATIC void WeightsPersister::copyArrayToNetWeights( float const*source, NeuralN
         pos += persistSize;
     }
 }
+STATIC int WeightsPersister::getArrayOffsetForLayer( NeuralNet *net, int layer ) {
+    int pos = 0;
+    for( int layerIdx = 1; layerIdx < layer; layerIdx++ ) {
+    Layer *layer = net->layers[layerIdx];
+        pos += layer->getPersistSize();
+    }
+    return pos;
+}
 STATIC void WeightsPersister::persistWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int epoch, int batch, float annealedLearningRate, int numRight, float loss ) {
     int headerLength = 1024;
     int totalWeightsSize = getTotalNumWeights( net );

@@ -12,6 +12,8 @@
 #include "PoolingPropagate.h"
 #include "PoolingBackprop.h"
 
+//#include "test/PrintBuffer.h"
+
 using namespace std;
 
 #undef VIRTUAL
@@ -71,6 +73,7 @@ VIRTUAL PoolingLayer::~PoolingLayer() {
     }
 }
 VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
+//    cout << "PoolingLayer::setBatchSize" << endl;
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;
         return;
@@ -101,6 +104,7 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     selectorsWrapper = cl->wrap( getResultsSize(), selectors );
     errorsForUpstream = new float[ previousLayer->getResultsSize() ];
     errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
+    errorsForUpstreamWrapper->createOnDevice();
 }
 VIRTUAL int PoolingLayer::getResultsSize() {
     return batchSize * numPlanes * outputBoardSize * outputBoardSize;
@@ -159,6 +163,17 @@ VIRTUAL void PoolingLayer::propagate() {
     if( !previousLayer->hasResultsWrapper() ) {
         delete upstreamResultsWrapper;
     }
+
+//    cout << "PoolingLayer::propagate() selectors after propagate: " << endl;
+//    for( int i = 0; i < outputBoardSize; i++ ) {
+//        for( int j = 0; j < outputBoardSize; j++ ) {
+//            cout << selectors[ i * outputBoardSize + j ] << " ";
+//        }
+//        cout << endl;
+//    }
+
+//    cout << "PoolingLayer::propagate() selectorsWrapper after propagate: " << endl;
+//    PrintBuffer::printInts( cl, selectorsWrapper, outputBoardSize, outputBoardSize );
 }
 VIRTUAL void PoolingLayer::backProp( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
@@ -173,7 +188,45 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
 
+//    cout << "PoolingLayer::backProp selectorsWrapper:" << endl;
+//    PrintBuffer::printInts( cl, selectorsWrapper, outputBoardSize, outputBoardSize );
+
+//    int *selectors = reinterpret_cast< int * >( selectorsWrapper->getHostArray() );
+//    cout << "PoolingLayer::backProp selectors before copy to host:" << endl;
+//    for( int i = 0; i < outputBoardSize; i++ ) {
+//        for( int j = 0; j < outputBoardSize; j++ ) {
+//            cout << " " << selectors[i * outputBoardSize + j];
+//        }
+//        cout << endl;
+//    }
+//    selectorsWrapper->copyToHost();
+//    cout << "PoolingLayer::backProp selectors after copy to host:" << endl;
+//    for( int i = 0; i < outputBoardSize; i++ ) {
+//        for( int j = 0; j < outputBoardSize; j++ ) {
+//            cout << " " << selectors[i * outputBoardSize + j];
+//        }
+//        cout << endl;
+//    }
+//    selectorsWrapper->copyToDevice();
+
+//    selectorsWrapper->copyToHost();
+
     poolingBackpropImpl->backpropErrors( batchSize, errorsWrapper, selectorsWrapper, errorsForUpstreamWrapper );
+
+//    errorsForUpstreamWrapper->copyToHost();
+//    float *errorsForUpstream = reinterpret_cast< float * >( errorsForUpstreamWrapper->getHostArray() );
+//    cout << "errorsForUpstream:" << endl;
+//    for( int i = 0; i < inputBoardSize; i++ ) {
+//        for( int j = 0; j < inputBoardSize; j++ ) {
+////            cout << " " << errorsForUpstream[i * inputBoardSize + j];
+//            if( errorsForUpstream[i * inputBoardSize + j] != 0 ) {
+//                cout << " *";
+//            } else {
+//                cout << " .";
+//            }
+//        }
+//        cout << endl;
+//    }
 
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;

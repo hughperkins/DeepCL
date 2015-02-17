@@ -24,6 +24,8 @@ PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int n
         PoolingPropagate( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
 }
 VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+//    cout << "PoolingPropagateCpu::propagate( CLWrapper * )" << endl;
+
     inputWrapper->copyToHost();
 
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
@@ -46,6 +48,7 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
 }
 VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *selectors, float *output ) {
 //    float *output = new float[ getResultsSize( batchSize ) ];
+//    cout << "PoolingPropagateCpu::propagate( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {

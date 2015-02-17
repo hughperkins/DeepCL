@@ -52,6 +52,7 @@ VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, C
     throw runtime_error("propagate not implemented for this child type");
 }
 VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *selectors, float *output ) {
+//    cout << "PoolingPropagate::propagate( float * )" << endl;
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
     CLWrapper *selectorsWrapper = cl->wrap( getResultsSize( batchSize ), selectors );
     CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );

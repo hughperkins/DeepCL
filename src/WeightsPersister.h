@@ -29,6 +29,7 @@ public:
     STATIC int getTotalNumWeights( NeuralNet *net );
     STATIC void copyNetWeightsToArray( NeuralNet *net, float *target );
     STATIC void copyArrayToNetWeights( float const*source, NeuralNet *net );
+    STATIC int getArrayOffsetForLayer( NeuralNet *net, int layer );
     STATIC void persistWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int epoch, int batch, float annealedLearningRate, int numRight, float loss );
     STATIC bool loadWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss );
 

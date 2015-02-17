@@ -14,12 +14,14 @@
 class PoolingBackpropGpuNaive : public PoolingBackprop {
 public:
     CLKernel *kernel;
+    CLKernel *kMemset;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    VIRTUAL ~PoolingBackpropGpuNaive();
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );
     PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );

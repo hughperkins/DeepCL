@@ -42,5 +42,6 @@ kernel void propagateNaive( const int batchSize, global const float *input, glob
     }
     output[ globalId ] = maxValue;
     selectors[ globalId ] = selector;
+//    selectors[globalId] = 123;
 }
 

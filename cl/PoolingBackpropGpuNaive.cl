@@ -13,26 +13,36 @@
 // globalId: [n][plane][outrow][outcol]
 kernel void backprop_errors( const int batchSize, 
     global const float *errors, global const int *selectors, global float *errorsForUpstream ) {
-//    const int globalId = get_global_id(0);
 
+    #define globalId get_global_id(0)
+    #define nPlaneCombo ( globalId / gOutputBoardSizeSquared ) 
+    #define outputPosCombo ( globalId % gOutputBoardSizeSquared )
 
-    memset( errorsForUpstream, 0, sizeof( float ) * getInputSize( batchSize ) );
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outputRow = 0; outputRow < outputBoardSize; outputRow++ ) {
-                int inputRow = outputRow * poolingSize;
-                for( int outputCol = 0; outputCol < outputBoardSize; outputCol++ ) {
-                    int inputCol = outputCol * poolingSize;
-                    int resultIndex = getResultIndex( n, plane, outputRow, outputCol );
-                    float error = errors[resultIndex];
-                    int selector = selectors[resultIndex];
-                    int drow = selector / poolingSize;
-                    int dcol = selector % poolingSize;
-                    int inputIndex = getInputIndex( n, plane, inputRow + drow, inputCol + dcol );
-                    errorsForUpstream[ inputIndex ] = error;
-                }
-            }
-        }
+    const int n = nPlaneCombo / gNumPlanes;
+    const int plane = nPlaneCombo % gNumPlanes;
+    const int outputRow = outputPosCombo / gOutputBoardSize;
+    const int outputCol = outputPosCombo % gOutputBoardSize;
+
+    if( n >= batchSize ) {
+        return;
     }
+
+    int resultIndex = ( ( n
+        * gNumPlanes + plane )
+        * gOutputBoardSize + outputRow )
+        * gOutputBoardSize + outputCol;
+    #define error ( errors[resultIndex] )
+    int selector = ( selectors[resultIndex] );
+    #define drow ( selector / gPoolingSize )
+    #define dcol ( selector % gPoolingSize )
+    #define inputRow ( outputRow * gPoolingSize + drow )
+    #define inputCol ( outputCol * gPoolingSize + dcol )
+    int inputIndex = ( ( n
+        * gNumPlanes + plane )
+        * gInputBoardSize + inputRow )
+        * gInputBoardSize + inputCol;
+//    if( n < batchSize ) {
+        errorsForUpstream[ inputIndex ] = error;
+//    }
 }
 
