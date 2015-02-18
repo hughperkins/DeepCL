@@ -7,10 +7,26 @@
 // expected defines:
 // BIASED (or not)
 
-// workgroupId: [outputPlane][inputPlane]
+// blockRow, blockCol
+// blockPos
+// margin
+// localInRow, localInCol
+// localOutRow, localOutCol
+// 
+
+//typedef struct tag_block {
+//    int pos;
+//} block;
+
+#define posToRow( pos ) ( ( pos >> 10 ) & (2^11-1) )
+#define posToCol( pos ) ( ( pos ) & (2^11-1) )
+#define rowColToPos( row, col ) ( ( row << 10 ) | col )
+#define linearIdToPos( linearId, base ) ( rowColToPos( ( linearId / base ), ( linearId % base )  ) )
+
+// workgroupId: [outputPlane][inputPlane][blockRow][blockCol]
 // localId: [filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-// local: errorboard: outputBoardSize * outputBoardSize
+// local: errorboard: blockSize * blockSize
 //        imageboard: inputBoardSize * inputBoardSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
@@ -26,11 +42,13 @@ void kernel backprop_floats_withscratch_dobias(
     #define workgroupId ( get_group_id(0) )
     #define workgroupSize ( get_local_size(0) )
 
-    const int filterRow = localId / gFilterSize;
-    const int filterCol = localId % gFilterSize;
+//    const int filterRow = localId / gFilterSize;
+//    const int filterCol = localId % gFilterSize;
+    const int filterPos = linearIdToPos( localId, gFilterSize )
+    const int inOutPlane = linearIdToPos( workgroupId, gInputPlanes )
 
-    #define outPlane ( workgroupId / gInputPlanes )
-    #define upstreamPlane ( workgroupId % gInputPlanes )
+//    #define outPlane ( workgroupId / gInputPlanes )
+//    #define upstreamPlane ( workgroupId % gInputPlanes )
 
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]

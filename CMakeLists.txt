@@ -49,7 +49,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
-    PoolingBackpropGpuNaive.cpp
+    PoolingBackpropGpuNaive.cpp 
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
@@ -179,6 +179,7 @@ if( PROTOTYPING )
     target_include_directories( prototyping PRIVATE thirdparty/gtest )
     add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
     add_executable( testrawstring prototyping/testRawString.cpp )
+    add_executable( testpassdim prototyping/testPassDim.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
 endif( PROTOTYPING )
 
