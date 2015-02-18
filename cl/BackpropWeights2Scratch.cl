@@ -7,6 +7,17 @@
 // expected defines:
 // BIASED (or not)
 
+void copyLocal( local float *target, global float const *source, int N ) {
+    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
+    for( int loop = 0; loop < numLoops; loop++ ) {
+        int offset = loop * get_local_size(0) + get_local_id(0);
+        if( offset < N ) {
+            target[offset] = source[offset];
+        }
+    }
+}
+
+
 // workgroupId: [outputPlane][inputPlane]
 // localId: [filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
@@ -39,29 +50,9 @@ void kernel backprop_floats_withscratch_dobias(
     float thisbiaschange = 0;
 #endif
     for( int n = 0; n < batchSize; n++ ) {
-	    { // these parantheses are to prevent leakage of names to outside of this block
-           // I'm hoping it reduces register pressure, but probably somewhat compiler-dependent
-            int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-            // need to fetch the board, but it's bigger than us, so will need to loop...
-            const int numLoopsForUpstream = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-            barrier(CLK_LOCAL_MEM_FENCE);
-            for( int i = 0; i < numLoopsForUpstream; i++ ) {
-                const int imageOffset = i * workgroupSize + localId;
-                if( imageOffset < gInputBoardSizeSquared ) {
-                    _imageBoard[imageOffset] = images[ upstreamBoardGlobalOffset + imageOffset ];
-                }
-            }
-	    }
-	    {
-            int resultBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
-            int numLoopsForResults = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-            for( int i = 0; i < numLoopsForResults; i++ ) {
-                int thisOffset = i * workgroupSize + localId;
-                if( thisOffset < gOutputBoardSizeSquared ) {
-                    _errorBoard[thisOffset ] = errors[resultBoardGlobalOffset + thisOffset];
-                }
-            }
-	    }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        copyLocal( _imageBoard, images + ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared, gInputBoardSizeSquared );
+        copyLocal(_errorBoard, errors + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared, gOutputBoardSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {
             for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {
@@ -87,12 +78,12 @@ void kernel backprop_floats_withscratch_dobias(
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weights[ workgroupId * gFilterSizeSquared + localId ] = learningRateMultiplier * thiswchange;
+        weights[ workgroupId * gFilterSizeSquared + localId ] -= learningRateMultiplier * thiswchange;
     }
 #ifdef BIASED
     #define writeBias ( upstreamPlane == 0 && localId == 0 )
     if( writeBias ) {
-        biasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
+        biasWeights[outPlane] -= learningRateMultiplier * thisbiaschange;
     }
 #endif
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
