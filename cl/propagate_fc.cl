@@ -20,6 +20,16 @@
     #define ACTIVATION_FUNCTION(output) (output)
 #endif
 
+void copyLocal( local float *target, global float const *source, int N ) {
+    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
+    for( int loop = 0; loop < numLoops; loop++ ) {
+        int offset = loop * get_local_size(0) + get_local_id(0);
+        if( offset < N ) {
+            target[offset] = source[offset];
+        }
+    }
+}
+
 //#ifdef gOutputBoardSize // for previous tests that dont define it
 // concept:
 //  we want to share each input example across multiple filters
@@ -76,15 +86,10 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
         + filterId * gNumInputPlanes * gFilterSizeSquared
         + inputPlaneId * gFilterSizeSquared
         + filterRowId * gFilterSize;
-//    filterRow = filters + localId * gNumInputPlanes * gFilterSizeSquared;
     local float *_threadFilterRow = _filterRows + localId * gFilterSize;
-//    filterRow = filters;
     for( int i = 0; i < gFilterSize; i++ ) {
         _threadFilterRow[i] = filterRow[i];
     }
-//    #ifdef BIASED
-//    const float bias = biases[filterId];
-//    #endif
     const int loopsPerExample = ( gInputBoardSize + workgroupSize - 1 ) / workgroupSize;
     // now loop over examples...
     for( int n = 0; n < batchSize; n++ ) {
@@ -92,17 +97,11 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
         // hopefully should be enough threads....
         // but we should check anyway really, since depends on number of filters configured,
         // not on relative size of filter and input board
-        global const float *exampleRow = images 
+        barrier(CLK_LOCAL_MEM_FENCE);
+        copyLocal( _imageRow,  images 
             + n * gNumInputPlanes * gInputBoardSizeSquared
             + inputPlaneId * gInputBoardSizeSquared
-            + filterRowId * gInputBoardSize;
-        barrier(CLK_LOCAL_MEM_FENCE);
-        for( int loop = 0; loop < loopsPerExample; loop++ ) {
-            int offset = loop * workgroupSize + localId;
-            if( offset < gInputBoardSize ) {
-                _imageRow[offset] = exampleRow[offset];
-            }
-        }
+            + filterRowId * gInputBoardSize, gInputBoardSize );
         barrier(CLK_LOCAL_MEM_FENCE);
         // add up the values in our row...
         float sum = 0;
