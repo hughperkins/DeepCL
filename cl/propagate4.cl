@@ -38,12 +38,10 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
         #endif
     global float *results,
     local float *_upstreamBoard, local float *_filterCube ) {
-    const int globalId = get_global_id(0);
+    #define globalId ( get_global_id(0) )
 
-    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
-
-    const int localId = get_local_id(0);
-    const int workgroupId = get_group_id(0);
+    #define localId ( get_local_id(0) )
+    #define workgroupId ( get_group_id(0) )
     const int workgroupSize = get_local_size(0);
     const int effectiveWorkgroupId = workgroupId / pixelsPerThread;
     const int pixel = workgroupId % pixelsPerThread;
@@ -51,44 +49,56 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     const int n = effectiveWorkgroupId / gNumFilters;
     const int outPlane = effectiveWorkgroupId % gNumFilters;
 
-    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
-
     const int outputRow = effectiveLocalId / gOutputBoardSize;
     const int outputCol = effectiveLocalId % gOutputBoardSize;
 
-    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputRow  - evenPadding) : gHalfFilterSize - evenPadding;
-    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - evenPadding, gOutputBoardSize - 1 - outputCol - evenPadding) : gHalfFilterSize - evenPadding;
-
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
-        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-        barrier(CLK_LOCAL_MEM_FENCE);
-        for( int i = 0; i < numUpstreamsPerThread; i++ ) {
-            int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gInputBoardSizeSquared ) {
-                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+        { // these parentheses are an attempt to reduce register pressure...
+            // note to self: probably should make workgroupSize a #define...
+            const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+            int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
+            barrier(CLK_LOCAL_MEM_FENCE);
+            for( int i = 0; i < numUpstreamsPerThread; i++ ) {
+                int thisOffset = workgroupSize * i + localId;
+                if( thisOffset < gInputBoardSizeSquared ) {
+                    _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+                }
             }
         }
-        const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
-        for( int i = 0; i < numFilterPixelsPerThread; i++ ) {
-            int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gFilterSizeSquared ) {
-                _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];
+        {
+            const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
+            const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
+            for( int i = 0; i < numFilterPixelsPerThread; i++ ) {
+                int thisOffset = workgroupSize * i + localId;
+                if( thisOffset < gFilterSizeSquared ) {
+                    _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];
+                }
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
 
         if( effectiveLocalId < gOutputBoardSizeSquared ) {
-            for( int u = minu; u <= maxu; u++ ) {
-                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
+            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
+                // trying to reduce register pressure...
+                #if gPadZeros == 1
+                    #define inputRow ( outputRow + u )
+                #else
+                    #define inputRow ( outputRow + u + gHalfFilterSize )
+                #endif
                 int inputboardrowoffset = inputRow * gInputBoardSize;
                 int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-                for( int v = minv; v <= maxv; v++ ) {
-                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
-                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                bool rowOk = inputRow >= 0 && inputRow < gInputBoardSize;
+                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
+                    #if gPadZeros == 1
+                        #define inputCol ( outputCol + v )
+                    #else
+                        #define inputCol ( outputCol + v + gHalfFilterSize )
+                    #endif
+                    bool process = rowOk && inputCol >= 0 && inputCol < gInputBoardSize;
+                    if( process ) {
+                            sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                    }
                 }
             }
         }

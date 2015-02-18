@@ -436,5 +436,18 @@ StatefulTimer readings:
    Propagate::propagate after copytohost: 40ms
 [       OK ] SLOW_testpropagate.perf_kgsgo_64c7_args (2078 ms)
 
+==================
+./clconvolve1 netdef=32c5{z}-500n-361n numtrain=100000 dataset=kgsgo
+
+./clconvolve1 netdef=32c5{z}-32c5{z}-500n-361n numtrain=100000 dataset=kgsgo
+
+./clconvolve1 netdef=32c5{z}-32c5{z}-32c5{z}-500n-361n numtrain=100000 dataset=kgsgo
+after epoch 10 224247 ms
+annealed learning rate: 0.002 training loss: 261370
+ train accuracy: 39174/100000 39.174%
+test accuracy: 3065/18860 16.2513%
+after tests 15235 ms
+wrote weights to file, filesize 23497KB
+
 
 
