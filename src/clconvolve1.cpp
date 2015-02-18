@@ -99,9 +99,9 @@ public:
         weightsFile = "weights.dat";
         normalization = "stddev";
         batchSize = 128;
-        numTest = 0;
+        numTest = -1;
         loadWeights = 0;
-        numTrain = 0;
+        numTrain = -1;
         numEpochs = 12;
         normalizationExamples = 10000;
         learningRate = 0.002f;
