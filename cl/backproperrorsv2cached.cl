@@ -4,6 +4,16 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+void copyLocal( local float *target, global float const *source, int N ) {
+    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
+    for( int loop = 0; loop < numLoops; loop++ ) {
+        int offset = loop * get_local_size(0) + get_local_id(0);
+        if( offset < N ) {
+            target[offset] = source[offset];
+        }
+    }
+}
+
 // as calcErrorsForUpstream, but with local cache
 // convolve weights with errors to produce errorsForUpstream
 // workgroupid: [n][inputPlane]
@@ -52,24 +62,10 @@ void kernel calcErrorsForUpstreamCached(
 
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
-        const int filterBoardGlobalOffset =( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
-        const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int i = 0; i < pixelCopiesPerThread; i++ ) {
-            int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gFilterSizeSquared ) {
-                _filterBoard[ thisOffset ] = filtersGlobal[ filterBoardGlobalOffset + thisOffset ];
-            }
-            if( thisOffset < gOutputBoardSizeSquared ) {
-                _errorBoard[ thisOffset ] = errorsGlobal[ errorBoardGlobalOffset + thisOffset ];
-            }
-        }
+        copyLocal( _filterBoard, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
+        copyLocal( _errorBoard, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared, gOutputBoardSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
-//        if( globalId == 0 ) {
-//            for( int i = 0; i < gFilterSizeSquared; i++ ) {
-//                errorsForUpstream[ (outPlane+1)*100 + i ] = _filterBoard[i];
-//            }
-//        }
         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
