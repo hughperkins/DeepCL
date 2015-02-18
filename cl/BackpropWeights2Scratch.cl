@@ -21,16 +21,16 @@ void kernel backprop_floats_withscratch_dobias(
         #endif
         local float *_errorBoard, local float *_imageBoard
  ) {
-    const int globalId = get_global_id(0);
-    const int localId = get_local_id(0);
-    const int workgroupId = get_group_id(0);
-    const int workgroupSize = get_local_size(0);
+    #define globalId ( get_global_id(0) )
+    #define localId ( get_local_id(0)  )
+    #define workgroupId ( get_group_id(0) )
+    #define workgroupSize ( get_local_size(0) )
 
     const int filterRow = localId / gFilterSize;
     const int filterCol = localId % gFilterSize;
 
-    const int outPlane = workgroupId / gInputPlanes;
-    const int upstreamPlane = workgroupId % gInputPlanes;
+    #define outPlane ( workgroupId / gInputPlanes )
+    #define upstreamPlane ( workgroupId % gInputPlanes )
 
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
@@ -39,37 +39,44 @@ void kernel backprop_floats_withscratch_dobias(
     float thisbiaschange = 0;
 #endif
     for( int n = 0; n < batchSize; n++ ) {
-        int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-        // need to fetch the board, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        barrier(CLK_LOCAL_MEM_FENCE);
-        for( int i = 0; i < numLoopsForUpstream; i++ ) {
-            int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gInputBoardSizeSquared ) {
-                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+	    { // these parantheses are to prevent leakage of names to outside of this block
+           // I'm hoping it reduces register pressure, but probably somewhat compiler-dependent
+            int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
+            // need to fetch the board, but it's bigger than us, so will need to loop...
+            const int numLoopsForUpstream = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+            barrier(CLK_LOCAL_MEM_FENCE);
+            for( int i = 0; i < numLoopsForUpstream; i++ ) {
+                const int imageOffset = i * workgroupSize + localId;
+                if( imageOffset < gInputBoardSizeSquared ) {
+                    _imageBoard[imageOffset] = images[ upstreamBoardGlobalOffset + imageOffset ];
+                }
             }
-        }
-        int resultBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
-        int numLoopsForResults = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        for( int i = 0; i < numLoopsForResults; i++ ) {
-            int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutputBoardSizeSquared ) {
-                _errorBoard[thisOffset ] = errors[resultBoardGlobalOffset + thisOffset];
+	    }
+	    {
+            int resultBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
+            int numLoopsForResults = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+            for( int i = 0; i < numLoopsForResults; i++ ) {
+                int thisOffset = i * workgroupSize + localId;
+                if( thisOffset < gOutputBoardSizeSquared ) {
+                    _errorBoard[thisOffset ] = errors[resultBoardGlobalOffset + thisOffset];
+                }
             }
-        }
+	    }
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {
             for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {
                 int upstreamRow = outRow - gMargin + filterRow;
                 for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
-                    int upstreamCol = outCol - gMargin + filterCol;
-                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize
-                        && upstreamCol < gInputBoardSize;
+                    const int upstreamCol = outCol - gMargin + filterCol;
+                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize && upstreamCol < gInputBoardSize )
                     if( proceed ) {
-                        int resultIndex = outRow * gOutputBoardSize + outCol;
-                        float error = _errorBoard[resultIndex];
-                        int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
-                        float upstreamResult = _imageBoard[upstreamDataIndex];
+                        // these defines reduce register pressure, compared to const
+                        // giving a 40% speedup on nvidia :-)
+                        #define resultIndex ( outRow * gOutputBoardSize + outCol )
+                        #define error ( _errorBoard[resultIndex] )
+                        //const float error = _errorBoard[resultIndex];
+                        #define upstreamDataIndex ( upstreamRow * gInputBoardSize + upstreamCol )
+                        #define upstreamResult ( _imageBoard[upstreamDataIndex] )
                         thiswchange += upstreamResult * error;
     #ifdef BIASED
                         thisbiaschange += error;
@@ -83,7 +90,7 @@ void kernel backprop_floats_withscratch_dobias(
         weights[ workgroupId * gFilterSizeSquared + localId ] -= learningRateMultiplier * thiswchange;
     }
 #ifdef BIASED
-    bool writeBias = upstreamPlane == 0 && localId == 0;
+    #define writeBias ( upstreamPlane == 0 && localId == 0 )
     if( writeBias ) {
         biasWeights[outPlane] -= learningRateMultiplier * thisbiaschange;
     }
