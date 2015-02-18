@@ -54,6 +54,9 @@ Contents
 - [What if I need a new feature?](#what-if-i-need-a-new-feature)
 - [What if I want to contribute myself?](#what-if-i-want-to-contribute-myself)
   - [Development technical details](#development-technical-details)
+  - [You might wonder why...](#you-might-wonder-why)
+  - [OpenCL optimization](#opencl-optimization)
+  - [OpenCL debugging](#opencl-debugging)
 - [Forums](#forums)
 - [What's done / what's planned](#whats-done--whats-planned)
 - [Recent changes](#recent-changes)
@@ -588,6 +591,8 @@ What if I want to contribute myself?
 * You need Python installed and available for this to work.  You don't need python just to
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE` switch in the 
 cmake configuration, then a lot of manual editing will no longer be necessary :-)
+
+## You might wonder why...
 * You might wonder why I use cog to include the GPU kernels rather than using any of the following options:
   * raw strings `R"DELIM( ... )DELIM"
   * some kind of `stringify` include macro
@@ -602,6 +607,32 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
   * if I use `cog`, I can code comfortably using gedit, and that seems stable and works ok for me :-)
 * You might wonder why I target OpenCL rather than just using cuda-conv, caffe etc, and the answer is:
   * I think that more open standards and increased competition is a good thing, for us users, and I like to feel I can contribute to this in some small way :-)
+
+## OpenCL optimization
+
+This is obviously a huge topic, and there are lots of resources out there.  A few pointers:
+* Use of define-time constants, ie '-D foo=bar' works well
+* Local memory is faster than global memory, so a good strategy is:
+  * copy some data portion into local memory
+  * do some work on it, ideally using as many workgroup threads as possible
+  * copy results back out to global memory
+* Private memory, ie registers, is fastest, but even more scarce than local memory, since:
+  * not just has to be divided out per compute-unit, like local memory, but every single thread has its own set
+  * using too much increases register pressure, which reduces compute unit occupation
+* The relative performance of different kernels on different hardware is probably theoretically possible to predict, but in practice incredibly complicated.  Perhaps better to just try plausible kernels, for a batch or three, first, and then choose the ones that empirically run the fastest, on the current hardware, for each specific neural net layer configuration?
+  * Since each batch runs pretty quickly, idea: might be useful to use [UCB1](http://homes.di.unimi.it/~cesabian/Pubblicazioni/ml-02.pdf) for this :-)
+  * By comparing at runtime, it means, we no longer need to spend any effort on analyzing heuristics for choosing, we simply throw a diverse set of kernels at the problem, and hopefully one or two of them are optimal for each layer of our specific network
+
+## OpenCL debugging
+
+* painful... :-(
+* a few things that work ok-ish:
+* making sure to factorize the kernel as much as possible, into relatively simple smaller kernels
+  * this turns out to often be optimal for performance too, since reduces register pressure etc
+  * but in the case that it's not (or isnt on certain hardware), it's relatively easy to combine the subkernels together again, into another candidate kernel, once the factorized kernel version is working ok
+* easiest to implement in C++ first, and then get working in OpenCL
+* it's possible to 'see' inside the kernel, by writing certain values to any of the output arrays, eg make the output array bigger, and write 'off the end', or add a new output array
+  * in practice, writing off the end of the array, or simply writing other data, instead of the results, temporarily, seems to work well
 
 Forums
 ======
