@@ -149,7 +149,7 @@ void go(Config config) {
 
 //    int totalLinearSize;
     GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &boardSize );
-    Ntrain = config.numTrain == 0 ? Ntrain : config.numTrain;
+    Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * boardSize * boardSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " boardSize " << boardSize << endl;
     if( config.loadOnDemand ) {
@@ -159,20 +159,20 @@ void go(Config config) {
     }
     trainData = new unsigned char[ (long)trainAllocateN * numPlanes * boardSize * boardSize ];
     trainLabels = new int[trainAllocateN];
-    if( !config.loadOnDemand ) {
+    if( !config.loadOnDemand && Ntrain > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
     }
 
     GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &boardSize );
-    Ntest = config.numTest == 0 ? Ntest : config.numTest;
+    Ntest = config.numTest == -1 ? Ntest : config.numTest;
     if( config.loadOnDemand ) {
         testAllocateN = config.batchSize; // can improve this later
     } else {
         testAllocateN = Ntest;
     }
     testData = new unsigned char[ (long)testAllocateN * numPlanes * boardSize * boardSize ];
-    testLabels = new int[testAllocateN];    
-    if( !config.loadOnDemand ) {
+    testLabels = new int[testAllocateN]; 
+    if( !config.loadOnDemand && Ntest > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
     }
     
