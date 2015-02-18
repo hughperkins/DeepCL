@@ -1,31 +1,34 @@
-layer 3:ConvolutionalLayer{ LayerDimensions{ inputPlanes=1 inputBoardSize=28 numFilters=8 filterSize=5 outputBoardSize=28 padZeros=1 biased=1 skip=0} RELU }
+in propagate, filter plane i of filter f convolves with plane i from each input cube
+to contribute to plane f of each output
 
-./clconvolve dumptimings=1
-StatefulTimer readings:
-   layer3 BackpropWeights2Scratch end: 5625ms
-   layer4 PoolingBackpropCpu::backpropErrors end: 947ms
-   layer5 BackpropErrorsv2Cached after first kernel: 469ms
-   layer5 BackpropWeights2Scratch end: 2344ms
-   layer5 Propagate4::propagate after call propagate: 547ms
-   layer6 PoolingBackpropCpu::backpropErrors end: 23ms
+so, for backprop:
+need to take plane i from each input cube, and plane f from each output cube, 
+and convolve together to get changes to plane i of filter f
+so, using notation:
+  I[n] is input cube n
+  O[n] is output cube n
+  I[n,i] is plane i of input cube n
+  O[n,f] is plane f of output cube n
+  F[f] is filter cube f
+  F[f,i] is plane i of filter cube f
+  dF[f,i] is weights update to plane i of filter cube f
+  (*) means convolve
+  sum() means sum()
+  sum[n]() means sum over n
+Then:
+dF[f,i] = sum[n]( I[n,i] (*) O[n,f] )
+
+basically we have to convolve one specific plane of each output
+with one specific plane of each input, to get one filter plane change
+(and do this for each example, sum them together)
+
+sizes, eg for mnist:
+plane f from each output: 128 * 28 * 28 * 4 = 401KB
+plane i from each input: 128 * 28 * 28 * 4 = 401KB
+plane i from filter f: 5 * 5 * 4 = 100 bytes...
+plane i from all filters: 5 * 5 * 4 * 8 = 800 bytes (ok :-) )
+all planes from all filters eg: 5 * 5 * 4 * 8 * 1 = 800 bytes (ok :-) )
 
 
-on aws, ./clconvolve dumptimings=1 numtrain=12800
-LayerDimensions{ inputPlanes=1 inputBoardSize=28 numFilters=8 filterSize=5 outputBoardSize=28 padZeros=1 biased=1 skip=0}
-StatefulTimer readings:
-   layer3 BackpropWeights2Scratch end: 1200ms
-   layer3 backprop(): start, layer 3: 219ms
-   layer5 BackpropErrorsv2Cached after first kernel: 100ms
-   layer5 BackpropWeights2Scratch end: 500ms
-   layer5 Propagate4::propagate after call propagate: 178ms
-   layer5 backprop(): start, layer 5: 34ms
 
-comp:
-./unittests --gtest_filter=*testbackpropweights.comp*args instance0=1 instance1=2 learningrate=0.5 batchsize=128 its=100
-instance 0 backpropweights 2771 ms
-instance 1 backpropweights 3601 ms
-instance 2 backpropweights 1385 ms
-instance 3 backpropweights 1135 ms
-
-./unittests --gtest_filter=*testbackpropweights.comp*args instance0=1 instance1=2 learningrate=0.5 batchsize=128 its=100 inputboardsize=28 numfilters=8 filtersize=5 padzeros=1 biased=1
 

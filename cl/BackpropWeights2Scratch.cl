@@ -7,22 +7,6 @@
 // expected defines:
 // BIASED (or not)
 
-// not specifci to this kernel, but basically we have to convolve one plane of the propagate output
-// with one plane of each propagate input, to get one filter plane change output plane
-// (and do this for each example, sum them together)
-
-// eg plane f from each output: 128 * 28 * 28 * 4 = 401KB
-// plane i from each input: 128 * 28 * 28 * 4 = 401KB
-// plane i from filter f: 5 * 5 * 4 = 100 bytes...
-// plane i from all filters: 5 * 5 * 4 * 8 = 800 bytes (ok :-) )
-// all planes from all filters eg: 5 * 5 * 4 * 8 * 1 = 800 bytes (ok :-) )
-//
-// in propagate, filter plane i of filter f:
-// convolves with plane i from each input cube
-// to contribute to plane f of each output
-// so, for backprop, need to take plane i from each input cube, and plane f
-// from each output cube, and convolve together to get changes to plane i of filter f
-
 // workgroupId: [outputPlane][inputPlane]
 // localId: [filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
