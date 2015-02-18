@@ -56,10 +56,6 @@ void kernel calcErrorsForUpstreamCached(
     const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputBoardSize -1) );
     const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
 
-    const int filterPixelCopiesPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
-    const int errorPixelCopiesPerThread = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
-    const int pixelCopiesPerThread = max( filterPixelCopiesPerThread, errorPixelCopiesPerThread );
-
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
