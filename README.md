@@ -611,7 +611,7 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
 ## OpenCL optimization
 
 This is obviously a huge topic, and there are lots of resources out there.  A few pointers:
-* Use of define-time constants, ie '-D foo=bar' works well
+* Use of compile-time constants, ie '-D foo=bar' works well
 * Local memory is faster than global memory, so a good strategy is:
   * copy some data portion into local memory
   * do some work on it, ideally using as many workgroup threads as possible
