@@ -5,6 +5,8 @@
 class Propagate4 : public Propagate {
 public:
     CLKernel *kernel;
+    int workgroupSize;
+    int pixelsPerThread;
 
     // [[[cog
     // import cog_addheaders

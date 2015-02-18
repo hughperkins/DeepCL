@@ -31,7 +31,6 @@
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
 // results are organized like [n][filterid][outrow][outcol]
 void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
-    const int pixelsPerThread,
       global const float *images, global const float *filters, 
         #ifdef BIASED
             global const float*biases, 
@@ -42,10 +41,10 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
 
     #define localId ( get_local_id(0) )
     #define workgroupId ( get_group_id(0) )
-    const int workgroupSize = get_local_size(0);
-    const int effectiveWorkgroupId = workgroupId / pixelsPerThread;
-    const int pixel = workgroupId % pixelsPerThread;
-    const int effectiveLocalId = localId + pixel * workgroupSize;
+//    const int workgroupSize = get_local_size(0);
+    const int effectiveWorkgroupId = workgroupId / gPixelsPerThread;
+    const int pixel = workgroupId % gPixelsPerThread;
+    const int effectiveLocalId = localId + pixel * gWorkgroupSize;
     const int n = effectiveWorkgroupId / gNumFilters;
     const int outPlane = effectiveWorkgroupId % gNumFilters;
 
@@ -56,21 +55,21 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         { // these parentheses are an attempt to reduce register pressure...
             // note to self: probably should make workgroupSize a #define...
-            const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+            const int numUpstreamsPerThread = ( gInputBoardSizeSquared + gWorkgroupSize - 1 ) / gWorkgroupSize;
             int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int i = 0; i < numUpstreamsPerThread; i++ ) {
-                int thisOffset = workgroupSize * i + localId;
+                int thisOffset = gWorkgroupSize * i + localId;
                 if( thisOffset < gInputBoardSizeSquared ) {
                     _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
                 }
             }
         }
         {
-            const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
+            const int numFilterPixelsPerThread = ( gFilterSizeSquared + gWorkgroupSize - 1 ) / gWorkgroupSize;
             const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
             for( int i = 0; i < numFilterPixelsPerThread; i++ ) {
-                int thisOffset = workgroupSize * i + localId;
+                int thisOffset = gWorkgroupSize * i + localId;
                 if( thisOffset < gFilterSizeSquared ) {
                     _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];
                 }

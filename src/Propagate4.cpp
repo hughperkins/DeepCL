@@ -22,19 +22,12 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("Propagate4::propagate start");
 
-    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
-    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    int pixelsPerThread = 1;
-    while( workgroupsize > maxWorkgroupSize ) {
-        workgroupsize >>= 1;
-        pixelsPerThread <<= 1;
-    }
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
-    int globalSize = workgroupsize * numWorkgroups;
+    int globalSize = workgroupSize * numWorkgroups;
 //    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
 
     kernel->in(batchSize);
-    kernel->in( pixelsPerThread );
+//    kernel->in( pixelsPerThread );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
@@ -44,14 +37,24 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->localFloats( square( dim.filterSize ) );
 //    kernel->localFloats( pixelsPerThread * workgroupsize );
 
-    kernel->run_1d( globalSize, workgroupsize );
+    kernel->run_1d( globalSize, workgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("Propagate4::propagate after call propagate");
 }
 Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
         Propagate( cl, dim, fn )
             {
+    workgroupSize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
+    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+    pixelsPerThread = 1;
+    while( workgroupSize > maxWorkgroupSize ) {
+        workgroupSize >>= 1;
+        pixelsPerThread <<= 1;
+    }
+
     std::string options = "-D " + fn->getDefineName();
+    options += " -D gWorkgroupSize=" + toString( workgroupSize );
+    options += " -D gPixelsPerThread=" + toString( pixelsPerThread );
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify
@@ -92,7 +95,6 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
     "// results are organized like [n][filterid][outrow][outcol]\n" 
     "void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,\n" 
-    "    const int pixelsPerThread,\n" 
     "      global const float *images, global const float *filters,\n" 
     "        #ifdef BIASED\n" 
     "            global const float*biases,\n" 
@@ -103,74 +105,63 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "\n" 
     "    #define localId ( get_local_id(0) )\n" 
     "    #define workgroupId ( get_group_id(0) )\n" 
-    "    const int workgroupSize = get_local_size(0);\n" 
-    "    const int effectiveWorkgroupId = workgroupId / pixelsPerThread;\n" 
-    "    const int pixel = workgroupId % pixelsPerThread;\n" 
-    "    const int effectiveLocalId = localId + pixel * workgroupSize;\n" 
+    "//    const int workgroupSize = get_local_size(0);\n" 
+    "    const int effectiveWorkgroupId = workgroupId / gPixelsPerThread;\n" 
+    "    const int pixel = workgroupId % gPixelsPerThread;\n" 
+    "    const int effectiveLocalId = localId + pixel * gWorkgroupSize;\n" 
     "    const int n = effectiveWorkgroupId / gNumFilters;\n" 
     "    const int outPlane = effectiveWorkgroupId % gNumFilters;\n" 
     "\n" 
     "    const int outputRow = effectiveLocalId / gOutputBoardSize;\n" 
     "    const int outputCol = effectiveLocalId % gOutputBoardSize;\n" 
     "\n" 
-    "// #if gPadZeros == 1\n" 
-    "//     const int minu = max( -gHalfFilterSize, -outputRow );\n" 
-    "//     const int maxu = min( gHalfFilterSize, gOutputBoardSize - 1 - outputRow ) - gEven;\n" 
-    "//     const int minv = max( -gHalfFilterSize, -outputCol );\n" 
-    "//     const int maxv = min( gHalfFilterSize, gOutputBoardSize - 1 - outputCol ) - gEven;\n" 
-    "// #else\n" 
-    "//     const int minu = - gHalfFilterSize;\n" 
-    "//     const int maxu = gHalfFilterSize - gEven;\n" 
-    "//     const int minv = - gHalfFilterSize;\n" 
-    "//     const int maxv = gHalfFilterSize - gEven;\n" 
-    "// #endif\n" 
-    "\n" 
     "    float sum = 0;\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
-    "	{\n" 
-    "    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
-    "        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
-    "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
-    "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gInputBoardSizeSquared ) {\n" 
-    "                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
+    "        { // these parentheses are an attempt to reduce register pressure...\n" 
+    "            // note to self: probably should make workgroupSize a #define...\n" 
+    "            const int numUpstreamsPerThread = ( gInputBoardSizeSquared + gWorkgroupSize - 1 ) / gWorkgroupSize;\n" 
+    "            int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
+    "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
+    "            for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
+    "                int thisOffset = gWorkgroupSize * i + localId;\n" 
+    "                if( thisOffset < gInputBoardSizeSquared ) {\n" 
+    "                    _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
+    "                }\n" 
     "            }\n" 
     "        }\n" 
-    "	}\n" 
-    "	{\n" 
-    "    const int numFilterPixelsPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
-    "        const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;\n" 
-    "        for( int i = 0; i < numFilterPixelsPerThread; i++ ) {\n" 
-    "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gFilterSizeSquared ) {\n" 
-    "                _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];\n" 
+    "        {\n" 
+    "            const int numFilterPixelsPerThread = ( gFilterSizeSquared + gWorkgroupSize - 1 ) / gWorkgroupSize;\n" 
+    "            const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;\n" 
+    "            for( int i = 0; i < numFilterPixelsPerThread; i++ ) {\n" 
+    "                int thisOffset = gWorkgroupSize * i + localId;\n" 
+    "                if( thisOffset < gFilterSizeSquared ) {\n" 
+    "                    _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];\n" 
+    "                }\n" 
     "            }\n" 
     "        }\n" 
-    "	}\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "\n" 
     "        if( effectiveLocalId < gOutputBoardSizeSquared ) {\n" 
     "            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {\n" 
-    "                // int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
-    "		#if gPadZeros == 1\n" 
-    "                	#define inputRow ( outputRow + u )\n" 
-    "		#else\n" 
-    "                	#define inputRow ( outputRow + u + gHalfFilterSize )\n" 
-    "		#endif\n" 
+    "                // trying to reduce register pressure...\n" 
+    "                #if gPadZeros == 1\n" 
+    "                    #define inputRow ( outputRow + u )\n" 
+    "                #else\n" 
+    "                    #define inputRow ( outputRow + u + gHalfFilterSize )\n" 
+    "                #endif\n" 
     "                int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
     "                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "		bool rowOk = inputRow >= 0 && inputRow < gInputBoardSize;\n" 
-    "                for( int v = -gHalfFilterSize; v <= gHalfFilterSize -gEven; v++ ) {\n" 
-    "		    #if gPadZeros == 1\n" 
-    "                    	#define inputCol ( outputCol + v )\n" 
-    "	            #else\n" 
-    "                    	#define inputCol ( outputCol + v + gHalfFilterSize )\n" 
+    "                bool rowOk = inputRow >= 0 && inputRow < gInputBoardSize;\n" 
+    "                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {\n" 
+    "                    #if gPadZeros == 1\n" 
+    "                        #define inputCol ( outputCol + v )\n" 
+    "                    #else\n" 
+    "                        #define inputCol ( outputCol + v + gHalfFilterSize )\n" 
     "                    #endif\n" 
     "                    bool process = rowOk && inputCol >= 0 && inputCol < gInputBoardSize;\n" 
-    "			if( process ) {\n" 
-    "                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
-    "			}\n" 
+    "                    if( process ) {\n" 
+    "                            sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "                    }\n" 
     "                }\n" 
     "            }\n" 
     "        }\n" 
