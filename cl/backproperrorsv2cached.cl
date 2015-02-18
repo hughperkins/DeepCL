@@ -51,27 +51,24 @@ void kernel calcErrorsForUpstreamCached(
     const int upstreamRow = localId / gInputBoardSize;
     const int upstreamCol = localId % gInputBoardSize;
 
-    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputBoardSize - 1) );
-    const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
-    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputBoardSize -1) );
-    const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
-
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
         copyLocal( _filterBoard, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
         copyLocal( _errorBoard, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared, gOutputBoardSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
+        for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
-            for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
+            for( int filterCol = 0; filterCol <= gFilterSize; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
                 int resultIndex = outRow * gOutputBoardSize + outCol;
-                float thisError = _errorBoard[resultIndex];
-                int thisWeightIndex = filterRow * gFilterSize + filterCol;
-                float thisWeight = _filterBoard[thisWeightIndex];
-                float thisWeightTimesError = thisWeight * thisError;
-                sumWeightTimesOutError += thisWeightTimesError;
+                if( outCol >= 0 && outCol < gOutputBoardSize && outRow >= 0 && outRow < gOutputBoardSize ) {
+                    float thisError = _errorBoard[resultIndex];
+                    int thisWeightIndex = filterRow * gFilterSize + filterCol;
+                    float thisWeight = _filterBoard[thisWeightIndex];
+                    float thisWeightTimesError = thisWeight * thisError;
+                    sumWeightTimesOutError += thisWeightTimesError;
+                }
             }
         }
     }
