@@ -20,6 +20,16 @@
     #define ACTIVATION_FUNCTION(output) (output)
 #endif
 
+void copyLocal( local float *target, global float const *source, int N ) {
+    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
+    for( int loop = 0; loop < numLoops; loop++ ) {
+        int offset = loop * get_local_size(0) + get_local_id(0);
+        if( offset < N ) {
+            target[offset] = source[offset];
+        }
+    }
+}
+
 #ifdef gOutputBoardSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [n][filterid]
@@ -53,28 +63,9 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
-        { // these parentheses are an attempt to reduce register pressure...
-            // note to self: probably should make workgroupSize a #define...
-            const int numUpstreamsPerThread = ( gInputBoardSizeSquared + gWorkgroupSize - 1 ) / gWorkgroupSize;
-            int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-            barrier(CLK_LOCAL_MEM_FENCE);
-            for( int i = 0; i < numUpstreamsPerThread; i++ ) {
-                int thisOffset = gWorkgroupSize * i + localId;
-                if( thisOffset < gInputBoardSizeSquared ) {
-                    _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
-                }
-            }
-        }
-        {
-            const int numFilterPixelsPerThread = ( gFilterSizeSquared + gWorkgroupSize - 1 ) / gWorkgroupSize;
-            const int filterGlobalOffset = ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
-            for( int i = 0; i < numFilterPixelsPerThread; i++ ) {
-                int thisOffset = gWorkgroupSize * i + localId;
-                if( thisOffset < gFilterSizeSquared ) {
-                    _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];
-                }
-            }
-        }
+        barrier(CLK_LOCAL_MEM_FENCE);
+        copyLocal( _upstreamBoard, images + ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared, gInputBoardSizeSquared );
+        copyLocal( _filterCube, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
 
         if( effectiveLocalId < gOutputBoardSizeSquared ) {
@@ -106,7 +97,7 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
         sum += biases[outPlane];
     #endif
     // results are organized like [imageid][filterid][row][col]
-    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + effectiveLocalId;
+    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + effectiveLocalId )
     if( localId < gOutputBoardSizeSquared ) {
         results[resultIndex ] = ACTIVATION_FUNCTION(sum);
     }
