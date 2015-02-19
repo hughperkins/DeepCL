@@ -129,21 +129,12 @@ global const float*biases,
                 if( exampleId < numExamples ) {
                     sum += images[ inputboardrowoffset + inputCol] * filters[ filterrowoffset + n ];
                 }
-//                probe += 10000 * pown(100, inputPlane) *( inputboardrowoffset + inputCol );
-            //    probe += pown(100, inputPlane) *( images[inputboardrowoffset + inputCol] );
-                //probe += pown(100, inputPlane) *( filterrowoffset + n );
-             //   probe += pown(1000, inputPlane) *( floor(filters[ filterrowoffset + n ]*100)/100 );
-
-//                sum = filters[filterrowoffset + n];
-                //sum = filterrowoffset;
                 n++;
             }
             m++;
         }
-//        probe += pown(100, inputPlane ) * filterBoardOffset;
         inputPlane++;
     }
-//     probe = exampleId * 100 + filterCubeOffset;
 
     if( exampleId < numExamples ) {
     #ifdef BIASED
@@ -151,11 +142,6 @@ global const float*biases,
     #endif
         results[globalId] = ACTIVATION_FUNCTION(sum);
     }
-//    results[globalId] = globalId;
-//    results[0] = 1234.0;
-//     results[1024+globalId] = maxn;
-//     results[1] = maxMm;
-//     results[2] = minm;
 }
 #endif
 

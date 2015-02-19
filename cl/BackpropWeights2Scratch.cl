@@ -7,16 +7,8 @@
 // expected defines:
 // BIASED (or not)
 
-void copyLocal( local float *target, global float const *source, int N ) {
-    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
-    for( int loop = 0; loop < numLoops; loop++ ) {
-        int offset = loop * get_local_size(0) + get_local_id(0);
-        if( offset < N ) {
-            target[offset] = source[offset];
-        }
-    }
-}
-
+#include "cl/copyLocal.cl"
+#include "cl/ids.cl"
 
 // workgroupId: [outputPlane][inputPlane]
 // localId: [filterRow][filterCol]
@@ -32,11 +24,6 @@ void kernel backprop_floats_withscratch_dobias(
         #endif
         local float *_errorBoard, local float *_imageBoard
  ) {
-    #define globalId ( get_global_id(0) )
-    #define localId ( get_local_id(0)  )
-    #define workgroupId ( get_group_id(0) )
-    #define workgroupSize ( get_local_size(0) )
-
     const int filterRow = localId / gFilterSize;
     const int filterCol = localId % gFilterSize;
 
