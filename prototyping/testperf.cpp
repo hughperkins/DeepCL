@@ -31,6 +31,8 @@ int main( int argc, char *argv[] ) {
             float a = stuff[get_global_id(0)];
 #ifdef dOn
             float d = stuff[get_global_id(0)+1024];
+            float e = stuff[get_global_id(0)+1];
+            float f = stuff[get_global_id(0)+2];
 #endif
             float b = stuff[5000];
             float c = stuff[5001];
@@ -39,11 +41,15 @@ int main( int argc, char *argv[] ) {
                 a = a * b + c;
 #ifdef dOn
                 d = d * b + c;
+                e = e * b + c;
+                f = f * b + c;
 #endif
             }
             stuff[get_global_id(0)] = a;
 #ifdef dOn
             stuff[get_global_id(0) + 1024] = d;
+            stuff[get_global_id(0) + 1024] = e;
+            stuff[get_global_id(0) + 1024] = f;
 #endif
         }
     )DELIM";
@@ -76,7 +82,7 @@ int main( int argc, char *argv[] ) {
 
     float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
     if( dOn ) {
-        throughputGflops *= 2;
+        throughputGflops *= 4;
     }
     cout << "throughput: " << throughputGflops << "Gflop/s" << endl;
 
