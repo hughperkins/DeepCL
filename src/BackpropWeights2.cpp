@@ -15,7 +15,6 @@
 #include "BackpropWeights2Naive.h"
 #include "BackpropWeights2Scratch.h"
 #include "BackpropWeights2ScratchLarge.h"
-//#include "BackpropWeights2ByRow.h"
 
 using namespace std;
 
@@ -63,9 +62,6 @@ STATIC BackpropWeights2 *BackpropWeights2::instanceSpecific( int idx, OpenCLHelp
     if( idx == 3 ) {
         return new BackpropWeights2ScratchLarge( cl, layerDimensions );
     }
-//    if( idx == 4 ) {
-//        return new BackpropWeights2ByRow( cl, layerDimensions );
-//    }
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx) );
 }
 BackpropWeights2::BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
