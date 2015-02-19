@@ -36,12 +36,16 @@ int main( int argc, char *argv[] ) {
         stuff[i] = 2.0f;
     }
     stuff[1024] = 2.0f;
-    stuff[1025] = -2.0f;
+    stuff[1025] = -1.999999f;
     kernel->inout( 2048, stuff );
     kernel->run_1d( workgroupSize, workgroupSize );
     cl->finish();
-    timer.timeCheck("After kernel");
+    float kernelTime = timer.lap();
+    cout << "time: " << kernelTime << "ms" << endl;
     cout << stuff[0] << " " << stuff[1] << endl;
+
+    float throughputGflops = (float)its * workgroupSize / kernelTime * 1000.0f / 1024 / 1024 / 1024;
+    cout << "throughput: " << throughputGflops << "Gflop/s" << endl;
 
     delete kernel;
     delete cl;
