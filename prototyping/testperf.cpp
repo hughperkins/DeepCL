@@ -5,14 +5,24 @@
 #include "OpenCLHelper.h"
 #include "stringhelper.h"
 #include "Timer.h"
+#include "test/TestArgsParser.h"
 
 using namespace std;
 
 int main( int argc, char *argv[] ) {
-    int its = atoi(argv[1] );
-    int workgroupSize = atoi( argv[2] );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    cout << "its: " << its << " workgroupsize: " << workgroupSize << endl;  
+    int its = 10000000;
+    int workgroupSize = 512;
+    bool optimizerOn = true;
+
+    TestArgsParser args( argc, argv );
+    args._arg( "its", &its );
+    args._arg( "workgroupsize", &workgroupSize );
+    args._arg( "opt", &optimizerOn );
+    args._go();
+
+    cout << "its: " << its << " workgroupsize: " << workgroupSize << " optimizer: " << optimizerOn << endl;  
 
     string kernelSource = R"DELIM(
         kernel void test(global float *stuff) {
@@ -27,8 +37,8 @@ int main( int argc, char *argv[] ) {
         }
     )DELIM";
     
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", "-cl-opt-disable -D N_ITERATIONS=" + toString( its ) );
+    string optimizerDefine = optimizerOn ? "" : "-cl-opt-disable ";
+    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", optimizerDefine + " -D N_ITERATIONS=" + toString( its ) );
 
     float stuff[2048];
     for( int i = 0; i < 2048; i++ ) {
