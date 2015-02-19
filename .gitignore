@@ -30,6 +30,7 @@
 *.out
 *.app
 
+debug/
 build/
 build-win32/
 build-win64/
