@@ -40,10 +40,10 @@ void kernel calcErrorsForUpstreamCached(
         local float *_errorBoard, 
         local float *_filterBoard ) {
 
-    const int globalId = get_global_id(0);
-    const int localId = get_local_id(0);
-    const int workgroupId = get_group_id(0);
-    const int workgroupSize = get_local_size(0);
+    #define globalId get_global_id(0)
+    #define localId get_local_id(0)
+    #define workgroupId get_group_id(0)
+    #define workgroupSize get_local_size(0)
 
     const int n = workgroupId / gInputPlanes;
     const int upstreamPlane = workgroupId % gInputPlanes;
@@ -59,14 +59,12 @@ void kernel calcErrorsForUpstreamCached(
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
-            for( int filterCol = 0; filterCol <= gFilterSize; filterCol++ ) {
+            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
-                int resultIndex = outRow * gOutputBoardSize + outCol;
                 if( outCol >= 0 && outCol < gOutputBoardSize && outRow >= 0 && outRow < gOutputBoardSize ) {
-                    float thisError = _errorBoard[resultIndex];
-                    int thisWeightIndex = filterRow * gFilterSize + filterCol;
-                    float thisWeight = _filterBoard[thisWeightIndex];
-                    float thisWeightTimesError = thisWeight * thisError;
+                    float thisWeightTimesError = 
+                        _errorBoard[outRow * gOutputBoardSize + outCol] * 
+                        _filterBoard[filterRow * gFilterSize + filterCol];
                     sumWeightTimesOutError += thisWeightTimesError;
                 }
             }
