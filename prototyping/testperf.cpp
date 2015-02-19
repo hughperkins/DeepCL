@@ -30,7 +30,6 @@ int main( int argc, char *argv[] ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", "-cl-opt-disable -D N_ITERATIONS=" + toString( its ) );
 
-    Timer timer;
     float stuff[2048];
     for( int i = 0; i < 2048; i++ ) {
         stuff[i] = 2.0f;
@@ -38,13 +37,15 @@ int main( int argc, char *argv[] ) {
     stuff[1024] = 2.0f;
     stuff[1025] = -1.999999f;
     kernel->inout( 2048, stuff );
+    Timer timer;
     kernel->run_1d( workgroupSize, workgroupSize );
     cl->finish();
     float kernelTime = timer.lap();
     cout << "time: " << kernelTime << "ms" << endl;
     cout << stuff[0] << " " << stuff[1] << endl;
 
-    float throughputGflops = (float)its * workgroupSize / kernelTime * 1000.0f / 1024 / 1024 / 1024;
+    float kernelTimeSeconds = kernelTime / 1000.0f;
+    float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
     cout << "throughput: " << throughputGflops << "Gflop/s" << endl;
 
     delete kernel;
