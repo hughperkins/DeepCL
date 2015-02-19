@@ -16,12 +16,14 @@ int main( int argc, char *argv[] ) {
     int workgroupSize = 512;
     bool optimizerOn = true;
     int dOn = false;
+    bool enableMad = true;
 
     TestArgsParser args( argc, argv );
     args._arg( "its", &its );
     args._arg( "workgroupsize", &workgroupSize );
     args._arg( "opt", &optimizerOn );
     args._arg( "don", &dOn );
+    args._arg( "mad", &enableMad );
     args._go();
 
     cout << "its: " << its << " workgroupsize: " << workgroupSize << " optimizer: " << optimizerOn << endl;  
@@ -58,9 +60,13 @@ int main( int argc, char *argv[] ) {
     if( !optimizerOn ) {
         options += " -cl-opt-disable";
     }
+    if( enableMad ) {
+        options += " -cl-mad-enable";
+    }
     if( dOn ) {
         options += " -D dOn";
     }
+    options += " -cl-single-precision-constant";
     options += " -D N_ITERATIONS=" + toString( its );
     CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", options );
 
