@@ -18,50 +18,14 @@
 //    int pos;
 //} block;
 
+#include "ids.cl"
+#include "cl/copyLocal.cl"
+#include "cl/copyBlock.cl"
+
 //#define posToRow( pos ) ( ( pos >> 10 ) & (2^11-1) )
 //#define posToCol( pos ) ( ( pos ) & (2^11-1) )
 //#define rowColToPos( row, col ) ( ( row << 10 ) | col )
 //#define linearIdToPos( linearId, base ) ( rowColToPos( ( linearId / base ), ( linearId % base )  ) )
-
-int posToRow( int pos ) {
-    return ( pos >> 10 ) & ( 2^11-1);
-}
-int posToCol( int pos ) {
-    return ( pos ) & (2^11-1) );
-}
-int rowColToPos( int row, int col ) {
-    return ( row << 10 ) | col );
-}
-int linearIdToPos( int linearId, int base ) {
-    return rowColToPos( ( linearId / base ), ( linearId % base )  );
-}
-int posToOffset( int pos, int rowLength ) {
-    return posToRow(pos) * rowLength + posToCol(pos);
-}
-
-void copyLocal( local float *target, global float const *source, int N ) {
-    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
-    for( int loop = 0; loop < numLoops; loop++ ) {
-        int offset = loop * get_local_size(0) + get_local_id(0);
-        if( offset < N ) {
-            target[offset] = source[offset];
-        }
-    }
-}
-
-// assumes that the block will fit exactly into the target
-void copyBlock( local float *target, global float const *source, 
-    const int blockStart, const int blockSize, const int sourceSize ) {
-    const int totalLinearSize = posToRow( blockSize ) * posToCol( blockSize );
-    const int numLoops = ( totalLinearSize + get_local_size(0) - 1 ) / get_local_size(0);
-    for( int loop = 0; loop < numLoops; loop++ ) {
-        const int offset = get_local_id(0) + loop * get_local_size(0);
-        if( offset < totalLinearSize ) {
-            const int offsetAsPos = linearIdToPos( offset, posToRow( blockSize ) );
-            target[ offset ] = source[ posToOffset( blockStart + offsetAsPos ) ];  
-        }
-    }
-}
 
 // workgroupId: [outputPlane][inputPlane][blockRow][blockCol]
 // localId: [filterRow][filterCol]

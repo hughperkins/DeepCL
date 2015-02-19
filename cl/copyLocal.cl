@@ -14,3 +14,13 @@ void copyLocal( local float *target, global float const *source, int N ) {
     }
 }
 
+void copyGlobal( global float *target, local float const *source, int N ) {
+    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
+    for( int loop = 0; loop < numLoops; loop++ ) {
+        int offset = loop * get_local_size(0) + get_local_id(0);
+        if( offset < N ) {
+            target[offset] = source[offset];
+        }
+    }
+}
+

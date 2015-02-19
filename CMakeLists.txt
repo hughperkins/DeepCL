@@ -128,7 +128,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp test/testArgsParser.cpp
  src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
- test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp
+ test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
  )
 #
 #
@@ -180,6 +180,7 @@ if( PROTOTYPING )
     add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
     add_executable( testrawstring prototyping/testRawString.cpp )
     add_executable( testpassdim prototyping/testPassDim.cpp )
+    add_executable( testperf prototyping/testperf.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
 endif( PROTOTYPING )
 
