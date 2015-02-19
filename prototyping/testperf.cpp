@@ -15,11 +15,13 @@ int main( int argc, char *argv[] ) {
     int its = 10000000;
     int workgroupSize = 512;
     bool optimizerOn = true;
+    int dOn = false;
 
     TestArgsParser args( argc, argv );
     args._arg( "its", &its );
     args._arg( "workgroupsize", &workgroupSize );
     args._arg( "opt", &optimizerOn );
+    args._arg( "don", &dOn );
     args._go();
 
     cout << "its: " << its << " workgroupsize: " << workgroupSize << " optimizer: " << optimizerOn << endl;  
@@ -27,26 +29,42 @@ int main( int argc, char *argv[] ) {
     string kernelSource = R"DELIM(
         kernel void test(global float *stuff) {
             float a = stuff[get_global_id(0)];
-            float b = stuff[1024];
-            float c = stuff[1025];
+#ifdef dOn
+            float d = stuff[get_global_id(0)+1024];
+#endif
+            float b = stuff[5000];
+            float c = stuff[5001];
             #pragma unroll 100
             for( int i = 0; i < N_ITERATIONS; i++ ) {
                 a = a * b + c;
+#ifdef dOn
+                d = d * b + c;
+#endif
             }
             stuff[get_global_id(0)] = a;
+#ifdef dOn
+            stuff[get_global_id(0) + 1024] = d;
+#endif
         }
     )DELIM";
     
-    string optimizerDefine = optimizerOn ? "" : "-cl-opt-disable ";
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", optimizerDefine + " -D N_ITERATIONS=" + toString( its ) );
+    string options = "";
+    if( !optimizerOn ) {
+        options += " -cl-opt-disable";
+    }
+    if( dOn ) {
+        options += " -D dOn";
+    }
+    options += " -D N_ITERATIONS=" + toString( its );
+    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", options );
 
-    float stuff[2048];
-    for( int i = 0; i < 2048; i++ ) {
+    float stuff[10000];
+    for( int i = 0; i < 10000; i++ ) {
         stuff[i] = 2.0f;
     }
-    stuff[1024] = 2.0f;
-    stuff[1025] = -1.999999f;
-    kernel->inout( 2048, stuff );
+    stuff[5000] = 2.0f;
+    stuff[5001] = -1.999999f;
+    kernel->inout( 10000, stuff );
     Timer timer;
     kernel->run_1d( workgroupSize, workgroupSize );
     cl->finish();
@@ -55,7 +73,11 @@ int main( int argc, char *argv[] ) {
     cout << stuff[0] << " " << stuff[1] << endl;
 
     float kernelTimeSeconds = kernelTime / 1000.0f;
+
     float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
+    if( dOn ) {
+        throughputGflops *= 2;
+    }
     cout << "throughput: " << throughputGflops << "Gflop/s" << endl;
 
     delete kernel;
