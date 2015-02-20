@@ -69,7 +69,7 @@ std::string Template::render() {
         throw render_error("some sourcecode found at end: " + sourceCode.substr( finalPos ) );
     }
 //    cout << "tempalte::render root=" << root << endl;
-    root->print("");
+//    root->print("");
 //    cout << "tempalte::render root=" << root << endl;
     return root->render(valueByName);
 }

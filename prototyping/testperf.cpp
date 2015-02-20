@@ -20,19 +20,23 @@ int main( int argc, char *argv[] ) {
     int count = 4;
 //    int dOn = false;
     bool enableMad = true;
+    int kernelVersion = 2;
+    int unroll = 100;
 
     TestArgsParser args( argc, argv );
     args._arg( "its", &its );
     args._arg( "workgroupsize", &workgroupSize );
     args._arg( "opt", &optimizerOn );
     args._arg( "count", &count );
+    args._arg( "unroll", &unroll );
+    args._arg( "kernel", &kernelVersion );
 //    args._arg( "don", &dOn );
     args._arg( "mad", &enableMad );
     args._go();
 
     cout << "its: " << its << " workgroupsize: " << workgroupSize << " optimizer: " << optimizerOn << endl;  
 
-    string kernelSource = R"DELIM(
+    string kernelSource1 = R"DELIM(
         kernel void test(global float *stuff) {
             float a = stuff[get_global_id(0)];
 #ifdef dOn
@@ -69,7 +73,7 @@ int main( int argc, char *argv[] ) {
             }
             float b = stuff[5000];
             float c = stuff[5001];
-            #pragma unroll 100
+            #pragma unroll UNROLL
             for( int i = 0; i < N_ITERATIONS; i++ ) {
                 #pragma unroll COUNT
                 for( int j = 0; j < COUNT; j++ ) {
@@ -107,20 +111,32 @@ int main( int argc, char *argv[] ) {
         options += " -cl-mad-enable";
     }
     options += " -D COUNT=" + toString( count );
-//    if( dOn ) {
-//        options += " -D dOn";
-//    }
+    if( kernelVersion == 1 && count == 4 ) {
+        options += " -D dOn";
+    }
     options += " -cl-single-precision-constant";
     options += " -D N_ITERATIONS=" + toString( its );
+    options += " -D UNROLL=" + toString( unroll );
     
-//    SpeedTemplates::Template mytemplate( kernelSource3 );
-//    mytemplate.setValue( "COUNT", count );
-//    mytemplate.setValue( "N_ITERATIONS", its );
-//    mytemplate.setValue( "unroll", 25 );
-//    string renderedSource3 = mytemplate.render();
-//    cout << "rendered source 3: [" << renderedSource3 << "]" << endl;
+    string kernelSource = "";
+    if( kernelVersion == 1 ) {
+        kernelSource = kernelSource1;
+    } else if( kernelVersion == 2 ) {
+        kernelSource = kernelSource2;
+    } else if( kernelVersion == 3 ) {
+        SpeedTemplates::Template mytemplate( kernelSource3 );
+        mytemplate.setValue( "COUNT", count );
+        mytemplate.setValue( "N_ITERATIONS", its );
+        mytemplate.setValue( "unroll", unroll );
+        string renderedSource3 = mytemplate.render();
+        //cout << "rendered source 3: [" << renderedSource3 << "]" << endl;
+        kernelSource = renderedSource3;
+    } else {
+        throw runtime_error("kernel version " + toString( kernelVersion ) + " not implemented");
+    }
+    
 //    CLKernel *kernel = cl->buildKernelFromString( renderedSource3, "test", options );
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource2, "test", options );
+    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", options );
 
     float stuff[10000];
     for( int i = 0; i < 10000; i++ ) {
@@ -140,7 +156,11 @@ int main( int argc, char *argv[] ) {
 
     float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
 //    if( dOn ) {
+    if( kernelVersion == 2 || kernelVersion == 3 ) {
         throughputGflops *= count;
+    } else if( kernelVersion == 1 && count == 4 ) {
+        throughputGflops *= count;
+    }
 //    }
     cout << "throughput: " << throughputGflops << "Gflop/s" << endl;
 
