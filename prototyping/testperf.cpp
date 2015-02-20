@@ -77,7 +77,7 @@ int main( int argc, char *argv[] ) {
             }
             #pragma unroll COUNT
             for( int i = 0; i < COUNT; i++ ) {
-                stuff[get_global_id(0) + 1] = a[i];
+                stuff[get_global_id(0) + i] = a[i];
             }
         }
     )DELIM";
@@ -94,7 +94,7 @@ int main( int argc, char *argv[] ) {
                         a[{{j}}] = a[{{j}}] * b + c;{% endfor %}{% endfor %}
             }
             {% for i in range( COUNT ) %}
-                stuff[get_global_id(0) + 1] = a[{{i}}];{% endfor %}
+                stuff[get_global_id(0) + {{i}}] = a[{{i}}];{% endfor %}
         }
     )DELIM";
     
@@ -112,13 +112,14 @@ int main( int argc, char *argv[] ) {
     options += " -cl-single-precision-constant";
     options += " -D N_ITERATIONS=" + toString( its );
     
-    SpeedTemplates::Template mytemplate( kernelSource3 );
-    mytemplate.setValue( "COUNT", count );
-    mytemplate.setValue( "N_ITERATIONS", its );
-    mytemplate.setValue( "unroll", 25 );
-    string renderedSource3 = mytemplate.render();
-    cout << "rendered source 3: [" << renderedSource3 << "]" << endl;
-    CLKernel *kernel = cl->buildKernelFromString( renderedSource3, "test", options );
+//    SpeedTemplates::Template mytemplate( kernelSource3 );
+//    mytemplate.setValue( "COUNT", count );
+//    mytemplate.setValue( "N_ITERATIONS", its );
+//    mytemplate.setValue( "unroll", 25 );
+//    string renderedSource3 = mytemplate.render();
+//    cout << "rendered source 3: [" << renderedSource3 << "]" << endl;
+//    CLKernel *kernel = cl->buildKernelFromString( renderedSource3, "test", options );
+    CLKernel *kernel = cl->buildKernelFromString( kernelSource2, "test", options );
 
     float stuff[10000];
     for( int i = 0; i < 10000; i++ ) {
