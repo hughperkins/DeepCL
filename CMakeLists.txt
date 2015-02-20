@@ -183,6 +183,8 @@ if( PROTOTYPING )
     add_executable( testpassdim prototyping/testPassDim.cpp )
     add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
        test/SpeedTemplates.cpp )
+    add_executable( testmemperf prototyping/testmemperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
+       test/SpeedTemplates.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
 endif( PROTOTYPING )
 

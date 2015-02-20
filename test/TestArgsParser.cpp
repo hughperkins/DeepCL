@@ -36,6 +36,11 @@ void TestArgsParser::_printAvailableKeys() {
         cout << "   " << (*it)->key << endl;
     }
 }
+void TestArgsParser::_printValues() {
+    for( vector< Arg * >::iterator it = args.begin(); it != args.end(); it++ ) {
+        cout << "   " << (*it)->key << "=" << (*it)->valueAsString() << endl;
+    }
+}
 void TestArgsParser::_go() {
     if( argc == 2 && string( argv[1] ) == "--help" ) {
         _printAvailableKeys();
@@ -74,6 +79,18 @@ void ArgBool::apply( std::string stringValue ) {
 }
 void ArgFloat::apply( std::string stringValue ) {
     *p_value = atof( stringValue );
+}
+string ArgInt::valueAsString() {
+    return toString( *p_int );
+}
+string ArgFloat::valueAsString() {
+    return toString( *p_value );
+}
+string ArgBool::valueAsString() {
+    return toString( *p_value );
+}
+string ArgString::valueAsString() {
+    return toString( *p_value );
 }
 TestArgsParser *TestArgsParser::instance() {
     static TestArgsParser *thisInstance = new TestArgsParser();
