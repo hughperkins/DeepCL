@@ -10,6 +10,7 @@
 
 using namespace std;
 
+// for use in conjunction with http://www.cs.berkeley.edu/~volkov/volkov10-GTC.pdf
 int main( int argc, char *argv[] ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
