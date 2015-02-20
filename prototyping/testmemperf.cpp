@@ -110,24 +110,18 @@ int main( int argc, char *argv[] ) {
     )DELIM";
     
     string kernelSource6 = R"DELIM(
+        #define f4(var) ( (global float4*)(var) )
+
         kernel void memcpy(global float const*src, global float *dest) {
-            float a[COUNT];
-            #pragma unroll COUNT
-            for( int i = 0; i < COUNT; i++ ) {
-                a[i] = stuff[get_global_id(0) + i ];
-            }
-            float b = stuff[5000];
-            float c = stuff[5001];
-            #pragma unroll UNROLL
-            for( int i = 0; i < N_ITERATIONS; i++ ) {
-                #pragma unroll COUNT
-                for( int j = 0; j < COUNT; j++ ) {
-                    a[j] = a[j] * b + c;
-                }
-            }
-            #pragma unroll COUNT
-            for( int i = 0; i < COUNT; i++ ) {
-                stuff[get_global_id(0) + i] = a[i];
+            float4 a[COUNT];
+            int offset = get_global_id(0) << SHIFT;
+            if( get_global_id(0) < ( N >> SHIFT ) ) {
+                {% for i in range( COUNT ) %}
+                    a[{{i}}] = f4(src)[ offset + {{i}} ];
+                {% endfor %}
+                {% for i in range( COUNT ) %}
+                    f4(dest)[ offset + {{i}} ] = a[{{i}}];
+                {% endfor %}
             }
         }
     )DELIM";
@@ -159,7 +153,14 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 4 ) {
         kernelSource = kernelSource4;
     } else if( kernelVersion == 5 ) {
-        kernelSource = kernelSource4;
+        kernelSource = kernelSource5;
+    } else if( kernelVersion == 6 ) {
+        SpeedTemplates::Template mytemplate( kernelSource6 );
+        mytemplate.setValue( "COUNT", count );
+        mytemplate.setValue( "unroll", unroll );
+        string renderedSource = mytemplate.render();
+        cout << "rendered source: [" << renderedSource << "]" << endl;
+        kernelSource = renderedSource;
     } else {
         throw runtime_error("kernel version " + toString( kernelVersion ) + " not implemented");
     }
