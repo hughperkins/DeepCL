@@ -21,6 +21,7 @@ int main( int argc, char *argv[] ) {
     int count = 1;
     bool enableMad = true;
     int kernelVersion = 1;
+    string type = "float";
     int unroll = 100;
 
     TestArgsParser args( argc, argv );
@@ -31,6 +32,7 @@ int main( int argc, char *argv[] ) {
     args._arg( "count", &count );
     args._arg( "unroll", &unroll );
     args._arg( "kernel", &kernelVersion );
+    args._arg( "type", &type );
     args._arg( "mad", &enableMad );
     args._go();
     cout << "values:" << endl;

@@ -185,6 +185,8 @@ if( PROTOTYPING )
        test/SpeedTemplates.cpp )
     add_executable( testmemperf prototyping/testmemperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
        test/SpeedTemplates.cpp )
+    add_executable( testfloat4 prototyping/testFloat4.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
+       test/SpeedTemplates.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
 endif( PROTOTYPING )
 
