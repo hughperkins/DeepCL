@@ -91,6 +91,22 @@ int main( int argc, char *argv[] ) {
     )DELIM";
     
     string kernelSource5 = R"DELIM(
+        kernel void memcpy(global float const*src, global float *dest) {
+            float a[COUNT];
+            int offset = get_global_id(0) << SHIFT;
+//            if( offset < N ) {
+            if( get_global_id(0) < ( N >> SHIFT ) ) {
+                {% for i in range( COUNT ) %}
+                    a[{{i}}] = src[ offset + {{i}} ];
+                {% endfor %}
+                {% for i in range( COUNT ) %}
+                    dest[ offset + {{i}} ] = a[{{i}}];
+                {% endfor %}
+            }
+        }
+    )DELIM";
+    
+    string kernelSource6 = R"DELIM(
         #define f4(var) ( (global float4*)(var) )
 
         kernel void memcpy(global float const*src, global float *dest) {
@@ -109,7 +125,7 @@ int main( int argc, char *argv[] ) {
         }
     )DELIM";
     
-    string kernelSource6 = R"DELIM(
+    string kernelSource7 = R"DELIM(
         #define f4(var) ( (global float4*)(var) )
 
         kernel void memcpy(global float const*src, global float *dest) {
@@ -153,9 +169,16 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 4 ) {
         kernelSource = kernelSource4;
     } else if( kernelVersion == 5 ) {
-        kernelSource = kernelSource5;
+        SpeedTemplates::Template mytemplate( kernelSource5 );
+        mytemplate.setValue( "COUNT", count );
+        mytemplate.setValue( "unroll", unroll );
+        string renderedSource = mytemplate.render();
+        cout << "rendered source: [" << renderedSource << "]" << endl;
+        kernelSource = renderedSource;
     } else if( kernelVersion == 6 ) {
-        SpeedTemplates::Template mytemplate( kernelSource6 );
+        kernelSource = kernelSource6;
+    } else if( kernelVersion == 7 ) {
+        SpeedTemplates::Template mytemplate( kernelSource7 );
         mytemplate.setValue( "COUNT", count );
         mytemplate.setValue( "unroll", unroll );
         string renderedSource = mytemplate.render();
@@ -177,7 +200,7 @@ int main( int argc, char *argv[] ) {
     kernel->in( numFloats, src );
     kernel->out( numFloats, dest );
     int numWorkgroups = ( numFloats + workgroupSize - 1 ) / workgroupSize;
-    if( kernelVersion == 5 ) {
+    if( kernelVersion >= 6 ) {
         numWorkgroups = ( numFloats / 4 + workgroupSize - 1 ) / workgroupSize;
     }
     Timer timer;
