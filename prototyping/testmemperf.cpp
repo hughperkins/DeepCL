@@ -88,17 +88,18 @@ int main( int argc, char *argv[] ) {
     )DELIM";
     
     string kernelSource5 = R"DELIM(
+        #define f4(var) ( (global float4*)(var) )
+
         kernel void memcpy(global float const*src, global float *dest) {
-//            global float4 *src4 = (global float
-            float a[COUNT];
+            float4 a[COUNT];
             int offset = get_global_id(0) << SHIFT;
             #pragma unroll COUNT
             for( int i = 0; i < COUNT; i++ ) {
-                a[i] = src[ offset + get_global_id(0) + i ];
+                a[i] = f4(src)[ offset + get_global_id(0) + i ];
             }
             #pragma unroll COUNT
             for( int i = 0; i < COUNT; i++ ) {
-                dest[ offset + get_global_id(0) + i ] = a[i];
+                f4(dest)[ offset + get_global_id(0) + i ] = a[i];
             }
         }
     )DELIM";
@@ -170,6 +171,9 @@ int main( int argc, char *argv[] ) {
     kernel->in( numFloats, src );
     kernel->out( numFloats, dest );
     int numWorkgroups = ( numFloats + workgroupSize - 1 ) / workgroupSize;
+    if( kernelVersion == 5 ) {
+        numWorkgroups = ( numFloats / 4 + workgroupSize - 1 ) / workgroupSize;
+    }
     Timer timer;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
@@ -180,7 +184,7 @@ int main( int argc, char *argv[] ) {
     float kernelTimeSeconds = kernelTime / 1000.0f;
 
     float throughputGbytes = numFloats * 4.0f  / 1024 / 1024 / 1024;
-    if( kernelVersion == 4 ) {
+    if( kernelVersion >= 4 ) {
         throughputGbytes *= count;
     }
     float throughputGbytespersec = throughputGbytes / kernelTimeSeconds;
