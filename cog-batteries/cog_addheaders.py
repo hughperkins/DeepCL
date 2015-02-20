@@ -16,16 +16,17 @@
 
 import cog
 
-def add():
+def add( classname = ''):
 #    debug = open('debug.txt', 'a' )
 #    debug.write( 'foo\n')
 #    debug.write( 'infile [' + cog.inFile + ']\n' )
 
     infile = cog.inFile
-    cppfile = infile.replace('.h','.cpp')
     splitinfile = infile.replace('\\','/').split('/')
     infilename = splitinfile[ len(splitinfile) - 1 ]
-    classname = infilename.replace('.h','')
+    if classname == '':
+        classname = infilename.replace('.h','')
+    cppfile = infile.replace('.h','.cpp')
     # cog.outl( '// classname: ' + classname )
     # cog.outl( '// cppfile: ' + infilename.replace('.h','.cpp' ) )
     f = open( cppfile, 'r')
@@ -96,5 +97,4 @@ def add_templated():
     f.close()
     cog.outl('')
 
-#    debug.close()
 

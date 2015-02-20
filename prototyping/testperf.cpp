@@ -15,14 +15,16 @@ int main( int argc, char *argv[] ) {
     int its = 10000000;
     int workgroupSize = 512;
     bool optimizerOn = true;
-    int dOn = false;
+    int count = 4;
+//    int dOn = false;
     bool enableMad = true;
 
     TestArgsParser args( argc, argv );
     args._arg( "its", &its );
     args._arg( "workgroupsize", &workgroupSize );
     args._arg( "opt", &optimizerOn );
-    args._arg( "don", &dOn );
+    args._arg( "count", &count );
+//    args._arg( "don", &dOn );
     args._arg( "mad", &enableMad );
     args._go();
 
@@ -56,6 +58,29 @@ int main( int argc, char *argv[] ) {
         }
     )DELIM";
     
+    string kernelSource2 = R"DELIM(
+        kernel void test(global float *stuff) {
+            float a[COUNT];
+            #pragma unroll COUNT
+            for( int i = 0; i < COUNT; i++ ) {
+                a[i] = stuff[get_global_id(0) + i ];
+            }
+            float b = stuff[5000];
+            float c = stuff[5001];
+            #pragma unroll 100
+            for( int i = 0; i < N_ITERATIONS; i++ ) {
+                #pragma unroll COUNT
+                for( int j = 0; j < COUNT; j++ ) {
+                    a[j] = a[j] * b + c;
+                }
+            }
+            #pragma unroll COUNT
+            for( int i = 0; i < COUNT; i++ ) {
+                stuff[get_global_id(0) + 1] = a[i];
+            }
+        }
+    )DELIM";
+    
     string options = "";
     if( !optimizerOn ) {
         options += " -cl-opt-disable";
@@ -63,12 +88,13 @@ int main( int argc, char *argv[] ) {
     if( enableMad ) {
         options += " -cl-mad-enable";
     }
-    if( dOn ) {
-        options += " -D dOn";
-    }
+    options += " -D COUNT=" + toString( count );
+//    if( dOn ) {
+//        options += " -D dOn";
+//    }
     options += " -cl-single-precision-constant";
     options += " -D N_ITERATIONS=" + toString( its );
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "test", options );
+    CLKernel *kernel = cl->buildKernelFromString( kernelSource2, "test", options );
 
     float stuff[10000];
     for( int i = 0; i < 10000; i++ ) {
@@ -87,9 +113,9 @@ int main( int argc, char *argv[] ) {
     float kernelTimeSeconds = kernelTime / 1000.0f;
 
     float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
-    if( dOn ) {
-        throughputGflops *= 4;
-    }
+//    if( dOn ) {
+        throughputGflops *= count;
+//    }
     cout << "throughput: " << throughputGflops << "Gflop/s" << endl;
 
     delete kernel;
