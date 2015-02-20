@@ -38,13 +38,12 @@ int main( int argc, char *argv[] ) {
     )DELIM";
 
     string kernelSource2 = R"DELIM(
+        #define f4(var) ( (global float4*)(var) )
         kernel void memcpy( global float const*src, global float *dest) {
-            global float4 *dest4 = (global float4*)&(dest[0]);
-            global float4 *src4 = (global float4*)&(src[0]);
             int offset = get_global_id(0);
             if( offset < ( N >> 2 ) ) {
-                float4 a = src4[offset];
-                dest4[offset] = a;
+                float4 a = f4(src)[offset];
+                f4(dest)[offset] = a;
             }
         }
     )DELIM";

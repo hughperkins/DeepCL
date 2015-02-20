@@ -21,7 +21,7 @@ int main( int argc, char *argv[] ) {
     int count = 1;
     bool enableMad = true;
     int kernelVersion = 1;
-    string type = "float";
+//    string type = "float";
     int unroll = 100;
 
     TestArgsParser args( argc, argv );
@@ -32,7 +32,7 @@ int main( int argc, char *argv[] ) {
     args._arg( "count", &count );
     args._arg( "unroll", &unroll );
     args._arg( "kernel", &kernelVersion );
-    args._arg( "type", &type );
+//    args._arg( "type", &type );
     args._arg( "mad", &enableMad );
     args._go();
     cout << "values:" << endl;
@@ -89,6 +89,22 @@ int main( int argc, char *argv[] ) {
     
     string kernelSource5 = R"DELIM(
         kernel void memcpy(global float const*src, global float *dest) {
+//            global float4 *src4 = (global float
+            float a[COUNT];
+            int offset = get_global_id(0) << SHIFT;
+            #pragma unroll COUNT
+            for( int i = 0; i < COUNT; i++ ) {
+                a[i] = src[ offset + get_global_id(0) + i ];
+            }
+            #pragma unroll COUNT
+            for( int i = 0; i < COUNT; i++ ) {
+                dest[ offset + get_global_id(0) + i ] = a[i];
+            }
+        }
+    )DELIM";
+    
+    string kernelSource6 = R"DELIM(
+        kernel void memcpy(global float const*src, global float *dest) {
             float a[COUNT];
             #pragma unroll COUNT
             for( int i = 0; i < COUNT; i++ ) {
@@ -135,6 +151,8 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 3 ) {
         kernelSource = kernelSource3;
     } else if( kernelVersion == 4 ) {
+        kernelSource = kernelSource4;
+    } else if( kernelVersion == 5 ) {
         kernelSource = kernelSource4;
     } else {
         throw runtime_error("kernel version " + toString( kernelVersion ) + " not implemented");
