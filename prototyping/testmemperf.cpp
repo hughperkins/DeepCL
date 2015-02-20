@@ -36,6 +36,15 @@ int main( int argc, char *argv[] ) {
     cout << "values:" << endl;
     args._printValues();
 
+    count = OpenCLHelper::getNextPower2( count );
+    int thiscount = count;
+    int shift = 1;
+    while( thiscount > 1 ) {
+        thiscount >>= 1;
+        shift++;
+    }
+    cout << "count: " << count << " shift: " << shift << endl;
+
 //    cout << "its: " << its << " workgroupsize: " << workgroupSize << " optimizer: " << optimizerOn << endl;  
 
     string kernelSource1 = R"DELIM(
@@ -60,8 +69,23 @@ int main( int argc, char *argv[] ) {
             dest[get_global_id(0)] = src[get_global_id(0)];
         }
     )DELIM";
-    
+
     string kernelSource4 = R"DELIM(
+        kernel void memcpy(global float const*src, global float *dest) {
+            float a[COUNT];
+            int offset = get_global_id(0) << SHIFT;
+            #pragma unroll COUNT
+            for( int i = 0; i < COUNT; i++ ) {
+                a[i] = src[ offset + get_global_id(0) + i ];
+            }
+            #pragma unroll COUNT
+            for( int i = 0; i < COUNT; i++ ) {
+                dest[ offset + get_global_id(0) + i ] = a[i];
+            }
+        }
+    )DELIM";
+    
+    string kernelSource5 = R"DELIM(
         kernel void memcpy(global float const*src, global float *dest) {
             float a[COUNT];
             #pragma unroll COUNT
@@ -92,6 +116,7 @@ int main( int argc, char *argv[] ) {
         options += " -cl-mad-enable";
     }
     options += " -D COUNT=" + toString( count );
+    options += " -D SHIFT=" + toString( shift );
     if( kernelVersion == 1 && count == 4 ) {
         options += " -D dOn";
     }
@@ -135,6 +160,9 @@ int main( int argc, char *argv[] ) {
     float kernelTimeSeconds = kernelTime / 1000.0f;
 
     float throughputGbytes = numFloats * 4.0f  / 1024 / 1024 / 1024;
+    if( kernelVersion == 4 ) {
+        throughputGbytes *= count;
+    }
     float throughputGbytespersec = throughputGbytes / kernelTimeSeconds;
 //    float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
 
