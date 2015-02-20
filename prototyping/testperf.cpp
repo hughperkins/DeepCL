@@ -6,6 +6,7 @@
 #include "stringhelper.h"
 #include "Timer.h"
 #include "test/TestArgsParser.h"
+#include "test/SpeedTemplates.h"
 
 using namespace std;
 
@@ -81,6 +82,22 @@ int main( int argc, char *argv[] ) {
         }
     )DELIM";
     
+    string kernelSource3 = R"DELIM(
+        kernel void test(global float *stuff) {
+            float a[{{COUNT}}];
+            {% for i in range( COUNT ) %}
+                a[{{i}}] = stuff[get_global_id(0) + {{i}} ];{% endfor %}
+            float b = stuff[5000];
+            float c = stuff[5001];
+            for( int it = 0; it < N_ITERATIONS / {{unroll}}; it++ ) {
+                {% for i in range( unroll ) %}{% for j in range( COUNT ) %}
+                        a[{{j}}] = a[{{j}}] * b + c;{% endfor %}{% endfor %}
+            }
+            {% for i in range( COUNT ) %}
+                stuff[get_global_id(0) + 1] = a[{{i}}];{% endfor %}
+        }
+    )DELIM";
+    
     string options = "";
     if( !optimizerOn ) {
         options += " -cl-opt-disable";
@@ -94,7 +111,14 @@ int main( int argc, char *argv[] ) {
 //    }
     options += " -cl-single-precision-constant";
     options += " -D N_ITERATIONS=" + toString( its );
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource2, "test", options );
+    
+    SpeedTemplates::Template mytemplate( kernelSource3 );
+    mytemplate.setValue( "COUNT", count );
+    mytemplate.setValue( "N_ITERATIONS", its );
+    mytemplate.setValue( "unroll", 25 );
+    string renderedSource3 = mytemplate.render();
+    cout << "rendered source 3: [" << renderedSource3 << "]" << endl;
+    CLKernel *kernel = cl->buildKernelFromString( renderedSource3, "test", options );
 
     float stuff[10000];
     for( int i = 0; i < 10000; i++ ) {

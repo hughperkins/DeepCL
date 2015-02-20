@@ -21,7 +21,7 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-namespace speedtemplates {
+namespace SpeedTemplates {
 
 class render_error : public std::runtime_error {
 public:
@@ -84,9 +84,9 @@ public:
     Template( std::string sourceCode );
     STATIC bool isNumber( std::string astring, int *p_value );
     VIRTUAL ~Template();
-    Template &value( std::string name, int value );
-    Template &value( std::string name, float value );
-    Template &value( std::string name, std::string value );
+    Template &setValue( std::string name, int value );
+    Template &setValue( std::string name, float value );
+    Template &setValue( std::string name, std::string value );
     std::string render();
     void print(ControlSection *section);
     int eatSection( int pos, ControlSection *controlSection );

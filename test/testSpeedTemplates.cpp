@@ -13,7 +13,7 @@
 #include "SpeedTemplates.h"
 
 using namespace std;
-using namespace speedtemplates;
+using namespace SpeedTemplates;
 
 TEST( testSpeedTemplates, basicsubstitution ) {
     string source = R"DELIM(
@@ -22,9 +22,9 @@ TEST( testSpeedTemplates, basicsubstitution ) {
     )DELIM";
 
     Template mytemplate( source );
-    mytemplate.value( "avalue", 3 );
-    mytemplate.value( "secondvalue", 12.123f );
-    mytemplate.value( "weather", "rain" );
+    mytemplate.setValue( "avalue", 3 );
+    mytemplate.setValue( "secondvalue", 12.123f );
+    mytemplate.setValue( "weather", "rain" );
     string result = mytemplate.render();
     cout << result << endl;
     string expectedResult = R"DELIM(
@@ -56,7 +56,7 @@ TEST( testSpeedTemplates, loop ) {
     )DELIM";
 
     Template mytemplate( source );
-    mytemplate.value( "its", 3 );
+    mytemplate.setValue( "its", 3 );
     string result = mytemplate.render();
     cout << result << endl;
     string expectedResult = R"DELIM(
@@ -79,7 +79,7 @@ TEST( testSpeedTemplates, nestedloop ) {
 )DELIM";
 
     Template mytemplate( source );
-    mytemplate.value( "its", 3 );
+    mytemplate.setValue( "its", 3 );
     string result = mytemplate.render();
     cout << "[" << result << "]" << endl;
     string expectedResult = R"DELIM(

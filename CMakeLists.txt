@@ -181,7 +181,8 @@ if( PROTOTYPING )
     add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
     add_executable( testrawstring prototyping/testRawString.cpp )
     add_executable( testpassdim prototyping/testPassDim.cpp )
-    add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp )
+    add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
+       test/SpeedTemplates.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
 endif( PROTOTYPING )
 

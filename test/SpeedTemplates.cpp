@@ -16,7 +16,7 @@
 
 using namespace std;
 
-namespace speedtemplates {
+namespace SpeedTemplates {
 
 #undef VIRTUAL
 #define VIRTUAL
@@ -45,17 +45,17 @@ VIRTUAL Template::~Template() {
     valueByName.clear();
     delete root;
 }
-Template &Template::value( std::string name, int value ) {
+Template &Template::setValue( std::string name, int value ) {
     IntValue *intValue = new IntValue( value );
     valueByName[ name ] = intValue;
     return *this;
 }
-Template &Template::value( std::string name, float value ) {
+Template &Template::setValue( std::string name, float value ) {
     FloatValue *floatValue = new FloatValue( value );
     valueByName[ name ] = floatValue;
     return *this;
 }
-Template &Template::value( std::string name, std::string value ) {
+Template &Template::setValue( std::string name, std::string value ) {
     StringValue *floatValue = new StringValue( value );
     valueByName[ name ] = floatValue;
     return *this;
