@@ -26,7 +26,7 @@ namespace speedtemplates {
 Template::Template( std::string sourceCode ) :
     sourceCode( sourceCode ) {
     root = new Root();
-    cout << "template::Template root: "  << root << endl;
+//    cout << "template::Template root: "  << root << endl;
 }    
 
 STATIC bool Template::isNumber( std::string astring, int *p_value ) {
@@ -61,16 +61,16 @@ Template &Template::value( std::string name, std::string value ) {
     return *this;
 }
 std::string Template::render() {
-    cout << "tempalte::render root=" << root << endl;
+//    cout << "tempalte::render root=" << root << endl;
     int finalPos = eatSection(0, root );
     cout << finalPos << " vs " << sourceCode.length() << endl;
     if( finalPos != sourceCode.length() ) {
         root->print("");
         throw render_error("some sourcecode found at end: " + sourceCode.substr( finalPos ) );
     }
-    cout << "tempalte::render root=" << root << endl;
+//    cout << "tempalte::render root=" << root << endl;
     root->print("");
-    cout << "tempalte::render root=" << root << endl;
+//    cout << "tempalte::render root=" << root << endl;
     return root->render(valueByName);
 }
 
@@ -85,9 +85,9 @@ int Template::eatSection( int pos, ControlSection *controlSection ) {
 //    vector<string> tokenStack;
 //    string updatedString = "";
     while( true ) {
-        cout << "pos: " << pos << endl;
+//        cout << "pos: " << pos << endl;
         int controlChangeBegin = sourceCode.find( "{%", pos );
-        cout << "controlChangeBegin: " << controlChangeBegin << endl;
+//        cout << "controlChangeBegin: " << controlChangeBegin << endl;
         if( controlChangeBegin == string::npos ) {
             //updatedString += doSubstitutions( sourceCode.substr( pos ), valueByName );
             Code *code = new Code();
@@ -150,7 +150,7 @@ int Template::eatSection( int pos, ControlSection *controlSection ) {
                     throw render_error("control section " + controlChange + " unexpected: should be in format 'range(somevar)' or 'range(somenumber)'" );
                 }
                 string name = split( splitRangeString[1], ")" )[0];
-                cout << "for range name: " << name << endl;
+//                cout << "for range name: " << name << endl;
                 int endValue;
                 if( isNumber( name, &endValue ) ) {
                 } else {
@@ -165,7 +165,7 @@ int Template::eatSection( int pos, ControlSection *controlSection ) {
                     }                    
                 }
                 int beginValue = 0; // default for now...
-                cout << "for loop start=" << beginValue << " end=" << endValue << endl;
+//                cout << "for loop start=" << beginValue << " end=" << endValue << endl;
                 ForSection *forSection = new ForSection();
                 forSection->startPos = controlChangeEnd + 2;
                 forSection->loopStart = beginValue;
@@ -222,7 +222,7 @@ STATIC std::string Template::doSubstitutions( std::string sourceCode, std::map< 
     for( int i = startI; i < splitSource.size(); i++ ) {
         vector<string> thisSplit = split( splitSource[i], "}}" );
         string name = trim( thisSplit[0] );
-        cout << "name: " << name << endl;
+//        cout << "name: " << name << endl;
         if( valueByName.find( name ) == valueByName.end() ) {
             throw render_error( "name " + name + " not defined" );
         }
