@@ -76,13 +76,15 @@ int main( int argc, char *argv[] ) {
         kernel void memcpy(global float const*src, global float *dest) {
             float a[COUNT];
             int offset = get_global_id(0) << SHIFT;
-            #pragma unroll COUNT
-            for( int i = 0; i < COUNT; i++ ) {
-                a[i] = src[ offset + get_global_id(0) + i ];
-            }
-            #pragma unroll COUNT
-            for( int i = 0; i < COUNT; i++ ) {
-                dest[ offset + get_global_id(0) + i ] = a[i];
+            if( offset < N ) {
+                #pragma unroll COUNT
+                for( int i = 0; i < COUNT; i++ ) {
+                    a[i] = src[ offset + i ];
+                }
+                #pragma unroll COUNT
+                for( int i = 0; i < COUNT; i++ ) {
+                    dest[ offset + i ] = a[i];
+                }
             }
         }
     )DELIM";
@@ -93,14 +95,17 @@ int main( int argc, char *argv[] ) {
         kernel void memcpy(global float const*src, global float *dest) {
             float4 a[COUNT];
             int offset = get_global_id(0) << SHIFT;
-            #pragma unroll COUNT
-            for( int i = 0; i < COUNT; i++ ) {
-                a[i] = f4(src)[ offset + get_global_id(0) + i ];
+            if( offset >= N ) {
+                return;
             }
-            #pragma unroll COUNT
-            for( int i = 0; i < COUNT; i++ ) {
-                f4(dest)[ offset + get_global_id(0) + i ] = a[i];
-            }
+                #pragma unroll COUNT
+                for( int i = 0; i < COUNT; i++ ) {
+                    a[i] = f4(src)[ offset + i ];
+                }
+                #pragma unroll COUNT
+                for( int i = 0; i < COUNT; i++ ) {
+                    f4(dest)[ offset + i ] = a[i];
+                }
         }
     )DELIM";
     
