@@ -53,6 +53,7 @@ inline std::string getToken( std::string targetstring, int tokenIndexFromZero, s
 }
 
 std::string replace( std::string targetString, std::string oldValue, std::string newValue );
+std::string replaceGlobal( std::string targetString, std::string oldValue, std::string newValue );
 
 std::string toLower(std::string in );
 

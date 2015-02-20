@@ -54,6 +54,19 @@ string replace( string targetString, string oldValue, string newValue ) {
     }
     return targetString.replace( pos, oldValue.length(), newValue );
 }
+string replaceGlobal( string targetString, string oldValue, string newValue ) {
+    int pos = 0;
+    string resultString = "";
+    size_t targetPos = targetString.find( oldValue, pos );
+    while( targetPos != string::npos ) {
+        string preOld = targetString.substr( pos, targetPos - pos );
+        resultString += preOld + newValue;
+        pos = targetPos + oldValue.length();
+        targetPos = targetString.find( oldValue, pos );
+    }
+    resultString += targetString.substr(pos);
+    return resultString;
+}
 
 std::string toLower(std::string in ) {
      int len = static_cast<int>( in.size() );

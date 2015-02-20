@@ -71,3 +71,29 @@ TEST( testSpeedTemplates, loop ) {
     EXPECT_EQ( expectedResult, result );
 }
 
+TEST( testSpeedTemplates, nestedloop ) {
+    string source = R"DELIM(
+{% for i in range(its) %}a[{{i}}] = image[{{i}}];
+{% for j in range(2) %}b[{{j}}] = image[{{j}}];
+{% endfor %}{% endfor %}
+)DELIM";
+
+    Template mytemplate( source );
+    mytemplate.value( "its", 3 );
+    string result = mytemplate.render();
+    cout << "[" << result << "]" << endl;
+    string expectedResult = R"DELIM(
+a[0] = image[0];
+b[0] = image[0];
+b[1] = image[1];
+a[1] = image[1];
+b[0] = image[0];
+b[1] = image[1];
+a[2] = image[2];
+b[0] = image[0];
+b[1] = image[1];
+
+)DELIM";
+    EXPECT_EQ( expectedResult, result );
+}
+

@@ -48,6 +48,24 @@ TEST( teststringhelper, replace ) {
     EXPECT_EQ( "hellocoolworld", replace( mystring, "new", "cool" ) );
 }
 
+TEST( teststringhelper, replaceglobal ) {
+    string mystring = "";
+    mystring = "hello world";
+    EXPECT_EQ( "one world", replaceGlobal( mystring, "hello", "one" ) );
+
+    mystring = "hello hello";
+    EXPECT_EQ( "one one", replaceGlobal( mystring, "hello", "one" ) );
+
+    mystring = "hello hello hello";
+    EXPECT_EQ( "one one one", replaceGlobal( mystring, "hello", "one" ) );
+
+    mystring = "hellohellohello";
+    EXPECT_EQ( "oneoneone", replaceGlobal( mystring, "hello", "one" ) );
+
+    mystring = "hellonewwohellorldhellohellohello";
+    EXPECT_EQ( "onenewwoonerldoneoneone", replaceGlobal( mystring, "hello", "one" ) );
+}
+
 TEST( teststringhelper, strcpy_safe ) {
     char const*source = "hello123";
     char dest[1024];
