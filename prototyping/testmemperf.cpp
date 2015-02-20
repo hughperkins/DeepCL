@@ -77,7 +77,7 @@ int main( int argc, char *argv[] ) {
             float a[COUNT];
             int offset = get_global_id(0) << SHIFT;
 //            if( offset < N ) {
-            if( get_global_id(0) < ( N >> 2 ) ) {
+            if( get_global_id(0) < ( N >> SHIFT ) ) {
                 #pragma unroll COUNT
                 for( int i = 0; i < COUNT; i++ ) {
                     a[i] = src[ offset + i ];
@@ -96,7 +96,7 @@ int main( int argc, char *argv[] ) {
         kernel void memcpy(global float const*src, global float *dest) {
             float4 a[COUNT];
             int offset = get_global_id(0) << SHIFT;
-            if( get_global_id(0) < ( N >> 2 ) ) {
+            if( get_global_id(0) < ( N >> SHIFT ) ) {
                 #pragma unroll COUNT
                 for( int i = 0; i < COUNT; i++ ) {
                     a[i] = f4(src)[ offset + i ];
