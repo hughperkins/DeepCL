@@ -171,9 +171,9 @@ public:
     }
     virtual std::string render( std::map< std::string, Value *> &valueByName ) {
 //        std::string templateString = sourceCode.substr( startPos, endPos - startPos );
-        std::cout << "Code section, rendering [" << templateCode << "]" << std::endl;
+//        std::cout << "Code section, rendering [" << templateCode << "]" << std::endl;
         std::string processed = Template::doSubstitutions( templateCode, valueByName );
-        std::cout << "Code section, after rendering: [" << processed << "]" << std::endl;
+//        std::cout << "Code section, after rendering: [" << processed << "]" << std::endl;
         return processed;
     }
 };
