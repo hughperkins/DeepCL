@@ -625,7 +625,7 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
   * [Propagate2.cpp](src/Propagate2.cpp)
   * [Propagate3.cpp](src/Propagate3.cpp)
   * ...
-* ... and similarly for [BackpropErrorsv2](src/BackpropErrorsv2.cpp), and [BackpropWeights2.cpp](BackpropWeights2.cpp): each has implementation classes
+* ... and similarly for [BackpropErrorsv2](src/BackpropErrorsv2.cpp), and [BackpropWeights2.cpp](src/BackpropWeights2.cpp): each has implementation classes
 * Therefore:
   * Testing can target one single implementation, or target only propagate or backproperrors, or backpropweights, rather than needing to test an entire network
   * These lower level factorized implementations could also plausibly be an appropriate unit of re-use
