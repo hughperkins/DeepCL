@@ -217,7 +217,7 @@ int main( int argc, char *argv[] ) {
 
     CLKernel *kernel = cl->buildKernelFromString( kernelSource, "memcpy", options );
 
-    float *src = new float[numFloats];
+    float *src = new float[numFloats + count];
     for( int i = 0; i < numFloats; i++ ) {
         src[i] = 2.0f;
     }
