@@ -92,7 +92,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate3.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -184,7 +184,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagate_3_by_n_outplane", options, "cl/propagate3.cl" );
-    // generated using cog:
+    // generated using cog, from cl/per_element_add.cl:
     const char * repeatedAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -220,7 +220,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "\n" 
     "";
     repeatedAdd = cl->buildKernelFromString( repeatedAddSource, "repeated_add", options, "cl/per_element_add.cl" );
-    // generated using cog:
+    // generated using cog, from cl/activate.cl:
     const char * activateSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

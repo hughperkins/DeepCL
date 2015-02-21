@@ -54,7 +54,7 @@ CLKernel *makeKernel( OpenCLHelper *cl ) {
     // import stringify
     // stringify.write_kernel2( "kernel", "test/testCopyBlock.cl", "run", '""' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from test/testCopyBlock.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

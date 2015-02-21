@@ -33,7 +33,7 @@ def process_includes( line ):
 
 def write_kernel2( kernelVarName, kernel_filename, kernelName, options ):
     # cog.outl( 'string kernelFilename = "'  + kernel_filename + '";' )
-    cog.outl( '// generated using cog:' )
+    cog.outl( '// generated using cog, from ' + kernel_filename + ':' )
     cog.outl( 'const char * ' + kernelVarName + 'Source =  ' )
     write_file2( '../' + kernel_filename )
     cog.outl( '"";')

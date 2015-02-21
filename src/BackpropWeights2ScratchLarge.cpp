@@ -110,7 +110,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/BackpropWeights2ScratchLarge.cl", "backprop_floats_withscratch_dobias_striped", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/BackpropWeights2ScratchLarge.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014,2015 hughperkins at gmail\n" 
     "//\n" 

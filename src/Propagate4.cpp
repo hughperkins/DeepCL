@@ -60,7 +60,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate4.cl", "propagate_4_by_n_outplane_smallercache", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate4.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 

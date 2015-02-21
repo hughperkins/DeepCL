@@ -113,7 +113,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate_byinputplane.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -220,7 +220,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagate_byinputplane", options, "cl/propagate_byinputplane.cl" );
-    // generated using cog:
+    // generated using cog, from cl/reduce_segments.cl:
     const char * reduceSegmentsSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -248,7 +248,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     reduceSegments = cl->buildKernelFromString( reduceSegmentsSource, "reduce_segments", options, "cl/reduce_segments.cl" );
-    // generated using cog:
+    // generated using cog, from cl/per_element_add.cl:
     const char * repeatedAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -284,7 +284,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     repeatedAdd = cl->buildKernelFromString( repeatedAddSource, "repeated_add", options, "cl/per_element_add.cl" );
-    // generated using cog:
+    // generated using cog, from cl/activate.cl:
     const char * activateSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

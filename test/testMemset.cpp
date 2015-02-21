@@ -18,7 +18,7 @@ TEST( testMemset, basic ) {
     // import stringify
     // stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

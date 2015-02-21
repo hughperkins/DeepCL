@@ -78,7 +78,7 @@ BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimension
     // stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/backproperrorsv2cached.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -160,7 +160,7 @@ BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimension
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstreamCached", options, "cl/backproperrorsv2cached.cl" );
-    // generated using cog:
+    // generated using cog, from cl/applyActivationDeriv.cl:
     const char * applyActivationDerivSource =  
     "// Copyright Hugh Perkins 201, 2015 hughperkins at gmail\n" 
     "//\n" 

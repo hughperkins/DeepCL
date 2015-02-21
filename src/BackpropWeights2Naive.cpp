@@ -53,7 +53,7 @@ BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions 
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/backpropweights2.cl", "backprop_floats", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/backpropweights2.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014,2015 hughperkins at gmail\n" 
     "//\n" 

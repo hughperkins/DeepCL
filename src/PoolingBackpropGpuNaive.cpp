@@ -65,7 +65,7 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     // stringify.write_kernel2( "kernel", "cl/PoolingBackpropGpuNaive.cl", "backprop_errors", 'options' )
     // stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/PoolingBackpropGpuNaive.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -117,7 +117,7 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "backprop_errors", options, "cl/PoolingBackpropGpuNaive.cl" );
-    // generated using cog:
+    // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

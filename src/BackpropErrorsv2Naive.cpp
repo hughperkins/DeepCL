@@ -53,7 +53,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     // stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/backproperrorsv2.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014 hughperkins at gmail\n" 
     "//\n" 
@@ -122,7 +122,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options, "cl/backproperrorsv2.cl" );
-    // generated using cog:
+    // generated using cog, from cl/applyActivationDeriv.cl:
     const char * applyActivationDerivSource =  
     "// Copyright Hugh Perkins 201, 2015 hughperkins at gmail\n" 
     "//\n" 

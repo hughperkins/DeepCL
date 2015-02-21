@@ -124,7 +124,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     // # stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
     // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate_fc_wgperrow.cl:
     const char * kernel1Source =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -231,7 +231,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "\n" 
     "";
     kernel1 = cl->buildKernelFromString( kernel1Source, "propagate_fc_workgroup_perrow", options, "cl/propagate_fc_wgperrow.cl" );
-    // generated using cog:
+    // generated using cog, from cl/reduce_segments.cl:
     const char * kernel_reduceSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -259,7 +259,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "\n" 
     "";
     kernel_reduce = cl->buildKernelFromString( kernel_reduceSource, "reduce_segments", options, "cl/reduce_segments.cl" );
-    // generated using cog:
+    // generated using cog, from cl/activate.cl:
     const char * kernel_activateSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -294,7 +294,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "\n" 
     "";
     kernel_activate = cl->buildKernelFromString( kernel_activateSource, "activate", options, "cl/activate.cl" );
-    // generated using cog:
+    // generated using cog, from cl/per_element_add.cl:
     const char * kPerElementTiledAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

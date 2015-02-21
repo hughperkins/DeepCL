@@ -65,7 +65,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/BackpropWeights2Scratch.cl", "backprop_floats_withscratch_dobias", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/BackpropWeights2Scratch.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014,2015 hughperkins at gmail\n" 
     "//\n" 

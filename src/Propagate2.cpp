@@ -53,7 +53,7 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate2.cl", "propagate_2_by_outplane", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate2.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 

@@ -57,7 +57,7 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/pooling.cl", "propagateNaive", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/pooling.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014 hughperkins at gmail\n" 
     "//\n" 

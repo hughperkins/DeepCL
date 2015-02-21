@@ -153,7 +153,7 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     // stringify.write_kernel2( "reduce", "cl/reduce_segments.cl", "reduce_segments", '""' )
     // stringify.write_kernel2( "perElementAdd", "cl/per_element_add.cl", "per_element_add", '""' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/backpropweights_byrow.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014,2015 hughperkins at gmail\n" 
     "//\n" 
@@ -262,7 +262,7 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "backprop_weights", options, "cl/backpropweights_byrow.cl" );
-    // generated using cog:
+    // generated using cog, from cl/reduce_segments.cl:
     const char * reduceSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -290,7 +290,7 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     reduce = cl->buildKernelFromString( reduceSource, "reduce_segments", "", "cl/reduce_segments.cl" );
-    // generated using cog:
+    // generated using cog, from cl/per_element_add.cl:
     const char * perElementAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 

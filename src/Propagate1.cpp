@@ -50,7 +50,7 @@ Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate1.cl", "convolve_imagecubes_float2", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate1.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 

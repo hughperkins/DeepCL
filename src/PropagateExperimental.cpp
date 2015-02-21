@@ -53,7 +53,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     // classname = cog_getfilename.get_class_name()
     // stringify.write_kernel2( "kernel", "cl/" + classname + ".cl", "propagate", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/PropagateExperimental.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 

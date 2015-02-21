@@ -68,7 +68,7 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     // stringify.write_kernel2( "kernel1", "cl/propagate_fc_wgperrow.cl", "propagate_fc_workgroup_perrow", 'options' )
     // stringify.write_kernel2( "kernel2", "cl/propagate_fc.cl", "reduce_rows", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate_fc_wgperrow.cl:
     const char * kernel1Source =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -175,7 +175,7 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     "\n" 
     "";
     kernel1 = cl->buildKernelFromString( kernel1Source, "propagate_fc_workgroup_perrow", options, "cl/propagate_fc_wgperrow.cl" );
-    // generated using cog:
+    // generated using cog, from cl/propagate_fc.cl:
     const char * kernel2Source =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 

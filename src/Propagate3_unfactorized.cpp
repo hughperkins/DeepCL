@@ -61,7 +61,7 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate3_unfactorized.cl", "propagate", 'options' )
     // ]]]
-    // generated using cog:
+    // generated using cog, from cl/propagate3_unfactorized.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
