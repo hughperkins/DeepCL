@@ -608,6 +608,27 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
 * You might wonder why I target OpenCL rather than just using cuda-conv, caffe etc, and the answer is:
   * I think that more open standards and increased competition is a good thing, for us users, and I like to feel I can contribute to this in some small way :-)
 
+## Architecture
+
+* NeuralNet is a container for layers. It contains three types of method:
+  * methods that iterate over each layer, eg `propagate`
+  * methods that call a method on the first layer, eg `getInputCubeSize`
+  * methods that call a method on the last layer, eg `getResults()`
+* Trying to debug/unit-test by training whole networks is challenging, so the layer implementations are factorized, over two levels.  The first level abstracts away propagation, backprop of errors, and backprop of weights:
+  * Propagate.cpp handles forward propagation
+  * BackpropErrorsv2.cpp handles backward propagation of errors (strictly speaking: of the partial derivative of the loss with respect to the pre-activation sums for the layer)
+    * The results of this layer are passed back through the stack of layers
+  * BackpropWeights2.cpp handles backward propagation of weights, from the results of the appropriate BackpropErrorsv2 layer
+* Then, each of these classes calls into implementation classes, which are children of the same class, which provide various kernels and implementations.  Eg, for Propagate.cpp, we have:
+  * Propagate1.cpp
+  * Propagate2.cpp
+  * Propagate3.cpp
+  * ...
+* ... and similarly for BackpropErrorsv2, and BackpropWeights2.cpp: each has implementation classes
+* Therefore:
+  * Testing can target one single implementation, or target only propagate or backproperrors, or backpropweights, rather than needing to test an entire network
+  * These lower level factorized implementations could also plausibly be an appropriate unit of re-use
+
 ## OpenCL optimization
 
 This is obviously a huge topic, and there are lots of resources out there.  A few pointers:

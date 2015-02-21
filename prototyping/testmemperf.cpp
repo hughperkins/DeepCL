@@ -151,9 +151,9 @@ int main( int argc, char *argv[] ) {
     }
     options += " -D COUNT=" + toString( count );
     options += " -D SHIFT=" + toString( shift );
-    if( kernelVersion == 1 && count == 4 ) {
-        options += " -D dOn";
-    }
+//    if( kernelVersion == 1 && count == 4 ) {
+//        options += " -D dOn";
+//    }
     options += " -cl-single-precision-constant";
 //    options += " -D N_ITERATIONS=" + toString( its );
     options += " -D N=" + toString( numFloats );
