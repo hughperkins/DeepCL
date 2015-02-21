@@ -19,10 +19,8 @@ int main( int argc, char *argv[] ) {
     int workgroupSize = 512;
     bool optimizerOn = true;
     int count = 1;
-    bool enableMad = true;
+//    bool enableMad = true;
     int kernelVersion = 1;
-//    string type = "float";
-    int unroll = 100;
 
     TestArgsParser args( argc, argv );
 //    args._arg( "its", &its );
@@ -30,10 +28,8 @@ int main( int argc, char *argv[] ) {
     args._arg( "workgroupsize", &workgroupSize );
     args._arg( "opt", &optimizerOn );
     args._arg( "count", &count );
-    args._arg( "unroll", &unroll );
     args._arg( "kernel", &kernelVersion );
-//    args._arg( "type", &type );
-    args._arg( "mad", &enableMad );
+//    args._arg( "mad", &enableMad );
     args._go();
     cout << "values:" << endl;
     args._printValues();
@@ -146,9 +142,9 @@ int main( int argc, char *argv[] ) {
     if( !optimizerOn ) {
         options += " -cl-opt-disable";
     }
-    if( enableMad ) {
+//    if( enableMad ) {
         options += " -cl-mad-enable";
-    }
+//    }
     options += " -D COUNT=" + toString( count );
     options += " -D SHIFT=" + toString( shift );
 //    if( kernelVersion == 1 && count == 4 ) {
@@ -157,7 +153,7 @@ int main( int argc, char *argv[] ) {
     options += " -cl-single-precision-constant";
 //    options += " -D N_ITERATIONS=" + toString( its );
     options += " -D N=" + toString( numFloats );
-    options += " -D UNROLL=" + toString( unroll );
+//    options += " -D UNROLL=" + toString( unroll );
     
     string kernelSource = "";
     if( kernelVersion == 1 ) {
@@ -171,7 +167,7 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 5 ) {
         SpeedTemplates::Template mytemplate( kernelSource5 );
         mytemplate.setValue( "COUNT", count );
-        mytemplate.setValue( "unroll", unroll );
+//        mytemplate.setValue( "unroll", unroll );
         string renderedSource = mytemplate.render();
         cout << "rendered source: [" << renderedSource << "]" << endl;
         kernelSource = renderedSource;
@@ -180,7 +176,7 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 7 ) {
         SpeedTemplates::Template mytemplate( kernelSource7 );
         mytemplate.setValue( "COUNT", count );
-        mytemplate.setValue( "unroll", unroll );
+//        mytemplate.setValue( "unroll", unroll );
         string renderedSource = mytemplate.render();
         cout << "rendered source: [" << renderedSource << "]" << endl;
         kernelSource = renderedSource;
