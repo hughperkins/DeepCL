@@ -128,7 +128,7 @@ int main( int argc, char *argv[] ) {
             float4 a[{{COUNT}}];
             int offset = get_global_id(0) << {{SHIFT}};
 //            if( get_global_id(0) < ( {{N}} >> {{SHIFT}} ) ) {
-            if( offset + {{COUNT}} - 1 < {{N}} ) {
+            if( ( ( offset + {{COUNT}} - 1) << 2 ) < {{N}} ) {
                 {% for i in range( COUNT ) %}
                     a[{{i}}] = f4(src)[ offset + {{i}} ];
                 {% endfor %}
