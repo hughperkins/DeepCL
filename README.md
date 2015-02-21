@@ -622,7 +622,7 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
   * [BackpropWeights2.cpp](BackpropWeights2.cpp) handles backward propagation of weights, from the results of the appropriate BackpropErrorsv2 layer
 * Then, each of these classes calls into implementation classes, which are children of the same class, which provide various kernels and implementations.  Eg, for [Propagate.h](src/Propagate.h], we have:
   * [Propagate1.cpp](src/Propagate1.cpp)
-  * [Propagate2.cpp](src/propagate2.cpp)
+  * [Propagate2.cpp](src/Propagate2.cpp)
   * [Propagate3.cpp](src/Propagate3.cpp)
   * ...
 * ... and similarly for [BackpropErrorsv2](src/BackpropErrorsv2.cpp), and [BackpropWeights2.cpp](BackpropWeights2.cpp): each has implementation classes
