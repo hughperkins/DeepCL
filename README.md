@@ -621,7 +621,7 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
     * The results of this layer are passed back through the stack of layers
   * BackpropWeights2.cpp handles backward propagation of weights, from the results of the appropriate BackpropErrorsv2 layer
 * Then, each of these classes calls into implementation classes, which are children of the same class, which provide various kernels and implementations.  Eg, for Propagate.cpp, we have:
-  * Propagate1.cpp
+  * (src/Propagate1.cpp)
   * Propagate2.cpp
   * Propagate3.cpp
   * ...
@@ -644,6 +644,7 @@ This is obviously a huge topic, and there are lots of resources out there.  A fe
 * The relative performance of different kernels on different hardware is probably theoretically possible to predict, but in practice incredibly complicated.  Perhaps better to just try plausible kernels, for a batch or three, first, and then choose the ones that empirically run the fastest, on the current hardware, for each specific neural net layer configuration?
   * Since each batch runs pretty quickly, idea: might be useful to use [UCB1](http://homes.di.unimi.it/~cesabian/Pubblicazioni/ml-02.pdf) for this :-)
   * By comparing at runtime, it means, we no longer need to spend any effort on analyzing heuristics for choosing, we simply throw a diverse set of kernels at the problem, and hopefully one or two of them are optimal for each layer of our specific network
+  * [PropagateAuto.cpp](src/PropagateAuto.cpp) handles this for forward propagation, and we can plausibly add similar layers for error backprop, and weights backprop
 
 ## OpenCL debugging
 
