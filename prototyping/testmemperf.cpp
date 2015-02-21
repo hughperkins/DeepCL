@@ -73,7 +73,7 @@ int main( int argc, char *argv[] ) {
             float a[COUNT];
             int offset = ( get_global_id(0) << SHIFT );
 //            if( offset < N ) {
-            if( ( offset + COUNT - 1     ) < N ) {
+            if( ( offset + COUNT - 1 ) < N ) {
                 #pragma unroll COUNT
                 for( int i = 0; i < COUNT; i++ ) {
                     a[i] = src[ offset + i ];
