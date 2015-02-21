@@ -615,7 +615,8 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
   * methods that iterate over each layer, eg `propagate`
   * methods that call a method on the first layer, eg `getInputCubeSize`
   * methods that call a method on the last layer, eg `getResults()`
-* Trying to debug/unit-test by training whole networks is challenging, so the layer implementations are factorized, over two levels.  The first level abstracts away propagation, backprop of errors, and backprop of weights:
+* Various net layers, eg [ConvolutionalLayer.cpp](src/ConvolutionalLayer.cpp), [PoolingLayer.cpp](src/PoolingLayer.cpp), etc
+* Trying to debug/unit-test by training whole layers is challenging, so the layer implementations are factorized, over two levels.  The first level abstracts away propagation, backprop of errors, and backprop of weights:
   * [Propagate.cpp](src/Propagate.cpp) handles forward propagation
   * [BackpropErrorsv2.cpp](src/BackpropErrorsv2.cpp) handles backward propagation of errors (strictly speaking: of the partial derivative of the loss with respect to the pre-activation sums for the layer)
     * The results of this layer are passed back through the stack of layers
