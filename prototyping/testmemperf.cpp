@@ -36,7 +36,7 @@ int main( int argc, char *argv[] ) {
 
     count = OpenCLHelper::getNextPower2( count );
     int thiscount = count;
-    int shift = 1;
+    int shift = 0;
     while( thiscount > 1 ) {
         thiscount >>= 1;
         shift++;
@@ -89,9 +89,9 @@ int main( int argc, char *argv[] ) {
     string kernelSource5 = R"DELIM(
         kernel void memcpy(global float const*src, global float *dest) {
             float a[COUNT];
-            int offset = get_global_id(0) << SHIFT;
+            int offset = get_global_id(0) << {{SHIFT}};
 //            if( offset < N ) {
-            if( get_global_id(0) < ( N >> SHIFT ) ) {
+            if( get_global_id(0) < ( N >> {{SHIFT}} ) ) {
                 {% for i in range( COUNT ) %}
                     a[{{i}}] = src[ offset + {{i}} ];
                 {% endfor %}
@@ -126,8 +126,8 @@ int main( int argc, char *argv[] ) {
 
         kernel void memcpy(global float const*src, global float *dest) {
             float4 a[COUNT];
-            int offset = get_global_id(0) << SHIFT;
-            if( get_global_id(0) < ( N >> SHIFT ) ) {
+            int offset = get_global_id(0) << {{SHIFT}};
+            if( get_global_id(0) < ( N >> {{SHIFT}} ) ) {
                 {% for i in range( COUNT ) %}
                     a[{{i}}] = f4(src)[ offset + {{i}} ];
                 {% endfor %}
@@ -167,6 +167,7 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 5 ) {
         SpeedTemplates::Template mytemplate( kernelSource5 );
         mytemplate.setValue( "COUNT", count );
+        mytemplate.setValue( "SHIFT", shift );
 //        mytemplate.setValue( "unroll", unroll );
         string renderedSource = mytemplate.render();
         cout << "rendered source: [" << renderedSource << "]" << endl;
@@ -176,6 +177,7 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 7 ) {
         SpeedTemplates::Template mytemplate( kernelSource7 );
         mytemplate.setValue( "COUNT", count );
+        mytemplate.setValue( "SHIFT", shift );
 //        mytemplate.setValue( "unroll", unroll );
         string renderedSource = mytemplate.render();
         cout << "rendered source: [" << renderedSource << "]" << endl;
