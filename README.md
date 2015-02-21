@@ -566,8 +566,7 @@ make unittests
 * Actually, by default, with no arguments, the argument `--gtest_filter=-SLOW*` will be appended automatically
 * Also, rather than having to type `--gtest_filter=[something]`, you can just type `tests=[something]`, and this will be converted into `--gtest_filter=[something]` automatically
 
-Formulae notes
-==============
+# Formulae notes
 
 These are generic formulae, but just putting them here, so I remember them ;-)
 
