@@ -139,6 +139,22 @@ int main( int argc, char *argv[] ) {
         }
     )DELIM";
 
+    string kernelSource8 = R"DELIM(
+        kernel void memcpy(global float const*src, global float *dest) {
+            local float a[{{COUNT}}];
+            int offset = get_global_id(0) << {{SHIFT}};
+//            if( get_global_id(0) < ( {{N}} >> {{SHIFT}} ) ) {
+            if( ( ( offset + {{COUNT}} - 1) << 2 ) < {{N}} ) {
+                {% for i in range( COUNT ) %}
+                    a[{{i}}] = f4(src)[ offset + {{i}} ];
+                {% endfor %}
+                {% for i in range( COUNT ) %}
+                    f4(dest)[ offset + {{i}} ] = a[{{i}}];
+                {% endfor %}
+            }
+        }
+    )DELIM";
+
     string options = "";
     if( !optimizerOn ) {
         options += " -cl-opt-disable";
@@ -196,13 +212,13 @@ int main( int argc, char *argv[] ) {
     for( int i = 0; i < numFloats; i++ ) {
         src[i] = 2.0f;
     }
-    float *dest = new float[numFloats];
-    memset( dest, 0, numFloats * sizeof(float) );
+    float *dest = new float[numFloats + count];
+    memset( dest, 0, ( numFloats + count ) * sizeof(float) );
     kernel->in( numFloats, src );
     kernel->out( numFloats, dest );
-    int numWorkgroups = ( numFloats + workgroupSize - 1 ) / workgroupSize;
+    int numWorkgroups = ( numFloats / count + workgroupSize - 1 ) / workgroupSize;
     if( kernelVersion >= 6 ) {
-        numWorkgroups = ( numFloats / 4 + workgroupSize - 1 ) / workgroupSize;
+        numWorkgroups = ( numFloats / count / 4 + workgroupSize - 1 ) / workgroupSize;
     }
     Timer timer;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
@@ -214,13 +230,36 @@ int main( int argc, char *argv[] ) {
     float kernelTimeSeconds = kernelTime / 1000.0f;
 
     float throughputGbytes = numFloats * 4.0f  / 1024 / 1024 / 1024;
-    if( kernelVersion >= 4 ) {
-        throughputGbytes *= count;
-    }
+//    if( kernelVersion >= 4 ) {
+//        throughputGbytes *= count;
+//    }
     float throughputGbytespersec = throughputGbytes / kernelTimeSeconds;
 //    float throughputGflops = (float)its * workgroupSize / kernelTimeSeconds / 1024 / 1024 / 1024;
 
     cout << "throughput: " << throughputGbytespersec << "GB/s" << endl;
+
+    // check the memory copied...
+    int errCount = 0;
+    for( int i = 0; i < numFloats; i++ ) {
+        if( dest[i] != 2.0f ) {
+            if( errCount > 5 ) {
+                cout << "..." << endl;
+                break;
+            }
+            cout << "DIFF: dest[" << i << "]=" << dest[i] << endl;
+            errCount++;
+        }
+    }
+    for( int i = 0; i < count; i++ ) {
+        if( dest[i + numFloats] != 0.0f ) {
+            if( errCount > 5 ) {
+                cout << "..." << endl;
+                break;
+            }
+            cout << "DIFF: dest[" << ( i + numFloats ) << "]=" << dest[i + numFloats] << endl;
+            errCount++;
+        }
+    }
 
     delete[] src;
     delete[] dest;
