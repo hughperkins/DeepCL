@@ -88,10 +88,10 @@ int main( int argc, char *argv[] ) {
     
     string kernelSource5 = R"DELIM(
         kernel void memcpy(global float const*src, global float *dest) {
-            float a[COUNT];
+            float a[{{COUNT}}];
             int offset = get_global_id(0) << {{SHIFT}};
 //            if( offset < N ) {
-            if( get_global_id(0) < ( N >> {{SHIFT}} ) ) {
+            if( get_global_id(0) < ( {{N}} >> {{SHIFT}} ) ) {
                 {% for i in range( COUNT ) %}
                     a[{{i}}] = src[ offset + {{i}} ];
                 {% endfor %}
@@ -125,9 +125,9 @@ int main( int argc, char *argv[] ) {
         #define f4(var) ( (global float4*)(var) )
 
         kernel void memcpy(global float const*src, global float *dest) {
-            float4 a[COUNT];
+            float4 a[{{COUNT}}];
             int offset = get_global_id(0) << {{SHIFT}};
-            if( get_global_id(0) < ( N >> {{SHIFT}} ) ) {
+            if( get_global_id(0) < ( {{N}} >> {{SHIFT}} ) ) {
                 {% for i in range( COUNT ) %}
                     a[{{i}}] = f4(src)[ offset + {{i}} ];
                 {% endfor %}
@@ -167,6 +167,7 @@ int main( int argc, char *argv[] ) {
     } else if( kernelVersion == 5 ) {
         SpeedTemplates::Template mytemplate( kernelSource5 );
         mytemplate.setValue( "COUNT", count );
+        mytemplate.setValue( "N", numFloats );
         mytemplate.setValue( "SHIFT", shift );
 //        mytemplate.setValue( "unroll", unroll );
         string renderedSource = mytemplate.render();
@@ -176,6 +177,7 @@ int main( int argc, char *argv[] ) {
         kernelSource = kernelSource6;
     } else if( kernelVersion == 7 ) {
         SpeedTemplates::Template mytemplate( kernelSource7 );
+        mytemplate.setValue( "N", numFloats );
         mytemplate.setValue( "COUNT", count );
         mytemplate.setValue( "SHIFT", shift );
 //        mytemplate.setValue( "unroll", unroll );
