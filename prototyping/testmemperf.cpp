@@ -214,12 +214,18 @@ int main( int argc, char *argv[] ) {
     }
     float *dest = new float[numFloats + count];
     memset( dest, 0, ( numFloats + count ) * sizeof(float) );
-    kernel->in( numFloats, src );
-    kernel->out( numFloats, dest );
+
+    CLWrapper *destWrapper = cl->wrap( numFloats + count, dest );
+    CLWrapper *srcWrapper = cl->wrap( numFloats + count, src );
+    destWrapper->createOnDevice();
+    srcWrapper->copyToDevice();
+    kernel->in( srcWrapper );
+    kernel->out( destWrapper );
     int numWorkgroups = ( numFloats / count + workgroupSize - 1 ) / workgroupSize;
     if( kernelVersion >= 6 ) {
         numWorkgroups = ( numFloats / count / 4 + workgroupSize - 1 ) / workgroupSize;
     }
+    cl->finish(); // just in case...
     Timer timer;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
@@ -239,6 +245,7 @@ int main( int argc, char *argv[] ) {
     cout << "throughput: " << throughputGbytespersec << "GB/s" << endl;
 
     // check the memory copied...
+    destWrapper->copyToHost();
     int errCount = 0;
     for( int i = 0; i < numFloats; i++ ) {
         if( dest[i] != 2.0f ) {
@@ -261,6 +268,8 @@ int main( int argc, char *argv[] ) {
         }
     }
 
+    delete destWrapper;
+    delete srcWrapper;
     delete[] src;
     delete[] dest;
     delete kernel;
