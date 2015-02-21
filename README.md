@@ -55,6 +55,7 @@ Contents
 - [What if I want to contribute myself?](#what-if-i-want-to-contribute-myself)
   - [Development technical details](#development-technical-details)
   - [You might wonder why...](#you-might-wonder-why)
+  - [Architecture](#architecture)
   - [OpenCL optimization](#opencl-optimization)
   - [OpenCL debugging](#opencl-debugging)
 - [Forums](#forums)
