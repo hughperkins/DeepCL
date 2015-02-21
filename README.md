@@ -616,16 +616,16 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
   * methods that call a method on the first layer, eg `getInputCubeSize`
   * methods that call a method on the last layer, eg `getResults()`
 * Trying to debug/unit-test by training whole networks is challenging, so the layer implementations are factorized, over two levels.  The first level abstracts away propagation, backprop of errors, and backprop of weights:
-  * [Propagate.h](src/Propagate.h) handles forward propagation
-  * [BackpropErrorsv2.h](BackpropErrorsv2.h) handles backward propagation of errors (strictly speaking: of the partial derivative of the loss with respect to the pre-activation sums for the layer)
+  * [Propagate.cpp](src/Propagate.cpp) handles forward propagation
+  * [BackpropErrorsv2.cpp](BackpropErrorsv2.cpp) handles backward propagation of errors (strictly speaking: of the partial derivative of the loss with respect to the pre-activation sums for the layer)
     * The results of this layer are passed back through the stack of layers
-  * [BackpropWeights2.h](BackpropWeights2.h) handles backward propagation of weights, from the results of the appropriate BackpropErrorsv2 layer
+  * [BackpropWeights2.cpp](BackpropWeights2.cpp) handles backward propagation of weights, from the results of the appropriate BackpropErrorsv2 layer
 * Then, each of these classes calls into implementation classes, which are children of the same class, which provide various kernels and implementations.  Eg, for [Propagate.h](src/Propagate.h], we have:
-  * [Propagate1.h](src/Propagate1.h)
-  * [Propagate2.](src/propagate2.h)
-  * [Propagate3.h](src/Propagate3.h)
+  * [Propagate1.cpp](src/Propagate1.cpp)
+  * [Propagate2.cpp](src/propagate2.cpp)
+  * [Propagate3.cpp](src/Propagate3.cpp)
   * ...
-* ... and similarly for BackpropErrorsv2, and BackpropWeights2.cpp: each has implementation classes
+* ... and similarly for [BackpropErrorsv2](src/BackpropErrorsv2.cpp), and [BackpropWeights2.cpp](BackpropWeights2.cpp): each has implementation classes
 * Therefore:
   * Testing can target one single implementation, or target only propagate or backproperrors, or backpropweights, rather than needing to test an entire network
   * These lower level factorized implementations could also plausibly be an appropriate unit of re-use
