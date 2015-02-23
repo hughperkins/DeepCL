@@ -269,8 +269,7 @@ int main( int argc, char *argv[] ) {
     destWrapper->copyToHost();
     int errCount = 0;
     for( int i = 0; i < numFloats; i++ ) {
-        if( dest[i] != 2.0f + ( i % 10 );
-    } ) {
+        if( dest[i] != 2.0f + ( i % 10 ) ) {
             if( errCount > 5 ) {
                 cout << "..." << endl;
                 break;
