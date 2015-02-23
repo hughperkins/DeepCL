@@ -45,6 +45,15 @@ int main( int argc, char *argv[] ) {
 
 //    cout << "its: " << its << " workgroupsize: " << workgroupSize << " optimizer: " << optimizerOn << endl;  
 
+    string kernelMemsetSource = R"DELIM(
+        #define globalId (get_global_id(0))
+        kernel void memset( global float *dest, const float value, const int N ) {
+            if( globalId < N ) {
+                dest[globalId] = value;
+            }
+        }
+    )DELIM";
+
     string kernelSource1 = R"DELIM(
         kernel void memcpy( global float const*src, global float *dest) {
             if( get_global_id(0) < N ) {
@@ -219,7 +228,7 @@ int main( int argc, char *argv[] ) {
 
     float *src = new float[numFloats + count];
     for( int i = 0; i < numFloats; i++ ) {
-        src[i] = 2.0f;
+        src[i] = 2.0f + ( i % 10 );
     }
     float *dest = new float[numFloats + count];
     memset( dest, 0, ( numFloats + count ) * sizeof(float) );
@@ -228,8 +237,15 @@ int main( int argc, char *argv[] ) {
     CLWrapper *srcWrapper = cl->wrap( numFloats + count, src );
     destWrapper->createOnDevice();
     srcWrapper->copyToDevice();
+    
+    CLKernel *kMemset = cl->buildKernelFromString( kernelMemsetSource, "memset", "" );
+    kMemset->out( destWrapper );
+    kMemset->in(0)->in(numFloats + count );
+    kMemset->run_1d( ( numFloats + count + workgroupSize - 1 ) / workgroupSize * workgroupSize, workgroupSize );
+    cl->finish();
+
     kernel->in( srcWrapper );
-    kernel->out( destWrapper );
+    kernel->inout( destWrapper );
     cl->finish(); // just in case...
     Timer timer;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
@@ -253,7 +269,8 @@ int main( int argc, char *argv[] ) {
     destWrapper->copyToHost();
     int errCount = 0;
     for( int i = 0; i < numFloats; i++ ) {
-        if( dest[i] != 2.0f ) {
+        if( dest[i] != 2.0f + ( i % 10 );
+    } ) {
             if( errCount > 5 ) {
                 cout << "..." << endl;
                 break;
@@ -273,6 +290,7 @@ int main( int argc, char *argv[] ) {
         }
     }
 
+    delete kMemset;
     delete destWrapper;
     delete srcWrapper;
     delete[] src;
