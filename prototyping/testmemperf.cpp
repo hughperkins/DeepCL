@@ -149,22 +149,25 @@ int main( int argc, char *argv[] ) {
 
     string kernelSource8 = R"DELIM(
         kernel void memcpy(global float const*src, global float *dest) {
-            local float a[{{COUNT}}];
-            int offset = get_global_id(0) << {{SHIFT}};
-//            if( get_global_id(0) < ( {{N}} >> {{SHIFT}} ) ) {
-            if( ( ( offset + {{COUNT}} - 1) << 2 ) < {{N}} ) {
-                {% for i in range( COUNT ) %}
-                    a[{{i}}] = f4(src)[ offset + {{i}} ];
-                {% endfor %}
-                {% for i in range( COUNT ) %}
-                    f4(dest)[ offset + {{i}} ] = a[{{i}}];
-                {% endfor %}
+            local float shared_a[COUNT * WORKGROUPSIZE];
+            local float *a = shared_a + COUNT * get_local_id(0);
+            int offset = ( get_global_id(0) << SHIFT );
+//            if( offset < N ) {
+            if( ( offset + COUNT - 1 ) < N ) {
+                #pragma unroll COUNT
+                for( int i = 0; i < COUNT; i++ ) {
+                    a[i] = src[ offset + i ];
+                }
+                #pragma unroll COUNT
+                for( int i = 0; i < COUNT; i++ ) {
+                    dest[ offset + i ] = a[i];
+                }
             }
         }
     )DELIM";
 
     int numWorkgroups = 0;
-    if( kernelVersion <= 5 ) {
+    if( kernelVersion <= 5 || kernelVersion >= 8 ) {
         numWorkgroups = ( numFloats / count + workgroupSize - 1 ) / workgroupSize;
         numFloats = numWorkgroups * workgroupSize * count;
     } else {
@@ -182,6 +185,7 @@ int main( int argc, char *argv[] ) {
 //    }
     options += " -D COUNT=" + toString( count );
     options += " -D SHIFT=" + toString( shift );
+    options += " -D WORKGROUPSIZE=" + toString( workgroupSize );
 //    if( kernelVersion == 1 && count == 4 ) {
 //        options += " -D dOn";
 //    }
@@ -219,6 +223,8 @@ int main( int argc, char *argv[] ) {
         string renderedSource = mytemplate.render();
         cout << "rendered source: [" << renderedSource << "]" << endl;
         kernelSource = renderedSource;
+    } else if( kernelVersion == 8 ) {
+        kernelSource = kernelSource8;
     } else {
         throw runtime_error("kernel version " + toString( kernelVersion ) + " not implemented");
     }
