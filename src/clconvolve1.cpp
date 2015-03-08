@@ -437,6 +437,10 @@ int main( int argc, char *argv[] ) {
             config.dataDir = "../data/kgsgo";
             config.trainFile = "kgsgo-train10k-v2.dat";
             config.validateFile = "kgsgo-test-v2.dat";
+        } else if( dataset == "kgsgoall" ) {
+            config.dataDir = "../data/kgsgo";
+            config.trainFile = "kgsgo-trainall-v2.dat";
+            config.validateFile = "kgsgo-test-v2.dat";
         } else {
             cout << "dataset " << dataset << " not known.  please choose from: mnist, norb, cifar10, kgsgo" << endl;
             return -1;
