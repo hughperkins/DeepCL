@@ -129,7 +129,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/teststringhelper.cpp test/testGtestGlobals.cpp test/testArgsParser.cpp
  src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
- test/SpeedTemplates.cpp test/testSpeedTemplates.cpp
+ test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  )
 #
 #

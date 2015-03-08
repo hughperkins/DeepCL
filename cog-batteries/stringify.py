@@ -27,7 +27,7 @@ def process_includes( line ):
     line = line.replace('<','"').replace('>','"') # standardize quotes a bit...
     targetpath = line.split('"')[1]
     line = ''
-    cog.outl('// including ' + targetpath + ':')
+    cog.outl('"// including ' + targetpath + ':\\n"')
     write_file2( '../' + targetpath )
     return line
 

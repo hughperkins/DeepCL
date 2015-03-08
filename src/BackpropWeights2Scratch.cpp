@@ -76,7 +76,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "// expected defines:\n" 
     "// BIASED (or not)\n" 
     "\n" 
-    // including cl/copyLocal.cl:
+    "// including cl/copyLocal.cl:\n"
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
     "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
@@ -104,7 +104,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "}\n" 
     "\n" 
     "\n" 
-    // including cl/ids.cl:
+    "// including cl/ids.cl:\n"
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
     "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 

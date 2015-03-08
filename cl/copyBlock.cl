@@ -5,10 +5,13 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 int posToRow( int pos ) {
-    return ( pos >> 10 ) & ( 2^11-1);
+    return ( pos >> 10 ) & ( (1<<10)-1);
+//    return 53
 }
 int posToCol( int pos ) {
-    return pos & (2^11-1);
+    return pos & ((1<<10)-1);
+  //  return 67;
+    //return ((1<<11)-1);
 }
 int rowColToPos( int row, int col ) {
     return ( row << 10 ) | col;
@@ -28,7 +31,7 @@ void copyBlock( local float *target, global float const *source,
     for( int loop = 0; loop < numLoops; loop++ ) {
         const int offset = get_local_id(0) + loop * get_local_size(0);
         if( offset < totalLinearSize ) {
-            const int offsetAsPos = linearIdToPos( offset, posToRow( blockSize ) );
+            const int offsetAsPos = linearIdToPos( offset, posToCol( blockSize ) );
             target[ offset ] = source[ posToOffset( blockStart + offsetAsPos, posToCol( sourceSize ) ) ];  
         }
     }
