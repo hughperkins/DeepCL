@@ -10,12 +10,24 @@
 
 using namespace std;
 
-bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
-    string netDefLower = toLower( netdef );
-    vector<string> splitNetDef = split( netDefLower, "-" );
-    for( int i = 0; i < splitNetDef.size(); i++ ) {
-        string thisLayerDef = splitNetDef[i];
-        vector<string>splitLayerDef = split( thisLayerDef, "{" );
+#undef STATIC
+#undef VIRTUAL
+#define STATIC
+#define VIRTUAL
+
+STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring ) {
+    int starPos = substring.find("*");
+    if( starPos != string::npos ) {
+        string repeatNumString = substring.substr( 0, starPos );
+        cout << "repeatNumString " << repeatNumString << endl;
+        string remainderString = substring.substr( starPos + 1 );
+        cout << "remainderString " << remainderString << endl;
+        int repeatNum = atoi( repeatNumString);
+        for( int i = 0; i < repeatNum; i++ ) {
+            parseSubstring( net, remainderString );
+        }
+    } else {
+        vector<string>splitLayerDef = split( substring, "{" );
         string baseLayerDef = splitLayerDef[0];
         string optionsDef = "";
         vector<string> splitOptionsDef;
@@ -23,7 +35,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             optionsDef = split( splitLayerDef[1], "}" )[0];
             splitOptionsDef = split( optionsDef, "," );
         }
-//        cout << "optionsDef: " << optionsDef << endl;
+    //        cout << "optionsDef: " << optionsDef << endl;
         if( baseLayerDef.find("c") != string::npos ) {
             vector<string> splitConvDef = split( baseLayerDef, "c" );
             int numFilters = atoi( splitConvDef[0] );
@@ -33,7 +45,7 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
             int padZeros = 0;
             for( int i = 0; i < splitOptionsDef.size(); i++ ) {
                 string optionDef = splitOptionsDef[i];
-//                cout << "optionDef: " << optionDef << endl;
+    //                cout << "optionDef: " << optionDef << endl;
                 vector<string> splitOptionDef = split( optionDef, "=");
                 string optionName = splitOptionDef[0];
                 if( splitOptionDef.size() == 2 ) {
@@ -80,14 +92,51 @@ bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
         } else if( baseLayerDef.find("n") != string::npos ) {
             vector<string> fullDef = split( baseLayerDef, "n" );
             int numPlanes = atoi( fullDef[0] );
-            if( i == splitNetDef.size() - 1 ) {
-                net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->linear()->biased() );
-            } else {
-                net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->tanh()->biased() );
+            ActivationFunction *fn = new TanhActivation();
+            int padZeros = 0;
+            for( int i = 0; i < splitOptionsDef.size(); i++ ) {
+                string optionDef = splitOptionsDef[i];
+    //                cout << "optionDef: " << optionDef << endl;
+                vector<string> splitOptionDef = split( optionDef, "=");
+                string optionName = splitOptionDef[0];
+                if( splitOptionDef.size() == 1 ) {
+                    if( optionName == "tanh" ) {
+                        fn = new TanhActivation();
+                    } else if( optionName == "scaledtanh" ) {
+                        fn = new ScaledTanhActivation();
+                    } else if( optionName == "sigmoid" ) {
+                        fn = new SigmoidActivation();
+                    } else if( optionName == "relu" ) {
+                        fn = new ReluActivation();
+                    } else if( optionName == "linear" ) {
+                        fn = new LinearActivation();
+                    } else {
+                        cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
+                        return false;
+                    }
+                } else {
+                    cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
+                    return false;
+                }
             }
+            net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->fn(fn)->biased() );
         } else {
             cout << "network definition " << baseLayerDef << " not recognised" << endl;
             return false;
+        }
+    }
+    return true;
+}
+
+STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
+    string netDefLower = toLower( netdef );
+    vector<string> splitNetDef = split( netDefLower, "-" );
+    if( netdef != "" ) {
+        for( int i = 0; i < splitNetDef.size(); i++ ) {
+            string thisLayerDef = splitNetDef[i];
+            if( !parseSubstring( net, thisLayerDef ) ) {
+                return false;
+            }
         }
     }
     net->addLayer( SoftMaxMaker::instance() );

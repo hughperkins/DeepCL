@@ -450,4 +450,22 @@ after tests 15235 ms
 wrote weights to file, filesize 23497KB
 
 
+=========================
+
+gpu1:
+dataset=kgsgo netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numtrain=1000000 numtest=1000 numepochs=15 learningrate=0.0001 , epoch 6 29.3:32.5
+
+
+gpu2:
+dataset=kgsgo netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-361n numtrain=1000000 numtest=1000 numepochs=15 learningrate=0.0001 26.7:59.0, epoch 8: 30.2:41.2
+dataset=kgsgo netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numtrain=1000000 numtest=1000 numepochs=15 learningrate=0.0001 29.9:52.1, epoch 8: 29.8:39.5
+
+gpu3:
+dataset=kgsgo netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numepochs=15 learningrate=0.0001 epoch 8: 28.8:41.1, crashed after epoch 9
+dataset=kgsgo netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numepochs=15 learningrate=0.0001 epoch 3: 27.4:30.0
+
+gpu4:
+dataset=kgsgoall netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numepochs=15 learningrate=0.0001 numtrain=4000000 epoch 3: 30.8:32.6
+
+
 

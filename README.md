@@ -143,6 +143,14 @@ Example usage:
 ./clconvolve1 netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 
+## Repeated layers
+
+* simply prefix a layer with eg `3*` to repeat it.  `3*` will repeat the layer 3 times, and similar for other numbers, eg:
+```
+./clconvolve1 netdef=6*32c5{z}-500n-361n learningrate=0.0001 dataset=kgsgoall
+```
+... will create 6 convolutional layers of 32 5x5 filters each.
+
 ## Additional layer types
 
 ### Random patches

@@ -17,7 +17,7 @@ public:
     int _numPlanes;
     int _boardSize;
     int _biased;
-    ActivationFunction *_activationFunction;
+    ActivationFunction const*_activationFunction;
     FullyConnectedMaker() :
         _numPlanes(0),
         _boardSize(0),
@@ -57,6 +57,10 @@ public:
     FullyConnectedMaker *relu() {
         delete this->_activationFunction;
         this->_activationFunction = new ReluActivation();
+        return this;
+    }
+    FullyConnectedMaker *fn(ActivationFunction const*_fn) {
+        this->_activationFunction = _fn;
         return this;
     }
     static FullyConnectedMaker *instance() {

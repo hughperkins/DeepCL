@@ -12,8 +12,20 @@
 
 class NeuralNet;
 
+#define VIRTUAL virtual
+#define STATIC static
+
 class ClConvolve_EXPORT NetdefToNet {
 public:
-    static bool createNetFromNetdef( NeuralNet *net, std::string netdef );
+
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.add()
+    // ]]]
+    // generated, using cog:
+    STATIC bool parseSubstring( NeuralNet *net, std::string substring );
+    STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef );
+
+    // [[[end]]]
 };
 
