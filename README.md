@@ -58,7 +58,6 @@ Contents
   - [Architecture](#architecture)
   - [OpenCL optimization](#opencl-optimization)
   - [OpenCL debugging](#opencl-debugging)
-- [Forums](#forums)
 - [What's done / what's planned](#whats-done--whats-planned)
 - [Recent changes](#recent-changes)
 - [Third-party libraries](#third-party-libraries)
