@@ -50,4 +50,5 @@ node pngtomat.js
 ```bash
 ./clconvolve-fixedweights datadir=../prototyping/convnetjs-reference/data trainfile=mnist12k-dat.mat validatefile=mnist12k-dat.mat 'netdef=10n{linear}' numtrain=1 batchsize=1 numepochs=1 learningrate=0.4 normalizationexamples=1
 ```
+* Note that (at time of writing), convnetjs divides the learning rate by the batchsize, whereas clconvolve (at time of writing) does not
 
