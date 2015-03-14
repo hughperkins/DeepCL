@@ -98,10 +98,13 @@ Functionalities:
 
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
+  - obtained 35.1% test accuracy, using 16 million training records from the [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+  - commandline used `./clconvolve1 dataset=kgsgoall netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numepochs=15 learningrate=0.0001 numtrain=16000000`
+  - 3 epochs, 14 hours per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n numepochs=20 multinet=6 learningrate=0.002`
   - epoch time 99.8 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
 - obtained 91.7% test accuracy (99.996% training accuracy) on [NORB](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) dataset, using `netdef=8c5-mp4-24c6-mp3-80c6-5n`
-  - epoch time 76 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU
+  - epoch time 76 seconds, using an Amazon GPU instance, half an NVidia GRID K520 GPU
 
 # Commandline usage
 
