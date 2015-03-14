@@ -203,9 +203,6 @@ function learn(options) {
 
         setWeights( net );
 
-//        var numTrain = parseInt(process.argv[2]);
-//        var numEpochs = parseInt(process.argv[3]);
-
         var trainer = new convnetjs.SGDTrainer(net, {method:'sgd', batch_size:options.numTrain, l2_decay:0.00, momentum: 0, learning_rate: 0.4});
 
         var x = new convnetjs.Vol(28,28,1,0.0);
@@ -247,8 +244,6 @@ function processArgs(callback) {
         }
         var key = splitKeyValue[0];
         var value = splitKeyValue[1];
-//        var numTrain = 1;
-//        var numEpochs = 1;
         if( key == 'numtrain' ) {
             options.numTrain = parseInt(value);
         } else if( key == 'numepochs' ) {
