@@ -32,6 +32,7 @@ npm start numtrain=4 numepochs=4
 
 ## To convert png into norb .mat format
 
+* This is used to ensure we are using the exact same data when we run ClConvolve, as when we run convnetjs
 * First, run the convnetjs implementation above, which will download the data files
 * Then, run:
 ```bash
