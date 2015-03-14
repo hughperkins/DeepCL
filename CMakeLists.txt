@@ -112,7 +112,7 @@ endif()
 if(PYTHON_AVAILABLE)
     add_custom_target( 
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
     )
     add_dependencies( ClConvolve cog )
 endif(PYTHON_AVAILABLE)
@@ -189,6 +189,7 @@ if( PROTOTYPING )
     add_executable( testfloat4 prototyping/testFloat4.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
        test/SpeedTemplates.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
+    add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/stringhelper.cpp )
 endif( PROTOTYPING )
 
 target_link_libraries( unittests ClConvolve )

@@ -132,6 +132,14 @@ VIRTUAL float *ConvolutionalLayer::getWeights() {
     }
     return weights;
 }
+VIRTUAL float *ConvolutionalLayer::getBiasWeights() {
+    //if( !biasWeightsCopiedToHost ) {
+//        cout << "copying weights to host" << endl;
+      //  cl->finish();
+       // biasWeightsWrapper->copyToHost();
+    //}
+    return biasWeights;
+}
 VIRTUAL int ConvolutionalLayer::getResultsSize() const {
     return batchSize * dim.outputCubeSize;
 }

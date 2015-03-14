@@ -105,6 +105,7 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
+    VIRTUAL float *getBiasWeights();
     VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputBoardSize() const;

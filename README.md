@@ -667,11 +667,6 @@ This is obviously a huge topic, and there are lots of resources out there.  A fe
 * it's possible to 'see' inside the kernel, by writing certain values to any of the output arrays, eg make the output array bigger, and write 'off the end', or add a new output array
   * in practice, writing off the end of the array, or simply writing other data, instead of the results, temporarily, seems to work well
 
-Forums
-======
-
-[http://www.hughperkins.com/clconvolvebb](http://www.hughperkins.com/clconvolvebb)
-
 What's done / what's planned
 ============================
 

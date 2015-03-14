@@ -29,13 +29,12 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring )
     } else {
         vector<string>splitLayerDef = split( substring, "{" );
         string baseLayerDef = splitLayerDef[0];
-        string optionsDef = "";
+//         optionsDef = "";
         vector<string> splitOptionsDef;
         if( splitLayerDef.size() == 2 ) {
-            optionsDef = split( splitLayerDef[1], "}" )[0];
+            string  optionsDef = split( splitLayerDef[1], "}" )[0];
             splitOptionsDef = split( optionsDef, "," );
         }
-    //        cout << "optionsDef: " << optionsDef << endl;
         if( baseLayerDef.find("c") != string::npos ) {
             vector<string> splitConvDef = split( baseLayerDef, "c" );
             int numFilters = atoi( splitConvDef[0] );
@@ -45,7 +44,6 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring )
             int padZeros = 0;
             for( int i = 0; i < splitOptionsDef.size(); i++ ) {
                 string optionDef = splitOptionsDef[i];
-    //                cout << "optionDef: " << optionDef << endl;
                 vector<string> splitOptionDef = split( optionDef, "=");
                 string optionName = splitOptionDef[0];
                 if( splitOptionDef.size() == 2 ) {
@@ -94,6 +92,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring )
             int numPlanes = atoi( fullDef[0] );
             ActivationFunction *fn = new TanhActivation();
             int padZeros = 0;
+            int biased = 1;
             for( int i = 0; i < splitOptionsDef.size(); i++ ) {
                 string optionDef = splitOptionsDef[i];
     //                cout << "optionDef: " << optionDef << endl;
@@ -108,6 +107,8 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring )
                         fn = new SigmoidActivation();
                     } else if( optionName == "relu" ) {
                         fn = new ReluActivation();
+                    } else if( optionName == "nobias" ) {
+                        biased = 0;
                     } else if( optionName == "linear" ) {
                         fn = new LinearActivation();
                     } else {
@@ -119,7 +120,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring )
                     return false;
                 }
             }
-            net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->fn(fn)->biased() );
+            net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->fn(fn)->biased(biased) );
         } else {
             cout << "network definition " << baseLayerDef << " not recognised" << endl;
             return false;

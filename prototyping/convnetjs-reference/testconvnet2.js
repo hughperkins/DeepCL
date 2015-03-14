@@ -177,6 +177,10 @@ function setWeights( net ) {
                     filter.w[j] = ( mt() % 100000 ) / 1000000.0;
                 }
             }            
+            mt.seed(0);
+            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
+                layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
+            }
         }
     }
 }
