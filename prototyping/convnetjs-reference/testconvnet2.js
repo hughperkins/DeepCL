@@ -111,6 +111,10 @@ convnetjs.Net.prototype.print = function() {
     }
 }
 
+convnetjs.Vol.prototype.get_n = function() {
+    return this.sx*this.sy*this.depth;
+}
+
 function createNet() {
     var layer_defs = [];
     layer_defs.push({type:'input', out_sx:28, out_sy:28, out_depth:1});
@@ -122,7 +126,7 @@ function createNet() {
     net.layers.splice(1,100); // remove original filters, so we can
                               // use low-level methods to add our own
 
-    net.addLayer( 'conv', {'filters': 8, 'sx': 5, 'pad': 2 } );
+    net.addLayer( 'conv', {'filters': 1, 'sx': 3, 'pad': 0 } );
     //net.addLayer( 'fc', {'num_neurons': 10} );
     //net.addLayer( 'relu' );
     net.addLayer( 'fc', {'num_neurons': 10} );
@@ -141,23 +145,38 @@ function setWeights( net ) {
     console.log('setting weights...');
     for( var layerId = 0; layerId < net.layers.length; layerId++ ) {
         var layer = net.layers[layerId];
-        if( layer.layer_type != 'conv' && layer.layer_type != 'fc' ) {
+        var layerType = layer.layer_type;
+        if( layerType != 'conv' && layerType != 'fc' ) {
             continue;
         }
         console.log('   processing layer id ' + layerId );
         //console.log( net.layers[layerId] );
-        mt.seed(0);
-        for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
-    //        var numWeights = layer.w.length;
-    //        console.log('numweights ' + numWeights );
-            var filter = layer.filters[filterId];
-            for( var j = 0; j < filter.depth; j++ ) {
-                filter.w[j] = ( mt() % 100000 ) / 1000000.0;
+        if( layerType == 'fc' ) {
+            mt.seed(0);
+            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
+    //            var numWeights = layer.w.length;
+    //            console.log('numweights ' + numWeights );
+                var filter = layer.filters[filterId];
+                for( var j = 0; j < filter.depth; j++ ) {
+                    filter.w[j] = ( mt() % 100000 ) / 1000000.0;
+                }
             }
-        }
-        mt.seed(0);
-        for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
-            layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
+            mt.seed(0);
+            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
+                layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
+            }
+        } else if( layerType == 'conv' ) {
+            mt.seed(0);
+            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
+                console.log('filter ' + filterId );
+    //            var numWeights = layer.w.length;
+    //            console.log('numweights ' + numWeights );
+                var filter = layer.filters[filterId];
+                console.log( '     size: ' + filter.get_n() );
+                for( var j = 0; j < filter.get_n(); j++ ) {
+                    filter.w[j] = ( mt() % 100000 ) / 1000000.0;
+                }
+            }            
         }
     }
 }

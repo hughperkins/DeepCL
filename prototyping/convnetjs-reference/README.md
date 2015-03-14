@@ -30,3 +30,16 @@ Possible args, eg:
 npm start numtrain=4 numepochs=4
 ```
 
+## To convert png into norb .mat format
+
+* First, run the convnetjs implementation above, which will download the data files
+* Then, run:
+```bash
+node pngtomat.js
+```
+* This will generate the following files, in the `data` subdirectory:
+  * `mnist12k-dat.mat`
+  * `mnist12k-cat.mat`
+* You can use these with ClConvolve by setting `datadir=` to point to the `data` subdirectory, and specifying `trainfile=mnist12k-dat.mat`
+
+
