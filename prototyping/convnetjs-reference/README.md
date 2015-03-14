@@ -1,6 +1,6 @@
 # convnetjs reference implementation
 
-I'm using (since 13th March 2015) convnetjs as a reference implementation, to double-check
+I'm using (since 13th March 2015) [convnetjs](https://github.com/karpathy/convnetjs) as a reference implementation, to double-check
 my calculations, since convnetjs:
 
  - is straightforward to read
