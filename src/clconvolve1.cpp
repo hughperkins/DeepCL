@@ -175,6 +175,7 @@ void go(Config config) {
     if( !config.loadOnDemand && Ntest > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
     }
+    cout << "Ntest " << Ntest << " Ntest" << endl;
     
     timer.timeCheck("after load images");
 

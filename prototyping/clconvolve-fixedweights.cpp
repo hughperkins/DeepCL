@@ -181,8 +181,8 @@ void go(Config config) {
         return;
     }
     net->print();
+    mt19937 initrand;
     for( int i = 1; i < net->layers.size() - 1; i++ ) {
-        mt19937 initrand;
         Layer *layer = net->layers[i];
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >(layer);
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >(layer);
@@ -254,18 +254,33 @@ void go(Config config) {
         }
         cout << "layer " << layerId << endl;
         conv->getResults();
-        for( int i = 0; i < 3; i++ ) {
-            cout << conv->getResults()[i] << endl;
+//        for( int i = 0; i < 3; i++ ) {
+//            cout << conv->getResults()[i] << endl;
+//        }
+        initrand.seed(0);
+        LayerDimensions &dim = conv->dim;
+        for( int i = 0; i < 10; i++ ) {
+            int thisrand = abs( (int)initrand() );
+            int seq = thisrand % ( dim.numFilters * dim.outputBoardSize * dim.outputBoardSize );
+            int outPlane = seq / ( dim.outputBoardSize * dim.outputBoardSize );
+            int rowcol = seq % ( dim.outputBoardSize * dim.outputBoardSize );
+            int row = rowcol / dim.outputBoardSize;
+            int col = rowcol % dim.outputBoardSize;
+            cout << "out[" << outPlane << "," << row << "," << col << "]=" << conv->getResults()[ seq ] << endl;
         }
     }
 
     cout << "backprop results" << endl;
     for( int layerId = net->layers.size() - 1; layerId >= 0; layerId-- ) {
-        FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( net->layers[layerId] );
-        if( fc == 0 ) {
+        Layer *layer = net->layers[layerId];
+        FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
+        ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
+        if( fc != 0 ) {
+            conv = fc->convolutionalLayer;
+        }
+        if( conv == 0 ) {
             continue;
         }
-        ConvolutionalLayer *conv = fc->convolutionalLayer;
 
         cout << "layer " << layerId << endl;
         float const*weights = conv->getWeights();
@@ -277,6 +292,7 @@ void go(Config config) {
             cout << " bias " << i << " " << biases[i] << endl;
         }
     }
+    cout << "done" << endl;
 
     delete net;
 

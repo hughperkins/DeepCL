@@ -52,3 +52,9 @@ node pngtomat.js
 ```
 * Note that (at time of writing), convnetjs divides the learning rate by the batchsize, whereas clconvolve (at time of writing) does not
 
+## Differences between convnetjs and clconvolve (at time of writing)
+
+* convnetjs divides learning rate by the batchsize, clconvolve does not (at time of writing...)
+* convnetjs arranges convolutional filters and data by [row][col][plane], clconvolve does by [plane][row][col]
+  * for fc layers, no difference since only one row and column (in both cases; both implement fc as basically a depth-only convolutional layer :-) )
+
