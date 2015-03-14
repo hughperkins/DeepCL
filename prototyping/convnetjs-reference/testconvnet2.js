@@ -195,9 +195,8 @@ function printBackward( net ) {
 
 function learn(options) {
     var labelscontents = fs.readFileSync( __dirname + '/data/mnist_labels.js', { encoding: 'utf-8'} );
-    labelscontents += 'labels';
-    var labels = eval(labelscontents);
-//    console.log(ret);
+    labelscontents = labelscontents.split('=')[1].split(';')[0];
+    var labels = JSON.parse(labelscontents);
     console.log('labels.length: ' + labels.length);
     openPng( __dirname + '/data/mnist_batch_0.png', function( data ) {
         var net = createNet();
