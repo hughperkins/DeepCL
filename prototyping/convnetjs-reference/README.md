@@ -43,4 +43,11 @@ node pngtomat.js
   * `mnist12k-cat.mat`
 * You can use these with ClConvolve by setting `datadir=` to point to the `data` subdirectory, and specifying `trainfile=mnist12k-dat.mat`
 
+## How to run clconvolve, to get comparable results
+
+* Use [clconvolve-fixedweights.cpp](prototyping/clconvolve-fixedweights.cpp]
+* eg:
+```bash
+./clconvolve-fixedweights datadir=../prototyping/convnetjs-reference/data trainfile=mnist12k-dat.mat validatefile=mnist12k-dat.mat 'netdef=10n{linear}' numtrain=1 batchsize=1 numepochs=1 learningrate=0.4 normalizationexamples=1
+```
 
