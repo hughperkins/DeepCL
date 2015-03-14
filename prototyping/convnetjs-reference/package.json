@@ -1,0 +1,18 @@
+{
+  "name": "convnetjs-reference",
+  "version": "1.0.0",
+  "description": "reference implementation of convolutional network, using convnetjs",
+  "main": "testconvnet2.js",
+  "scripts": {
+    "start": "node testconvnet2.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hugh Perkins",
+  "license": "MPL",
+  "dependencies": {
+    "convnetjs": "^0.3.0",
+    "pngjs": "^0.4.0",
+    "random-js": "^1.0.4"
+  }
+}
+
