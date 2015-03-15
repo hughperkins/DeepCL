@@ -24,6 +24,8 @@
 #include "BatchProcess.h"
 #include "NetLearnerOnDemand.h"
 #include "FullyConnectedLayer.h"
+#include "PoolingLayer.h"
+#include "SoftMaxLayer.h"
 
 using namespace std;
 
@@ -219,6 +221,41 @@ void go(Config config) {
         }
     }
 
+    cout << "weight samples before learning:" << endl;
+    for( int layerId = 0; layerId < net->layers.size();  layerId++ ) {
+        Layer *layer = net->layers[layerId];
+        FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
+        ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
+        if( fc != 0 ) {
+            conv = fc->convolutionalLayer;
+        }
+        if( conv == 0 ) {
+            continue;
+        }
+
+        cout << "layer " << layerId << endl;
+        float const*weights = conv->getWeights();
+        float const*biases = conv->getBiasWeights();
+        LayerDimensions &dim = conv->dim;
+        int numFilters = dim.numFilters;
+        int inputPlanes = dim.inputPlanes;
+        int filterSize = dim.filterSize;
+        initrand.seed(0);
+        
+        for( int i = 0; i < 10; i++ ) {
+            int thisrand = abs( (int)initrand() );
+            int seq = thisrand % ( numFilters * inputPlanes * filterSize * filterSize );
+            int planefilter = seq / ( filterSize * filterSize );
+            int rowcol = seq % ( filterSize * filterSize );
+            int filter = planefilter / inputPlanes;
+            int inputPlane = planefilter % inputPlanes;
+            int row = rowcol / filterSize;
+            int col = rowcol % filterSize;
+            cout << "weights[" << filter << "," << inputPlane << "," << row << "," << col << "]=" << weights[ seq ] << endl;
+        }
+    }
+
+
     bool afterRestart = false;
     int restartEpoch = 0;
     int restartBatch = 0;
@@ -246,27 +283,45 @@ void go(Config config) {
         Layer *layer = net->layers[layerId];
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
+        PoolingLayer *pool = dynamic_cast< PoolingLayer * >( layer );
+        SoftMaxLayer *softMax = dynamic_cast< SoftMaxLayer * >( layer );
         if( fc != 0 ) {
             conv = fc->convolutionalLayer;
         }
-        if( conv == 0 ) {
+        int planes = 0;
+        int boardSize = 0;
+        if( conv != 0 ) {
+            cout << "convolutional (or conv based, ie fc)" << endl;
+            planes = conv->dim.numFilters;
+            boardSize = conv->dim.outputBoardSize;
+          //  continue;
+        } else if( pool != 0 ) {
+            cout << "pooling" << endl;
+            planes = pool->numPlanes;
+            boardSize = pool->outputBoardSize;
+        } else if( softMax != 0 ) {
+            cout << "softmax" << endl;
+            planes = softMax->numPlanes;
+            boardSize = softMax->boardSize;
+        } else {
             continue;
         }
         cout << "layer " << layerId << endl;
-        conv->getResults();
+//        conv->getResults();
+        float const*results = layer->getResults();
 //        for( int i = 0; i < 3; i++ ) {
 //            cout << conv->getResults()[i] << endl;
 //        }
         initrand.seed(0);
-        LayerDimensions &dim = conv->dim;
+//        LayerDimensions &dim = conv->dim;
         for( int i = 0; i < 10; i++ ) {
             int thisrand = abs( (int)initrand() );
-            int seq = thisrand % ( dim.numFilters * dim.outputBoardSize * dim.outputBoardSize );
-            int outPlane = seq / ( dim.outputBoardSize * dim.outputBoardSize );
-            int rowcol = seq % ( dim.outputBoardSize * dim.outputBoardSize );
-            int row = rowcol / dim.outputBoardSize;
-            int col = rowcol % dim.outputBoardSize;
-            cout << "out[" << outPlane << "," << row << "," << col << "]=" << conv->getResults()[ seq ] << endl;
+            int seq = thisrand % ( planes * boardSize * boardSize );
+            int outPlane = seq / ( boardSize * boardSize );
+            int rowcol = seq % ( boardSize * boardSize );
+            int row = rowcol / boardSize;
+            int col = rowcol % boardSize;
+            cout << "out[" << outPlane << "," << row << "," << col << "]=" << results[ seq ] << endl;
         }
     }
 

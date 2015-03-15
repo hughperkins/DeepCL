@@ -90,6 +90,8 @@ convnetjs.Net.prototype.addLayer = function( type, opt ) {
         newLayer = new convnetjs.ReluLayer(opt);
     } else if( type == 'sigmoid' ) {
         newLayer = new convnetjs.SigmoidLayer(opt);
+    } else if( type == 'pool' ) {
+        newLayer = new convnetjs.PoolLayer(opt);
     } else if( type == 'fc' ) {  
         if( typeof opt.num_neurons == 'undefined' ) {
             console.log('required option: num_neurons, not defined' );
@@ -126,6 +128,7 @@ function createNet() {
     net.layers.splice(1,100); // remove original filters, so we can
                               // use low-level methods to add our own
 
+    net.addLayer( 'pool', { 'sx':7, 'stride':7 });
     net.addLayer( 'conv', {'filters': 2, 'sx': 1, 'pad': 0 } );
     //net.addLayer( 'fc', {'num_neurons': 10} );
     //net.addLayer( 'relu' );
@@ -145,11 +148,40 @@ function setWeights( net ) {
     console.log('setting weights...');
     for( var layerId = 0; layerId < net.layers.length; layerId++ ) {
         var layer = net.layers[layerId];
-        var layerType = layer.layer_type;
-        if( layerType != 'conv' && layerType != 'fc' ) {
+        var layer_type = layer.layer_type;
+        if( layer_type != 'conv' && layer_type != 'fc' ) {
             continue;
         }
         console.log('   processing layer id ' + layerId );
+        if( layer_type == 'fc' && net.layers[layerId-1].layer_type == 'conv' ) {
+            var prev = net.layers[layerId-1];
+            console.log('   prev type ' + prev.layer_type );
+            mt.seed(0);
+            var prev_depth = prev.out_depth;
+//            console.log('   prev out depth ' + prev_depth );
+//            var prev_filter_length = prev.filters[0].w.length;
+            console.log( prev.out_depth + ',' + prev.out_sy + ',' + prev.out_sx );
+            var prev_out_plane_size = prev.out_sx * prev.out_sy;
+            console.log('   prev out depth ' + prev_depth + ' out planesize ' + prev_out_plane_size );
+            // so we need to distribute our random numbers across these input planes
+            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
+                console.log('filter ' + filterId );
+                var filter = layer.filters[filterId];
+                for( var d = 0; d < prev_depth; d++ ) {
+                    for( var xy = 0; xy < prev_out_plane_size; xy++ ) {
+//                    for( var y = 0; y < filter.sy; y++ ) {
+//                        for( var x = 0; x < filter.sx; x++ ) {
+                         var thisrand = ( mt() % 100000 ) / 1000000.0;
+                         filter.w[ xy * prev_depth + d ] = thisrand;
+//                        }
+                    }
+                }
+            }
+            mt.seed(0);
+            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
+                layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
+            }
+        } else {
         //console.log( net.layers[layerId] );
 //        if( layerType == 'fc' ) {
 //            mt.seed(0);
@@ -188,7 +220,32 @@ function setWeights( net ) {
             for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
                 layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
             }
-//        }
+        }
+    }
+}
+
+function sampleWeights( net ) {
+    for( var layerId = 0; layerId < net.layers.length; layerId++ ) {
+        var layer = net.layers[layerId];
+        var layerType = layer.layer_type;
+        if( layerType != 'conv' && layerType != 'fc' ) {
+            continue;
+        }
+        console.log('   samples weights layer id ' + layerId );
+        mt.seed(0);
+        var filters = layer.filters;
+        var afilter = filters[0];
+        for( var i = 0; i < 10; i++ ) { // sample 10 points, pseudo-randomly (but repeatably...)
+            var seq = Math.abs( mt() ) % ( filters.length * afilter.depth * afilter.sx * afilter.sy );
+            var xysize = afilter.sx * afilter.sy;
+            var inoutplane = Math.floor( seq / xysize );
+            var outplane = Math.floor( inoutplane / afilter.depth );
+            var inplane = inoutplane % afilter.depth;
+            var xy = seq % xysize;
+            var y = Math.floor( xy / afilter.sx );
+            var x = xy % afilter.sx;
+            console.log('filter.w[' + outplane + ',' + inplane + ',' + y + ',' + x + ']=' + filters[outplane].get(x,y,inplane) );
+        }
     }
 }
 
@@ -197,7 +254,7 @@ function printForward( net ) {
     for( var layerId = 0; layerId < net.layers.length; layerId++ ) {
         var layer = net.layers[layerId];
         if( layer.layer_type != 'conv' && layer.layer_type != 'fc' ) {
-            continue;
+        //    continue;
         }
         console.log('  layer id ' + layerId + ':' );
         var out = layer.out_act;
@@ -212,13 +269,13 @@ function printForward( net ) {
 //            console.log('out_act.w[' + i + ']=' + layer.out_act.get(x,y,d) );
 //        }
         mt.seed(0);
-        for( var i = 0; i < 10; i++ ) {
+        for( var i = 0; i < 10; i++ ) { // sample 10 points, pseudo-randomly (but repeatably...)
             var seq = Math.abs( mt() ) % ( out.sx * out.sy * out.depth );
             var xysize = out.sx * out.sy;
             var d = Math.floor( seq / xysize );
             var xy = seq % xysize;
-            var y = Math.floor( xy / out.sy );
-            var x = xy % out.sy;
+            var y = Math.floor( xy / out.sx );
+            var x = xy % out.sx;
 //            console.log('out_act.w[' + i + ']=' + layer.out_act.w[i] );
 //            console.log('out_act.w[' + i + ']=' + layer.out_act.get(0,i,0) );
             console.log('out_act.w[' + d + ',' + y + ',' + x + ']=' + layer.out_act.get(x,y,d) );
@@ -252,6 +309,8 @@ function learn(options) {
         var net = createNet();
 
         setWeights( net );
+//        return;
+        sampleWeights( net );
 
         var trainer = new convnetjs.SGDTrainer(net, {method:'sgd', batch_size:options.numTrain, l2_decay:0.00, momentum: 0, learning_rate: 0.4});
 
@@ -265,7 +324,8 @@ function learn(options) {
                     var thispoint = data[(i*784+j)*4];
     //                x.w[j] = thispoint/255.0;
     //                x.w[j] = (thispoint-32.7936)*0.00643144;
-                     x.w[j] = (thispoint-35.1084)*0.00627357;
+                     x.w[j] = (thispoint-35.1084)*0.00627357; // this has to match whatever normalization we
+                                                              // use on the clconvolve side
                 }
                 var stats = trainer.train( x, y );
                 totalLoss += stats.cost_loss;

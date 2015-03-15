@@ -56,5 +56,8 @@ node pngtomat.js
 
 * convnetjs divides learning rate by the batchsize, clconvolve does not (at time of writing...)
 * convnetjs arranges convolutional filters and data by [row][col][plane], clconvolve does by [plane][row][col]
-  * for fc layers, no difference since only one row and column (in both cases; both implement fc as basically a depth-only convolutional layer :-) )
+  * for fc layers, no difference since only one row and column (-in both cases; both implement fc as basically a depth-only convolutional layer :-)-)
+  * for fc layers, in convnetjs, since there is no concept of row, column, depth - only the one variable `depth`, as far as the filter weights are concerned, so we need to reorder the weights a bit, if we want the weights to be combined with upstream values, in the same value-value pairs.
+  * re-ordering of the filter values in an fc should be based on the arrangement of the upstream layer
+    * specifically, on the number of output planes in the upstream layer
 
