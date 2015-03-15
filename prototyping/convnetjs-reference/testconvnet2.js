@@ -169,11 +169,8 @@ function setWeights( net ) {
                 var filter = layer.filters[filterId];
                 for( var d = 0; d < prev_depth; d++ ) {
                     for( var xy = 0; xy < prev_out_plane_size; xy++ ) {
-//                    for( var y = 0; y < filter.sy; y++ ) {
-//                        for( var x = 0; x < filter.sx; x++ ) {
-                         var thisrand = ( mt() % 100000 ) / 1000000.0;
-                         filter.w[ xy * prev_depth + d ] = thisrand;
-//                        }
+                        var thisrand = ( mt() % 100000 ) / 1000000.0;
+                        filter.w[ xy * prev_depth + d ] = thisrand;
                     }
                 }
             }
@@ -182,39 +179,17 @@ function setWeights( net ) {
                 layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
             }
         } else {
-        //console.log( net.layers[layerId] );
-//        if( layerType == 'fc' ) {
-//            mt.seed(0);
-//            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
-//    //            var numWeights = layer.w.length;
-//    //            console.log('numweights ' + numWeights );
-//                var filter = layer.filters[filterId];
-//                for( var j = 0; j < filter.depth; j++ ) {
-//                    filter.w[j] = ( mt() % 100000 ) / 1000000.0;
-//                }
-//            }
-//            mt.seed(0);
-//            for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
-//                layer.biases.w[filterId] = ( mt() % 100000 ) / 1000000.0;
-//            }
-//        } else if( layerType == 'conv' ) {
             mt.seed(0);
             for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
                 console.log('filter ' + filterId );
                 var filter = layer.filters[filterId];
-//                console.log( '     size: ' + filter.get_n() );
                 for( var d = 0; d < filter.depth; d++ ) {
                     for( var y = 0; y < filter.sy; y++ ) {
                         for( var x = 0; x < filter.sx; x++ ) {
-    //            var numWeights = layer.w.length;
-    //            console.log('numweights ' + numWeights );
-//                for( var j = 0; j < filter.get_n(); j++ ) {
-//                            filter.w[j] = ( mt() % 100000 ) / 1000000.0;
                             filter.set( x, y, d, ( mt() % 100000 ) / 1000000.0 );
                         }
                     }
                 }
-//                }
             }            
             mt.seed(0);
             for( var filterId = 0; filterId < layer.filters.length; filterId++ ) {
@@ -258,16 +233,6 @@ function printForward( net ) {
         }
         console.log('  layer id ' + layerId + ':' );
         var out = layer.out_act;
-//        for( var i = 0; i < 3; i++ ) {
-//            var xysize = out.sx * out.sy;
-//            var d = Math.floor( i / xysize );
-//            var xy = i % xysize;
-//            var y = Math.floor( xy / out.sy );
-//            var x = xy % out.sy;
-////            console.log('out_act.w[' + i + ']=' + layer.out_act.w[i] );
-////            console.log('out_act.w[' + i + ']=' + layer.out_act.get(0,i,0) );
-//            console.log('out_act.w[' + i + ']=' + layer.out_act.get(x,y,d) );
-//        }
         mt.seed(0);
         for( var i = 0; i < 10; i++ ) { // sample 10 points, pseudo-randomly (but repeatably...)
             var seq = Math.abs( mt() ) % ( out.sx * out.sy * out.depth );
@@ -276,9 +241,7 @@ function printForward( net ) {
             var xy = seq % xysize;
             var y = Math.floor( xy / out.sx );
             var x = xy % out.sx;
-//            console.log('out_act.w[' + i + ']=' + layer.out_act.w[i] );
-//            console.log('out_act.w[' + i + ']=' + layer.out_act.get(0,i,0) );
-            console.log('out_act.w[' + d + ',' + y + ',' + x + ']=' + layer.out_act.get(x,y,d) );
+            console.log('out_act.w[' + d + ',' + y + ',' + x + ']=' + layer.out_act.get(x,y,d).toPrecision(6) );
         }
     }
 }
@@ -292,10 +255,10 @@ function printBackward( net ) {
         }
         console.log('   layer id ' + layerId );
         for( var i = 0; i < 3; i++ ) {
-            console.log('w[' + i + ']=' + layer.filters[0].w[i] );
+            console.log('w[' + i + ']=' + (0.0 + layer.filters[0].w[i]).toPrecision(6) );
         }
         for( var i = 0; i < 3; i++ ) {
-            console.log('bias[' + i + ']=' + layer.biases.w[i] );
+            console.log('bias[' + i + ']=' + (0.0 + layer.biases.w[i]).toPrecision(6) );
         }
     }
 }
