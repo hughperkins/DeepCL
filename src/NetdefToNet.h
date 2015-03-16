@@ -23,7 +23,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC bool parseSubstring( NeuralNet *net, std::string substring );
+    STATIC bool parseSubstring( NeuralNet *net, std::string substring, bool isLast );
     STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef );
 
     // [[[end]]]

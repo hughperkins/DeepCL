@@ -129,9 +129,10 @@ function createNet() {
                               // use low-level methods to add our own
 
     net.addLayer( 'pool', { 'sx':7, 'stride':7 });
-    net.addLayer( 'conv', {'filters': 2, 'sx': 3, 'pad': 1 } );
+    net.addLayer( 'conv', {'filters': 2, 'sx': 1, 'pad': 0 } );
     //net.addLayer( 'fc', {'num_neurons': 10} );
     //net.addLayer( 'relu' );
+    net.addLayer( 'tanh' );
     net.addLayer( 'fc', {'num_neurons': 10} );
     net.addLayer( 'softmax' );
     net.print();

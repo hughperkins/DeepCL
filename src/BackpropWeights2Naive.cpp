@@ -124,7 +124,7 @@ BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions 
     "    //       aggregate over:  [outRow][outCol][n]\n" 
     "    weights[ globalId ] += - learningRateMultiplier * thiswchange;\n" 
     "#ifdef BIASED\n" 
-    "    bool writeBias = upstreamPlane == 0 && IntraFilterOffset == 0;\n" 
+    "    bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;\n" 
     "    if( writeBias ) {\n" 
     "        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;\n" 
     "    }\n" 

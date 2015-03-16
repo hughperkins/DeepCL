@@ -68,7 +68,7 @@ void kernel backprop_floats_withscratch_dobias(
         weights[ workgroupId * gFilterSizeSquared + localId ] -= learningRateMultiplier * thiswchange;
     }
 #ifdef BIASED
-    #define writeBias ( upstreamPlane == 0 && localId == 0 )
+    #define writeBias ( upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin )
     if( writeBias ) {
         biasWeights[outPlane] -= learningRateMultiplier * thisbiaschange;
     }

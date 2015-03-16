@@ -249,7 +249,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "//        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;\n" 
     "    }\n" 
     "#ifdef BIASED\n" 
-    "    bool writeBias = upstreamPlane == 0 && localId == 0;\n" 
+    "    bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;\n" 
     "    if( writeBias ) {\n" 
     "        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;\n" 
     "    }\n" 

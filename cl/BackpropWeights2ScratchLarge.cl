@@ -135,7 +135,7 @@ void kernel backprop_floats_withscratch_dobias_striped(
 //        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
     }
 #ifdef BIASED
-    bool writeBias = upstreamPlane == 0 && localId == 0;
+    bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
     if( writeBias ) {
         biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
     }

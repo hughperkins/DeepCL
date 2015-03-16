@@ -67,7 +67,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
     //       aggregate over:  [outRow][outCol][n]
     weights[ globalId ] += - learningRateMultiplier * thiswchange;
 #ifdef BIASED
-    bool writeBias = upstreamPlane == 0 && IntraFilterOffset == 0;
+    bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
     if( writeBias ) {
         biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
     }
