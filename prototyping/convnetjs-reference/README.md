@@ -60,4 +60,5 @@ node pngtomat.js
   * for fc layers, in convnetjs, since there is no concept of row, column, depth - only the one variable `depth`, as far as the filter weights are concerned, so we need to reorder the weights a bit, if we want the weights to be combined with upstream values, in the same value-value pairs.
   * re-ordering of the filter values in an fc should be based on the arrangement of the upstream layer
     * specifically, on the number of output planes in the upstream layer
+    * also means need to reorder, when comparing backproped weights
 

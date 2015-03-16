@@ -60,6 +60,8 @@ using namespace std;
 *///]]]
 // [[[end]]]
 
+mt19937 initrand;
+
 class Config {
 public:
     // [[[cog
@@ -110,6 +112,41 @@ public:
         return configString;
     }
 };
+
+void sampleWeights( NeuralNet *net ) {
+    for( int layerId = 0; layerId < net->layers.size();  layerId++ ) {
+        Layer *layer = net->layers[layerId];
+        FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
+        ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
+        if( fc != 0 ) {
+            conv = fc->convolutionalLayer;
+        }
+        if( conv == 0 ) {
+            continue;
+        }
+
+        cout << "layer " << layerId << endl;
+        float const*weights = conv->getWeights();
+        float const*biases = conv->getBiasWeights();
+        LayerDimensions &dim = conv->dim;
+        int numFilters = dim.numFilters;
+        int inputPlanes = dim.inputPlanes;
+        int filterSize = dim.filterSize;
+
+        initrand.seed(0);        
+        for( int i = 0; i < 10; i++ ) {
+            int thisrand = abs( (int)initrand() );
+            int seq = thisrand % ( numFilters * inputPlanes * filterSize * filterSize );
+            int planefilter = seq / ( filterSize * filterSize );
+            int rowcol = seq % ( filterSize * filterSize );
+            int filter = planefilter / inputPlanes;
+            int inputPlane = planefilter % inputPlanes;
+            int row = rowcol / filterSize;
+            int col = rowcol % filterSize;
+            cout << "weights[" << filter << "," << inputPlane << "," << row << "," << col << "]=" << weights[ seq ] << endl;
+        }
+    }
+}
 
 void go(Config config) {
     Timer timer;
@@ -183,7 +220,6 @@ void go(Config config) {
         return;
     }
     net->print();
-    mt19937 initrand;
     for( int i = 1; i < net->layers.size() - 1; i++ ) {
         Layer *layer = net->layers[i];
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >(layer);
@@ -222,39 +258,7 @@ void go(Config config) {
     }
 
     cout << "weight samples before learning:" << endl;
-    for( int layerId = 0; layerId < net->layers.size();  layerId++ ) {
-        Layer *layer = net->layers[layerId];
-        FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
-        ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
-        if( fc != 0 ) {
-            conv = fc->convolutionalLayer;
-        }
-        if( conv == 0 ) {
-            continue;
-        }
-
-        cout << "layer " << layerId << endl;
-        float const*weights = conv->getWeights();
-        float const*biases = conv->getBiasWeights();
-        LayerDimensions &dim = conv->dim;
-        int numFilters = dim.numFilters;
-        int inputPlanes = dim.inputPlanes;
-        int filterSize = dim.filterSize;
-        initrand.seed(0);
-        
-        for( int i = 0; i < 10; i++ ) {
-            int thisrand = abs( (int)initrand() );
-            int seq = thisrand % ( numFilters * inputPlanes * filterSize * filterSize );
-            int planefilter = seq / ( filterSize * filterSize );
-            int rowcol = seq % ( filterSize * filterSize );
-            int filter = planefilter / inputPlanes;
-            int inputPlane = planefilter % inputPlanes;
-            int row = rowcol / filterSize;
-            int col = rowcol % filterSize;
-            cout << "weights[" << filter << "," << inputPlane << "," << row << "," << col << "]=" << weights[ seq ] << endl;
-        }
-    }
-
+    sampleWeights(net);
 
     bool afterRestart = false;
     int restartEpoch = 0;
@@ -325,6 +329,9 @@ void go(Config config) {
         }
     }
 
+    cout << "weight samples after learning:" << endl;
+    sampleWeights(net);
+
     cout << "backprop results" << endl;
     for( int layerId = net->layers.size() - 1; layerId >= 0; layerId-- ) {
         Layer *layer = net->layers[layerId];
@@ -340,7 +347,8 @@ void go(Config config) {
         cout << "layer " << layerId << endl;
         float const*weights = conv->getWeights();
         float const*biases = conv->getBiasWeights();
-        for( int i = 0; i < 3; i++ ) {
+        int weightsSize = conv->getWeightsSize() / conv->dim.numFilters;
+        for( int i = 0; i < weightsSize; i++ ) {
             cout << " weight " << i << " " << weights[i] << endl;
         }
         for( int i = 0; i < 3; i++ ) {

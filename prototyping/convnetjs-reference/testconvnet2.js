@@ -129,7 +129,7 @@ function createNet() {
                               // use low-level methods to add our own
 
     net.addLayer( 'pool', { 'sx':7, 'stride':7 });
-    net.addLayer( 'conv', {'filters': 2, 'sx': 1, 'pad': 0 } );
+    net.addLayer( 'conv', {'filters': 2, 'sx': 3, 'pad': 1 } );
     //net.addLayer( 'fc', {'num_neurons': 10} );
     //net.addLayer( 'relu' );
     net.addLayer( 'fc', {'num_neurons': 10} );
@@ -219,7 +219,7 @@ function sampleWeights( net ) {
             var xy = seq % xysize;
             var y = Math.floor( xy / afilter.sx );
             var x = xy % afilter.sx;
-            console.log('filter.w[' + outplane + ',' + inplane + ',' + y + ',' + x + ']=' + filters[outplane].get(x,y,inplane) );
+            console.log('filter.w[' + outplane + ',' + inplane + ',' + y + ',' + x + ']=' + filters[outplane].get(x,y,inplane).toPrecision(6) );
         }
     }
 }
@@ -254,8 +254,10 @@ function printBackward( net ) {
             continue;
         }
         console.log('   layer id ' + layerId );
-        for( var i = 0; i < 3; i++ ) {
-            console.log('w[' + i + ']=' + (0.0 + layer.filters[0].w[i]).toPrecision(6) );
+        var filter = layer.filters[0];
+        var filter_size = filter.sx * filter.sy * filter.depth;
+        for( var i = 0; i < filter_size; i++ ) {
+            console.log('w[' + i + ']=' + (0.0 + filter.w[i]).toPrecision(6) );
         }
         for( var i = 0; i < 3; i++ ) {
             console.log('bias[' + i + ']=' + (0.0 + layer.biases.w[i]).toPrecision(6) );
@@ -298,6 +300,7 @@ function learn(options) {
             }
             printForward( net );
             printBackward( net );
+            sampleWeights( net );
             var accuracy = numRight * 100.0 / options.numTrain;
             console.log( 'loss ' + totalLoss );
             console.log( 'it ' + it + ' numRight ' + numRight + '/' + options.numTrain +  ' ' + accuracy + '%' );

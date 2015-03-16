@@ -88,7 +88,7 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
 //                    cout << "weight change " << weightIndex << " " << learningMultiplier * thiswchange << endl;
                     weights[ weightIndex ] += - thiswchange * learningMultiplier;
                     if( dim.biased ) {
-                        if( filterRow == 0 && filterCol == 0 && upstreamPlane == 0 ) {
+                        if( filterRow == margin && filterCol == margin && upstreamPlane == 0 ) {
                             biasWeights[ outPlane ] += - learningMultiplier * thisBiasChange;
                         }
                     }
