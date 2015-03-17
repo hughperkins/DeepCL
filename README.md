@@ -147,6 +147,15 @@ Example usage:
 ./clconvolve1 netdef=6*32c5{z}-500n-361n learningrate=0.0001 dataset=kgsgoall
 ```
 ... will create 6 convolutional layers of 32 5x5 filters each.
+* you can also use parentheses `(...)` to repeat multiple layers, eg:
+```
+./clconvolve1 netdef=3*(32c5{z}-mp2)-150n-10n
+```
+... will be expanded to:
+```
+./clconvolve1 netdef=32c5{z}-mp2-32c5{z}-mp2-32c5{z}-mp2-150n-10n
+```
+
 
 ## Additional layer types
 
