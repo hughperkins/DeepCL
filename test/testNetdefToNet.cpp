@@ -134,22 +134,50 @@ TEST( testNetdefToNet, 3x32c5zmp2 ) {
     delete net;
 }
 
-TEST( testNetdefToNet, DISABLED_2x32c7_3x32c5z ) {
+TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     NeuralNet *net = new NeuralNet();
     net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->boardSize(19) );
-    EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7{z}-3*32c5{z}" ) );
+    EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7{z}-3*32c5{z}-10n" ) );
     net->print();
-    EXPECT_EQ( 7, net->layers.size() );
+    EXPECT_EQ( 8, net->layers.size() );
     EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->layers[1] ) != 0 );
     EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->layers[2] ) != 0 );
     EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->layers[3] ) != 0 );
-    EXPECT_TRUE( dynamic_cast< SoftMaxLayer * >( net->layers[6] ) != 0 );
+    EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->layers[4] ) != 0 );
+    EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->layers[5] ) != 0 );
+    EXPECT_TRUE( dynamic_cast< SoftMaxLayer * >( net->layers[7] ) != 0 );
     ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( net->layers[1] );
     EXPECT_EQ( 19, conv->dim.inputBoardSize );
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 1, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
+    EXPECT_EQ( 7, conv->dim.filterSize );
     EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+
+    conv = dynamic_cast< ConvolutionalLayer * >( net->layers[2] );
+    EXPECT_EQ( 19, conv->dim.inputBoardSize );
+    EXPECT_EQ( true, conv->dim.padZeros );
+    EXPECT_EQ( 32, conv->dim.inputPlanes );
+    EXPECT_EQ( 32, conv->dim.numFilters );
+    EXPECT_EQ( 7, conv->dim.filterSize );
+    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+
+    conv = dynamic_cast< ConvolutionalLayer * >( net->layers[3] );
+    EXPECT_EQ( 19, conv->dim.inputBoardSize );
+    EXPECT_EQ( true, conv->dim.padZeros );
+    EXPECT_EQ( 32, conv->dim.inputPlanes );
+    EXPECT_EQ( 32, conv->dim.numFilters );
+    EXPECT_EQ( 5, conv->dim.filterSize );
+    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+
+    conv = dynamic_cast< ConvolutionalLayer * >( net->layers[5] );
+    EXPECT_EQ( 19, conv->dim.inputBoardSize );
+    EXPECT_EQ( true, conv->dim.padZeros );
+    EXPECT_EQ( 32, conv->dim.inputPlanes );
+    EXPECT_EQ( 32, conv->dim.numFilters );
+    EXPECT_EQ( 5, conv->dim.filterSize );
+    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+
     delete net;
 }
 

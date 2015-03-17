@@ -89,7 +89,7 @@ STATIC std::string expandMultipliers( std::string netdef ) {
             newString += expandMultipliers( inner );
         }
         if( postfix != "" ) {
-            newString += "-" + postfix;
+            newString += "-" + expandMultipliers( postfix );
         }
         cout << "multiplied string: " << newString << endl;
         return newString;
