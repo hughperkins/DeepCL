@@ -20,31 +20,82 @@ using namespace std;
 // or:
 // prefix-nn*inner-postfix
 STATIC std::string expandMultipliers( std::string netdef ) {
-    return netdef; // placeholder for now :-P
-//    int starPos = netdef.find("*");
-//    if( starPos != string::npos ) {
-//        
-//        string repeatNumString =  netdef.substr( 0, starPos );
-//        int repeatNum = atoi( repeatNumString);
-//        cout << "repeatNumString " << repeatNumString << endl;
-//        string remainderString = netdef.substr( starPos + 1 );
-//        cout << "remainderString " << remainderString << endl;
-//        // if remainderString starts with (, then repeat up to next )
-//        // otherwise, repeat up to next -
-//        int sectionEndPos = remainderString.length;
-//        if( remainderString.substr(0, 1 ) == "(" ) {
-//        } else {
+//    return netdef; // placeholder for now :-P
+    int starPos = netdef.find("*");
+    if( starPos != string::npos ) {
+        int prefixEnd = netdef.rfind("-", starPos);
+        string prefix = "";
+        string nnString = "";
+        if( prefixEnd == string::npos ) {
+            prefixEnd = -1;
+            nnString = netdef.substr(0, starPos );
+        } else {
+            prefixEnd--;
+            prefix = netdef.substr(0, prefixEnd + 1 );
+            cout << "prefix: [" << prefix << "]" << endl;
+            nnString = netdef.substr(prefixEnd + 2, starPos - prefixEnd - 2);
+        }
+        cout << "nnString: [" << nnString << "]" << endl;
+        int repeatNum = atoi( nnString);
+        cout << "repeatNum " << repeatNum << endl;
+        string remainderString = netdef.substr( starPos + 1 );
+        cout << "remainderString [" << remainderString << "]" << endl;
+        string inner = "";
+        string postfix = "";
+        if( remainderString.substr(0, 1 ) == "(" ) {
+            // need to find other ')', assume not nested for now...
+            int rhBracket = remainderString.find(")");
+            if( rhBracket == string::npos ) {
+                throw runtime_error( "matching bracket not found in " + remainderString );
+//                return false;
+            }
+            inner = remainderString.substr(1, rhBracket - 1 );
+            cout << "inner [" << inner << "]" << endl;
+            string newRemainder = remainderString.substr(rhBracket + 1);
+            cout << "newRemainder [" << newRemainder << "]" << endl;
+            if( newRemainder != "" ) {
+                if( newRemainder[0] != '-' ) {
+                    throw runtime_error( "expect '-' after ')' in " + remainderString );
+    //                return false;
+                }
+                postfix = newRemainder.substr(1);
+                cout << "postfix [" << postfix << "]" << endl;
+            }
+        } else {
+            int innerEnd = remainderString.find("-");
+            if( innerEnd == string::npos ) {
+                innerEnd = remainderString.length();
+            } else {
+                innerEnd;
+                postfix = remainderString.substr( innerEnd + 1 );
+                cout << "postfix [" << postfix << "]" << endl;
+            }
+            inner = remainderString.substr(0, innerEnd );
+            cout << "inner [" << inner << "]" << endl;
 //            if( remainderString.find("-") != string::npos ) {
 //                sectionEndPos = remainderString.find("-");
 //            }
-//        }
+        }
+//        return "";
+        // if remainderString starts with (, then repeat up to next )
+        // otherwise, repeat up to next -
+//        int sectionEndPos = remainderString.length();
 //        remainderString = 
-//        for( int i = 0; i < repeatNum; i++ ) {
-//            expandMultipliers( net, remainderString );
-//        }
-//    } else {
-//        return netdef;
-//    }    
+        string newString = prefix;
+        for( int i = 0; i < repeatNum; i++ ) {
+            if( newString != "" ) {
+                newString += "-";
+            }
+            newString += expandMultipliers( inner );
+        }
+        if( postfix != "" ) {
+            newString += "-" + postfix;
+        }
+        cout << "multiplied string: " << newString << endl;
+        return newString;
+    } else {
+        return netdef;
+    }    
 }
 
 STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, bool isLast ) {
@@ -158,7 +209,12 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
 
 STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
     string netDefLower = toLower( netdef );
-    netDefLower = expandMultipliers( netDefLower );
+    try {
+        netDefLower = expandMultipliers( netDefLower );
+    } catch( runtime_error &e ) {
+        cout << e.what() << endl;
+        return false;
+    }
     vector<string> splitNetDef = split( netDefLower, "-" );
     if( netdef != "" ) {
         for( int i = 0; i < splitNetDef.size(); i++ ) {
