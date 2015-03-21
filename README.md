@@ -662,7 +662,7 @@ What's done / what's planned
   * testing result averaged over several propagations (used in conjunction with `rp`)
   * sparse connectivity between feature maps in adjacent layers
   * ~~MCDNN?~~ DONE
-  * migrate to use `async_work_group_copy`?
+  * ~~migrate to use `async_work_group_copy`?~~ (seems like actually slower, at least on nvidia)
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
   * ~~randomly translating input layer?~~ DONE
@@ -670,11 +670,12 @@ What's done / what's planned
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
   * generalization to non-square images
   * ~~generalization to larger images~~ kind of done, ish, for NORB
-  * drop-out ... or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?
+  * drop-out ... ~~or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?~~ (per [Sandle Dieleman's solution to the Galaxy Zoo challenge](http://benanne.github.io/2014/04/05/galaxy-zoo.html), seems like dropconnect is slower and doesnt convincingly add value; and it's certainly insanely a lot harder to implement...)
   * Python bindings?
   * scaling? rotations? mirroring?
   * ~~max-pooling?~~ DONE
   * ~~read network from a config file?~~ soft of done with the `netdef` syntax
+  * more general DAGs?
 
 Recent changes
 ==============
