@@ -23,13 +23,13 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
 }
 
 // this will test layer 1 backprop in a network like:
-//    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+//    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
 //    net->convolutionalMaker()->numFilters(14)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(24)->tanh()->biased(config.biased)->insert();
 /*TEST( testbackprop, main ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
     net->convolutionalMaker()->numFilters(14)->filterSize(5)->tanh()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(24)->tanh()->biased()->insert();
     net->setBatchSize(128);
@@ -87,13 +87,13 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
 }
  */   
 // this will test layer 1 backprop in a network like:
-//    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+//    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
 //    net->convolutionalMaker()->numFilters(32)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased(config.biased)->insert();
-/*TEST( testbackprop, board19 ) {
+/*TEST( testbackprop, image19 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
     net->setBatchSize(128);
@@ -156,10 +156,10 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
 }
 */
 /*
-TEST( testbackprop, board19_1plane_1filter ) {
+TEST( testbackprop, image19_1plane_1filter ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
     net->setBatchSize(1);
@@ -220,10 +220,10 @@ TEST( testbackprop, board19_1plane_1filter ) {
 }
 */
 /*
-TEST( testbackprop, board19_1plane_1filter_batchsize128 ) {
+TEST( testbackprop, image19_1plane_1filter_batchsize128 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
     net->setBatchSize(128);
@@ -270,10 +270,10 @@ TEST( testbackprop, board19_1plane_1filter_batchsize128 ) {
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board19_1plane_2filter_batchsize128 ) {
+TEST( testbackprop, image19_1plane_2filter_batchsize128 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
     net->setBatchSize(128);
@@ -321,10 +321,10 @@ TEST( testbackprop, board19_1plane_2filter_batchsize128 ) {
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5 ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(5)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(3)->relu()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -380,10 +380,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5 ) {
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(5)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(5)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(3)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -439,10 +439,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize5_tanh ) {
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize7_filtersize5 ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize7_filtersize5 ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(7)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(7)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->relu()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -498,10 +498,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize7_filtersize5 ) {
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize11_filtersize5_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize11_filtersize5_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(11)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(11)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -557,10 +557,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize11_filtersize5_tanh )
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize15_filtersize5_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize15_filtersize5_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(15)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(15)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -617,10 +617,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize15_filtersize5_tanh )
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize16_filtersize5_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize16_filtersize5_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(16)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(16)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -675,10 +675,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize16_filtersize5_tanh )
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize5_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize5_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(17)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -736,10 +736,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize5_tanh )
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize3_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize3_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(17)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(3)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -797,10 +797,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize3_tanh )
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(17)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(1)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -854,10 +854,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_tanh )
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_linear ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(17)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(1)->linear()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -911,10 +911,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_linear
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_linear_diffvalues ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear_diffvalues ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(17)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(1)->linear()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
@@ -976,10 +976,10 @@ TEST( testbackprop, board5_1plane_1filter_upstreamboardsize17_filtersize1_linear
     delete[] upstreamResults;
 }
 
-TEST( testbackprop, board5_1plane_1filter_upstreamboardsize19_filtersize5_tanh ) {
+TEST( testbackprop, image5_1plane_1filter_upstreamimagesize19_filtersize5_tanh ) {
     mt19937 random;
     random.seed(0); // so always gives same results
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(19)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");

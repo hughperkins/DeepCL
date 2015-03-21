@@ -10,13 +10,13 @@
 kernel void propagateNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {
     const int globalId = get_global_id(0);
 
-    const int intraBoardOffset = globalId % gOutputBoardSizeSquared;
-    const int outputRow = intraBoardOffset / gOutputBoardSize;
-    const int outputCol = intraBoardOffset % gOutputBoardSize;
+    const int intraImageOffset = globalId % gOutputImageSizeSquared;
+    const int outputRow = intraImageOffset / gOutputImageSize;
+    const int outputCol = intraImageOffset % gOutputImageSize;
 
-    const int board2dIdx = globalId / gOutputBoardSizeSquared;
-    const int plane = board2dIdx % gNumPlanes;
-    const int n = board2dIdx / gNumPlanes;
+    const int image2dIdx = globalId / gOutputImageSizeSquared;
+    const int plane = image2dIdx % gNumPlanes;
+    const int n = image2dIdx / gNumPlanes;
 
     if( n >= batchSize ) {
         return;
@@ -24,15 +24,15 @@ kernel void propagateNaive( const int batchSize, global const float *input, glob
 
     const int inputRow = outputRow * gPoolingSize;
     const int inputCol = outputCol * gPoolingSize;
-    const int inputBoardOffset = ( n * gNumPlanes + plane ) * gInputBoardSizeSquared;
+    const int inputImageOffset = ( n * gNumPlanes + plane ) * gInputImageSizeSquared;
     int selector = 0;
-    int poolInputOffset = inputBoardOffset + inputRow * gInputBoardSize + inputCol;
+    int poolInputOffset = inputImageOffset + inputRow * gInputImageSize + inputCol;
     float maxValue = input[ poolInputOffset ];
     for( int dRow = 0; dRow < gPoolingSize; dRow++ ) {
         for( int dCol = 0; dCol < gPoolingSize; dCol++ ) {
-            bool process = ( inputRow + dRow < gInputBoardSize ) && ( inputCol + dCol < gInputBoardSize );
+            bool process = ( inputRow + dRow < gInputImageSize ) && ( inputCol + dCol < gInputImageSize );
             if( process ) {
-                float thisValue = input[ poolInputOffset + dRow * gInputBoardSize + dCol ];
+                float thisValue = input[ poolInputOffset + dRow * gInputImageSize + dCol ];
                 if( thisValue > maxValue ) {
                     maxValue = thisValue;
                     selector = dRow * gPoolingSize + dCol;

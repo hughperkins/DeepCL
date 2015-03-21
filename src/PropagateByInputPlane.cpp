@@ -30,12 +30,12 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     int maxglobalId = 0;
 
     // [n][filterId][outRow][outCol][inputPlane]
-    int results1Size = batchSize * dim.numFilters * dim.outputBoardSizeSquared * dim.numInputPlanes;
+    int results1Size = batchSize * dim.numFilters * dim.outputImageSizeSquared * dim.numInputPlanes;
 //    cout << "results1size: " << results1Size << endl;
     float *results1 = new float[results1Size];
     CLWrapper *results1Wrapper = cl->wrap( results1Size, results1 );
 
-    int MBAllocRequired = batchSize * dim.numFilters * dim.outputBoardSizeSquared * dim.numInputPlanes * 4 / 1024 / 1024;
+    int MBAllocRequired = batchSize * dim.numFilters * dim.outputImageSizeSquared * dim.numInputPlanes * 4 / 1024 / 1024;
     if( MBAllocRequired >= cl->getMaxAllocSizeMB() ) {
         throw runtime_error( "memallocsize too small to use this kernel on this device.  Need: " + 
             toString( MBAllocRequired ) + "MB, but only have: " + 
@@ -46,10 +46,10 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     kernel->output( results1Wrapper );
-    kernel->localFloats( square( dim.inputBoardSize ) );
+    kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.numFilters );
 
-    int workgroupsize = std::max( 32, dim.numFilters * dim.outputBoardSize ); // no point in wasting threads....
+    int workgroupsize = std::max( 32, dim.numFilters * dim.outputImageSize ); // no point in wasting threads....
     while( workgroupsize > cl->getMaxWorkgroupSize() ) {
         workgroupsize >>= 1;
     }
@@ -67,28 +67,28 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
 //        }
 //    }
 
-    reduceSegments->in( batchSize * dim.numFilters * dim.outputBoardSizeSquared )->in( dim.numInputPlanes )->in( results1Wrapper )->out( resultsWrapper );
-    maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
+    reduceSegments->in( batchSize * dim.numFilters * dim.outputImageSizeSquared )->in( dim.numInputPlanes )->in( results1Wrapper )->out( resultsWrapper );
+    maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     reduceSegments->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate after reduce over inputplanes");
 
     if( dim.biased ) {
-        repeatedAdd->in( batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize )
+        repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
             ->in( dim.numFilters )
-            ->in( dim.outputBoardSize * dim.outputBoardSize )
+            ->in( dim.outputImageSize * dim.outputImageSize )
             ->inout( resultsWrapper )->in( biasWeightsWrapper );
-        maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
+        maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
         StatefulTimer::timeCheck("PropagateByInputPlane::propagate after repeatedAdd");
     }
 
-    activate->in( batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize )
+    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
         ->inout( resultsWrapper );
-    maxglobalId = batchSize * dim.numFilters * dim.outputBoardSize * dim.outputBoardSize;
+    maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
@@ -145,21 +145,21 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "    const int localId = get_local_id(0);\n" 
     "\n" 
     "    const int inputPlaneId = workgroupId;\n" 
-    "    const int numLoops = ( gNumFilters * gOutputBoardSize + workgroupSize - 1 ) / workgroupSize;\n" 
-    "    const int numFilterCopyLoops = ( gFilterSizeSquared + gOutputBoardSize - 1 ) / gOutputBoardSize;\n" 
-    "    const int numImageCopyLoops = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numLoops = ( gNumFilters * gOutputImageSize + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numFilterCopyLoops = ( gFilterSizeSquared + gOutputImageSize - 1 ) / gOutputImageSize;\n" 
+    "    const int numImageCopyLoops = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
     "        const int loopLocalId = localId + loop * workgroupSize;\n" 
-    "        const int filterId = loopLocalId / gOutputBoardSize;\n" 
-    "        const int outRow = loopLocalId % gOutputBoardSize;\n" 
+    "        const int filterId = loopLocalId / gOutputImageSize;\n" 
+    "        const int outRow = loopLocalId % gOutputImageSize;\n" 
     "\n" 
-    "        // copy down our filter, we have gOutputBoardSize threads to do this\n" 
+    "        // copy down our filter, we have gOutputImageSize threads to do this\n" 
     "        global float const *globalFilterPlane = filters +\n" 
     "            ( filterId * gNumInputPlanes + inputPlaneId ) * gFilterSizeSquared;\n" 
     "        local float *_localFilterPlane = _filterPlanes + filterId * gFilterSizeSquared;\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        for( int i = 0; i < numFilterCopyLoops; i++ ) {\n" 
-    "            const int offset = i * gOutputBoardSize + outRow;\n" 
+    "            const int offset = i * gOutputImageSize + outRow;\n" 
     "            bool process = filterId < gNumFilters && offset < gFilterSizeSquared;\n" 
     "            if( process ) {\n" 
     "                _localFilterPlane[ offset ] = globalFilterPlane[ offset ];\n" 
@@ -170,32 +170,32 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "            // copy down our imageplane, we have workgroupSize threads to do this\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "            global float const *globalImagePlane = images +\n" 
-    "                ( n * gNumInputPlanes + inputPlaneId ) * gInputBoardSizeSquared;\n" 
+    "                ( n * gNumInputPlanes + inputPlaneId ) * gInputImageSizeSquared;\n" 
     "            for( int i = 0; i< numImageCopyLoops; i++ ) {\n" 
     "                const int offset = i * workgroupSize + localId;\n" 
-    "                if( offset < gInputBoardSizeSquared ) {\n" 
+    "                if( offset < gInputImageSizeSquared ) {\n" 
     "                    _inputPlane[ offset ] = globalImagePlane[ offset ];\n" 
     "                }\n" 
     "            }\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "            // calc results for each [outrow][outcol]\n" 
     "            bool filterPlaneOk = filterId < gNumFilters;\n" 
-    "            for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {\n" 
+    "            for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {\n" 
     "                float sum = 0;\n" 
     "                for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {\n" 
     "                    int inRow = outRow + filterRow;\n" 
     "                    #if gPadZeros == 1\n" 
     "                        inRow -= gHalfFilterSize;\n" 
     "                    #endif\n" 
-    "                    bool rowOk = filterPlaneOk && inRow >= 0 && inRow < gInputBoardSize;\n" 
+    "                    bool rowOk = filterPlaneOk && inRow >= 0 && inRow < gInputImageSize;\n" 
     "                    for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {\n" 
     "                        int inCol = outCol + filterCol;\n" 
     "                        #if gPadZeros == 1\n" 
     "                            inCol -= gHalfFilterSize;\n" 
     "                        #endif\n" 
-    "                        bool process = rowOk && inCol >= 0 && inCol < gInputBoardSize;\n" 
+    "                        bool process = rowOk && inCol >= 0 && inCol < gInputImageSize;\n" 
     "                        if( process ) {\n" 
-    "                            float imageValue = _inputPlane[ inRow * gInputBoardSize + inCol ];\n" 
+    "                            float imageValue = _inputPlane[ inRow * gInputImageSize + inCol ];\n" 
     "                            float filterValue = _localFilterPlane[ filterRow * gFilterSize + filterCol ];\n" 
     "                            sum += imageValue * filterValue;\n" 
     "                        }\n" 
@@ -205,8 +205,8 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "                    // [n][filterId][outRow][outCol][inputPlane]\n" 
     "                    int resultIndex = ( ( ( n\n" 
     "                        * gNumFilters + filterId )\n" 
-    "                        * gOutputBoardSize + outRow )\n" 
-    "                        * gOutputBoardSize + outCol )\n" 
+    "                        * gOutputImageSize + outRow )\n" 
+    "                        * gOutputImageSize + outCol )\n" 
     "                        * gNumInputPlanes + inputPlaneId;\n" 
     "                    results[resultIndex] = sum;\n" 
     "                    //if( globalId == 2 ) results[0] = resultIndex;\n" 

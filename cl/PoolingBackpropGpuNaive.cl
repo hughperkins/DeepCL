@@ -15,13 +15,13 @@ kernel void backprop_errors( const int batchSize,
     global const float *errors, global const int *selectors, global float *errorsForUpstream ) {
 
     #define globalId get_global_id(0)
-    #define nPlaneCombo ( globalId / gOutputBoardSizeSquared ) 
-    #define outputPosCombo ( globalId % gOutputBoardSizeSquared )
+    #define nPlaneCombo ( globalId / gOutputImageSizeSquared ) 
+    #define outputPosCombo ( globalId % gOutputImageSizeSquared )
 
     const int n = nPlaneCombo / gNumPlanes;
     const int plane = nPlaneCombo % gNumPlanes;
-    const int outputRow = outputPosCombo / gOutputBoardSize;
-    const int outputCol = outputPosCombo % gOutputBoardSize;
+    const int outputRow = outputPosCombo / gOutputImageSize;
+    const int outputCol = outputPosCombo % gOutputImageSize;
 
     if( n >= batchSize ) {
         return;
@@ -29,8 +29,8 @@ kernel void backprop_errors( const int batchSize,
 
     int resultIndex = ( ( n
         * gNumPlanes + plane )
-        * gOutputBoardSize + outputRow )
-        * gOutputBoardSize + outputCol;
+        * gOutputImageSize + outputRow )
+        * gOutputImageSize + outputCol;
     #define error ( errors[resultIndex] )
     int selector = ( selectors[resultIndex] );
     #define drow ( selector / gPoolingSize )
@@ -39,8 +39,8 @@ kernel void backprop_errors( const int batchSize,
     #define inputCol ( outputCol * gPoolingSize + dcol )
     int inputIndex = ( ( n
         * gNumPlanes + plane )
-        * gInputBoardSize + inputRow )
-        * gInputBoardSize + inputCol;
+        * gInputImageSize + inputRow )
+        * gInputImageSize + inputCol;
 //    if( n < batchSize ) {
         errorsForUpstream[ inputIndex ] = error;
 //    }

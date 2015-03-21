@@ -63,7 +63,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
 //    cout << "dim: " << dim << endl;
     std::string options = dim.buildOptionsString();
 
-    int localMemoryRequirementsFullImage = dim.inputBoardSize * dim.inputBoardSize * 4 + dim.outputBoardSize * dim.outputBoardSize * 4;
+    int localMemoryRequirementsFullImage = dim.inputImageSize * dim.inputImageSize * 4 + dim.outputImageSize * dim.outputImageSize * 4;
     int availableLocal = cl->getLocalMemorySize();
     cout << "localmemoryrequirementsfullimage: " << localMemoryRequirementsFullImage << endl;
     cout << "availablelocal: " << availableLocal << endl;
@@ -77,15 +77,15 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
 //    cout << "numStripes: " << numStripes << endl;
 
     int inputStripeMarginRows = dim.filterSize - 1;
-    int inputStripeInnerNumRows = dim.inputBoardSize / numStripes;
+    int inputStripeInnerNumRows = dim.inputImageSize / numStripes;
     int inputStripeOuterNumRows = inputStripeInnerNumRows + 2 * inputStripeMarginRows;
 
-    int inputStripeInnerSize = inputStripeInnerNumRows * dim.inputBoardSize;
-    inputStripeOuterSize = inputStripeOuterNumRows * dim.inputBoardSize;
-    int inputStripeMarginSize = inputStripeMarginRows * dim.inputBoardSize;
+    int inputStripeInnerSize = inputStripeInnerNumRows * dim.inputImageSize;
+    inputStripeOuterSize = inputStripeOuterNumRows * dim.inputImageSize;
+    int inputStripeMarginSize = inputStripeMarginRows * dim.inputImageSize;
 
-    int outputStripeNumRows = ( dim.outputBoardSize + numStripes - 1 ) / numStripes;
-    outputStripeSize = outputStripeNumRows * dim.outputBoardSize;
+    int outputStripeNumRows = ( dim.outputImageSize + numStripes - 1 ) / numStripes;
+    outputStripeSize = outputStripeNumRows * dim.outputImageSize;
 
     // [[[cog
     // import cog_optionswriter
@@ -124,8 +124,8 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "// workgroupId: [outputPlane][inputPlane]\n" 
     "// localId: [filterRow][filterCol]\n" 
     "// per-thread iteration: [n][outputRow][outputCol]\n" 
-    "// local: errorboard: outputBoardSize * outputBoardSize\n" 
-    "//        imageboard: inputBoardSize * inputBoardSize\n" 
+    "// local: errorimage: outputImageSize * outputImageSize\n" 
+    "//        imageimage: inputImageSize * inputImageSize\n" 
     "// specific characteristic: load one stripe of each image at a time,\n" 
     "// so we dont run out of memory\n" 
     "// number of stripes set in: gNumStripes\n" 
@@ -146,15 +146,15 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "        local float *_errorStripe, local float *_imageStripe\n" 
     " ) {\n" 
     "    // gHalfFilterSize\n" 
-    "    // gInputBoardSize\n" 
+    "    // gInputImageSize\n" 
     "    //\n" 
     "    // gInputStripeMarginRows => basically equal to gHalfFilterSize\n" 
-    "    // gInputStripeInnerNumRows = gInputBoardSize / gNumStripes\n" 
+    "    // gInputStripeInnerNumRows = gInputImageSize / gNumStripes\n" 
     "    // gInputStripeOuterNumRows = gInputStripeInnerNumRows + 2 * gHalfFilterSize  (note: one row less than\n" 
     "    //                                                         if we just added gFilterSize)\n" 
-    "    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputBoardSize\n" 
-    "    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputBoardSize\n" 
-    "    // gInputStripeMarginSize = gInputStripeMarginRows * gInputBoardSize\n" 
+    "    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputImageSize\n" 
+    "    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputImageSize\n" 
+    "    // gInputStripeMarginSize = gInputStripeMarginRows * gInputImageSize\n" 
     "    //\n" 
     "    // gOutputStripeNumRows\n" 
     "    // gOutputStripeSize\n" 
@@ -177,33 +177,33 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "    float thisbiaschange = 0;\n" 
     "#endif\n" 
     "    const int numLoopsForImageStripe = ( gInputStripeOuterSize + workgroupSize - 1 ) / workgroupSize;\n" 
-    "    const int numLoopsForErrorStripe = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numLoopsForErrorStripe = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
-    "        const int imageBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
-    "        const int imageBoardGlobalOffsetAfter = imageBoardGlobalOffset + gInputBoardSizeSquared;\n" 
-    "        const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;\n" 
-    "        const int errorBoardGlobalOffsetAfter = errorBoardGlobalOffset + gOutputBoardSizeSquared;\n" 
+    "        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
+    "        const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputImageSizeSquared;\n" 
+    "        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;\n" 
+    "        const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputImageSizeSquared;\n" 
     "        for( int stripe = 0; stripe < gNumStripes; stripe++ ) {\n" 
-    "            const int imageStripeInnerOffset = imageBoardGlobalOffset + stripe * gInputStripeInnerSize;\n" 
+    "            const int imageStripeInnerOffset = imageImageGlobalOffset + stripe * gInputStripeInnerSize;\n" 
     "            const int imageStripeOuterOffset = imageStripeInnerOffset - gInputStripeMarginSize;\n" 
-    "            // need to fetch the board, but it's bigger than us, so will need to loop...\n" 
+    "            // need to fetch the image, but it's bigger than us, so will need to loop...\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "            for( int i = 0; i < numLoopsForImageStripe; i++ ) {\n" 
     "                int thisOffset = i * workgroupSize + localId;\n" 
     "                int thisGlobalImagesOffset = imageStripeOuterOffset + thisOffset;\n" 
     "                bool process = thisOffset < gInputStripeOuterSize\n" 
-    "                    && thisGlobalImagesOffset >= imageBoardGlobalOffset\n" 
-    "                    && thisGlobalImagesOffset < imageBoardGlobalOffsetAfter;\n" 
+    "                    && thisGlobalImagesOffset >= imageImageGlobalOffset\n" 
+    "                    && thisGlobalImagesOffset < imageImageGlobalOffsetAfter;\n" 
     "                if( process ) {\n" 
     "                    _imageStripe[thisOffset] = images[ thisGlobalImagesOffset ];\n" 
     "                }\n" 
     "            }\n" 
-    "            int errorStripeOffset = errorBoardGlobalOffset + stripe * gOutputStripeSize;\n" 
+    "            int errorStripeOffset = errorImageGlobalOffset + stripe * gOutputStripeSize;\n" 
     "            for( int i = 0; i < numLoopsForErrorStripe; i++ ) {\n" 
     "                int thisOffset = i * workgroupSize + localId;\n" 
     "                int globalErrorsOffset = errorStripeOffset + thisOffset;\n" 
     "                bool process = thisOffset < gOutputStripeSize\n" 
-    "                    && globalErrorsOffset < errorBoardGlobalOffsetAfter;\n" 
+    "                    && globalErrorsOffset < errorImageGlobalOffsetAfter;\n" 
     "                if( process ) {\n" 
     "                    _errorStripe[thisOffset ] = errors[globalErrorsOffset];\n" 
     "                }\n" 
@@ -213,25 +213,25 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "//            if( localId == 13 ) {\n" 
     "//                for( int i = 0; i < 12; i++ ) {\n" 
-    "//                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];\n" 
+    "//                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputImageSize];\n" 
     "//                }\n" 
     "//                for( int i = 0; i < 20; i++ ) {\n" 
-    "//                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputBoardSize];\n" 
+    "//                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputImageSize];\n" 
     "//                }\n" 
     "//            }\n" 
     "            if( localId < gFilterSizeSquared ) {\n" 
     "                for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {\n" 
     "                    int upstreamRow = outRow - gMargin + filterRow;\n" 
-    "                    for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {\n" 
+    "                    for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {\n" 
     "                        int upstreamCol = outCol - gMargin + filterCol;\n" 
     "                        bool proceed =\n" 
     "                            upstreamRow >= 0 && upstreamCol >= 0\n" 
-    "                            && upstreamRow < gInputBoardSize && upstreamCol < gInputBoardSize\n" 
-    "                            && outRow < gOutputBoardSize;\n" 
+    "                            && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize\n" 
+    "                            && outRow < gOutputImageSize;\n" 
     "                        if( proceed ) {\n" 
-    "                            int resultIndex = outRow * gOutputBoardSize + outCol;\n" 
+    "                            int resultIndex = outRow * gOutputImageSize + outCol;\n" 
     "                            float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];\n" 
-    "                            int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;\n" 
+    "                            int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;\n" 
     "                            float upstreamResult = _imageStripe[upstreamDataIndex +  gInputStripeMarginSize\n" 
     "                                        - stripe * gInputStripeInnerSize ];\n" 
     "                            thiswchange += upstreamResult * error;\n" 

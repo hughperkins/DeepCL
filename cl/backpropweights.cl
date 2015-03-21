@@ -29,24 +29,24 @@
 // then we are aggregating over [outRow][outCol][n]
 //      eg 19 * 19 * 128 = 46208
 // derivtype: 0=relu 1=tanh
-// outboards(eg 128x32x28x28), errors (eg 128x28x28), upstreamboards (eg 128x32x28x28) => weightchanges (eg 32x32x28x28)
+// outimages(eg 128x32x28x28), errors (eg 128x28x28), upstreamimages (eg 128x32x28x28) => weightchanges (eg 32x32x28x28)
 // if break for per-example, per-filter:
-// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+// outimage(eg 28x28), error (28x28), upstreamimage(32x28x28) => weightchanges(32x5x5)
 //             784 3k         784 3k                 25088 100k                800 3k
 // if break for per-filter:
-// outboard(eg 128x28x28), error (128x28x28), upstreamboard(128x32x28x28) => weightchanges(32x32x5x5)
+// outimage(eg 128x28x28), error (128x28x28), upstreamimage(128x32x28x28) => weightchanges(32x32x5x5)
 //                350k           350k                 12.8MB                   100k
 // if break for per-example:
-// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+// outimage(eg 28x28), error (28x28), upstreamimage(32x28x28) => weightchanges(32x5x5)
 //                3k             3k                 100k                       3k
-//    note that weightchanges will need to be summed over 128 input boards
+//    note that weightchanges will need to be summed over 128 input images
 //
 // globalid is for: [outPlane][upstreamPlane][filterRow][filterCol]
 // per-thread looping over [n][outRow][outCol]
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
-         const int upstreamBoardSize, const int filterSize, const int outBoardSize, const int padZeros, 
+         const int upstreamImageSize, const int filterSize, const int outImageSize, const int padZeros, 
          global const float *errors, global const float *results, global const float *images, 
         global float *weights
         #ifdef BIASED
@@ -77,23 +77,23 @@ void kernel backprop_floats( const float learningRateMultiplier,
     float thisbiaschange = 0;
 #endif
     for( int n = 0; n < batchSize; n++ ) {
-        for( int outRow = 0; outRow < outBoardSize; outRow++ ) {
+        for( int outRow = 0; outRow < outImageSize; outRow++ ) {
             int upstreamRow = outRow - margin + filterRow;
-            for( int outCol = 0; outCol < outBoardSize; outCol++ ) {
+            for( int outCol = 0; outCol < outImageSize; outCol++ ) {
                 int upstreamCol = outCol - margin + filterCol;
-                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < upstreamBoardSize
-                    && upstreamCol < upstreamBoardSize;
+                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < upstreamImageSize
+                    && upstreamCol < upstreamImageSize;
                 if( proceed ) {
                     int resultIndex = ( ( n * numPlanes 
-                              + outPlane ) * outBoardSize
-                              + outRow ) * outBoardSize
+                              + outPlane ) * outImageSize
+                              + outRow ) * outImageSize
                               + outCol;
                     float error = errors[resultIndex];
                     float actualOutput = results[resultIndex];
                     float activationDerivative = ACTIVATION_DERIV( actualOutput);
                     int upstreamDataIndex = ( ( n * upstreamNumPlanes 
-                                     + upstreamPlane ) * upstreamBoardSize
-                                     + upstreamRow ) * upstreamBoardSize
+                                     + upstreamPlane ) * upstreamImageSize
+                                     + upstreamRow ) * upstreamImageSize
                                      + upstreamCol;
                     float upstreamResult = images[upstreamDataIndex];
                     float thisimagethiswchange = upstreamResult * activationDerivative *
@@ -119,51 +119,51 @@ void kernel backprop_floats( const float learningRateMultiplier,
 #endif
 
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 /*void kernel backprop_floats_2( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
-     global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
+     global const float *upstreamImagesGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
      global float *weightChangesGlobal,
-    local float *_upstreamBoard, local float *_resultBoard, local float *_errorBoard, 
+    local float *_upstreamImage, local float *_resultImage, local float *_errorImage, 
     local float *_weightChanges, local float *_weightReduceArea ) {
 
         // required (minimum...) sizes for local arrays:
-        // upstreamboard: upstreamBoardSizeSquared
-        // resultboard: outBoardSizeSquared
-        // errorBoard: outBoardSizeSquaread
+        // upstreamimage: upstreamImageSizeSquared
+        // resultimage: outImageSizeSquared
+        // errorImage: outImageSizeSquaread
         // weightChanges: filterSizeSquared
-        // weightReduceArea: upstreamBoardSizeSquared, or workflowSize, to be decided :-)
+        // weightReduceArea: upstreamImageSizeSquared, or workflowSize, to be decided :-)
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
     const int workgroupSize = get_local_size(0);
 
-    const int upstreamBoard2dId = globalId / gUpstreamBoardSizeSquared;
-    const int upstreamPlane = upstreamBoard2dId % gUpstreamNumPlanes;
-    const int outPlane2dId = upstreamBoard2dId / gUpstreamNumPlanes;
+    const int upstreamImage2dId = globalId / gUpstreamImageSizeSquared;
+    const int upstreamPlane = upstreamImage2dId % gUpstreamNumPlanes;
+    const int outPlane2dId = upstreamImage2dId / gUpstreamNumPlanes;
     const int n = outPlane2dId / gNumOutPlanes;
     const int outPlane = outPlane2dId % gNumOutPlanes;
 
-    const int outRow = localId / gOutBoardSize;
-    const int outCol = localId % gOutBoardSize;
+    const int outRow = localId / gOutImageSize;
+    const int outCol = localId % gOutImageSize;
 
     // each localid corresponds to one [upstreamRow][upstreamCol] combination
     // we assume that:
-    // filterSize <= upstreamBoardSize (reasonable... :-) )
-    // outBoardSize <= upstreamBoardSize (true... unless we have a filter with even size, and padZeros = true )
-    const int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+    // filterSize <= upstreamImageSize (reasonable... :-) )
+    // outImageSize <= upstreamImageSize (true... unless we have a filter with even size, and padZeros = true )
+    const int upstreamImageGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;
 
-    if( localId < gUpstreamBoardSizeSquared ) {
-        _upstreamBoard[localId] = upstreamBoardsGlobal[upstreamBoardGlobalOffset + localId];
+    if( localId < gUpstreamImageSizeSquared ) {
+        _upstreamImage[localId] = upstreamImagesGlobal[upstreamImageGlobalOffset + localId];
     }
-    int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
-    if( localId < gOutBoardSizeSquared ) {
-        _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
-        _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
+    int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
+    if( localId < gOutImageSizeSquared ) {
+        _resultImage[localId ] = resultsGlobal[resultImageGlobalOffset + localId];
+        _errorImage[localId ] = errorsGlobal[resultImageGlobalOffset + localId];
         _weightReduceArea[localId] = 0;
     }
     barrier(CLK_LOCAL_MEM_FENCE);
 
-    // now we loop over the filter, and the output board...
+    // now we loop over the filter, and the output image...
     for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
 //        int outRow = upstreamRow + gMargin - filterRow;
         int upstreamRow = outRow - gMargin + filterRow;
@@ -171,20 +171,20 @@ void kernel backprop_floats( const float learningRateMultiplier,
             int upstreamCol = outCol - gMargin + filterCol;
 //            int outCol = upstreamCol + gMargin - filterCol;
 //            float thiswchange = 0;
-            int resultIndex = outRow * gOutBoardSize + outCol;
-            float error = _errorBoard[resultIndex];
-            float actualOutput = _resultBoard[resultIndex];
+            int resultIndex = outRow * gOutImageSize + outCol;
+            float error = _errorImage[resultIndex];
+            float actualOutput = _resultImage[resultIndex];
             float activationDerivative = ACTIVATION_DERIV( actualOutput);
-            int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
-            float upstreamResult = _upstreamBoard[upstreamDataIndex];
+            int upstreamDataIndex = upstreamRow * gUpstreamImageSize + upstreamCol;
+            float upstreamResult = _upstreamImage[upstreamDataIndex];
             float thisimagethiswchange = upstreamResult * activationDerivative * error;
-            if( localId < gOutBoardSizeSquared ) {
+            if( localId < gOutImageSizeSquared ) {
                 _weightReduceArea[localId] = thisimagethiswchange;
             }
 
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int offset = workgroupsizenextpower2 >> 1; offset > 0; offset >>= 1 ) {
-                if( localId + offset < gOutBoardSizeSquared ) {
+                if( localId + offset < gOutImageSizeSquared ) {
                     _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
                 }
                 barrier(CLK_LOCAL_MEM_FENCE);
@@ -202,9 +202,9 @@ void kernel backprop_floats( const float learningRateMultiplier,
         weightChangesGlobal[ localId ] = - learningRateMultiplier * _weightChanges[ localId ];
     }
 
-//    if( localId < gUpstreamBoardSizeSquared ) {
-//        weightChangesGlobal[ globalId ] = upstreamBoardsGlobal[globalId];
-//        weightChangesGlobal[ globalId ] = _errorBoard[globalId];
+//    if( localId < gUpstreamImageSizeSquared ) {
+//        weightChangesGlobal[ globalId ] = upstreamImagesGlobal[globalId];
+//        weightChangesGlobal[ globalId ] = _errorImage[globalId];
 //    }
 //    weightChangesGlobal[globalId] = resultsGlobal[localId];
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
@@ -217,34 +217,34 @@ void kernel backprop_floats( const float learningRateMultiplier,
 
 // need about ~50 workgroups
 // eg: - one per n => 128 groups, each one loads:
-//                               one cube of input boards (46k :-O )
-//                               one cube of output boards (each output cube is 46k too...)
+//                               one cube of input images (46k :-O )
+//                               one cube of output images (each output cube is 46k too...)
 //                               same errors (46k...)
 //                               (need to reduce over n)
 //     - one per filter => 32 groups, each one loads:
-//                               each cube of input boards (eg, sequentially) (each cube is 46k...)
+//                               each cube of input images (eg, sequentially) (each cube is 46k...)
 //                               each of its own output planes (eg, sequentially)
 //                               each of its own error planes (eg, sequentially)
-//                               (no extra-workgroup reduction needed, for boardsize < 19)
+//                               (no extra-workgroup reduction needed, for imagesize < 19)
 //     - one per filter, per upstream => 32*32 = 784 groups. each one loads:
-//                               one plane from each cube of boards (eg, sequentially) (1.5k per plane)
+//                               one plane from each cube of images (eg, sequentially) (1.5k per plane)
 //                               one plane from each example output (eg, sequentially) (1.5k per plane)
 //                               one plane from each example error (eg, sequentially) (1.5k per plane)
-//                               each workgroup will have one thread per board position, ie 384 threads
+//                               each workgroup will have one thread per image position, ie 384 threads
 //                               each thread will iterate over the 25 filter positions
 //                               after iterating over all n,
 //                                   each workgroup will then give a single w update, 5x5 = 100 bytes
 //                                    => written to global memory somewhere
 //                               and there will be 784 workgroups to reduce over....
-//                                   ... but they will be reduced in blocks of 32, giving a cube of 32 filter board
+//                                   ... but they will be reduced in blocks of 32, giving a cube of 32 filter image
 //                                        updates
-//                               (and then need to reduce over upstream boards)
+//                               (and then need to reduce over upstream images)
 
 // if break for per-example, per-filter:
-// outboard(eg 28x28), error (28x28), upstreamboard(32x28x28) => weightchanges(32x5x5)
+// outimage(eg 28x28), error (28x28), upstreamimage(32x28x28) => weightchanges(32x5x5)
 //             784 3k         784 3k                 25088 100k                800 3k
 // if break for per-example, per-filter, per-upstream:
-// outboard(eg 28x28), error (28x28), upstreamboard(28x28) => weightchanges(5x5)
+// outimage(eg 28x28), error (28x28), upstreamimage(28x28) => weightchanges(5x5)
 //             784 3k         784 3k                 784 3k                 25
 // n * outplane = 128 * 32 = 4096   , then loop over: [upstreamrow][upstreamcol]
 // in this version, workgroups are [outPlane][upstreamPlane]
@@ -255,28 +255,28 @@ void kernel backprop_floats( const float learningRateMultiplier,
 //        (outRow/outCol are locked to upstreamRow/upstreamCol)
 // w is [filterRow][filterCol]
 // this assumes that filterSizeSquared will fit into one workgroup
-//  - which is true for Go-boards, but not for MNIST :-P
-//      - so we will test with cropped MNIST images, 19x19, same as go boards :-)
+//  - which is true for Go-images, but not for MNIST :-P
+//      - so we will test with cropped MNIST images, 19x19, same as go images :-)
 //
 // weightChangesGlobal contains one plane from each of the 784 workgroups
 // organized as: [outPlane][upstreamPlan]:[filterRow][filterCol] (colon marks gap between
 //                       the coordinates per workgroup, and intra-workgroup coordinates )
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 /*
 void kernel backprop_floats_3( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
-     global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
+     global const float *upstreamImagesGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
      global float *weightChangesGlobal,
-    local float *_upstreamBoard, local float *_resultBoard, local float *_errorBoard, 
+    local float *_upstreamImage, local float *_resultImage, local float *_errorImage, 
     local float *_weightChanges, local float *_weightReduceArea ) {
 
         // required (minimum...) sizes for local arrays:
-        // upstreamboard: upstreamBoardSizeSquared
-        // resultboard: outBoardSizeSquared
-        // errorBoard: outBoardSizeSquaread
+        // upstreamimage: upstreamImageSizeSquared
+        // resultimage: outImageSizeSquared
+        // errorImage: outImageSizeSquaread
         // weightChanges: filterSizeSquared
-        // weightReduceArea: upstreamBoardSizeSquared, or workflowSize, to be decided :-)
+        // weightReduceArea: upstreamImageSizeSquared, or workflowSize, to be decided :-)
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
     const int workgroupSize = get_local_size(0);
@@ -285,8 +285,8 @@ void kernel backprop_floats_3(
     const int outPlane = workgroupId / gUpstreamNumPlanes;
     const int upstreamPlane = workgroupId % gUpstreamNumPlanes;
 
-    const int outRow = localId / gOutBoardSize;
-    const int outCol = localId % gOutBoardSize;
+    const int outRow = localId / gOutImageSize;
+    const int outCol = localId % gOutImageSize;
 
     // wipe _weightChanges first
     // dont need a barrier, just use the barrier from loading the other planes from global memory
@@ -297,21 +297,21 @@ void kernel backprop_floats_3(
     for( int n = 0; n < batchSize; n++ ) {
         // each localid corresponds to one [upstreamRow][upstreamCol] combination
         // we assume that:
-        // filterSize <= upstreamBoardSize (reasonable... :-) )
-        // outBoardSize <= upstreamBoardSize (true... unless we have a filter with even size, and padZeros = true )
-        const int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
-        if( localId < gUpstreamBoardSizeSquared ) {
-            _upstreamBoard[localId] = upstreamBoardsGlobal[upstreamBoardGlobalOffset + localId];
+        // filterSize <= upstreamImageSize (reasonable... :-) )
+        // outImageSize <= upstreamImageSize (true... unless we have a filter with even size, and padZeros = true )
+        const int upstreamImageGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;
+        if( localId < gUpstreamImageSizeSquared ) {
+            _upstreamImage[localId] = upstreamImagesGlobal[upstreamImageGlobalOffset + localId];
         }
-        const int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
-        if( localId < gOutBoardSizeSquared ) {
-            _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
-            _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
+        const int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
+        if( localId < gOutImageSizeSquared ) {
+            _resultImage[localId ] = resultsGlobal[resultImageGlobalOffset + localId];
+            _errorImage[localId ] = errorsGlobal[resultImageGlobalOffset + localId];
             _weightReduceArea[localId] = 0; // note: can probably remove this
         }
-        barrier(CLK_LOCAL_MEM_FENCE);  // loaded one upstreamboard, one error plane, one output plane :-)
+        barrier(CLK_LOCAL_MEM_FENCE);  // loaded one upstreamimage, one error plane, one output plane :-)
 
-        // now we loop over the filter, and the output board...
+        // now we loop over the filter, and the output image...
         for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
     //        int outRow = upstreamRow + gMargin - filterRow;
             int upstreamRow = outRow - gMargin + filterRow;
@@ -319,21 +319,21 @@ void kernel backprop_floats_3(
                 int upstreamCol = outCol - gMargin + filterCol;
     //            int outCol = upstreamCol + gMargin - filterCol;
     //            float thiswchange = 0;
-                int resultIndex = outRow * gOutBoardSize + outCol;
-                float error = _errorBoard[resultIndex];
-                float actualOutput = _resultBoard[resultIndex];
+                int resultIndex = outRow * gOutImageSize + outCol;
+                float error = _errorImage[resultIndex];
+                float actualOutput = _resultImage[resultIndex];
                 float activationDerivative = ACTIVATION_DERIV( actualOutput);
-                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
-                float upstreamResult = _upstreamBoard[upstreamDataIndex];
+                int upstreamDataIndex = upstreamRow * gUpstreamImageSize + upstreamCol;
+                float upstreamResult = _upstreamImage[upstreamDataIndex];
                 float thisimagethiswchange = upstreamResult * activationDerivative * error;
-                if( localId < gOutBoardSizeSquared ) {
+                if( localId < gOutImageSizeSquared ) {
                     _weightReduceArea[localId] = thisimagethiswchange;
                 }
 
                 barrier(CLK_LOCAL_MEM_FENCE);
                 for( int offset = workgroupsizenextpower2 >> 1; offset > 0; offset >>= 1 ) {
-                    if( localId + offset < gOutBoardSizeSquared ) {  // cos we're reducing over each position
-                                                                     // in the output board, which this workgroup
+                    if( localId + offset < gOutImageSizeSquared ) {  // cos we're reducing over each position
+                                                                     // in the output image, which this workgroup
                                                  // has one thread for each position for
                         _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
                     }
@@ -349,9 +349,9 @@ void kernel backprop_floats_3(
     // each thread copies one element
     // so need a fence :-)
     barrier(CLK_LOCAL_MEM_FENCE);
-    const int weightBoardGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;
+    const int weightImageGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;
     if( localId < gFilterSizeSquared ) {
-        weightChangesGlobal[weightBoardGlobalOffset + localId ] = - learningRateMultiplier * _weightChanges[ localId ];
+        weightChangesGlobal[weightImageGlobalOffset + localId ] = - learningRateMultiplier * _weightChanges[ localId ];
     }
 }
 */
@@ -359,24 +359,24 @@ void kernel backprop_floats_3(
 #endif
 
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 // 32 workgroups, one per filter
 // globalId: [outPlane]:[upstreamRow][upstreamCol]
 //   each thread needs to loop over: [n][upstreamPlane][filterRow][filterCol]
 /*
 void kernel backprop_floats_4( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
-     global const float *upstreamBoardsGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
+     global const float *upstreamImagesGlobal, global const float *resultsGlobal, global const float *errorsGlobal,
      global float *weightChangesGlobal,
-    local float *_upstreamBoard, local float *_resultBoard, local float *_errorBoard, 
+    local float *_upstreamImage, local float *_resultImage, local float *_errorImage, 
     local float *_weightChanges, local float *_weightReduceArea ) {
 
         // required (minimum...) sizes for local arrays:
-        // upstreamboard: upstreamBoardSizeSquared
-        // resultboard: outBoardSizeSquared
-        // errorBoard: outBoardSizeSquaread
+        // upstreamimage: upstreamImageSizeSquared
+        // resultimage: outImageSizeSquared
+        // errorImage: outImageSizeSquaread
         // weightChanges: filterSizeSquared
-        // weightReduceArea: upstreamBoardSizeSquared, or workflowSize, to be decided :-)
+        // weightReduceArea: upstreamImageSizeSquared, or workflowSize, to be decided :-)
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
     const int workgroupSize = get_local_size(0);
@@ -384,8 +384,8 @@ void kernel backprop_floats_4(
 
     const int outPlane = workgroupId;
 
-    const int outRow = localId / gOutBoardSize;
-    const int outCol = localId % gOutBoardSize;
+    const int outRow = localId / gOutImageSize;
+    const int outCol = localId % gOutImageSize;
 
     // wipe _weightChanges first
     // dont need a barrier, just use the barrier from loading the other planes from global memory
@@ -394,24 +394,24 @@ void kernel backprop_floats_4(
     }
 
     for( int n = 0; n < batchSize; n++ ) {
-        const int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
-        if( localId < gOutBoardSizeSquared ) {
-            _resultBoard[localId ] = resultsGlobal[resultBoardGlobalOffset + localId];
-            _errorBoard[localId ] = errorsGlobal[resultBoardGlobalOffset + localId];
+        const int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
+        if( localId < gOutImageSizeSquared ) {
+            _resultImage[localId ] = resultsGlobal[resultImageGlobalOffset + localId];
+            _errorImage[localId ] = errorsGlobal[resultImageGlobalOffset + localId];
 //            _weightReduceArea[localId] = 0; // note: can probably remove this
         }
         for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
             // each localid corresponds to one [upstreamRow][upstreamCol] combination
             // we assume that:
-            // filterSize <= upstreamBoardSize (reasonable... :-) )
-            // outBoardSize <= upstreamBoardSize (true... unless we have a filter with even size, and padZeros = true )
-            const int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
-            if( localId < gUpstreamBoardSizeSquared ) {
-                _upstreamBoard[localId] = upstreamBoardsGlobal[upstreamBoardGlobalOffset + localId];
+            // filterSize <= upstreamImageSize (reasonable... :-) )
+            // outImageSize <= upstreamImageSize (true... unless we have a filter with even size, and padZeros = true )
+            const int upstreamImageGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;
+            if( localId < gUpstreamImageSizeSquared ) {
+                _upstreamImage[localId] = upstreamImagesGlobal[upstreamImageGlobalOffset + localId];
             }
-            barrier(CLK_LOCAL_MEM_FENCE);  // loaded one upstreamboard, one error plane, one output plane :-)
+            barrier(CLK_LOCAL_MEM_FENCE);  // loaded one upstreamimage, one error plane, one output plane :-)
 
-            // now we loop over the filter, and the output board...
+            // now we loop over the filter, and the output image...
             for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
         //        int outRow = upstreamRow + gMargin - filterRow;
                 int upstreamRow = outRow - gMargin + filterRow;
@@ -419,21 +419,21 @@ void kernel backprop_floats_4(
                     int upstreamCol = outCol - gMargin + filterCol;
         //            int outCol = upstreamCol + gMargin - filterCol;
         //            float thiswchange = 0;
-                    int resultIndex = outRow * gOutBoardSize + outCol;
-                    float error = _errorBoard[resultIndex];
-                    float actualOutput = _resultBoard[resultIndex];
+                    int resultIndex = outRow * gOutImageSize + outCol;
+                    float error = _errorImage[resultIndex];
+                    float actualOutput = _resultImage[resultIndex];
                     float activationDerivative = ACTIVATION_DERIV( actualOutput);
-                    int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
-                    float upstreamResult = _upstreamBoard[upstreamDataIndex];
+                    int upstreamDataIndex = upstreamRow * gUpstreamImageSize + upstreamCol;
+                    float upstreamResult = _upstreamImage[upstreamDataIndex];
                     float thisimagethiswchange = upstreamResult * activationDerivative * error;
-                    if( localId < gOutBoardSizeSquared ) {
+                    if( localId < gOutImageSizeSquared ) {
                         _weightReduceArea[localId] = thisimagethiswchange;
                     }
 
                     barrier(CLK_LOCAL_MEM_FENCE);
                     for( int offset = workgroupsizenextpower2 >> 1; offset > 0; offset >>= 1 ) {
-                        if( localId + offset < gOutBoardSizeSquared ) {  // cos we're reducing over each position
-                                                                         // in the output board, which this workgroup
+                        if( localId + offset < gOutImageSizeSquared ) {  // cos we're reducing over each position
+                                                                         // in the output image, which this workgroup
                                                      // has one thread for each position for
                             _weightReduceArea[localId] = _weightReduceArea[ localId ] + _weightReduceArea[ localId + offset ];
                         }
@@ -467,11 +467,11 @@ void kernel backprop_floats_4(
 //   workgroup is over [filterRow][filterCol]
 // per-thread looping over [n][outRow][outCol]
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges,
-        local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
+        local float *_imageImage, local float *_resultImage, local float *_errorImage
  ) {
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
@@ -488,33 +488,33 @@ void kernel backprop_floats_withscratch(
     //       aggregate over:  [outRow][outCol][n]
     float thiswchange = 0;
     for( int n = 0; n < batchSize; n++ ) {
-        int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
-        // need to fetch the board, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int upstreamImageGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;
+        // need to fetch the image, but it's bigger than us, so will need to loop...
+        int numLoopsForUpstream = ( gUpstreamImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForUpstream; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gUpstreamBoardSizeSquared ) {
-                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+            if( thisOffset < gUpstreamImageSizeSquared ) {
+                _imageImage[thisOffset] = images[ upstreamImageGlobalOffset + thisOffset ];
             }
         }
-        int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
-        int numLoopsForResults = ( gOutBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
+        int numLoopsForResults = ( gOutImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForResults; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutBoardSizeSquared ) {
-                _resultBoard[thisOffset ] = ( ACTIVATION_DERIV( results[resultBoardGlobalOffset + thisOffset] ) )
-                    * errors[resultBoardGlobalOffset + thisOffset];
+            if( thisOffset < gOutImageSizeSquared ) {
+                _resultImage[thisOffset ] = ( ACTIVATION_DERIV( results[resultImageGlobalOffset + thisOffset] ) )
+                    * errors[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+        for( int outRow = 0; outRow < gOutImageSize; outRow++ ) {
             int upstreamRow = outRow - gMargin + filterRow;
-            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+            for( int outCol = 0; outCol < gOutImageSize; outCol++ ) {
                 int upstreamCol = outCol - gMargin + filterCol;
-                int resultIndex = outRow * gOutBoardSize + outCol;
-                float activationDerivative = _resultBoard[resultIndex];
-                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
-                float upstreamResult = _imageBoard[upstreamDataIndex];
+                int resultIndex = outRow * gOutImageSize + outCol;
+                float activationDerivative = _resultImage[resultIndex];
+                int upstreamDataIndex = upstreamRow * gUpstreamImageSize + upstreamCol;
+                float upstreamResult = _imageImage[upstreamDataIndex];
                 float thisimagethiswchange = upstreamResult * activationDerivative;
                 thiswchange += thisimagethiswchange;
             }
@@ -532,7 +532,7 @@ void kernel backprop_floats_withscratch(
 
 // biasWeightChanges is: [outplane] (only upstreamplane=0 workgroups need to write it)
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutputBoardSize // for previous tests that dont define it
+#ifdef gOutputImageSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *images, global const float *results, global const float *errors, 
@@ -540,7 +540,7 @@ void kernel backprop_floats_withscratch_dobias(
         #ifdef BIASED
              global float *biasWeights,
         #endif
-        local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
+        local float *_imageImage, local float *_resultImage, local float *_errorImage
  ) {
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
@@ -560,38 +560,38 @@ void kernel backprop_floats_withscratch_dobias(
     float thisbiaschange = 0;
 #endif
     for( int n = 0; n < batchSize; n++ ) {
-        int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-        // need to fetch the board, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+        // need to fetch the image, but it's bigger than us, so will need to loop...
+        int numLoopsForUpstream = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numLoopsForUpstream; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gInputBoardSizeSquared ) {
-                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+            if( thisOffset < gInputImageSizeSquared ) {
+                _imageImage[thisOffset] = images[ upstreamImageGlobalOffset + thisOffset ];
             }
         }
-        int resultBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
-        int numLoopsForResults = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int resultImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
+        int numLoopsForResults = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForResults; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutputBoardSizeSquared ) {
-                _resultBoard[thisOffset ] = ( ACTIVATION_DERIV( results[resultBoardGlobalOffset + thisOffset] ) )
-                    * errors[resultBoardGlobalOffset + thisOffset];
+            if( thisOffset < gOutputImageSizeSquared ) {
+                _resultImage[thisOffset ] = ( ACTIVATION_DERIV( results[resultImageGlobalOffset + thisOffset] ) )
+                    * errors[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {
-            for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {
+            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {
                 int upstreamRow = outRow - gMargin + filterRow;
-                for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
+                for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
                     int upstreamCol = outCol - gMargin + filterCol;
-                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize
-                        && upstreamCol < gInputBoardSize;
+                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize
+                        && upstreamCol < gInputImageSize;
                     if( proceed ) {
-                        int resultIndex = outRow * gOutputBoardSize + outCol;
-                        float activationDerivative = _resultBoard[resultIndex];
-                        int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
-                        float upstreamResult = _imageBoard[upstreamDataIndex];
+                        int resultIndex = outRow * gOutputImageSize + outCol;
+                        float activationDerivative = _resultImage[resultIndex];
+                        int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;
+                        float upstreamResult = _imageImage[upstreamDataIndex];
                         float thisimagethiswchange = upstreamResult * activationDerivative;
                         thiswchange += thisimagethiswchange;
     #ifdef BIASED
@@ -622,11 +622,11 @@ void kernel backprop_floats_withscratch_dobias(
     const int outPlane = globalId;
     float thiswchange = 0;
     for( int n = 0; n < batchSize; n++ ) {
-        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
-            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+        for( int outRow = 0; outRow < gOutImageSize; outRow++ ) {
+            for( int outCol = 0; outCol < gOutImageSize; outCol++ ) {
                 int resultIndex = ( ( n * gNumOutPlanes 
-                          + outPlane ) * gOutBoardSize
-                          + outRow ) * gOutBoardSize
+                          + outPlane ) * gOutImageSize
+                          + outRow ) * gOutImageSize
                           + outCol;
                 float thisimagethiswchange = errors[resultIndex] * ACTIVATION_DERIV( results[resultIndex] );
                 thiswchange += thisimagethiswchange;
@@ -641,13 +641,13 @@ void kernel backprop_floats_withscratch_dobias(
 //   workgroup is [a filterid][filterRow][filterCol]
 // per-thread looping over [n][outRow][outCol]
 // eg if a filter is 5x5, which is 25 values, we can fit 20 of these into one workgroup
-// or possibly 16 perhaps, all using the same input board data at the same time
+// or possibly 16 perhaps, all using the same input image data at the same time
 #ifdef ACTIVATION_DERIV // protect against if activation_function not defined
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch_batched( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *images, global const float *results, global const float *errors, global float *weightChanges,
-        local float *_imageBoard, local float *_resultBoard, local float *_errorBoard
+        local float *_imageImage, local float *_resultImage, local float *_errorImage
  ) {
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
@@ -664,33 +664,33 @@ void kernel backprop_floats_withscratch_batched(
     //       aggregate over:  [outRow][outCol][n]
     float thiswchange = 0;
     for( int n = 0; n < batchSize; n++ ) {
-        int upstreamBoardGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
-        // need to fetch the board, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gUpstreamBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int upstreamImageGlobalOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;
+        // need to fetch the image, but it's bigger than us, so will need to loop...
+        int numLoopsForUpstream = ( gUpstreamImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForUpstream; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gUpstreamBoardSizeSquared ) {
-                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+            if( thisOffset < gUpstreamImageSizeSquared ) {
+                _imageImage[thisOffset] = images[ upstreamImageGlobalOffset + thisOffset ];
             }
         }
-        int resultBoardGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared;
-        int numLoopsForResults = ( gOutBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
+        int numLoopsForResults = ( gOutImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForResults; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutBoardSizeSquared ) {
-                _resultBoard[thisOffset ] = ( ACTIVATION_DERIV( results[resultBoardGlobalOffset + thisOffset] ) )
-                    * errors[resultBoardGlobalOffset + thisOffset];
+            if( thisOffset < gOutImageSizeSquared ) {
+                _resultImage[thisOffset ] = ( ACTIVATION_DERIV( results[resultImageGlobalOffset + thisOffset] ) )
+                    * errors[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
+        for( int outRow = 0; outRow < gOutImageSize; outRow++ ) {
             int upstreamRow = outRow - gMargin + filterRow;
-            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+            for( int outCol = 0; outCol < gOutImageSize; outCol++ ) {
                 int upstreamCol = outCol - gMargin + filterCol;
-                int resultIndex = outRow * gOutBoardSize + outCol;
-                float activationDerivative = _resultBoard[resultIndex];
-                int upstreamDataIndex = upstreamRow * gUpstreamBoardSize + upstreamCol;
-                float upstreamResult = _imageBoard[upstreamDataIndex];
+                int resultIndex = outRow * gOutImageSize + outCol;
+                float activationDerivative = _resultImage[resultIndex];
+                int upstreamDataIndex = upstreamRow * gUpstreamImageSize + upstreamCol;
+                float upstreamResult = _imageImage[upstreamDataIndex];
                 float thisimagethiswchange = upstreamResult * activationDerivative;
                 thiswchange += thisimagethiswchange;
             }
@@ -710,7 +710,7 @@ void kernel backprop_floats_withscratch_batched(
 // make globalid be [outplane]
 // and localid is also [outplane]
 // so, one workgroup, internally structured as [outplane] (unless there are >512 outplanes....)
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 kernel void doBiasBackprop( const float learningMultiplier, const int batchSize,
     global float const *results, global float const *errors, global float *biasWeightChanges ) {
     const int globalId = get_local_id(0);
@@ -722,11 +722,11 @@ kernel void doBiasBackprop( const float learningMultiplier, const int batchSize,
     //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
     float thiswchange = 0;
     for( int n = 0; n < batchSize; n++ ) {
-        for( int outRow = 0; outRow < gOutBoardSize; outRow++ ) {
-            for( int outCol = 0; outCol < gOutBoardSize; outCol++ ) {
+        for( int outRow = 0; outRow < gOutImageSize; outRow++ ) {
+            for( int outCol = 0; outCol < gOutImageSize; outCol++ ) {
                 int resultIndex = ( ( n * gNumOutPlanes 
-                          + outPlane ) * gOutBoardSize
-                          + outRow ) * gOutBoardSize
+                          + outPlane ) * gOutImageSize
+                          + outRow ) * gOutImageSize
                           + outCol;
                 float thisimagethiswchange = errors[resultIndex] * ACTIVATION_DERIV( results[resultIndex] );
                 thiswchange += thisimagethiswchange;

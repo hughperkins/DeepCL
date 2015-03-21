@@ -2,7 +2,7 @@
 #include <string>
 
 #include "NorbLoader.h"
-#include "BoardPng.h"
+#include "ImagePng.h"
 #include "PatchExtractor.h"
 
 using namespace std;
@@ -10,18 +10,18 @@ using namespace std;
 void go( string dataDir, string setName, int n, int patchSize, int patchRow, int patchCol ) {
     int N;
     int numPlanes;
-    int boardSize;
-    unsigned char *imagesUchar = NorbLoader::loadImages( dataDir + "/" + setName + "-dat.mat", &N, &numPlanes, &boardSize, n + 1 );
+    int imageSize;
+    unsigned char *imagesUchar = NorbLoader::loadImages( dataDir + "/" + setName + "-dat.mat", &N, &numPlanes, &imageSize, n + 1 );
     cout << "n " << n << " N " << N << endl;
     N = n + 1;
-    float *images = new float[ N * numPlanes * boardSize * boardSize ];
-    for( int i = 0; i < N * numPlanes * boardSize * boardSize; i++ ) {
+    float *images = new float[ N * numPlanes * imageSize * imageSize ];
+    for( int i = 0; i < N * numPlanes * imageSize * imageSize; i++ ) {
         images[i] = imagesUchar[i];
     }
-    BoardPng::writeBoardsToPng( "testPatchExtractor-1.png", images + n * numPlanes * boardSize * boardSize, numPlanes, boardSize );
+    ImagePng::writeImagesToPng( "testPatchExtractor-1.png", images + n * numPlanes * imageSize * imageSize, numPlanes, imageSize );
     float *patches = new float[N * numPlanes * patchSize * patchSize];
-    PatchExtractor::extractPatch( n, numPlanes, boardSize, patchSize, patchRow, patchCol, images, patches );
-    BoardPng::writeBoardsToPng( "testPatchExtractor-2.png", patches + n * numPlanes * patchSize * patchSize, numPlanes, patchSize );
+    PatchExtractor::extractPatch( n, numPlanes, imageSize, patchSize, patchRow, patchCol, images, patches );
+    ImagePng::writeImagesToPng( "testPatchExtractor-2.png", patches + n * numPlanes * patchSize * patchSize, numPlanes, patchSize );
 }
 
 int main( int argc, char *argv[] ) {

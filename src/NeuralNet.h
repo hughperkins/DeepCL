@@ -47,7 +47,7 @@ public:
     // ]]]
     // generated, using cog:
     NeuralNet();
-    NeuralNet( int numPlanes, int boardSize );
+    NeuralNet( int numPlanes, int imageSize );
     ~NeuralNet();
     NeuralNet *clone();
     OpenCLHelper *getCl();
@@ -66,7 +66,7 @@ public:
     Layer *getLastLayer();
     Layer const*getLastLayer() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     void setBatchSize( int batchSize );
     void setTraining( bool training );
     int calcNumRight( int const *labels );

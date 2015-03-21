@@ -23,18 +23,18 @@ RandomTranslations::RandomTranslations( Layer *previousLayer, RandomTranslations
         Layer( previousLayer, maker ),
         translateSize( maker->_translateSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),
-        inputBoardSize( previousLayer->getOutputBoardSize() ),
-        outputBoardSize( previousLayer->getOutputBoardSize() ),
+        inputImageSize( previousLayer->getOutputImageSize() ),
+        outputImageSize( previousLayer->getOutputImageSize() ),
         results(0),
         batchSize(0),
         allocatedSize(0) {
-    if( inputBoardSize == 0 ) {
+    if( inputImageSize == 0 ) {
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input board size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input image size is 0" );
     }
-    if( outputBoardSize == 0 ) {
+    if( outputImageSize == 0 ) {
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output board size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
     }
     if( previousLayer->needsBackProp() ) {
         throw runtime_error("Error: RandomTranslations layer does not provide backprop currently, so you cannot put it after a layer that needs backprop");
@@ -58,7 +58,7 @@ VIRTUAL void RandomTranslations::setBatchSize( int batchSize ) {
     results = new float[ getResultsSize() ];
 }
 VIRTUAL int RandomTranslations::getResultsSize() {
-    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
+    return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *RandomTranslations::getResults() {
     return results;
@@ -67,10 +67,10 @@ VIRTUAL bool RandomTranslations::needsBackProp() {
     return false;
 }
 VIRTUAL int RandomTranslations::getResultsSize() const {
-    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
+    return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int RandomTranslations::getOutputBoardSize() const {
-    return outputBoardSize;
+VIRTUAL int RandomTranslations::getOutputImageSize() const {
+    return outputImageSize;
 }
 VIRTUAL int RandomTranslations::getOutputPlanes() const {
     return numPlanes;
@@ -93,11 +93,11 @@ VIRTUAL void RandomTranslations::propagate() {
     for( int n = 0; n < batchSize; n++ ) {
         const int translateRows = MyRandom::instance()->uniformInt( - translateSize, translateSize );
         const int translateCols = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-        Translator::translate( n, numPlanes, inputBoardSize, translateRows, translateCols, upstreamResults, results );
+        Translator::translate( n, numPlanes, inputImageSize, translateRows, translateCols, upstreamResults, results );
     }
 }
 VIRTUAL std::string RandomTranslations::asString() const {
-    return "RandomTranslations{ inputPlanes=" + toString(numPlanes) + " inputBoardSize=" + toString(inputBoardSize) + " translateSize=" + toString( translateSize ) + " }";
+    return "RandomTranslations{ inputPlanes=" + toString(numPlanes) + " inputImageSize=" + toString(inputImageSize) + " translateSize=" + toString( translateSize ) + " }";
 }
 
 

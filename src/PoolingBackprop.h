@@ -20,23 +20,23 @@ public:
 
     const bool padZeros;
     const int numPlanes;
-    const int inputBoardSize;
+    const int inputImageSize;
     const int poolingSize;
 
-    const int outputBoardSize;
+    const int outputImageSize;
 //    const int poolingSizeSquared;
 
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * inputBoardSize + row )
-            * inputBoardSize + col;
+            * inputImageSize + row )
+            * inputImageSize + col;
     }
     inline int getResultIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * outputBoardSize + row )
-            * outputBoardSize + col;
+            * outputImageSize + row )
+            * outputImageSize + col;
     }
 
     // [[[cog
@@ -44,10 +44,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC PoolingBackprop *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize);
-    STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
-    PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    STATIC PoolingBackprop *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize);
+    STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getResultsSize(int batchSize);
     VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream );

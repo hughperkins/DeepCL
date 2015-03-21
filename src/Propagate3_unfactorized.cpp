@@ -33,11 +33,11 @@ VIRTUAL void Propagate3_unfactorized::propagate( int batchSize, CLWrapper *dataW
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-//    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
-    kernel->localFloats( square( dim.inputBoardSize ) );
+//    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
+    kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
 
-    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
+    int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
 //    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
@@ -50,8 +50,8 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
         Propagate( cl, dim, fn )
             {
 
-    if( square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
-        throw runtime_error("cannot use propagate3, since outputboardsize * outputboardsize > maxworkgroupsize");
+    if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
+        throw runtime_error("cannot use propagate3, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
     std::string options = "-D " + fn->getDefineName();
@@ -105,7 +105,7 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
     "        global const float*biases,\n" 
     "    #endif\n" 
     "    global float *results,\n" 
-    "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
+    "    local float *_upstreamImage, local float *_filterCube ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "    const int workgroupId = get_group_id(0);\n" 
@@ -114,15 +114,15 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
     "    const int outPlane = workgroupId % gNumFilters;\n" 
     "\n" 
     "    const int localId = get_local_id(0);\n" 
-    "    const int outputRow = localId / gOutputBoardSize;\n" 
-    "    const int outputCol = localId % gOutputBoardSize;\n" 
+    "    const int outputRow = localId / gOutputImageSize;\n" 
+    "    const int outputCol = localId % gOutputImageSize;\n" 
     "\n" 
     "    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;\n" 
-    "    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;\n" 
+    "    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;\n" 
     "    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;\n" 
-    "    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;\n" 
+    "    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;\n" 
     "\n" 
-    "    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "\n" 
     "    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
     "    const int filterCubeGlobalOffset = outPlane * filterCubeLength;\n" 
@@ -133,34 +133,34 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
     "            _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];\n" 
     "        }\n" 
     "    }\n" 
-    "    // dont need a barrier, since we'll just run behind the barrier from the upstream board download\n" 
+    "    // dont need a barrier, since we'll just run behind the barrier from the upstream image download\n" 
     "\n" 
     "    float sum = 0;\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
-    "        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
+    "        int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
     "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gInputBoardSizeSquared ) {\n" 
-    "                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
+    "            if( thisOffset < gInputImageSizeSquared ) {\n" 
+    "                _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];\n" 
     "            }\n" 
     "        }\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        int filterBoardOffset = upstreamPlane * gFilterSizeSquared;\n" 
+    "        int filterImageOffset = upstreamPlane * gFilterSizeSquared;\n" 
     "        for( int u = minu; u <= maxu; u++ ) {\n" 
     "            int inputRow = outputRow + u;\n" 
     "            #if gPadZeros == 0\n" 
     "                inputRow += gHalfFilterSize;\n" 
     "            #endif\n" 
-    "            int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
-    "            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "            int inputimagerowoffset = inputRow * gInputImageSize;\n" 
+    "            int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
     "            for( int v = minv; v <= maxv; v++ ) {\n" 
     "                int inputCol = outputCol + v;\n" 
     "                #if gPadZeros == 0\n" 
     "                    inputCol += gHalfFilterSize;\n" 
     "                #endif\n" 
-    "                if( localId < gOutputBoardSizeSquared ) {\n" 
-    "                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "                if( localId < gOutputImageSizeSquared ) {\n" 
+    "                    sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
     "                }\n" 
     "            }\n" 
     "        }\n" 
@@ -173,8 +173,8 @@ Propagate3_unfactorized::Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensi
     "    #endif\n" 
     "\n" 
     "    // results are organized like [imageid][filterid][row][col]\n" 
-    "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
-    "    if( localId < gOutputBoardSizeSquared ) {\n" 
+    "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;\n" 
+    "    if( localId < gOutputImageSizeSquared ) {\n" 
     "        results[resultIndex ] = ACTIVATION_FUNCTION( sum );\n" 
     "    }\n" 
     "}\n" 

@@ -18,7 +18,7 @@
 void kernel propagate_3_by_n_outplane( const int batchSize,
       global const float *images, global const float *filters, 
     global float *results,
-    local float *_upstreamBoard, local float *_filterCube ) {
+    local float *_upstreamImage, local float *_filterCube ) {
     const int globalId = get_global_id(0);
 
     const int workgroupId = get_group_id(0);
@@ -27,15 +27,15 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
     const int outPlane = workgroupId % gNumFilters;
 
     const int localId = get_local_id(0);
-    const int outputRow = localId / gOutputBoardSize;
-    const int outputCol = localId % gOutputBoardSize;
+    const int outputRow = localId / gOutputImageSize;
+    const int outputCol = localId % gOutputImageSize;
 
     const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
+    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
     const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputBoardSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
+    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
 
-    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
     const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
     const int filterCubeGlobalOffset = outPlane * filterCubeLength;
@@ -46,42 +46,42 @@ void kernel propagate_3_by_n_outplane( const int batchSize,
             _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];
         }
     }
-    // dont need a barrier, since we'll just run behind the barrier from the upstream board download
+    // dont need a barrier, since we'll just run behind the barrier from the upstream image download
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
-        int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
+        int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numUpstreamsPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gInputBoardSizeSquared ) {
-                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+            if( thisOffset < gInputImageSizeSquared ) {
+                _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        int filterBoardOffset = upstreamPlane * gFilterSizeSquared;
+        int filterImageOffset = upstreamPlane * gFilterSizeSquared;
         for( int u = minu; u <= maxu; u++ ) {
             int inputRow = outputRow + u;
             #if gPadZeros == 0
                 inputRow += gHalfFilterSize;
             #endif
-            int inputboardrowoffset = inputRow * gInputBoardSize;
-            int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+            int inputimagerowoffset = inputRow * gInputImageSize;
+            int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
             for( int v = minv; v <= maxv; v++ ) {
                 int inputCol = outputCol + v;
                 #if gPadZeros == 0
                     inputCol += gHalfFilterSize;
                 #endif
-                if( localId < gOutputBoardSizeSquared ) {
-                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                if( localId < gOutputImageSizeSquared ) {
+                    sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                 }
             }
         }
     }
 
     // results are organized like [imageid][filterid][row][col]
-    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;
-    if( localId < gOutputBoardSizeSquared ) {
+    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
+    if( localId < gOutputImageSizeSquared ) {
         results[resultIndex ] = sum;
     }
 }

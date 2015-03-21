@@ -20,22 +20,22 @@ public:
 
     const bool padZeros;
     const int numPlanes;
-    const int inputBoardSize;
+    const int inputImageSize;
     const int poolingSize;
 
-    const int outputBoardSize;
+    const int outputImageSize;
 
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * inputBoardSize + row )
-            * inputBoardSize + col;
+            * inputImageSize + row )
+            * inputImageSize + col;
     }
     inline int getResultIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * outputBoardSize + row )
-            * outputBoardSize + col;
+            * outputImageSize + row )
+            * outputImageSize + col;
     }
 
     // [[[cog
@@ -43,10 +43,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingPropagate( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
-    STATIC PoolingPropagate *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingPropagate( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingPropagate *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingPropagate *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingPropagate *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL void propagate( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
     VIRTUAL void propagate( int batchSize, float *input, int *selectors, float *output );
     VIRTUAL int getInputSize( int batchSize );

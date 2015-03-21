@@ -38,7 +38,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         backpropErrorsImpl(0),
         activationFunction( maker->_activationFunction ) {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
-        .setInputBoardSize( previousLayer->getOutputBoardSize() )
+        .setInputImageSize( previousLayer->getOutputImageSize() )
         .setNumFilters( maker->_numFilters )
         .setFilterSize( maker->_filterSize )
         .setBiased( maker->_biased )
@@ -47,7 +47,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
     }
 
-//    dim = LayerDimensions( upstreamNumPlanes, upstreamBoardSize, 
+//    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
     propagateimpl = Propagate::instance( cl, dim, activationFunction );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
@@ -55,9 +55,9 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         backpropErrorsImpl = BackpropErrorsv2::instance( cl, dim, previousLayer->getActivationFunction() );
     }
 
-    if( dim.filterSize > dim.inputBoardSize ) {
-            throw std::runtime_error("filter size cannot be larger than upstream board size: " + toString( dim.filterSize) +
-                " > " + toString(dim.inputBoardSize) );
+    if( dim.filterSize > dim.inputImageSize ) {
+            throw std::runtime_error("filter size cannot be larger than upstream image size: " + toString( dim.filterSize) +
+                " > " + toString(dim.inputImageSize) );
     }
     biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
@@ -146,8 +146,8 @@ VIRTUAL int ConvolutionalLayer::getResultsSize() const {
 VIRTUAL int ConvolutionalLayer::getOutputPlanes() const {
     return dim.numFilters;
 }
-VIRTUAL int ConvolutionalLayer::getOutputBoardSize() const {
-    return dim.outputBoardSize;
+VIRTUAL int ConvolutionalLayer::getOutputImageSize() const {
+    return dim.outputImageSize;
 }
 // filters are organized like [filterid][plane][row][col]
 void ConvolutionalLayer::randomizeWeights() {
@@ -208,18 +208,18 @@ VIRTUAL void ConvolutionalLayer::printOutput() const {
         std::cout << "    n: " << n << std::endl;
         for( int plane = 0; plane < std::min(5, dim.numFilters ); plane++ ) {
             if( dim.numFilters > 1 ) std::cout << "      plane " << plane << std::endl;
-            if( dim.outputBoardSize == 1 ) {
+            if( dim.outputImageSize == 1 ) {
                  std::cout << "        " << getResult(n, plane, 0, 0 ) << std::endl;
             } else {
-                for( int i = 0; i < std::min(5, dim.outputBoardSize); i++ ) {
+                for( int i = 0; i < std::min(5, dim.outputImageSize); i++ ) {
                     std::cout << "      ";
-                    for( int j = 0; j < std::min(5, dim.outputBoardSize); j++ ) {
+                    for( int j = 0; j < std::min(5, dim.outputImageSize); j++ ) {
                         std::cout << getResult( n, plane, i, j ) << " ";
                     }
-                    if( dim.outputBoardSize > 5 ) std::cout << " ... ";
+                    if( dim.outputImageSize > 5 ) std::cout << " ... ";
                     std::cout << std::endl;
                 }
-                if( dim.outputBoardSize > 5 ) std::cout << " ... " << std::endl;
+                if( dim.outputImageSize > 5 ) std::cout << " ... " << std::endl;
             }
             if( dim.numFilters > 5 ) std::cout << " ... other planes ... " << std::endl;
         }
@@ -257,7 +257,7 @@ VIRTUAL void ConvolutionalLayer::propagate() {
     if( batchSize == 0 ) {
         throw runtime_error("Need to call setBatchSize(size) before calling propagate etc");
     }
-//    if( boardSizeSquared <= cl->getMaxWorkgroupSize() ) {
+//    if( imageSizeSquared <= cl->getMaxWorkgroupSize() ) {
 ////        propagate2();
 //    } else {
 //  //      propagate1();

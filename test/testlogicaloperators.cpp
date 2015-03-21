@@ -17,8 +17,8 @@ using namespace std;
 //    LogicalDataCreator ldc;
 //    ldc.applyAndGate();
 
-//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->tanh()->insert();
 ////    net->print();
 //    for( int epoch = 0; epoch < 100; epoch++ ) {
 //        net->epochMaker()
@@ -49,8 +49,8 @@ using namespace std;
 ////    ldc.applyAndGate();
 //    ldc.applyOrGate();
 ////    NeuralNet *net = new NeuralNet(2, 1 );
-//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->tanh()->insert();
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->tanh()->insert();
 //    for( int epoch = 0; epoch < 10; epoch++ ) {
 //        net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
 //        if( epoch % 5 == 0 ) {
@@ -76,9 +76,9 @@ using namespace std;
 //    LogicalDataCreator ldc;
 //    ldc.applyXorGate();
 ////    NeuralNet *net = new NeuralNet(2, 1 );
-//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
-//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->biased()->insert();
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->insert();
+//    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->insert();
 //    float weights1[] = {-1.04243, 0.251409, -0.806014, -0.0268563};
 //    float weights2[] = {0.107038, -0.144079, 0.1492, -0.395718};
 //    float biasWeights1[] = {-0.415169, 0.536681};
@@ -119,7 +119,7 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(4)->batchSize(4)->numExamples(4)->inputData(ldc.data)
@@ -138,7 +138,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
@@ -163,7 +163,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
@@ -201,7 +201,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    LogicalDataCreator ldc(new TanhActivation());
 //    ldc.applyXorGate();
 
-    int boardSize = 1;
+    int imageSize = 1;
     int inPlanes = 2;
     int numExamples = 4;
     int filterSize = 1;
@@ -239,7 +239,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
         0
     };
 
-    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
     net->addLayer( SquareLossMaker::instance() );;
@@ -270,8 +270,8 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    LogicalDataCreator ldc( new ReluActivation() );
 //    ldc.applyAndGate();
 
-//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->relu()->biased()->insert();
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->imageSize(1)->relu()->biased()->insert();
 //    net->print();
 //    for( int epoch = 0; epoch < 10; epoch++ ) {
 //        net->epochMaker()
@@ -295,8 +295,8 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    LogicalDataCreator ldc( new ReluActivation() );
 //    ldc.applyAndGate();
 
-//    NeuralNet *net = NeuralNet::maker()->planes(2)->boardSize(1)->instance();
-//    net->fullyConnectedMaker()->planes(2)->boardSize(1)->linear()->biased()->insert();
+//    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+//    net->fullyConnectedMaker()->planes(2)->imageSize(1)->linear()->biased()->insert();
 ////    net->print();
 //    for( int epoch = 0; epoch < 20; epoch++ ) {
 //        net->epochMaker()

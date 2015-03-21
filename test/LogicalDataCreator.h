@@ -17,7 +17,7 @@ public:
     int N;
     const int numInputPlanes;
     const int numOutputPlanes;
-    const int boardSize;
+    const int imageSize;
     ActivationFunction *fn;
     LogicalDataCreator( ActivationFunction *activationFunction = new TanhActivation() ) :
             data(new float[8]),
@@ -26,7 +26,7 @@ public:
             index(0),
             numInputPlanes(2),
             numOutputPlanes(2),
-            boardSize(1),
+            imageSize(1),
             fn( activationFunction ) {
     }
     ~LogicalDataCreator() {

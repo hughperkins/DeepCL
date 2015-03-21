@@ -1,4 +1,4 @@
-ClConvolve
+ ClConvolve
 ==========
 
 Contents
@@ -94,11 +94,11 @@ Functionalities:
 
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
-  - obtained 35.1% test accuracy, using 16 million training records from the [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-  - commandline used `./clconvolve1 dataset=kgsgoall netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numepochs=3 learningrate=0.0001 numtrain=16000000`
-  - 3 epochs, 14 hours per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU
+  - obtained 36.3% test accuracy, on next move prediction task, using 33.6 million training examples from [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+  - commandline used `./clconvolve1 dataset=kgsgoall netdef=32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-32c5{z}-500n-361n numepochs=3 learningrate=0.0001`
+  - 3 epochs, 1.5 days per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU (about half as powerful as a GTX780)
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n numepochs=20 multinet=6 learningrate=0.002`
-  - epoch time 99.8 seconds, using an Amazon GPU instance, NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
+  - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
 
 # Commandline usage
 
@@ -279,14 +279,14 @@ Example usage:
 * You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
 ```c++
 NeuralNet *net = new NeuralNet();
-net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(1)->boardSize(28) );
+net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(1)->imageSize(28) );
 net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
 net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
 net->addLayer( PoolingMaker::instance()->poolingSize(2) );
 net->addLayer( ConvolutionalMaker::instance()->numFilters(16)->filterSize(5)->relu()->biased() );
 net->addLayer( PoolingMaker::instance()->poolingSize(3) );
-net->addLayer( FullyConnectedMaker::instance()->numPlanes(150)->boardSize(1)->tanh()->biased() );
-net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->boardSize(1)->linear()->biased() );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(150)->imageSize(1)->tanh()->biased() );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->imageSize(1)->linear()->biased() );
 net->addLayer( SoftMaxLossMaker::instance() );
 net->print();
 ```
@@ -306,20 +306,20 @@ NeuralNet *net = new NeuralNet();
 * You need exactly one input layer
 * This is templated, so you can feed it an array of `unsigned char *`, or `float *`, later, as you wish.  If you want to feed in data as `float *`, then do:
 ```c++
-net->addLayer( InputMaker<float>::instance()->numPlanes(10)->boardSize(19) );
+net->addLayer( InputMaker<float>::instance()->numPlanes(10)->imageSize(19) );
 ```
 * If you want to feed in data as `unsigned char *`, then do:
 ```c++
-net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(10)->boardSize(19) );
+net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(10)->imageSize(19) );
 ```
-* You need to set the number of input planes, and the board size.
+* You need to set the number of input planes, and the image size.
 
 ## Normalization layer
 
 * You can add a normalization layer, to translate and scale input data.  Put it just after the input layer, like this:
 ```c++
 NeuralNet *net = new NeuralNet();
-net->addLayer( InputMaker<float>::instance()->numPlanes(10)->boardSize(19) );
+net->addLayer( InputMaker<float>::instance()->numPlanes(10)->imageSize(19) );
 net->addLayer( NormalizationMaker::instance()->translate( - mean )->scale( 1.0f / standardDeviation ) );
 // other layers here...
 ```
@@ -353,7 +353,7 @@ net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->re
 ```
 
 * You can change the number of filters, and their size.  If you want, you can use any of the following options:
-  * `->padZeros()`: pad the input board with zeros, so the output board is same size as the input
+  * `->padZeros()`: pad the input image with zeros, so the output image is same size as the input
   * `->biased()` turn on bias
   * `->biased(1)` same as `->biased()`
   * `->biased(0)` turn off bias (default)
@@ -368,7 +368,7 @@ net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->re
 
 eg:
 ```c++
-net->addLayer( FullyConnectedMaker::instance()->numPlanes(2)->boardSize(28) );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(2)->imageSize(28) );
 ```
 
 Available options:
@@ -386,7 +386,7 @@ Available options:
 ```c++
 net->addLayer( PoolingMaker::instance()->poolingSize(2) );
 ```
-* By default, if the input board size is not an exact multiple of the poolingsize, the extra margin will be ignored
+* By default, if the input image size is not an exact multiple of the poolingsize, the extra margin will be ignored
 * You can specify `padZeros` to include this margin:
 ```c++
 net->addLayer( PoolingMaker::instance()->poolingSize(2)->padZeros() );
@@ -407,7 +407,7 @@ net->addLayer( SoftMaxLayer::instance() );
   * if you're not sure, then `tanh` last layer, with squared loss, works well
 * the softmax layer:
   * creates a probability distribution, ie a set of outputs, that sum to 1, and each lie in the range `0 <= x <= 1`
-  * can create this probability distribution either across all output planes, with a boardsize of 1
+  * can create this probability distribution either across all output planes, with a imagesize of 1
     * this is the default
   * or else a per-plane probability distribution
     * add option `->perPlane()`
@@ -418,8 +418,8 @@ Input data should be provided in a contiguous array, of `float`s (edit: or `unsi
 
 * training example id
 * input plane
-* board row
-* board column
+* image row
+* image column
 
 Providing labels, as an integer array, is the most efficient way of training, if you are training against categorical data.  The labels should be provided as one integer per example, zero-based.
 
@@ -680,6 +680,8 @@ Recent changes
 ==============
 
 Dates are dates of code change / commit, rather than date merged into master, or tagged.
+* 21st March:
+  * global rename 'board' and 'Board' to 'image' and 'Image', to make more generic
 * 17th February:
   * migrated max-pooling backprop to gpu
 * 15th February:
@@ -734,11 +736,11 @@ Dates are dates of code change / commit, rather than date merged into master, or
 * 23rd January:
   * created `testmnist-mpi`, to experiment with using mpi to parallelize across multiple compute nodes (which must each have a GPU, which GPUs must ideally each be the same model/specifications)
 * 22nd January:
-  * re-added FullyConnectedLayer, which is now a wrapper around ConvolutionalLayer, with one filter per output node.  So, if we want a 28x28 board as the output, this will need 784 filters in the underlying convolutional layer, which
+  * re-added FullyConnectedLayer, which is now a wrapper around ConvolutionalLayer, with one filter per output node.  So, if we want a 28x28 image as the output, this will need 784 filters in the underlying convolutional layer, which
 sounds excessive, but this is how a fully connected layer works :-)
   * best mnist accuracy now at 98.6%
 * 21st January:
-  * added softmax layer, for per-column configuration, ie multi-planar output, with boardsize 1
+  * added softmax layer, for per-column configuration, ie multi-planar output, with imagesize 1
     * tested once on mnist: 97.65% test accuracy after 12 epochs; 98.09% after 20 epochs
 * week up to 21st January: 
   * added sigmoid activation

@@ -31,7 +31,7 @@ STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimen
         return new BackpropWeights2Naive( cl, dim );
     }
     if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
-            && dim.inputBoardSize <= 32 ) { // if inputboardsize too big, we run out of local memory
+            && dim.inputImageSize <= 32 ) { // if inputimagesize too big, we run out of local memory
         return new BackpropWeights2Scratch( cl, dim );
     } else if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
         return new BackpropWeights2ScratchLarge( cl, dim );
@@ -42,7 +42,7 @@ STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimen
 //    return new BackpropWeights2ScratchLarge( cl, dim );
 
 //    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
-//            && dim.inputBoardSize <= 32 ) { // if inputboardsize too big, we run out of local memory
+//            && dim.inputImageSize <= 32 ) { // if inputimagesize too big, we run out of local memory
 //        return new BackpropWeights2Scratch( cl, dim );
 //    } else {
 //        return new BackpropWeights2Naive( cl, dim );
@@ -74,7 +74,7 @@ BackpropWeights2::BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimen
 VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRate, float *derivLossBySum, float *inputData, float *filters, float *biasWeights ) {
     StatefulTimer::timeCheck("BackpropWeights2::backprop begin");
 
-//    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputBoardSize * dim.outputBoardSize );
+//    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
 
     int resultsSize = batchSize * dim.outputCubeSize;
     CLWrapper *derivLossBySumWrapper = cl->wrap( resultsSize, derivLossBySum );
@@ -116,7 +116,7 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
 }
 
 float BackpropWeights2::learningRateToMultiplier( int batchSize, float rate ) {
-//        float multiplier = rate / batchSize / sqrt( dim.outputBoardSize );
+//        float multiplier = rate / batchSize / sqrt( dim.outputImageSize );
     float multiplier = rate;
 //    std::cout << "rate " << rate << " multiplier " << multiplier << std::endl;
     return multiplier;

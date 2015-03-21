@@ -12,7 +12,7 @@
 #include <random>
 
 #include "FileHelper.h"
-#include "BoardsHelper.h"
+#include "ImagesHelper.h"
 
 class MnistLoader {
 public:
@@ -30,15 +30,15 @@ public:
         *p_size = numRows;
         std::cout << "numimages " << numImages << " " << numRows << "*" << numCols << std::endl;
 
-        int **board = BoardHelper::allocateBoard( numRows );
+        int **image = ImageHelper::allocateImage( numRows );
         for( int i = 0; i < numRows; i++ ) {
             for( int j = 0; j < numRows; j++ ) {
-                board[i][j] = (int)imagesData[idx * numRows * numCols + i * numCols + j];
+                image[i][j] = (int)imagesData[idx * numRows * numCols + i * numCols + j];
             }
         }
         delete[] imagesDataSigned;
         delete[] labelsDataSigned;
-        return board;
+        return image;
     }
     static int ***loadImages( std::string dir, std::string set, int *p_numImages, int *p_size ) {
         long imagesFilesize = 0;
@@ -51,16 +51,16 @@ public:
         *p_numImages = totalNumImages;
         *p_size = numRows;
         std::cout << "totalNumImages " << *p_numImages << " " << *p_size << "*" << numCols << std::endl;
-        int ***boards = BoardsHelper::allocateBoards( *p_numImages, numRows );
+        int ***images = ImagesHelper::allocateImages( *p_numImages, numRows );
         for( int n = 0; n < *p_numImages; n++ ) {
             for( int i = 0; i < numRows; i++ ) {
                 for( int j = 0; j < numRows; j++ ) {
-                    boards[n][i][j] = (int)imagesData[16 + n * numRows * numCols + i * numCols + j];
+                    images[n][i][j] = (int)imagesData[16 + n * numRows * numCols + i * numCols + j];
                 }
             }
         }
         delete[] imagesDataSigned;
-        return boards;
+        return images;
     }
     static int *loadLabels( std::string dir, std::string set, int *p_numImages ) {
         long labelsFilesize = 0;

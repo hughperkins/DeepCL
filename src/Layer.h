@@ -51,7 +51,7 @@ public:
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     VIRTUAL void propagate();
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();

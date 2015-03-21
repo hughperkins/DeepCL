@@ -30,8 +30,8 @@
 // workgroupId: [outputPlane][inputPlane][blockRow][blockCol]
 // localId: [filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-// local: errorboard: blockSize * blockSize
-//        imageboard: inputBoardSize * inputBoardSize
+// local: errorimage: blockSize * blockSize
+//        imageimage: inputImageSize * inputImageSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *errors, global const float *images, 
@@ -39,7 +39,7 @@ void kernel backprop_floats_withscratch_dobias(
         #ifdef BIASED
              global float *biasWeights,
         #endif
-        local float *_errorBoard, local float *_imageBoard
+        local float *_errorImage, local float *_imageImage
  ) {
     #define globalId ( get_global_id(0) )
     #define localId ( get_local_id(0)  )
@@ -62,25 +62,25 @@ void kernel backprop_floats_withscratch_dobias(
 #endif
     for( int n = 0; n < batchSize; n++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _imageBoard, images + ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared, 
-            gInputBoardSizeSquared );
-        copyLocal( _errorBoard, errors + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared,
-            gOutputBoardSizeSquared );
+        copyLocal( _imageImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, 
+            gInputImageSizeSquared );
+        copyLocal( _errorImage, errors + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared,
+            gOutputImageSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {
-            for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {
+            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {
                 int upstreamRow = outRow - gMargin + filterRow;
-                for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
+                for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
                     const int upstreamCol = outCol - gMargin + filterCol;
-                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize && upstreamCol < gInputBoardSize )
+                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize )
                     if( proceed ) {
                         // these defines reduce register pressure, compared to const
                         // giving a 40% speedup on nvidia :-)
-                        #define resultIndex ( outRow * gOutputBoardSize + outCol )
-                        #define error ( _errorBoard[resultIndex] )
-                        //const float error = _errorBoard[resultIndex];
-                        #define upstreamDataIndex ( upstreamRow * gInputBoardSize + upstreamCol )
-                        #define upstreamResult ( _imageBoard[upstreamDataIndex] )
+                        #define resultIndex ( outRow * gOutputImageSize + outCol )
+                        #define error ( _errorImage[resultIndex] )
+                        //const float error = _errorImage[resultIndex];
+                        #define upstreamDataIndex ( upstreamRow * gInputImageSize + upstreamCol )
+                        #define upstreamResult ( _imageImage[upstreamDataIndex] )
                         thiswchange += upstreamResult * error;
     #ifdef BIASED
                         thisbiaschange += error;

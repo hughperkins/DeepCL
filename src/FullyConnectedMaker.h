@@ -15,20 +15,20 @@
 class ClConvolve_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:
     int _numPlanes;
-    int _boardSize;
+    int _imageSize;
     int _biased;
     ActivationFunction const*_activationFunction;
     FullyConnectedMaker() :
         _numPlanes(0),
-        _boardSize(0),
+        _imageSize(0),
         _activationFunction( new TanhActivation() ) {
     }
     FullyConnectedMaker *numPlanes(int numPlanes) {
         this->_numPlanes = numPlanes;
         return this;
     }    
-    FullyConnectedMaker *boardSize(int boardSize) {
-        this->_boardSize = boardSize;
+    FullyConnectedMaker *imageSize(int imageSize) {
+        this->_imageSize = imageSize;
         return this;
     }
     FullyConnectedMaker *biased() {

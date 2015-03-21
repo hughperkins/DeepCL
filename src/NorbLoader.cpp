@@ -20,7 +20,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
+STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int *p_numPlanes, int *p_imageSize ) {
     char*headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 6 * 4 );
     unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
 
@@ -32,18 +32,18 @@ STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int 
     int ndim = headerValues[1];
     int N = headerValues[2];
     int numPlanes = headerValues[3];
-    int boardSize = headerValues[4];
-    int boardSizeRepeated = headerValues[5];
-//    std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
-    checkSame( "boardSize", boardSize, boardSizeRepeated );
+    int imageSize = headerValues[4];
+    int imageSizeRepeated = headerValues[5];
+//    std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << imageSize << " " << imageSizeRepeated << std::endl;
+    checkSame( "imageSize", imageSize, imageSizeRepeated );
 
 //    if( maxN > 0 ) {
 //        N = min( maxN, N );
 //    }
-//    int totalLinearSize = N * numPlanes * boardSize * boardSize;
+//    int totalLinearSize = N * numPlanes * imageSize * imageSize;
     *p_N = N;
     *p_numPlanes = numPlanes;
-    *p_boardSize = boardSize;
+    *p_imageSize = imageSize;
 //    *p_imagesLinearSize = totalLinearSize;
 }
 
@@ -52,19 +52,19 @@ STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, 
 }
 
 STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
-    int N, numPlanes, boardSize;
+    int N, numPlanes, imageSize;
     // I know, this could be optimized a bit, to remove the intermediate arrays...
-    loadImages( images, trainFilepath, &N, &numPlanes, &boardSize, startN, numExamples );
-//    int totalLinearSize = numExamples  * numPlanes * boardSize * boardSize;
-//    memcpy( images, loadedImages + startN * numPlanes * boardSize * boardSize, numExamples * numPlanes * boardSize * boardSize * sizeof( unsigned char ) );
+    loadImages( images, trainFilepath, &N, &numPlanes, &imageSize, startN, numExamples );
+//    int totalLinearSize = numExamples  * numPlanes * imageSize * imageSize;
+//    memcpy( images, loadedImages + startN * numPlanes * imageSize * imageSize, numExamples * numPlanes * imageSize * imageSize * sizeof( unsigned char ) );
     loadLabels( labels, replace( trainFilepath, "-dat.mat","-cat.mat"), startN, numExamples );
 //    memcpy( labels, loadedLabels + startN, sizeof( int ) * numExamples );
 //    delete []loadedImages;
 //    delete[] loadedLabels;
 }
 
-//STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
-//    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, 0 );
+//STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize ) {
+//    return loadImages( filepath, p_N, p_numPlanes, p_imageSize, 0, 0 );
 //}
 
 STATIC int *NorbLoader::loadLabels( std::string labelsfilepath, int numExamples ) {
@@ -73,23 +73,23 @@ STATIC int *NorbLoader::loadLabels( std::string labelsfilepath, int numExamples 
     return labels;
 }
 
-STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
-    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, 0 );
+STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize ) {
+    return loadImages( filepath, p_N, p_numPlanes, p_imageSize, 0, 0 );
 }
 
-STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int numExamples ) {
-    return loadImages( filepath, p_N, p_numPlanes, p_boardSize, 0, numExamples );
+STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize, int numExamples ) {
+    return loadImages( filepath, p_N, p_numPlanes, p_imageSize, 0, numExamples );
 }
 
-STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int startN, int numExamples ) {
-    getDimensions( filepath, p_N, p_numPlanes, p_boardSize );
-    unsigned char *images = new unsigned char[ (long)numExamples * *p_numPlanes * *p_boardSize * *p_boardSize ];
-    loadImages( images, filepath, p_N, p_numPlanes, p_boardSize, startN, numExamples );
+STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize, int startN, int numExamples ) {
+    getDimensions( filepath, p_N, p_numPlanes, p_imageSize );
+    unsigned char *images = new unsigned char[ (long)numExamples * *p_numPlanes * *p_imageSize * *p_imageSize ];
+    loadImages( images, filepath, p_N, p_numPlanes, p_imageSize, startN, numExamples );
     return images;
 }
 
 // you need to allocate this yourself, before use
-STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize, int startN, int numExamples ) {
+STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize, int startN, int numExamples ) {
     char*headerBytes = FileHelper::readBinaryChunk( filepath, 0, 6 * 4 );
     unsigned int *headerValues = reinterpret_cast< unsigned int *>( headerBytes );
 
@@ -101,10 +101,10 @@ STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath,
     int ndim = headerValues[1];
     int N = headerValues[2];
     int numPlanes = headerValues[3];
-    int boardSize = headerValues[4];
-    int boardSizeRepeated = headerValues[5];
-//    std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << boardSize << " " << boardSizeRepeated << std::endl;
-    checkSame( "boardSize", boardSize, boardSizeRepeated );
+    int imageSize = headerValues[4];
+    int imageSizeRepeated = headerValues[5];
+//    std::cout << "ndim " << ndim << " " << N << " " << numPlanes << " " << imageSize << " " << imageSizeRepeated << std::endl;
+    checkSame( "imageSize", imageSize, imageSizeRepeated );
 
     if( numExamples > 0 && numExamples > ( N - startN ) ) {
         throw runtime_error("You requested " + toString( numExamples ) + " but there are only " + toString( N - startN ) + " avialalbe after start N " + toString( startN ) );
@@ -115,8 +115,8 @@ STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath,
 //    if( maxN > 0 ) {
 //        N = min( maxN, N );
 //    }
-    long fileStartPos = 6 * 4 + (long)startN * numPlanes * boardSize * boardSize;
-    long fileReadLength = (long)numExamples * numPlanes * boardSize * boardSize;
+    long fileStartPos = 6 * 4 + (long)startN * numPlanes * imageSize * imageSize;
+    long fileReadLength = (long)numExamples * numPlanes * imageSize * imageSize;
     char *imagesAsCharArray = reinterpret_cast< char *>(images );
 //    cout << "images, filestartpos " << fileStartPos << " readlength " << fileReadLength << endl;
     FileHelper::readBinaryChunk( imagesAsCharArray, filepath, fileStartPos, fileReadLength );
@@ -124,7 +124,7 @@ STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath,
 
     *p_N = N;
     *p_numPlanes = numPlanes;
-    *p_boardSize = boardSize;
+    *p_imageSize = imageSize;
 //    return imagesDataUnsigned;
 }
 // you need to allocate this yourself, before use
@@ -157,8 +157,8 @@ STATIC void NorbLoader::loadLabels( int *labels, std::string filepath, int start
 //    int *labels = reinterpret_cast< int *>(labelsAsByteArray);
 //    return labels;
 }
-STATIC void NorbLoader::writeImages( std::string filepath, unsigned char *images, int N, int numPlanes, int boardSize ) {
-    int totalLinearSize = N * numPlanes * boardSize * boardSize;
+STATIC void NorbLoader::writeImages( std::string filepath, unsigned char *images, int N, int numPlanes, int imageSize ) {
+    int totalLinearSize = N * numPlanes * imageSize * imageSize;
 
     long imagesFilesize = totalLinearSize + 6 * 4; // magic, plus num dimensions, plus 4 dimensions
     char *imagesDataSigned = new char[ imagesFilesize ];
@@ -168,8 +168,8 @@ STATIC void NorbLoader::writeImages( std::string filepath, unsigned char *images
     imagesDataInt[1] = 4;
     imagesDataInt[2] = N;
     imagesDataInt[3] = numPlanes;
-    imagesDataInt[4] = boardSize;
-    imagesDataInt[5] = boardSize;
+    imagesDataInt[4] = imageSize;
+    imagesDataInt[5] = imageSize;
     memcpy( imagesDataUnsigned + 6 * sizeof(int), images, totalLinearSize * sizeof( unsigned char ) );
     FileHelper::writeBinary( filepath, imagesDataSigned, imagesFilesize );
 }

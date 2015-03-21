@@ -11,7 +11,7 @@
 using namespace std;
 
 TEST( DISABLED_testbiasbackprop, one ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();

@@ -29,10 +29,10 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-//        cout << "square(outputBoardSize) " << square( outputBoardSize ) << endl;
-    kernel->localFloats( square( dim.inputBoardSize ) );
+//        cout << "square(outputImageSize) " << square( outputImageSize ) << endl;
+    kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
-    int workgroupsize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
+    int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters;
     int globalSize = workgroupsize * numWorkgroups;
 //    cout << "propagate2 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
@@ -43,8 +43,8 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
         Propagate( cl, dim, fn )
             {
-    if( square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
-        throw runtime_error("cannot use propagate2, since outputboardsize * outputboardsize > maxworkgroupsize");
+    if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
+        throw runtime_error("cannot use propagate2, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
     std::string options = "-D " + fn->getDefineName();
@@ -77,7 +77,7 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "    #define ACTIVATION_FUNCTION(output) (output)\n" 
     "#endif\n" 
     "\n" 
-    "#ifdef gOutputBoardSize // for previous tests that dont define it\n" 
+    "#ifdef gOutputImageSize // for previous tests that dont define it\n" 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
     "// workgroup id organized like: [outplane]\n" 
     "// local id organized like: [outrow][outcol]\n" 
@@ -96,7 +96,7 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            global const float*biases,\n" 
     "        #endif\n" 
     "    global float *results,\n" 
-    "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
+    "    local float *_upstreamImage, local float *_filterCube ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "//    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;\n" 
@@ -106,14 +106,14 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "    const int outPlane = workgroupId;\n" 
     "\n" 
     "    const int localId = get_local_id(0);\n" 
-    "    const int outputRow = localId / gOutputBoardSize;\n" 
-    "    const int outputCol = localId % gOutputBoardSize;\n" 
+    "    const int outputRow = localId / gOutputImageSize;\n" 
+    "    const int outputCol = localId % gOutputImageSize;\n" 
     "\n" 
     "    #if gPadZeros == 1\n" 
     "        const int minu = max( -gHalfFilterSize, -outputRow );\n" 
-    "        const int maxu = min( gHalfFilterSize, gOutputBoardSize - 1 - outputRow ) - gEven;\n" 
+    "        const int maxu = min( gHalfFilterSize, gOutputImageSize - 1 - outputRow ) - gEven;\n" 
     "        const int minv = max( -gHalfFilterSize, -outputCol );\n" 
-    "        const int maxv = min( gHalfFilterSize, gOutputBoardSize - 1 - outputCol ) - gEven;\n" 
+    "        const int maxv = min( gHalfFilterSize, gOutputImageSize - 1 - outputCol ) - gEven;\n" 
     "    #else\n" 
     "        const int minu = -gHalfFilterSize;\n" 
     "        const int maxu = gHalfFilterSize - gEven;\n" 
@@ -121,7 +121,7 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "        const int maxv = gHalfFilterSize - gEven;\n" 
     "    #endif\n" 
     "\n" 
-    "    const int numUpstreamsPerThread = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "\n" 
     "    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
     "    const int filterCubeGlobalOffset = outPlane * filterCubeLength;\n" 
@@ -132,35 +132,35 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];\n" 
     "        }\n" 
     "    }\n" 
-    "    // dont need a barrier, since we'll just run behind the barrier from the upstream board download\n" 
+    "    // dont need a barrier, since we'll just run behind the barrier from the upstream image download\n" 
     "\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        float sum = 0;\n" 
     "        for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
-    "            int thisUpstreamBoardOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
+    "            int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "            for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
     "                int thisOffset = workgroupSize * i + localId;\n" 
-    "                if( thisOffset < gInputBoardSizeSquared ) {\n" 
-    "                    _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];\n" 
+    "                if( thisOffset < gInputImageSizeSquared ) {\n" 
+    "                    _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];\n" 
     "                }\n" 
     "            }\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "            int filterBoardOffset = upstreamPlane * gFilterSizeSquared;\n" 
-    "            if( localId < gOutputBoardSizeSquared ) {\n" 
+    "            int filterImageOffset = upstreamPlane * gFilterSizeSquared;\n" 
+    "            if( localId < gOutputImageSizeSquared ) {\n" 
     "                for( int u = minu; u <= maxu; u++ ) {\n" 
     "                    int inputRow = outputRow + u;\n" 
     "                    #if gPadZeros == 0\n" 
     "                         inputRow += gHalfFilterSize;\n" 
     "                    #endif\n" 
-    "                    int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
-    "                    int filterrowoffset = filterBoardOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "                    int inputimagerowoffset = inputRow * gInputImageSize;\n" 
+    "                    int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
     "                    for( int v = minv; v <= maxv; v++ ) {\n" 
     "                        int inputCol = outputCol + v;\n" 
     "                        #if gPadZeros == 0\n" 
     "                             inputCol += gHalfFilterSize;\n" 
     "                        #endif\n" 
-    "                        sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "                        sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
     "                    }\n" 
     "                }\n" 
     "            }\n" 
@@ -169,8 +169,8 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            sum += biases[outPlane];\n" 
     "        #endif\n" 
     "        // results are organized like [imageid][filterid][row][col]\n" 
-    "        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + localId;\n" 
-    "        if( localId < gOutputBoardSizeSquared ) {\n" 
+    "        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;\n" 
+    "        if( localId < gOutputImageSizeSquared ) {\n" 
     "            results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
     "        }\n" 
     "    }\n" 

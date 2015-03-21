@@ -32,8 +32,8 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
     kernel->output( resultsWrapper );
-//    cout << "square(dim.outputBoardSize) " << square( dim.outputBoardSize ) << endl;
-    kernel->localFloats( square( dim.inputBoardSize ) );
+//    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
+    kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) );
 //    kernel->localFloats( pixelsPerThread * workgroupsize );
 
@@ -44,7 +44,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
         Propagate( cl, dim, fn )
             {
-    workgroupSize = std::max( 32, square( dim.outputBoardSize ) ); // no point in wasting threads....
+    workgroupSize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     pixelsPerThread = 1;
     while( workgroupSize > maxWorkgroupSize ) {
@@ -94,7 +94,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "    }\n" 
     "}\n" 
     "\n" 
-    "#ifdef gOutputBoardSize // for previous tests that dont define it\n" 
+    "#ifdef gOutputImageSize // for previous tests that dont define it\n" 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
     "// workgroup id organized like: [n][filterid]\n" 
     "// local id organized like: [outrow][outcol]\n" 
@@ -110,7 +110,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "            global const float*biases,\n" 
     "        #endif\n" 
     "    global float *results,\n" 
-    "    local float *_upstreamBoard, local float *_filterCube ) {\n" 
+    "    local float *_upstreamImage, local float *_filterCube ) {\n" 
     "    #define globalId ( get_global_id(0) )\n" 
     "\n" 
     "    #define localId ( get_local_id(0) )\n" 
@@ -122,17 +122,17 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "    const int n = effectiveWorkgroupId / gNumFilters;\n" 
     "    const int outPlane = effectiveWorkgroupId % gNumFilters;\n" 
     "\n" 
-    "    const int outputRow = effectiveLocalId / gOutputBoardSize;\n" 
-    "    const int outputCol = effectiveLocalId % gOutputBoardSize;\n" 
+    "    const int outputRow = effectiveLocalId / gOutputImageSize;\n" 
+    "    const int outputCol = effectiveLocalId % gOutputImageSize;\n" 
     "\n" 
     "    float sum = 0;\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _upstreamBoard, images + ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared, gInputBoardSizeSquared );\n" 
+    "        copyLocal( _upstreamImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );\n" 
     "        copyLocal( _filterCube, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "\n" 
-    "        if( effectiveLocalId < gOutputBoardSizeSquared ) {\n" 
+    "        if( effectiveLocalId < gOutputImageSizeSquared ) {\n" 
     "            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {\n" 
     "                // trying to reduce register pressure...\n" 
     "                #if gPadZeros == 1\n" 
@@ -140,18 +140,18 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "                #else\n" 
     "                    #define inputRow ( outputRow + u + gHalfFilterSize )\n" 
     "                #endif\n" 
-    "                int inputboardrowoffset = inputRow * gInputBoardSize;\n" 
+    "                int inputimagerowoffset = inputRow * gInputImageSize;\n" 
     "                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "                bool rowOk = inputRow >= 0 && inputRow < gInputBoardSize;\n" 
+    "                bool rowOk = inputRow >= 0 && inputRow < gInputImageSize;\n" 
     "                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {\n" 
     "                    #if gPadZeros == 1\n" 
     "                        #define inputCol ( outputCol + v )\n" 
     "                    #else\n" 
     "                        #define inputCol ( outputCol + v + gHalfFilterSize )\n" 
     "                    #endif\n" 
-    "                    bool process = rowOk && inputCol >= 0 && inputCol < gInputBoardSize;\n" 
+    "                    bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;\n" 
     "                    if( process ) {\n" 
-    "                            sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "                            sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
     "                    }\n" 
     "                }\n" 
     "            }\n" 
@@ -161,8 +161,8 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
     "        sum += biases[outPlane];\n" 
     "    #endif\n" 
     "    // results are organized like [imageid][filterid][row][col]\n" 
-    "    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + effectiveLocalId )\n" 
-    "    if( localId < gOutputBoardSizeSquared ) {\n" 
+    "    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + effectiveLocalId )\n" 
+    "    if( localId < gOutputImageSizeSquared ) {\n" 
     "        results[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
     "    }\n" 
     "    // results[resultIndex ] = 123;\n" 

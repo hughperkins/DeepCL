@@ -13,24 +13,24 @@
 using namespace std;
 
 
-void Translator::translate( int n, int numPlanes, int boardSize, int translateRows, int translateCols, float *source, float *destination ) {
-    const int cubeSize = numPlanes * boardSize * boardSize;
+void Translator::translate( int n, int numPlanes, int imageSize, int translateRows, int translateCols, float *source, float *destination ) {
+    const int cubeSize = numPlanes * imageSize * imageSize;
     float *sourceCube = source + n * cubeSize;
     float *destinationCube = destination + n * cubeSize;
     memset( destinationCube, 0, sizeof(float) * cubeSize );
-    const int rowCopyLength = boardSize - abs( translateCols );
+    const int rowCopyLength = imageSize - abs( translateCols );
     const int outColStart = translateCols > 0 ? translateCols : 0;
     const int inColStart = translateCols > 0 ? 0 : - translateCols;
     for( int plane = 0; plane < numPlanes; plane++ ) {
-        float *upstreamBoard = source + ( n * numPlanes + plane ) * boardSize * boardSize;
-        float *outputBoard = destination + ( n * numPlanes + plane ) * boardSize * boardSize;
-        for( int inRow = 0; inRow < boardSize; inRow++ ) {
+        float *upstreamImage = source + ( n * numPlanes + plane ) * imageSize * imageSize;
+        float *outputImage = destination + ( n * numPlanes + plane ) * imageSize * imageSize;
+        for( int inRow = 0; inRow < imageSize; inRow++ ) {
             const int outRow = inRow + translateRows;
-            if( outRow < 0 || outRow > boardSize - 1 ) {
+            if( outRow < 0 || outRow > imageSize - 1 ) {
                 continue;
             }
-            memcpy( &(outputBoard[ outRow * boardSize + outColStart ]), 
-                &(upstreamBoard[ inRow * boardSize + inColStart ]),
+            memcpy( &(outputImage[ outRow * imageSize + outColStart ]), 
+                &(upstreamImage[ inRow * imageSize + inColStart ]),
                 rowCopyLength * sizeof(float) );
         }        
     }

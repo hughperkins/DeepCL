@@ -68,17 +68,17 @@ public:
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * dim.numFilters + outPlane )
-            * dim.outputBoardSize + outRow )
-            * dim.outputBoardSize + outCol;
+            * dim.outputImageSize + outRow )
+            * dim.outputImageSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
         return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
 //    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
-    // images are organized like [imageId][plane][boardrow][boardcol]
+    // images are organized like [imageId][plane][imagerow][imagecol]
     // filters are organized like [filterid][plane][filterrow][filtercol]
-    // results are organized like [imageid][filterid][boardrow][boardcol]
+    // results are organized like [imageid][filterid][imagerow][imagecol]
 //    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
 //        return ( ( outPlane * upstreamNumPlanes 
 //             + inPlane ) * filterSize 
@@ -108,7 +108,7 @@ public:
     VIRTUAL float *getBiasWeights();
     VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     void randomizeWeights();
     VIRTUAL void print();
     VIRTUAL void printWeights();

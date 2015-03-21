@@ -24,7 +24,7 @@ public:
     VIRTUAL ~PoolingBackpropGpuNaive();
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );
-    PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
 
     // [[[end]]]
 };

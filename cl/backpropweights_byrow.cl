@@ -35,8 +35,8 @@ kernel void backprop_weights( const float learningRateMultiplier, const int batc
     
     const int filterRow = localId / gFilterSize;
     const int filterCol = localId % gFilterSize;
-    const int outputRow = workgroupId % gOutputBoardSize;
-    #define outInCombo ( workgroupId / gOutputBoardSize )
+    const int outputRow = workgroupId % gOutputImageSize;
+    #define outInCombo ( workgroupId / gOutputImageSize )
     const int outputPlane = outInCombo / gNumInputPlanes;
     const int inputPlane = outInCombo % gNumInputPlanes;
 
@@ -53,9 +53,9 @@ kernel void backprop_weights( const float learningRateMultiplier, const int batc
             global float const*errorsRow = errors + 
                 ( ( n
                     * gNumOutputPlanes + outputPlane )
-                    * gOutputBoardSize + outputRow )
-                    * gOutputBoardSize;
-            if( localId < gOutputBoardSize ) { // assume we have enough threads for now... should fix later
+                    * gOutputImageSize + outputRow )
+                    * gOutputImageSize;
+            if( localId < gOutputImageSize ) { // assume we have enough threads for now... should fix later
                 _errorRow[ localId ] = errorsRow[ localId ];
             }
         }
@@ -64,16 +64,16 @@ kernel void backprop_weights( const float learningRateMultiplier, const int batc
             global float const*inputRowData = input +
                 ( ( n
                     * gNumInputPlanes + inputPlane )
-                    * gInputBoardSize + thisInputRow )
-                    * gInputBoardSize;
-            if( localId < gInputBoardSize ) { // assume we have enough threads for now... should fix later
+                    * gInputImageSize + thisInputRow )
+                    * gInputImageSize;
+            if( localId < gInputImageSize ) { // assume we have enough threads for now... should fix later
                 _inputRow[ localId ] = inputRowData[ localId ];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int outputCol = 0; outputCol < gOutputBoardSize; outputCol++ ) {
+        for( int outputCol = 0; outputCol < gOutputImageSize; outputCol++ ) {
             const int inputCol = outputCol - gMargin + filterCol;
-            if( inputRow >= 0 && inputRow < gInputBoardSize && inputCol >= 0 && inputCol < gInputBoardSize ) {
+            if( inputRow >= 0 && inputRow < gInputImageSize && inputCol >= 0 && inputCol < gInputImageSize ) {
                 if( localId < gFilterSizeSquared ) {
                     thiswchange += _inputRow[ inputCol ] * _errorRow[ outputCol ];
                     #ifdef BIASED
@@ -92,13 +92,13 @@ kernel void backprop_weights( const float learningRateMultiplier, const int batc
     if( localId < gFilterSizeSquared ) {
         #define weightsIndex ( ( ( outInCombo \
             * gFilterSizeSquared ) + localId \
-            * gOutputBoardSize ) + outputRow )
+            * gOutputImageSize ) + outputRow )
         //weights1[ weightsIndex ] -= learningRateMultiplier * thiswchange;
         //weights1[weightsIndex] = 123.0f;
     }
     #ifdef BIASED
         if( inputPlane == 0 && localId == 0 ) {
-            biasWeights1[outputPlane * gOutputBoardSize + outputRow ] -= learningRateMultiplier * thisbiaschange;
+            biasWeights1[outputPlane * gOutputImageSize + outputRow ] -= learningRateMultiplier * thisbiaschange;
         }
     #endif
 }

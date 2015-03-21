@@ -20,7 +20,7 @@ template< typename T > InputLayer<T>::InputLayer( InputLayerMaker<T> *maker ) :
     input(0),
     results(0),
     outputPlanes( maker->_numPlanes ),
-    outputBoardSize( maker->_boardSize ) {
+    outputImageSize( maker->_imageSize ) {
 }
 template< typename T > VIRTUAL InputLayer<T>::~InputLayer() {
 }
@@ -44,20 +44,20 @@ template< typename T > VIRTUAL void InputLayer<T>::printOutput() const {
         std::cout << "InputLayer n " << n << ":" << std::endl;
         for( int plane = 0; plane < std::min( 5, outputPlanes); plane++ ) {
             if( outputPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
-            for( int i = 0; i < std::min(5, outputBoardSize); i++ ) {
+            for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
                 std::cout << "      ";
-                for( int j = 0; j < std::min(5, outputBoardSize); j++ ) {
+                for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
                     std::cout << getResult( n, plane, i, j ) << " ";
 //results[
-//                            n * numPlanes * boardSize*boardSize +
-//                            plane*boardSize*boardSize +
-//                            i * boardSize +
+//                            n * numPlanes * imageSize*imageSize +
+//                            plane*imageSize*imageSize +
+//                            i * imageSize +
 //                            j ] << " ";
                 }
-                if( outputBoardSize > 5 ) std::cout << " ... ";
+                if( outputImageSize > 5 ) std::cout << " ... ";
                 std::cout << std::endl;
             }
-            if( outputBoardSize > 5 ) std::cout << " ... " << std::endl;
+            if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
         }
         if( outputPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
     }
@@ -97,14 +97,14 @@ template< typename T > VIRTUAL void InputLayer<T>::propagate() {
 }
 template< typename T > VIRTUAL void InputLayer<T>::backPropErrors( float learningRate, float const *errors ) {
 }
-template< typename T > VIRTUAL int InputLayer<T>::getOutputBoardSize() const {
-    return outputBoardSize;
+template< typename T > VIRTUAL int InputLayer<T>::getOutputImageSize() const {
+    return outputImageSize;
 }
 template< typename T > VIRTUAL int InputLayer<T>::getOutputPlanes() const {
     return outputPlanes;
 }
 template< typename T > VIRTUAL int InputLayer<T>::getOutputCubeSize() const {
-    return outputPlanes * outputBoardSize * outputBoardSize;
+    return outputPlanes * outputImageSize * outputImageSize;
 }
 template< typename T > VIRTUAL int InputLayer<T>::getResultsSize() const {
     return batchSize * getOutputCubeSize();
@@ -113,15 +113,15 @@ template< typename T > VIRTUAL std::string InputLayer<T>::toString() {
     return asString();
 }
 template< typename T > VIRTUAL std::string InputLayer<T>::asString() const {
-    return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+    return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputImageSize " +  ::toString( outputImageSize ) + " }";
 }
 
 template<> VIRTUAL std::string InputLayer<unsigned char>::asString() const {
-    return std::string("") + "InputLayer<unsigned char>{ outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+    return std::string("") + "InputLayer<unsigned char>{ outputPlanes " + ::toString( outputPlanes ) + " outputImageSize " +  ::toString( outputImageSize ) + " }";
 }
 
 template<> VIRTUAL std::string InputLayer<float>::asString() const {
-    return std::string("") + "InputLayer<float>{ outputPlanes " + ::toString( outputPlanes ) + " outputBoardSize " +  ::toString( outputBoardSize ) + " }";
+    return std::string("") + "InputLayer<float>{ outputPlanes " + ::toString( outputPlanes ) + " outputImageSize " +  ::toString( outputImageSize ) + " }";
 }
 
 template class InputLayer<float>;

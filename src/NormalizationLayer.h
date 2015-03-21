@@ -20,7 +20,7 @@ public:
     const float scale;  // then scale
 
     const int outputPlanes;
-    const int outputBoardSize;
+    const int outputImageSize;
 
     int batchSize;
     int allocatedSize;
@@ -29,8 +29,8 @@ public:
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * outputPlanes + outPlane )
-            * outputBoardSize + outRow )
-            * outputBoardSize + outCol;
+            * outputImageSize + outRow )
+            * outputImageSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
         return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
@@ -53,7 +53,7 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
     VIRTUAL void backPropErrors( float learningRate, float const *errors );
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getResultsSize() const;

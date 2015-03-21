@@ -37,7 +37,7 @@
 // workgroupid as [filterId][inputPlane]
 // localid as [filterRow][filterCol]
 // output as [n][filterId][inputPlane]
-#if gFilterSize == gInputBoardsize && gPadZeros == 0
+#if gFilterSize == gInputImagesize && gPadZeros == 0
 kernel void kernel1( const int batchSize, 
     global float const * images,
     global float const * filters,

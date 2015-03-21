@@ -30,8 +30,8 @@ VIRTUAL int LossLayer::getResultsSize() const {
 VIRTUAL int LossLayer::getOutputCubeSize() const {
     return previousLayer->getOutputCubeSize();
 }
-VIRTUAL int LossLayer::getOutputBoardSize() const {
-    return previousLayer->getOutputBoardSize();
+VIRTUAL int LossLayer::getOutputImageSize() const {
+    return previousLayer->getOutputImageSize();
 }
 VIRTUAL int LossLayer::getOutputPlanes() const {
     return previousLayer->getOutputPlanes();

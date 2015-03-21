@@ -38,14 +38,14 @@ void copyLocal( local float *restrict target, global float const *restrict sourc
 // results1 structured as: [n][inputplane][filter][row], need to reduce again after
 // this kernel assumes:
 //   padzeros == 0 (mandatory)
-//   filtersize == inputboardsize (mandatory)
-//   inputboardsize == 19
+//   filtersize == inputimagesize (mandatory)
+//   inputimagesize == 19
 //   filtersize == 19
-//   outputBoardSize == 1
+//   outputImageSize == 1
 //   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361
 //   lots of inplanes, eg 32-128
-//   inputboardsize around 19, not too small
-#if (gFilterSize == gInputBoardSize) && (gPadZeros == 0)
+//   inputimagesize around 19, not too small
+#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)
 void kernel propagate_fc_workgroup_perrow( const int batchSize,
     global const float *images, global const float *filters, 
     global float *results1,
@@ -70,20 +70,20 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
     for( int i = 0; i < gFilterSize; i++ ) {
         _threadFilterRow[i] = filterRow[i];
     }
-    const int loopsPerExample = ( gInputBoardSize + workgroupSize - 1 ) / workgroupSize;
+    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;
     // now loop over examples...
     for( int n = 0; n < batchSize; n++ ) {
         // copy down example row, which is global to all threads in workgroup
         // hopefully should be enough threads....
         // but we should check anyway really, since depends on number of filters configured,
-        // not on relative size of filter and input board
+        // not on relative size of filter and input image
         barrier(CLK_LOCAL_MEM_FENCE);
         copyLocal( _imageRow,  images 
             + ( ( n 
                 * gNumInputPlanes + inputPlaneId ) 
-                * gInputBoardSize + filterRowId )
-                * gInputBoardSize, 
-            gInputBoardSize );
+                * gInputImageSize + filterRowId )
+                * gInputImageSize, 
+            gInputImageSize );
         barrier(CLK_LOCAL_MEM_FENCE);
         // add up the values in our row...
         float sum = 0;

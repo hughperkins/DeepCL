@@ -29,17 +29,17 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     StatefulTimer::instance()->timeCheck("BackpropWeights2ByRow start" );
 
     cout << "input buffer:" << endl;
-    PrintBuffer::printFloats( cl, imagesWrapper, batchSize * dim.inputBoardSize, dim.inputBoardSize );
+    PrintBuffer::printFloats( cl, imagesWrapper, batchSize * dim.inputImageSize, dim.inputImageSize );
     cout << endl;
 
     cout << "errors buffer:" << endl;
-    PrintBuffer::printFloats( cl, errorsWrapper, batchSize * dim.outputBoardSize, dim.outputBoardSize );
+    PrintBuffer::printFloats( cl, errorsWrapper, batchSize * dim.outputImageSize, dim.outputImageSize );
     cout << endl;
 
     int globalSize = workgroupSize * numWorkgroups;
     globalSize = ( ( globalSize + workgroupSize - 1 ) / workgroupSize ) * workgroupSize;
 
-    int localMemRequiredKB = ( dim.outputBoardSize * 4 + dim.inputBoardSize * 4 ) / 1024 + 1;
+    int localMemRequiredKB = ( dim.outputImageSize * 4 + dim.inputImageSize * 4 ) / 1024 + 1;
     if( localMemRequiredKB >= cl->getLocalMemorySizeKB() ) {
         throw runtime_error( "local memory too small to use this kernel on this device.  Need: " + 
             toString( localMemRequiredKB ) + "KB, but only have: " + 
@@ -48,7 +48,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
-    const int weights1Size = dim.filtersSize * dim.outputBoardSize;
+    const int weights1Size = dim.filtersSize * dim.outputImageSize;
     float *weights1 = new float[ weights1Size ];
     CLWrapper *weights1Wrapper = cl->wrap( weights1Size, weights1 );
     weights1Wrapper->createOnDevice();
@@ -56,7 +56,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     float *biasWeights1 = 0;
     CLWrapper *biasWeights1Wrapper = 0;
     if( dim.biased ) {
-        const int biasWeights1Size = dim.numFilters * dim.outputBoardSize;
+        const int biasWeights1Size = dim.numFilters * dim.outputImageSize;
         biasWeights1 = new float[ biasWeights1Size ];
         biasWeights1Wrapper = cl->wrap( biasWeights1Size, biasWeights1 );
         biasWeights1Wrapper->createOnDevice();
@@ -86,21 +86,21 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
         kernel->out( biasWeights1Wrapper );
     }
     kernel
-        ->localFloats( dim.outputBoardSize )
-        ->localFloats( dim.inputBoardSize );
+        ->localFloats( dim.outputImageSize )
+        ->localFloats( dim.inputImageSize );
 
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
 
     cout << "weights1wrapper after first kernel:" << endl;
-    PrintBuffer::printFloats( cl, weights1Wrapper, dim.filterSize * dim.outputBoardSize, dim.filterSize );
+    PrintBuffer::printFloats( cl, weights1Wrapper, dim.filterSize * dim.outputImageSize, dim.filterSize );
     cout << endl;
 
-    reduce->in( dim.filtersSize )->in( dim.outputBoardSize )
+    reduce->in( dim.filtersSize )->in( dim.outputImageSize )
         ->in( weights1Wrapper )->out( weights2Wrapper );
     reduce->run_1d( ( dim.filtersSize + 64 - 1 ) / 64 * 64, 64 );
     if( dim.biased ) {
-        reduce->in( dim.numFilters )->in( dim.outputBoardSize )
+        reduce->in( dim.numFilters )->in( dim.outputImageSize )
             ->in( biasWeights1Wrapper )->out( biasWeights2Wrapper );
         reduce->run_1d( ( dim.numFilters + 64 - 1 ) / 64 * 64, 64 );
     }
@@ -139,7 +139,7 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
         BackpropWeights2( cl, dim )
             {
     workgroupSize = std::max( 32, dim.filterSize ); // no point in wasting cores...
-    numWorkgroups = dim.inputPlanes * dim.numFilters * dim.outputBoardSize;
+    numWorkgroups = dim.inputPlanes * dim.numFilters * dim.outputImageSize;
     cout << "numWorkgroups " << numWorkgroups << " workgropuSize=" << workgroupSize << endl;
     if( workgroupSize > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("filtersize larger than maxworkgroupsize, so cannot use BackpropWeights2ByRow kernel");
@@ -192,8 +192,8 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "    const int filterRow = localId / gFilterSize;\n" 
     "    const int filterCol = localId % gFilterSize;\n" 
-    "    const int outputRow = workgroupId % gOutputBoardSize;\n" 
-    "    #define outInCombo ( workgroupId / gOutputBoardSize )\n" 
+    "    const int outputRow = workgroupId % gOutputImageSize;\n" 
+    "    #define outInCombo ( workgroupId / gOutputImageSize )\n" 
     "    const int outputPlane = outInCombo / gNumInputPlanes;\n" 
     "    const int inputPlane = outInCombo % gNumInputPlanes;\n" 
     "\n" 
@@ -210,9 +210,9 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "            global float const*errorsRow = errors +\n" 
     "                ( ( n\n" 
     "                    * gNumOutputPlanes + outputPlane )\n" 
-    "                    * gOutputBoardSize + outputRow )\n" 
-    "                    * gOutputBoardSize;\n" 
-    "            if( localId < gOutputBoardSize ) { // assume we have enough threads for now... should fix later\n" 
+    "                    * gOutputImageSize + outputRow )\n" 
+    "                    * gOutputImageSize;\n" 
+    "            if( localId < gOutputImageSize ) { // assume we have enough threads for now... should fix later\n" 
     "                _errorRow[ localId ] = errorsRow[ localId ];\n" 
     "            }\n" 
     "        }\n" 
@@ -221,16 +221,16 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "            global float const*inputRowData = input +\n" 
     "                ( ( n\n" 
     "                    * gNumInputPlanes + inputPlane )\n" 
-    "                    * gInputBoardSize + thisInputRow )\n" 
-    "                    * gInputBoardSize;\n" 
-    "            if( localId < gInputBoardSize ) { // assume we have enough threads for now... should fix later\n" 
+    "                    * gInputImageSize + thisInputRow )\n" 
+    "                    * gInputImageSize;\n" 
+    "            if( localId < gInputImageSize ) { // assume we have enough threads for now... should fix later\n" 
     "                _inputRow[ localId ] = inputRowData[ localId ];\n" 
     "            }\n" 
     "        }\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for( int outputCol = 0; outputCol < gOutputBoardSize; outputCol++ ) {\n" 
+    "        for( int outputCol = 0; outputCol < gOutputImageSize; outputCol++ ) {\n" 
     "            const int inputCol = outputCol - gMargin + filterCol;\n" 
-    "            if( inputRow >= 0 && inputRow < gInputBoardSize && inputCol >= 0 && inputCol < gInputBoardSize ) {\n" 
+    "            if( inputRow >= 0 && inputRow < gInputImageSize && inputCol >= 0 && inputCol < gInputImageSize ) {\n" 
     "                if( localId < gFilterSizeSquared ) {\n" 
     "                    thiswchange += _inputRow[ inputCol ] * _errorRow[ outputCol ];\n" 
     "                    #ifdef BIASED\n" 
@@ -249,13 +249,13 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "    if( localId < gFilterSizeSquared ) {\n" 
     "        #define weightsIndex ( ( ( outInCombo \\\n" 
     "            * gFilterSizeSquared ) + localId \\\n" 
-    "            * gOutputBoardSize ) + outputRow )\n" 
+    "            * gOutputImageSize ) + outputRow )\n" 
     "        //weights1[ weightsIndex ] -= learningRateMultiplier * thiswchange;\n" 
     "        //weights1[weightsIndex] = 123.0f;\n" 
     "    }\n" 
     "    #ifdef BIASED\n" 
     "        if( inputPlane == 0 && localId == 0 ) {\n" 
-    "            biasWeights1[outputPlane * gOutputBoardSize + outputRow ] -= learningRateMultiplier * thisbiaschange;\n" 
+    "            biasWeights1[outputPlane * gOutputImageSize + outputRow ] -= learningRateMultiplier * thisbiaschange;\n" 
     "        }\n" 
     "    #endif\n" 
     "}\n" 

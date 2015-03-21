@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize );
+    PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
     VIRTUAL void propagate( int batchSize, float *input, int *selectors, float *output );
 

@@ -51,17 +51,17 @@ VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
 }
 //VIRTUAL int Layer::getResultsSize() const {
 //    throw std::runtime_error("getResultsSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
-// //     return numPlanes * boardSize * boardSize * batchSize;
+// //     return numPlanes * imageSize * imageSize * batchSize;
 //}
 VIRTUAL int Layer::getOutputCubeSize() const {
     throw std::runtime_error("getOutputCubeSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
- //     return numPlanes * boardSize * boardSize * batchSize;
+ //     return numPlanes * imageSize * imageSize * batchSize;
 }
 VIRTUAL int Layer::getOutputPlanes() const {
     throw std::runtime_error("getOutputPlanes not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 }
-VIRTUAL int Layer::getOutputBoardSize() const {
-    throw std::runtime_error("getOutputBoardSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+VIRTUAL int Layer::getOutputImageSize() const {
+    throw std::runtime_error("getOutputImageSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 }
 VIRTUAL void Layer::propagate() {
     throw std::runtime_error("propagate not implemented for this layer type");

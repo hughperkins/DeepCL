@@ -20,8 +20,8 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
 // need to store locally:
-// - _errorBoard. size = outputBoardSizeSquared
-// - _filterBoard. size = filtersizesquared
+// - _errorImage. size = outputImageSizeSquared
+// - _filterImage. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
 // inputs: errors :convolve: filters => errorsForUpstream
 //
@@ -37,8 +37,8 @@ void kernel calcErrorsForUpstreamCached(
         global const float *errorsGlobal,
         global const float *filtersGlobal, 
         global float *errorsForUpstream,
-        local float *_errorBoard, 
-        local float *_filterBoard ) {
+        local float *_errorImage, 
+        local float *_filterImage ) {
 
     #define globalId get_global_id(0)
     #define localId get_local_id(0)
@@ -48,31 +48,31 @@ void kernel calcErrorsForUpstreamCached(
     const int n = workgroupId / gInputPlanes;
     const int upstreamPlane = workgroupId % gInputPlanes;
 
-    const int upstreamRow = localId / gInputBoardSize;
-    const int upstreamCol = localId % gInputBoardSize;
+    const int upstreamRow = localId / gInputImageSize;
+    const int upstreamCol = localId % gInputImageSize;
 
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _filterBoard, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
-        copyLocal( _errorBoard, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared, gOutputBoardSizeSquared );
+        copyLocal( _filterImage, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
+        copyLocal( _errorImage, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
-                if( outCol >= 0 && outCol < gOutputBoardSize && outRow >= 0 && outRow < gOutputBoardSize ) {
+                if( outCol >= 0 && outCol < gOutputImageSize && outRow >= 0 && outRow < gOutputImageSize ) {
                     float thisWeightTimesError = 
-                        _errorBoard[outRow * gOutputBoardSize + outCol] * 
-                        _filterBoard[filterRow * gFilterSize + filterCol];
+                        _errorImage[outRow * gOutputImageSize + outCol] * 
+                        _filterImage[filterRow * gFilterSize + filterCol];
                     sumWeightTimesOutError += thisWeightTimesError;
                 }
             }
         }
     }
-    const int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-    if( localId < gInputBoardSizeSquared ) {
-        errorsForUpstream[upstreamBoardGlobalOffset + localId] = sumWeightTimesOutError;
+    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+    if( localId < gInputImageSizeSquared ) {
+        errorsForUpstream[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
     }
 }
 

@@ -15,18 +15,18 @@
 template< typename T > class ClConvolve_EXPORT InputLayerMaker : public LayerMaker2 {
 public:
     int _numPlanes;
-    int _boardSize;
+    int _imageSize;
     InputLayerMaker() :
 //            LayerMaker( net, 0 ),
             _numPlanes(0),
-            _boardSize(0) {
+            _imageSize(0) {
     }
     InputLayerMaker *numPlanes( int _numPlanes ) {
         this->_numPlanes = _numPlanes;
         return this;
     }    
-    InputLayerMaker *boardSize( int _boardSize ) {
-        this->_boardSize = _boardSize;
+    InputLayerMaker *imageSize( int _imageSize ) {
+        this->_imageSize = _imageSize;
         return this;
     }    
     static InputLayerMaker *instance() {

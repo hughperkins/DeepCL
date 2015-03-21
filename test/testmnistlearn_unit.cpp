@@ -9,39 +9,39 @@ using namespace std;
 
 #include "gtest/gtest.h"
 
-#include "BoardHelper.h"
+#include "ImageHelper.h"
 #include "MnistLoader.h"
-// #include "BoardPng.h"
+// #include "ImagePng.h"
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "stringhelper.h"
 #include "FileHelper.h"
 
-void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {
-    int boardSize;
-    int Nboards;
+void loadMnist( string mnistDir, string setName, int *p_N, int *p_imageSize, float ****p_images, int **p_labels, float **p_expectedOutputs ) {
+    int imageSize;
+    int Nimages;
     int Nlabels;
     // images
-    int ***boards = MnistLoader::loadImages( mnistDir, setName, &Nboards, &boardSize );
+    int ***images = MnistLoader::loadImages( mnistDir, setName, &Nimages, &imageSize );
     int *labels = MnistLoader::loadLabels( mnistDir, setName, &Nlabels );
-    if( Nboards != Nlabels ) {
-         throw runtime_error("mismatch between number of boards, and number of labels " + toString(Nboards ) + " vs " +
+    if( Nimages != Nlabels ) {
+         throw runtime_error("mismatch between number of images, and number of labels " + toString(Nimages ) + " vs " +
              toString(Nlabels ) );
     }
-    cout << "loaded " << Nboards << " boards.  " << endl;
-//    MnistLoader::shuffle( boards, labels, Nboards, boardSize );
-    float ***boardsFloat = BoardsHelper::allocateBoardsFloats( Nboards, boardSize );
-    BoardsHelper::copyBoards( boardsFloat, boards, Nboards, boardSize );
-    BoardsHelper::deleteBoards( &boards, Nboards, boardSize );
-    *p_images = boardsFloat;
+    cout << "loaded " << Nimages << " images.  " << endl;
+//    MnistLoader::shuffle( images, labels, Nimages, imageSize );
+    float ***imagesFloat = ImagesHelper::allocateImagesFloats( Nimages, imageSize );
+    ImagesHelper::copyImages( imagesFloat, images, Nimages, imageSize );
+    ImagesHelper::deleteImages( &images, Nimages, imageSize );
+    *p_images = imagesFloat;
     *p_labels = labels;
    
-    *p_boardSize = boardSize;
-    *p_N = Nboards;
+    *p_imageSize = imageSize;
+    *p_N = Nimages;
 
     // expected results
-    *p_expectedOutputs = new float[10 * Nboards];
+    *p_expectedOutputs = new float[10 * Nimages];
     for( int n = 0; n < Nlabels; n++ ) {
        int thislabel = labels[n];
        for( int i = 0; i < 10; i++ ) {
@@ -51,17 +51,17 @@ void loadMnist( string mnistDir, string setName, int *p_N, int *p_boardSize, flo
     }
 }
 
-void getStats( float ***boards, int N, int boardSize, float *p_mean, float *p_thismax ) {
+void getStats( float ***images, int N, int imageSize, float *p_mean, float *p_thismax ) {
     // get mean of the dataset
     int count = 0;
     float thismax = 0;
    float sum = 0;
     for( int n = 0; n < N; n++ ) {
-       for( int i = 0; i < boardSize; i++ ) {
-          for( int j = 0; j < boardSize; j++ ) {
+       for( int i = 0; i < imageSize; i++ ) {
+          for( int j = 0; j < imageSize; j++ ) {
               count++;
-              sum += boards[n][i][j];
-              thismax = max( thismax, boards[n][i][j] );
+              sum += images[n][i][j];
+              thismax = max( thismax, images[n][i][j] );
           }
        }
     }
@@ -69,11 +69,11 @@ void getStats( float ***boards, int N, int boardSize, float *p_mean, float *p_th
     *p_thismax = thismax;
 }
 
-void normalize( float ***boards, int N, int boardSize, double mean, double thismax ) {
+void normalize( float ***images, int N, int imageSize, double mean, double thismax ) {
     for( int n = 0; n < N; n++ ) {
-       for( int i = 0; i < boardSize; i++ ) {
-          for( int j = 0; j < boardSize; j++ ) {
-              boards[n][i][j] = boards[n][i][j] / thismax - 0.1;
+       for( int i = 0; i < imageSize; i++ ) {
+          for( int j = 0; j < imageSize; j++ ) {
+              images[n][i][j] = images[n][i][j] / thismax - 0.1;
           }
        }       
     }
@@ -94,7 +94,7 @@ public:
     }
 };
 
-void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, int batchSize, int N ) {
+void printAccuracy( string name, NeuralNet *net, float ***images, int *labels, int batchSize, int N ) {
     if( N == 0 ) { return; }
     int testNumRight = 0;
     int numBatches = ( N + batchSize - 1 ) /batchSize;
@@ -106,13 +106,13 @@ void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, i
             thisBatchSize = N - batchStart;
             net->setBatchSize(thisBatchSize);
         }
-        net->propagate( &(boards[batchStart][0][0]) );
+        net->propagate( &(images[batchStart][0][0]) );
         float const*results = net->getResults();
         int thisnumright = AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labels[batchStart]), results );
 //        cout << name << " batch " << batch << ": numright " << thisnumright << "/" << batchSize << endl;
         testNumRight += thisnumright;
     }
-//    cout << "boards interval: " << ( &(boards[1][0][0]) - &(boards[0][0][0])) << endl;
+//    cout << "images interval: " << ( &(images[1][0][0]) - &(images[0][0][0])) << endl;
 //    cout << "labels interval: " << ( &(labels[1]) - &(labels[0])) << endl;
     cout << name << " overall: " << testNumRight << "/" << N << endl;
 }
@@ -120,35 +120,35 @@ void printAccuracy( string name, NeuralNet *net, float ***boards, int *labels, i
 void go(Config config) {
     Timer timer;
 
-    int boardSize;
+    int imageSize;
 
-    float ***boardsFloat = 0;
+    float ***imagesFloat = 0;
     int *labels = 0;
     float *expectedOutputs = 0;
 
-    float ***boardsTest = 0;
+    float ***imagesTest = 0;
     int *labelsTest = 0;
     float *expectedOutputsTest = 0;
 
     int N;
-    loadMnist( config.dataDir, config.trainSet, &N, &boardSize, &boardsFloat, &labels, &expectedOutputs );
+    loadMnist( config.dataDir, config.trainSet, &N, &imageSize, &imagesFloat, &labels, &expectedOutputs );
 
     int Ntest;
-    loadMnist( config.dataDir, config.testSet, &Ntest, &boardSize, &boardsTest, &labelsTest, &expectedOutputsTest );
+    loadMnist( config.dataDir, config.testSet, &Ntest, &imageSize, &imagesTest, &labelsTest, &expectedOutputsTest );
 
     float mean;
     float thismax;
-//    getStats( boardsFloat, config.numTrain, boardSize, &mean, &thismax );
+//    getStats( imagesFloat, config.numTrain, imageSize, &mean, &thismax );
     mean = 33;
     thismax = 255;
-    cout << " board stats mean " << mean << " max " << thismax << " boardSize " << boardSize << endl;
-    normalize( boardsFloat, config.numTrain, boardSize, mean, thismax );
-    normalize( boardsTest, config.numTest, boardSize, mean, thismax );
+    cout << " image stats mean " << mean << " max " << thismax << " imageSize " << imageSize << endl;
+    normalize( imagesFloat, config.numTrain, imageSize, mean, thismax );
+    normalize( imagesTest, config.numTest, imageSize, mean, thismax );
     timer.timeCheck("after load images");
     int numToTrain = config.numTrain;
     const int batchSize = config.batchSize;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(boardSize)->tanh()->biased(config.biased) );
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(imageSize)->instance();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(imageSize)->tanh()->biased(config.biased) );
     net->addLayer( SquareLossMaker::instance() );;
 
 //    if( FileHelper::exists("weights.dat" ) ){
@@ -173,22 +173,22 @@ void go(Config config) {
             ->learningRate(config.learningRate)
             ->batchSize(batchSize)
             ->numExamples(numToTrain)
-            ->inputData(&(boardsFloat[0][0][0]))
+            ->inputData(&(imagesFloat[0][0][0]))
             ->expectedOutputs(expectedOutputs)
             ->run();
         cout << "       loss L: " << loss << endl;
         int trainNumRight = 0;
         timer.timeCheck("after epoch");
 //        net->print();
-        printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
-        printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
+        printAccuracy( "train", net, imagesFloat, labels, batchSize, config.numTrain );
+        printAccuracy( "test", net, imagesTest, labelsTest, batchSize, config.numTest );
         timer.timeCheck("after tests");
     }
     //float const*results = net->getResults( net->getNumLayers() - 1 );
 
     timer.timeCheck("after learning");
-    printAccuracy( "test", net, boardsTest, labelsTest, batchSize, config.numTest );
-//    printAccuracy( "train", net, boardsFloat, labels, batchSize, config.numTrain );
+    printAccuracy( "test", net, imagesTest, labelsTest, batchSize, config.numTest );
+//    printAccuracy( "train", net, imagesFloat, labels, batchSize, config.numTrain );
     timer.timeCheck("after tests");
 
     int numBatches = ( config.numTest + config.batchSize - 1 ) / config.batchSize;
@@ -202,7 +202,7 @@ void go(Config config) {
             thisBatchSize = config.numTest - batchStart;
             net->setBatchSize( thisBatchSize );
         }
-        net->propagate( &(boardsTest[batchStart][0][0]) );
+        net->propagate( &(imagesTest[batchStart][0][0]) );
         float const*resultsTest = net->getResults();
         totalNumber += thisBatchSize;
         totalNumRight += AccuracyHelper::calcNumRight( thisBatchSize, 10, &(labelsTest[batchStart]), resultsTest );
@@ -222,11 +222,11 @@ void go(Config config) {
     delete net;
     delete[] expectedOutputsTest;
     delete[] labelsTest;
-    BoardsHelper::deleteBoards( &boardsTest, Ntest, boardSize );
+    ImagesHelper::deleteImages( &imagesTest, Ntest, imageSize );
 
     delete[] expectedOutputs;
     delete[] labels;
-    BoardsHelper::deleteBoards( &boardsFloat, N, boardSize );
+    ImagesHelper::deleteImages( &imagesFloat, N, imageSize );
 }
 
 TEST( testmnistlearn_unit, main ) {

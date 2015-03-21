@@ -17,7 +17,7 @@ class FullyConnectedMaker;
 class FullyConnectedLayer : public Layer {
 public:
     const int numPlanes;
-    const int boardSize;
+    const int imageSize;
     ActivationFunction const*fn;
 
     ConvolutionalLayer *convolutionalLayer;
@@ -31,7 +31,7 @@ public:
     FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker *maker );
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL void persistToArray(float *array);
