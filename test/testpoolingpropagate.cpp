@@ -19,10 +19,10 @@ namespace testpoolingpropagate {
 TEST( testpoolingpropagate, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
-    int boardSize = 4;
+    int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -53,10 +53,10 @@ TEST( testpoolingpropagate, basic ) {
 TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
-    int boardSize = 2;
+    int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -94,10 +94,10 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
 TEST( testpoolingpropagate, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
-    int boardSize = 4;
+    int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, cl, false, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -107,7 +107,7 @@ TEST( testpoolingpropagate, fromwrappers ) {
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    const int inputSize = batchSize * numPlanes * boardSize * boardSize;
+    const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *selectorsWrapper = cl->wrap( outputSize, selectors );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
@@ -147,14 +147,14 @@ public:
 
     // [[[cog
     // floats= []
-    // ints = ['batchSize', 'numPlanes', 'boardSize', 'poolingSize', 'instance0', 'instance1', 'padZeros' ]
+    // ints = ['batchSize', 'numPlanes', 'imageSize', 'poolingSize', 'instance0', 'instance1', 'padZeros' ]
     // import cog_fluent
     // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
     // ]]]
     // generated, using cog:
     int _batchSize = 0;
     int _numPlanes = 0;
-    int _boardSize = 0;
+    int _imageSize = 0;
     int _poolingSize = 0;
     int _instance0 = 0;
     int _instance1 = 0;
@@ -167,8 +167,8 @@ public:
         this->_numPlanes = _numPlanes;
         return *this;
     }
-    CompareSpecificArgs boardSize( int _boardSize ) {
-        this->_boardSize = _boardSize;
+    CompareSpecificArgs imageSize( int _imageSize ) {
+        this->_imageSize = _imageSize;
         return *this;
     }
     CompareSpecificArgs poolingSize( int _poolingSize ) {
@@ -196,15 +196,15 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     int batchSize = args._batchSize;
     int numPlanes = args._numPlanes;
-    int boardSize = args._boardSize;
+    int imageSize = args._imageSize;
     int poolingSize = args._poolingSize;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, boardSize, poolingSize );
-    PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
+    PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
 
-    const int inputSize = batchSize * numPlanes * boardSize * boardSize;
+    const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = poolingPropagate0->getResultsSize( batchSize );
 
     float *input = new float[ inputSize ];
@@ -261,13 +261,13 @@ void compareSpecific( CompareSpecificArgs args ) {
     }
     EXPECT_EQ( 0, numErrors );
     if( numErrors > 0 ) {
-        int num2dPlanes = inputSize / boardSize / boardSize;
+        int num2dPlanes = inputSize / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {
             cout << "2dplane " << plane << ":" << endl;
-            for( int i = 0; i < boardSize; i++ ) {
+            for( int i = 0; i < imageSize; i++ ) {
                 string line = "";
-                for( int j = 0; j < boardSize; j++ ) {
-                    line += toString( input[ plane * boardSize * boardSize + i * boardSize + j] ) + " ";
+                for( int j = 0; j < imageSize; j++ ) {
+                    line += toString( input[ plane * imageSize * imageSize + i * imageSize + j] ) + " ";
                 }
                 cout << line << endl;
             }
@@ -290,37 +290,37 @@ void compareSpecific( CompareSpecificArgs args ) {
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling2 ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(2)
+        .batchSize(10).numPlanes(5).imageSize(10).poolingSize(2)
         .instance0(0).instance1(1) );
 }
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling3 ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(3)
+        .batchSize(10).numPlanes(5).imageSize(10).poolingSize(3)
         .instance0(0).instance1(1) );
 }
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling2_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(2)
+        .batchSize(10).numPlanes(5).imageSize(10).poolingSize(2)
         .instance0(0).instance1(1).padZeros(1) );
 }
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling3_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).boardSize(10).poolingSize(3)
+        .batchSize(10).numPlanes(5).imageSize(10).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );
 }
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(1).numPlanes(1).boardSize(2).poolingSize(3)
+        .batchSize(1).numPlanes(1).imageSize(2).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );
 }
 
 TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small2 ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(2).numPlanes(1).boardSize(2).poolingSize(3)
+        .batchSize(2).numPlanes(1).imageSize(2).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );
 }
 

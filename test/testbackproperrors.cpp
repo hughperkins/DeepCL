@@ -23,8 +23,8 @@ using namespace std;
 
 // This file contains tests for calculating errors for the upstream layer
 
-void testNumerically( float learningRate, int batchSize, int boardSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
-    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->boardSize(boardSize)->instance();
+void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
+    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
     net->addLayer( SquareLossMaker::instance() );;
@@ -92,7 +92,7 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
         }
         cout << "sumweightsdiff " << sumWeightDiff << endl;
     //    cout << "sumweightsdiff / learningrate " << (sumWeightDiff / learningRate ) << endl;
-    //    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * boardSize ) << endl;
+    //    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * imageSize ) << endl;
 
         float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate; // / filterSize;
 
@@ -100,8 +100,8 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
         cout << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
     //    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
     //    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
-        EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
-        EXPECT_GT( 0.01f * boardSize * boardSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
+        EXPECT_GT( 0.01f * imageSize * imageSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
+        EXPECT_GT( 0.01f * imageSize * imageSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
     }
 
 //    delete[] weights1;
@@ -113,24 +113,24 @@ void testNumerically( float learningRate, int batchSize, int boardSize, int filt
 TEST( testbackproperrors, checknumerically ) {
     float learningRate = 0.1f;
     const int batchSize = 1;
-    const int boardSize = 1;
+    const int imageSize = 1;
     const int filterSize = 1;
     const int numPlanes = 1;
     bool padZeros = false;
 
-    testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, new TanhActivation(), padZeros, 5 );
+    testNumerically( learningRate, batchSize, imageSize, filterSize, numPlanes, new TanhActivation(), padZeros, 5 );
 }
 
-TEST( testbackproperrors, checknumerically_boardsize5_filter3_relu ) {
+TEST( testbackproperrors, checknumerically_imagesize5_filter3_relu ) {
     float learningRate = 0.0001f;
     const int batchSize = 1;
-    const int boardSize = 5;
+    const int imageSize = 5;
     const int filterSize = 3;
     const int numPlanes = 1;
     ActivationFunction *fn = new ReluActivation();
     bool padZeros = true;
 
-    testNumerically( learningRate, batchSize, boardSize, filterSize, numPlanes, fn, padZeros );
+    testNumerically( learningRate, batchSize, imageSize, filterSize, numPlanes, fn, padZeros );
 }
 
 void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
@@ -185,7 +185,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFu
 TEST( SLOW_testbackproperrors, perf_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();
@@ -287,7 +287,7 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
 TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();
@@ -299,7 +299,7 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
 TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
     int batchSize = 4;
     LayerDimensions dim;
-    dim.setInputPlanes( 2 ).setInputBoardSize(3).setNumFilters( 2 ).setFilterSize( 3 )
+    dim.setInputPlanes( 2 ).setInputImageSize(3).setNumFilters( 2 ).setFilterSize( 3 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
     ActivationFunction *fn = new ReluActivation();
@@ -310,9 +310,9 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
 
 TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini2 ) {
     int batchSize = 1;
-    int boardSize = 2;
+    int imageSize = 2;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize(boardSize).setNumFilters( 1 ).setFilterSize( boardSize )
+    dim.setInputPlanes( 1 ).setInputImageSize(imageSize).setNumFilters( 1 ).setFilterSize( imageSize )
         .setPadZeros( true ).setBiased( true );
     cout << dim.buildOptionsString() << endl;
     ActivationFunction *fn = new ReluActivation();
@@ -322,10 +322,10 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini2 ) {
 }
 
 /*
-float *test( int boardSize ) {
+float *test( int imageSize ) {
     const int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputImageSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
         .setBiased( true ).setPadZeros( true );
 
     int weightsSize = dim.filtersSize;
@@ -359,11 +359,11 @@ float *test( int boardSize ) {
 }
 */
 // we want to test calcerrors for layer 2 in a network like:
-//    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+//    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
 //    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 //    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 //    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased(config.biased)->insert();
-//TEST( testbackproperrors, DISABLED_board28 ) {
+//TEST( testbackproperrors, DISABLED_image28 ) {
 //    float *errorsForUpstream = test(28);
 //    EXPECT_FLOAT_NEAR( -1.66007, errorsForUpstream[68268] );
 //    EXPECT_FLOAT_NEAR( 0.823709, errorsForUpstream[2927151] );
@@ -373,7 +373,7 @@ float *test( int boardSize ) {
 //    delete[] errorsForUpstream;
 //}
 
-//TEST( testbackproperrors, DISABLED_board19 ) { // make it work for a board19 first :-)
+//TEST( testbackproperrors, DISABLED_image19 ) { // make it work for a image19 first :-)
 //    float *errorsForUpstream = test(19);
 //    EXPECT_FLOAT_NEAR( -24.5602, errorsForUpstream[158380] );
 //    EXPECT_FLOAT_NEAR( 7.39012, errorsForUpstream[2607] );
@@ -384,10 +384,10 @@ float *test( int boardSize ) {
 
 //    const int batchSize = 128;
 //    LayerDimensions dim;
-//    dim.setInputPlanes( 32 ).setInputBoardSize( 19 ).setNumFilters( 32 ).setFilterSize( 5 )
+//    dim.setInputPlanes( 32 ).setInputImageSize( 19 ).setNumFilters( 32 ).setFilterSize( 5 )
 //        .setBiased( true ).setPadZeros( true );    const int batchSize = 128;
 //    LayerDimensions dim;
-//    dim.setInputPlanes( 32 ).setInputBoardSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+//    dim.setInputPlanes( 32 ).setInputImageSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
 //        .setBiased( true ).setPadZeros( true );
 
 //    int weightsSize = dim.filtersSize;
@@ -464,7 +464,7 @@ float *test( int boardSize ) {
 TEST( testbackproperrors, comparespecific ) {
     const int batchSize = 5;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize( 5 ).setNumFilters( 1 ).setFilterSize( 3 )
+    dim.setInputPlanes( 1 ).setInputImageSize( 5 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( true ).setPadZeros( false );
 
     int weightsSize = dim.filtersSize;

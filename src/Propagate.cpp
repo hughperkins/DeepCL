@@ -33,15 +33,15 @@ STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, Act
     return new PropagateAuto( cl, dim, fn );
 //    return new PropagateByInputPlane( cl, dim, fn );
 
-//    if( dim.filterSize == dim.inputBoardSize && dim.padZeros == false && dim.numFilters >= 64
+//    if( dim.filterSize == dim.inputImageSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {
 //        return new PropagateFc( cl, dim, fn );
 //    } else {
 //    }
-//    if( dim.filterSize == dim.inputBoardSize && dim.padZeros == false && dim.numFilters >= 64
+//    if( dim.filterSize == dim.inputImageSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {
 //        return new PropagateFc( cl, dim, fn );
-//    } else if( square( dim.outputBoardSize ) < 32 || square( dim.outputBoardSize ) > cl->getMaxWorkgroupSize() ) {
+//    } else if( square( dim.outputImageSize ) < 32 || square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
 //        return new Propagate1( cl, dim, fn );
 //    } else {
 //        return new Propagate3( cl, dim, fn );

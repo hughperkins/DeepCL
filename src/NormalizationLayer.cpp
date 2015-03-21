@@ -19,7 +19,7 @@ NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayer
     allocatedSize(0),
     results(0),
     outputPlanes( previousLayer->getOutputPlanes() ),
-    outputBoardSize( previousLayer->getOutputBoardSize() ),
+    outputImageSize( previousLayer->getOutputImageSize() ),
     translate( maker->_translate ),
     scale( maker->_scale ) {
 }
@@ -48,20 +48,20 @@ VIRTUAL void NormalizationLayer::printOutput() const {
         std::cout << "NormalizationLayer n " << n << ":" << std::endl;
         for( int plane = 0; plane < std::min( 5, outputPlanes); plane++ ) {
             if( outputPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
-            for( int i = 0; i < std::min(5, outputBoardSize); i++ ) {
+            for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
                 std::cout << "      ";
-                for( int j = 0; j < std::min(5, outputBoardSize); j++ ) {
+                for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
                     std::cout << getResult( n, plane, i, j ) << " ";
 //results[
-//                            n * numPlanes * boardSize*boardSize +
-//                            plane*boardSize*boardSize +
-//                            i * boardSize +
+//                            n * numPlanes * imageSize*imageSize +
+//                            plane*imageSize*imageSize +
+//                            i * imageSize +
 //                            j ] << " ";
                 }
-                if( outputBoardSize > 5 ) std::cout << " ... ";
+                if( outputImageSize > 5 ) std::cout << " ... ";
                 std::cout << std::endl;
             }
-            if( outputBoardSize > 5 ) std::cout << " ... " << std::endl;
+            if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
         }
         if( outputPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
     }
@@ -95,14 +95,14 @@ VIRTUAL void NormalizationLayer::propagate() {
 VIRTUAL void NormalizationLayer::backPropErrors( float learningRate, float const *errors ) {
   // do nothing...
 }
-VIRTUAL int NormalizationLayer::getOutputBoardSize() const {
-    return outputBoardSize;
+VIRTUAL int NormalizationLayer::getOutputImageSize() const {
+    return outputImageSize;
 }
 VIRTUAL int NormalizationLayer::getOutputPlanes() const {
     return outputPlanes;
 }
 VIRTUAL int NormalizationLayer::getOutputCubeSize() const {
-    return outputPlanes * outputBoardSize * outputBoardSize;
+    return outputPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL int NormalizationLayer::getResultsSize() const {
     return batchSize * getOutputCubeSize();
@@ -111,7 +111,7 @@ VIRTUAL std::string NormalizationLayer::toString() {
     return toString();
 }
 VIRTUAL std::string NormalizationLayer::asString() const {
-    return std::string("") + "NormalizationLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputBoardSize=" +  ::toString( outputBoardSize ) + " translate=" + ::toString( translate ) + 
+    return std::string("") + "NormalizationLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " translate=" + ::toString( translate ) + 
         " scale=" + ::toString( scale ) + " }";
 }
 

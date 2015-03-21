@@ -22,8 +22,8 @@ SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker ) :
         errorsForUpstream( 0 ),
         results( 0 ),
         perPlane( maker->_perPlane ),
-        boardSize( previousLayer->getOutputBoardSize() ),
-        boardSizeSquared( previousLayer->getOutputBoardSize() * previousLayer->getOutputBoardSize() ),
+        imageSize( previousLayer->getOutputImageSize() ),
+        imageSizeSquared( previousLayer->getOutputImageSize() * previousLayer->getOutputImageSize() ),
         numPlanes( previousLayer->getOutputPlanes() ) {
 }
 VIRTUAL SoftMaxLayer::~SoftMaxLayer() {
@@ -65,19 +65,19 @@ VIRTUAL float SoftMaxLayer::calcLossFromLabels( int const *labels ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 int label = labels[n * numPlanes + plane];
-                int boardOffset = ( n * numPlanes + plane ) * boardSizeSquared;
-                loss += - log( results[ boardOffset + label ] );
+                int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
+                loss += - log( results[ imageOffset + label ] );
             }
         }
     } else {
-        // force boardsize of 1 for now
-        if( boardSize != 1 ) {
-            throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+        // force imagesize of 1 for now
+        if( imageSize != 1 ) {
+            throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
-            int boardOffset = n * numPlanes * boardSizeSquared;
+            int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
-            loss += - log( results[boardOffset + label] );
+            loss += - log( results[imageOffset + label] );
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcLossfromlabels");
@@ -91,25 +91,25 @@ VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                int boardOffset = ( n * numPlanes + plane ) * boardSizeSquared;
-                for( int i = 0; i < boardSizeSquared; i++ ) {
-                    if( expectedValues[ boardOffset + i ] != 0 ) {
-                        float thisloss = - expectedValues[ boardOffset + i ] * log( results[ boardOffset + i ] );
+                int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
+                for( int i = 0; i < imageSizeSquared; i++ ) {
+                    if( expectedValues[ imageOffset + i ] != 0 ) {
+                        float thisloss = - expectedValues[ imageOffset + i ] * log( results[ imageOffset + i ] );
                         loss += thisloss;
                     }
                 }
             }
         }
     } else {
-        // force boardsize of 1 for now
-        if( boardSize != 1 ) {
-            throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+        // force imagesize of 1 for now
+        if( imageSize != 1 ) {
+            throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
-            int boardOffset = n * numPlanes * boardSizeSquared;
+            int imageOffset = n * numPlanes * imageSizeSquared;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                float thisloss = - expectedValues[boardOffset + plane] * log( results[boardOffset + plane] );
-//                cout << "n " << n << " plane " << plane << " expected " << expectedValues[boardOffset + plane] << " result " << results[boardOffset + plane] << " thisloss " << thisloss << endl;
+                float thisloss = - expectedValues[imageOffset + plane] * log( results[imageOffset + plane] );
+//                cout << "n " << n << " plane " << plane << " expected " << expectedValues[imageOffset + plane] << " result " << results[imageOffset + plane] << " thisloss " << thisloss << endl;
                 loss += thisloss;
             }
         }
@@ -126,31 +126,31 @@ VIRTUAL void SoftMaxLayer::calcErrorsFromLabels( int const *labels ) {
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                int boardOffset = ( n * numPlanes + plane ) * boardSizeSquared;
+                int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
                 int label = labels[n * numPlanes + plane];
-                for( int i = 0; i < boardSizeSquared; i++ ) {
-                    errorsForUpstream[boardOffset + i] = results[boardOffset + i];
+                for( int i = 0; i < imageSizeSquared; i++ ) {
+                    errorsForUpstream[imageOffset + i] = results[imageOffset + i];
                 }
-                errorsForUpstream[boardOffset + label] -= 1;
+                errorsForUpstream[imageOffset + label] -= 1;
             }
         }
     } else {
-        // force boardsize of 1 for now
-        if( boardSize != 1 ) {
-            throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+        // force imagesize of 1 for now
+        if( imageSize != 1 ) {
+            throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
-            int boardOffset = n * numPlanes * boardSizeSquared;
+            int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                errorsForUpstream[boardOffset + plane] = results[boardOffset + plane];
+                errorsForUpstream[imageOffset + plane] = results[imageOffset + plane];
             }
             if( label >= numPlanes ) {
                 throw runtime_error("Label " + toString( label ) + " exceeds number of softmax planes " + toString( numPlanes ) );
             } else if( label < 0 ) {
                 throw runtime_error("Label " + toString( label ) + " negative" );
             }
-            errorsForUpstream[boardOffset + label] -= 1;
+            errorsForUpstream[imageOffset + label] -= 1;
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcErrorsfromlabels");
@@ -164,22 +164,22 @@ VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                int boardOffset = ( n * numPlanes + plane ) * boardSizeSquared;
-                for( int i = 0; i < boardSizeSquared; i++ ) {
-                    int resultIndex = boardOffset + i;
+                int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
+                for( int i = 0; i < imageSizeSquared; i++ ) {
+                    int resultIndex = imageOffset + i;
                     errorsForUpstream[resultIndex] = results[resultIndex] - expectedValues[resultIndex];
                 }
             }
         }
     } else {
-        // force boardsize of 1 for now
-        if( boardSize != 1 ) {
-            throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+        // force imagesize of 1 for now
+        if( imageSize != 1 ) {
+            throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
-            int boardOffset = n * numPlanes * boardSizeSquared;
+            int imageOffset = n * numPlanes * imageSizeSquared;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                int resultIndex = boardOffset + plane;
+                int resultIndex = imageOffset + plane;
                 errorsForUpstream[resultIndex] = results[resultIndex] - expectedValues[resultIndex];
             }
         }
@@ -190,7 +190,7 @@ VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
     if( perPlane ) {
         return numPlanes;
     } else {
-        return boardSizeSquared;
+        return imageSizeSquared;
     }
 }
 VIRTUAL int SoftMaxLayer::getPersistSize() const {
@@ -203,13 +203,13 @@ VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                int boardOffset = ( n * numPlanes + plane ) * boardSizeSquared;
+                int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
                 int label = labels[n * numPlanes + plane];
-                float thisMax = results[boardOffset + 0];
+                float thisMax = results[imageOffset + 0];
                 int iMax = 0;
-                for( int i = 1; i < boardSizeSquared; i++ ) {
-                    if( results[boardOffset + i] > thisMax ) {
-                        thisMax = results[boardOffset + i];
+                for( int i = 1; i < imageSizeSquared; i++ ) {
+                    if( results[imageOffset + i] > thisMax ) {
+                        thisMax = results[imageOffset + i];
                         iMax = i;
                     }
                 }
@@ -220,18 +220,18 @@ VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
             }
         }
     } else {
-        // force boardsize of 1 for now
-        if( boardSize != 1 ) {
-            throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+        // force imagesize of 1 for now
+        if( imageSize != 1 ) {
+            throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
-            int boardOffset = n * numPlanes * boardSizeSquared;
+            int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
-            float thisMax = results[boardOffset + 0];
+            float thisMax = results[imageOffset + 0];
             int iMax = 0;
             for( int i = 1; i < numPlanes; i++ ) {
-                if( results[boardOffset + i] > thisMax ) {
-                    thisMax = results[boardOffset + i];
+                if( results[imageOffset + i] > thisMax ) {
+                    thisMax = results[imageOffset + i];
                     iMax = i;
                 }
             }
@@ -252,40 +252,40 @@ VIRTUAL void SoftMaxLayer::propagate() {
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                int boardOffset = ( n * numPlanes + plane ) * boardSizeSquared;
-                float maxValue = resultsFromUpstream[boardOffset + 0];
-                for( int i = 1; i < boardSizeSquared; i++ ) {
-                    maxValue = std::max( maxValue, resultsFromUpstream[boardOffset + i] );
+                int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
+                float maxValue = resultsFromUpstream[imageOffset + 0];
+                for( int i = 1; i < imageSizeSquared; i++ ) {
+                    maxValue = std::max( maxValue, resultsFromUpstream[imageOffset + i] );
                 }
                 float denominator = 0;
-                for( int i = 0; i < boardSizeSquared; i++ ) {
-                    denominator += exp( resultsFromUpstream[boardOffset + i] - maxValue );
+                for( int i = 0; i < imageSizeSquared; i++ ) {
+                    denominator += exp( resultsFromUpstream[imageOffset + i] - maxValue );
                 }
-                for( int i = 0; i < boardSizeSquared; i++ ) {
-                    results[boardOffset + i] = exp( resultsFromUpstream[boardOffset + i] - maxValue ) / denominator;
+                for( int i = 0; i < imageSizeSquared; i++ ) {
+                    results[imageOffset + i] = exp( resultsFromUpstream[imageOffset + i] - maxValue ) / denominator;
                 }
             }
         }
     } else {
-        // force boardsize of 1 for now
-        if( boardSize != 1 ) {
-            throw std::runtime_error("perColumn only supported for boardsize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+        // force imagesize of 1 for now
+        if( imageSize != 1 ) {
+            throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
-            int boardOffset = n * numPlanes * boardSizeSquared;
+            int imageOffset = n * numPlanes * imageSizeSquared;
             // first get the max
-            float maxValue = resultsFromUpstream[boardOffset + 0]; // since we assume boardsize 1, this is correct
+            float maxValue = resultsFromUpstream[imageOffset + 0]; // since we assume imagesize 1, this is correct
             for( int plane = 1; plane < numPlanes; plane++ ) {
-                maxValue = std::max( maxValue, resultsFromUpstream[boardOffset + plane] );
+                maxValue = std::max( maxValue, resultsFromUpstream[imageOffset + plane] );
             }
             // calculate sum, under this max
             float denominator = 0;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                denominator += exp( resultsFromUpstream[boardOffset + plane] - maxValue );
+                denominator += exp( resultsFromUpstream[imageOffset + plane] - maxValue );
             }
             // now calc the softmaxes:
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                results[boardOffset + plane] = exp( resultsFromUpstream[boardOffset + plane] - maxValue ) / denominator;
+                results[imageOffset + plane] = exp( resultsFromUpstream[imageOffset + plane] - maxValue ) / denominator;
             }
         }
     }
@@ -301,6 +301,6 @@ VIRTUAL void SoftMaxLayer::backPropErrors( float learningRate ) {
 }
 VIRTUAL std::string SoftMaxLayer::asString() const {
     return "SoftMaxLayer{ perPlane=" + toString( perPlane ) + " numPlanes=" + toString( numPlanes )
-        + " boardSize=" + toString( boardSize ) + " }";
+        + " imageSize=" + toString( imageSize ) + " }";
 }
 

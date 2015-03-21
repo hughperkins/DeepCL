@@ -29,10 +29,10 @@ void doTestFiles( string dir ) {
     int *labels = new int[ N ];
     CifarLoader::load( cifarFilename, images, labels );
     
-    const int boardSize = 32;
+    const int imageSize = 32;
     const int numPlanes = 3;
     NorbLoader::writeLabels( matCatFilename, labels, N );
-    NorbLoader::writeImages( matDatFilename, images, N, numPlanes, boardSize );
+    NorbLoader::writeImages( matDatFilename, images, N, numPlanes, imageSize );
 
     delete[] images;
     delete[] labels;
@@ -41,9 +41,9 @@ void doTestFiles( string dir ) {
 void doTrainingFiles( string dir ) {
     const int N = 50000; // yeah, we just hard-code this...
     const int numPlanes = 3;
-    const int boardSize = 32;
+    const int imageSize = 32;
     int *labels = new int[N];
-    const int cubeSize = numPlanes * boardSize * boardSize;
+    const int cubeSize = numPlanes * imageSize * imageSize;
     unsigned char *images = new unsigned char[ N * cubeSize ];
     for( int batch = 1; batch <= 5; batch++ ) {
         string cifarFilename = dir + "/data_batch_" + toString( batch ) + ".bin";
@@ -54,7 +54,7 @@ void doTrainingFiles( string dir ) {
     string matCatFilename = dir + "/train-cat.mat";
 
     NorbLoader::writeLabels( matCatFilename, labels, N );
-    NorbLoader::writeImages( matDatFilename, images, N, numPlanes, boardSize );
+    NorbLoader::writeImages( matDatFilename, images, N, numPlanes, imageSize );
 
     delete[] images;
     delete[] labels;

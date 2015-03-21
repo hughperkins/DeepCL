@@ -21,9 +21,9 @@ class RandomTranslations : public Layer {
 public:
     const int translateSize;
     const int numPlanes;
-    const int inputBoardSize;
+    const int inputImageSize;
 
-    const int outputBoardSize;
+    const int outputImageSize;
 
     float *results;
 
@@ -42,7 +42,7 @@ public:
     VIRTUAL float *getResults();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getResultsSize() const;
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool providesErrorsForUpstreamWrapper() const;

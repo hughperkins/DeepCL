@@ -23,18 +23,18 @@ RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker *maker ) 
         Layer( previousLayer, maker ),
         patchSize( maker->_patchSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),
-        inputBoardSize( previousLayer->getOutputBoardSize() ),
-        outputBoardSize( maker->_patchSize ),
+        inputImageSize( previousLayer->getOutputImageSize() ),
+        outputImageSize( maker->_patchSize ),
         results(0),
         batchSize(0),
         allocatedSize(0) {
-    if( inputBoardSize == 0 ) {
+    if( inputImageSize == 0 ) {
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input board size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input image size is 0" );
     }
-    if( outputBoardSize == 0 ) {
+    if( outputImageSize == 0 ) {
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output board size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
     }
     if( previousLayer->needsBackProp() ) {
         throw runtime_error("Error: RandomPatches layer does not provide backprop currently, so you cannot put it after a layer that needs backprop");
@@ -58,7 +58,7 @@ VIRTUAL void RandomPatches::setBatchSize( int batchSize ) {
     results = new float[ getResultsSize() ];
 }
 VIRTUAL int RandomPatches::getResultsSize() {
-    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
+    return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *RandomPatches::getResults() {
     return results;
@@ -67,10 +67,10 @@ VIRTUAL bool RandomPatches::needsBackProp() {
     return false;
 }
 VIRTUAL int RandomPatches::getResultsSize() const {
-    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
+    return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int RandomPatches::getOutputBoardSize() const {
-    return outputBoardSize;
+VIRTUAL int RandomPatches::getOutputImageSize() const {
+    return outputImageSize;
 }
 VIRTUAL int RandomPatches::getOutputPlanes() const {
     return numPlanes;
@@ -87,18 +87,18 @@ VIRTUAL bool RandomPatches::hasResultsWrapper() const {
 VIRTUAL void RandomPatches::propagate() {
     float *upstreamResults = previousLayer->getResults();
     for( int n = 0; n < batchSize; n++ ) {
-        int patchMargin = inputBoardSize - outputBoardSize;
+        int patchMargin = inputImageSize - outputImageSize;
         int patchRow = patchMargin / 2;
         int patchCol = patchMargin / 2;
         if( training ) {
             patchRow = MyRandom::instance()->uniformInt( 0, patchMargin );
             patchCol = MyRandom::instance()->uniformInt( 0, patchMargin );
         }
-        PatchExtractor::extractPatch( n, numPlanes, inputBoardSize, patchSize, patchRow, patchCol, upstreamResults, results );
+        PatchExtractor::extractPatch( n, numPlanes, inputImageSize, patchSize, patchRow, patchCol, upstreamResults, results );
     }
 }
 VIRTUAL std::string RandomPatches::asString() const {
-    return "RandomPatches{ inputPlanes=" + toString(numPlanes) + " inputBoardSize=" + toString(inputBoardSize) + " patchSize=" + toString( patchSize ) + " }";
+    return "RandomPatches{ inputPlanes=" + toString(numPlanes) + " inputImageSize=" + toString(inputImageSize) + " patchSize=" + toString( patchSize ) + " }";
 }
 
 

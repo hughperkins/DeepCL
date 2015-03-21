@@ -24,24 +24,24 @@ void go( string dir, string setName ) {
     string matDatFilename = dir + "/" + setName + "-dat.mat";
     string matCatFilename = dir + "/" + setName + "-cat.mat";
 
-    int Nboards;
+    int Nimages;
     int Nlabels;
-    int boardSize;
-    int ***images = MnistLoader::loadImages( dir, setName, &Nboards, &boardSize );
+    int imageSize;
+    int ***images = MnistLoader::loadImages( dir, setName, &Nimages, &imageSize );
     int *labels = MnistLoader::loadLabels( dir, setName, &Nlabels );
-    if( Nboards != Nlabels ) {
-         throw runtime_error("mismatch between number of boards, and number of labels " + toString(Nboards ) + " vs " +
+    if( Nimages != Nlabels ) {
+         throw runtime_error("mismatch between number of images, and number of labels " + toString(Nimages ) + " vs " +
              toString(Nlabels ) );
     }
 
-    int totalLinearSize = Nboards * boardSize * boardSize;
+    int totalLinearSize = Nimages * imageSize * imageSize;
     unsigned char *imagesUchar = new unsigned char[ totalLinearSize ];
     for( int i = 0; i < totalLinearSize; i++ ) {
         imagesUchar[i] = ( &(images[0][0][0]) )[i];
     }
 
-    NorbLoader::writeLabels( matCatFilename, labels, Nboards );
-    NorbLoader::writeImages( matDatFilename, imagesUchar, Nboards, 1, boardSize );
+    NorbLoader::writeLabels( matCatFilename, labels, Nimages );
+    NorbLoader::writeImages( matDatFilename, imagesUchar, Nimages, 1, imageSize );
 
     delete[] imagesUchar;
 }

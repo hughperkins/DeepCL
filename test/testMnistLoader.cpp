@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "MnistLoader.h"
-#include "BoardsHelper.h"
+#include "ImagesHelper.h"
 
 #include "test/myasserts.h"
 
@@ -39,10 +39,10 @@ TEST( testMnistLoader, labels ) {
 
 TEST( testMnistLoader, images ) {
     int N;
-    int boardSize;
-    int ***imagesTrain = MnistLoader::loadImages( "../data/mnist", "train", &N, &boardSize );
+    int imageSize;
+    int ***imagesTrain = MnistLoader::loadImages( "../data/mnist", "train", &N, &imageSize );
     EXPECT_EQ( 60000, N );
-    EXPECT_EQ( 28, boardSize );
+    EXPECT_EQ( 28, imageSize );
     int thismax = 0;
     int thismin = 0;
     for( int i = 0; i < 1000; i++ ) {
@@ -54,6 +54,6 @@ TEST( testMnistLoader, images ) {
     }
     EXPECT_EQ( 0, thismin );
     EXPECT_EQ( 255, thismax );
-    BoardsHelper::deleteBoards( &imagesTrain, N, boardSize );
+    ImagesHelper::deleteImages( &imagesTrain, N, imageSize );
 }
 

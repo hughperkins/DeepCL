@@ -29,7 +29,7 @@ VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float lear
     int globalSize = workgroupsize * numWorkgroups;
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
-    int localMemRequiredKB = ( square( dim.outputBoardSize ) * 4 + square( dim.inputBoardSize ) * 4 ) / 1024 + 1;
+    int localMemRequiredKB = ( square( dim.outputImageSize ) * 4 + square( dim.inputImageSize ) * 4 ) / 1024 + 1;
     if( localMemRequiredKB >= cl->getLocalMemorySizeKB() ) {
         throw runtime_error( "local memory too small to use this kernel on this device.  Need: " + 
             toString( localMemRequiredKB ) + "KB, but only have: " + 
@@ -48,8 +48,8 @@ VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float lear
         kernel->inout( biasWeightsWrapper );
     }
     kernel
-        ->localFloats( square( dim.outputBoardSize ) )
-        ->localFloats( square( dim.inputBoardSize ) );
+        ->localFloats( square( dim.outputImageSize ) )
+        ->localFloats( square( dim.inputImageSize ) );
 
     kernel->run_1d(globalSize, workgroupsize);
 
@@ -122,8 +122,8 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "// workgroupId: [outputPlane][inputPlane]\n" 
     "// localId: [filterRow][filterCol]\n" 
     "// per-thread iteration: [n][outputRow][outputCol]\n" 
-    "// local: errorboard: outputBoardSize * outputBoardSize\n" 
-    "//        imageboard: inputBoardSize * inputBoardSize\n" 
+    "// local: errorimage: outputImageSize * outputImageSize\n" 
+    "//        imageimage: inputImageSize * inputImageSize\n" 
     "void kernel backprop_floats_withscratch_dobias(\n" 
     "        const float learningRateMultiplier, const int batchSize,\n" 
     "         global const float *errors, global const float *images,\n" 
@@ -131,7 +131,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "        #ifdef BIASED\n" 
     "             global float *biasWeights,\n" 
     "        #endif\n" 
-    "        local float *_errorBoard, local float *_imageBoard\n" 
+    "        local float *_errorImage, local float *_imageImage\n" 
     " ) {\n" 
     "    const int filterRow = localId / gFilterSize;\n" 
     "    const int filterCol = localId % gFilterSize;\n" 
@@ -147,23 +147,23 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "#endif\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _imageBoard, images + ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared, gInputBoardSizeSquared );\n" 
-    "        copyLocal(_errorBoard, errors + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared, gOutputBoardSizeSquared );\n" 
+    "        copyLocal( _imageImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );\n" 
+    "        copyLocal(_errorImage, errors + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        if( localId < gFilterSizeSquared ) {\n" 
-    "            for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {\n" 
+    "            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {\n" 
     "                int upstreamRow = outRow - gMargin + filterRow;\n" 
-    "                for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {\n" 
+    "                for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {\n" 
     "                    const int upstreamCol = outCol - gMargin + filterCol;\n" 
-    "                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize && upstreamCol < gInputBoardSize )\n" 
+    "                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize )\n" 
     "                    if( proceed ) {\n" 
     "                        // these defines reduce register pressure, compared to const\n" 
     "                        // giving a 40% speedup on nvidia :-)\n" 
-    "                        #define resultIndex ( outRow * gOutputBoardSize + outCol )\n" 
-    "                        #define error ( _errorBoard[resultIndex] )\n" 
-    "                        //const float error = _errorBoard[resultIndex];\n" 
-    "                        #define upstreamDataIndex ( upstreamRow * gInputBoardSize + upstreamCol )\n" 
-    "                        #define upstreamResult ( _imageBoard[upstreamDataIndex] )\n" 
+    "                        #define resultIndex ( outRow * gOutputImageSize + outCol )\n" 
+    "                        #define error ( _errorImage[resultIndex] )\n" 
+    "                        //const float error = _errorImage[resultIndex];\n" 
+    "                        #define upstreamDataIndex ( upstreamRow * gInputImageSize + upstreamCol )\n" 
+    "                        #define upstreamResult ( _imageImage[upstreamDataIndex] )\n" 
     "                        thiswchange += upstreamResult * error;\n" 
     "    #ifdef BIASED\n" 
     "                        thisbiaschange += error;\n" 

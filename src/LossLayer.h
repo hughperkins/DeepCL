@@ -24,7 +24,7 @@ public:
     VIRTUAL float *getResults();
     VIRTUAL int getResultsSize() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getWeightsSize() const;
 

@@ -19,10 +19,10 @@ using namespace std;
 TEST( testpoolingbackprop, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
-    int boardSize = 4;
+    int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
+    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 5,
         2, 9
@@ -55,10 +55,10 @@ TEST( testpoolingbackprop, basic ) {
 TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
-    int boardSize = 2;
+    int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, boardSize, poolingSize );
+    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 
         5,
@@ -100,7 +100,7 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
 }
 
 TEST( SLOW_testpoolingbackprop, compare_args ) {
-    int inputBoardSize = 9;
+    int inputImageSize = 9;
     int poolingSize = 2;
     int instance0 = 0;
     int instance1 = 1;
@@ -111,7 +111,7 @@ TEST( SLOW_testpoolingbackprop, compare_args ) {
     TestArgsParser::arg( "batchSize", &batchSize );
     TestArgsParser::arg( "poolingsize", &poolingSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
-    TestArgsParser::arg( "inputboardsize", &inputBoardSize );
+    TestArgsParser::arg( "inputimagesize", &inputImageSize );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
@@ -119,17 +119,17 @@ TEST( SLOW_testpoolingbackprop, compare_args ) {
     bool padZeros = true;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingBackprop *p0 = PoolingBackprop::instanceSpecific( instance0, cl, padZeros, numPlanes, inputBoardSize, poolingSize );
-    PoolingBackprop *p1 = PoolingBackprop::instanceSpecific( instance1, cl, padZeros, numPlanes, inputBoardSize, poolingSize );
-    int outputBoardSize = p1->outputBoardSize;
-    int errorsSize = batchSize * outputBoardSize * outputBoardSize * numPlanes;
+    PoolingBackprop *p0 = PoolingBackprop::instanceSpecific( instance0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    PoolingBackprop *p1 = PoolingBackprop::instanceSpecific( instance1, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    int outputImageSize = p1->outputImageSize;
+    int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
     float *errors = new float[ errorsSize ];
-    int inputSize = batchSize * inputBoardSize * inputBoardSize * numPlanes;
+    int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
     int *selectors = new int[ errorsSize ];
     float *errorsForUpstream0 = new float[ inputSize ];
     float *errorsForUpstream1 = new float[ inputSize ];
     
-    PoolingPropagate *forwardprop = PoolingPropagate::instanceSpecific( 0, cl, padZeros, numPlanes, inputBoardSize, poolingSize );
+    PoolingPropagate *forwardprop = PoolingPropagate::instanceSpecific( 0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
     float *output = new float[errorsSize];
     float *input = new float[inputSize];
     float *errorsForUpstream[2];
@@ -185,10 +185,10 @@ TEST( SLOW_testpoolingbackprop, compare_args ) {
 TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
-    int boardSize = 2;
+    int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, numPlanes, boardSize, poolingSize );
+    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 

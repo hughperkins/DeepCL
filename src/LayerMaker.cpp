@@ -41,8 +41,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //    if( _numPlanes == 0 ) {
 //        throw runtime_error("Must provide ->planes(planes)");
 //    }
-//    if( _boardSize == 0 ) {
-//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    if( _imageSize == 0 ) {
+//        throw runtime_error("Must provide ->imageSize(imageSize)");
 //    }
 //    Layer *layer = net->addLayer( this );
 //    return layer;
@@ -51,8 +51,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //    if( _numPlanes == 0 ) {
 //        throw runtime_error("Must provide ->numPlanes(planes)");
 //    }
-//    if( _boardSize == 0 ) {
-//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    if( _imageSize == 0 ) {
+//        throw runtime_error("Must provide ->imageSize(imageSize)");
 //    }
 //    Layer *layer = net->addLayer( this );
 //    return layer;
@@ -72,7 +72,7 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //InputLayerMaker<T> InputLayerMaker<T>::clone() const {
 //    InputLayerMaker<T> maker = *this;
 ////    maker->_numPlanes = _numPlanes;
-////    maker->_boardSize = _boardSize;
+////    maker->_imageSize = _imageSize;
 //    return maker;
 //}
 //LayerMaker *NormalizationLayerMaker::clone( Layer *previousLayer ) const {
@@ -100,7 +100,7 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //LayerMaker *FullyConnectedMaker::clone( Layer *previousLayer ) const {
 //    FullyConnectedMaker *maker = new FullyConnectedMaker( 0, previousLayer );
 //    maker->_numPlanes = _numPlanes;
-//    maker->_boardSize = _boardSize;
+//    maker->_imageSize = _imageSize;
 //    maker->_biased = _biased;
 //    maker->_activationFunction = _activationFunction;
 //    return maker;
@@ -132,8 +132,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //    if( _numPlanes == 0 ) {
 //        throw runtime_error("Must provide ->planes(planes)");
 //    }
-//    if( _boardSize == 0 ) {
-//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    if( _imageSize == 0 ) {
+//        throw runtime_error("Must provide ->imageSize(imageSize)");
 //    }
 //    Layer *layer = new FullyConnectedLayer( net->cl, previousLayer, this );
 //    return layer;
@@ -158,8 +158,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //    if( _numPlanes == 0 ) {
 //        throw runtime_error("Must provide ->numPlanes(planes)");
 //    }
-//    if( _boardSize == 0 ) {
-//        throw runtime_error("Must provide ->boardSize(boardSize)");
+//    if( _imageSize == 0 ) {
+//        throw runtime_error("Must provide ->imageSize(imageSize)");
 //    }
 //    Layer *layer = new InputLayer<T>( 0, this );
 //    return layer;
@@ -177,17 +177,17 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //    return layer;
 //}
 
-//int ConvolutionalMaker::getOutputBoardSize() const {
+//int ConvolutionalMaker::getOutputImageSize() const {
 //    if( previousLayer == 0 ) {
 //        throw std::runtime_error("convolutional network must be attached to a parent layer");
 //    }
 //    int evenPadding = _filterSize % 2 == 0 ? 1 : 0;
-//    int boardSize = _padZeros ? previousLayer->getOutputBoardSize() + evenPadding : previousLayer->getOutputBoardSize() - _filterSize + 1;
-//    return boardSize;
+//    int imageSize = _padZeros ? previousLayer->getOutputImageSize() + evenPadding : previousLayer->getOutputImageSize() - _filterSize + 1;
+//    return imageSize;
 //}
 
-//int LossLayerMaker::getOutputBoardSize() const {
-//    return previousLayer->getOutputBoardSize();
+//int LossLayerMaker::getOutputImageSize() const {
+//    return previousLayer->getOutputImageSize();
 //}
 //int LossLayerMaker::getOutputPlanes() const {
 //    return previousLayer->getOutputPlanes();
@@ -195,8 +195,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //int LossLayerMaker::getBiased() const {
 //    return previousLayer->getBiased();
 //}
-//int PoolingMaker::getOutputBoardSize() const {
-//    return previousLayer->getOutputBoardSize() / _poolingSize;
+//int PoolingMaker::getOutputImageSize() const {
+//    return previousLayer->getOutputImageSize() / _poolingSize;
 //}
 //int PoolingMaker::getOutputPlanes() const {
 //    return previousLayer->getOutputPlanes();
@@ -204,8 +204,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //int PoolingMaker::getBiased() const {
 //    return false;
 //}
-//int NormalizationLayerMaker::getOutputBoardSize() const {
-//    return previousLayer->getOutputBoardSize();
+//int NormalizationLayerMaker::getOutputImageSize() const {
+//    return previousLayer->getOutputImageSize();
 //}
 //int NormalizationLayerMaker::getOutputPlanes() const {
 //    return previousLayer->getOutputPlanes();
@@ -213,7 +213,7 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //int NormalizationLayerMaker::getBiased() const {
 //    return false;
 //}
-//int RandomPatchesMaker::getOutputBoardSize() const {
+//int RandomPatchesMaker::getOutputImageSize() const {
 //    return _patchSize;
 //}
 //int RandomPatchesMaker::getOutputPlanes() const {
@@ -223,8 +223,8 @@ Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
 //    return false;
 //}
 
-//int RandomTranslationsMaker::getOutputBoardSize() const {
-//    return previousLayer->getOutputBoardSize();
+//int RandomTranslationsMaker::getOutputImageSize() const {
+//    return previousLayer->getOutputImageSize();
 //}
 //int RandomTranslationsMaker::getOutputPlanes() const {
 //    return previousLayer->getOutputPlanes();

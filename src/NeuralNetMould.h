@@ -21,21 +21,21 @@ class NeuralNet;
 class ClConvolve_EXPORT NeuralNetMould {
 public:
     int _numPlanes;
-    int _boardSize;
+    int _imageSize;
     NeuralNetMould(){
         _numPlanes = 0;
-        _boardSize = 0;
+        _imageSize = 0;
     }
-    NeuralNetMould( int planes, int boardSize ){
+    NeuralNetMould( int planes, int imageSize ){
         this->_numPlanes = planes;
-        this->_boardSize = boardSize;
+        this->_imageSize = imageSize;
     }
     NeuralNetMould *planes(int planes ) {
         this->_numPlanes = planes;
         return this;
     }
-    NeuralNetMould *boardSize( int boardSize ) {
-        this->_boardSize = boardSize;
+    NeuralNetMould *imageSize( int imageSize ) {
+        this->_imageSize = imageSize;
         return this;
     }
     NeuralNet *instance();

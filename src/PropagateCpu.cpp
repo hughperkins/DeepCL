@@ -44,28 +44,28 @@ VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *
     float *results = new float[ dim.outputCubeSize * batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
         for( int filter = 0; filter < dim.numFilters; filter++ ) {
-            for( int outRow = 0; outRow < dim.outputBoardSize; outRow += 1 + dim.skip ) {
-                for( int outCol = 0; outCol < dim.outputBoardSize; outCol += 1 + dim.skip ) {
+            for( int outRow = 0; outRow < dim.outputImageSize; outRow += 1 + dim.skip ) {
+                for( int outCol = 0; outCol < dim.outputImageSize; outCol += 1 + dim.skip ) {
                     float sum = 0;
                     for( int inPlane = 0; inPlane < dim.inputPlanes; inPlane++ ) {
 //                        cout << "inplane=" << inPlane << endl;
                         for( int u = -dim.halfFilterSize; u <= dim.halfFilterSize; u++ ) {
                             int inRow = outRow * ( dim.skip + 1 ) + u + ( dim.padZeros ? 0 : dim.halfFilterSize );
 //                                cout << "candidate inRow " << inRow << endl;
-                            if( inRow < 0 || inRow > dim.inputBoardSize - 1 ) {
+                            if( inRow < 0 || inRow > dim.inputImageSize - 1 ) {
                                 continue;
                             }
                             int filterRow = u + dim.halfFilterSize;
                             for( int v = -dim.halfFilterSize; v <= dim.halfFilterSize; v++ ) {
                                 int inCol = outCol * ( dim.skip + 1 ) + v + ( dim.padZeros ? 0 : dim.halfFilterSize );
                                 int filterCol = v + dim.halfFilterSize;
-                                if( inCol < 0 || inCol > dim.inputBoardSize - 1 ) {
+                                if( inCol < 0 || inCol > dim.inputImageSize - 1 ) {
                                     continue;
                                 }
                                 int inputIndex = ( ( n
                                     * dim.inputPlanes + inPlane )
-                                    * dim.inputBoardSize + inRow )
-                                    * dim.inputBoardSize + inCol;
+                                    * dim.inputImageSize + inRow )
+                                    * dim.inputImageSize + inCol;
                                 int weightIndex = ( ( filter 
                                     * dim.inputPlanes + inPlane ) 
                                     * dim.filterSize  + filterRow )
@@ -88,8 +88,8 @@ VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *
                     sum = fn->calc( sum );
                     int resultsIndex = ( ( n 
                         * dim.numFilters + filter ) 
-                        * dim.outputBoardSize + outRow )
-                        * dim.outputBoardSize + outCol;
+                        * dim.outputImageSize + outRow )
+                        * dim.outputImageSize + outCol;
                     results[resultsIndex] = sum;
 //                    cout << "resultsIndex=" << resultsIndex << " sum=" << sum << " results[resultsIndex]=" <<
 //                        results[resultsIndex] << endl;

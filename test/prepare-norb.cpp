@@ -21,11 +21,11 @@
 using namespace std;
 
 void prepareTraining( string norbDir ) {
-    int N, numPlanes, boardSize;
+    int N, numPlanes, imageSize;
     string imagesFilePath = norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-dat.mat";
     string labelsFilePath = norbDir + "/smallnorb-5x46789x9x18x6x2x96x96-training-cat.mat";
-    NorbLoader::getDimensions( imagesFilePath, &N, &numPlanes, &boardSize );
-    unsigned char *training = new unsigned char[ N * numPlanes * boardSize * boardSize ];
+    NorbLoader::getDimensions( imagesFilePath, &N, &numPlanes, &imageSize );
+    unsigned char *training = new unsigned char[ N * numPlanes * imageSize * imageSize ];
     int *labels = new int[ N ];
     NorbLoader::load( imagesFilePath, training, labels );
 //    int *labels = NorbLoader::loadLabels( labelsFilePath, N );
@@ -41,7 +41,7 @@ void prepareTraining( string norbDir ) {
     }
     // now sequence is shuffled, and has the numbers 0 to N, each exactly once
     // write out new, shuffled, training set
-    int inputCubeSize = numPlanes * boardSize * boardSize;
+    int inputCubeSize = numPlanes * imageSize * imageSize;
     unsigned char *shuffledData = new unsigned char[N * inputCubeSize ];
     int *shuffledLabels = new int[N];
     for( int n = 0; n < N; n++ ) {
@@ -51,7 +51,7 @@ void prepareTraining( string norbDir ) {
     }
 
     NorbLoader::writeLabels( norbDir + "/training-shuffled-cat.mat", shuffledLabels, N );
-    NorbLoader::writeImages( norbDir + "/training-shuffled-dat.mat", shuffledData, N, numPlanes, boardSize );
+    NorbLoader::writeImages( norbDir + "/training-shuffled-dat.mat", shuffledData, N, numPlanes, imageSize );
 
     delete[]training;
     delete[]labels;
@@ -61,9 +61,9 @@ void prepareTraining( string norbDir ) {
 }
 
 void prepareTest( string norbDir, int numSamples ) {
-    int N, numPlanes, boardSize;
+    int N, numPlanes, imageSize;
     string testingStem = "smallnorb-5x01235x9x18x6x2x96x96-testing";
-    unsigned char *training = NorbLoader::loadImages( norbDir + "/" + testingStem + "-dat.mat", &N, &numPlanes, &boardSize );
+    unsigned char *training = NorbLoader::loadImages( norbDir + "/" + testingStem + "-dat.mat", &N, &numPlanes, &imageSize );
     int *labels = NorbLoader::loadLabels( norbDir + "/" + testingStem + "-cat.mat", N );
 
     // create sequence of numSamples sample indexes
@@ -76,7 +76,7 @@ void prepareTest( string norbDir, int numSamples ) {
     }
 
     // write out samples
-    int inputCubeSize = numPlanes * boardSize * boardSize;
+    int inputCubeSize = numPlanes * imageSize * imageSize;
     unsigned char *sampledData = new unsigned char[numSamples * inputCubeSize ];
     int *sampledLabels = new int[numSamples];
     for( int n = 0; n < numSamples; n++ ) {
@@ -86,7 +86,7 @@ void prepareTest( string norbDir, int numSamples ) {
     }
 
     NorbLoader::writeLabels( norbDir + "/testing-sampled-cat.mat", sampledLabels, numSamples );
-    NorbLoader::writeImages( norbDir + "/testing-sampled-dat.mat", sampledData, numSamples, numPlanes, boardSize );
+    NorbLoader::writeImages( norbDir + "/testing-sampled-dat.mat", sampledData, numSamples, numPlanes, imageSize );
 
     delete[]training;
     delete[]labels;

@@ -58,26 +58,26 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
                     float thisBiasChange = 0;
                     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
                     //       aggregate over:  [outRow][outCol][n]
-                    for( int outRow = 0; outRow < dim.outputBoardSize; outRow++ ) {
+                    for( int outRow = 0; outRow < dim.outputImageSize; outRow++ ) {
                         int upstreamRow = outRow - margin + filterRow;
-                        if( upstreamRow < 0 || upstreamRow > dim.inputBoardSize - 1 ) {
+                        if( upstreamRow < 0 || upstreamRow > dim.inputImageSize - 1 ) {
                             continue;
                         }
-                        for( int outCol = 0; outCol < dim.outputBoardSize; outCol++ ) {
+                        for( int outCol = 0; outCol < dim.outputImageSize; outCol++ ) {
                             int upstreamCol = outCol - margin + filterCol;
-                            if( upstreamCol < 0 || upstreamCol > dim.inputBoardSize - 1 ) {
+                            if( upstreamCol < 0 || upstreamCol > dim.inputImageSize - 1 ) {
                                 continue;
                             }
                             for( int n = 0; n < batchSize; n++ ) {
                                 int resultIndex = ( ( n
                                     * dim.numFilters + outPlane )
-                                    * dim.outputBoardSize + outRow )
-                                    * dim.outputBoardSize + outCol;
+                                    * dim.outputImageSize + outRow )
+                                    * dim.outputImageSize + outCol;
                                 float _derivLossBySum = derivLossBySum[resultIndex];
                                 int upstreamResultIndex = ( ( n
                                     * dim.inputPlanes + upstreamPlane )
-                                    * dim.inputBoardSize + upstreamRow )
-                                    * dim.inputBoardSize + upstreamCol;
+                                    * dim.inputImageSize + upstreamRow )
+                                    * dim.inputImageSize + upstreamCol;
                                 float upstreamResult = images[ upstreamResultIndex ];
                                 float thisimagethiswchange = _derivLossBySum * upstreamResult;
                                 thiswchange += thisimagethiswchange;

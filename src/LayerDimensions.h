@@ -11,7 +11,7 @@ inline int square( int value ) {
 
 class ClConvolve_EXPORT LayerDimensions {
 public:
-    int inputPlanes, inputBoardSize, numFilters, filterSize, outputBoardSize;
+    int inputPlanes, inputImageSize, numFilters, filterSize, outputImageSize;
     bool padZeros, isEven;
     bool biased;
     int skip;
@@ -21,20 +21,20 @@ public:
     int outputCubeSize;
     int numInputPlanes;
 
-    int outputBoardSizeSquared;
+    int outputImageSizeSquared;
     int filterSizeSquared;
-    int inputBoardSizeSquared;
+    int inputImageSizeSquared;
 
     int halfFilterSize;
 
     LayerDimensions() {
         memset( this, 0, sizeof( LayerDimensions ) );
     }
-    LayerDimensions( int inputPlanes, int inputBoardSize, 
+    LayerDimensions( int inputPlanes, int inputImageSize, 
                 int numFilters, int filterSize, 
                 bool padZeros, bool biased ) :
             inputPlanes( inputPlanes ),
-            inputBoardSize( inputBoardSize ),
+            inputImageSize( inputImageSize ),
             numFilters( numFilters ),
             filterSize( filterSize ),
             padZeros( padZeros ),
@@ -42,8 +42,8 @@ public:
         {
         skip = 0;
         deriveOthers();
-//        std::cout << "outputBoardSize " << outputBoardSize << " padZeros " << padZeros << " filtersize "
-//            << filterSize << " inputBoardSize " << inputBoardSize << std::endl;
+//        std::cout << "outputImageSize " << outputImageSize << " padZeros " << padZeros << " filtersize "
+//            << filterSize << " inputImageSize " << inputImageSize << std::endl;
     }
     LayerDimensions &setInputPlanes( int _planes ) {
         this->inputPlanes = _planes;
@@ -55,8 +55,8 @@ public:
         deriveOthers();
         return *this;
     }
-    LayerDimensions &setInputBoardSize( int inputBoardSize ) {
-        this->inputBoardSize = inputBoardSize;
+    LayerDimensions &setInputImageSize( int inputImageSize ) {
+        this->inputImageSize = inputImageSize;
         deriveOthers();
         return *this;
     }

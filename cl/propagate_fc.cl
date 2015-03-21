@@ -62,26 +62,26 @@ kernel void reduce_inputplanes( const int batchSize, global float const *results
 }
 #endif
 
-#ifdef gOutBoardSize // for previous tests that dont define it
+#ifdef gOutImageSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroupid [n][outputplane]
 // localid: [filterrow][filtercol]
 //  each thread iterates over: [inplane]
 // this kernel assumes:
 //   padzeros == 0 (mandatory)
-//   filtersize == inputboardsize (mandatory)
-//   outputBoardSize == 1
+//   filtersize == inputimagesize (mandatory)
+//   outputImageSize == 1
 //   lots of outplanes, hundreds, but less than max work groupsize, eg 350, 500, 361
 //   lots of inplanes, eg 32
-//   inputboardsize around 19, not too small
-#if gFilterSize == gInputBoardSize && gPadZeros == 0
-void kernel propagate_filter_matches_inboard( const int batchSize,
+//   inputimagesize around 19, not too small
+#if gFilterSize == gInputImageSize && gPadZeros == 0
+void kernel propagate_filter_matches_inimage( const int batchSize,
       global const float *images, global const float *filters, 
         #ifdef BIASED
             global const float*biases, 
         #endif
     global float *results,
-    local float *_upstreamBoard, local float *_filterBoard ) {
+    local float *_upstreamImage, local float *_filterImage ) {
     const int globalId = get_global_id(0);
 
     const int workgroupId = get_group_id(0);
@@ -95,12 +95,12 @@ void kernel propagate_filter_matches_inboard( const int batchSize,
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
-        int thisUpstreamBoardOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamBoardSizeSquared;
+        int thisUpstreamImageOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numUpstreamsPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gUpstreamBoardSizeSquared ) {
-                _upstreamBoard[ thisOffset ] = images[ thisUpstreamBoardOffset + thisOffset ];
+            if( thisOffset < gUpstreamImageSizeSquared ) {
+                _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];
             }
         }
         const int filterGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;
@@ -111,14 +111,14 @@ void kernel propagate_filter_matches_inboard( const int batchSize,
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( localId < gOutBoardSizeSquared ) {
+        if( localId < gOutImageSizeSquared ) {
             for( int u = minu; u <= maxu; u++ ) {
                 int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
-                int inputboardrowoffset = inputRow * gUpstreamBoardSize;
+                int inputimagerowoffset = inputRow * gUpstreamImageSize;
                 int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
                 for( int v = minv; v <= maxv; v++ ) {
                     int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );
-                    sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                    sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                 }
             }
         }
@@ -127,8 +127,8 @@ void kernel propagate_filter_matches_inboard( const int batchSize,
         sum += biases[outPlane];
     #endif
     // results are organized like [imageid][filterid][row][col]
-    int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutBoardSizeSquared + localId;
-    if( localId < gOutBoardSizeSquared ) {
+    int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared + localId;
+    if( localId < gOutImageSizeSquared ) {
         results[resultIndex ] = ACTIVATION_FUNCTION(sum);
 //        results[resultIndex ] = 123;
     }

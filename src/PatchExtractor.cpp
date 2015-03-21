@@ -10,15 +10,15 @@
 
 using namespace std;
 
-void PatchExtractor::extractPatch( int n, int numPlanes, int boardSize, int patchSize, int patchRow, int patchCol, float *source, float *destination ) {
+void PatchExtractor::extractPatch( int n, int numPlanes, int imageSize, int patchSize, int patchRow, int patchCol, float *source, float *destination ) {
 //    int n = 0;
     for( int plane = 0; plane < numPlanes; plane++ ) {
-        float *upstreamBoard = source + ( n * numPlanes + plane ) * boardSize * boardSize;
-        float *outputBoard = destination + ( n * numPlanes + plane ) * patchSize * patchSize;
+        float *upstreamImage = source + ( n * numPlanes + plane ) * imageSize * imageSize;
+        float *outputImage = destination + ( n * numPlanes + plane ) * patchSize * patchSize;
         for( int outRow = 0; outRow < patchSize; outRow++ ) {
             const int inRow = outRow + patchRow;
-            memcpy( &(outputBoard[ outRow * patchSize ]), 
-                &(upstreamBoard[ inRow * boardSize + patchCol ]),
+            memcpy( &(outputImage[ outRow * patchSize ]), 
+                &(upstreamImage[ inRow * imageSize + patchCol ]),
                 patchSize * sizeof(float) );
         }        
     }

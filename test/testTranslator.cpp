@@ -2,7 +2,7 @@
 #include <string>
 
 #include "NorbLoader.h"
-#include "BoardPng.h"
+#include "ImagePng.h"
 #include "Translator.h"
 
 using namespace std;
@@ -10,22 +10,22 @@ using namespace std;
 void go( string dataDir, string setName, int n, int translateRows, int translateCols ) {
     int N;
     int numPlanes;
-    int boardSize;
+    int imageSize;
     string filePath = dataDir + "/" + setName + "-dat.mat";
-    NorbLoader::getDimensions( filePath, &N, &numPlanes, &boardSize );
+    NorbLoader::getDimensions( filePath, &N, &numPlanes, &imageSize );
     N = n + 1;
-    unsigned char *imagesUchar = new unsigned char[ N * numPlanes * boardSize * boardSize ];
+    unsigned char *imagesUchar = new unsigned char[ N * numPlanes * imageSize * imageSize ];
     int *labels = new int[ N ];
     NorbLoader::load( filePath, imagesUchar, labels, 0, N );
     cout << "n " << n << " N " << N << endl;
-    float *images = new float[ N * numPlanes * boardSize * boardSize ];
-    for( int i = 0; i < N * numPlanes * boardSize * boardSize; i++ ) {
+    float *images = new float[ N * numPlanes * imageSize * imageSize ];
+    for( int i = 0; i < N * numPlanes * imageSize * imageSize; i++ ) {
         images[i] = imagesUchar[i];
     }
-    BoardPng::writeBoardsToPng( "testTranslator-1.png", images + n * numPlanes * boardSize * boardSize, numPlanes, boardSize );
-    float *translated = new float[N * numPlanes * boardSize * boardSize];
-    Translator::translate( n, numPlanes, boardSize, translateRows, translateCols, images, translated );
-    BoardPng::writeBoardsToPng( "testTranslator-2.png", translated + n * numPlanes * boardSize * boardSize, numPlanes, boardSize );
+    ImagePng::writeImagesToPng( "testTranslator-1.png", images + n * numPlanes * imageSize * imageSize, numPlanes, imageSize );
+    float *translated = new float[N * numPlanes * imageSize * imageSize];
+    Translator::translate( n, numPlanes, imageSize, translateRows, translateCols, images, translated );
+    ImagePng::writeImagesToPng( "testTranslator-2.png", translated + n * numPlanes * imageSize * imageSize, numPlanes, imageSize );
 }
 
 int main( int argc, char *argv[] ) {

@@ -30,7 +30,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
     }
 }
 
-#ifdef gOutputBoardSize // for previous tests that dont define it
+#ifdef gOutputImageSize // for previous tests that dont define it
 #ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [n][filterid]
 // local id organized like: [outrow][outcol]
@@ -46,7 +46,7 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
             global const float*biases, 
         #endif
     global float *results,
-    local float *_upstreamBoard, local float *_filterCube ) {
+    local float *_upstreamImage, local float *_filterCube ) {
     #define globalId ( get_global_id(0) )
 
     #define localId ( get_local_id(0) )
@@ -58,17 +58,17 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     const int n = effectiveWorkgroupId / gNumFilters;
     const int outPlane = effectiveWorkgroupId % gNumFilters;
 
-    const int outputRow = effectiveLocalId / gOutputBoardSize;
-    const int outputCol = effectiveLocalId % gOutputBoardSize;
+    const int outputRow = effectiveLocalId / gOutputImageSize;
+    const int outputCol = effectiveLocalId % gOutputImageSize;
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _upstreamBoard, images + ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared, gInputBoardSizeSquared );
+        copyLocal( _upstreamImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );
         copyLocal( _filterCube, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        if( effectiveLocalId < gOutputBoardSizeSquared ) {
+        if( effectiveLocalId < gOutputImageSizeSquared ) {
             for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
                 // trying to reduce register pressure...
                 #if gPadZeros == 1
@@ -76,18 +76,18 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
                 #else
                     #define inputRow ( outputRow + u + gHalfFilterSize )
                 #endif
-                int inputboardrowoffset = inputRow * gInputBoardSize;
+                int inputimagerowoffset = inputRow * gInputImageSize;
                 int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-                bool rowOk = inputRow >= 0 && inputRow < gInputBoardSize;
+                bool rowOk = inputRow >= 0 && inputRow < gInputImageSize;
                 for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
                     #if gPadZeros == 1
                         #define inputCol ( outputCol + v )
                     #else
                         #define inputCol ( outputCol + v + gHalfFilterSize )
                     #endif
-                    bool process = rowOk && inputCol >= 0 && inputCol < gInputBoardSize;
+                    bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;
                     if( process ) {
-                            sum += _upstreamBoard[ inputboardrowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                            sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                     }
                 }
             }
@@ -97,8 +97,8 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
         sum += biases[outPlane];
     #endif
     // results are organized like [imageid][filterid][row][col]
-    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared + effectiveLocalId )
-    if( localId < gOutputBoardSizeSquared ) {
+    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + effectiveLocalId )
+    if( localId < gOutputImageSizeSquared ) {
         results[resultIndex ] = ACTIVATION_FUNCTION(sum);
     }
     // results[resultIndex ] = 123;

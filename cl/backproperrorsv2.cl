@@ -16,22 +16,22 @@ void kernel calcErrorsForUpstream(
         global const float *errors, global float *weights, global float *errorsForUpstream ) {
     int globalId = get_global_id(0);
 
-    const int upstreamBoard2dId = globalId / gInputBoardSizeSquared;
+    const int upstreamImage2dId = globalId / gInputImageSizeSquared;
 
-    const int intraBoardOffset = globalId % gInputBoardSizeSquared;
-    const int upstreamRow = intraBoardOffset / gInputBoardSize;
-    const int upstreamCol = intraBoardOffset % gInputBoardSize;
+    const int intraImageOffset = globalId % gInputImageSizeSquared;
+    const int upstreamRow = intraImageOffset / gInputImageSize;
+    const int upstreamCol = intraImageOffset % gInputImageSize;
 
-    const int upstreamPlane = upstreamBoard2dId % gInputPlanes;
-    const int n = upstreamBoard2dId / gInputPlanes;
+    const int upstreamPlane = upstreamImage2dId % gInputPlanes;
+    const int n = upstreamImage2dId / gInputPlanes;
 
     if( n >= batchSize ) {
         return;
     }
 
-    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputBoardSize - 1) );
+    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputImageSize - 1) );
     const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
-    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputBoardSize -1) );
+    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputImageSize -1) );
     const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
 
     float sumWeightTimesOutError = 0;
@@ -45,8 +45,8 @@ void kernel calcErrorsForUpstream(
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
                 int resultIndex = ( ( n * gNumFilters 
-                          + outPlane ) * gOutputBoardSize
-                          + outRow ) * gOutputBoardSize
+                          + outPlane ) * gOutputImageSize
+                          + outRow ) * gOutputImageSize
                           + outCol;
                 float thisError = errors[resultIndex];
                 int thisWeightIndex = ( ( outPlane * gInputPlanes

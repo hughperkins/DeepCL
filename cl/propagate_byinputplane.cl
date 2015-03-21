@@ -28,21 +28,21 @@ void kernel propagate_byinputplane( const int batchSize,
     const int localId = get_local_id(0);
 
     const int inputPlaneId = workgroupId;
-    const int numLoops = ( gNumFilters * gOutputBoardSize + workgroupSize - 1 ) / workgroupSize;
-    const int numFilterCopyLoops = ( gFilterSizeSquared + gOutputBoardSize - 1 ) / gOutputBoardSize;
-    const int numImageCopyLoops = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int numLoops = ( gNumFilters * gOutputImageSize + workgroupSize - 1 ) / workgroupSize;
+    const int numFilterCopyLoops = ( gFilterSizeSquared + gOutputImageSize - 1 ) / gOutputImageSize;
+    const int numImageCopyLoops = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
     for( int loop = 0; loop < numLoops; loop++ ) {
         const int loopLocalId = localId + loop * workgroupSize;
-        const int filterId = loopLocalId / gOutputBoardSize;
-        const int outRow = loopLocalId % gOutputBoardSize;
+        const int filterId = loopLocalId / gOutputImageSize;
+        const int outRow = loopLocalId % gOutputImageSize;
  
-        // copy down our filter, we have gOutputBoardSize threads to do this
+        // copy down our filter, we have gOutputImageSize threads to do this
         global float const *globalFilterPlane = filters +
             ( filterId * gNumInputPlanes + inputPlaneId ) * gFilterSizeSquared;
         local float *_localFilterPlane = _filterPlanes + filterId * gFilterSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numFilterCopyLoops; i++ ) {
-            const int offset = i * gOutputBoardSize + outRow;
+            const int offset = i * gOutputImageSize + outRow;
             bool process = filterId < gNumFilters && offset < gFilterSizeSquared;
             if( process ) {
                 _localFilterPlane[ offset ] = globalFilterPlane[ offset ];
@@ -53,32 +53,32 @@ void kernel propagate_byinputplane( const int batchSize,
             // copy down our imageplane, we have workgroupSize threads to do this
             barrier(CLK_LOCAL_MEM_FENCE);
             global float const *globalImagePlane = images +
-                ( n * gNumInputPlanes + inputPlaneId ) * gInputBoardSizeSquared;
+                ( n * gNumInputPlanes + inputPlaneId ) * gInputImageSizeSquared;
             for( int i = 0; i< numImageCopyLoops; i++ ) {
                 const int offset = i * workgroupSize + localId;
-                if( offset < gInputBoardSizeSquared ) {
+                if( offset < gInputImageSizeSquared ) {
                     _inputPlane[ offset ] = globalImagePlane[ offset ];
                 }
             }
             barrier(CLK_LOCAL_MEM_FENCE);
             // calc results for each [outrow][outcol]
             bool filterPlaneOk = filterId < gNumFilters;
-            for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
+            for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
                 float sum = 0;
                 for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
                     int inRow = outRow + filterRow;
                     #if gPadZeros == 1
                         inRow -= gHalfFilterSize;
                     #endif
-                    bool rowOk = filterPlaneOk && inRow >= 0 && inRow < gInputBoardSize;
+                    bool rowOk = filterPlaneOk && inRow >= 0 && inRow < gInputImageSize;
                     for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
                         int inCol = outCol + filterCol;
                         #if gPadZeros == 1
                             inCol -= gHalfFilterSize;
                         #endif
-                        bool process = rowOk && inCol >= 0 && inCol < gInputBoardSize;
+                        bool process = rowOk && inCol >= 0 && inCol < gInputImageSize;
                         if( process ) {
-                            float imageValue = _inputPlane[ inRow * gInputBoardSize + inCol ];
+                            float imageValue = _inputPlane[ inRow * gInputImageSize + inCol ];
                             float filterValue = _localFilterPlane[ filterRow * gFilterSize + filterCol ];
                             sum += imageValue * filterValue;
                         }
@@ -88,8 +88,8 @@ void kernel propagate_byinputplane( const int batchSize,
                     // [n][filterId][outRow][outCol][inputPlane]
                     int resultIndex = ( ( ( n
                         * gNumFilters + filterId )
-                        * gOutputBoardSize + outRow )
-                        * gOutputBoardSize + outCol )
+                        * gOutputImageSize + outRow )
+                        * gOutputImageSize + outCol )
                         * gNumInputPlanes + inputPlaneId;
                     results[resultIndex] = sum;
                     //if( globalId == 2 ) results[0] = resultIndex;

@@ -30,7 +30,7 @@ public:
     virtual float const *getResults() const = 0;
     virtual LossLayerMaker *cloneLossLayerMaker() const = 0;
     virtual int getOutputPlanes() const = 0;
-    virtual int getOutputBoardSize() const = 0;
+    virtual int getOutputImageSize() const = 0;
     virtual int getInputCubeSize() const = 0;
     virtual int getOutputCubeSize() const = 0;
 

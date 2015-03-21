@@ -37,18 +37,18 @@ using namespace std;
 NeuralNet::NeuralNet() {
 //    cout << "NeuralNet()" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, boardSize );
+//    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, imageSize );
 //    maker->insert();
 }
-NeuralNet::NeuralNet( int numPlanes, int boardSize ) {
-//    cout << "NeuralNet( " << numPlanes << ", " << boardSize << " )" << endl;
+NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
+//    cout << "NeuralNet( " << numPlanes << ", " << imageSize << " )" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
-//        ->numPlanes( numPlanes )->boardSize( boardSize );
+//        ->numPlanes( numPlanes )->imageSize( imageSize );
 //    maker->insert();
 //    InputLayerMaker<float> *maker = In;
 //    maker;
-    addLayer( InputLayerMaker<float>::instance()->numPlanes( numPlanes )->boardSize( boardSize ) );
+    addLayer( InputLayerMaker<float>::instance()->numPlanes( numPlanes )->imageSize( imageSize ) );
 //    print();
 }
 NeuralNet::~NeuralNet() {
@@ -80,7 +80,7 @@ NeuralNet *NeuralNet::clone() {
 //        }
     }
     copy->print();
-    cout << "outputboardsize: " << copy->getOutputBoardSize() << endl;
+    cout << "outputimagesize: " << copy->getOutputImageSize() << endl;
     return copy;
 }
 OpenCLHelper *NeuralNet::getCl() {
@@ -90,12 +90,12 @@ STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
 //template< typename T > void NeuralNet::insert( InputLayerMaker<T> inputLayerMaker ) {
-////    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " boardSize " << inputLayerMaker._boardSize << endl;
+////    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
 //    InputLayer<T> *inputLayer = new InputLayer<T>( inputLayerMaker );
 //    layers.push_back( inputLayer );
 //}
 void NeuralNet::addLayer( LayerMaker2 *maker ) {
-//    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " boardSize " << inputLayerMaker._boardSize << endl;
+//    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
     maker->setCl( cl );
     Layer *layer = maker->createLayer( getLastLayer() );
     layers.push_back( layer );
@@ -190,8 +190,8 @@ Layer const*NeuralNet::getLastLayer() const {
 VIRTUAL int NeuralNet::getOutputPlanes() const {
     return getLastLayer()->getOutputPlanes();
 }
-VIRTUAL int NeuralNet::getOutputBoardSize() const {
-    return getLastLayer()->getOutputBoardSize();
+VIRTUAL int NeuralNet::getOutputImageSize() const {
+    return getLastLayer()->getOutputImageSize();
 }
 //Layer *NeuralNet::addLayer( LayerMaker *maker ) {
 ////    Layer *previousLayer = 0;

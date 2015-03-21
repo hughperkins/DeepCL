@@ -199,7 +199,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
             cout << "Last fullyconnectedlayer must be linear (because softmax is the 'activationlayer' for this layer)" << endl;
             return false;
         }
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->boardSize(1)->fn(fn)->biased(biased) );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->fn(fn)->biased(biased) );
     } else {
         cout << "network definition " << baseLayerDef << " not recognised" << endl;
         return false;

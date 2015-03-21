@@ -28,13 +28,13 @@
 // we structure the blocks to maximize sharing between the pairs, whilst keeping the number
 // of pairs down
 // see prototyping/blocking.cpp for an example of calculating this cost (we could also
-// including boardsize too of course)
+// including imagesize too of course)
 
 // workgroupId: [outBlockId][inBlockId]
 // localId: [filterId][inputPlane][filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-// local: errorboard: outputBoardSize * outputBoardSize
-//        imageboard: inputBoardSize * inputBoardSize
+// local: errorimage: outputImageSize * outputImageSize
+//        imageimage: inputImageSize * inputImageSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *errors, global const float *images, 
@@ -42,7 +42,7 @@ void kernel backprop_floats_withscratch_dobias(
         #ifdef BIASED
              global float *biasWeights,
         #endif
-        local float *_errorBoard, local float *_imageBoard
+        local float *_errorImage, local float *_imageImage
  ) {
     const int globalId = get_global_id(0);
     const int localId = get_local_id(0);
@@ -72,37 +72,37 @@ void kernel backprop_floats_withscratch_dobias(
     float thisbiaschange = 0;
 #endif
     for( int n = 0; n < batchSize; n++ ) {
-        int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-        // need to fetch the board, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gInputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+        // need to fetch the image, but it's bigger than us, so will need to loop...
+        int numLoopsForUpstream = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numLoopsForUpstream; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gInputBoardSizeSquared ) {
-                _imageBoard[thisOffset] = images[ upstreamBoardGlobalOffset + thisOffset ];
+            if( thisOffset < gInputImageSizeSquared ) {
+                _imageImage[thisOffset] = images[ upstreamImageGlobalOffset + thisOffset ];
             }
         }
-        int resultBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
-        int numLoopsForResults = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int resultImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
+        int numLoopsForResults = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
         for( int i = 0; i < numLoopsForResults; i++ ) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutputBoardSizeSquared ) {
-                _errorBoard[thisOffset ] = errors[resultBoardGlobalOffset + thisOffset];
+            if( thisOffset < gOutputImageSizeSquared ) {
+                _errorImage[thisOffset ] = errors[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {
-            for( int outRow = 0; outRow < gOutputBoardSize; outRow++ ) {
+            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {
                 int upstreamRow = outRow - gMargin + filterRow;
-                for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
+                for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
                     int upstreamCol = outCol - gMargin + filterCol;
-                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputBoardSize
-                        && upstreamCol < gInputBoardSize;
+                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize
+                        && upstreamCol < gInputImageSize;
                     if( proceed ) {
-                        int resultIndex = outRow * gOutputBoardSize + outCol;
-                        float error = _errorBoard[resultIndex];
-                        int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
-                        float upstreamResult = _imageBoard[upstreamDataIndex];
+                        int resultIndex = outRow * gOutputImageSize + outCol;
+                        float error = _errorImage[resultIndex];
+                        int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;
+                        float upstreamResult = _imageImage[upstreamDataIndex];
                         thiswchange += upstreamResult * error;
     #ifdef BIASED
                         thisbiaschange += error;

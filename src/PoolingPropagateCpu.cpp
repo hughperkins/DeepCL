@@ -20,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingPropagate( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
+PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingPropagate( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
 VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
 //    cout << "PoolingPropagateCpu::propagate( CLWrapper * )" << endl;
@@ -52,15 +52,15 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *s
     StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outputRow = 0; outputRow < outputBoardSize; outputRow++ ) {
+            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
                 int inputRow = outputRow * poolingSize;
-                for( int outputCol = 0; outputCol < outputBoardSize; outputCol++ ) {
+                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
                     int selector = 0;
                     float maxValue = input[ getInputIndex( n, plane, inputRow, inputCol ) ];
                     for( int dx = 0; dx < poolingSize; dx++ ) {
                         for( int dy = 0; dy < poolingSize; dy++ ) {
-                            if( inputRow + dx < inputBoardSize && inputCol + dy < inputBoardSize ) {
+                            if( inputRow + dx < inputImageSize && inputCol + dy < inputImageSize ) {
                                 float thisValue = input[ getInputIndex( n, plane, inputRow + dx, inputCol + dy ) ];
                                 if( thisValue > maxValue ) {
                                     maxValue = thisValue;

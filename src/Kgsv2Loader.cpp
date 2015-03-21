@@ -21,7 +21,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_boardSize ) {
+STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize ) {
     char *headerBytes = FileHelper::readBinaryChunk( filepath, 0, 1024 );
     headerBytes[1023] = 0;
     string headerString = string( headerBytes );
@@ -31,15 +31,15 @@ STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_n
     }
     int N = atoi( split( split( headerString, "-n=" )[1], "-" )[0] );
     int numPlanes = atoi( split( split( headerString, "-numplanes=" )[1], "-" )[0] );
-    int boardSize = atoi( split( split( headerString, "-imagewidth=" )[1], "-" )[0] );
-    int boardSizeRepeated = atoi( split( split( headerString, "-imageheight=" )[1], "-" )[0] );
-    if( boardSize != boardSizeRepeated ) {
+    int imageSize = atoi( split( split( headerString, "-imagewidth=" )[1], "-" )[0] );
+    int imageSizeRepeated = atoi( split( split( headerString, "-imageheight=" )[1], "-" )[0] );
+    if( imageSize != imageSizeRepeated ) {
         throw runtime_error( "file " + filepath + " contains non-square images.  Not handled for now." );
     }
     *p_N = N;
     *p_numPlanes = numPlanes;
-    *p_boardSize = boardSize;
-//    *p_totalImagesLinearSize = N * numPlanes * boardSize * boardSize;
+    *p_imageSize = imageSize;
+//    *p_totalImagesLinearSize = N * numPlanes * imageSize * imageSize;
 }
 
 //STATIC int Kgsv2Loader::getNumRecords( std::string filepath ) {
@@ -49,8 +49,8 @@ STATIC void Kgsv2Loader::getDimensions( std::string filepath, int *p_N, int *p_n
 //    return numRecords;
 //}
 
-//STATIC int Kgsv2Loader::loadKgs( std::string filepath, int *p_numPlanes, int *p_boardSize, unsigned char *data, int *labels ) {
-//    return loadKgs( filepath, p_numPlanes, p_boardSize, data, labels, 0, getNumRecords( filepath ) );
+//STATIC int Kgsv2Loader::loadKgs( std::string filepath, int *p_numPlanes, int *p_imageSize, unsigned char *data, int *labels ) {
+//    return loadKgs( filepath, p_numPlanes, p_imageSize, data, labels, 0, getNumRecords( filepath ) );
 //}
 
 STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *labels ) {
@@ -59,15 +59,15 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
 
 STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *labels, int startRecord, int numRecords ) {
     int N;
-    int boardSize;
+    int imageSize;
     int numPlanes;
 //    int imagesSize;
-    getDimensions( filepath, &N, &numPlanes, &boardSize );
+    getDimensions( filepath, &N, &numPlanes, &imageSize );
     if( numRecords == 0 ) {
         numRecords = N - startRecord;
     }
-    const int boardSizeSquared = boardSize * boardSize;
-    const long recordSize = getRecordSize(numPlanes, boardSize);
+    const int imageSizeSquared = imageSize * imageSize;
+    const long recordSize = getRecordSize(numPlanes, imageSize);
     long pos = (long)startRecord * recordSize + 1024 /* for header */;
     long chunkByteSize = (long)numRecords * recordSize;
 //    cout << "chunkByteSize: " << chunkByteSize << endl;
@@ -98,11 +98,11 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
         int intraRecordPos = 0;
         unsigned char thisrecordbyte = recordImage[ intraRecordPos ];
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            unsigned char *dataPlane = data + ( (long)n * numPlanes + plane ) * boardSizeSquared;
-            for( int intraBoardPos = 0; intraBoardPos < boardSizeSquared; intraBoardPos++ ) {
+            unsigned char *dataPlane = data + ( (long)n * numPlanes + plane ) * imageSizeSquared;
+            for( int intraImagePos = 0; intraImagePos < imageSizeSquared; intraImagePos++ ) {
                 unsigned char thisbyte = ( thisrecordbyte >> ( 7 - bitPos ) ) & 1;
 //                cout << "thisbyte: " << (int)thisbyte << endl;
-                dataPlane[ intraBoardPos ] = thisbyte * 255;
+                dataPlane[ intraImagePos ] = thisbyte * 255;
                 bitPos++;
                 if( bitPos == 8 ) {
                     bitPos = 0;
@@ -116,12 +116,12 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
 //    return numRecords;
 }
 
-//STATIC int Kgsv2Loader::loadKgs( std::string filepath, int *p_numPlanes, int *p_boardSize, unsigned char *data, int *labels, int recordStart, int numRecords ) {
+//STATIC int Kgsv2Loader::loadKgs( std::string filepath, int *p_numPlanes, int *p_imageSize, unsigned char *data, int *labels, int recordStart, int numRecords ) {
 //    long pos = (long)recordStart * getRecordSize();
 //    const int recordSize = getRecordSize();
-//    const int boardSize = 19;
+//    const int imageSize = 19;
 //    const int numPlanes = 8;
-//    const int boardSizeSquared = boardSize * boardSize;
+//    const int imageSizeSquared = imageSize * imageSize;
 //    unsigned char *kgsData = reinterpret_cast<unsigned char *>( FileHelper::readBinaryChunk( filepath, pos, (long)numRecords * recordSize ) );
 //    for( int n = 0; n < numRecords; n++ ) {
 //        long recordPos = n * recordSize;
@@ -130,25 +130,25 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
 //        }
 //        int row = kgsData[ recordPos + 2 ];
 //        int col = kgsData[ recordPos + 3 ];
-//        labels[n] = row * boardSize + col;
+//        labels[n] = row * imageSize + col;
 //        for( int plane = 0; plane < numPlanes; plane++ ) {
-//            for( int intraBoardPos = 0; intraBoardPos < boardSizeSquared; intraBoardPos++ ) {
-//                unsigned char thisbyte = kgsData[ recordPos + intraBoardPos + 4 ];
+//            for( int intraImagePos = 0; intraImagePos < imageSizeSquared; intraImagePos++ ) {
+//                unsigned char thisbyte = kgsData[ recordPos + intraImagePos + 4 ];
 //                thisbyte = ( thisbyte >> plane ) & 1;
-//                data[ ( n * numPlanes + plane * boardSizeSquared ) + intraBoardPos ] = thisbyte;
+//                data[ ( n * numPlanes + plane * imageSizeSquared ) + intraImagePos ] = thisbyte;
 //            }
 //        }
 //    }
 //    *p_numPlanes = numPlanes;
-//    *p_boardSize = boardSize;
+//    *p_imageSize = imageSize;
 //    return numRecords;
 //}
 
-STATIC int Kgsv2Loader::getRecordSize( int numPlanes, int boardSize ) {
-    const int boardSizeSquared = boardSize * boardSize;
+STATIC int Kgsv2Loader::getRecordSize( int numPlanes, int imageSize ) {
+    const int imageSizeSquared = imageSize * imageSize;
     int recordSize = 2 /* "GO" */ + 4 /* label */;
-    // + boardSizeSquared;
-    int numBits = numPlanes * boardSize * boardSize;
+    // + imageSizeSquared;
+    int numBits = numPlanes * imageSize * imageSize;
     int numBytes = ( numBits + 8 - 1 ) / 8;
     recordSize += numBytes;
 //    cout << "numBits " << numBits << " numBytes " << numBytes << " recordSize " << recordSize << endl;

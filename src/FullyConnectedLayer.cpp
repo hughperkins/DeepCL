@@ -17,12 +17,12 @@ using namespace std;
 FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes( maker->_numPlanes ),
-        boardSize( maker->_boardSize ),
+        imageSize( maker->_imageSize ),
         fn( maker->_activationFunction ),
         batchSize(0) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
-    convolutionalMaker->numFilters( numPlanes * boardSize * boardSize )
-                      ->filterSize( previousLayer->getOutputBoardSize() )
+    convolutionalMaker->numFilters( numPlanes * imageSize * imageSize )
+                      ->filterSize( previousLayer->getOutputImageSize() )
                         ->biased( maker->_biased )
                         ->fn( maker->_activationFunction );
     convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
@@ -38,8 +38,8 @@ VIRTUAL void FullyConnectedLayer::setBatchSize( int batchSize ) {
     convolutionalLayer->setBatchSize( batchSize );
     this->batchSize = batchSize;
 }
-VIRTUAL int FullyConnectedLayer::getOutputBoardSize() const {
-    return boardSize;
+VIRTUAL int FullyConnectedLayer::getOutputImageSize() const {
+    return imageSize;
 }
 VIRTUAL int FullyConnectedLayer::getOutputPlanes() const {
     return numPlanes;
@@ -93,6 +93,6 @@ VIRTUAL void FullyConnectedLayer::backProp( float learningRate ) {
     convolutionalLayer->backProp( learningRate );
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
-    return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " boardSize=" + toString( boardSize ) + " " + fn->getDefineName() + " }";
+    return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " " + fn->getDefineName() + " }";
 }
 

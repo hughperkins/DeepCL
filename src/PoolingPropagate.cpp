@@ -20,30 +20,30 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingPropagate::PoolingPropagate( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
+PoolingPropagate::PoolingPropagate( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         cl( cl ),
         padZeros( padZeros ),
         numPlanes( numPlanes ),
-        inputBoardSize( inputBoardSize ),
+        inputImageSize( inputImageSize ),
         poolingSize( poolingSize ),
-        outputBoardSize( padZeros ? ( inputBoardSize + poolingSize - 1 ) / poolingSize : inputBoardSize / poolingSize ) {
-//    if( inputBoardSize % poolingSize != 0 ) {
-//        throw runtime_error("inputBoardSize should be an exact multiple of poolingsize: " + toString( inputBoardSize ) + " " + toString(poolingSize ) );
+        outputImageSize( padZeros ? ( inputImageSize + poolingSize - 1 ) / poolingSize : inputImageSize / poolingSize ) {
+//    if( inputImageSize % poolingSize != 0 ) {
+//        throw runtime_error("inputImageSize should be an exact multiple of poolingsize: " + toString( inputImageSize ) + " " + toString(poolingSize ) );
 //    }
 }
-STATIC PoolingPropagate *PoolingPropagate::instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) {
-    return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
-//    return new PoolingPropagateCpu( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
+STATIC PoolingPropagate *PoolingPropagate::instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+    return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+//    return new PoolingPropagateCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
-STATIC PoolingPropagate *PoolingPropagate::instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) {
-    return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
+STATIC PoolingPropagate *PoolingPropagate::instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+    return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
-STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) {
+STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
     if( idx == 0 ) {
-        return new PoolingPropagateCpu( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
+        return new PoolingPropagateCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
     }
     if( idx == 1 ) {
-        return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputBoardSize, poolingSize );
+        return new PoolingPropagateGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
     }
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("PoolingPropagate::instanceSpecific idx not known: " + toString( idx ) );
@@ -67,10 +67,10 @@ VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *sele
     delete inputWrapper;
 }
 VIRTUAL int PoolingPropagate::getInputSize( int batchSize ) {
-    return batchSize * numPlanes * inputBoardSize * inputBoardSize;
+    return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
 VIRTUAL int PoolingPropagate::getResultsSize(int batchSize) {
-    return batchSize * numPlanes * outputBoardSize * outputBoardSize;
+    return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 
 

@@ -18,8 +18,8 @@ public:
     // ]]]
     // generated, using cog:
     STATIC int getNumRecords( std::string filepath );
-    STATIC int loadKgs( std::string filepath, int *p_numPlanes, int *p_boardSize, unsigned char *data, int *labels );
-    STATIC int loadKgs( std::string filepath, int *p_numPlanes, int *p_boardSize, unsigned char *data, int *labels, int recordStart, int numRecords );
+    STATIC int loadKgs( std::string filepath, int *p_numPlanes, int *p_imageSize, unsigned char *data, int *labels );
+    STATIC int loadKgs( std::string filepath, int *p_numPlanes, int *p_imageSize, unsigned char *data, int *labels, int recordStart, int numRecords );
     STATIC int getRecordSize();
 
     // [[[end]]]

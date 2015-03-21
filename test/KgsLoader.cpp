@@ -26,16 +26,16 @@ STATIC int KgsLoader::getNumRecords( std::string filepath ) {
     return numRecords;
 }
 
-STATIC int KgsLoader::loadKgs( std::string filepath, int *p_numPlanes, int *p_boardSize, unsigned char *data, int *labels ) {
-    return loadKgs( filepath, p_numPlanes, p_boardSize, data, labels, 0, getNumRecords( filepath ) );
+STATIC int KgsLoader::loadKgs( std::string filepath, int *p_numPlanes, int *p_imageSize, unsigned char *data, int *labels ) {
+    return loadKgs( filepath, p_numPlanes, p_imageSize, data, labels, 0, getNumRecords( filepath ) );
 }
 
-STATIC int KgsLoader::loadKgs( std::string filepath, int *p_numPlanes, int *p_boardSize, unsigned char *data, int *labels, int recordStart, int numRecords ) {
+STATIC int KgsLoader::loadKgs( std::string filepath, int *p_numPlanes, int *p_imageSize, unsigned char *data, int *labels, int recordStart, int numRecords ) {
     long pos = (long)recordStart * getRecordSize();
     const int recordSize = getRecordSize();
-    const int boardSize = 19;
+    const int imageSize = 19;
     const int numPlanes = 8;
-    const int boardSizeSquared = boardSize * boardSize;
+    const int imageSizeSquared = imageSize * imageSize;
     unsigned char *kgsData = reinterpret_cast<unsigned char *>( FileHelper::readBinaryChunk( filepath, pos, (long)numRecords * recordSize ) );
     for( int n = 0; n < numRecords; n++ ) {
         long recordPos = n * recordSize;
@@ -44,24 +44,24 @@ STATIC int KgsLoader::loadKgs( std::string filepath, int *p_numPlanes, int *p_bo
         }
         int row = kgsData[ recordPos + 2 ];
         int col = kgsData[ recordPos + 3 ];
-        labels[n] = row * boardSize + col;
+        labels[n] = row * imageSize + col;
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int intraBoardPos = 0; intraBoardPos < boardSizeSquared; intraBoardPos++ ) {
-                unsigned char thisbyte = kgsData[ recordPos + intraBoardPos + 4 ];
+            for( int intraImagePos = 0; intraImagePos < imageSizeSquared; intraImagePos++ ) {
+                unsigned char thisbyte = kgsData[ recordPos + intraImagePos + 4 ];
                 thisbyte = ( thisbyte >> plane ) & 1;
-                data[ ( n * numPlanes + plane * boardSizeSquared ) + intraBoardPos ] = thisbyte;
+                data[ ( n * numPlanes + plane * imageSizeSquared ) + intraImagePos ] = thisbyte;
             }
         }
     }
     *p_numPlanes = numPlanes;
-    *p_boardSize = boardSize;
+    *p_imageSize = imageSize;
     return numRecords;
 }
 
 STATIC int KgsLoader::getRecordSize() {
-    const int boardSize = 19;
-    const int boardSizeSquared = boardSize * boardSize;
-    const int recordSize = 2 + 2 + boardSizeSquared;
+    const int imageSize = 19;
+    const int imageSizeSquared = imageSize * imageSize;
+    const int recordSize = 2 + 2 + imageSizeSquared;
     return recordSize;
 }
 

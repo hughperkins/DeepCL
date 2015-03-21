@@ -23,19 +23,19 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
 //        global const float *errorsGlobal,
 //        global const float *filtersGlobal, 
 //        global float *errorsForUpstream,
-//        local float *_errorBoard, 
-//        local float *_filterBoard ) {
+//        local float *_errorImage, 
+//        local float *_filterImage ) {
 
     kernel
        ->in( batchSize )
         ->in( errorsWrapper )
        ->in( weightsWrapper )
         ->out( errorsForUpstreamWrapper )
-        ->localFloats( square( dim.outputBoardSize ) )
+        ->localFloats( square( dim.outputImageSize ) )
         ->localFloats( square( dim.filterSize ) );
 
     int numWorkgroups = batchSize * dim.inputPlanes;
-    int workgroupSize = square( dim.inputBoardSize );
+    int workgroupSize = square( dim.inputImageSize );
     workgroupSize = std::max( 32, workgroupSize ); // no point in wasting cores...
     int globalSize = numWorkgroups * workgroupSize;
 
@@ -102,8 +102,8 @@ BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimension
     "// localid: [upstreamrow][upstreamcol]\n" 
     "// per-thread aggregation: [outPlane][filterRow][filterCol]\n" 
     "// need to store locally:\n" 
-    "// - _errorBoard. size = outputBoardSizeSquared\n" 
-    "// - _filterBoard. size = filtersizesquared\n" 
+    "// - _errorImage. size = outputImageSizeSquared\n" 
+    "// - _filterImage. size = filtersizesquared\n" 
     "// note: currently doesnt use bias as input.  thats probably an error?\n" 
     "// inputs: errors :convolve: filters => errorsForUpstream\n" 
     "//\n" 
@@ -119,8 +119,8 @@ BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimension
     "        global const float *errorsGlobal,\n" 
     "        global const float *filtersGlobal,\n" 
     "        global float *errorsForUpstream,\n" 
-    "        local float *_errorBoard,\n" 
-    "        local float *_filterBoard ) {\n" 
+    "        local float *_errorImage,\n" 
+    "        local float *_filterImage ) {\n" 
     "\n" 
     "    #define globalId get_global_id(0)\n" 
     "    #define localId get_local_id(0)\n" 
@@ -130,31 +130,31 @@ BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimension
     "    const int n = workgroupId / gInputPlanes;\n" 
     "    const int upstreamPlane = workgroupId % gInputPlanes;\n" 
     "\n" 
-    "    const int upstreamRow = localId / gInputBoardSize;\n" 
-    "    const int upstreamCol = localId % gInputBoardSize;\n" 
+    "    const int upstreamRow = localId / gInputImageSize;\n" 
+    "    const int upstreamCol = localId % gInputImageSize;\n" 
     "\n" 
     "    float sumWeightTimesOutError = 0;\n" 
     "    for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _filterBoard, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );\n" 
-    "        copyLocal( _errorBoard, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared, gOutputBoardSizeSquared );\n" 
+    "        copyLocal( _filterImage, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );\n" 
+    "        copyLocal( _errorImage, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {\n" 
     "            int outRow = upstreamRow + gMargin - filterRow;\n" 
     "            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {\n" 
     "                int outCol = upstreamCol + gMargin - filterCol;\n" 
-    "                if( outCol >= 0 && outCol < gOutputBoardSize && outRow >= 0 && outRow < gOutputBoardSize ) {\n" 
+    "                if( outCol >= 0 && outCol < gOutputImageSize && outRow >= 0 && outRow < gOutputImageSize ) {\n" 
     "                    float thisWeightTimesError =\n" 
-    "                        _errorBoard[outRow * gOutputBoardSize + outCol] *\n" 
-    "                        _filterBoard[filterRow * gFilterSize + filterCol];\n" 
+    "                        _errorImage[outRow * gOutputImageSize + outCol] *\n" 
+    "                        _filterImage[filterRow * gFilterSize + filterCol];\n" 
     "                    sumWeightTimesOutError += thisWeightTimesError;\n" 
     "                }\n" 
     "            }\n" 
     "        }\n" 
     "    }\n" 
-    "    const int upstreamBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;\n" 
-    "    if( localId < gInputBoardSizeSquared ) {\n" 
-    "        errorsForUpstream[upstreamBoardGlobalOffset + localId] = sumWeightTimesOutError;\n" 
+    "    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
+    "    if( localId < gInputImageSizeSquared ) {\n" 
+    "        errorsForUpstream[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;\n" 
     "    }\n" 
     "}\n" 
     "\n" 

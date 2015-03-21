@@ -16,15 +16,15 @@ class SoftMaxMaker;
 #define STATIC static
 
 // this doesnt have any weights as such, just handles propagation, and backpropagation
-// it will have the same shape as the previous layer, ie same boardsize, same number of planes
+// it will have the same shape as the previous layer, ie same imagesize, same number of planes
 // the softmax will be per-plane, or maybe that is configurable?
 // this will ALWAYS use multinomial logistic loss (ie cross-entropy loss), at least for now
 class SoftMaxLayer : public LossLayer, public IAcceptsLabels {
 public:
     const bool perPlane;
-    const int boardSize;
+    const int imageSize;
     const int numPlanes;
-    const int boardSizeSquared;
+    const int imageSizeSquared;
 
     float *results;
     float *errorsForUpstream;

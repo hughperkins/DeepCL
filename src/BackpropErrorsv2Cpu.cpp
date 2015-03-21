@@ -38,7 +38,7 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
     // need to backprop errors along each possible weight
     // each upstream feeds to:
     //    - each of our filters (so numPlanes filters)
-    //    - each of our outpoint points (so boardSize * boardSize)
+    //    - each of our outpoint points (so imageSize * imageSize)
     // for our own backprop, we updated weights for:
     //      [outPlane][inPlane][filterRow][filtercol]
     //    aggregating over: [n][outRow][outCol]
@@ -46,19 +46,19 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
 //    ActivationFunction *upstreamActivation = 
     for( int n = 0; n < batchSize; n++ ) {
         for( int upstreamPlane = 0; upstreamPlane < dim.inputPlanes; upstreamPlane++ ) {
-            for( int upstreamRow = 0; upstreamRow < dim.inputBoardSize; upstreamRow++ ) {
-                int minFilterRow = std::max( 0, upstreamRow + margin - (dim.outputBoardSize - 1) );
+            for( int upstreamRow = 0; upstreamRow < dim.inputImageSize; upstreamRow++ ) {
+                int minFilterRow = std::max( 0, upstreamRow + margin - (dim.outputImageSize - 1) );
                 int maxFilterRow = std::min( dim.filterSize - 1, upstreamRow + margin );
-                for( int upstreamCol = 0; upstreamCol < dim.inputBoardSize; upstreamCol++ ) {
+                for( int upstreamCol = 0; upstreamCol < dim.inputImageSize; upstreamCol++ ) {
                     float sumWeightTimesOutError = 0;
                     int inputDataIndex = ( ( n
                         * dim.inputPlanes + upstreamPlane )
-                        * dim.inputBoardSize + upstreamRow )
-                        * dim.inputBoardSize + upstreamCol;
+                        * dim.inputImageSize + upstreamRow )
+                        * dim.inputImageSize + upstreamCol;
                     float inputValue = inputData[inputDataIndex];
                     float activationDerivativeUpstream = upstreamFn->calcDerivative(inputValue);
                     // aggregate over [outPlane][outRow][outCol]
-                    int minFilterCol = std::max( 0, upstreamCol + margin - (dim.outputBoardSize -1) );
+                    int minFilterCol = std::max( 0, upstreamCol + margin - (dim.outputImageSize -1) );
                     int maxFilterCol = std::min( dim.filterSize - 1, upstreamCol + margin );
                     for( int outPlane = 0; outPlane < dim.numFilters; outPlane++ ) {
                         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
@@ -67,8 +67,8 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
                                 int outCol = upstreamCol + margin - filterCol;
                                 int resultIndex = ( ( n 
                                     * dim.numFilters + outPlane )
-                                    * dim.outputBoardSize + outRow )
-                                    * dim.outputBoardSize + outCol;
+                                    * dim.outputImageSize + outRow )
+                                    * dim.outputImageSize + outCol;
                                 float thisError = errors[resultIndex];
                                 int thisWeightIndex = ( ( outPlane 
                                     * dim.inputPlanes + upstreamPlane )
@@ -81,8 +81,8 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
                     }
                     int upstreamResultIndex = ( ( n
                         * dim.inputPlanes + upstreamPlane )
-                        * dim.inputBoardSize + upstreamRow )
-                        * dim.inputBoardSize + upstreamCol;
+                        * dim.inputImageSize + upstreamRow )
+                        * dim.inputImageSize + upstreamCol;
                     errorsForUpstream[upstreamResultIndex] = sumWeightTimesOutError * activationDerivativeUpstream;
                 }
             }

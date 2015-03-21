@@ -59,9 +59,9 @@ void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, flo
     }
 }
 
-TEST( testpropagate, boardsize2_nopadzeros ) {
+TEST( testpropagate, imagesize2_nopadzeros ) {
     int batchSize = 2;
-    int numInPlanes = 1; int boardSize = 2;
+    int numInPlanes = 1; int imageSize = 2;
     int numOutPlanes = 2; int filterWidth = 2;
     int padZeros = 0;
     float data[] = { 0, 0, 
@@ -84,11 +84,11 @@ TEST( testpropagate, boardsize2_nopadzeros ) {
         0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
     };
     cout << "expected number of results: " << resultSize << endl;
-    int outputBoardSize = 0;
+    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 1, cl,
-            LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+            LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ), new LinearActivation() );
         float *results = propagate->propagate( batchSize, data, filter1, 0 );  
         for( int result = 0; result < resultSize; result++ ) {
@@ -101,9 +101,9 @@ TEST( testpropagate, boardsize2_nopadzeros ) {
     delete cl;
 }
 
-TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
+TEST( testpropagate, DISABLED_imagesize2_nopadzeros_skip1 ) {
     int batchSize = 2;
-    int numInPlanes = 1; int boardSize = 4;
+    int numInPlanes = 1; int imageSize = 4;
     int numOutPlanes = 2; int filterWidth = 2;
     int padZeros = 0;
     int skip = 1;
@@ -123,9 +123,9 @@ TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
                         0.2f, 0.3f, 
                          0.7f, -1.1f,
  };
-    int outputBoardSize = ( boardSize - filterWidth ) / ( skip + 1 ) + 1;
-    cout << "outputboardsize: " << outputBoardSize << endl;
-    int resultsSize = outputBoardSize * numOutPlanes * batchSize;
+    int outputImageSize = ( imageSize - filterWidth ) / ( skip + 1 ) + 1;
+    cout << "outputimagesize: " << outputImageSize << endl;
+    int resultsSize = outputImageSize * numOutPlanes * batchSize;
     cout << "resultssize: " << resultsSize << endl;
     float expectedResults[] = {
         -2,  0,
@@ -143,11 +143,11 @@ TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
 
     };
     cout << "expected number of results: " << resultsSize << endl;
-//    int outputBoardSize = 0;
+//    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 0, cl,
-            LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+            LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ).setSkip(1), new LinearActivation() );
         float *results = propagate->propagate( batchSize, data, filter1, 0 );  
         for( int result = 0; result < resultsSize; result++ ) {
@@ -160,11 +160,11 @@ TEST( testpropagate, DISABLED_boardsize2_nopadzeros_skip1 ) {
     delete cl;
 }
 
-TEST( testpropagate, boardsize2_padzeros ) {
+TEST( testpropagate, imagesize2_padzeros ) {
     int batchSize = 2;
     int numOutPlanes = 2;
     int numInPlanes = 1;
-    int boardSize = 2;
+    int imageSize = 2;
     int filterWidth = 2;
     int padZeros = 1;
 
@@ -182,7 +182,7 @@ TEST( testpropagate, boardsize2_padzeros ) {
                          0.7f, -1.1f,
 
  };
-    int resultSize = (boardSize + 1) * (boardSize + 1) * batchSize * numOutPlanes;
+    int resultSize = (imageSize + 1) * (imageSize + 1) * batchSize * numOutPlanes;
     float *expectedResults = new float[resultSize];
     for( int i = 0; i < resultSize; i++ ) {
         expectedResults[i] = -9999; // means havent provided an expectedresult.
@@ -228,9 +228,9 @@ TEST( testpropagate, boardsize2_padzeros ) {
 //        0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
 //    };
 
-    int outputBoardSize = 0;
+    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
     float *results = propagate->propagate( batchSize, data, filter1, 0 );        
 
@@ -250,11 +250,11 @@ TEST( testpropagate, boardsize2_padzeros ) {
     delete cl;
 }
 
-TEST( testpropagate, boardsize3 ) {
+TEST( testpropagate, imagesize3 ) {
     int batchSize = 5;
     int numOutPlanes = 2;
     int numInPlanes = 1;
-    int boardSize = 3;
+    int imageSize = 3;
     int filterWidth = 3;
     int padZeros = 0;
 
@@ -289,9 +289,9 @@ TEST( testpropagate, boardsize3 ) {
 
  };
 
-    int outputBoardSize = 0;
+    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, boardSize, numOutPlanes, filterWidth,
+    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
     float *results = propagate->propagate( 
         batchSize, data, filter1, 0 );        
@@ -317,12 +317,12 @@ TEST( testpropagate, test2 ) {
 
 //    int numOutPlanes = 2;
 //    int numInPlanes = 1;
-//    int boardSize = 3;
+//    int imageSize = 3;
 //    int filterWidth = 3;
 //    int padZeros = 0;
    
     LayerDimensions dim;
-    dim.setNumFilters(2).setNumInputPlanes(1).setInputBoardSize(3).setFilterSize(3)
+    dim.setNumFilters(2).setNumInputPlanes(1).setInputImageSize(3).setFilterSize(3)
         .setPadZeros(false).setBiased(false);
 
     float data[] = { 0, 0, 0,
@@ -364,12 +364,12 @@ TEST( testpropagate, test2 ) {
     Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
     float *results = propagate->propagate( batchSize, data, filter1, biases );
 
-//        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( boardSize )->in( filterWidth )
+//        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( imageSize )->in( filterWidth )
 //           ->in( padZeros );
 //        convolve->input( dataWrapper );
 //        convolve->input( weightsWrapper);
 //        convolve->output( resultsWrapper );
-//        int globalSize = batchSize * numOutPlanes * boardSize * boardSize;
+//        int globalSize = batchSize * numOutPlanes * imageSize * imageSize;
 //        int workgroupsize = cl->getMaxWorkgroupSize();
 //        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 ////        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
@@ -399,8 +399,8 @@ TEST( testpropagate, test3 ) {
     int batchSize = 4;
     int numInPlanes = 2;
     int numOutPlanes = 2;
-    int inBoardSize = 1;
-    int outBoardSize = 1;
+    int inImageSize = 1;
+    int outImageSize = 1;
     int filterSize = 1;
     int padZeros = 0;
     float data[] = {0.1f,0.2f,
@@ -410,9 +410,9 @@ TEST( testpropagate, test3 ) {
     float filter[] = {0.2f,0.3f,
                      0.5f,0.7f};
 
-    int outputBoardSize = 0;
+    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inBoardSize, numOutPlanes, filterSize,
+    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ), new LinearActivation() );
     float *results = propagate->propagate( 
         batchSize, data, filter, 0 );        
@@ -568,7 +568,7 @@ TEST( testpropagate, compare_0_1_biased_nopad ) {
     int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
-    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+    dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
@@ -582,7 +582,7 @@ TEST( testpropagate, compare_0_1_biased_pad ) {
     int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
-    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+    dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
@@ -596,13 +596,13 @@ TEST( testpropagate, compare_1_n_biased_nopad ) {
     int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
-    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+    dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
     for( int instance = 2; instance <= 7; instance++ ) {
         if( instance == 5 ) {
-            continue; // propagatefc, cant use for inputboardsize != filtersize
+            continue; // propagatefc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
         compareSpecific( false, N, batchSize, dim, fn, 1, instance );
@@ -616,13 +616,13 @@ TEST( testpropagate, compare_1_n_biased_pad ) {
     int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
-    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+    dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
     for( int instance = 2; instance <= 7; instance++ ) {
         if( instance == 5 ) {
-            continue; // propagatefc, cant use for inputboardsize != filtersize
+            continue; // propagatefc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
         compareSpecific( false, N, batchSize, dim, fn, 1, instance );
@@ -636,7 +636,7 @@ TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, sinc
     int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
-    dim.setInputPlanes( 8 ).setInputBoardSize(19).setNumFilters( 8 )
+    dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 19 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
@@ -648,7 +648,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
     int batchSize = 4;
     int N = 4;
     string activationName = "tanh";
-    dim.setInputPlanes( 10 ).setInputBoardSize(24).setNumFilters( 10 )
+    dim.setInputPlanes( 10 ).setInputImageSize(24).setNumFilters( 10 )
         .setFilterSize( 24 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
@@ -657,31 +657,31 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 
 //TEST( SLOW_testpropagate, comparespecific ) {
 //    LayerDimensions dim;
-//    dim.setInputPlanes( 2 ).setInputBoardSize(5).setNumFilters( 1 ).setFilterSize( 5 )
+//    dim.setInputPlanes( 2 ).setInputImageSize(5).setNumFilters( 1 ).setFilterSize( 5 )
 //        .setPadZeros( true ).setBiased( false );    
 //    compareSpecific( 1, dim, new LinearActivation(), 1, 3 );
 //}
 
 //TEST( SLOW_testpropagate, comparespecific_fc500unbiased ) {
 //    LayerDimensions dim;
-//    const int boardSize = 19;
-//    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
+//    const int imageSize = 19;
+//    dim.setInputPlanes( 32 ).setInputImageSize(imageSize).setNumFilters( 500 ).setFilterSize( imageSize )
 //        .setPadZeros( false ).setBiased( false );    
 //    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
 //}
 
 //TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
 //    LayerDimensions dim;
-//    const int boardSize = 19;
-//    dim.setInputPlanes( 32 ).setInputBoardSize(boardSize).setNumFilters( 500 ).setFilterSize( boardSize )
+//    const int imageSize = 19;
+//    dim.setInputPlanes( 32 ).setInputImageSize(imageSize).setNumFilters( 500 ).setFilterSize( imageSize )
 //        .setPadZeros( false ).setBiased( true );    
 //    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
 //}
 
 //TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
 //    LayerDimensions dim;
-//    const int boardSize = 19;
-//    dim.setInputPlanes( 64 ).setInputBoardSize(boardSize).setNumFilters( 64 ).setFilterSize( 7 )
+//    const int imageSize = 19;
+//    dim.setInputPlanes( 64 ).setInputImageSize(imageSize).setNumFilters( 64 ).setFilterSize( 7 )
 //        .setPadZeros( true ).setBiased( true );    
 //    compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
 //}
@@ -689,7 +689,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 TEST( SLOW_testpropagate, compare_args ) {
     LayerDimensions dim;
     int batchSize = 128;
-//    int boardSize = 19;
+//    int imageSize = 19;
 //    int filterSize = 7;
 //    int inputPlanes = 64;
 //    int numFilters = 64;
@@ -698,7 +698,7 @@ TEST( SLOW_testpropagate, compare_args ) {
     int N = 128;
     bool debug = false;
     string activationName = "tanh";
-    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 )
+    dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 )
         .setFilterSize( 7 )
         .setPadZeros( true ).setBiased( false );    
 
@@ -718,14 +718,14 @@ TEST( SLOW_testpropagate, compare_args ) {
 
 //TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
 //    LayerDimensions dim;
-//    const int boardSize = 9;
-//    dim.setInputPlanes( 4 ).setInputBoardSize(boardSize).setNumFilters( 4 ).setFilterSize( 5 )
+//    const int imageSize = 9;
+//    dim.setInputPlanes( 4 ).setInputImageSize(imageSize).setNumFilters( 4 ).setFilterSize( 5 )
 //        .setPadZeros( true ).setBiased( false );    
 //    compareSpecific( 4, dim, new ReluActivation(), 1, 6 );
 //}
 
 TEST( testpropagate, softmax ) {
-    NeuralNet *net = NeuralNet::maker()->boardSize(1)->planes(4)->instance();
+    NeuralNet *net = NeuralNet::maker()->imageSize(1)->planes(4)->instance();
     net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
     float *input = new float[net->layers[0]->getOutputPlanes()];
@@ -783,11 +783,11 @@ TEST( testpropagate, softmax ) {
 }
 
 TEST( testpropagate, softmax_byplane ) {
-    NeuralNet *net = NeuralNet::maker()->boardSize(2)->planes(1)->instance();
+    NeuralNet *net = NeuralNet::maker()->imageSize(2)->planes(1)->instance();
     net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
-    int boardSizeSquared = net->layers[0]->getOutputBoardSize() * net->layers[0]->getOutputBoardSize();
-    float *input = new float[boardSizeSquared];
+    int imageSizeSquared = net->layers[0]->getOutputImageSize() * net->layers[0]->getOutputImageSize();
+    float *input = new float[imageSizeSquared];
     input[0] = 0;
     input[1] = 1;
     input[2] = 3;
@@ -795,7 +795,7 @@ TEST( testpropagate, softmax_byplane ) {
     net->propagate( input );
     float const*results = net->getResults();
     float sum = 0;
-    for( int i = 0; i < boardSizeSquared; i++ ) {
+    for( int i = 0; i < imageSizeSquared; i++ ) {
         cout << "results[" << i << "]=" << results[i] << endl;
         sum += results[i];
         EXPECT_LE( 0, results[i] );
@@ -807,29 +807,29 @@ TEST( testpropagate, softmax_byplane ) {
     EXPECT_FLOAT_NEAR( (float)( exp(3)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[2] );
     EXPECT_FLOAT_NEAR( (float)( exp(2)/(exp(0)+exp(1)+exp(3)+exp(2)) ), results[3] );
 
-    float *expected = new float[boardSizeSquared];
-    memset( expected, 0, sizeof(float) * boardSizeSquared );
+    float *expected = new float[imageSizeSquared];
+    memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[2] = 1;
     float loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
     EXPECT_FLOAT_NEAR( - log(results[2]), loss );
 
-    memset( expected, 0, sizeof(float) * boardSizeSquared );
+    memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[0] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
     EXPECT_FLOAT_NEAR( - log(results[0]), loss );
 
-    memset( expected, 0, sizeof(float) * boardSizeSquared );
+    memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[1] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
     EXPECT_FLOAT_NEAR( - log(results[1]), loss );
 
-    memset( expected, 0, sizeof(float) * boardSizeSquared );
+    memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[3] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
@@ -881,7 +881,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
 TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(19).setNumFilters( 500 ).setFilterSize( 19 )
+    dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 500 ).setFilterSize( 19 )
         .setPadZeros( false ).setBiased( true );  
     testPerf( -1, 128, batchSize, dim, new TanhActivation() );
 }
@@ -889,7 +889,7 @@ TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
 TEST( SLOW_testpropagate, perf_mnist_firstconvlayer ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 1 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
@@ -897,7 +897,7 @@ TEST( SLOW_testpropagate, perf_mnist_firstconvlayer ) {
 TEST( SLOW_testpropagate, perf_mnist_intlayers_128ex ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
@@ -905,7 +905,7 @@ TEST( SLOW_testpropagate, perf_mnist_intlayers_128ex ) {
 TEST( SLOW_testpropagate, perf_mnist_intlayers_1024ex ) {
     int batchSize = 1024;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
@@ -913,7 +913,7 @@ TEST( SLOW_testpropagate, perf_mnist_intlayers_1024ex ) {
 TEST( SLOW_testpropagate, perf_mnist_finallayer ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputBoardSize(28).setNumFilters( 10 ).setFilterSize( 28 )
+    dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 10 ).setFilterSize( 28 )
         .setPadZeros( false ).setBiased( true );    
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
@@ -923,7 +923,7 @@ TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
     int batchSize = 128;
     int N = 1000;
     LayerDimensions dim;
-    dim.setInputPlanes( 64 ).setInputBoardSize(19).setNumFilters( 64 ).setFilterSize( 7 )
+    dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 ).setFilterSize( 7 )
         .setPadZeros( true ).setBiased( true );  
     DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance", &instance );

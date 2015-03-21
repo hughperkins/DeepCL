@@ -21,16 +21,16 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingBackprop( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
+PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
 VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream ) {
     memset( errorsForUpstream, 0, sizeof( float ) * getInputSize( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outputRow = 0; outputRow < outputBoardSize; outputRow++ ) {
+            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
                 int inputRow = outputRow * poolingSize;
-                for( int outputCol = 0; outputCol < outputBoardSize; outputCol++ ) {
+                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
                     int resultIndex = getResultIndex( n, plane, outputRow, outputCol );
                     float error = errors[resultIndex];

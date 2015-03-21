@@ -43,7 +43,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     kernel1->input( weightsWrapper);
 //    if( dim.biased ) kernel1->input( biasWeightsWrapper );
     kernel1->output( results1Wrapper );
-    kernel1->localFloats( dim.inputBoardSize );
+    kernel1->localFloats( dim.inputImageSize );
     kernel1->localFloats( dim.numFilters * dim.filterSize );
 
     int workgroupSize = dim.numFilters;
@@ -106,8 +106,8 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
         Propagate( cl, dim, fn )
             {
 
-    if( dim.inputBoardSize != dim.filterSize ) {
-        throw runtime_error("For PropagateFc, filtersize and inputboardsize must be identical");
+    if( dim.inputImageSize != dim.filterSize ) {
+        throw runtime_error("For PropagateFc, filtersize and inputimagesize must be identical");
     }
     if( dim.padZeros ) {
         throw runtime_error("For PropagateFc, padzeros must be disabled");
@@ -166,14 +166,14 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "// results1 structured as: [n][inputplane][filter][row], need to reduce again after\n" 
     "// this kernel assumes:\n" 
     "//   padzeros == 0 (mandatory)\n" 
-    "//   filtersize == inputboardsize (mandatory)\n" 
-    "//   inputboardsize == 19\n" 
+    "//   filtersize == inputimagesize (mandatory)\n" 
+    "//   inputimagesize == 19\n" 
     "//   filtersize == 19\n" 
-    "//   outputBoardSize == 1\n" 
+    "//   outputImageSize == 1\n" 
     "//   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361\n" 
     "//   lots of inplanes, eg 32-128\n" 
-    "//   inputboardsize around 19, not too small\n" 
-    "#if (gFilterSize == gInputBoardSize) && (gPadZeros == 0)\n" 
+    "//   inputimagesize around 19, not too small\n" 
+    "#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)\n" 
     "void kernel propagate_fc_workgroup_perrow( const int batchSize,\n" 
     "    global const float *images, global const float *filters,\n" 
     "    global float *results1,\n" 
@@ -198,20 +198,20 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "    for( int i = 0; i < gFilterSize; i++ ) {\n" 
     "        _threadFilterRow[i] = filterRow[i];\n" 
     "    }\n" 
-    "    const int loopsPerExample = ( gInputBoardSize + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;\n" 
     "    // now loop over examples...\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        // copy down example row, which is global to all threads in workgroup\n" 
     "        // hopefully should be enough threads....\n" 
     "        // but we should check anyway really, since depends on number of filters configured,\n" 
-    "        // not on relative size of filter and input board\n" 
+    "        // not on relative size of filter and input image\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        copyLocal( _imageRow,  images\n" 
     "            + ( ( n\n" 
     "                * gNumInputPlanes + inputPlaneId )\n" 
-    "                * gInputBoardSize + filterRowId )\n" 
-    "                * gInputBoardSize,\n" 
-    "            gInputBoardSize );\n" 
+    "                * gInputImageSize + filterRowId )\n" 
+    "                * gInputImageSize,\n" 
+    "            gInputImageSize );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        // add up the values in our row...\n" 
     "        float sum = 0;\n" 

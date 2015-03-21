@@ -137,7 +137,7 @@ void go(Config config) {
     int Ntrain;
     int Ntest;
     int numPlanes;
-    int boardSize;
+    int imageSize;
 
     unsigned char *trainData = 0;
     unsigned char *testData = 0;
@@ -148,29 +148,29 @@ void go(Config config) {
     int testAllocateN = 0;
 
 //    int totalLinearSize;
-    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &boardSize );
+    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &imageSize );
     Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
-//    long allocateSize = (long)Ntrain * numPlanes * boardSize * boardSize;
-    cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " boardSize " << boardSize << endl;
+//    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
+    cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
     if( config.loadOnDemand ) {
         trainAllocateN = config.batchSize; // can improve this later
     } else {
         trainAllocateN = Ntrain;
     }
-    trainData = new unsigned char[ (long)trainAllocateN * numPlanes * boardSize * boardSize ];
+    trainData = new unsigned char[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if( !config.loadOnDemand && Ntrain > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
     }
 
-    GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &boardSize );
+    GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &imageSize );
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
     if( config.loadOnDemand ) {
         testAllocateN = config.batchSize; // can improve this later
     } else {
         testAllocateN = Ntest;
     }
-    testData = new unsigned char[ (long)testAllocateN * numPlanes * boardSize * boardSize ];
+    testData = new unsigned char[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if( !config.loadOnDemand && Ntest > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
@@ -179,7 +179,7 @@ void go(Config config) {
     
     timer.timeCheck("after load images");
 
-    const int inputCubeSize = numPlanes * boardSize * boardSize;
+    const int inputCubeSize = numPlanes * imageSize * imageSize;
     float translate;
     float scale;
     int normalizationExamples = config.normalizationExamples > Ntrain ? Ntrain : config.normalizationExamples;
@@ -187,7 +187,7 @@ void go(Config config) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
             NormalizationHelper::getMeanAndStdDev( trainData, normalizationExamples * inputCubeSize, &mean, &stdDev );
-            cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+            cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
@@ -205,7 +205,7 @@ void go(Config config) {
             NormalizeGetStdDev<unsigned char> normalizeGetStdDev( trainData, trainLabels ); 
             BatchProcess::run<unsigned char>( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
-            cout << " board stats mean " << mean << " stdDev " << stdDev << endl;
+            cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
@@ -217,14 +217,14 @@ void go(Config config) {
             return;
         }
     }
-    cout << " board norm translate " << translate << " scale " << scale << endl;
+    cout << " image norm translate " << translate << " scale " << scale << endl;
     timer.timeCheck("after getting stats");
 
     const int numToTrain = Ntrain;
     const int batchSize = config.batchSize;
     NeuralNet *net = new NeuralNet();
-//    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->boardSize(boardSize)->insert();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->boardSize(boardSize) );
+//    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
+    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;

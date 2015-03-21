@@ -22,10 +22,10 @@ class PoolingLayer : public Layer {
 public:
     const bool padZeros;
     const int numPlanes;
-    const int inputBoardSize;
+    const int inputImageSize;
     const int poolingSize;
 
-    const int outputBoardSize;
+    const int outputImageSize;
 
     OpenCLHelper *const cl; // NOT owned by us
     PoolingPropagate *poolingPropagateImpl;
@@ -57,7 +57,7 @@ public:
     VIRTUAL float *getResults();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getResultsSize() const;
-    VIRTUAL int getOutputBoardSize() const;
+    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool providesErrorsForUpstreamWrapper() const;

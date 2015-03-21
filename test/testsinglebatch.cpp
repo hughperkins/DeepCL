@@ -20,14 +20,14 @@ public:
     static TestArgs instance(){ TestArgs args; return args; };
     // [[[cog
     // floats= ['learningRate']
-    // ints = ['batchSize','boardSize','numLayers','filterSize','numFilters', 'numEpochs', 'poolingSize',
+    // ints = ['batchSize','imageSize','numLayers','filterSize','numFilters', 'numEpochs', 'poolingSize',
     // 'numCats', 'softMax' ]
     // import cog_fluent
     // cog_fluent.go( 'TestArgs', ints = ints, floats = floats )
     // ]]]
     // generated, using cog:
     int batchSize = 0;
-    int boardSize = 0;
+    int imageSize = 0;
     int numLayers = 0;
     int filterSize = 0;
     int numFilters = 0;
@@ -40,8 +40,8 @@ public:
         this->batchSize = _batchSize;
         return *this;
     }
-    TestArgs BoardSize( int _boardSize ) {
-        this->boardSize = _boardSize;
+    TestArgs ImageSize( int _imageSize ) {
+        this->imageSize = _imageSize;
         return *this;
     }
     TestArgs NumLayers( int _numLayers ) {
@@ -79,7 +79,7 @@ public:
     // [[[end]]]
 };
 
-//void test( int batchSize, float learningRate, int boardSize, int numLayers, int filterSize, int numFilters ) {
+//void test( int batchSize, float learningRate, int imageSize, int numLayers, int filterSize, int numFilters ) {
 void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     net->setBatchSize( batchSize );
     mt19937 random;
@@ -179,7 +179,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 }
 
 void test( ActivationFunction *fn, TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->fn(fn)->biased() );
         if( args.poolingSize > 0 ) {
@@ -187,10 +187,10 @@ void test( ActivationFunction *fn, TestArgs args ) {
         }
     }
     if( args.softMax ) {
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->linear()->biased() );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->imageSize(1)->linear()->biased() );
         net->addLayer( SoftMaxMaker::instance() );
     } else {
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->boardSize(1)->tanh()->biased() );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->imageSize(1)->tanh()->biased() );
         net->addLayer( SquareLossMaker::instance() );;
     }
     net->print();
@@ -198,23 +198,23 @@ void test( ActivationFunction *fn, TestArgs args ) {
     delete net;
 }
 
-TEST( testsinglebatch, boardsize5_filtersize3_batchsize2 ) {
-    test( new LinearActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.00001f).BoardSize(5).NumLayers(1)
+TEST( testsinglebatch, imagesize5_filtersize3_batchsize2 ) {
+    test( new LinearActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.00001f).ImageSize(5).NumLayers(1)
             .FilterSize(3).NumFilters(5).NumEpochs(20) );
 }
 
-TEST( testsinglebatch, boardsize5_filtersize3_batchsize2_10filters ) {
-    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.01f).BoardSize(5).NumLayers(1)
+TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_10filters ) {
+    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.01f).ImageSize(5).NumLayers(1)
             .FilterSize(3).NumFilters(10).NumEpochs(100) );
 }
 
-TEST( testsinglebatch, boardsize28 ) {
-    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(28).NumLayers(1)
+TEST( testsinglebatch, imagesize28 ) {
+    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(28).NumLayers(1)
             .FilterSize(3).NumFilters(10).NumEpochs(100) );
 }
 
-TEST( testsinglebatch, boardsize28_filtersize5 ) {
-    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(28).NumLayers(1)
+TEST( testsinglebatch, imagesize28_filtersize5 ) {
+    test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(28).NumLayers(1)
             .FilterSize(5).NumFilters(10).NumEpochs(100) );
 }
 
@@ -265,14 +265,14 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
 }
 
 void testLabelled( TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(args.boardSize)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased()->padZeros() );
         if( args.poolingSize > 0 ) {
             net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
         }
     }
-    net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numCats)->boardSize(1)->linear()->biased() );
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numCats)->imageSize(1)->linear()->biased() );
     net->addLayer( SoftMaxMaker::instance() );
     net->print();
     net->setBatchSize(args.batchSize);
@@ -376,18 +376,18 @@ void testLabelled( TestArgs args ) {
     delete net;
 }
 
-TEST( testsinglebatch, boardsize5_filtersize3_batchsize2_softmax ) {
-    testLabelled( TestArgs::instance().BatchSize(2).LearningRate(0.001f).BoardSize(5).NumLayers(2)
+TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_softmax ) {
+    testLabelled( TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(5).NumLayers(2)
             .FilterSize(3).NumFilters(5).NumEpochs(20).NumCats(5) );
 }
 
-TEST( testsinglebatch, boardsize4_filtersize3_batchsize2_pooling ) {
-    testLabelled( TestArgs::instance().BatchSize(2).LearningRate(0.0001f).BoardSize(12).NumLayers(2)
+TEST( testsinglebatch, imagesize4_filtersize3_batchsize2_pooling ) {
+    testLabelled( TestArgs::instance().BatchSize(2).LearningRate(0.0001f).ImageSize(12).NumLayers(2)
             .NumFilters(5).FilterSize(3).NumEpochs(20).NumCats(5)
             .PoolingSize(2) );
 }
 
-TEST( SLOW_testsinglebatch, boardsize4_filtersize3_batchsize2_pooling_args ) {
+TEST( SLOW_testsinglebatch, imagesize4_filtersize3_batchsize2_pooling_args ) {
     int numEpochs = 20;
     int poolingSize = 2;
     float learningRate = 0.01f;
@@ -395,7 +395,7 @@ TEST( SLOW_testsinglebatch, boardsize4_filtersize3_batchsize2_pooling_args ) {
     TestArgsParser::arg( "poolingsize", &poolingSize );
     TestArgsParser::arg( "learningrate", &learningRate );
     TestArgsParser::go();
-    testLabelled( TestArgs::instance().BatchSize(2).LearningRate(learningRate).BoardSize(12).NumLayers(2)
+    testLabelled( TestArgs::instance().BatchSize(2).LearningRate(learningRate).ImageSize(12).NumLayers(2)
             .NumFilters(5).FilterSize(3).NumEpochs(numEpochs).NumCats(5)
             .PoolingSize(poolingSize) );
 }
@@ -405,7 +405,7 @@ TEST( testsinglebatch, detailedregression ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
@@ -648,7 +648,7 @@ TEST( SLOW_testsinglebatch, perf ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(28)->instance();
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
@@ -708,11 +708,11 @@ TEST( testsinglebatch, perf19 ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 
-    const int boardSize = 19;
-    NeuralNet *net = NeuralNet::maker()->planes(1)->boardSize(boardSize)->instance();
+    const int imageSize = 19;
+    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(imageSize)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(boardSize - 4 * 2 )->tanh()->biased()->insert();
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(imageSize - 4 * 2 )->tanh()->biased()->insert();
 //    ExpectedValuesLayer *expectedValuesLayer = ( new ExpectedValuesLayerMaker( net, net->getLastLayer() ) )->instance();
 //    net->getLastLayer()->nextLayer = expectedValuesLayer;
 //    net->layers.push_back( expectedValuesLayer );
@@ -769,8 +769,8 @@ TEST( SLOW_testsinglebatch, perf19_depth12 ) {
     const int batchSize = 128;
     const float learningRate = 0.1f;
 
-    const int boardSize = 19;
-    NeuralNet *net = NeuralNet::maker()->planes(32)->boardSize(boardSize)->instance();
+    const int imageSize = 19;
+    NeuralNet *net = NeuralNet::maker()->planes(32)->imageSize(imageSize)->instance();
     for( int i = 0; i < 12; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(128)->filterSize(3)->relu()->padZeros()->biased()->insert();
     }

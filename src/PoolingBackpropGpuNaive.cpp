@@ -32,15 +32,15 @@ VIRTUAL void PoolingBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *
     StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backpropErrors start" );
 
     // first, memset errors to 0 ...
-    kMemset->out( errorsForUpstreamWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputBoardSize * inputBoardSize );
-    int globalSize = batchSize * numPlanes * inputBoardSize * inputBoardSize;
+    kMemset->out( errorsForUpstreamWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputImageSize * inputImageSize );
+    int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
     kernel->in( batchSize )->inout( errorsWrapper )->in( selectorsWrapper )->in( errorsForUpstreamWrapper );
-    globalSize = batchSize * numPlanes * outputBoardSize * outputBoardSize;
+    globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     workgroupSize = 64;
     numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
@@ -48,15 +48,15 @@ VIRTUAL void PoolingBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *
 
     StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backpropErrors end" );
 }
-PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputBoardSize, int poolingSize ) :
-        PoolingBackprop( cl, padZeros, numPlanes, inputBoardSize, poolingSize ) {
+PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
     options += " -D gNumPlanes=" + toString( numPlanes );
-    options += " -D gInputBoardSize=" + toString( inputBoardSize );
-    options += " -D gInputBoardSizeSquared=" + toString( inputBoardSize * inputBoardSize );
-    options += " -D gOutputBoardSize=" + toString( outputBoardSize );
-    options += " -D gOutputBoardSizeSquared=" + toString( outputBoardSize * outputBoardSize );
+    options += " -D gInputImageSize=" + toString( inputImageSize );
+    options += " -D gInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
+    options += " -D gOutputImageSize=" + toString( outputImageSize );
+    options += " -D gOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
     options += " -D gPoolingSize=" + toString( poolingSize );
     options += " -D gPadZeros=" + toString( padZeros ? 1 : 0 );
 
@@ -84,13 +84,13 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "    global const float *errors, global const int *selectors, global float *errorsForUpstream ) {\n" 
     "\n" 
     "    #define globalId get_global_id(0)\n" 
-    "    #define nPlaneCombo ( globalId / gOutputBoardSizeSquared )\n" 
-    "    #define outputPosCombo ( globalId % gOutputBoardSizeSquared )\n" 
+    "    #define nPlaneCombo ( globalId / gOutputImageSizeSquared )\n" 
+    "    #define outputPosCombo ( globalId % gOutputImageSizeSquared )\n" 
     "\n" 
     "    const int n = nPlaneCombo / gNumPlanes;\n" 
     "    const int plane = nPlaneCombo % gNumPlanes;\n" 
-    "    const int outputRow = outputPosCombo / gOutputBoardSize;\n" 
-    "    const int outputCol = outputPosCombo % gOutputBoardSize;\n" 
+    "    const int outputRow = outputPosCombo / gOutputImageSize;\n" 
+    "    const int outputCol = outputPosCombo % gOutputImageSize;\n" 
     "\n" 
     "    if( n >= batchSize ) {\n" 
     "        return;\n" 
@@ -98,8 +98,8 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "\n" 
     "    int resultIndex = ( ( n\n" 
     "        * gNumPlanes + plane )\n" 
-    "        * gOutputBoardSize + outputRow )\n" 
-    "        * gOutputBoardSize + outputCol;\n" 
+    "        * gOutputImageSize + outputRow )\n" 
+    "        * gOutputImageSize + outputCol;\n" 
     "    #define error ( errors[resultIndex] )\n" 
     "    int selector = ( selectors[resultIndex] );\n" 
     "    #define drow ( selector / gPoolingSize )\n" 
@@ -108,8 +108,8 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "    #define inputCol ( outputCol * gPoolingSize + dcol )\n" 
     "    int inputIndex = ( ( n\n" 
     "        * gNumPlanes + plane )\n" 
-    "        * gInputBoardSize + inputRow )\n" 
-    "        * gInputBoardSize + inputCol;\n" 
+    "        * gInputImageSize + inputRow )\n" 
+    "        * gInputImageSize + inputCol;\n" 
     "//    if( n < batchSize ) {\n" 
     "        errorsForUpstream[ inputIndex ] = error;\n" 
     "//    }\n" 

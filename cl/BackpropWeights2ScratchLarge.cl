@@ -10,8 +10,8 @@
 // workgroupId: [outputPlane][inputPlane]
 // localId: [filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-// local: errorboard: outputBoardSize * outputBoardSize
-//        imageboard: inputBoardSize * inputBoardSize
+// local: errorimage: outputImageSize * outputImageSize
+//        imageimage: inputImageSize * inputImageSize
 // specific characteristic: load one stripe of each image at a time,
 // so we dont run out of memory
 // number of stripes set in: gNumStripes
@@ -32,15 +32,15 @@ void kernel backprop_floats_withscratch_dobias_striped(
         local float *_errorStripe, local float *_imageStripe
  ) {
     // gHalfFilterSize
-    // gInputBoardSize
+    // gInputImageSize
     //
     // gInputStripeMarginRows => basically equal to gHalfFilterSize
-    // gInputStripeInnerNumRows = gInputBoardSize / gNumStripes
+    // gInputStripeInnerNumRows = gInputImageSize / gNumStripes
     // gInputStripeOuterNumRows = gInputStripeInnerNumRows + 2 * gHalfFilterSize  (note: one row less than
     //                                                         if we just added gFilterSize)
-    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputBoardSize
-    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputBoardSize
-    // gInputStripeMarginSize = gInputStripeMarginRows * gInputBoardSize
+    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputImageSize
+    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputImageSize
+    // gInputStripeMarginSize = gInputStripeMarginRows * gInputImageSize
     //
     // gOutputStripeNumRows
     // gOutputStripeSize
@@ -63,33 +63,33 @@ void kernel backprop_floats_withscratch_dobias_striped(
     float thisbiaschange = 0;
 #endif
     const int numLoopsForImageStripe = ( gInputStripeOuterSize + workgroupSize - 1 ) / workgroupSize;
-    const int numLoopsForErrorStripe = ( gOutputBoardSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int numLoopsForErrorStripe = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
     for( int n = 0; n < batchSize; n++ ) {
-        const int imageBoardGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputBoardSizeSquared;
-        const int imageBoardGlobalOffsetAfter = imageBoardGlobalOffset + gInputBoardSizeSquared;
-        const int errorBoardGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputBoardSizeSquared;
-        const int errorBoardGlobalOffsetAfter = errorBoardGlobalOffset + gOutputBoardSizeSquared;
+        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+        const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputImageSizeSquared;
+        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
+        const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputImageSizeSquared;
         for( int stripe = 0; stripe < gNumStripes; stripe++ ) {
-            const int imageStripeInnerOffset = imageBoardGlobalOffset + stripe * gInputStripeInnerSize;
+            const int imageStripeInnerOffset = imageImageGlobalOffset + stripe * gInputStripeInnerSize;
             const int imageStripeOuterOffset = imageStripeInnerOffset - gInputStripeMarginSize;
-            // need to fetch the board, but it's bigger than us, so will need to loop...
+            // need to fetch the image, but it's bigger than us, so will need to loop...
             barrier(CLK_LOCAL_MEM_FENCE);
             for( int i = 0; i < numLoopsForImageStripe; i++ ) {
                 int thisOffset = i * workgroupSize + localId;
                 int thisGlobalImagesOffset = imageStripeOuterOffset + thisOffset;
                 bool process = thisOffset < gInputStripeOuterSize 
-                    && thisGlobalImagesOffset >= imageBoardGlobalOffset 
-                    && thisGlobalImagesOffset < imageBoardGlobalOffsetAfter;
+                    && thisGlobalImagesOffset >= imageImageGlobalOffset 
+                    && thisGlobalImagesOffset < imageImageGlobalOffsetAfter;
                 if( process ) {
                     _imageStripe[thisOffset] = images[ thisGlobalImagesOffset ];
                 }
             }
-            int errorStripeOffset = errorBoardGlobalOffset + stripe * gOutputStripeSize;
+            int errorStripeOffset = errorImageGlobalOffset + stripe * gOutputStripeSize;
             for( int i = 0; i < numLoopsForErrorStripe; i++ ) {
                 int thisOffset = i * workgroupSize + localId;
                 int globalErrorsOffset = errorStripeOffset + thisOffset;
                 bool process = thisOffset < gOutputStripeSize 
-                    && globalErrorsOffset < errorBoardGlobalOffsetAfter;
+                    && globalErrorsOffset < errorImageGlobalOffsetAfter;
                 if( process ) {
                     _errorStripe[thisOffset ] = errors[globalErrorsOffset];
                 }
@@ -99,25 +99,25 @@ void kernel backprop_floats_withscratch_dobias_striped(
             barrier(CLK_LOCAL_MEM_FENCE);
 //            if( localId == 13 ) {
 //                for( int i = 0; i < 12; i++ ) {
-//                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputBoardSize];
+//                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputImageSize];
 //                }
 //                for( int i = 0; i < 20; i++ ) {
-//                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputBoardSize];
+//                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputImageSize];
 //                }
 //            }
             if( localId < gFilterSizeSquared ) {
                 for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {
                     int upstreamRow = outRow - gMargin + filterRow;
-                    for( int outCol = 0; outCol < gOutputBoardSize; outCol++ ) {
+                    for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
                         int upstreamCol = outCol - gMargin + filterCol;
                         bool proceed = 
                             upstreamRow >= 0 && upstreamCol >= 0 
-                            && upstreamRow < gInputBoardSize && upstreamCol < gInputBoardSize
-                            && outRow < gOutputBoardSize;
+                            && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize
+                            && outRow < gOutputImageSize;
                         if( proceed ) {
-                            int resultIndex = outRow * gOutputBoardSize + outCol;
+                            int resultIndex = outRow * gOutputImageSize + outCol;
                             float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];
-                            int upstreamDataIndex = upstreamRow * gInputBoardSize + upstreamCol;
+                            int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;
                             float upstreamResult = _imageStripe[upstreamDataIndex +  gInputStripeMarginSize
                                         - stripe * gInputStripeInnerSize ];
                             thiswchange += upstreamResult * error;
