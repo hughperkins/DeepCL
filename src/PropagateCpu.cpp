@@ -41,6 +41,7 @@ VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper
 }
 VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *weights, float *biasWeights ) {
 //    cout << "PropagateCpu::propagate outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
+    cout << "" << endl;
     float *results = new float[ dim.outputCubeSize * batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
         for( int filter = 0; filter < dim.numFilters; filter++ ) {
@@ -73,6 +74,13 @@ VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *
 //                                    cout << "inpos " << inRow << "," << inCol << " outpos " << outRow << "," << outCol
 //                                        << " filterpos " << filterRow << "," << filterCol << endl;
                                 float sumchange = inputData[ inputIndex] * weights[ weightIndex ];
+                                if( filter == 0 ) {
+//                                    cout << "filter[" << filter << "," << inPlane << "," << filterRow << "," << filterCol << "]=" << weights[weightIndex]  << " weightindex=" << weightIndex << endl;
+//                                    cout << "input[n=" << n << ",inplane=" << inPlane << "," << inRow << "," << inCol << "]=" << inputData[inputIndex] << endl;
+
+                                    cout << "input[n=" << n << ",inplane=" << inPlane << "," << inRow << "," << inCol << "] input=" << inputData[inputIndex] << " weight=" << weights[weightIndex] << endl;
+//                                    cout << "filter[" << filter << "," << inPlane << "," << filterRow << "," << filterCol << "]=" << weights[weightIndex]  << " weightindex=" << weightIndex << endl;
+                                }
                                 if( sumchange != 0 ) {
 //                                        cout << inputData[inputIndex] << " * " << weights[weightIndex] << " = " << sumchange << endl;
                                 }
@@ -82,17 +90,20 @@ VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *
                             }
                         }
                     }
+                    cout << "sum before bias " << sum << endl;
                     if( dim.biased ) {
                         sum += biasWeights[filter];
                     }
+                    cout << "sum after bias " << sum << endl;
                     sum = fn->calc( sum );
+                    cout << "sum after activate " << sum << endl;
                     int resultsIndex = ( ( n 
                         * dim.numFilters + filter ) 
                         * dim.outputBoardSize + outRow )
                         * dim.outputBoardSize + outCol;
                     results[resultsIndex] = sum;
-//                    cout << "resultsIndex=" << resultsIndex << " sum=" << sum << " results[resultsIndex]=" <<
-//                        results[resultsIndex] << endl;
+                    cout << "resultsIndex=" << resultsIndex << " sum=" << sum << " results[resultsIndex]=" <<
+                        results[resultsIndex] << endl;
                 }
             }
         }

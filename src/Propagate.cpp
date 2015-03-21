@@ -31,6 +31,7 @@ using namespace std;
 
 STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
     return new PropagateAuto( cl, dim, fn );
+    return new PropagateCpu( cl, dim, fn );
 //    return new PropagateByInputPlane( cl, dim, fn );
 
 //    if( dim.filterSize == dim.inputBoardSize && dim.padZeros == false && dim.numFilters >= 64

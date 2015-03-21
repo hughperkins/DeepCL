@@ -25,6 +25,8 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+    //return new BackpropWeights2Cpu( cl, dim );
+
     if( dim.inputBoardSize - dim.filterSize < 4 ) {
         return new BackpropWeights2Naive( cl, dim );
     }

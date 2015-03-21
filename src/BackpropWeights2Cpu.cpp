@@ -46,6 +46,8 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
 
     const int halfFilterSize = dim.filterSize >> 1;
     const int margin = dim.padZeros ? halfFilterSize : 0;
+    cout << "dim.inputBoardSize=" << dim.inputBoardSize << endl;
+    cout << "dim.outputBoardSize=" << dim.outputBoardSize << endl;
     for( int outPlane = 0; outPlane < dim.numFilters; outPlane++ ) {
         for( int upstreamPlane = 0; upstreamPlane < dim.inputPlanes; upstreamPlane++ ) {
             for( int filterRow = 0; filterRow < dim.filterSize; filterRow++ ) {
@@ -82,6 +84,9 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
                                 float thisimagethiswchange = _derivLossBySum * upstreamResult;
                                 thiswchange += thisimagethiswchange;
                                 thisBiasChange += _derivLossBySum; // fairly sure this is right.  Fairly :-P
+                                if( outPlane == 0 && filterRow ==  margin && filterCol == margin && upstreamPlane == 0 ) {
+                                    cout << "_derivLossBySum " << upstreamRow << "," << upstreamCol << "=" << _derivLossBySum << endl;
+                                }
                             }
                         }
                     }
@@ -96,6 +101,7 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
             }
         }
     }
+    cout << endl;
     StatefulTimer::instance()->timeCheck(" BackpropWeights2Cpu end" );
 }
 
