@@ -670,7 +670,7 @@ What's done / what's planned
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent
   * generalization to non-square images
   * ~~generalization to larger images~~ kind of done, ish, for NORB
-  * drop-out ... or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?
+  * drop-out ... ~~or maybe [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) ?~~ (per [Sandle Dieleman's solution to the Galaxy Zoo challenge](http://benanne.github.io/2014/04/05/galaxy-zoo.html), seems like dropconnect is slower and doesnt convincingly add value; and it's certainly insanely a lot harder to implement...)
   * Python bindings?
   * scaling? rotations? mirroring?
   * ~~max-pooling?~~ DONE
