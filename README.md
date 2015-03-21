@@ -662,7 +662,7 @@ What's done / what's planned
   * testing result averaged over several propagations (used in conjunction with `rp`)
   * sparse connectivity between feature maps in adjacent layers
   * ~~MCDNN?~~ DONE
-  * migrate to use `async_work_group_copy`?
+  * ~~migrate to use `async_work_group_copy`?~~ (seems like actually slower, at least on nvidia)
 * Plausible, medium-term (pull requests welcome):
   * maybe L2 regularization?
   * ~~randomly translating input layer?~~ DONE
@@ -675,6 +675,7 @@ What's done / what's planned
   * scaling? rotations? mirroring?
   * ~~max-pooling?~~ DONE
   * ~~read network from a config file?~~ soft of done with the `netdef` syntax
+  * more general DAGs?
 
 Recent changes
 ==============
