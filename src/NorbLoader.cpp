@@ -29,7 +29,7 @@ STATIC void NorbLoader::getDimensions( std::string trainFilepath, int *p_N, int 
     if( magic != 0x1e3d4c55 ) {
         throw std::runtime_error("magic value doesnt match expections: " + toString(magic) );
     }
-    int ndim = headerValues[1];
+//    int ndim = headerValues[1];
     int N = headerValues[2];
     int numPlanes = headerValues[3];
     int imageSize = headerValues[4];
@@ -98,7 +98,7 @@ STATIC void NorbLoader::loadImages( unsigned char *images, std::string filepath,
     if( magic != 0x1e3d4c55 ) {
         throw std::runtime_error("magic value doesnt match expections: " + toString(magic) );
     }
-    int ndim = headerValues[1];
+//    int ndim = headerValues[1];
     int N = headerValues[2];
     int numPlanes = headerValues[3];
     int imageSize = headerValues[4];
@@ -137,7 +137,7 @@ STATIC void NorbLoader::loadLabels( int *labels, std::string filepath, int start
     if( magic != 0x1e3d4c54 ) {
         throw std::runtime_error("magic value doesnt match expections: " + toString(magic) + " expected: " + toString( 0x1e3d4c54 ) );
     }
-    int ndim = headerValues[1];
+//    int ndim = headerValues[1];
     int N = headerValues[2];
 //    checkSame( "ndim", 1, ndim );
     if( numExamples > 0 && numExamples > ( N - startN ) ) {
