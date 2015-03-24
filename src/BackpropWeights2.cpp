@@ -24,6 +24,10 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
+BackpropWeights2::BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
+        cl( cl ),
+        dim( layerDimensions ) {
+}
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
     if( dim.inputImageSize - dim.filterSize < 4 ) {
         return new BackpropWeights2Naive( cl, dim );
@@ -63,10 +67,6 @@ STATIC BackpropWeights2 *BackpropWeights2::instanceSpecific( int idx, OpenCLHelp
         return new BackpropWeights2ScratchLarge( cl, layerDimensions );
     }
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx) );
-}
-BackpropWeights2::BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
-        dim( layerDimensions ),
-        cl( cl ) {
 }
 
 VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRate, float *derivLossBySum, float *inputData, float *filters, float *biasWeights ) {

@@ -29,6 +29,11 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
+Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :
+        cl( cl ),
+        dim( layerDimensions ),
+        fn( fn ) {
+}
 STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
     return new PropagateAuto( cl, dim, fn );
 //    return new PropagateByInputPlane( cl, dim, fn );
@@ -108,11 +113,6 @@ STATIC Propagate *Propagate::instanceSpecific( std::string name, OpenCLHelper *c
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for name " + name );
     }
-}
-Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :
-        dim( layerDimensions ),
-        cl( cl ),
-        fn( fn ) {
 }
 // you own the returned results array, and are responsible for deleting it
 VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {

@@ -25,8 +25,8 @@ VIRTUAL Propagate3_unfactorized::~Propagate3_unfactorized() {
 VIRTUAL void Propagate3_unfactorized::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("Propagate3_unfactorized::propagate begin");
-    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    int maxglobalId = 0;
+//    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+//    int maxglobalId = 0;
 
     kernel->in(batchSize);
     kernel->input( dataWrapper );

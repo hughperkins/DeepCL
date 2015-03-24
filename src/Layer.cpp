@@ -7,10 +7,10 @@ using namespace std;
 
 Layer::Layer( Layer *previousLayer, LayerMaker2 *maker ) :
     previousLayer( previousLayer ),
-    training( false ),
     nextLayer( 0 ),
-    maker( maker ),
-    layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 )
+    layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
+    training( false ),
+    maker( maker )
      {
     if( previousLayer != 0 ) {
         previousLayer->nextLayer = this;

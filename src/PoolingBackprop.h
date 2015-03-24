@@ -26,6 +26,7 @@ public:
     const int outputImageSize;
 //    const int poolingSizeSquared;
 
+    virtual ~PoolingBackprop() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )

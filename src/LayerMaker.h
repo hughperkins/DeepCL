@@ -31,6 +31,7 @@ public:
     LayerMaker2() :
         cl(0) {
     }
+    virtual ~LayerMaker2() {}
     void setCl( OpenCLHelper *cl ) {
         this->cl = cl;
     }

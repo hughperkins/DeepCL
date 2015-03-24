@@ -145,7 +145,7 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
 //}
 
 STATIC int Kgsv2Loader::getRecordSize( int numPlanes, int imageSize ) {
-    const int imageSizeSquared = imageSize * imageSize;
+//    const int imageSizeSquared = imageSize * imageSize;
     int recordSize = 2 /* "GO" */ + 4 /* label */;
     // + imageSizeSquared;
     int numBits = numPlanes * imageSize * imageSize;

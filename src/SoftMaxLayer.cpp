@@ -18,13 +18,15 @@ using namespace std;
 
 SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker ) :
     LossLayer( previousLayer, maker ),
-        allocatedSize( 0 ),
-        errorsForUpstream( 0 ),
-        results( 0 ),
         perPlane( maker->_perPlane ),
         imageSize( previousLayer->getOutputImageSize() ),
+        numPlanes( previousLayer->getOutputPlanes() ),
         imageSizeSquared( previousLayer->getOutputImageSize() * previousLayer->getOutputImageSize() ),
-        numPlanes( previousLayer->getOutputPlanes() ) {
+        results( 0 ),
+        errorsForUpstream( 0 ),
+        allocatedSize( 0 ),
+        batchSize( 0 )
+         {
 }
 VIRTUAL SoftMaxLayer::~SoftMaxLayer() {
     if( errorsForUpstream != 0 ) {
@@ -198,7 +200,7 @@ VIRTUAL int SoftMaxLayer::getPersistSize() const {
 }
 VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
-    float *resultsFromUpstream = previousLayer->getResults(); // just retrieve as host-side array for now
+//    float *resultsFromUpstream = previousLayer->getResults(); // just retrieve as host-side array for now
     int numRight = 0;
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {

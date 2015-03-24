@@ -31,6 +31,7 @@ public:
 template< typename T>
 class ClConvolve_EXPORT NetAction {
 public:
+    virtual ~NetAction() {}
     virtual void run( Trainable *net, T *batchData, int const*batchLabels ) = 0;
 };
 

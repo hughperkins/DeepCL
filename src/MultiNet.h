@@ -31,7 +31,6 @@ class ClConvolve_EXPORT MultiNet : public Trainable {
     LossLayer *lossLayer;
 
 public:
-
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()

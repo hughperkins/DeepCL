@@ -14,6 +14,7 @@
 
 class ClConvolve_EXPORT ActivationFunction {
 public:
+    virtual ~ActivationFunction() {}
     virtual float calc( float value ) const { throw std::runtime_error("calc not implemented"); };
     virtual float calcDerivative( float output ) const { throw std::runtime_error("calcDerivative not implemented"); };
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 

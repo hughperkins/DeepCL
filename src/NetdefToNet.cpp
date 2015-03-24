@@ -22,11 +22,11 @@ using namespace std;
 STATIC std::string expandMultipliers( std::string netdef ) {
 //    return netdef; // placeholder for now :-P
     int starPos = netdef.find("*");
-    if( starPos != string::npos ) {
+    if( starPos != (int)string::npos ) {
         int prefixEnd = netdef.rfind("-", starPos);
         string prefix = "";
         string nnString = "";
-        if( prefixEnd == string::npos ) {
+        if( prefixEnd == (int)string::npos ) {
             prefixEnd = -1;
             nnString = netdef.substr(0, starPos );
         } else {
@@ -45,7 +45,7 @@ STATIC std::string expandMultipliers( std::string netdef ) {
         if( remainderString.substr(0, 1 ) == "(" ) {
             // need to find other ')', assume not nested for now...
             int rhBracket = remainderString.find(")");
-            if( rhBracket == string::npos ) {
+            if( rhBracket == (int)string::npos ) {
                 throw runtime_error( "matching bracket not found in " + remainderString );
 //                return false;
             }
@@ -63,10 +63,10 @@ STATIC std::string expandMultipliers( std::string netdef ) {
             }
         } else {
             int innerEnd = remainderString.find("-");
-            if( innerEnd == string::npos ) {
+            if( innerEnd == (int)string::npos ) {
                 innerEnd = remainderString.length();
             } else {
-                innerEnd;
+//                innerEnd;
                 postfix = remainderString.substr( innerEnd + 1 );
                 cout << "postfix [" << postfix << "]" << endl;
             }
@@ -114,7 +114,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
         int skip = 0;
         ActivationFunction *fn = new ReluActivation();
         int padZeros = 0;
-        for( int i = 0; i < splitOptionsDef.size(); i++ ) {
+        for( int i = 0; i < (int)splitOptionsDef.size(); i++ ) {
             string optionDef = splitOptionsDef[i];
             vector<string> splitOptionDef = split( optionDef, "=");
             string optionName = splitOptionDef[0];
@@ -166,9 +166,9 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
         if( isLast ) {
             fn = new LinearActivation();
         }
-        int padZeros = 0;
+//        int padZeros = 0;
         int biased = 1;
-        for( int i = 0; i < splitOptionsDef.size(); i++ ) {
+        for( int i = 0; i < (int)splitOptionsDef.size(); i++ ) {
             string optionDef = splitOptionsDef[i];
 //                cout << "optionDef: " << optionDef << endl;
             vector<string> splitOptionDef = split( optionDef, "=");
@@ -217,9 +217,9 @@ STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef
     }
     vector<string> splitNetDef = split( netDefLower, "-" );
     if( netdef != "" ) {
-        for( int i = 0; i < splitNetDef.size(); i++ ) {
+        for( int i = 0; i < (int)splitNetDef.size(); i++ ) {
             string thisLayerDef = splitNetDef[i];
-            if( !parseSubstring( net, thisLayerDef, i == splitNetDef.size() - 1 ) ) {
+            if( !parseSubstring( net, thisLayerDef, i == (int)splitNetDef.size() - 1 ) ) {
                 return false;
             }
         }

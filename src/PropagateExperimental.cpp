@@ -21,8 +21,8 @@ VIRTUAL PropagateExperimental::~PropagateExperimental() {
 VIRTUAL void PropagateExperimental::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *resultsWrapper ) {
     StatefulTimer::timeCheck("PropagateExperimental::propagate start");
-    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    int maxglobalId = 0;
+//    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+//    int maxglobalId = 0;
 
     kernel->in(batchSize);
     kernel->input( dataWrapper );

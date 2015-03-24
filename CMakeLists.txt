@@ -29,7 +29,7 @@ include_directories( OpenCLHelper/clew/include )
 
 if( ON_LINUX )
 link_libraries(dl)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 endif()
 
 set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp

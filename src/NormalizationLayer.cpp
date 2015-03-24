@@ -15,13 +15,13 @@ using namespace std;
 
 NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker ) :
        Layer( previousLayer, maker ),
-    batchSize(0),
-    allocatedSize(0),
-    results(0),
+    translate( maker->_translate ),
+    scale( maker->_scale ),
     outputPlanes( previousLayer->getOutputPlanes() ),
     outputImageSize( previousLayer->getOutputImageSize() ),
-    translate( maker->_translate ),
-    scale( maker->_scale ) {
+    batchSize(0),
+    allocatedSize(0),
+    results(0) {
 }
 VIRTUAL NormalizationLayer::~NormalizationLayer() {
     if( results != 0 ) {

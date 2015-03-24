@@ -25,6 +25,7 @@ public:
 
     const int outputImageSize;
 
+    virtual ~PoolingPropagate() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )

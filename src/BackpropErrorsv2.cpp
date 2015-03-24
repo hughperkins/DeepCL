@@ -47,8 +47,8 @@ STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceSpecific( int idx, OpenCLHelp
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
 BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn ) :
-        dim( layerDimensions ),
         cl( cl ),
+        dim( layerDimensions ),
         upstreamFn( upstreamFn ) {
 }
 VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputData, float *errors, float *filters ) {

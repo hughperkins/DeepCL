@@ -15,7 +15,7 @@ using namespace std;
 
 void Translator::translate( int n, int numPlanes, int imageSize, int translateRows, int translateCols, float *source, float *destination ) {
     const int cubeSize = numPlanes * imageSize * imageSize;
-    float *sourceCube = source + n * cubeSize;
+//    float *sourceCube = source + n * cubeSize;
     float *destinationCube = destination + n * cubeSize;
     memset( destinationCube, 0, sizeof(float) * cubeSize );
     const int rowCopyLength = imageSize - abs( translateCols );

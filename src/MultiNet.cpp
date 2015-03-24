@@ -23,8 +23,8 @@ using namespace std;
 
 MultiNet::MultiNet( int numNets, NeuralNet *model ) :
         results( 0 ),
-        allocatedSize( 0 ),
         batchSize( 0 ),
+        allocatedSize( 0 ),
         proxyInputLayer( 0 ),
         lossLayer( 0 ) {
 //    trainables.push_back( model );

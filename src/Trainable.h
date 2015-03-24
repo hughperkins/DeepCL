@@ -17,6 +17,7 @@ class Layer;
 
 class ClConvolve_EXPORT Trainable {
 public:
+    virtual ~Trainable() {}
     virtual int getResultsSize() const = 0;
     virtual float calcLoss(float const *expectedValues ) = 0;
     virtual float calcLossFromLabels(int const *labels ) = 0;

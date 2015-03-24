@@ -17,10 +17,10 @@ template< typename T > InputLayer<T>::InputLayer( InputLayerMaker<T> *maker ) :
        Layer( 0, maker ),
     batchSize(0),
     allocatedSize(0),
-    input(0),
-    results(0),
     outputPlanes( maker->_numPlanes ),
-    outputImageSize( maker->_imageSize ) {
+    outputImageSize( maker->_imageSize ),
+    input(0),
+    results(0) {
 }
 template< typename T > VIRTUAL InputLayer<T>::~InputLayer() {
 }

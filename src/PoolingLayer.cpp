@@ -24,21 +24,21 @@ using namespace std;
 PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker *maker ) :
         Layer( previousLayer, maker ),
         padZeros( maker->_padZeros ),
-        poolingSize( maker->_poolingSize ),
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputImageSize( previousLayer->getOutputImageSize() ),
+        poolingSize( maker->_poolingSize ),
         outputImageSize( maker->_padZeros ? ( previousLayer->getOutputImageSize() + maker->_poolingSize - 1 ) / maker->_poolingSize : previousLayer->getOutputImageSize() / maker->_poolingSize ),
+        cl( cl ),
         results(0),
-        errorsForUpstream(0),
         selectors(0),
+        errorsForUpstream(0),
         resultsWrapper(0),
         selectorsWrapper(0),
         errorsForUpstreamWrapper(0),
         resultsCopiedToHost(false),
         errorsForUpstreamCopiedToHost(false),
         batchSize(0),
-        allocatedSize(0),
-        cl( cl ){
+        allocatedSize(0){
     if( inputImageSize == 0 ){
 //        maker->net->print();
         throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input image size is 0" );
