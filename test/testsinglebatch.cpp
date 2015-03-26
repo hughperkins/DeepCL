@@ -218,7 +218,7 @@ TEST( testsinglebatch, imagesize28_filtersize5 ) {
             .FilterSize(5).NumFilters(10).NumEpochs(100) );
 }
 
-float sumWeightChangesSquared( float *__restrict__ oldWeights, float * __restrict__ newWeights, NeuralNet *net ) {
+float sumWeightChangesSquared( float *__restrict oldWeights, float * __restrict newWeights, NeuralNet *net ) {
     int offset = 0;
     float sum = 0;
     for( int i = 1; i < net->layers.size(); i++ ) {
