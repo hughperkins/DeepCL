@@ -83,6 +83,9 @@ STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, in
 
 STATIC unsigned char *NorbLoader::loadImages( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize, int startN, int numExamples ) {
     getDimensions( filepath, p_N, p_numPlanes, p_imageSize );
+    if( numExamples == 0 ) {
+        numExamples = *p_N - startN;
+    }
     unsigned char *images = new unsigned char[ (long)numExamples * *p_numPlanes * *p_imageSize * *p_imageSize ];
     loadImages( images, filepath, p_N, p_numPlanes, p_imageSize, startN, numExamples );
     return images;
