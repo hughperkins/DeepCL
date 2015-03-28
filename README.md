@@ -11,6 +11,7 @@ Contents
 - [ClConvolve](#clconvolve)
 - [Commandline usage](#commandline-usage)
   - [Additional net-def options](#additional-net-def-options)
+  - [Repeated layers](#repeated-layers)
   - [Additional layer types](#additional-layer-types)
     - [Random patches](#random-patches)
     - [Random translations](#random-translations)
@@ -58,6 +59,7 @@ Contents
 - [What's done / what's planned](#whats-done--whats-planned)
 - [Recent changes](#recent-changes)
 - [Third-party libraries](#third-party-libraries)
+- [Related projects](#related-projects)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -759,6 +761,12 @@ Third-party libraries
 * [OpenCLHelper](https://github.com/hughperkins/OpenCLHelper)
 * [clew](https://github.com/martijnberger/clew)
 * [libpng++](http://www.nongnu.org/pngpp/doc/0.2.1/)
+
+Related projects
+================
+
+* [PyClConvolve](https://pypi.python.org/pypi/PyClConvolve) Python wrapper for ClConvolve
+* [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
 
 License
 =======
