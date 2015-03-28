@@ -39,7 +39,7 @@ class ClConvolve_EXPORT NeuralNet : public Trainable {
 public:
     std::vector< Layer *> layers;
     OpenCLHelper *cl;
-    int isTraining = true;
+    int isTraining; // = true;
 
     // [[[cog
     // import cog_addheaders

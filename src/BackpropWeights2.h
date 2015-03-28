@@ -21,7 +21,7 @@ class ClConvolve_EXPORT BackpropWeights2 {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
-    bool debug = false;
+    bool debug; // = false;
 
     virtual ~BackpropWeights2() {}
     virtual void backpropWeights( int batchSize, float learningRate, CLWrapper *derivLossBySumWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;

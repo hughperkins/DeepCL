@@ -38,7 +38,7 @@ public:
 //	    struct std::timeval tm;
 //	    gettimeofday( &tm, NULL );
 //	    return (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
-        return thistime;
+        return (double)thistime;
    }
 #else
    std::chrono::time_point<std::chrono::high_resolution_clock> getCount() {

@@ -26,7 +26,8 @@ using namespace std;
 
 BackpropWeights2::BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
-        dim( layerDimensions ) {
+        dim( layerDimensions ),
+        debug( false ) {
 }
 STATIC BackpropWeights2 *BackpropWeights2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
     if( dim.inputImageSize - dim.filterSize < 4 ) {

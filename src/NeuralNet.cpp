@@ -34,7 +34,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-NeuralNet::NeuralNet() {
+NeuralNet::NeuralNet() :
+    isTraining( true ) {
 //    cout << "NeuralNet()" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, imageSize );

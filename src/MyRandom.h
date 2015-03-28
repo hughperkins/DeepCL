@@ -25,13 +25,13 @@ class MyRandom {
         #ifdef MSVC2008
         time_t thistime;
         time(&thistime);
-        int time = thistime;
+        int time = (int)thistime;
         #else
         std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
         int time = static_cast<int>( std::chrono::duration_cast<std::chrono::milliseconds> ( thistime.time_since_epoch() ).count() );
         #endif
         srand(time);
-        int seed = ( rand() << 8 ) + rand();
+        unsigned long seed = ( rand() << 8 ) + rand();
         //MPI_Bcast( &seed, 1, MPI_INT, 0, MPI_COMM_WORLD );
         random.seed( seed );
     }
@@ -42,7 +42,7 @@ public:
     }
     static float uniform() {
         #ifdef MSVC2008
-        return ( instance()->random() % 10000001 ) / 10000000.0;
+        return ( instance()->random() % 10000001 ) / 10000000.0f;
         #else
         float maxrand = (float)std::mt19937::max();
         return instance()->random() / maxrand;

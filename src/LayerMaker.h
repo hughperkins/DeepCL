@@ -102,8 +102,9 @@ public:
 // can switch to be per-column
 class ClConvolve_EXPORT SoftMaxMaker : public LossLayerMaker {
 public:
-    bool _perPlane = false;
+    bool _perPlane; // = false;
     SoftMaxMaker() {
+        _perPlane = false;
     }
     SoftMaxMaker *perColumn() {
         this->_perPlane = false;

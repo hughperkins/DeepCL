@@ -31,12 +31,12 @@ public:
     std::chrono::time_point<std::chrono::high_resolution_clock> last;
     #endif
     std::map< std::string, float > timeByState;
-    std::string prefix = "";
-    StatefulTimer() {
+    std::string prefix; // = "";
+    StatefulTimer() : prefix("") {
         #ifdef MSVC2008
         time_t thistime;
         time(&thistime);
-        last = thistime;
+        last = (float)thistime;
         #else
          last = std::chrono::high_resolution_clock::now();
         #endif
@@ -89,7 +89,11 @@ public:
 //        } else {
 //            timeByState[state] = timemilliseconds;
 //        }
+        #ifdef MSVC2008
+        last = (float)thistime;
+        #else
         last = thistime;
+        #endif
     }
 };
 
