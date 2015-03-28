@@ -7,7 +7,14 @@
 #pragma once
 
 #include <iostream>
+
+#if (_MSC_VER == 1500) // visual studio 2008
+#define MSVC2008
+#include <ctime>
+#else
 #include <chrono>
+#endif
+
 #include <vector>
 #include <map>
 #include <string>
@@ -18,11 +25,21 @@ public:
         static StatefulTimer *_instance = new StatefulTimer();
         return _instance;
     }
+    #ifdef MSVC2008
+    float last;
+    #else
     std::chrono::time_point<std::chrono::high_resolution_clock> last;
+    #endif
     std::map< std::string, float > timeByState;
     std::string prefix = "";
     StatefulTimer() {
+        #ifdef MSVC2008
+        time_t thistime;
+        time(&thistime);
+        last = thistime;
+        #else
          last = std::chrono::high_resolution_clock::now();
+        #endif
     }
     ~StatefulTimer() {
         std::cout << "StatefulTimer readings:" << std::endl;
@@ -58,9 +75,15 @@ public:
     }
     void _timeCheck( std::string state ) {
         state = prefix + state;
+        #ifdef MSVC2008
+        time_t thistime;
+        time(&thistime);
+        float timemilliseconds = thistime * 1000.0f;
+        #else
        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
        std::chrono::duration<float> change = thistime - last;
        float timemilliseconds = static_cast<float>( std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count() );
+        #endif
 //        if( timeByState.has_key( state ) ) {
             timeByState[state] += timemilliseconds;
 //        } else {
