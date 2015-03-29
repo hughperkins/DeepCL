@@ -1,4 +1,4 @@
- ClConvolve
+  ClConvolve
 ==========
 
 Contents
@@ -466,6 +466,7 @@ int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 Pre-built binaries are available for Windows-64, for certain releases.  In order to use them you need:
 * [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
 * An OpenCL driver for your GPU
+* A recent release with Windows binaries is [v2.0.2](https://github.com/hughperkins/ClConvolve/releases/tag/v2.0.2)
 
 #To build
 
