@@ -36,6 +36,7 @@ Contents
   - [Data format](#data-format)
   - [Train](#train)
   - [Test](#test)
+- [Q-learning (draft)](#q-learning-draft)
 - [To use the pre-built binaries](#to-use-the-pre-built-binaries)
 - [To build](#to-build)
   - [linux](#linux)
@@ -71,6 +72,7 @@ OpenCL library to train deep convolutional networks
 - C++
 - OpenCL
 - Deep convolutional
+- (New!) includes Q-learning module (draft)
 
 Functionalities:
 * convolutional layers
@@ -93,6 +95,7 @@ Functionalities:
   * square loss
   * cross-entropy
   * multinomial cross-entropy (synonymous with multinomial logistic, etc)
+* Q-learning
 
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
@@ -460,6 +463,14 @@ eg
 BatchLearner<unsigned char> batchLearner( net );
 int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
+
+# Q-learning (draft)
+
+* Started to write a q-learning module
+* Ideally, this will be callable from Python in the future, via [PyClConvolve](https://pypi.python.org/pypi/PyClConvolve)
+* Look at [ScenarioImage.h](prototyping/qlearning/ScenarioImage.h) and [ScenarioImage.cpp](prototyping/qlearning/ScenarioImage.cpp) for an example scenario we can feed to it
+  * [learnScenarioImage.cpp](prototyping/qlearning/learnScenarioImage.cpp) is a corresponding example of how we can learn this
+* The qlearning module is at [QLearner.h](qlearning/QLearner.h), and the interface for scenarios at [Scenario.h](qlearning/Scenario.h)
 
 # To use the pre-built binaries
 

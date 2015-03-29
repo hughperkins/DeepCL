@@ -96,7 +96,7 @@ float sumSums_singlethread( OpenCLHelper *cl, CLWrapper *sums, int numImages ) {
 }
 
 TEST( testreduce, sumimages_threadperimage ) {
-    const int imageSizeSquared = imageSize * imageSize;
+//    const int imageSizeSquared = imageSize * imageSize;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -146,7 +146,7 @@ TEST( testreduce, sumimages_threadperimage ) {
 }
 
 TEST( testreduce, sumimages_threadperrow ) {
-    const int imageSizeSquared = imageSize * imageSize;
+//    const int imageSizeSquared = imageSize * imageSize;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -205,7 +205,7 @@ TEST( testreduce, sumimages_threadperrow ) {
 }
 
 TEST( testreduce, sumimages_workgroupperimage_threadperrow ) {
-    const int imageSizeSquared = imageSize * imageSize;
+//    const int imageSizeSquared = imageSize * imageSize;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -267,7 +267,7 @@ TEST( testreduce, sumimages_workgroupperimage_threadperrow ) {
 }
 
 TEST( testreduce, sum_workgroupperimage_threadperpixel ) {
-    const int imageSizeSquared = imageSize * imageSize;
+//    const int imageSizeSquared = imageSize * imageSize;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -281,7 +281,7 @@ TEST( testreduce, sum_workgroupperimage_threadperpixel ) {
 
     CLWrapper *inputWrapper = cl->wrap( totalLinearSize, input );
     inputWrapper->createOnDevice();
-    float *rowsums = new float[numImages * imageSize];
+//    float *rowsums = new float[numImages * imageSize];
 //    CLWrapper *rowSumsWrapper = cl->wrap( numImages * imageSize, rowsums );
 //    rowSumsWrapper->createOnDevice();
     CLWrapper *sumsWrapper = cl->wrap( numImages, sums );
@@ -329,7 +329,7 @@ TEST( testreduce, sum_workgroupperimage_threadperpixel ) {
 }
 
 TEST( testreduce, sum_workgroupperimage_threadperpixel_local ) {
-    const int imageSizeSquared = imageSize * imageSize;
+//    const int imageSizeSquared = imageSize * imageSize;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -343,7 +343,7 @@ TEST( testreduce, sum_workgroupperimage_threadperpixel_local ) {
 
     CLWrapper *inputWrapper = cl->wrap( totalLinearSize, input );
     inputWrapper->createOnDevice();
-    float *rowsums = new float[numImages * imageSize];
+//    float *rowsums = new float[numImages * imageSize];
 //    CLWrapper *rowSumsWrapper = cl->wrap( numImages * imageSize, rowsums );
 //    rowSumsWrapper->createOnDevice();
     CLWrapper *sumsWrapper = cl->wrap( numImages, sums );

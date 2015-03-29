@@ -41,7 +41,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     float *expectedResults = new float[max(10000, resultsSize )];
     memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
     memset( expectedResults, 0, sizeof(float) * max(10000, resultsSize ) );
-    int seed = 0;
+//    int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, net->layers[1]->getWeights(), weightsSize, -0.1f, 0.1f );
@@ -410,7 +410,7 @@ TEST( testbackpropweights, backprop_instance3_smaller2 ) {
     int resultsSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+//    int biasWeightsSize = dim.numFilters;
 
     cout << "numweights: " << weightsSize << endl;
 

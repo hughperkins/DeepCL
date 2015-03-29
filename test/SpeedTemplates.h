@@ -32,6 +32,7 @@ public:
 
 class Value {
 public:
+    virtual ~Value() {}
     virtual std::string render() = 0;
 };
 class IntValue : public Value {
@@ -136,7 +137,7 @@ public:
         }
         for( int i = loopStart; i < loopEnd; i++ ) {
             valueByName[varName] = new IntValue( i );
-            for( int j = 0; j < sections.size(); j++ ) {
+            for( int j = 0; j < (int)sections.size(); j++ ) {
                 result += sections[j]->render( valueByName );
             }
             delete valueByName[varName];

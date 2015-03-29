@@ -3,8 +3,8 @@
 
 TEST(testgtestsupp, main ) {
     float one = 1.314f;
-    float two = 1.315f;
-    float three = 1.319f;
+//    float two = 1.315f;
+//    float three = 1.319f;
     
 //    EXPECT_FLOAT_NEAR( 1.315f, one, 0.001f );
 //    EXPECT_FLOAT_NEAR( 1.317f, one, 0.001f );

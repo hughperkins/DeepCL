@@ -24,6 +24,7 @@ OPTION(PROTOTYPING "Only for devs." OFF)
 
 include_directories( . )
 include_directories( src )
+include_directories( qlearning )
 include_directories( OpenCLHelper )
 include_directories( OpenCLHelper/clew/include )
 
@@ -49,7 +50,7 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
-    PoolingBackpropGpuNaive.cpp 
+    PoolingBackpropGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
  )
 foreach(source ${CLConvolve_sources})
     set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
@@ -113,6 +114,7 @@ if(PYTHON_AVAILABLE)
     add_custom_target( 
         cog
         python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/qlearning/*.h
     )
     add_dependencies( ClConvolve cog )
 endif(PYTHON_AVAILABLE)
@@ -190,6 +192,8 @@ if( PROTOTYPING )
        test/SpeedTemplates.cpp )
     add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/stringhelper.cpp )
+    add_executable( learn_scenario_image prototyping/qlearning/learnScenarioImage.cpp 
+        prototyping/qlearning/ScenarioImage.cpp )
 endif( PROTOTYPING )
 
 target_link_libraries( unittests ClConvolve )

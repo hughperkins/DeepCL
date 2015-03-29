@@ -84,7 +84,7 @@ TEST( testpropagate, imagesize2_nopadzeros ) {
         0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
     };
     cout << "expected number of results: " << resultSize << endl;
-    int outputImageSize = 0;
+//    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 1, cl,
@@ -228,7 +228,7 @@ TEST( testpropagate, imagesize2_padzeros ) {
 //        0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
 //    };
 
-    int outputImageSize = 0;
+//    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
@@ -289,7 +289,7 @@ TEST( testpropagate, imagesize3 ) {
 
  };
 
-    int outputImageSize = 0;
+//    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
@@ -400,7 +400,7 @@ TEST( testpropagate, test3 ) {
     int numInPlanes = 2;
     int numOutPlanes = 2;
     int inImageSize = 1;
-    int outImageSize = 1;
+//    int outImageSize = 1;
     int filterSize = 1;
     int padZeros = 0;
     float data[] = {0.1f,0.2f,
@@ -410,7 +410,7 @@ TEST( testpropagate, test3 ) {
     float filter[] = {0.2f,0.3f,
                      0.5f,0.7f};
 
-    int outputImageSize = 0;
+//    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ), new LinearActivation() );
@@ -564,8 +564,8 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
 TEST( testpropagate, compare_0_1_biased_nopad ) {
     LayerDimensions dim;
     int batchSize = 4;
-    int instance0 = 1;
-    int instance1 = 1;
+//    int instance0 = 1;
+//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
@@ -578,8 +578,8 @@ TEST( testpropagate, compare_0_1_biased_nopad ) {
 TEST( testpropagate, compare_0_1_biased_pad ) {
     LayerDimensions dim;
     int batchSize = 4;
-    int instance0 = 1;
-    int instance1 = 1;
+//    int instance0 = 1;
+//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
@@ -592,8 +592,8 @@ TEST( testpropagate, compare_0_1_biased_pad ) {
 TEST( testpropagate, compare_1_n_biased_nopad ) {
     LayerDimensions dim;
     int batchSize = 4;
-    int instance0 = 1;
-    int instance1 = 1;
+//    int instance0 = 1;
+//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
@@ -612,8 +612,8 @@ TEST( testpropagate, compare_1_n_biased_nopad ) {
 TEST( testpropagate, compare_1_n_biased_pad ) {
     LayerDimensions dim;
     int batchSize = 4;
-    int instance0 = 1;
-    int instance1 = 1;
+//    int instance0 = 1;
+//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
@@ -632,8 +632,8 @@ TEST( testpropagate, compare_1_n_biased_pad ) {
 TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, since fc wont work with pad
     LayerDimensions dim;
     int batchSize = 4;
-    int instance0 = 1;
-    int instance1 = 1;
+//    int instance0 = 1;
+//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
