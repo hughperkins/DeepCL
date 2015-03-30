@@ -178,19 +178,19 @@ target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
-    add_executable( prototyping prototyping/testreduce.cpp src/stringhelper.cpp thirdparty/gtest/gtest_main.cc )
-    target_link_libraries( prototyping gtest )
-    target_include_directories( prototyping PRIVATE thirdparty/gtest )
-    add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
-    add_executable( testrawstring prototyping/testRawString.cpp )
-    add_executable( testpassdim prototyping/testPassDim.cpp )
-    add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-       test/SpeedTemplates.cpp )
-    add_executable( testmemperf prototyping/testmemperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-       test/SpeedTemplates.cpp )
-    add_executable( testfloat4 prototyping/testFloat4.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-       test/SpeedTemplates.cpp )
-    add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
+#    add_executable( prototyping prototyping/testreduce.cpp src/stringhelper.cpp thirdparty/gtest/gtest_main.cc )
+#    target_link_libraries( prototyping gtest )
+#    target_include_directories( prototyping PRIVATE thirdparty/gtest )
+#    add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
+#    add_executable( testrawstring prototyping/testRawString.cpp )
+#    add_executable( testpassdim prototyping/testPassDim.cpp )
+#    add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
+#       test/SpeedTemplates.cpp )
+#    add_executable( testmemperf prototyping/testmemperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
+#       test/SpeedTemplates.cpp )
+#    add_executable( testfloat4 prototyping/testFloat4.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
+#       test/SpeedTemplates.cpp )
+#    add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/stringhelper.cpp )
     add_executable( learn_scenario_image prototyping/qlearning/learnScenarioImage.cpp 
         prototyping/qlearning/ScenarioImage.cpp )
