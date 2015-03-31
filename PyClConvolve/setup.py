@@ -186,7 +186,7 @@ ext_modules = [
               sources=["PyClConvolve.pyx", 'CyWrappers.cpp'] 
                 + openclhelpersources
                 + list(map( lambda name : '../src/' + name, clconvolve_sources))
-                + ['qlearning/QLearner.cpp','qlearning/array_helper.cpp'], 
+                + ['../qlearning/QLearner.cpp','../qlearning/array_helper.cpp'], 
 #                glob.glob('ClConvolve/OpenCLHelper/*.h'),
               include_dirs = ['../src','../OpenCLHelper','../qlearning'],
               libraries= libraries,
