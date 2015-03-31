@@ -135,7 +135,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
- test/teststringhelper.cpp test/testGtestGlobals.cpp test/testArgsParser.cpp
+ test/teststringhelper.cpp test/testGtestGlobals.cpp 
  src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp

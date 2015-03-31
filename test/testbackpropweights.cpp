@@ -541,18 +541,29 @@ public:
     // ints = [  'inputPlanes', 'inputImageSize', 'numFilters', 'filterSize',
     //    'batchSize', 'biased', 'padZeros', 'instance0', 'instance1' ]
     // import cog_fluent
-    // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
+    // cog_fluent.gov3( 'CompareSpecificArgs', ints = ints, floats = floats )
     // ]]]
     // generated, using cog:
-    int _inputPlanes = 0;
-    int _inputImageSize = 0;
-    int _numFilters = 0;
-    int _filterSize = 0;
-    int _batchSize = 0;
-    int _biased = 0;
-    int _padZeros = 0;
-    int _instance0 = 0;
-    int _instance1 = 0;
+    int _inputPlanes;
+    int _inputImageSize;
+    int _numFilters;
+    int _filterSize;
+    int _batchSize;
+    int _biased;
+    int _padZeros;
+    int _instance0;
+    int _instance1;
+    CompareSpecificArgs() {
+        _inputPlanes = 0;
+        _inputImageSize = 0;
+        _numFilters = 0;
+        _filterSize = 0;
+        _batchSize = 0;
+        _biased = 0;
+        _padZeros = 0;
+        _instance0 = 0;
+        _instance1 = 0;
+    }
     CompareSpecificArgs inputPlanes( int _inputPlanes ) {
         this->_inputPlanes = _inputPlanes;
         return *this;
