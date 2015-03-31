@@ -70,30 +70,55 @@ public:
     // [[[cog
     // cog.outl('// generated using cog:')
     // for astring in strings:
-    //    cog.outl( 'string ' + astring + ' = "";')
+    //    cog.outl( 'string ' + astring + ';')
     // for anint in ints:
-    //    cog.outl( 'int ' + anint + ' = 0;')
+    //    cog.outl( 'int ' + anint + ';')
     // for name in floats:
-    //    cog.outl( 'float ' + name + ' = 0.0f;')
+    //    cog.outl( 'float ' + name + ';')
     // ]]]
     // generated using cog:
-    string dataDir = "";
-    string trainFile = "";
-    string validateFile = "";
-    string netDef = "";
-    string normalization = "";
-    string dataset = "";
-    int numTrain = 0;
-    int numTest = 0;
-    int batchSize = 0;
-    int numEpochs = 0;
-    int dumpTimings = 0;
-    int normalizationExamples = 0;
-    float learningRate = 0.0f;
-    float normalizationNumStds = 0.0f;
+    string dataDir;
+    string trainFile;
+    string validateFile;
+    string netDef;
+    string normalization;
+    string dataset;
+    int numTrain;
+    int numTest;
+    int batchSize;
+    int numEpochs;
+    int dumpTimings;
+    int normalizationExamples;
+    float learningRate;
+    float normalizationNumStds;
     // [[[end]]]
 
     Config() {
+        // [[[cog
+        // cog.outl('// generated using cog:')
+        // for astring in strings:
+        //    cog.outl( astring + ' = "";')
+        // for anint in ints:
+        //    cog.outl( anint + ' = 0;')
+        // for name in floats:
+        //    cog.outl( name + ' = 0.0f;')
+        // ]]]
+        // generated using cog:
+        dataDir = "";
+        trainFile = "";
+        validateFile = "";
+        netDef = "";
+        normalization = "";
+        dataset = "";
+        numTrain = 0;
+        numTest = 0;
+        batchSize = 0;
+        numEpochs = 0;
+        dumpTimings = 0;
+        normalizationExamples = 0;
+        learningRate = 0.0f;
+        normalizationNumStds = 0.0f;
+    // [[[end]]]
         netDef = "10N{linear}";
 //        dataDir = "../data/mnist";
         dataDir = "../data/mnist";
