@@ -138,8 +138,12 @@ else:
 #    print('Probably possible to coerce ClConvolve to work with visual studio 9, and by extension with python 2.x, but maybe easier to just use python 3.x instead?')
 
 runtime_library_dirs = []
+libraries = []
 if osfamily == 'Linux':
     runtime_library_dirs= ['.']
+
+if osfamily == 'Windows':
+    libraries = ['winmm']
 
 if cython_present:
     my_cythonize = cythonize
@@ -185,7 +189,7 @@ ext_modules = [
                 + ['qlearning/QLearner.cpp','qlearning/array_helper.cpp'], 
 #                glob.glob('ClConvolve/OpenCLHelper/*.h'),
               include_dirs = ['../src','../OpenCLHelper','../qlearning'],
-#              libraries=["ClConvolve" + get_so_suffix() ],
+              libraries= libraries,
               extra_compile_args=compile_options,
         define_macros = [('ClConvolve_EXPORTS',1),('OpenCLHelper_EXPORTS',1)],
 #              extra_objects=['cClConvolve.pxd'],
