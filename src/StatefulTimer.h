@@ -8,9 +8,11 @@
 
 #include <iostream>
 
-#if (_MSC_VER == 1500) // visual studio 2008
-#define MSVC2008
-#include <ctime>
+#if (_MSC_VER == 1500 || _MSC_VER == 1600 ) // visual studio 2008 or 2010
+#define WINNOCHRONO
+//#include <ctime>
+#define NOMINMAX // prevents errors compiling std::max and std::min
+#include <Windows.h>
 #else
 #include <chrono>
 #endif
@@ -25,18 +27,16 @@ public:
         static StatefulTimer *_instance = new StatefulTimer();
         return _instance;
     }
-    #ifdef MSVC2008
-    float last;
+    #ifdef WINNOCHRONO
+    DWORD last;
     #else
     std::chrono::time_point<std::chrono::high_resolution_clock> last;
     #endif
     std::map< std::string, float > timeByState;
     std::string prefix; // = "";
     StatefulTimer() : prefix("") {
-        #ifdef MSVC2008
-        time_t thistime;
-        time(&thistime);
-        last = (float)thistime;
+        #ifdef WINNOCHRONO
+        last = timeGetTime();
         #else
          last = std::chrono::high_resolution_clock::now();
         #endif
@@ -75,10 +75,9 @@ public:
     }
     void _timeCheck( std::string state ) {
         state = prefix + state;
-        #ifdef MSVC2008
-        time_t thistime;
-        time(&thistime);
-        float timemilliseconds = thistime * 1000.0f;
+        #ifdef WINNOCHRONO
+        DWORD thistime = timeGetTime();
+		DWORD timemilliseconds = thistime - last;
         #else
        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
        std::chrono::duration<float> change = thistime - last;
@@ -89,8 +88,8 @@ public:
 //        } else {
 //            timeByState[state] = timemilliseconds;
 //        }
-        #ifdef MSVC2008
-        last = (float)thistime;
+        #ifdef WINNOCHRONO
+        last = thistime;
         #else
         last = thistime;
         #endif

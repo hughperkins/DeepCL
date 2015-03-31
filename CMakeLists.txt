@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
   set( ON_LINUX 1 )
 endif()
+if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
+  set( ON_WINDOWS 1 )
+endif()
 
 if (NOT CMAKE_BUILD_TYPE)
     message("Setting build type to 'RelWithDebInfo'")
@@ -31,6 +34,10 @@ include_directories( OpenCLHelper/clew/include )
 if( ON_LINUX )
 link_libraries(dl)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+endif()
+
+if( ON_WINDOWS)
+link_libraries(winmm) # needed for timeGetTime
 endif()
 
 set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp

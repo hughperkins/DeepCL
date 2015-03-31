@@ -5,48 +5,112 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <iostream>
+#include <stdexcept>
 
-#include "gtest/gtest.h"
-#include "test/gtest_supp.h"
-#include "test/TestArgsParser.h"
+#include "stringhelper.h"
 #include "GtestGlobals.h"
+
+#include "TestArgsParser.h"
 
 using namespace std;
 
-TEST( testArgsParser, basic ) {
-    int myvalue = 3;
-    TestArgsParser argsParser;
-    argsParser._arg( "myvalue", &myvalue );
-    argsParser._go();
-    cout << "myvalue: " << myvalue << endl;
+TestArgsParser::TestArgsParser() :
+    argc(GtestGlobals::instance()->argc),
+    argv(GtestGlobals::instance()->argv) {
 }
-
-TEST( testArgsParser, static ) {
-    GtestGlobals::instance()->argc = 2;
-    GtestGlobals::instance()->argv = new char *[2];
-    GtestGlobals::instance()->argv[0] = new char[255];    
-    GtestGlobals::instance()->argv[1] = new char[255];    
-    strcpy_safe( GtestGlobals::instance()->argv[0], "./unittests", 20 );
-    strcpy_safe( GtestGlobals::instance()->argv[1], "myvalue=5", 20 );
-
-    int myvalue = 3;
-    TestArgsParser::arg( "myvalue", &myvalue );
-    TestArgsParser::go();
-    cout << "myvalue: " << myvalue << endl;
-
-    myvalue = 3;
-    bool threw = false;
-    try {
-        TestArgsParser::go();
-    } catch( runtime_error e ) {
-        threw = true;
+void TestArgsParser::_arg( std::string key, int *p_value ) {
+    args.push_back( new ArgInt( key, p_value ) );
+}
+void TestArgsParser::_arg( std::string key, std::string *p_value ) {
+    args.push_back( new ArgString( key, p_value ) );
+}
+void TestArgsParser::_arg( std::string key, bool *p_value ) {
+    args.push_back( new ArgBool( key, p_value ) );
+}
+void TestArgsParser::_arg( std::string key, float *p_value ) {
+    args.push_back( new ArgFloat( key, p_value ) );
+}
+void TestArgsParser::_printAvailableKeys() {
+    cout << "Available keys:" << endl;
+    for( vector< Arg * >::iterator it = args.begin(); it != args.end(); it++ ) {
+        cout << "   " << (*it)->key << endl;
     }
-    EXPECT_EQ( true, threw );
-//    cout << "myvalue: " << myvalue << endl;
-
-    myvalue = 3;
-    TestArgsParser::arg( "myvalue", &myvalue );
-    TestArgsParser::go();
-    cout << "myvalue: " << myvalue << endl;
 }
+void TestArgsParser::_printValues() {
+    for( vector< Arg * >::iterator it = args.begin(); it != args.end(); it++ ) {
+        cout << "   " << (*it)->key << "=" << (*it)->valueAsString() << endl;
+    }
+}
+void TestArgsParser::_go() {
+    if( argc == 2 && string( argv[1] ) == "--help" ) {
+        _printAvailableKeys();
+        return;
+    }
+    for( int i = 1; i < argc; i++ ) {
+        bool found = false;
+        string thisKeyValue = string( argv[i] );
+        vector<string> splitKeyValue = split( thisKeyValue, "=" );
+        if( splitKeyValue.size() != 2 ) {
+            throw runtime_error( "argument [" + thisKeyValue + "] not in format [key]=[value]" );
+        }
+        string key = splitKeyValue[0];
+        string valueString = splitKeyValue[1];
+        for( vector< Arg * >::iterator it = args.begin(); it != args.end(); it++ ) {
+            if( (*it)->key == key ) {
+                found = true;
+                (*it)->apply( valueString );
+            }
+        }
+        if( !found ) {
+            _printAvailableKeys();
+            cout << endl;
+            throw runtime_error("key [" + key + "] not found");
+        }
+    }
+}
+void ArgInt::apply( std::string stringValue ) {
+    *p_int = atoi( stringValue );
+}
+void ArgString::apply( std::string stringValue ) {
+    *p_value = stringValue;
+}
+void ArgBool::apply( std::string stringValue ) {
+    *p_value = atoi( stringValue );
+}
+void ArgFloat::apply( std::string stringValue ) {
+    *p_value = atof( stringValue );
+}
+string ArgInt::valueAsString() {
+    return toString( *p_int );
+}
+string ArgFloat::valueAsString() {
+    return toString( *p_value );
+}
+string ArgBool::valueAsString() {
+    return toString( *p_value );
+}
+string ArgString::valueAsString() {
+    return toString( *p_value );
+}
+TestArgsParser *TestArgsParser::instance() {
+    static TestArgsParser *thisInstance = new TestArgsParser();
+    return thisInstance;
+}
+void TestArgsParser::arg( std::string key, int *p_value ) {
+    instance()->_arg( key, p_value );
+}
+void TestArgsParser::arg( std::string key, std::string *p_value ) {
+    instance()->_arg( key, p_value );
+}
+void TestArgsParser::arg( std::string key, bool *p_value ) {
+    instance()->_arg( key, p_value );
+}
+void TestArgsParser::arg( std::string key, float *p_value ) {
+    instance()->_arg( key, p_value );
+}
+void TestArgsParser::go() {
+    instance()->_go();
+    instance()->args.clear();
+}
+
 

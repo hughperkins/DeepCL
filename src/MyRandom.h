@@ -8,21 +8,25 @@
 
 #include <random>
 
-#if (_MSC_VER == 1500) // visual studio 2008
-#define MSVC2008
+#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
+#define TR1RANDOM
+#endif
+
+#if (_MSC_VER == 1500 || _MSC_VER == 1600 ) // visual studio 2008
+#define NOCHRONO
 #include <ctime>
 #else
 #include <chrono>
 #endif
 
 class MyRandom {
-    #ifdef MSVC2008
+    #ifdef TR1RANDOM
     std::tr1::mt19937 random;
     #else
     std::mt19937 random;
     #endif
     MyRandom() {
-        #ifdef MSVC2008
+        #ifdef NOCHRONO
         time_t thistime;
         time(&thistime);
         int time = (int)thistime;
@@ -41,7 +45,7 @@ public:
         return thisinstance;
     }
     static float uniform() {
-        #ifdef MSVC2008
+        #ifdef TR1RANDOM
         return ( instance()->random() % 10000001 ) / 10000000.0f;
         #else
         float maxrand = (float)std::mt19937::max();
