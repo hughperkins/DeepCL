@@ -49,3 +49,7 @@ data/cifar10
 # vi
 *.swp
 
+# PyClConvolve
+dist/
+*.egg-info/
+

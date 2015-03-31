@@ -4,7 +4,7 @@ Python wrapper for  [ClConvolve](https://github.com/hughperkins/ClConvolve)
 
 # How to use
 
-See [test_clconvolve.py](https://github.com/hughperkins/PyClConvolve/blob/master/test_clconvolve.py) for an example of:
+See [test_clconvolve.py](PyClConvolve/test_clconvolve.py) for an example of:
 
 * creating a network, with several layers
 * loading mnist data
@@ -17,11 +17,43 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 
 # Notes on how the wrapper works
 
-* [cClConvolve.pxd](https://github.com/hughperkins/PyClConvolve/blob/master/cClConvolve.pxd) contains the definitions of the underlying ClConvolve c++ libraries classes
-* [PyClConvolve.pyx](https://github.com/hughperkins/PyClConvolve/blob/master/PyClConvolve.pyx) contains Cython wrapper classes around the underlying c++ classes
-* [setup.py](https://github.com/hughperkins/PyClConvolve/blob/master/setup.py) is a setup file for compiling the `PyClConvolve.pyx` Cython file
+* [cClConvolve.pxd](PyClConvolve/cClConvolve.pxd) contains the definitions of the underlying ClConvolve c++ libraries classes
+* [PyClConvolve.pyx](PyClConvolve/PyClConvolve.pyx) contains Cython wrapper classes around the underlying c++ classes
+* [setup.py](PyClConvolve/setup.py) is a setup file for compiling the `PyClConvolve.pyx` Cython file
 
-# To build
+# To install from pip
+
+```bash
+pip install PyClConvolve 
+```
+
+# To build directly
+
+## Pre-requisites:
+
+### Compillers
+* on Windows:
+  * Python 2.7 build: need [Visual Studio 2008 for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266) from Microsoft
+  * Python 3.4 build: need Visual Studio 2010, eg [Visual C++ 2010 Express](https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
+
+### Python packages
+
+* Need the following python packages installed, eg via `pip install`:
+  * cython
+
+## To build:
+
+```bash
+cd PyClConvolve
+python setup.py build_ext -i
+```
+
+# Considerations for Python wrapper developers
+
+* By default, cython disables ctrl-c, so need to handle this ourselves somehow, eg see NetLearner.learn for an example
+* To handle ctrl-c, we need to use `nogil`, which means we cant use the `except +` syntax, I think, hence need to handle this ourselves too :-)  see again Netlearner.learn for an example
+
+# To build, obsolete method
 
 Should probably more or less build on Windows too, but here are instructions for linux for now:
 
