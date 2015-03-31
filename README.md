@@ -199,7 +199,7 @@ Example usage:
   * shuffles the training set, creating `training-shuffled-dat.mat` and `training-shuffled-cat.mat`
   * draws 1000 test samples, and writes them to `testing-sampled-dat.mat` and `testing-sampled-cat.mat`
 ```bash
-./prepare-norb
+./prepare-norb ../data/norb
 ```
 
 ## File types
@@ -253,7 +253,7 @@ Example usage:
 * Download the data files from [NORB datafiles](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/), and place in `data/norb`, decompressed, ie (g)unzipped
 * Pre-process, to shuffle the training samples, and draw 1000 testing samples:
 ```bash
-./prepare-norb
+./prepare-norb ../data/norb
 ```
 * Run training, eg, based on LeCun's lenet-7:
 ```bash
