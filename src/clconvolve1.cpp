@@ -61,36 +61,68 @@ public:
     // [[[cog
     // cog.outl('// generated using cog:')
     // for astring in strings:
-    //    cog.outl( 'string ' + astring + ' = "";')
+    //    cog.outl( 'string ' + astring + ';')
     // for anint in ints:
-    //    cog.outl( 'int ' + anint + ' = 0;')
+    //    cog.outl( 'int ' + anint + ';')
     // for name in floats:
-    //    cog.outl( 'float ' + name + ' = 0.0f;')
+    //    cog.outl( 'float ' + name + ';')
     // ]]]
     // generated using cog:
-    string dataDir = "";
-    string trainFile = "";
-    string validateFile = "";
-    string netDef = "";
-    string weightsFile = "";
-    string normalization = "";
-    string dataset = "";
-    int numTrain = 0;
-    int numTest = 0;
-    int batchSize = 0;
-    int numEpochs = 0;
-    int loadWeights = 0;
-    int dumpTimings = 0;
-    int multiNet = 0;
-    int loadOnDemand = 0;
-    int fileReadBatches = 0;
-    int normalizationExamples = 0;
-    float learningRate = 0.0f;
-    float annealLearningRate = 0.0f;
-    float normalizationNumStds = 0.0f;
+    string dataDir;
+    string trainFile;
+    string validateFile;
+    string netDef;
+    string weightsFile;
+    string normalization;
+    string dataset;
+    int numTrain;
+    int numTest;
+    int batchSize;
+    int numEpochs;
+    int loadWeights;
+    int dumpTimings;
+    int multiNet;
+    int loadOnDemand;
+    int fileReadBatches;
+    int normalizationExamples;
+    float learningRate;
+    float annealLearningRate;
+    float normalizationNumStds;
     // [[[end]]]
 
     Config() {
+        // [[[cog
+        // cog.outl('// generated using cog:')
+        // for astring in strings:
+        //    cog.outl( astring + ' = "";')
+        // for anint in ints:
+        //    cog.outl( anint + ' = 0;')
+        // for name in floats:
+        //    cog.outl( name + ' = 0.0f;')
+        // ]]]
+        // generated using cog:
+        dataDir = "";
+        trainFile = "";
+        validateFile = "";
+        netDef = "";
+        weightsFile = "";
+        normalization = "";
+        dataset = "";
+        numTrain = 0;
+        numTest = 0;
+        batchSize = 0;
+        numEpochs = 0;
+        loadWeights = 0;
+        dumpTimings = 0;
+        multiNet = 0;
+        loadOnDemand = 0;
+        fileReadBatches = 0;
+        normalizationExamples = 0;
+        learningRate = 0.0f;
+        annealLearningRate = 0.0f;
+        normalizationNumStds = 0.0f;
+        // [[[end]]]
+
         netDef = "RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N";
 //        dataDir = "../data/mnist";
         dataDir = "../data/mnist";
