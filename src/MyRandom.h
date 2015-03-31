@@ -8,6 +8,8 @@
 
 #include <random>
 
+#include "mt19937defs.h"
+
 #if (_MSC_VER == 1500 || _MSC_VER == 1600  )
 #define TR1RANDOM
 #endif
@@ -20,11 +22,11 @@
 #endif
 
 class MyRandom {
-    #ifdef TR1RANDOM
-    std::tr1::mt19937 random;
-    #else
-    std::mt19937 random;
-    #endif
+//    #ifdef TR1RANDOM
+    MT19937 random;
+//    #else
+//    std::mt19937 random;
+//    #endif
     MyRandom() {
         #ifdef NOCHRONO
         time_t thistime;
@@ -44,13 +46,18 @@ public:
         static MyRandom *thisinstance = new MyRandom();
         return thisinstance;
     }
+    float _uniform() {
+//        float maxrand = (float)random.max();
+        return random() / (float)random.max();
+    }
     static float uniform() {
-        #ifdef TR1RANDOM
-        return ( instance()->random() % 10000001 ) / 10000000.0f;
-        #else
-        float maxrand = (float)std::mt19937::max();
-        return instance()->random() / maxrand;
-        #endif
+//        #ifdef TR1RANDOM
+//        return ( instance()->random() % 10000001 ) / 10000000.0f;
+//        #else
+//        float maxrand = (float)instance()->random.max();
+//        return instance()->random() / maxrand;
+        return instance()->_uniform();
+//        #endif
     }
     static int uniformInt( int minvalue, int maxvalue ) {
         return ( instance()->random() % ( maxvalue - minvalue + 1 ) ) + minvalue;

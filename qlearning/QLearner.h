@@ -10,6 +10,7 @@
 #include <random>
 
 #include "Scenario.h"
+#include "mt19937defs.h"
 
 #include "ClConvolveDllExport.h"
 
@@ -47,7 +48,7 @@ protected:
 
     float *perception;
 
-    std::mt19937 myrand;
+    MT19937 myrand;
 
     std::vector< Experience * > history;
     Scenario *scenario; // NOT belong to us, dont delete

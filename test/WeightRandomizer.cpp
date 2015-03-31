@@ -12,12 +12,12 @@
 using namespace std;
 using namespace ClConvolve;
 
-#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
-#define TR1RANDOM
-typedef std::tr1::mt19937 MT19937;
-#else
-typedef std::mt19937 MT19937;
-#endif
+//#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
+//#define TR1RANDOM
+//typedef std::tr1::mt19937 MT19937;
+//#else
+//typedef std::mt19937 MT19937;
+//#endif
 
 #undef VIRTUAL
 #define VIRTUAL 
@@ -35,7 +35,7 @@ STATIC void WeightRandomizer::randomize( MT19937 &random, float *values, int num
         values[i] = random() / (float)random.max() * (maxvalue-minvalue) - maxvalue;
     }
 }
-STATIC std::mt19937 WeightRandomizer::randomize( float *values, int numValues, float minvalue, float maxvalue ) {
+STATIC MT19937 WeightRandomizer::randomize( float *values, int numValues, float minvalue, float maxvalue ) {
     MT19937 random;
     random.seed(0); // so always gives same results
     randomize( random, values, numValues, minvalue, maxvalue );
@@ -55,13 +55,13 @@ STATIC void WeightRandomizer::randomizeInts( int *values, int numValues, int min
         values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
     }
 }
-STATIC std::mt19937 WeightRandomizer::randomize( ClConvolve::vfloat &values, float minvalue, float maxvalue ) {
+STATIC MT19937 WeightRandomizer::randomize( ClConvolve::vfloat &values, float minvalue, float maxvalue ) {
     MT19937 random;
     random.seed(0); // so always gives same results
     randomize( random, values.begin(), values.end(), minvalue, maxvalue );
     return random;
 }
-template< typename It > STATIC std::mt19937 WeightRandomizer::randomize( It begin, It end, float minvalue, float maxvalue ) {
+template< typename It > STATIC MT19937 WeightRandomizer::randomize( It begin, It end, float minvalue, float maxvalue ) {
     MT19937 random;
     random.seed(0); // so always gives same results
     randomize( random, begin, end, minvalue, maxvalue );
