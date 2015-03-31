@@ -8,8 +8,10 @@
 
 #include <string>
 
-void arrayCopy( float *dest, float const*src, int N );
-void arrayZero( float *array, int N );
-std::string toString( float const*array, int N );
+#include "ClConvolveDllExport.h"
+
+ClConvolve_EXPORT void arrayCopy( float *dest, float const*src, int N );
+ClConvolve_EXPORT void arrayZero( float *array, int N );
+ClConvolve_EXPORT std::string toString( float const*array, int N );
 
 

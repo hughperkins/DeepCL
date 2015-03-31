@@ -11,6 +11,8 @@
 
 #include "Scenario.h"
 
+#include "ClConvolveDllExport.h"
+
 class NeuralNet;
 
 class Experience {
@@ -22,7 +24,7 @@ public:
     float *after;
 };
 
-class QLearner {
+class ClConvolve_EXPORT QLearner {
 public:
     // following 4 parameters are user-configurable:
     float lambda; // means: how far into the future do we look? (any number from 0.0 to 1.0 is possible)
