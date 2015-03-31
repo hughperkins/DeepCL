@@ -149,16 +149,25 @@ public:
     // floats= []
     // ints = ['batchSize', 'numPlanes', 'imageSize', 'poolingSize', 'instance0', 'instance1', 'padZeros' ]
     // import cog_fluent
-    // cog_fluent.gov2( 'CompareSpecificArgs', ints = ints, floats = floats )
+    // cog_fluent.gov3( 'CompareSpecificArgs', ints = ints, floats = floats )
     // ]]]
     // generated, using cog:
-    int _batchSize = 0;
-    int _numPlanes = 0;
-    int _imageSize = 0;
-    int _poolingSize = 0;
-    int _instance0 = 0;
-    int _instance1 = 0;
-    int _padZeros = 0;
+    int _batchSize;
+    int _numPlanes;
+    int _imageSize;
+    int _poolingSize;
+    int _instance0;
+    int _instance1;
+    int _padZeros;
+    CompareSpecificArgs() {
+        _batchSize = 0;
+        _numPlanes = 0;
+        _imageSize = 0;
+        _poolingSize = 0;
+        _instance0 = 0;
+        _instance1 = 0;
+        _padZeros = 0;
+    }
     CompareSpecificArgs batchSize( int _batchSize ) {
         this->_batchSize = _batchSize;
         return *this;

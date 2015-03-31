@@ -23,19 +23,31 @@ public:
     // ints = ['batchSize','imageSize','numLayers','filterSize','numFilters', 'numEpochs', 'poolingSize',
     // 'numCats', 'softMax' ]
     // import cog_fluent
-    // cog_fluent.go( 'TestArgs', ints = ints, floats = floats )
+    // cog_fluent.go1b( 'TestArgs', ints = ints, floats = floats )
     // ]]]
     // generated, using cog:
-    int batchSize = 0;
-    int imageSize = 0;
-    int numLayers = 0;
-    int filterSize = 0;
-    int numFilters = 0;
-    int numEpochs = 0;
-    int poolingSize = 0;
-    int numCats = 0;
-    int softMax = 0;
-    float learningRate = 0;
+    int batchSize;
+    int imageSize;
+    int numLayers;
+    int filterSize;
+    int numFilters;
+    int numEpochs;
+    int poolingSize;
+    int numCats;
+    int softMax;
+    float learningRate;
+    TestArgs() {
+        batchSize = 0;
+        imageSize = 0;
+        numLayers = 0;
+        filterSize = 0;
+        numFilters = 0;
+        numEpochs = 0;
+        poolingSize = 0;
+        numCats = 0;
+        softMax = 0;
+        learningRate = 0;
+    }
     TestArgs BatchSize( int _batchSize ) {
         this->batchSize = _batchSize;
         return *this;

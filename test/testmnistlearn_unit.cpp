@@ -81,16 +81,25 @@ void normalize( float ***images, int N, int imageSize, double mean, double thism
 
 class Config {
 public:
-    string dataDir = "../data/mnist";
-    string trainSet = "train";
-    string testSet = "t10k";
-    int numTrain = 60000;
-    int numTest = 10000;
-    int batchSize = 128;
-    int numEpochs = 2;
-    float learningRate = 0.001f;
-    int biased = 1;
+    string dataDir;
+    string trainSet;
+    string testSet;
+    int numTrain;
+    int numTest;
+    int batchSize;
+    int numEpochs;
+    float learningRate;
+    int biased;
     Config() {
+        dataDir = "../data/mnist";
+        trainSet = "train";
+        testSet = "t10k";
+        numTrain = 60000;
+        numTest = 10000;
+        batchSize = 128;
+        numEpochs = 2;
+        learningRate = 0.001f;
+        biased = 1;
     }
 };
 

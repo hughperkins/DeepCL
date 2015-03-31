@@ -16,10 +16,10 @@ using namespace std;
 using namespace SpeedTemplates;
 
 TEST( testSpeedTemplates, basicsubstitution ) {
-    string source = R"DELIM(
-        This is my {{avalue}} template.  It's {{secondvalue}}...
-        Today's weather is {{weather}}.
-    )DELIM";
+    string source = "\n"
+"        This is my {{avalue}} template.  It's {{secondvalue}}...\n"
+"        Today's weather is {{weather}}.\n"
+"    \n";
 
     Template mytemplate( source );
     mytemplate.setValue( "avalue", 3 );
@@ -27,16 +27,16 @@ TEST( testSpeedTemplates, basicsubstitution ) {
     mytemplate.setValue( "weather", "rain" );
     string result = mytemplate.render();
     cout << result << endl;
-    string expectedResult = R"DELIM(
-        This is my 3 template.  It's 12.123...
-        Today's weather is rain.
-    )DELIM";
+    string expectedResult = "\n"
+"        This is my 3 template.  It's 12.123...\n"
+"        Today's weather is rain.\n"
+"    \n";
     EXPECT_EQ( expectedResult, result );
 }
 TEST( testSpeedTemplates, namemissing ) {
-    string source = R"DELIM(
-        This is my {{avalue}} template.
-    )DELIM";
+    string source = "\n"
+"        This is my {{avalue}} template.\n"
+"    \n";
 
     Template mytemplate( source );
     bool threw = false;
@@ -49,51 +49,51 @@ TEST( testSpeedTemplates, namemissing ) {
     EXPECT_EQ( true, threw );
 }
 TEST( testSpeedTemplates, loop ) {
-    string source = R"DELIM(
-        {% for i in range(its) %}
-            a[{{i}}] = image[{{i}}];
-        {% endfor %}
-    )DELIM";
+    string source = "\n"
+"        {% for i in range(its) %}\n"
+"            a[{{i}}] = image[{{i}}];\n"
+"        {% endfor %}\n"
+"    \n";
 
     Template mytemplate( source );
     mytemplate.setValue( "its", 3 );
     string result = mytemplate.render();
     cout << result << endl;
-    string expectedResult = R"DELIM(
-        
-            a[0] = image[0];
-        
-            a[1] = image[1];
-        
-            a[2] = image[2];
-        
-    )DELIM";
+    string expectedResult = "\n"
+"        \n"
+"            a[0] = image[0];\n"
+"        \n"
+"            a[1] = image[1];\n"
+"        \n"
+"            a[2] = image[2];\n"
+"        \n"
+"    \n";
     EXPECT_EQ( expectedResult, result );
 }
 
 TEST( testSpeedTemplates, nestedloop ) {
-    string source = R"DELIM(
-{% for i in range(its) %}a[{{i}}] = image[{{i}}];
-{% for j in range(2) %}b[{{j}}] = image[{{j}}];
-{% endfor %}{% endfor %}
-)DELIM";
+    string source = "\n"
+"{% for i in range(its) %}a[{{i}}] = image[{{i}}];\n"
+"{% for j in range(2) %}b[{{j}}] = image[{{j}}];\n"
+"{% endfor %}{% endfor %}\n"
+"";
 
     Template mytemplate( source );
     mytemplate.setValue( "its", 3 );
     string result = mytemplate.render();
     cout << "[" << result << "]" << endl;
-    string expectedResult = R"DELIM(
-a[0] = image[0];
-b[0] = image[0];
-b[1] = image[1];
-a[1] = image[1];
-b[0] = image[0];
-b[1] = image[1];
-a[2] = image[2];
-b[0] = image[0];
-b[1] = image[1];
-
-)DELIM";
+    string expectedResult = "\n"
+"a[0] = image[0];\n"
+"b[0] = image[0];\n"
+"b[1] = image[1];\n"
+"a[1] = image[1];\n"
+"b[0] = image[0];\n"
+"b[1] = image[1];\n"
+"a[2] = image[2];\n"
+"b[0] = image[0];\n"
+"b[1] = image[1];\n"
+"\n"
+"";
     EXPECT_EQ( expectedResult, result );
 }
 

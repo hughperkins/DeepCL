@@ -23,14 +23,13 @@ void CopyBuffer::copy( OpenCLHelper *cl, CLWrapper *sourceWrapper, float *target
     targetWrapper->createOnDevice();
 
     // now copy it, via a kernel
-    const string kernelSource = R"DELIM(
-        kernel void copy( int N, global float const *source, global float *dest ) {
-            #define globalId ( get_global_id(0) )
-            if( globalId < N ) {
-                dest[globalId] = source[globalId];
-            }
-        }
-    )DELIM";
+    const string kernelSource = "\n"
+        "kernel void copy( int N, global float const *source, global float *dest ) {\n"
+            "#define globalId ( get_global_id(0) )\n"
+            "if( globalId < N ) {\n"
+             "   dest[globalId] = source[globalId];\n"
+            "}\n"
+        "}\n";
     CLKernel *kernel = cl->buildKernelFromString( kernelSource, "copy", "" );
     kernel->in( bufferSize )->in( sourceWrapper )->out( targetWrapper );
     int workgroupSize = 32;
@@ -51,14 +50,13 @@ void CopyBuffer::copy( OpenCLHelper *cl, CLWrapper *sourceWrapper, int *target )
     targetWrapper->createOnDevice();
 
     // now copy it, via a kernel
-    const string kernelSource = R"DELIM(
-        kernel void copy( int N, global int const *source, global int *dest ) {
-            #define globalId ( get_global_id(0) )
-            if( globalId < N ) {
-                dest[globalId] = source[globalId];
-            }
-        }
-    )DELIM";
+    const string kernelSource = "\n"
+        "kernel void copy( int N, global int const *source, global int *dest ) {\n"
+          "  #define globalId ( get_global_id(0) )\n"
+          "  if( globalId < N ) {\n"
+          "      dest[globalId] = source[globalId];\n"
+          "  }\n"
+       " }\n";
     CLKernel *kernel = cl->buildKernelFromString( kernelSource, "copy", "" );
     kernel->in( bufferSize )->in( sourceWrapper )->out( targetWrapper );
     int workgroupSize = 32;
