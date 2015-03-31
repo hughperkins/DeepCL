@@ -27,6 +27,8 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 pip install PyClConvolve 
 ```
 
+* related pypi page: [https://pypi.python.org/pypi/PyClConvolve](https://pypi.python.org/pypi/PyClConvolve)
+
 # To build directly
 
 ## Pre-requisites:
