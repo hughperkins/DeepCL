@@ -18,6 +18,13 @@
 
 #include "NorbLoader.h"
 
+#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
+#define TR1RANDOM
+typedef std::tr1::mt19937 MT19937;
+#else
+typedef std::mt19937 MT19937;
+#endif
+
 using namespace std;
 
 void prepareTraining( string norbDir ) {
@@ -35,10 +42,20 @@ void prepareTraining( string norbDir ) {
     for( int n = 0; n < N; n++ ) {
         sequence.push_back( n );
     }
-    shuffle( sequence.begin(), sequence.end(), std::minstd_rand(0) ); // use seed 0, so repeatable
-//    for( int i = 0; i < 10; i++ ) {
-//        cout << i << "=" << sequence[i] << endl;
-//    }
+	MT19937 random;
+	for( int n = 0; n < N - 1; n++ ) {
+		int range = N - n;
+		int otherIndex = n + ( random() % range );
+		if( otherIndex != n ) {
+			int temp = sequence[n];
+			sequence[n] = sequence[otherIndex];
+			sequence[otherIndex] = temp;
+		}
+	}
+    //random_shuffle( sequence.begin(), sequence.end(), std::minstd_rand(0) ); // use seed 0, so repeatable
+    for( int i = 0; i < 10; i++ ) {
+        cout << i << "=" << sequence[i] << endl;
+    }
     // now sequence is shuffled, and has the numbers 0 to N, each exactly once
     // write out new, shuffled, training set
     int inputCubeSize = numPlanes * imageSize * imageSize;
@@ -96,13 +113,21 @@ void prepareTest( string norbDir, int numSamples ) {
 }
 
 int main( int argc, char *argv[] ) {
-    string norbDir = "../data/norb";
+	if( argc != 2 ) {
+		cout << "usage: " << argv[0] << " [norb data directory]" << endl;
+		return -1;
+	}
+    string norbDir = argv[1];
 
-    cout << "shuffling training set...." << endl;
-    prepareTraining( norbDir );
-    cout << "sampling test set...." << endl;
-    prepareTest( norbDir, 1000 );
-    cout << "done" << endl;
+	try {
+		cout << "shuffling training set...." << endl;
+		prepareTraining( norbDir );
+		cout << "sampling test set...." << endl;
+		prepareTest( norbDir, 1000 );
+		cout << "done" << endl;
+	} catch( runtime_error &e ) {
+		cout << "something went wrong: " << e.what() << endl;
+	}
 
     return 0;
 }

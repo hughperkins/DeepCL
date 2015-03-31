@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include <cstring>
+#include <cmath>
 
 #include "NeuralNet.h"
 #include "WeightsPersister.h"
@@ -12,6 +13,14 @@
 #include "test/Sampler.h"
 #include "test/TestArgsParser.h"
 #include "Timer.h"
+
+#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
+#define TR1RANDOM
+typedef std::tr1::mt19937 MT19937;
+#define isnan _isnan
+#else
+typedef std::mt19937 MT19937;
+#endif
 
 using namespace std;
 
@@ -94,17 +103,17 @@ public:
 //void test( int batchSize, float learningRate, int imageSize, int numLayers, int filterSize, int numFilters ) {
 void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     net->setBatchSize( batchSize );
-    mt19937 random;
+    MT19937 random;
     random.seed(0); // so always gives same results
     const int inputsSize = net->getInputCubeSize() * batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
-        inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        inputData[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
     const int resultsSize = net->getLastLayer()->getResultsSize();
     float *expectedResults = new float[resultsSize];
     for( int i = 0; i < resultsSize; i++ ) {
-        expectedResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        expectedResults[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
 
     for (int layerIndex = 1; layerIndex < net->getNumLayers(); layerIndex++ ) {
@@ -115,12 +124,12 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
         int weightsSize = layer->getWeightsSize();
 //        cout << "weightsSize, layer " << 1 << "= " << weightsSize << endl;
         for( int i = 0; i < weightsSize; i++ ) {
-            layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+            layer->weights[i] = random() / (float)random.max() * 0.2f - 0.1f;
         }
         layer->weightsWrapper->copyToDevice();
         int biasWeightsSize = layer->getBiasWeightsSize();
         for( int i = 0; i < biasWeightsSize; i++ ) {
-            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+            layer->biasWeights[i] = random() / (float)random.max() * 0.2f - 0.1f;
         }
     }
 
@@ -294,7 +303,7 @@ void testLabelled( TestArgs args ) {
     const int inputsSize = net->getInputCubeSize() * args.batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
-        inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        inputData[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
     const int resultsSize = net->getLastLayer()->getResultsSize();
     int *labels = new int[args.batchSize];
@@ -308,12 +317,12 @@ void testLabelled( TestArgs args ) {
             int weightsSize = layer->getWeightsSize();
     //        cout << "weightsSize, layer " << 1 << "= " << weightsSize << endl;
             for( int i = 0; i < weightsSize; i++ ) {
-                layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+                layer->weights[i] = random() / (float)random.max() * 0.2f - 0.1f;
             }
             layer->weightsWrapper->copyToDevice();
             int biasWeightsSize = layer->getBiasWeightsSize();
             for( int i = 0; i < biasWeightsSize; i++ ) {
-                layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+                layer->biasWeights[i] = random() / (float)random.max() * 0.2f - 0.1f;
             }
         }
     }

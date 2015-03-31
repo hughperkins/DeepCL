@@ -10,7 +10,7 @@
 
 class LogicalDataCreator {
 public:
-    int index = 0;
+    int index;
     float *data;
     int *labels;
     float *expectedResults;
@@ -20,10 +20,10 @@ public:
     const int imageSize;
     ActivationFunction *fn;
     LogicalDataCreator( ActivationFunction *activationFunction = new TanhActivation() ) :
+			index(0),
             data(new float[8]),
             labels(new int[4]),
             expectedResults(new float[8]),
-            index(0),
             numInputPlanes(2),
             numOutputPlanes(2),
             imageSize(1),
