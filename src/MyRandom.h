@@ -10,11 +10,13 @@
 
 #include "mt19937defs.h"
 
-#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
+//#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
+#ifdef _MSC_VER // make consistent across all msvc versions, so dont have to retest on different msvc versions...
 #define TR1RANDOM
 #endif
 
-#if (_MSC_VER == 1500 || _MSC_VER == 1600 ) // visual studio 2008
+//#if (_MSC_VER == 1500 || _MSC_VER == 1600 ) // visual studio 2008
+#ifdef _MSC_VER // make consistent across all msvc versions, so dont have to retest on different msvc versions...
 #define NOCHRONO
 #include <ctime>
 #else

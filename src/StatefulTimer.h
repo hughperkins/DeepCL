@@ -8,7 +8,8 @@
 
 #include <iostream>
 
-#if (_MSC_VER == 1500 || _MSC_VER == 1600 ) // visual studio 2008 or 2010
+//#if (_MSC_VER == 1500 || _MSC_VER == 1600 ) // visual studio 2008 or 2010
+#ifdef _MSC_VER // make consistent across all msvc versions, so dont have to retest on different msvc versions...
 #define WINNOCHRONO
 //#include <ctime>
 #define NOMINMAX // prevents errors compiling std::max and std::min
