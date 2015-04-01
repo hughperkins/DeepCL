@@ -1,3 +1,9 @@
+# Copyright Hugh Perkins 2015 hughperkins at gmail
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License, 
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+# obtain one at http://mozilla.org/MPL/2.0/.
+
 #from distutils.core import setup
 import os
 import os.path
@@ -182,8 +188,8 @@ ext_modules = [
 #        runtime_library_dirs=runtime_library_dirs
 ##        language='c++'
 #    ),
-    Extension("PyClConvolve",
-              sources=["PyClConvolve.pyx", 'CyWrappers.cpp'] 
+    Extension("PyDeepCL",
+              sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
                 + openclhelpersources
                 + list(map( lambda name : '../src/' + name, clconvolve_sources))
                 + ['../qlearning/QLearner.cpp','../qlearning/array_helper.cpp'], 
@@ -206,7 +212,7 @@ setup(
   author_email = "hughperkins@gmail.com",
   description = 'python wrapper for ClConvolve deep convolutional neural network library for OpenCL',
   license = 'MPL',
-  url = 'https://github.com/hughperkins/PyClConvolve',
+  url = 'https://github.com/hughperkins/DeepCL',
   long_description = read('README.rst'),
   classifiers = [
     'Development Status :: 4 - Beta',
@@ -215,7 +221,7 @@ setup(
   ],
   install_requires = ['Cython>=0.22','cogapp>=2.4','future>=0.14.3'],
   tests_require = ['nose>=1.3.4'],
-  scripts = ['test_clconvolve.py','test_lowlevel.py'],
+  scripts = ['test_deepcl.py','test_lowlevel.py'],
  # modules = libraries,
 #  libraries = libraries,
   ext_modules = my_cythonize( ext_modules),

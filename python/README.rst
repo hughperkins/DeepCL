@@ -1,3 +1,30 @@
+.. raw:: html
+
+   <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+   <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+**Table of Contents** *generated with
+`DocToc <https://github.com/thlorenz/doctoc>`__*
+
+-  `PyClConvolve <#pyclconvolve>`__
+-  `How to use <#how-to-use>`__
+-  `Notes on how the wrapper works <#notes-on-how-the-wrapper-works>`__
+-  `To install from pip <#to-install-from-pip>`__
+-  `To build directly <#to-build-directly>`__
+-  `Pre-requisites: <#pre-requisites>`__
+
+   -  `Compilers <#compilers>`__
+   -  `Python packages <#python-packages>`__
+
+-  `To build: <#to-build>`__
+-  `Considerations for Python wrapper
+   developers <#considerations-for-python-wrapper-developers>`__
+-  `To build, obsolete method <#to-build-obsolete-method>`__
+
+.. raw:: html
+
+   <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 PyClConvolve
 ============
 
@@ -36,7 +63,7 @@ To install from pip
 
 .. code:: bash
 
-    pip install PyClConvolve 
+    pip install DeepCL 
 
 -  related pypi page: https://pypi.python.org/pypi/PyClConvolve
 
@@ -67,7 +94,7 @@ To build:
 
 .. code:: bash
 
-    cd PyClConvolve
+    cd python
     python setup.py build_ext -i
 
 Considerations for Python wrapper developers
@@ -78,41 +105,4 @@ Considerations for Python wrapper developers
 -  To handle ctrl-c, we need to use ``nogil``, which means we cant use
    the ``except +`` syntax, I think, hence need to handle this ourselves
    too :-) see again \`Netlearner.learn for an example
-
-To build, obsolete method
-=========================
-
-Should probably more or less build on Windows too, but here are
-instructions for linux for now:
-
--  checkout:
-
-   ::
-
-       git clone --recursive https://github.com/hughperkins/PyClConvolve.git
-
--  build the C++ library:
-
-   ::
-
-       cd ClConvolve
-       mkdir build
-       cd build
-       cmake ..
-       make -j 4
-       cd ../..
-
--  build the Cython modules
-
-   ::
-
-       CFLAGS="-IClConvolve/src -IClConvolve/OpenCLHelper -std=c++11" LDFLAGS="-LClConvolve/build" python setup.py build_ext -i 2>&1 | less
-
--  run one of the example scripts:
-
-   ::
-
-       LD_LIBRARY_PATH=ClConvolve/build python test_clconvolve.py
-       LD_LIBRARY_PATH=ClConvolve/build python test_lowlevel.py
-
 
