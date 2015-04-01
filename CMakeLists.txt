@@ -33,7 +33,7 @@ include_directories( OpenCLHelper/clew/include )
 
 if( ON_LINUX )
 link_libraries(dl)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 
 if( ON_WINDOWS)

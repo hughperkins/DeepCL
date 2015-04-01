@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <cmath>
 #include <iostream>
 
 template<typename T>
@@ -72,7 +73,7 @@ public:
             float diffSquared = diffFromMean * diffFromMean;
             sumSquaredDiff += diffSquared;
         }
-        float stdDev = sqrt( sumSquaredDiff / ( length - 1 ) );
+        float stdDev = (float)std::sqrt( (double)(sumSquaredDiff / ( length - 1 )) );
 
         *p_mean = mean;
         *p_stdDev = stdDev;
@@ -107,7 +108,7 @@ public:
         // get mean of the dataset, and stddev
         float thismin = 0;
         float thismax = 0;
-        float sum = 0;
+//        float sum = 0;
         for( int i = 0; i < length; i++ ) {
             float thisValue = data[i];
             thismin = std::min<float>( thisValue, thismin );
