@@ -73,6 +73,7 @@ OpenCL library to train deep convolutional networks
 - OpenCL
 - Deep convolutional
 - (New!) includes Q-learning module (draft)
+- (New!) Python wrappers available (draft too :-) )
 
 Functionalities:
 * convolutional layers
@@ -104,6 +105,8 @@ Example usage:
   - 3 epochs, 1.5 days per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU (about half as powerful as a GTX780)
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n numepochs=20 multinet=6 learningrate=0.002`
   - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
+
+For Python wrappers, please see [PyClConvolve/README.md](PyClconvolve/README.md)
 
 # Commandline usage
 
@@ -777,7 +780,6 @@ Third-party libraries
 Related projects
 ================
 
-* [PyClConvolve](https://pypi.python.org/pypi/PyClConvolve) Python wrapper for ClConvolve
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
 
 License
