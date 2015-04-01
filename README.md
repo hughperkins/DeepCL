@@ -1,4 +1,4 @@
-  ClConvolve
+  DeepCL
 ==========
 
 Global Contents
@@ -7,7 +7,7 @@ Global Contents
 - [This page](README.md)
 - [Command line usage](Commandline.md)
 - [Neural Net API](NeuralNetAPI.md)
-- [Python wrapper](PyClConvolve/README.md)
+- [Python wrapper](python/README.md)
 - [Formulae notes](Formulae.md)
 - [To build](Build.md)
 - [Testing](Testing.md)
@@ -20,7 +20,7 @@ Page Contents
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [ClConvolve](#clconvolve)
+- [DeepCL](#deepcl)
 - [Validation against standard datasets](#validation-against-standard-datasets)
   - [NORB](#norb)
   - [MNIST](#mnist)
@@ -37,7 +37,7 @@ Page Contents
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-ClConvolve
+DeepCL
 ==========
 
 OpenCL library to train deep convolutional networks
@@ -78,7 +78,7 @@ Example usage:
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n numepochs=20 multinet=6 learningrate=0.002`
   - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
 
-For Python wrappers, please see [PyClConvolve/README.md](PyClconvolve/README.md)
+For Python wrappers, please see [python/README.md](python/README.md)
 
 
 # Validation against standard datasets
@@ -117,7 +117,7 @@ For Python wrappers, please see [PyClConvolve/README.md](PyClconvolve/README.md)
 # Q-learning (draft)
 
 * Started to write a q-learning module
-* Ideally, this will be callable from Python in the future, via [PyClConvolve](https://pypi.python.org/pypi/PyClConvolve)
+* Ideally, this will be callable from Python in the future, via [PyDeepCL](https://pypi.python.org/pypi/PyDeepCL)
 * Look at [ScenarioImage.h](prototyping/qlearning/ScenarioImage.h) and [ScenarioImage.cpp](prototyping/qlearning/ScenarioImage.cpp) for an example scenario we can feed to it
   * [learnScenarioImage.cpp](prototyping/qlearning/learnScenarioImage.cpp) is a corresponding example of how we can learn this
 * The qlearning module is at [QLearner.h](qlearning/QLearner.h), and the interface for scenarios at [Scenario.h](qlearning/Scenario.h)
@@ -127,12 +127,12 @@ For Python wrappers, please see [PyClConvolve/README.md](PyClconvolve/README.md)
 Pre-built binaries are available for Windows-64, for certain releases.  In order to use them you need:
 * [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
 * An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v2.0.2](https://github.com/hughperkins/ClConvolve/releases/tag/v2.0.2)
+* A recent release with Windows binaries is [v2.0.2](https://github.com/hughperkins/DeepCL/releases/tag/v2.0.2)
 
 ## What if it doesn't run?
 
 * Check if you have an OpenCL-enabled device on your system
-  * ideally a GPU, or accelerator, since there is no attempt to optimize ClConvolve for CPUs (at least, not currently, could change, feel free to submit a pull request :-) )
+  * ideally a GPU, or accelerator, since there is no attempt to optimize DeepCL for CPUs (at least, not currently, could change, feel free to submit a pull request :-) )
 * Try running `gpuinfo` (from [OpenCLHelper](https://github.com/hughperkins/OpenCLHelper), but built as part of this project too, for ease of use )
   * it should output at least one OpenCL-enabled device
   * if it doesn't, then you need to make sure you have an OpenCL-enabled device, and that appropriate drivers are installed, and that the ICD is configured appropriately (registry in Windows, and `/etc/OpenCL/vendors` in linux)

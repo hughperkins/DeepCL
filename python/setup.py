@@ -207,7 +207,7 @@ ext_modules = [
 
 setup(
   name = 'DeepCL',
-  version = "1.0.1",
+  version = "1.0.2",
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
   description = 'python wrapper for DeepCL deep convolutional neural network library for OpenCL',

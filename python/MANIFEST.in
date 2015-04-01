@@ -1,4 +1,4 @@
 include ../src/*.h
-include cClConvolve.pxd
+include cDeepCL.pxd
 include ../OpenCLHelper/*.h
 
