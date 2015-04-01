@@ -74,7 +74,7 @@ if( ON_LINUX )
 target_link_libraries( gpuinfo dl )
 endif()
 
-add_library( ClConvolve SHARED ${CLConvolve_sources_prefixed} )
+add_library( DeepCL SHARED ${CLConvolve_sources_prefixed} )
 #    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
 #    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
 
@@ -92,7 +92,7 @@ add_custom_command(
     COMMAND git submodule update --init --force --recursive
 )
 add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
-add_dependencies( ClConvolve git_submodules_update )
+add_dependencies( DeepCL git_submodules_update )
 endif()
 
 find_package(PNG QUIET)
@@ -107,7 +107,7 @@ find_package(PNG REQUIRED)
 link_libraries(${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
-link_libraries(ClConvolve)
+link_libraries(DeepCL)
 
 execute_process( COMMAND python -V ERROR_VARIABLE python_test )
 if( ${python_test} MATCHES "Python 2\\.7\\..*" )
@@ -123,7 +123,7 @@ if(PYTHON_AVAILABLE)
         python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/qlearning/*.h
     )
-    add_dependencies( ClConvolve cog )
+    add_dependencies( DeepCL cog )
 endif(PYTHON_AVAILABLE)
 
 #add_custom_target(
@@ -152,7 +152,7 @@ add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
 #add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
-# target_link_libraries( testmnist-mpi ClConvolve )
+# target_link_libraries( testmnist-mpi DeepCL )
 
 #if( MPI_AVAILABLE )
     #add_definitions(-DMPI_AVAILABLE)
@@ -203,7 +203,7 @@ if( PROTOTYPING )
         prototyping/qlearning/ScenarioImage.cpp )
 endif( PROTOTYPING )
 
-target_link_libraries( unittests ClConvolve )
+target_link_libraries( unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
@@ -214,7 +214,7 @@ target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 #    clfiles
 #    cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
 #)
-#add_dependencies( ClConvolve clfiles )
+#add_dependencies( DeepCL clfiles )
 #else()
 ## no idea how to fix this, for Windows.  If you have any ideas, please send a pull request :-)
 ##add_custom_target( 
