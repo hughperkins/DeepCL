@@ -23,12 +23,13 @@ For examples of using lower-level entrypoints, see
 Notes on how the wrapper works
 ==============================
 
--  `cClConvolve.pxd <PyClConvolve/cClConvolve.pxd>`__ contains the
-   definitions of the underlying ClConvolve c++ libraries classes
--  `PyClConvolve.pyx <PyClConvolve/PyClConvolve.pyx>`__ contains Cython
-   wrapper classes around the underlying c++ classes
--  `setup.py <PyClConvolve/setup.py>`__ is a setup file for compiling
-   the ``PyClConvolve.pyx`` Cython file
+-  `cClConvolve.pxd <https://github.com/hughperkins/ClConvolve/blob/master/PyClConvolve/cClConvolve.pxd>`__
+   contains the definitions of the underlying ClConvolve c++ libraries
+   classes
+-  `PyClConvolve.pyx <https://github.com/hughperkins/ClConvolve/blob/master/PyClConvolve/PyClConvolve.pyx>`__
+   contains Cython wrapper classes around the underlying c++ classes
+-  `setup.py <https://github.com/hughperkins/ClConvolve/blob/master/PyClConvolve/setup.py>`__
+   is a setup file for compiling the ``PyClConvolve.pyx`` Cython file
 
 To install from pip
 ===================
@@ -36,6 +37,8 @@ To install from pip
 .. code:: bash
 
     pip install PyClConvolve 
+
+-  related pypi page: https://pypi.python.org/pypi/PyClConvolve
 
 To build directly
 =================
@@ -71,10 +74,10 @@ Considerations for Python wrapper developers
 ============================================
 
 -  By default, cython disables ctrl-c, so need to handle this ourselves
-   somehow, eg see NetLearner.learn for an example
+   somehow, eg see ``NetLearner.learn`` for an example
 -  To handle ctrl-c, we need to use ``nogil``, which means we cant use
    the ``except +`` syntax, I think, hence need to handle this ourselves
-   too :-) see again Netlearner.learn for an example
+   too :-) see again \`Netlearner.learn for an example
 
 To build, obsolete method
 =========================
