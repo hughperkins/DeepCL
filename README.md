@@ -24,7 +24,6 @@ Page Contents
 - [Validation against standard datasets](#validation-against-standard-datasets)
   - [NORB](#norb)
   - [MNIST](#mnist)
-  - [Test](#test)
 - [Q-learning (draft)](#q-learning-draft)
 - [To use the pre-built binaries](#to-use-the-pre-built-binaries)
   - [What if it doesn't run?](#what-if-it-doesnt-run)
@@ -113,17 +112,6 @@ For Python wrappers, please see [PyClConvolve/README.md](PyClconvolve/README.md)
 * Actually, I think the following gives slightly better test accuracy, about 99.0%, using 17.2seconds per epoch:
 ```bash
 ./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 dataset=mnist
-```
-
-## Test
-
-eg
-```c++
-// (create a net, as above)
-// (train it, as above)
-// test, eg for unsigned char input data:
-BatchLearner<unsigned char> batchLearner( net );
-int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
 
 # Q-learning (draft)

@@ -14,6 +14,7 @@
   - [Loss layer](#loss-layer)
   - [Data format](#data-format)
   - [Train](#train)
+  - [Test](#test)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -191,4 +192,15 @@ netLearner.learn( learningRate );
 // learning is now done :-)
 ```
 
+
+## Test
+
+eg
+```c++
+// (create a net, as above)
+// (train it, as above)
+// test, eg for unsigned char input data:
+BatchLearner<unsigned char> batchLearner( net );
+int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
+```
 
