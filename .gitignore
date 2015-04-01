@@ -55,4 +55,7 @@ dist/
 PyClConvolve/OpenCLHelper/
 PyClConvolve/src/
 PyClConvolve/qlearning/
+python/OpenCLHelper/
+python/src/
+python/qlearning/
 

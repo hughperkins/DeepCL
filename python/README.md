@@ -42,7 +42,7 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 # To install from pip
 
 ```bash
-pip install PyClConvolve 
+pip install DeepCL 
 ```
 
 * related pypi page: [https://pypi.python.org/pypi/PyClConvolve](https://pypi.python.org/pypi/PyClConvolve)
@@ -64,7 +64,7 @@ pip install PyClConvolve
 ## To build:
 
 ```bash
-cd PyClConvolve
+cd python
 python setup.py build_ext -i
 ```
 
@@ -72,32 +72,5 @@ python setup.py build_ext -i
 
 * By default, cython disables ctrl-c, so need to handle this ourselves somehow, eg see `NetLearner.learn` for an example
 * To handle ctrl-c, we need to use `nogil`, which means we cant use the `except +` syntax, I think, hence need to handle this ourselves too :-)  see again `Netlearner.learn for an example
-
-# To build, obsolete method
-
-Should probably more or less build on Windows too, but here are instructions for linux for now:
-
-* checkout:
-```
-git clone --recursive https://github.com/hughperkins/PyClConvolve.git
-```
-* build the C++ library:
-```
-cd ClConvolve
-mkdir build
-cd build
-cmake ..
-make -j 4
-cd ../..
-```
-* build the Cython modules
-```
-CFLAGS="-IClConvolve/src -IClConvolve/OpenCLHelper -std=c++11" LDFLAGS="-LClConvolve/build" python setup.py build_ext -i 2>&1 | less
-```
-* run one of the example scripts:
-```
-LD_LIBRARY_PATH=ClConvolve/build python test_clconvolve.py
-LD_LIBRARY_PATH=ClConvolve/build python test_lowlevel.py
-```
 
 
