@@ -4,7 +4,7 @@
 Global Contents
 ===============
 
-- [Main page](README.md)
+- [This page](README.md)
 - [Command line usage](Commandline.md)
 - [Neural Net API](NeuralNetAPI.md)
 - [Python wrapper](PyClConvolve/README.md)
