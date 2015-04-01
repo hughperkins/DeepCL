@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [convnetjs reference implementation](#convnetjs-reference-implementation)
+  - [Pre-requisites](#pre-requisites)
+  - [To install/configure:](#to-installconfigure)
+  - [To run:](#to-run)
+  - [To convert png into norb .mat format](#to-convert-png-into-norb-mat-format)
+  - [How to run clconvolve, to get comparable results](#how-to-run-clconvolve-to-get-comparable-results)
+  - [Differences between convnetjs and clconvolve (at time of writing)](#differences-between-convnetjs-and-clconvolve-at-time-of-writing)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # convnetjs reference implementation
 
 I'm using (since 13th March 2015) [convnetjs](https://github.com/karpathy/convnetjs) as a reference implementation, to double-check

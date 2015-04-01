@@ -1,0 +1,194 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Neural Net API](#neural-net-api)
+  - [Create a net](#create-a-net)
+  - [Add an input layer](#add-an-input-layer)
+  - [Normalization layer](#normalization-layer)
+  - [Random patch layer](#random-patch-layer)
+  - [Random translations layer](#random-translations-layer)
+  - [Convolutional layers](#convolutional-layers)
+  - [Fully connected layers](#fully-connected-layers)
+  - [Max-pooling layers](#max-pooling-layers)
+  - [Loss layer](#loss-layer)
+  - [Data format](#data-format)
+  - [Train](#train)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Neural Net API
+
+* You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
+```c++
+NeuralNet *net = new NeuralNet();
+net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(1)->imageSize(28) );
+net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
+net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
+net->addLayer( PoolingMaker::instance()->poolingSize(2) );
+net->addLayer( ConvolutionalMaker::instance()->numFilters(16)->filterSize(5)->relu()->biased() );
+net->addLayer( PoolingMaker::instance()->poolingSize(3) );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(150)->imageSize(1)->tanh()->biased() );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->imageSize(1)->linear()->biased() );
+net->addLayer( SoftMaxLossMaker::instance() );
+net->print();
+```
+* The following sections will detail the various layers available, and the options available for each layer type
+* Data must be provided in contiguous, 1d format, see below
+
+## Create a net
+
+```c++
+#include "ClConvolve.h"
+
+NeuralNet *net = new NeuralNet();
+```
+
+## Add an input layer
+
+* You need exactly one input layer
+* This is templated, so you can feed it an array of `unsigned char *`, or `float *`, later, as you wish.  If you want to feed in data as `float *`, then do:
+```c++
+net->addLayer( InputMaker<float>::instance()->numPlanes(10)->imageSize(19) );
+```
+* If you want to feed in data as `unsigned char *`, then do:
+```c++
+net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(10)->imageSize(19) );
+```
+* You need to set the number of input planes, and the image size.
+
+## Normalization layer
+
+* You can add a normalization layer, to translate and scale input data.  Put it just after the input layer, like this:
+```c++
+NeuralNet *net = new NeuralNet();
+net->addLayer( InputMaker<float>::instance()->numPlanes(10)->imageSize(19) );
+net->addLayer( NormalizationMaker::instance()->translate( - mean )->scale( 1.0f / standardDeviation ) );
+// other layers here...
+```
+
+## Random patch layer
+
+* You can add a random patch layer, to cut a patch from each image, in a random location, and train against that
+* You need to specify the patch size, eg on minst, which is 28x28 images, you might use a patch size of 24
+* During training the patch location is chosen randomly, per image, per epoch
+* Size of output image from this layer is the size of the patch
+* During testing, the patch is cut from the centre of the image
+```c++
+net->addLayer( RandomPatchMaker::instance()->patchSize(24) );
+```
+
+## Random translations layer
+
+* You can add a random translations layer, to randomly translate each input image by a random amount, during training
+* During testing, no translation is done
+* If you put eg `translateSize(2)`, then the translation amount will be chosen uniformly from the set `{-2,-1,0,1,2}`, for each axis.
+* Output image from this layer is same size as input image
+```c++
+net->addLayer( RandomTranslationsMaker::instance()->translateSize(2) );
+```
+
+## Convolutional layers
+
+Eg:
+```c++
+net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased() );
+```
+
+* You can change the number of filters, and their size.  If you want, you can use any of the following options:
+  * `->padZeros()`: pad the input image with zeros, so the output image is same size as the input
+  * `->biased()` turn on bias
+  * `->biased(1)` same as `->biased()`
+  * `->biased(0)` turn off bias (default)
+  * `->linear()` choose linear activation
+  * `->relu()` choose relu activation
+  * `->sigmoid()` choose sigmoid activation
+  * `->tanh()` choose tanh activation (current default, but defaults can change...)
+  * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
+* convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
+
+## Fully connected layers
+
+eg:
+```c++
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(2)->imageSize(28) );
+```
+
+Available options:
+  * `->biased()` turn on bias
+  * `->biased(1)` same as `->biased()`
+  * `->biased(0)` turn off bias (default)
+  * `->linear()` choose linear activation
+  * `->relu()` choose relu activation
+  * `->sigmoid()` choose sigmoid activation
+  * `->tanh()` choose tanh activation (current default, but defaults can change...)
+  * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
+
+## Max-pooling layers
+
+```c++
+net->addLayer( PoolingMaker::instance()->poolingSize(2) );
+```
+* By default, if the input image size is not an exact multiple of the poolingsize, the extra margin will be ignored
+* You can specify `padZeros` to include this margin:
+```c++
+net->addLayer( PoolingMaker::instance()->poolingSize(2)->padZeros() );
+```
+
+## Loss layer
+
+You need to add exactly one loss layer, as the last layer of the net.  The following loss layers are available:
+```c++
+net->addLayer( SquareLossMaker::instance() );
+net->addLayer( CrossEntropyMaker::instance() );
+net->addLayer( SoftMaxLayer::instance() );
+```
+* if your outputs are categorial, 1-of-N, then softMaxLossLayer is probably what you want
+* otherwise, you can choose square loss, or cross-entropy loss:
+  * squared loss works well with a `tanh` last layer
+  * cross entropy loss works well with a `sigmoid` last layer
+  * if you're not sure, then `tanh` last layer, with squared loss, works well
+* the softmax layer:
+  * creates a probability distribution, ie a set of outputs, that sum to 1, and each lie in the range `0 <= x <= 1`
+  * can create this probability distribution either across all output planes, with a imagesize of 1
+    * this is the default
+  * or else a per-plane probability distribution
+    * add option `->perPlane()`
+
+## Data format
+
+Input data should be provided in a contiguous array, of `float`s (edit: or `unsigned char` now!  Or anything that is castable to a float).  "group by" order should be:
+
+* training example id
+* input plane
+* image row
+* image column
+
+Providing labels, as an integer array, is the most efficient way of training, if you are training against categorical data.  The labels should be provided as one integer per example, zero-based.
+
+* in this case, the last layer of the net should have the same number of nodes as categories, eg a `netdef` ending in `-5n`, if there are 5 categories
+* if using the C++ API, you would probably want to use a `softmax` loss layer
+
+For non-categorical data, you can provide expected output values as a contiguous array of floats. "group by" order for the floats should be:
+
+* training example id
+* output plane (eg, corresponds to filter id, for convolutional network)
+* output row
+* output column
+
+## Train
+
+eg:
+```c++
+// (create a net, as above)
+// train, eg on unsigned char input data:
+NetLearner<unsigned char> netLearner( net );
+netLearner.setTrainingData( Ntrain, trainData, trainLabels );
+netLearner.setTestingData( Ntest, testData, testLabels );
+netLearner.setSchedule( numEpochs );
+netLearner.setBatchSize( batchSize );
+netLearner.learn( learningRate );
+// learning is now done :-)
+```
+
+
