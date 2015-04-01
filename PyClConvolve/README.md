@@ -33,7 +33,7 @@ pip install PyClConvolve
 
 ## Pre-requisites:
 
-### Compillers
+### Compilers
 * on Windows:
   * Python 2.7 build: need [Visual Studio 2008 for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266) from Microsoft
   * Python 3.4 build: need Visual Studio 2010, eg [Visual C++ 2010 Express](https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)

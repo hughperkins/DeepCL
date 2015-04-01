@@ -46,8 +46,8 @@ To build directly
 Pre-requisites:
 ---------------
 
-Compillers
-~~~~~~~~~~
+Compilers
+~~~~~~~~~
 
 -  on Windows:
 -  Python 2.7 build: need `Visual Studio 2008 for Python
