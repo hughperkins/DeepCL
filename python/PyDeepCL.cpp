@@ -6,7 +6,7 @@
         "language": "c++", 
         "define_macros": [
             [
-                "ClConvolve_EXPORTS", 
+                "DeepCL_EXPORTS", 
                 1
             ], 
             [
@@ -618,7 +618,7 @@ struct __pyx_memoryviewslice_obj;
  *     return pyString
  * 
  * cdef class NeuralNet:             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.NeuralNet *thisptr
+ *     cdef cDeepCL.NeuralNet *thisptr
  * 
  */
 struct __pyx_obj_8PyDeepCL_NeuralNet {
@@ -640,10 +640,10 @@ struct __pyx_obj_8PyDeepCL_NetdefToNet {
 
 
 /* "PyDeepCL.pyx":71
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  * cdef class NetLearner:             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.CyNetLearner[float] *thisptr
+ *     cdef cDeepCL.CyNetLearner[float] *thisptr
  *     def __cinit__( self, NeuralNet neuralnet ):
  */
 struct __pyx_obj_8PyDeepCL_NetLearner {
@@ -668,7 +668,7 @@ struct __pyx_obj_8PyDeepCL_GenericLoader {
  *             images[i] = ucImagesMv[i]
  * 
  * cdef class LayerMaker2:             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.LayerMaker2 *baseptr
+ *     cdef cDeepCL.LayerMaker2 *baseptr
  * 
  */
 struct __pyx_obj_8PyDeepCL_LayerMaker2 {
@@ -678,10 +678,10 @@ struct __pyx_obj_8PyDeepCL_LayerMaker2 {
 
 
 /* "PyDeepCL.pyx":133
- *     cdef cClConvolve.LayerMaker2 *baseptr
+ *     cdef cDeepCL.LayerMaker2 *baseptr
  * 
  * cdef class NormalizationLayerMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.NormalizationLayerMaker *thisptr
+ *     cdef cDeepCL.NormalizationLayerMaker *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_NormalizationLayerMaker {
@@ -694,7 +694,7 @@ struct __pyx_obj_8PyDeepCL_NormalizationLayerMaker {
  *         return NormalizationLayerMaker()
  * 
  * cdef class FullyConnectedMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.FullyConnectedMaker *thisptr
+ *     cdef cDeepCL.FullyConnectedMaker *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_FullyConnectedMaker {
@@ -707,7 +707,7 @@ struct __pyx_obj_8PyDeepCL_FullyConnectedMaker {
  *         return FullyConnectedMaker()
  * 
  * cdef class ConvolutionalMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.ConvolutionalMaker *thisptr
+ *     cdef cDeepCL.ConvolutionalMaker *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_ConvolutionalMaker {
@@ -720,7 +720,7 @@ struct __pyx_obj_8PyDeepCL_ConvolutionalMaker {
  *         return ConvolutionalMaker()
  * 
  * cdef class PoolingMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.PoolingMaker *thisptr
+ *     cdef cDeepCL.PoolingMaker *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_PoolingMaker {
@@ -733,7 +733,7 @@ struct __pyx_obj_8PyDeepCL_PoolingMaker {
  *         return PoolingMaker()
  * 
  * cdef class SquareLossMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.SquareLossMaker *thisptr
+ *     cdef cDeepCL.SquareLossMaker *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_SquareLossMaker {
@@ -746,7 +746,7 @@ struct __pyx_obj_8PyDeepCL_SquareLossMaker {
  *         return SquareLossMaker()
  * 
  * cdef class SoftMaxMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.SoftMaxMaker *thisptr
+ *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_SoftMaxMaker {
@@ -759,7 +759,7 @@ struct __pyx_obj_8PyDeepCL_SoftMaxMaker {
  *         return SoftMaxMaker()
  * 
  * cdef class InputLayerMaker(LayerMaker2):             # <<<<<<<<<<<<<<
- *     cdef cClConvolve.InputLayerMaker[float] *thisptr
+ *     cdef cDeepCL.InputLayerMaker[float] *thisptr
  *     def __cinit__( self ):
  */
 struct __pyx_obj_8PyDeepCL_InputLayerMaker {
@@ -1550,7 +1550,7 @@ static CYTHON_INLINE int __pyx_f_7cpython_5array_extend_buffer(arrayobject *, ch
 
 /* Module declarations from 'libcpp' */
 
-/* Module declarations from 'cClConvolve' */
+/* Module declarations from 'cDeepCL' */
 
 /* Module declarations from 'PyDeepCL' */
 static PyTypeObject *__pyx_ptype_8PyDeepCL_NeuralNet = 0;
@@ -2021,7 +2021,7 @@ static PyObject *__pyx_codeobj__35;
 static PyObject *__pyx_codeobj__36;
 
 /* "PyDeepCL.pyx":14
- * cimport cClConvolve
+ * cimport cDeepCL
  * 
  * def checkException():             # <<<<<<<<<<<<<<
  *     cdef int threwException = 0
@@ -2061,7 +2061,7 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
  * def checkException():
  *     cdef int threwException = 0             # <<<<<<<<<<<<<<
  *     cdef string message = ""
- *     cClConvolve.checkException( &threwException, &message)
+ *     cDeepCL.checkException( &threwException, &message)
  */
   __pyx_v_threwException = 0;
 
@@ -2069,7 +2069,7 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
  * def checkException():
  *     cdef int threwException = 0
  *     cdef string message = ""             # <<<<<<<<<<<<<<
- *     cClConvolve.checkException( &threwException, &message)
+ *     cDeepCL.checkException( &threwException, &message)
  *     # print('threwException: ' + str(threwException) + ' ' + message )
  */
   __pyx_t_1 = __pyx_convert_string_from_py_std__in_string(__pyx_kp_b_); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -2078,14 +2078,14 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
   /* "PyDeepCL.pyx":17
  *     cdef int threwException = 0
  *     cdef string message = ""
- *     cClConvolve.checkException( &threwException, &message)             # <<<<<<<<<<<<<<
+ *     cDeepCL.checkException( &threwException, &message)             # <<<<<<<<<<<<<<
  *     # print('threwException: ' + str(threwException) + ' ' + message )
  *     if threwException:
  */
   checkException((&__pyx_v_threwException), (&__pyx_v_message));
 
   /* "PyDeepCL.pyx":19
- *     cClConvolve.checkException( &threwException, &message)
+ *     cDeepCL.checkException( &threwException, &message)
  *     # print('threwException: ' + str(threwException) + ' ' + message )
  *     if threwException:             # <<<<<<<<<<<<<<
  *         raise RuntimeError(message)
@@ -2117,7 +2117,7 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
   }
 
   /* "PyDeepCL.pyx":14
- * cimport cClConvolve
+ * cimport cDeepCL
  * 
  * def checkException():             # <<<<<<<<<<<<<<
  *     cdef int threwException = 0
@@ -2449,7 +2449,7 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
 }
 
 /* "PyDeepCL.pyx":38
- *     cdef cClConvolve.NeuralNet *thisptr
+ *     cdef cDeepCL.NeuralNet *thisptr
  * 
  *     def __cinit__(self, planes = None, size = None):             # <<<<<<<<<<<<<<
  *         print( '__cinit__(planes,size)')
@@ -2542,7 +2542,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
  *     def __cinit__(self, planes = None, size = None):
  *         print( '__cinit__(planes,size)')             # <<<<<<<<<<<<<<
  *         if planes == None and size == None:
- *              self.thisptr = new cClConvolve.NeuralNet()
+ *              self.thisptr = new cDeepCL.NeuralNet()
  */
   if (__Pyx_PrintOne(0, __pyx_kp_s_cinit___planes_size) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
@@ -2550,7 +2550,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
  *     def __cinit__(self, planes = None, size = None):
  *         print( '__cinit__(planes,size)')
  *         if planes == None and size == None:             # <<<<<<<<<<<<<<
- *              self.thisptr = new cClConvolve.NeuralNet()
+ *              self.thisptr = new cDeepCL.NeuralNet()
  *         else:
  */
   __pyx_t_2 = PyObject_RichCompare(__pyx_v_planes, Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -2571,9 +2571,9 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
     /* "PyDeepCL.pyx":41
  *         print( '__cinit__(planes,size)')
  *         if planes == None and size == None:
- *              self.thisptr = new cClConvolve.NeuralNet()             # <<<<<<<<<<<<<<
+ *              self.thisptr = new cDeepCL.NeuralNet()             # <<<<<<<<<<<<<<
  *         else:
- *             self.thisptr = new cClConvolve.NeuralNet(planes, size)
+ *             self.thisptr = new cDeepCL.NeuralNet(planes, size)
  */
     try {
       __pyx_t_4 = new NeuralNet();
@@ -2587,9 +2587,9 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
   /*else*/ {
 
     /* "PyDeepCL.pyx":43
- *              self.thisptr = new cClConvolve.NeuralNet()
+ *              self.thisptr = new cDeepCL.NeuralNet()
  *         else:
- *             self.thisptr = new cClConvolve.NeuralNet(planes, size)             # <<<<<<<<<<<<<<
+ *             self.thisptr = new cDeepCL.NeuralNet(planes, size)             # <<<<<<<<<<<<<<
  * 
  *     def asString(self):
  */
@@ -2606,7 +2606,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
   __pyx_L3:;
 
   /* "PyDeepCL.pyx":38
- *     cdef cClConvolve.NeuralNet *thisptr
+ *     cdef cDeepCL.NeuralNet *thisptr
  * 
  *     def __cinit__(self, planes = None, size = None):             # <<<<<<<<<<<<<<
  *         print( '__cinit__(planes,size)')
@@ -2626,7 +2626,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
 }
 
 /* "PyDeepCL.pyx":45
- *             self.thisptr = new cClConvolve.NeuralNet(planes, size)
+ *             self.thisptr = new cDeepCL.NeuralNet(planes, size)
  * 
  *     def asString(self):             # <<<<<<<<<<<<<<
  *         return self.thisptr.asString()
@@ -2677,7 +2677,7 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_2asString(struct __pyx_obj_8PyDee
   goto __pyx_L0;
 
   /* "PyDeepCL.pyx":45
- *             self.thisptr = new cClConvolve.NeuralNet(planes, size)
+ *             self.thisptr = new cDeepCL.NeuralNet(planes, size)
  * 
  *     def asString(self):             # <<<<<<<<<<<<<<
  *         return self.thisptr.asString()
@@ -3290,7 +3290,7 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_14addLayer(struct __pyx_obj_8PyDe
  * cdef class NetdefToNet:
  *     @staticmethod
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):             # <<<<<<<<<<<<<<
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  */
 
@@ -3378,7 +3378,7 @@ static PyObject *__pyx_pf_8PyDeepCL_11NetdefToNet_createNetFromNetdef(struct __p
   /* "PyDeepCL.pyx":69
  *     @staticmethod
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )             # <<<<<<<<<<<<<<
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )             # <<<<<<<<<<<<<<
  * 
  * cdef class NetLearner:
  */
@@ -3428,7 +3428,7 @@ static PyObject *__pyx_pf_8PyDeepCL_11NetdefToNet_createNetFromNetdef(struct __p
  * cdef class NetdefToNet:
  *     @staticmethod
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):             # <<<<<<<<<<<<<<
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  */
 
@@ -3448,9 +3448,9 @@ static PyObject *__pyx_pf_8PyDeepCL_11NetdefToNet_createNetFromNetdef(struct __p
 
 /* "PyDeepCL.pyx":73
  * cdef class NetLearner:
- *     cdef cClConvolve.CyNetLearner[float] *thisptr
+ *     cdef cDeepCL.CyNetLearner[float] *thisptr
  *     def __cinit__( self, NeuralNet neuralnet ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )
+ *         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
  *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
  */
 
@@ -3521,9 +3521,9 @@ static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":74
- *     cdef cClConvolve.CyNetLearner[float] *thisptr
+ *     cdef cDeepCL.CyNetLearner[float] *thisptr
  *     def __cinit__( self, NeuralNet neuralnet ):
- *         self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )             # <<<<<<<<<<<<<<
  *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
  *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
  */
@@ -3537,9 +3537,9 @@ static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_
 
   /* "PyDeepCL.pyx":73
  * cdef class NetLearner:
- *     cdef cClConvolve.CyNetLearner[float] *thisptr
+ *     cdef cDeepCL.CyNetLearner[float] *thisptr
  *     def __cinit__( self, NeuralNet neuralnet ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )
+ *         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
  *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
  */
 
@@ -3556,7 +3556,7 @@ static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_
 
 /* "PyDeepCL.pyx":75
  *     def __cinit__( self, NeuralNet neuralnet ):
- *         self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )
+ *         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
  *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):             # <<<<<<<<<<<<<<
  *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
  *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
@@ -3645,7 +3645,7 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_2setTrainingData(struct __pyx_o
   __Pyx_RefNannySetupContext("setTrainingData", 0);
 
   /* "PyDeepCL.pyx":76
- *         self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )
+ *         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
  *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
  *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )             # <<<<<<<<<<<<<<
  *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
@@ -3681,7 +3681,7 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_2setTrainingData(struct __pyx_o
 
   /* "PyDeepCL.pyx":75
  *     def __cinit__( self, NeuralNet neuralnet ):
- *         self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )
+ *         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
  *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):             # <<<<<<<<<<<<<<
  *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
  *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
@@ -4381,7 +4381,7 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_getDimensions(PyObject *__py
   /* "PyDeepCL.pyx":100
  *         cdef int planes
  *         cdef int size
- *         cClConvolve.GenericLoader.getDimensions( toCppString( trainFilePath ), &N, &planes, &size )             # <<<<<<<<<<<<<<
+ *         cDeepCL.GenericLoader.getDimensions( toCppString( trainFilePath ), &N, &planes, &size )             # <<<<<<<<<<<<<<
  *         # print( N )
  *         return (N,planes,size)
  */
@@ -4422,7 +4422,7 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_getDimensions(PyObject *__py
   }
 
   /* "PyDeepCL.pyx":102
- *         cClConvolve.GenericLoader.getDimensions( toCppString( trainFilePath ), &N, &planes, &size )
+ *         cDeepCL.GenericLoader.getDimensions( toCppString( trainFilePath ), &N, &planes, &size )
  *         # print( N )
  *         return (N,planes,size)             # <<<<<<<<<<<<<<
  *     @staticmethod
@@ -4589,7 +4589,7 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_2loaduc(PyObject *__pyx_v_tr
   /* "PyDeepCL.pyx":109
  *         #cdef unsigned char *images
  *         #cdef int *labels
- *         cClConvolve.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )             # <<<<<<<<<<<<<<
+ *         cDeepCL.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )             # <<<<<<<<<<<<<<
  *         #return (images, labels)
  *     @staticmethod
  */
@@ -4957,7 +4957,7 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_4load(PyObject *__pyx_v_trai
  *         print( (N, planes, size ) )
  *         cdef c_array.array ucImages = array('B', [0] * (numExamples * planes * size * size) )             # <<<<<<<<<<<<<<
  *         cdef unsigned char[:] ucImagesMv = ucImages
- *         cClConvolve.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )
+ *         cDeepCL.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )
  */
   __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 119; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
@@ -5015,7 +5015,7 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_4load(PyObject *__pyx_v_trai
  *         print( (N, planes, size ) )
  *         cdef c_array.array ucImages = array('B', [0] * (numExamples * planes * size * size) )
  *         cdef unsigned char[:] ucImagesMv = ucImages             # <<<<<<<<<<<<<<
- *         cClConvolve.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )
+ *         cDeepCL.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )
  *         #return (images, labels)
  */
   __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_char(((PyObject *)__pyx_v_ucImages));
@@ -5027,7 +5027,7 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_4load(PyObject *__pyx_v_trai
   /* "PyDeepCL.pyx":121
  *         cdef c_array.array ucImages = array('B', [0] * (numExamples * planes * size * size) )
  *         cdef unsigned char[:] ucImagesMv = ucImages
- *         cClConvolve.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )             # <<<<<<<<<<<<<<
+ *         cDeepCL.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )             # <<<<<<<<<<<<<<
  *         #return (images, labels)
  *         cdef int i
  */
@@ -5197,9 +5197,9 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_4load(PyObject *__pyx_v_trai
 
 /* "PyDeepCL.pyx":135
  * cdef class NormalizationLayerMaker(LayerMaker2):
- *     cdef cClConvolve.NormalizationLayerMaker *thisptr
+ *     cdef cDeepCL.NormalizationLayerMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.NormalizationLayerMaker()
+ *         self.thisptr = new cDeepCL.NormalizationLayerMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -5229,9 +5229,9 @@ static int __pyx_pf_8PyDeepCL_23NormalizationLayerMaker___cinit__(struct __pyx_o
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":136
- *     cdef cClConvolve.NormalizationLayerMaker *thisptr
+ *     cdef cDeepCL.NormalizationLayerMaker *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.NormalizationLayerMaker()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.NormalizationLayerMaker()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     def translate( self, float _translate ):
  */
@@ -5245,7 +5245,7 @@ static int __pyx_pf_8PyDeepCL_23NormalizationLayerMaker___cinit__(struct __pyx_o
 
   /* "PyDeepCL.pyx":137
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.NormalizationLayerMaker()
+ *         self.thisptr = new cDeepCL.NormalizationLayerMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     def translate( self, float _translate ):
  *         self.thisptr.translate( _translate )
@@ -5255,9 +5255,9 @@ static int __pyx_pf_8PyDeepCL_23NormalizationLayerMaker___cinit__(struct __pyx_o
 
   /* "PyDeepCL.pyx":135
  * cdef class NormalizationLayerMaker(LayerMaker2):
- *     cdef cClConvolve.NormalizationLayerMaker *thisptr
+ *     cdef cDeepCL.NormalizationLayerMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.NormalizationLayerMaker()
+ *         self.thisptr = new cDeepCL.NormalizationLayerMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -5273,7 +5273,7 @@ static int __pyx_pf_8PyDeepCL_23NormalizationLayerMaker___cinit__(struct __pyx_o
 }
 
 /* "PyDeepCL.pyx":138
- *         self.thisptr = new cClConvolve.NormalizationLayerMaker()
+ *         self.thisptr = new cDeepCL.NormalizationLayerMaker()
  *         self.baseptr = self.thisptr
  *     def translate( self, float _translate ):             # <<<<<<<<<<<<<<
  *         self.thisptr.translate( _translate )
@@ -5341,7 +5341,7 @@ static PyObject *__pyx_pf_8PyDeepCL_23NormalizationLayerMaker_2translate(struct 
   goto __pyx_L0;
 
   /* "PyDeepCL.pyx":138
- *         self.thisptr = new cClConvolve.NormalizationLayerMaker()
+ *         self.thisptr = new cDeepCL.NormalizationLayerMaker()
  *         self.baseptr = self.thisptr
  *     def translate( self, float _translate ):             # <<<<<<<<<<<<<<
  *         self.thisptr.translate( _translate )
@@ -5513,9 +5513,9 @@ static PyObject *__pyx_pf_8PyDeepCL_23NormalizationLayerMaker_6instance() {
 
 /* "PyDeepCL.pyx":150
  * cdef class FullyConnectedMaker(LayerMaker2):
- *     cdef cClConvolve.FullyConnectedMaker *thisptr
+ *     cdef cDeepCL.FullyConnectedMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.FullyConnectedMaker()
+ *         self.thisptr = new cDeepCL.FullyConnectedMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -5545,9 +5545,9 @@ static int __pyx_pf_8PyDeepCL_19FullyConnectedMaker___cinit__(struct __pyx_obj_8
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":151
- *     cdef cClConvolve.FullyConnectedMaker *thisptr
+ *     cdef cDeepCL.FullyConnectedMaker *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.FullyConnectedMaker()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.FullyConnectedMaker()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     def numPlanes( self, int _numPlanes ):
  */
@@ -5561,7 +5561,7 @@ static int __pyx_pf_8PyDeepCL_19FullyConnectedMaker___cinit__(struct __pyx_obj_8
 
   /* "PyDeepCL.pyx":152
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.FullyConnectedMaker()
+ *         self.thisptr = new cDeepCL.FullyConnectedMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     def numPlanes( self, int _numPlanes ):
  *         self.thisptr.numPlanes( _numPlanes )
@@ -5571,9 +5571,9 @@ static int __pyx_pf_8PyDeepCL_19FullyConnectedMaker___cinit__(struct __pyx_obj_8
 
   /* "PyDeepCL.pyx":150
  * cdef class FullyConnectedMaker(LayerMaker2):
- *     cdef cClConvolve.FullyConnectedMaker *thisptr
+ *     cdef cDeepCL.FullyConnectedMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.FullyConnectedMaker()
+ *         self.thisptr = new cDeepCL.FullyConnectedMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -5589,7 +5589,7 @@ static int __pyx_pf_8PyDeepCL_19FullyConnectedMaker___cinit__(struct __pyx_obj_8
 }
 
 /* "PyDeepCL.pyx":153
- *         self.thisptr = new cClConvolve.FullyConnectedMaker()
+ *         self.thisptr = new cDeepCL.FullyConnectedMaker()
  *         self.baseptr = self.thisptr
  *     def numPlanes( self, int _numPlanes ):             # <<<<<<<<<<<<<<
  *         self.thisptr.numPlanes( _numPlanes )
@@ -5657,7 +5657,7 @@ static PyObject *__pyx_pf_8PyDeepCL_19FullyConnectedMaker_2numPlanes(struct __py
   goto __pyx_L0;
 
   /* "PyDeepCL.pyx":153
- *         self.thisptr = new cClConvolve.FullyConnectedMaker()
+ *         self.thisptr = new cDeepCL.FullyConnectedMaker()
  *         self.baseptr = self.thisptr
  *     def numPlanes( self, int _numPlanes ):             # <<<<<<<<<<<<<<
  *         self.thisptr.numPlanes( _numPlanes )
@@ -6280,9 +6280,9 @@ static PyObject *__pyx_pf_8PyDeepCL_19FullyConnectedMaker_18instance() {
 
 /* "PyDeepCL.pyx":183
  * cdef class ConvolutionalMaker(LayerMaker2):
- *     cdef cClConvolve.ConvolutionalMaker *thisptr
+ *     cdef cDeepCL.ConvolutionalMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.ConvolutionalMaker()
+ *         self.thisptr = new cDeepCL.ConvolutionalMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -6312,9 +6312,9 @@ static int __pyx_pf_8PyDeepCL_18ConvolutionalMaker___cinit__(struct __pyx_obj_8P
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":184
- *     cdef cClConvolve.ConvolutionalMaker *thisptr
+ *     cdef cDeepCL.ConvolutionalMaker *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.ConvolutionalMaker()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.ConvolutionalMaker()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     def numFilters( self, int _numFilters ):
  */
@@ -6328,7 +6328,7 @@ static int __pyx_pf_8PyDeepCL_18ConvolutionalMaker___cinit__(struct __pyx_obj_8P
 
   /* "PyDeepCL.pyx":185
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.ConvolutionalMaker()
+ *         self.thisptr = new cDeepCL.ConvolutionalMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     def numFilters( self, int _numFilters ):
  *         self.thisptr.numFilters( _numFilters )
@@ -6338,9 +6338,9 @@ static int __pyx_pf_8PyDeepCL_18ConvolutionalMaker___cinit__(struct __pyx_obj_8P
 
   /* "PyDeepCL.pyx":183
  * cdef class ConvolutionalMaker(LayerMaker2):
- *     cdef cClConvolve.ConvolutionalMaker *thisptr
+ *     cdef cDeepCL.ConvolutionalMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.ConvolutionalMaker()
+ *         self.thisptr = new cDeepCL.ConvolutionalMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -6356,7 +6356,7 @@ static int __pyx_pf_8PyDeepCL_18ConvolutionalMaker___cinit__(struct __pyx_obj_8P
 }
 
 /* "PyDeepCL.pyx":186
- *         self.thisptr = new cClConvolve.ConvolutionalMaker()
+ *         self.thisptr = new cDeepCL.ConvolutionalMaker()
  *         self.baseptr = self.thisptr
  *     def numFilters( self, int _numFilters ):             # <<<<<<<<<<<<<<
  *         self.thisptr.numFilters( _numFilters )
@@ -6424,7 +6424,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_2numFilters(struct __py
   goto __pyx_L0;
 
   /* "PyDeepCL.pyx":186
- *         self.thisptr = new cClConvolve.ConvolutionalMaker()
+ *         self.thisptr = new cDeepCL.ConvolutionalMaker()
  *         self.baseptr = self.thisptr
  *     def numFilters( self, int _numFilters ):             # <<<<<<<<<<<<<<
  *         self.thisptr.numFilters( _numFilters )
@@ -7206,9 +7206,9 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_22instance() {
 
 /* "PyDeepCL.pyx":222
  * cdef class PoolingMaker(LayerMaker2):
- *     cdef cClConvolve.PoolingMaker *thisptr
+ *     cdef cDeepCL.PoolingMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.PoolingMaker()
+ *         self.thisptr = new cDeepCL.PoolingMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -7238,9 +7238,9 @@ static int __pyx_pf_8PyDeepCL_12PoolingMaker___cinit__(struct __pyx_obj_8PyDeepC
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":223
- *     cdef cClConvolve.PoolingMaker *thisptr
+ *     cdef cDeepCL.PoolingMaker *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.PoolingMaker()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.PoolingMaker()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     def poolingSize( self, int _poolingSize ):
  */
@@ -7254,7 +7254,7 @@ static int __pyx_pf_8PyDeepCL_12PoolingMaker___cinit__(struct __pyx_obj_8PyDeepC
 
   /* "PyDeepCL.pyx":224
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.PoolingMaker()
+ *         self.thisptr = new cDeepCL.PoolingMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     def poolingSize( self, int _poolingSize ):
  *         self.thisptr.poolingSize( _poolingSize )
@@ -7264,9 +7264,9 @@ static int __pyx_pf_8PyDeepCL_12PoolingMaker___cinit__(struct __pyx_obj_8PyDeepC
 
   /* "PyDeepCL.pyx":222
  * cdef class PoolingMaker(LayerMaker2):
- *     cdef cClConvolve.PoolingMaker *thisptr
+ *     cdef cDeepCL.PoolingMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.PoolingMaker()
+ *         self.thisptr = new cDeepCL.PoolingMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -7282,7 +7282,7 @@ static int __pyx_pf_8PyDeepCL_12PoolingMaker___cinit__(struct __pyx_obj_8PyDeepC
 }
 
 /* "PyDeepCL.pyx":225
- *         self.thisptr = new cClConvolve.PoolingMaker()
+ *         self.thisptr = new cDeepCL.PoolingMaker()
  *         self.baseptr = self.thisptr
  *     def poolingSize( self, int _poolingSize ):             # <<<<<<<<<<<<<<
  *         self.thisptr.poolingSize( _poolingSize )
@@ -7350,7 +7350,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingMaker_2poolingSize(struct __pyx_obj
   goto __pyx_L0;
 
   /* "PyDeepCL.pyx":225
- *         self.thisptr = new cClConvolve.PoolingMaker()
+ *         self.thisptr = new cDeepCL.PoolingMaker()
  *         self.baseptr = self.thisptr
  *     def poolingSize( self, int _poolingSize ):             # <<<<<<<<<<<<<<
  *         self.thisptr.poolingSize( _poolingSize )
@@ -7436,9 +7436,9 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingMaker_4instance() {
 
 /* "PyDeepCL.pyx":234
  * cdef class SquareLossMaker(LayerMaker2):
- *     cdef cClConvolve.SquareLossMaker *thisptr
+ *     cdef cDeepCL.SquareLossMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.SquareLossMaker()
+ *         self.thisptr = new cDeepCL.SquareLossMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -7468,9 +7468,9 @@ static int __pyx_pf_8PyDeepCL_15SquareLossMaker___cinit__(struct __pyx_obj_8PyDe
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":235
- *     cdef cClConvolve.SquareLossMaker *thisptr
+ *     cdef cDeepCL.SquareLossMaker *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.SquareLossMaker()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.SquareLossMaker()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     @staticmethod
  */
@@ -7484,7 +7484,7 @@ static int __pyx_pf_8PyDeepCL_15SquareLossMaker___cinit__(struct __pyx_obj_8PyDe
 
   /* "PyDeepCL.pyx":236
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.SquareLossMaker()
+ *         self.thisptr = new cDeepCL.SquareLossMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     @staticmethod
  *     def instance():
@@ -7494,9 +7494,9 @@ static int __pyx_pf_8PyDeepCL_15SquareLossMaker___cinit__(struct __pyx_obj_8PyDe
 
   /* "PyDeepCL.pyx":234
  * cdef class SquareLossMaker(LayerMaker2):
- *     cdef cClConvolve.SquareLossMaker *thisptr
+ *     cdef cDeepCL.SquareLossMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.SquareLossMaker()
+ *         self.thisptr = new cDeepCL.SquareLossMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -7580,9 +7580,9 @@ static PyObject *__pyx_pf_8PyDeepCL_15SquareLossMaker_2instance() {
 
 /* "PyDeepCL.pyx":243
  * cdef class SoftMaxMaker(LayerMaker2):
- *     cdef cClConvolve.SoftMaxMaker *thisptr
+ *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.SoftMaxMaker()
+ *         self.thisptr = new cDeepCL.SoftMaxMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -7612,9 +7612,9 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":244
- *     cdef cClConvolve.SoftMaxMaker *thisptr
+ *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.SoftMaxMaker()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.SoftMaxMaker()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     @staticmethod
  */
@@ -7628,7 +7628,7 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
 
   /* "PyDeepCL.pyx":245
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.SoftMaxMaker()
+ *         self.thisptr = new cDeepCL.SoftMaxMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     @staticmethod
  *     def instance():
@@ -7638,9 +7638,9 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
 
   /* "PyDeepCL.pyx":243
  * cdef class SoftMaxMaker(LayerMaker2):
- *     cdef cClConvolve.SoftMaxMaker *thisptr
+ *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.SoftMaxMaker()
+ *         self.thisptr = new cDeepCL.SoftMaxMaker()
  *         self.baseptr = self.thisptr
  */
 
@@ -7724,9 +7724,9 @@ static PyObject *__pyx_pf_8PyDeepCL_12SoftMaxMaker_2instance() {
 
 /* "PyDeepCL.pyx":252
  * cdef class InputLayerMaker(LayerMaker2):
- *     cdef cClConvolve.InputLayerMaker[float] *thisptr
+ *     cdef cDeepCL.InputLayerMaker[float] *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.InputLayerMaker[float]()
+ *         self.thisptr = new cDeepCL.InputLayerMaker[float]()
  *         self.baseptr = self.thisptr
  */
 
@@ -7756,9 +7756,9 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "PyDeepCL.pyx":253
- *     cdef cClConvolve.InputLayerMaker[float] *thisptr
+ *     cdef cDeepCL.InputLayerMaker[float] *thisptr
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.InputLayerMaker[float]()             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.InputLayerMaker[float]()             # <<<<<<<<<<<<<<
  *         self.baseptr = self.thisptr
  *     def numPlanes( self, int _numPlanes ):
  */
@@ -7772,7 +7772,7 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
 
   /* "PyDeepCL.pyx":254
  *     def __cinit__( self ):
- *         self.thisptr = new cClConvolve.InputLayerMaker[float]()
+ *         self.thisptr = new cDeepCL.InputLayerMaker[float]()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
  *     def numPlanes( self, int _numPlanes ):
  *         self.thisptr.numPlanes( _numPlanes )
@@ -7782,9 +7782,9 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
 
   /* "PyDeepCL.pyx":252
  * cdef class InputLayerMaker(LayerMaker2):
- *     cdef cClConvolve.InputLayerMaker[float] *thisptr
+ *     cdef cDeepCL.InputLayerMaker[float] *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cClConvolve.InputLayerMaker[float]()
+ *         self.thisptr = new cDeepCL.InputLayerMaker[float]()
  *         self.baseptr = self.thisptr
  */
 
@@ -7800,7 +7800,7 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
 }
 
 /* "PyDeepCL.pyx":255
- *         self.thisptr = new cClConvolve.InputLayerMaker[float]()
+ *         self.thisptr = new cDeepCL.InputLayerMaker[float]()
  *         self.baseptr = self.thisptr
  *     def numPlanes( self, int _numPlanes ):             # <<<<<<<<<<<<<<
  *         self.thisptr.numPlanes( _numPlanes )
@@ -7868,7 +7868,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_2numPlanes(struct __pyx_ob
   goto __pyx_L0;
 
   /* "PyDeepCL.pyx":255
- *         self.thisptr = new cClConvolve.InputLayerMaker[float]()
+ *         self.thisptr = new cDeepCL.InputLayerMaker[float]()
  *         self.baseptr = self.thisptr
  *     def numPlanes( self, int _numPlanes ):             # <<<<<<<<<<<<<<
  *         self.thisptr.numPlanes( _numPlanes )
@@ -21521,7 +21521,7 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__15);
 
   /* "PyDeepCL.pyx":14
- * cimport cClConvolve
+ * cimport cDeepCL
  * 
  * def checkException():             # <<<<<<<<<<<<<<
  *     cdef int threwException = 0
@@ -21560,7 +21560,7 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef class NetdefToNet:
  *     @staticmethod
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):             # <<<<<<<<<<<<<<
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  */
   __pyx_tuple__22 = PyTuple_Pack(2, __pyx_n_s_neuralnet, __pyx_n_s_netdef); if (unlikely(!__pyx_tuple__22)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -21948,7 +21948,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * from array import array
  * import threading             # <<<<<<<<<<<<<<
  * from libcpp.string cimport string
- * cimport cClConvolve
+ * cimport cDeepCL
  */
   __pyx_t_2 = __Pyx_Import(__pyx_n_s_threading, 0, -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
@@ -21956,7 +21956,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "PyDeepCL.pyx":14
- * cimport cClConvolve
+ * cimport cDeepCL
  * 
  * def checkException():             # <<<<<<<<<<<<<<
  *     cdef int threwException = 0
@@ -21995,7 +21995,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef class NetdefToNet:
  *     @staticmethod
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):             # <<<<<<<<<<<<<<
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  */
   __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_11NetdefToNet_1createNetFromNetdef, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -22006,7 +22006,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef class NetdefToNet:
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  */
   __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
@@ -22024,7 +22024,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef class NetdefToNet:
  *     @staticmethod
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):             # <<<<<<<<<<<<<<
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  */
   __pyx_t_2 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_8PyDeepCL_NetdefToNet, __pyx_n_s_createNetFromNetdef); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 68; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -22035,7 +22035,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef class NetdefToNet:
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def createNetFromNetdef( NeuralNet neuralnet, netdef ):
- *         return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+ *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  */
   __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
@@ -22176,7 +22176,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "PyDeepCL.pyx":111
- *         cClConvolve.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )
+ *         cDeepCL.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )
  *         #return (images, labels)
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def load( trainFilepath, float[:] images, int[:] labels, startN, numExamples ):
@@ -22205,7 +22205,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "PyDeepCL.pyx":111
- *         cClConvolve.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )
+ *         cDeepCL.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )
  *         #return (images, labels)
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def load( trainFilepath, float[:] images, int[:] labels, startN, numExamples ):
@@ -22466,7 +22466,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "PyDeepCL.pyx":237
- *         self.thisptr = new cClConvolve.SquareLossMaker()
+ *         self.thisptr = new cDeepCL.SquareLossMaker()
  *         self.baseptr = self.thisptr
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
@@ -22495,7 +22495,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "PyDeepCL.pyx":237
- *         self.thisptr = new cClConvolve.SquareLossMaker()
+ *         self.thisptr = new cDeepCL.SquareLossMaker()
  *         self.baseptr = self.thisptr
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
@@ -22524,7 +22524,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "PyDeepCL.pyx":246
- *         self.thisptr = new cClConvolve.SoftMaxMaker()
+ *         self.thisptr = new cDeepCL.SoftMaxMaker()
  *         self.baseptr = self.thisptr
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
@@ -22553,7 +22553,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "PyDeepCL.pyx":246
- *         self.thisptr = new cClConvolve.SoftMaxMaker()
+ *         self.thisptr = new cDeepCL.SoftMaxMaker()
  *         self.baseptr = self.thisptr
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():

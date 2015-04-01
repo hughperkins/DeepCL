@@ -100,7 +100,7 @@ def distutils_dir_name(dname):
 def lib_build_dir():
     return os.path.join('build', distutils_dir_name('lib'))
 
-clconvolve_sourcestring = """LayerMaker.cpp NeuralNetMould.cpp
+deepcl_sourcestring = """LayerMaker.cpp NeuralNetMould.cpp
      ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
     Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
@@ -118,10 +118,10 @@ clconvolve_sourcestring = """LayerMaker.cpp NeuralNetMould.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
     PoolingBackpropGpuNaive.cpp""" 
-clconvolve_sources_all = clconvolve_sourcestring.split()
-clconvolve_sources = []
-for source in clconvolve_sources_all:
-    clconvolve_sources.append(source)
+deepcl_sources_all = deepcl_sourcestring.split()
+deepcl_sources = []
+for source in deepcl_sources_all:
+    deepcl_sources.append(source)
 
 openclhelpersources = list(map( lambda name : '../' + name, [ 'OpenCLHelper/OpenCLHelper.cpp',
         'OpenCLHelper/deviceinfo_helper.cpp', 'OpenCLHelper/platforminfo_helper.cpp',
@@ -141,7 +141,7 @@ else:
 
 #if osfamily == 'Windows' and sys.version_info[0] == 2:
 #    print('WARNING: python 2.x not really supported, since it needs visual studio 9; and visual studio 2009 doesnt support any c++11 features, which we would ideally prefer to be able to use')
-#    print('Probably possible to coerce ClConvolve to work with visual studio 9, and by extension with python 2.x, but maybe easier to just use python 3.x instead?')
+#    print('Probably possible to coerce DeepCL to work with visual studio 9, and by extension with python 2.x, but maybe easier to just use python 3.x instead?')
 
 runtime_library_dirs = []
 libraries = []
@@ -159,7 +159,7 @@ else:
 #libraries = [
 #    ("OpenCLHelper", {
 #        'sources': openclhelpersources + ['dummy_openclhelper.cpp'],
-#        'include_dirs': ['ClConvolve/OpenCLHelper'],
+#        'include_dirs': ['DeepCL/OpenCLHelper'],
 #        'extra_compile_args': compile_options,
 ##        define_macros = [('OpenCLHelper_EXPORTS',1)],
 ##        libraries = []
@@ -171,34 +171,34 @@ else:
 ext_modules = [
 #    Extension("_OpenCLHelper",
 #        sources = openclhelpersources + ['dummy_openclhelper.cpp'],
-#        include_dirs = ['ClConvolve/OpenCLHelper'],
+#        include_dirs = ['DeepCL/OpenCLHelper'],
 #        extra_compile_args=compile_options,
 #        define_macros = [('OpenCLHelper_EXPORTS',1),('MS_WIN32',1)],
 ##        libraries = []
 ##        language='c++'
 #    )
-#    Extension("libClConvolve",
-#        list(map( lambda name : 'ClConvolve/src/' + name, clconvolve_sources)), # +
-##            glob.glob('ClConvolve/src/*.h'),
-#        include_dirs = ['ClConvolve/src','ClConvolve/OpenCLHelper'],
+#    Extension("libDeepCL",
+#        list(map( lambda name : 'DeepCL/src/' + name, deepcl_sources)), # +
+##            glob.glob('DeepCL/src/*.h'),
+#        include_dirs = ['DeepCL/src','DeepCL/OpenCLHelper'],
 #        extra_compile_args = compile_options,
 #        library_dirs = [ lib_build_dir() ],
 #        libraries = [ "OpenCLHelper" + get_so_suffix() ],
-#        define_macros = [('ClConvolve_EXPORTS',1)],
+#        define_macros = [('DeepCL_EXPORTS',1)],
 #        runtime_library_dirs=runtime_library_dirs
 ##        language='c++'
 #    ),
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
                 + openclhelpersources
-                + list(map( lambda name : '../src/' + name, clconvolve_sources))
+                + list(map( lambda name : '../src/' + name, deepcl_sources))
                 + ['../qlearning/QLearner.cpp','../qlearning/array_helper.cpp'], 
-#                glob.glob('ClConvolve/OpenCLHelper/*.h'),
+#                glob.glob('DeepCL/OpenCLHelper/*.h'),
               include_dirs = ['../src','../OpenCLHelper','../qlearning'],
               libraries= libraries,
               extra_compile_args=compile_options,
-        define_macros = [('ClConvolve_EXPORTS',1),('OpenCLHelper_EXPORTS',1)],
-#              extra_objects=['cClConvolve.pxd'],
+        define_macros = [('DeepCL_EXPORTS',1),('OpenCLHelper_EXPORTS',1)],
+#              extra_objects=['cDeepCL.pxd'],
 #              library_dirs = [lib_build_dir()],
               runtime_library_dirs=runtime_library_dirs,
               language="c++"
@@ -207,10 +207,10 @@ ext_modules = [
 
 setup(
   name = 'DeepCL',
-  version = "0.0.7",
+  version = "1.0.1",
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
-  description = 'python wrapper for ClConvolve deep convolutional neural network library for OpenCL',
+  description = 'python wrapper for DeepCL deep convolutional neural network library for OpenCL',
   license = 'MPL',
   url = 'https://github.com/hughperkins/DeepCL',
   long_description = read('README.rst'),

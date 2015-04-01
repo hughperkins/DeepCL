@@ -26,7 +26,6 @@ net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(10).imageSize(1).biased()
 net.addLayer( PyDeepCL.SoftMaxMaker() )
 print( net.asString() )
 
-#mnistFilePath = '../ClConvolve/data/mnist/t10k-dat.mat'
 (N,planes,size) = PyDeepCL.GenericLoader.getDimensions(mnistFilePath)
 print( (N,planes,size) )
 

@@ -1,4 +1,4 @@
-include ClConvolve/src/*.h
+include ../src/*.h
 include cClConvolve.pxd
-include ClConvolve/OpenCLHelper/*.h
+include ../OpenCLHelper/*.h
 

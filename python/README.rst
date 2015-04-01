@@ -6,7 +6,7 @@
 **Table of Contents** *generated with
 `DocToc <https://github.com/thlorenz/doctoc>`__*
 
--  `PyClConvolve <#pyclconvolve>`__
+-  `PyDeepCL <#pyclconvolve>`__
 -  `How to use <#how-to-use>`__
 -  `Notes on how the wrapper works <#notes-on-how-the-wrapper-works>`__
 -  `To install from pip <#to-install-from-pip>`__
@@ -25,24 +25,23 @@
 
    <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-PyClConvolve
-============
+PyDeepCL
+========
 
-Python wrapper for
-`ClConvolve <https://github.com/hughperkins/ClConvolve>`__
+Python wrapper for `DeepCL <https://github.com/hughperkins/DeepCL>`__
 
 How to use
 ==========
 
-See `test\_clconvolve.py <PyClConvolve/test_clconvolve.py>`__ for an
-example of:
+See `test\_clconvolve.py <python/test_clconvolve.py>`__ for an example
+of:
 
 -  creating a network, with several layers
 -  loading mnist data
 -  training the network using a higher-level interface (``NetLearner``)
 
 For examples of using lower-level entrypoints, see
-`test\_lowlevel.py <https://github.com/hughperkins/PyClConvolve/blob/master/test_lowlevel.py>`__:
+`test\_lowlevel.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_lowlevel.py>`__:
 
 -  creating layers directly
 -  running epochs and forward/backprop directly
@@ -50,13 +49,13 @@ For examples of using lower-level entrypoints, see
 Notes on how the wrapper works
 ==============================
 
--  `cClConvolve.pxd <https://github.com/hughperkins/ClConvolve/blob/master/PyClConvolve/cClConvolve.pxd>`__
-   contains the definitions of the underlying ClConvolve c++ libraries
+-  `cDeepCL.pxd <https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd>`__
+   contains the definitions of the underlying DeepCL c++ libraries
    classes
--  `PyClConvolve.pyx <https://github.com/hughperkins/ClConvolve/blob/master/PyClConvolve/PyClConvolve.pyx>`__
+-  `PyDeepCL.pyx <https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx>`__
    contains Cython wrapper classes around the underlying c++ classes
--  `setup.py <https://github.com/hughperkins/ClConvolve/blob/master/PyClConvolve/setup.py>`__
-   is a setup file for compiling the ``PyClConvolve.pyx`` Cython file
+-  `setup.py <https://github.com/hughperkins/DeepCL/blob/master/python/setup.py>`__
+   is a setup file for compiling the ``PyDeepCL.pyx`` Cython file
 
 To install from pip
 ===================
@@ -65,7 +64,7 @@ To install from pip
 
     pip install DeepCL 
 
--  related pypi page: https://pypi.python.org/pypi/PyClConvolve
+-  related pypi page: https://pypi.python.org/pypi/DeepCL
 
 To build directly
 =================

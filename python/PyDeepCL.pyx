@@ -9,12 +9,12 @@ from cpython cimport array as c_array
 from array import array
 import threading
 from libcpp.string cimport string
-cimport cClConvolve
+cimport cDeepCL
 
 def checkException():
     cdef int threwException = 0
     cdef string message = ""
-    cClConvolve.checkException( &threwException, &message)
+    cDeepCL.checkException( &threwException, &message)
     # print('threwException: ' + str(threwException) + ' ' + message ) 
     if threwException:
         raise RuntimeError(message)
@@ -33,14 +33,14 @@ def toCppString( pyString ):
     return pyString
 
 cdef class NeuralNet:
-    cdef cClConvolve.NeuralNet *thisptr
+    cdef cDeepCL.NeuralNet *thisptr
 
     def __cinit__(self, planes = None, size = None):
         print( '__cinit__(planes,size)')
         if planes == None and size == None:
-             self.thisptr = new cClConvolve.NeuralNet()
+             self.thisptr = new cDeepCL.NeuralNet()
         else:
-            self.thisptr = new cClConvolve.NeuralNet(planes, size)
+            self.thisptr = new cDeepCL.NeuralNet(planes, size)
 
     def asString(self):
         return self.thisptr.asString()
@@ -66,12 +66,12 @@ cdef class NeuralNet:
 cdef class NetdefToNet:
     @staticmethod
     def createNetFromNetdef( NeuralNet neuralnet, netdef ):
-        return cClConvolve.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
+        return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
 
 cdef class NetLearner: 
-    cdef cClConvolve.CyNetLearner[float] *thisptr
+    cdef cDeepCL.CyNetLearner[float] *thisptr
     def __cinit__( self, NeuralNet neuralnet ):
-        self.thisptr = new cClConvolve.CyNetLearner[float]( neuralnet.thisptr )
+        self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
@@ -97,7 +97,7 @@ cdef class GenericLoader:
         cdef int N
         cdef int planes
         cdef int size
-        cClConvolve.GenericLoader.getDimensions( toCppString( trainFilePath ), &N, &planes, &size )
+        cDeepCL.GenericLoader.getDimensions( toCppString( trainFilePath ), &N, &planes, &size )
         # print( N )
         return (N,planes,size)
     @staticmethod 
@@ -106,7 +106,7 @@ cdef class GenericLoader:
         #images = view.array(shape=(N,planes,size,size),itemsize=1,
         #cdef unsigned char *images
         #cdef int *labels
-        cClConvolve.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )
+        cDeepCL.GenericLoader.load( toCppString( trainFilepath ), &images[0], &labels[0], startN , numExamples )
         #return (images, labels)
     @staticmethod 
     def load( trainFilepath, float[:] images, int[:] labels, startN, numExamples ):
@@ -118,7 +118,7 @@ cdef class GenericLoader:
         print( (N, planes, size ) )
         cdef c_array.array ucImages = array('B', [0] * (numExamples * planes * size * size) )
         cdef unsigned char[:] ucImagesMv = ucImages
-        cClConvolve.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )
+        cDeepCL.GenericLoader.load( toCppString(trainFilepath), &ucImagesMv[0], &labels[0], startN , numExamples )
         #return (images, labels)
         cdef int i
         cdef int total
@@ -128,12 +128,12 @@ cdef class GenericLoader:
             images[i] = ucImagesMv[i]
 
 cdef class LayerMaker2:
-    cdef cClConvolve.LayerMaker2 *baseptr
+    cdef cDeepCL.LayerMaker2 *baseptr
 
 cdef class NormalizationLayerMaker(LayerMaker2):
-    cdef cClConvolve.NormalizationLayerMaker *thisptr
+    cdef cDeepCL.NormalizationLayerMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.NormalizationLayerMaker()
+        self.thisptr = new cDeepCL.NormalizationLayerMaker()
         self.baseptr = self.thisptr
     def translate( self, float _translate ):
         self.thisptr.translate( _translate )
@@ -146,9 +146,9 @@ cdef class NormalizationLayerMaker(LayerMaker2):
         return NormalizationLayerMaker()
 
 cdef class FullyConnectedMaker(LayerMaker2):
-    cdef cClConvolve.FullyConnectedMaker *thisptr
+    cdef cDeepCL.FullyConnectedMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.FullyConnectedMaker()
+        self.thisptr = new cDeepCL.FullyConnectedMaker()
         self.baseptr = self.thisptr
     def numPlanes( self, int _numPlanes ):
         self.thisptr.numPlanes( _numPlanes )
@@ -179,9 +179,9 @@ cdef class FullyConnectedMaker(LayerMaker2):
         return FullyConnectedMaker()
 
 cdef class ConvolutionalMaker(LayerMaker2):
-    cdef cClConvolve.ConvolutionalMaker *thisptr
+    cdef cDeepCL.ConvolutionalMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.ConvolutionalMaker()
+        self.thisptr = new cDeepCL.ConvolutionalMaker()
         self.baseptr = self.thisptr
     def numFilters( self, int _numFilters ):
         self.thisptr.numFilters( _numFilters )
@@ -218,9 +218,9 @@ cdef class ConvolutionalMaker(LayerMaker2):
         return ConvolutionalMaker()
 
 cdef class PoolingMaker(LayerMaker2):
-    cdef cClConvolve.PoolingMaker *thisptr
+    cdef cDeepCL.PoolingMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.PoolingMaker()
+        self.thisptr = new cDeepCL.PoolingMaker()
         self.baseptr = self.thisptr
     def poolingSize( self, int _poolingSize ):
         self.thisptr.poolingSize( _poolingSize )
@@ -230,27 +230,27 @@ cdef class PoolingMaker(LayerMaker2):
         return PoolingMaker()
 
 cdef class SquareLossMaker(LayerMaker2):
-    cdef cClConvolve.SquareLossMaker *thisptr
+    cdef cDeepCL.SquareLossMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.SquareLossMaker()
+        self.thisptr = new cDeepCL.SquareLossMaker()
         self.baseptr = self.thisptr
     @staticmethod
     def instance():
         return SquareLossMaker()
 
 cdef class SoftMaxMaker(LayerMaker2):
-    cdef cClConvolve.SoftMaxMaker *thisptr
+    cdef cDeepCL.SoftMaxMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.SoftMaxMaker()
+        self.thisptr = new cDeepCL.SoftMaxMaker()
         self.baseptr = self.thisptr
     @staticmethod
     def instance():
         return SoftMaxMaker()
 
 cdef class InputLayerMaker(LayerMaker2):
-    cdef cClConvolve.InputLayerMaker[float] *thisptr
+    cdef cDeepCL.InputLayerMaker[float] *thisptr
     def __cinit__( self ):
-        self.thisptr = new cClConvolve.InputLayerMaker[float]()
+        self.thisptr = new cDeepCL.InputLayerMaker[float]()
         self.baseptr = self.thisptr
     def numPlanes( self, int _numPlanes ):
         self.thisptr.numPlanes( _numPlanes )
