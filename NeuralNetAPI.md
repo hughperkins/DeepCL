@@ -40,7 +40,7 @@ net->print();
 ## Create a net
 
 ```c++
-#include "ClConvolve.h"
+#include "NeuralNet.h"
 
 NeuralNet *net = new NeuralNet();
 ```

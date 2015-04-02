@@ -129,9 +129,9 @@
 * If you specify option `loadweights=1`, the weights will be loadeded at the start
 * You can change the weights file with option `weightsfile=somefilename.dat`
 * If you specify option `loadweights=1`:
-  * the `netdef`, the `datadir`, and the `trainfile` will be compared to that used to generate the current weights file: if any of them are different, then ClConvolve will refuse to carry on, so that you don't overwrite the weights file inadvertently
-    * If you need something like, ClConvolve prompts you, showing the differences, and asks if you want to continue, then please raise an issue, and I will add this in
-  * Note that the epoch number will continue from the weights.dat file, so make sure to increase `numepochs` appropriately, otherwise ClConvolve will start, load the weights file, and then exit again, since all epochs have been finished :-P
+  * the `netdef`, the `datadir`, and the `trainfile` will be compared to that used to generate the current weights file: if any of them are different, then DeepCL will refuse to carry on, so that you don't overwrite the weights file inadvertently
+    * If you need something like, DeepCL prompts you, showing the differences, and asks if you want to continue, then please raise an issue, and I will add this in
+  * Note that the epoch number will continue from the weights.dat file, so make sure to increase `numepochs` appropriately, otherwise DeepCL will start, load the weights file, and then exit again, since all epochs have been finished :-P
 
 ## Command-line options
 

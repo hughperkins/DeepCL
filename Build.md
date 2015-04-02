@@ -21,8 +21,7 @@
 
 - git
 - cmake
-- gcc
-- g++
+- g++ (should support c++0x; eg 4.4 or better)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
   - tested using beignet, which provides OpenCL 1.2; and on CUDA 6.5 driver
 - opencl-headers
@@ -31,8 +30,8 @@
 ### Procedure
 
 ```bash
-git clone --recursive https://github.com/hughperkins/ClConvolve.git
-cd ClConvolve
+git clone --recursive https://github.com/hughperkins/DeepCL.git
+cd DeepCL
 mkdir build
 cd build
 cmake ..
@@ -50,14 +49,14 @@ Note:
 
 - git
 - cmake
-- Visual Studio (tested on 2013 Community Edition)
+- Visual Studio (current 'standard' build system is: Visual Studio 2010 Express, but should also work on Visual Studio 2008 for Python 2.7, and Visual Studio Express 2013)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 ### Procedure
 
-- in git, do `git clone --recursive https://github.com/hughperkins/ClConvolve.git`
-- create a subdirectory `build` in the git cloned `ClConvolve` directory
-- open cmake, point at the `ClConvolve` directory, and set to build in the `build` subdirectory
+- in git, do `git clone --recursive https://github.com/hughperkins/DeepCL.git`
+- create a subdirectory `build` in the git cloned `DeepCL` directory
+- open cmake, point at the `DeepCL` directory, and set to build in the `build` subdirectory
   - `configure` then `generate`
 - open visual studio, and load any of the projects in the `build` directory
   - change release type to `Release`
@@ -67,9 +66,9 @@ Note:
 ## Linking
 
 You will need:
-- libClConvolve.so (or ClConvolve.dll)
+- libDeepCL.so (or DeepCL.dll)
 - ~~*.cl files~~ *.cl files no longer needed at runtime :-)  They're packaged inside the dll/so now.
 
-~~The *.cl files should be in the current working directory at the time that you call into any ClConvolve methods.~~
+~~The *.cl files should be in the current working directory at the time that you call into any DeepCL methods.~~
 
 
