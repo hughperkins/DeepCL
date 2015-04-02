@@ -15,9 +15,6 @@ Global Contents
 - [Architecture](Architecture.md)
 - [Changes](Changes.md)
 
-Page Contents
-========
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
@@ -77,8 +74,6 @@ Example usage:
   - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
 
 For Python wrappers, please see [python/README.md](python/README.md)
-
-
 
 # To use the pre-built binaries
 
