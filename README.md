@@ -8,9 +8,11 @@ Global Contents
 - [Command line usage](Commandline.md)
 - [Neural Net API](NeuralNetAPI.md)
 - [Python wrapper](python/README.md)
+- [Q-learning](QLearning.md)
 - [Formulae notes](Formulae.md)
 - [To build](Build.md)
 - [Testing](Testing.md)
+- [Architecture](Architecture.md)
 - [Changes](Changes.md)
 
 Page Contents
@@ -21,10 +23,6 @@ Page Contents
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [DeepCL](#deepcl)
-- [Validation against standard datasets](#validation-against-standard-datasets)
-  - [NORB](#norb)
-  - [MNIST](#mnist)
-- [Q-learning (draft)](#q-learning-draft)
 - [To use the pre-built binaries](#to-use-the-pre-built-binaries)
   - [What if it doesn't run?](#what-if-it-doesnt-run)
 - [What if I need a new feature?](#what-if-i-need-a-new-feature)
@@ -81,46 +79,6 @@ Example usage:
 For Python wrappers, please see [python/README.md](python/README.md)
 
 
-# Validation against standard datasets
-
-## NORB
-
-* Download the data files from [NORB datafiles](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/), and place in `data/norb`, decompressed, ie (g)unzipped
-* Pre-process, to shuffle the training samples, and draw 1000 testing samples:
-```bash
-./prepare-norb ../data/norb
-```
-* Run training, eg, based on LeCun's lenet-7:
-```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.00001 dataset=norb
-```
-* On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, this has epoch time of 76 seconds, and reaches test accuracy of around 91.7% after around 200 epochs (train accuracy 99.996%!)
-
-## MNIST
-
-* You can download the MNIST data from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
-* Convert from idx to mat format:
-```bash
-./idx-to-mat ../data/mnist train
-./idx-to-mat ../data/mnist t10k
-```
-* Run as per the [convnetjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
-```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 dataset=mnist
-```
-* On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
-* Actually, I think the following gives slightly better test accuracy, about 99.0%, using 17.2seconds per epoch:
-```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 dataset=mnist
-```
-
-# Q-learning (draft)
-
-* Started to write a q-learning module
-* Ideally, this will be callable from Python in the future, via [PyDeepCL](https://pypi.python.org/pypi/PyDeepCL)
-* Look at [ScenarioImage.h](prototyping/qlearning/ScenarioImage.h) and [ScenarioImage.cpp](prototyping/qlearning/ScenarioImage.cpp) for an example scenario we can feed to it
-  * [learnScenarioImage.cpp](prototyping/qlearning/learnScenarioImage.cpp) is a corresponding example of how we can learn this
-* The qlearning module is at [QLearner.h](qlearning/QLearner.h), and the interface for scenarios at [Scenario.h](qlearning/Scenario.h)
 
 # To use the pre-built binaries
 

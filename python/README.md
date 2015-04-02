@@ -2,7 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [PyDeepCL](#pyclconvolve)
+- [PyDeepCL](#pydeepcl)
 - [How to use](#how-to-use)
 - [Notes on how the wrapper works](#notes-on-how-the-wrapper-works)
 - [To install from pip](#to-install-from-pip)
@@ -12,7 +12,6 @@
     - [Python packages](#python-packages)
   - [To build:](#to-build)
 - [Considerations for Python wrapper developers](#considerations-for-python-wrapper-developers)
-- [To build, obsolete method](#to-build-obsolete-method)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
