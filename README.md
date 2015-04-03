@@ -4,16 +4,16 @@
 Global Contents
 ===============
 
-- [This page](README.md)
-- [Command line usage](Commandline.md)
-- [Neural Net API](NeuralNetAPI.md)
+- [This page](doc/README.md)
+- [Command line usage](doc/Commandline.md)
+- [Neural Net API](doc/NeuralNetAPI.md)
 - [Python wrapper](python/README.md)
-- [Q-learning](QLearning.md)
-- [Formulae notes](Formulae.md)
-- [To build](Build.md)
-- [Testing](Testing.md)
-- [Architecture](Architecture.md)
-- [Changes](Changes.md)
+- [Q-learning](doc/QLearning.md)
+- [Formulae notes](doc/Formulae.md)
+- [To build](doc/Build.md)
+- [Testing](doc/Testing.md)
+- [Architecture](doc/Architecture.md)
+- [Changes](doc/Changes.md)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
