@@ -9,7 +9,6 @@ Global Contents
 - [Neural Net API](doc/NeuralNetAPI.md)
 - [Python wrapper](python/README.md)
 - [Q-learning](doc/QLearning.md)
-- [Formulae notes](doc/Formulae.md)
 - [To build](doc/Build.md)
 - [Testing](doc/Testing.md)
 - [Architecture](doc/Architecture.md)
