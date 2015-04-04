@@ -134,7 +134,7 @@ osfamily = platform.uname()[0]
 if osfamily == 'Windows':
    compile_options.append('/EHsc')
 elif osfamily == 'Linux':
-   compile_options.append('-std=c++11')
+   compile_options.append('-std=c++0x')
 else:
    pass
    # put other options etc here if necessary
