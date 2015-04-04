@@ -135,6 +135,7 @@ if osfamily == 'Windows':
    compile_options.append('/EHsc')
 elif osfamily == 'Linux':
    compile_options.append('-std=c++0x')
+   compile_options.append('-g')
 else:
    pass
    # put other options etc here if necessary
