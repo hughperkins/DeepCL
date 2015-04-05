@@ -14,6 +14,8 @@ import platform
 from setuptools import setup
 #from distutils.extension import Extension
 from setuptools import Extension
+import distutils.dir_util
+import distutils.file_util
 
 cython_present = False
 try:
@@ -29,7 +31,27 @@ try:
 except ImportError:
     pass
 
-print ( sys.argv )
+#print ( sys.argv )
+# if any of sys.argv is bdist or sdist or bdist_egg, then lets copy everything to
+# a subfolder of us called 'mysrc', since '..' paths dont work well..
+# otherwise, let's just assume this folder already contains our source :-)
+docopy = False
+for arg in sys.argv:
+    if arg in ('sdist','bdist','bdist_egg','build_ext'):
+        docopy = True
+
+if docopy:
+    if not os.path.isdir('mysrc'):
+        os.makedirs('mysrc')
+    for thisdir in ['../src','../OpenCLHelper','../qlearning',
+            '../OpenCLHelper/thirdparty/clew/src']: # copy everything..
+        for thisfile in os.listdir(thisdir):
+            #print(thisfile)
+            thisfilepath = thisdir +'/' + thisfile
+            if os.path.isfile(thisfilepath):
+                distutils.file_util.copy_file( thisfilepath, 'mysrc/' + thisfile )
+
+#        distutils.dir_util.copy_tree( thisdir, 'mysrc' )
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -53,13 +75,20 @@ def my_cythonize(extensions, **_ignore):
             if ext in ('.pyx', '.py'):
                 should_cythonize = True
                 if not cython_present:
-                    if extension.language == 'c++':
+                   # if extension.language == 'c++':
                         ext = '.cpp'
-                    else:
-                        ext = '.c'
-                sfile = path + ext
+                    #else:
+                     #   ext = '.c'
+            if sfile == 'PyDeepCL.c':
+                ext = '.cpp' # hack for now... not sure how to fix this cleanly
+                             # yet
+            sfile = path + ext
+            if sfile.startswith('..'):
+                # use mysrc instead
+                basename = os.path.basename(sfile)
+                sfile = 'mysrc/' + basename
             sources.append(sfile)
-        print(should_cythonize)
+        #print(should_cythonize)
         if should_cythonize and cython_present:
             print('cythonizing...')
             cythonize(extension)
@@ -72,13 +101,22 @@ def no_cythonize(extensions, **_ignore):
         sources = []
         for sfile in extension.sources:
             path, ext = os.path.splitext(sfile)
+            #print('path,ext',path,ext)
             if ext in ('.pyx', '.py'):
-                if extension.language == 'c++':
+                #if extension.language == 'c++':
                     ext = '.cpp'
-                else:
-                    ext = '.c'
-                sfile = path + ext
+                #else:
+                #    ext = '.c'
+            if sfile == 'PyDeepCL.c':
+                ext = '.cpp' # hack for now... not sure how to fix this cleanly
+                             # yet
+            sfile = path + ext
+            if sfile.startswith('..'):
+                # use mysrc instead
+                basename = os.path.basename(sfile)
+                sfile = 'mysrc/' + basename
             sources.append(sfile)
+            print('appending source ', sfile )
         extension.sources[:] = sources    
     return extensions
 
@@ -116,7 +154,7 @@ deepcl_sources = []
 for source in deepcl_sources_all:
     deepcl_sources.append(source)
 
-openclhelpersources = list(map( lambda name : '../' + name, [ 'OpenCLHelper/OpenCLHelper.cpp',
+openclhelpersources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [ 'OpenCLHelper/OpenCLHelper.cpp',
         'OpenCLHelper/deviceinfo_helper.cpp', 'OpenCLHelper/platforminfo_helper.cpp',
         'OpenCLHelper/CLKernel.cpp', 'OpenCLHelper/thirdparty/clew/src/clew.c' ] ))
 print(openclhelpersources)
@@ -181,10 +219,10 @@ ext_modules = [
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
                 + openclhelpersources
-                + list(map( lambda name : '../src/' + name, deepcl_sources))
-                + ['../qlearning/QLearner.cpp','../qlearning/array_helper.cpp'], 
+                + list(map( lambda name : 'mysrc/' + name, deepcl_sources))
+                + ['mysrc/QLearner.cpp','mysrc/array_helper.cpp'], 
 #                glob.glob('DeepCL/OpenCLHelper/*.h'),
-              include_dirs = ['../src','../OpenCLHelper','../qlearning'],
+              include_dirs = ['mysrc'],
               libraries= libraries,
               extra_compile_args=compile_options,
         define_macros = [('DeepCL_EXPORTS',1),('OpenCLHelper_EXPORTS',1)],
@@ -197,7 +235,7 @@ ext_modules = [
 
 setup(
   name = 'DeepCL',
-  version = "3.1.0",  # synchronize to deepcl main version
+  version = "3.2.1",  # synchronize to deepcl main version
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
   description = 'python wrapper for DeepCL deep convolutional neural network library for OpenCL',
@@ -214,7 +252,7 @@ setup(
   tests_require = ['nose>=1.3.4','Cython>=0.22','cogapp>=2.4','future>=0.14.3'],
   scripts = ['test_deepcl.py','test_lowlevel.py'],
  # modules = libraries,
-#  libraries = libraries,
+#  lib raries = libraries,
   ext_modules = my_cythonize( ext_modules),
 )
 

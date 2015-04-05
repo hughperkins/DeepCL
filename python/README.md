@@ -1,27 +1,10 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [PyDeepCL](#pydeepcl)
-- [How to use](#how-to-use)
-- [Notes on how the wrapper works](#notes-on-how-the-wrapper-works)
-- [To install from pip](#to-install-from-pip)
-- [To build directly](#to-build-directly)
-  - [Pre-requisites:](#pre-requisites)
-    - [Compilers](#compilers)
-    - [Python packages](#python-packages)
-  - [To build:](#to-build)
-- [Considerations for Python wrapper developers](#considerations-for-python-wrapper-developers)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 # PyDeepCL
 
 Python wrapper for  [DeepCL](https://github.com/hughperkins/DeepCL)
 
 # How to use
 
-See [test_clconvolve.py](python/test_clconvolve.py) for an example of:
+See [test_clconvolve.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_clconvolve.py) for an example of:
 
 * creating a network, with several layers
 * loading mnist data

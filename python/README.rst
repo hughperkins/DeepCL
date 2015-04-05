@@ -1,29 +1,3 @@
-.. raw:: html
-
-   <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-   <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-**Table of Contents** *generated with
-`DocToc <https://github.com/thlorenz/doctoc>`__*
-
--  `PyDeepCL <#pydeepcl>`__
--  `How to use <#how-to-use>`__
--  `Notes on how the wrapper works <#notes-on-how-the-wrapper-works>`__
--  `To install from pip <#to-install-from-pip>`__
--  `To build directly <#to-build-directly>`__
--  `Pre-requisites: <#pre-requisites>`__
-
-   -  `Compilers <#compilers>`__
-   -  `Python packages <#python-packages>`__
-
--  `To build: <#to-build>`__
--  `Considerations for Python wrapper
-   developers <#considerations-for-python-wrapper-developers>`__
-
-.. raw:: html
-
-   <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 PyDeepCL
 ========
 
@@ -32,8 +6,9 @@ Python wrapper for `DeepCL <https://github.com/hughperkins/DeepCL>`__
 How to use
 ==========
 
-See `test\_clconvolve.py <python/test_clconvolve.py>`__ for an example
-of:
+See
+`test\_clconvolve.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_clconvolve.py>`__
+for an example of:
 
 -  creating a network, with several layers
 -  loading mnist data

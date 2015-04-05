@@ -1,4 +1,11 @@
-include ../src/*.h
+#include ../src/*.h
+#include ../src/*.cpp
+#include ../qlearning/*.cpp
+#include ../qlearning/*.h
 include cDeepCL.pxd
-include ../OpenCLHelper/*.h
+#include ../OpenCLHelper/*.h
+#include ../OpenCLHelper/*.cpp
+include Cy*.cpp
+include Cy*.h
+include mysrc/*
 

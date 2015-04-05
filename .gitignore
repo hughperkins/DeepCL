@@ -53,10 +53,12 @@ data/cifar10
 # PyClConvolve
 dist/
 *.egg-info/
-PyClConvolve/OpenCLHelper/
-PyClConvolve/src/
-PyClConvolve/qlearning/
-python/OpenCLHelper/
+# PyClConvolve/OpenCLHelper/
+# PyClConvolve/src/
+# PyClConvolve/qlearning/
+# python/OpenCLHelper/
 python/src/
-python/qlearning/
+# python/qlearning/
+python/mysrc/
+
 
