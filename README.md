@@ -79,7 +79,7 @@ For Python wrappers, please see [python/README.md](python/README.md)
 Pre-built binaries are available for Windows-64, for certain releases.  In order to use them you need:
 * [Windows 2013 redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=40784).
 * An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v2.0.2](https://github.com/hughperkins/DeepCL/releases/tag/v2.0.2)
+* A recent release with Windows binaries is [v3.1.0](https://github.com/hughperkins/DeepCL/releases/tag/v3.1.0)
 
 ## What if it doesn't run?
 

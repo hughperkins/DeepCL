@@ -197,7 +197,7 @@ ext_modules = [
 
 setup(
   name = 'DeepCL',
-  version = "1.0.2",
+  version = "3.1.0",  # synchronize to deepcl main version
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
   description = 'python wrapper for DeepCL deep convolutional neural network library for OpenCL',
@@ -209,8 +209,9 @@ setup(
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
     'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
   ],
-  install_requires = ['Cython>=0.22','cogapp>=2.4','future>=0.14.3'],
-  tests_require = ['nose>=1.3.4'],
+  install_requires = [],
+  # install_requires = [],
+  tests_require = ['nose>=1.3.4','Cython>=0.22','cogapp>=2.4','future>=0.14.3'],
   scripts = ['test_deepcl.py','test_lowlevel.py'],
  # modules = libraries,
 #  libraries = libraries,
