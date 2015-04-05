@@ -40,7 +40,7 @@ if( ON_WINDOWS)
 link_libraries(winmm) # needed for timeGetTime
 endif()
 
-set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
+set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
      ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
     Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
@@ -59,8 +59,8 @@ set( CLConvolve_sources LayerMaker.cpp NeuralNetMould.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
     PoolingBackpropGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
  )
-foreach(source ${CLConvolve_sources})
-    set( CLConvolve_sources_prefixed ${CLConvolve_sources_prefixed} src/${source})
+foreach(source ${DeepCL_sources})
+    set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
 endforeach()
 
 add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp
@@ -74,7 +74,7 @@ if( ON_LINUX )
 target_link_libraries( gpuinfo dl )
 endif()
 
-add_library( DeepCL SHARED ${CLConvolve_sources_prefixed} )
+add_library( DeepCL SHARED ${DeepCL_sources_prefixed} )
 #    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
 #    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
 
@@ -146,7 +146,9 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
-add_executable( clconvolve1 src/clconvolve1.cpp src/stringhelper.cpp )
+add_executable( deepcl src/deepcl.cpp src/stringhelper.cpp )
+add_executable( clconvolve1 src/deepcl.cpp src/stringhelper.cpp ) # same as deepcl, just for 
+              # backwards compatibility, so dont need to increment major version :-P
 
 add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
