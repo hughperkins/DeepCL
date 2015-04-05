@@ -146,7 +146,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
 #test/testbackprop.cpp test/testbiasbackprop.cpp
 #
 
-add_executable( deepcl src/deepcl.cpp src/stringhelper.cpp )
+add_executable( deepclrun src/deepcl.cpp src/stringhelper.cpp )
 add_executable( clconvolve1 src/deepcl.cpp src/stringhelper.cpp ) # same as deepcl, just for 
               # backwards compatibility, so dont need to increment major version :-P
 
