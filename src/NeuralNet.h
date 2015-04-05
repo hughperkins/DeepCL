@@ -64,6 +64,7 @@ public:
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
     template< typename T > InputLayer<T> *getFirstLayer();
     Layer *getLastLayer();
+    Layer *getLayer( int index );
     Layer const*getLastLayer() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;

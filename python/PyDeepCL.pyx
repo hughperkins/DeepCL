@@ -32,6 +32,18 @@ def toCppString( pyString ):
         return pyString.encode('utf8')
     return pyString
 
+cdef class Layer:
+    cdef cDeepCL.Layer *thisptr
+
+    def __cinit__(self):
+        pass
+    cdef set_thisptr( self, cDeepCL.Layer *thisptr):
+        self.thisptr = thisptr
+    def propagate(self):
+        self.thisptr.propagate()
+    def backProp(self, float learningRate):
+        self.thisptr.backProp( learningRate )
+
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
 
@@ -41,6 +53,9 @@ cdef class NeuralNet:
              self.thisptr = new cDeepCL.NeuralNet()
         else:
             self.thisptr = new cDeepCL.NeuralNet(planes, size)
+
+    def __dealloc(self):
+        del self.thisptr 
 
     def asString(self):
         return self.thisptr.asString()
@@ -62,6 +77,12 @@ cdef class NeuralNet:
         return self.thisptr.calcNumRight( &labels[0] )
     def addLayer( self, LayerMaker2 layerMaker ):
         self.thisptr.addLayer( layerMaker.baseptr )
+    def getLayer( self, int index ):
+        layer = Layer()
+        cdef cDeepCL.Layer *cLayer = self.thisptr.getLayer( index )
+        layer.set_thisptr( cLayer ) # note: once neuralnet out of scope, these 
+                                                        # are no longer valid
+        return layer
 
 cdef class NetdefToNet:
     @staticmethod
@@ -72,6 +93,8 @@ cdef class NetLearner:
     cdef cDeepCL.CyNetLearner[float] *thisptr
     def __cinit__( self, NeuralNet neuralnet ):
         self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
+    def __dealloc(self):
+        del self.thisptr
     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
@@ -135,6 +158,8 @@ cdef class NormalizationLayerMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.NormalizationLayerMaker()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     def translate( self, float _translate ):
         self.thisptr.translate( _translate )
         return self
@@ -150,6 +175,8 @@ cdef class FullyConnectedMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.FullyConnectedMaker()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     def numPlanes( self, int _numPlanes ):
         self.thisptr.numPlanes( _numPlanes )
         return self
@@ -183,6 +210,8 @@ cdef class ConvolutionalMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.ConvolutionalMaker()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     def numFilters( self, int _numFilters ):
         self.thisptr.numFilters( _numFilters )
         return self
@@ -222,6 +251,8 @@ cdef class PoolingMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.PoolingMaker()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     def poolingSize( self, int _poolingSize ):
         self.thisptr.poolingSize( _poolingSize )
         return self
@@ -234,6 +265,8 @@ cdef class SquareLossMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.SquareLossMaker()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     @staticmethod
     def instance():
         return SquareLossMaker()
@@ -243,6 +276,8 @@ cdef class SoftMaxMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.SoftMaxMaker()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     @staticmethod
     def instance():
         return SoftMaxMaker()
@@ -252,6 +287,8 @@ cdef class InputLayerMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.InputLayerMaker[float]()
         self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
     def numPlanes( self, int _numPlanes ):
         self.thisptr.numPlanes( _numPlanes )
         return self

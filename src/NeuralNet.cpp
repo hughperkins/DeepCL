@@ -182,6 +182,15 @@ Layer *NeuralNet::getLastLayer() {
     }
     return layers[layers.size() - 1];
 }
+Layer *NeuralNet::getLayer( int index ) {
+    if( layers.size() == 0 ) {
+        return 0;
+    }
+    if( index < 0 || index > (int)layers.size() - 1 ) {
+        return 0;
+    }
+    return layers[index];
+}
 Layer const*NeuralNet::getLastLayer() const {
     if( layers.size() == 0 ) {
         return 0;

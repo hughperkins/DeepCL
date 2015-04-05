@@ -10,6 +10,11 @@ from libcpp cimport bool
 cdef extern from "CyWrappers.h":
     cdef void checkException( int *wasRaised, string *message )
 
+cdef extern from "Layer.h":
+    cdef cppclass Layer:
+        void propagate()
+        void backProp( float learningRate )
+
 cdef extern from "NeuralNet.h":
     cdef cppclass NeuralNet:
         #pass
@@ -23,6 +28,7 @@ cdef extern from "NeuralNet.h":
         void backProp( float learningRate, const float *expectedResults) except +
         int calcNumRight( const int *labels ) except +
         void addLayer( LayerMaker2 *maker ) except +
+        Layer *getLayer( int index )
 
 cdef extern from "NetdefToNet.h":
     cdef cppclass NetdefToNet:

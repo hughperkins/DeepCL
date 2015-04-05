@@ -22,9 +22,7 @@ import sys
 import glob
 import platform
 from setuptools import setup
-#from distutils.extension import Extension
 from setuptools import Extension
-
 from Cython.Build import cythonize
 import pypandoc
 
