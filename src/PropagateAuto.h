@@ -14,7 +14,7 @@
 #include "ActivationFunction.h"
 #include "Propagate.h"
 #include "LayerDimensions.h"
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 using namespace std;
 
@@ -25,7 +25,7 @@ using namespace std;
 #define STATIC static
 #define VIRTUAL virtual
 
-class ClConvolve_EXPORT PropagateAuto : public Propagate {
+class DeepCL_EXPORT PropagateAuto : public Propagate {
 public:
 //    OpenCLHelper *cl;
 //    LayerDimensions dim;

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -14,7 +14,7 @@
 class OpenCLHelper;
 class CLWrapper;
 
-class ClConvolve_EXPORT PoolingPropagate {
+class DeepCL_EXPORT PoolingPropagate {
 public:
     OpenCLHelper *cl;
 

@@ -12,7 +12,7 @@
 
 #include "BatchProcess.h"
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 using namespace std;
 
@@ -33,5 +33,5 @@ void BatchProcess::run(std::string filepath, int startN, int batchSize, int tota
     }
 }
 
-template ClConvolve_EXPORT void BatchProcess::run<unsigned char>( std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<unsigned char> *batchAction);
+template DeepCL_EXPORT void BatchProcess::run<unsigned char>( std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<unsigned char> *batchAction);
 

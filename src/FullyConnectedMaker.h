@@ -10,9 +10,9 @@
 
 #include "LayerMaker.h"
 #include "ActivationFunction.h"
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
-class ClConvolve_EXPORT FullyConnectedMaker : public LayerMaker2 {
+class DeepCL_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:
     int _numPlanes;
     int _imageSize;

@@ -9,11 +9,11 @@
 #include <cstring>
 
 #include "ActivationFunction.h"
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 #include "LayerMaker.h"
 
-class ClConvolve_EXPORT ConvolutionalMaker : public LayerMaker2 {
+class DeepCL_EXPORT ConvolutionalMaker : public LayerMaker2 {
 public:
     int _numFilters;
     int _filterSize;

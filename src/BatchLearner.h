@@ -16,9 +16,9 @@ class Trainable;
 #define VIRTUAL virtual
 #define STATIC static
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
-class ClConvolve_EXPORT EpochResult {
+class DeepCL_EXPORT EpochResult {
 public:
     float loss;
     int numRight;
@@ -29,14 +29,14 @@ public:
 };
 
 template< typename T>
-class ClConvolve_EXPORT NetAction {
+class DeepCL_EXPORT NetAction {
 public:
     virtual ~NetAction() {}
     virtual void run( Trainable *net, T *batchData, int const*batchLabels ) = 0;
 };
 
 template< typename T>
-class ClConvolve_EXPORT NetLearnLabeledBatch : public NetAction<T> {
+class DeepCL_EXPORT NetLearnLabeledBatch : public NetAction<T> {
 public:
     float learningRate;
     NetLearnLabeledBatch( float learningRate ) :
@@ -46,7 +46,7 @@ public:
 };
 
 template< typename T>
-class ClConvolve_EXPORT NetPropagateBatch : public NetAction<T> {
+class DeepCL_EXPORT NetPropagateBatch : public NetAction<T> {
 public:
     NetPropagateBatch() {
     }
@@ -54,7 +54,7 @@ public:
 };
 
 template< typename T>
-class ClConvolve_EXPORT NetBackpropBatch : public NetAction<T> {
+class DeepCL_EXPORT NetBackpropBatch : public NetAction<T> {
 public:
     float learningRate;
     NetBackpropBatch( float learningRate ) :
@@ -67,7 +67,7 @@ public:
 // data into batches, which are then sent to the NeuralNet for forward and backward
 // propagation.
 template< typename T>
-class ClConvolve_EXPORT BatchLearner {
+class DeepCL_EXPORT BatchLearner {
 public:
     Trainable *net; // NOT owned by us, dont delete
 

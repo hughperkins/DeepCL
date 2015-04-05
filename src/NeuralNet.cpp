@@ -330,9 +330,9 @@ std::string NeuralNet::asString() {
     return result;
 }
 
-//template ClConvolve_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
-//template ClConvolve_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
+//template DeepCL_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
+//template DeepCL_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
 
-//template ClConvolve_EXPORT void NeuralNet::append( InputLayerMaker<unsigned char> inputLayerMaker );
-//template ClConvolve_EXPORT void NeuralNet::append( InputLayerMaker<float> inputLayerMaker );
+//template DeepCL_EXPORT void NeuralNet::append( InputLayerMaker<unsigned char> inputLayerMaker );
+//template DeepCL_EXPORT void NeuralNet::append( InputLayerMaker<float> inputLayerMaker );
 

@@ -10,12 +10,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 class LossLayerMaker;
 class Layer;
 
-class ClConvolve_EXPORT Trainable {
+class DeepCL_EXPORT Trainable {
 public:
     virtual ~Trainable() {}
     virtual int getResultsSize() const = 0;

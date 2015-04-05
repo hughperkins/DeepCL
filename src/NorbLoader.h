@@ -11,12 +11,12 @@
 #include "stringhelper.h"
 #include "FileHelper.h"
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class ClConvolve_EXPORT NorbLoader {
+class DeepCL_EXPORT NorbLoader {
 public:
 
     // [[[cog

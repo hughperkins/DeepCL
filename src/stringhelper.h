@@ -12,7 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 
-// #include "ClConvolveDllExport.h"
+// #include "DeepCLDllExport.h"
 
 class IHasToString {
 public:

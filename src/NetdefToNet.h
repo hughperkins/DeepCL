@@ -8,14 +8,14 @@
 
 #include <string>
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 class NeuralNet;
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class ClConvolve_EXPORT NetdefToNet {
+class DeepCL_EXPORT NetdefToNet {
 public:
 
     // [[[cog

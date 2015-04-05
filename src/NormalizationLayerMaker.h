@@ -9,9 +9,9 @@
 #include <cstring>
 
 #include "LayerMaker.h"
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
-class ClConvolve_EXPORT NormalizationLayerMaker : public LayerMaker2 {
+class DeepCL_EXPORT NormalizationLayerMaker : public LayerMaker2 {
 public:
     float _translate;
     float _scale;

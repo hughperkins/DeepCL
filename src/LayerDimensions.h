@@ -3,13 +3,13 @@
 #include <iostream>
 #include <cstring>
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 inline int square( int value ) {
     return value * value;
 }
 
-class ClConvolve_EXPORT LayerDimensions {
+class DeepCL_EXPORT LayerDimensions {
 public:
     int inputPlanes, inputImageSize, numFilters, filterSize, outputImageSize;
     bool padZeros, isEven;
@@ -89,6 +89,6 @@ public:
     std::string buildOptionsString();
 };
 
-ClConvolve_EXPORT std::ostream &operator<<( std::ostream &os, const LayerDimensions &dim );
+DeepCL_EXPORT std::ostream &operator<<( std::ostream &os, const LayerDimensions &dim );
 
 

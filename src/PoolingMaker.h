@@ -7,9 +7,9 @@
 #pragma once
 
 #include "LayerMaker.h"
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
-class ClConvolve_EXPORT PoolingMaker : public LayerMaker2 {
+class DeepCL_EXPORT PoolingMaker : public LayerMaker2 {
 public:
 //    Layer *previousLayer;
     int _poolingSize;

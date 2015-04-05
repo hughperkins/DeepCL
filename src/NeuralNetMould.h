@@ -9,16 +9,16 @@
 class NeuralNet;
 
 #if defined(_WIN32) 
-# if defined(ClConvolve_EXPORTS)
-#  define ClConvolve_EXPORT __declspec(dllexport)
+# if defined(DeepCL_EXPORTS)
+#  define DeepCL_EXPORT __declspec(dllexport)
 # else
-#  define ClConvolve_EXPORT __declspec(dllimport)
-# endif // ClConvolve_EXPORTS
+#  define DeepCL_EXPORT __declspec(dllimport)
+# endif // DeepCL_EXPORTS
 #else // _WIN32
-# define ClConvolve_EXPORT
+# define DeepCL_EXPORT
 #endif
 
-class ClConvolve_EXPORT NeuralNetMould {
+class DeepCL_EXPORT NeuralNetMould {
 public:
     int _numPlanes;
     int _imageSize;

@@ -14,9 +14,9 @@
 class NeuralNet;
 class Trainable;
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
-class ClConvolve_EXPORT PostEpochAction {
+class DeepCL_EXPORT PostEpochAction {
 public:
     virtual void run( int epoch ) = 0;
 };
@@ -24,7 +24,7 @@ public:
 // handles learning the neural net, ie running multiple epochs,
 // using a BatchLearner, to learn each epoch
 template<typename T>
-class ClConvolve_EXPORT NetLearner {
+class DeepCL_EXPORT NetLearner {
 public:
     Trainable *net;
 

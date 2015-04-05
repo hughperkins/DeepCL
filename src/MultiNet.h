@@ -15,14 +15,14 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 class LossLayer;
 
 class NeuralNet;
 
 // This handles grouping several NeuralNets into one single MultiNet
-class ClConvolve_EXPORT MultiNet : public Trainable {
+class DeepCL_EXPORT MultiNet : public Trainable {
     std::vector<Trainable * > trainables;
     float *results;
     int batchSize;

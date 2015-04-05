@@ -12,7 +12,7 @@
 
 #include "NormalizationHelper.h"
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 template< typename T >
 class BatchAction {
@@ -26,7 +26,7 @@ public:
     virtual void processBatch( int batchSize, int cubeSize ) = 0;
 };
 
-class ClConvolve_EXPORT BatchProcess {
+class DeepCL_EXPORT BatchProcess {
 public:
     template< typename T>
     static void run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<T> *batchAction);

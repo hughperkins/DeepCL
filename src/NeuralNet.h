@@ -24,7 +24,7 @@
 #include "PoolingMaker.h"
 #include "LayerMaker.h"
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 class OpenCLHelper;
 class ConvolutionalMaker;
@@ -35,7 +35,7 @@ template< typename T> class InputLayerMaker;
 #define VIRTUAL virtual
 #define STATIC static
 
-class ClConvolve_EXPORT NeuralNet : public Trainable {
+class DeepCL_EXPORT NeuralNet : public Trainable {
 public:
     std::vector< Layer *> layers;
     OpenCLHelper *cl;

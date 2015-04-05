@@ -18,13 +18,13 @@ class Trainable;
 #define VIRTUAL virtual
 #define STATIC static
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 // this handles learning one single epoch, breaking up the incoming training or testing
 // data into batches, which are then sent to the NeuralNet for forward and backward
 // propagation.
 template< typename T>
-class ClConvolve_EXPORT BatchLearnerOnDemand {
+class DeepCL_EXPORT BatchLearnerOnDemand {
 public:
     Trainable *net; // NOT owned by us, dont delete
 

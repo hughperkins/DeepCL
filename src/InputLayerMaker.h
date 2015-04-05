@@ -9,10 +9,10 @@
 #include <cstring>
 #include <iostream>
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 #include "LayerMaker.h"
 
-template< typename T > class ClConvolve_EXPORT InputLayerMaker : public LayerMaker2 {
+template< typename T > class DeepCL_EXPORT InputLayerMaker : public LayerMaker2 {
 public:
     int _numPlanes;
     int _imageSize;

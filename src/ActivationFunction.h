@@ -10,9 +10,9 @@
 #include <stdexcept>
 #include <cmath>
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
-class ClConvolve_EXPORT ActivationFunction {
+class DeepCL_EXPORT ActivationFunction {
 public:
     virtual ~ActivationFunction() {}
     virtual float calc( float value ) const { throw std::runtime_error("calc not implemented"); };

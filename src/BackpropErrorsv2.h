@@ -13,12 +13,12 @@
 #include "ActivationFunction.h"
 #include "LayerDimensions.h"
 
-#include "ClConvolveDllExport.h"
+#include "DeepCLDllExport.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class ClConvolve_EXPORT BackpropErrorsv2 {
+class DeepCL_EXPORT BackpropErrorsv2 {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
