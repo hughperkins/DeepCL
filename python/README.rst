@@ -104,3 +104,12 @@ Considerations for Python wrapper developers
    the ``except +`` syntax, I think, hence need to handle this ourselves
    too :-) see again \`Netlearner.learn for an example
 
+to run unit-tests
+-----------------
+
+(Draft) From this directory:
+
+.. code:: bash
+
+    nosetests -sv
+

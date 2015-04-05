@@ -72,4 +72,11 @@ python setup.py build_ext -i
 * By default, cython disables ctrl-c, so need to handle this ourselves somehow, eg see `NetLearner.learn` for an example
 * To handle ctrl-c, we need to use `nogil`, which means we cant use the `except +` syntax, I think, hence need to handle this ourselves too :-)  see again `Netlearner.learn for an example
 
+## to run unit-tests
+
+(Draft) From this directory:
+
+```bash
+nosetests -sv
+```
 

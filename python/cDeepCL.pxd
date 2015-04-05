@@ -14,6 +14,12 @@ cdef extern from "Layer.h":
     cdef cppclass Layer:
         void propagate()
         void backProp( float learningRate )
+        bool needsBackProp()
+        bool getBiased()
+        int getOutputCubeSize()
+        int getOutputPlanes()
+        int getOutputImageSize()
+        float * getResults()
 
 cdef extern from "NeuralNet.h":
     cdef cppclass NeuralNet:
@@ -29,6 +35,7 @@ cdef extern from "NeuralNet.h":
         int calcNumRight( const int *labels ) except +
         void addLayer( LayerMaker2 *maker ) except +
         Layer *getLayer( int index )
+        int getNumLayers()
 
 cdef extern from "NetdefToNet.h":
     cdef cppclass NetdefToNet:

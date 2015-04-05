@@ -5,18 +5,36 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-# This is just for use during development of the python wrapper
-# It's not going to be useful for doing multi-platform, reliable builds
-# It uses the binary built by the c++ cmake build, which can be built
-# multithreaded etc, so is fast to build during development :-)
-
-# If you do want to use it though, simply run it as for setup.py, ie:
+# ****************************************************************************
+# *                                                                          *
+# *  IMPORTANT:                                                              *
+# *  This script is for python wrapper development                           *
+# *  If you want to build and use the wrapper, you probably want             *
+# *  to use: 'setup.py'                                                      *
+# *                                                                          *
+# ****************************************************************************
+#
+# This script uses the binary built by the c++ cmake build, which can be built
+# using multiple threads etc, so is fast to build during development :-)
+# If you just want to build and use the wrapper, you should probably use 
+# 'setup.py', which builds slower, but more likely to be reliable and multi
+# platform
+#
+# Bearing in mind these caveats, if you do want to use this script:
+#
+# - first, build DeepCL shared object (.so or .dll) into the ../build directory
+#
+# - then, simply run this script as for setup.py, ie:
 #
 #     python dev-build.py build_ext -i
 #
 # ... and then you can simply run the test python scripts as before, eg:
 #
 #     ./test_lowlevel.py /mydata/mnist 
+#
+# The following command might be useful for running the C++ build, on linux:
+#
+#     ( cd ..; mkdir -p build; cd build; cmake ..; make -j 4 )
 #
 
 import os

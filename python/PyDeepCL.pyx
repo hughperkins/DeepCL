@@ -43,12 +43,22 @@ cdef class Layer:
         self.thisptr.propagate()
     def backProp(self, float learningRate):
         self.thisptr.backProp( learningRate )
+    def needsBackProp( self ):
+        return self.thisptr.needsBackProp()
+#    def getBiased( self ):
+#        return self.thisptr.getBiased()
+    def getOutputCubeSize( self ):
+        return self.thisptr.getOutputCubeSize()
+    def getOutputPlanes( self ):
+        return self.thisptr.getOutputPlanes()
+    def getOutputImageSize( self ):
+        return self.thisptr.getOutputImageSize()
 
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
 
     def __cinit__(self, planes = None, size = None):
-        print( '__cinit__(planes,size)')
+#        print( '__cinit__(planes,size)')
         if planes == None and size == None:
              self.thisptr = new cDeepCL.NeuralNet()
         else:
@@ -78,11 +88,15 @@ cdef class NeuralNet:
     def addLayer( self, LayerMaker2 layerMaker ):
         self.thisptr.addLayer( layerMaker.baseptr )
     def getLayer( self, int index ):
-        layer = Layer()
         cdef cDeepCL.Layer *cLayer = self.thisptr.getLayer( index )
+        if cLayer == NULL:
+            raise Exception('layer ' + str(index) + ' not found')
+        layer = Layer()
         layer.set_thisptr( cLayer ) # note: once neuralnet out of scope, these 
                                                         # are no longer valid
         return layer
+    def getNumLayers( self ):
+        return self.thisptr.getNumLayers()
 
 cdef class NetdefToNet:
     @staticmethod
