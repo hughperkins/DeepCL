@@ -1,3 +1,9 @@
+# Copyright Hugh Perkins 2015
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License, 
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+# obtain one at http://mozilla.org/MPL/2.0/.
+
 from __future__ import print_function
 
 import sys
@@ -78,4 +84,48 @@ def test_getResults():
     results = net.getLayer(1).getResults()
     print('results', results )
     assert [4,8] == results.tolist()
+
+def test_getsetweights():
+    # set some weights, try getting them, should give same values, and
+    # not crash etc :-)
+    # then try forward propagating, and it should prop according to these
+    # weigths, eg try setting all weights to 0, or 1, or 2, to make
+    # it easy ish, and turn off bias
+    net = PyDeepCL.NeuralNet()
+    net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(2) )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(1).filterSize(1).linear() )
+    net.setBatchSize(1)
+    print( net.asString() )
+    assert 2 == net.getNumLayers()
+    weights = net.getLayer(1).getWeights()
+    print('weights',weights)
+    assert len(weights) == 1 # since not biased
+    assert weights[0] != 0 # since it's random, not much more we can say :-)
+
+    # set weights, and check we can get them again
+    net.getLayer(1).setWeightsList([2.5])
+    weights = net.getLayer(1).getWeights()
+    print('weights',weights)
+    assert len(weights) == 1 # since not biased
+    assert weights[0] == 2.5
+
+    # try with biased, check there are two weights now, or 5, since we make filter bigger
+    net = PyDeepCL.NeuralNet()
+    net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(2) )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(1).filterSize(2).biased().linear() )
+    net.setBatchSize(1)
+    print( net.asString() )
+    assert 2 == net.getNumLayers()
+    weights = net.getLayer(1).getWeights()
+    print('weights',weights)
+    assert len(weights) == 5 # since not biased
+    for weight in weights:
+        assert weight != 0 # since it's random, not much more we can say :-)
+
+    # set weights, and check we can get them again
+    net.getLayer(1).setWeightsList([2.5,1,3,2,7])
+    weights = net.getLayer(1).getWeights()
+    print('weights',weights)
+    assert len(weights) == 5 # since not biased
+    assert weights.tolist() == [2.5,1,3,2,7]
 

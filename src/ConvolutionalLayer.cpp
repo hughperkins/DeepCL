@@ -308,19 +308,27 @@ VIRTUAL int ConvolutionalLayer::getOutputCubeSize() const {
     return dim.outputCubeSize;
 }
 VIRTUAL int ConvolutionalLayer::getPersistSize() const {
-    return getWeightsSize() + getBiasWeightsSize();
+    if( dim.biased ) {
+        return getWeightsSize() + getBiasWeightsSize();
+    } else {
+        return getWeightsSize();
+    }
 }
 VIRTUAL void ConvolutionalLayer::persistToArray(float *array) {
     float const*weights = getWeights();
 //    float const*biasWeights = getBiasWeights();
     memcpy( array, weights, sizeof(float) * getWeightsSize() );
-    memcpy( array + getWeightsSize(), biasWeights, sizeof(float) * getBiasWeightsSize() );
+    if( dim.biased ) {
+        memcpy( array + getWeightsSize(), biasWeights, sizeof(float) * getBiasWeightsSize() );
+    }
 }
 VIRTUAL void ConvolutionalLayer::unpersistFromArray(float const*array) {
     float const*newweights = array;
-    float const*newbiasWeights = array + getWeightsSize();
     initWeights( newweights );
-    initBiasWeights( newbiasWeights );
+    if( dim.biased ) {
+        float const*newbiasWeights = array + getWeightsSize();
+        initBiasWeights( newbiasWeights );
+    }
 }
 VIRTUAL void ConvolutionalLayer::initBiasWeights( float const*biasWeights ) {
     int biasWeightsSize = dim.numFilters;
@@ -331,7 +339,11 @@ VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
     return dim.numFilters * dim.inputPlanes * dim.filterSize * dim.filterSize;
 }
 VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
-    return dim.numFilters;
+    if( dim.biased ) {
+        return dim.numFilters;
+    } else {
+        return 0;
+    }
 }
 
 // weights:     [outPlane][upstreamPlane][filterRow][filterCol]

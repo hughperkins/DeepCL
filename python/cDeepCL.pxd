@@ -21,6 +21,9 @@ cdef extern from "Layer.h":
         int getOutputImageSize()
         float * getResults()
         int getResultsSize()
+        int getPersistSize()
+        void persistToArray(float *array)
+        void unpersistFromArray(const float *array)
 
 cdef extern from "NeuralNet.h":
     cdef cppclass NeuralNet:

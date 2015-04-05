@@ -67,6 +67,25 @@ cdef class Layer:
 #        resultsArrayMv[:] = resultsMv
 #        resultsArrayMv = self.thisptr.getResults()
         return resultsArray
+    def getWeights(self):
+        cdef int weightsSize = self.thisptr.getPersistSize()
+        cdef c_array.array weightsArray = array('f', [0] * weightsSize )
+        cdef float[:] weightsArray_view = weightsArray
+        self.thisptr.persistToArray( &weightsArray_view[0] )
+        return weightsArray
+    def setWeights(self, float[:] weights):
+        cdef int weightsSize = self.thisptr.getPersistSize()
+        assert weightsSize == len(weights)
+#        cdef c_array.array weightsArray = array('f', [0] * weightsSize )
+        self.thisptr.unpersistFromArray( &weights[0] )
+
+#        int getPersistSize()
+#        void persistToArray(float *array)
+#        void unpersistFromArray(const float *array)
+    def setWeightsList(self, weightsList):
+        cdef c_array.array weightsArray = array('f')
+        weightsArray.fromlist( weightsList )
+        self.setWeights( weightsArray )
 
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
