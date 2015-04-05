@@ -4,18 +4,11 @@
 {
     "distutils": {
         "language": "c++", 
-        "define_macros": [
-            [
-                "DeepCL_EXPORTS", 
-                1
-            ], 
-            [
-                "OpenCLHelper_EXPORTS", 
-                1
-            ]
-        ], 
         "runtime_library_dirs": [
-            "."
+            "../build"
+        ], 
+        "libraries": [
+            "DeepCL"
         ], 
         "depends": [
             "CyNetLearner.h", 
@@ -33,7 +26,8 @@
             "../src/NeuralNet.h"
         ], 
         "extra_compile_args": [
-            "-std=c++11"
+            "-std=c++0x", 
+            "-g"
         ], 
         "include_dirs": [
             "../src", 

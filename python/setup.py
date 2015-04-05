@@ -39,13 +39,6 @@ def get_so_suffix():
         return "." + sysconfig.get_config_var('SOABI')
     return ""
 
-#def read_md( mdname ): 
-#    if pypandoc_present:
-#        return pypandoc.convert(mdname, 'rst')
-#    else:
-#        print("warning: pypandoc module not found, could not convert Markdown to RST")
-#        return open(mdname, 'r').read()
-
 if pypandoc_present:
     pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
 
@@ -139,10 +132,6 @@ elif osfamily == 'Linux':
 else:
    pass
    # put other options etc here if necessary
-
-#if osfamily == 'Windows' and sys.version_info[0] == 2:
-#    print('WARNING: python 2.x not really supported, since it needs visual studio 9; and visual studio 2009 doesnt support any c++11 features, which we would ideally prefer to be able to use')
-#    print('Probably possible to coerce DeepCL to work with visual studio 9, and by extension with python 2.x, but maybe easier to just use python 3.x instead?')
 
 runtime_library_dirs = []
 libraries = []

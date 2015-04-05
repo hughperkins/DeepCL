@@ -6,7 +6,7 @@
 **Table of Contents** *generated with
 `DocToc <https://github.com/thlorenz/doctoc>`__*
 
--  `PyDeepCL <#pyclconvolve>`__
+-  `PyDeepCL <#pydeepcl>`__
 -  `How to use <#how-to-use>`__
 -  `Notes on how the wrapper works <#notes-on-how-the-wrapper-works>`__
 -  `To install from pip <#to-install-from-pip>`__
@@ -19,7 +19,6 @@
 -  `To build: <#to-build>`__
 -  `Considerations for Python wrapper
    developers <#considerations-for-python-wrapper-developers>`__
--  `To build, obsolete method <#to-build-obsolete-method>`__
 
 .. raw:: html
 
