@@ -12,7 +12,11 @@
 
 # If you do want to use it though, simply run it as for setup.py, ie:
 #
-# python dev-build.py build_ext -i
+#     python dev-build.py build_ext -i
+#
+# ... and then you can simply run the test python scripts as before, eg:
+#
+#     ./test_lowlevel.py /mydata/mnist 
 #
 
 import os

@@ -70,7 +70,7 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
 #    grad = array.array('f',[0] * batchSize * outputPlanes * (inputSize - filterSize + 1) )
 #    for i in range( batchSize * outputPlanes * (inputSize - filterSize + 1) ):
 #        grad[i] = random.random() - 0.5
-    labels = array.array('i',[0] * batchSize )
+    labels = array.array('i',[0] )
     
     print('warming up...')
     #try:
