@@ -20,6 +20,7 @@ cdef extern from "Layer.h":
         int getOutputPlanes()
         int getOutputImageSize()
         float * getResults()
+        int getResultsSize()
 
 cdef extern from "NeuralNet.h":
     cdef cppclass NeuralNet:

@@ -46,3 +46,25 @@ def test_buildnet():
 #    assert net.getLayer(5).getBiased()
 #    assert net.getLayer(6).getBiased()
 
+def test_getResults():
+    # we probalby need to do some learning first, otherwise how can we 
+    # know what we have is correct?
+
+    # maybe try input layer first?
+    net = PyDeepCL.NeuralNet()
+    net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(2) )
+    net.addLayer( PyDeepCL.NormalizationLayerMaker().translate(-2.0).scale(1/4.0) )
+    print( net.asString() )
+    assert 2 == net.getNumLayers()
+    net.setBatchSize(2)
+    inputValues = [ 1,2,3,4, 5,6,7,8]
+    net.propagateList( inputValues )
+
+    results = net.getLayer(0).getResults()
+    print('results', results )
+    assert [1,2,3,4,5,6,7,8] == results.tolist()
+
+    results = net.getLayer(1).getResults()
+    print('results', results )
+    assert map( lambda x: ( x - 2.0)/4.0, [1,2,3,4,5,6,7,8] ) == results.tolist()
+

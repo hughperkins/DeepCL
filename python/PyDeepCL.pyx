@@ -53,6 +53,20 @@ cdef class Layer:
         return self.thisptr.getOutputPlanes()
     def getOutputImageSize( self ):
         return self.thisptr.getOutputImageSize()
+    def getResults(self):
+        # the underlying c++ method returns a pointer
+        # to a block of memory that we dont own
+        # we should probably copy it I suppose
+        cdef float *results = self.thisptr.getResults()
+        cdef int resultsSize = self.thisptr.getResultsSize()
+        cdef c_array.array resultsArray = array('f', [0] * resultsSize )
+        for i in range(resultsSize):
+            resultsArray[i] = results[i]
+#        cdef float[:] resultsMv = results
+#        cdef float[:] resultsArrayMv = resultsArray
+#        resultsArrayMv[:] = resultsMv
+#        resultsArrayMv = self.thisptr.getResults()
+        return resultsArray
 
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
@@ -79,6 +93,10 @@ cdef class NeuralNet:
     #    self.thisptr.propagate( &images[0] )
     def propagate( self, const float[:] images):
         self.thisptr.propagate( &images[0] )
+    def propagateList( self, imagesList):
+        cdef c_array.array imagesArray = array('f', imagesList )
+        cdef float[:] imagesArray_view = imagesArray
+        self.thisptr.propagate( &imagesArray_view[0] )
     def backPropFromLabels( self, float learningRate, int[:] labels):
         return self.thisptr.backPropFromLabels( learningRate, &labels[0] ) 
     def backProp( self, float learningRate, float[:] expectedResults):
