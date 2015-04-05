@@ -68,3 +68,14 @@ def test_getResults():
     print('results', results )
     assert map( lambda x: ( x - 2.0)/4.0, [1,2,3,4,5,6,7,8] ) == results.tolist()
 
+    net = PyDeepCL.NeuralNet()
+    net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(2) )
+    net.addLayer( PyDeepCL.PoolingMaker().poolingSize(2) )
+    print( net.asString() )
+    assert 2 == net.getNumLayers()
+    net.setBatchSize(2)
+    net.propagateList( inputValues )
+    results = net.getLayer(1).getResults()
+    print('results', results )
+    assert [4,8] == results.tolist()
+
