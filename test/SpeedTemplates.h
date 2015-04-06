@@ -182,6 +182,7 @@ public:
 class Root : public ControlSection {
 public:
 //    std::vector< ControlSection * >sections;
+    virtual ~Root() {}
     virtual std::string render( std::map< std::string, Value *> &valueByName ) {
         std::string resultString = "";
         for( int i = 0; i < (int)sections.size(); i++ ) {

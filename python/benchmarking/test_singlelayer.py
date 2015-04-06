@@ -1,6 +1,10 @@
 #!/usr/bin/python
 
 # this is for experimenting prior to incorporation in deepcl_benchmark.py
+#
+# you might need to add PYTHONPATH=. to run it, like:
+#
+#     PYTHONPATH=. python benchmarking/test_singlelayer.py
 
 from __future__ import print_function
 

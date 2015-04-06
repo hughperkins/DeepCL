@@ -54,7 +54,7 @@ runs = [
 
 def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filterSize ):
     print('building network...')
-    net = PyDeepCL.NeuralNet( inputPlanes, inputSize )
+    net = PyDeepCL.NeuralNet( 1, inputSize )
     net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(inputPlanes)
         .filterSize(1).padZeros().biased().linear() ) # this is just to make sure that gradient needs to be 
                                                       # backproped through next layer
@@ -70,7 +70,7 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
 #    grad = array.array('f',[0] * batchSize * outputPlanes * (inputSize - filterSize + 1) )
 #    for i in range( batchSize * outputPlanes * (inputSize - filterSize + 1) ):
 #        grad[i] = random.random() - 0.5
-    labels = array.array('i',[0] )
+    labels = array.array('i',[0] * batchSize )
     
     print('warming up...')
     #try:

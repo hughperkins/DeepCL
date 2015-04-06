@@ -45,6 +45,9 @@ VIRTUAL RandomTranslations::~RandomTranslations() {
         delete[] results;
     }
 }
+VIRTUAL std::string RandomTranslations::getClassName() const {
+    return "RandomTranslations";
+}
 VIRTUAL void RandomTranslations::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;

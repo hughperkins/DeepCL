@@ -64,7 +64,7 @@ std::string Template::render() {
 //    cout << "tempalte::render root=" << root << endl;
     int finalPos = eatSection(0, root );
     cout << finalPos << " vs " << sourceCode.length() << endl;
-    if( finalPos != sourceCode.length() ) {
+    if( finalPos != (int)sourceCode.length() ) {
         root->print("");
         throw render_error("some sourcecode found at end: " + sourceCode.substr( finalPos ) );
     }
@@ -88,7 +88,7 @@ int Template::eatSection( int pos, ControlSection *controlSection ) {
 //        cout << "pos: " << pos << endl;
         int controlChangeBegin = sourceCode.find( "{%", pos );
 //        cout << "controlChangeBegin: " << controlChangeBegin << endl;
-        if( controlChangeBegin == string::npos ) {
+        if( controlChangeBegin == (int)string::npos ) {
             //updatedString += doSubstitutions( sourceCode.substr( pos ), valueByName );
             Code *code = new Code();
             code->startPos = pos;
@@ -99,7 +99,7 @@ int Template::eatSection( int pos, ControlSection *controlSection ) {
             return sourceCode.length();
         } else {
             int controlChangeEnd = sourceCode.find( "%}", controlChangeBegin );
-            if( controlChangeEnd == string::npos ) {
+            if( controlChangeEnd == (int)string::npos ) {
                 throw render_error( "control section unterminated: " + sourceCode.substr( controlChangeBegin, 40 ) );
             }
             string controlChange = trim( sourceCode.substr( controlChangeBegin + 2, controlChangeEnd - controlChangeBegin - 2 ) );
@@ -174,7 +174,7 @@ int Template::eatSection( int pos, ControlSection *controlSection ) {
                 pos = eatSection( controlChangeEnd + 2, forSection );
                 controlSection->sections.push_back(forSection);
                 int controlEndEndPos = sourceCode.find("%}", pos );
-                if( controlEndEndPos == string::npos ) {
+                if( controlEndEndPos == (int)string::npos ) {
                     throw render_error("No control end section found at: " + sourceCode.substr(pos ) );
                 }
                 string controlEnd = sourceCode.substr( pos, controlEndEndPos - pos + 2 );
@@ -219,7 +219,7 @@ STATIC std::string Template::doSubstitutions( std::string sourceCode, std::map< 
     if( startI == 1 ) {
         templatedString = splitSource[0];
     }
-    for( int i = startI; i < splitSource.size(); i++ ) {
+    for( int i = startI; i < (int)splitSource.size(); i++ ) {
         vector<string> thisSplit = split( splitSource[i], "}}" );
         string name = trim( thisSplit[0] );
 //        cout << "name: " << name << endl;

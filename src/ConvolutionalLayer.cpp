@@ -92,6 +92,9 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete backpropWeightsImpl;
     delete backpropErrorsImpl;
 }
+VIRTUAL std::string ConvolutionalLayer::getClassName() const {
+    return "ConvolutionalLayer";
+}
 VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
     return activationFunction;
 }

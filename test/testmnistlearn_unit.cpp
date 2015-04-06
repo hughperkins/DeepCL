@@ -186,7 +186,7 @@ void go(Config config) {
             ->expectedOutputs(expectedOutputs)
             ->run();
         cout << "       loss L: " << loss << endl;
-        int trainNumRight = 0;
+//        int trainNumRight = 0;
         timer.timeCheck("after epoch");
 //        net->print();
         printAccuracy( "train", net, imagesFloat, labels, batchSize, config.numTrain );

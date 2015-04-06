@@ -32,6 +32,9 @@ FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer
 VIRTUAL FullyConnectedLayer::~FullyConnectedLayer() {
     delete convolutionalLayer;
 }
+VIRTUAL std::string FullyConnectedLayer::getClassName() const {
+    return "FullyConnectedLayer";
+}
 VIRTUAL void FullyConnectedLayer::setBatchSize( int batchSize ) {
     convolutionalLayer->previousLayer = this->previousLayer;
     convolutionalLayer->nextLayer = this->nextLayer;

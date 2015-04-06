@@ -252,8 +252,8 @@ void go(Config config) {
     cout << " image norm translate " << translate << " scale " << scale << endl;
     timer.timeCheck("after getting stats");
 
-    const int numToTrain = Ntrain;
-    const int batchSize = config.batchSize;
+//    const int numToTrain = Ntrain;
+//    const int batchSize = config.batchSize;
     NeuralNet *net = new NeuralNet();
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->imageSize(imageSize) );

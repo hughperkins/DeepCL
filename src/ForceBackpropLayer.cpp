@@ -4,51 +4,49 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "NormalizationLayerMaker.h"
+#include "ForceBackpropLayerMaker.h"
 
-#include "NormalizationLayer.h"
+#include "ForceBackpropLayer.h"
 
 using namespace std;
 
 #undef VIRTUAL
 #define VIRTUAL 
 
-NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker ) :
+ForceBackpropLayer::ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayerMaker *maker ) :
        Layer( previousLayer, maker ),
-    translate( maker->_translate ),
-    scale( maker->_scale ),
     outputPlanes( previousLayer->getOutputPlanes() ),
     outputImageSize( previousLayer->getOutputImageSize() ),
     batchSize(0),
     allocatedSize(0),
     results(0) {
 }
-VIRTUAL NormalizationLayer::~NormalizationLayer() {
+VIRTUAL ForceBackpropLayer::~ForceBackpropLayer() {
     if( results != 0 ) {
         delete[] results;
     }
 }
-VIRTUAL std::string NormalizationLayer::getClassName() const {
-    return "NormalizationLayer";
+VIRTUAL std::string ForceBackpropLayer::getClassName() const {
+    return "ForceBackpropLayer";
 }
-VIRTUAL float *NormalizationLayer::getResults() {
+VIRTUAL float *ForceBackpropLayer::getResults() {
     return results;
 }
-VIRTUAL ActivationFunction const *NormalizationLayer::getActivationFunction() {
+VIRTUAL ActivationFunction const *ForceBackpropLayer::getActivationFunction() {
     return new LinearActivation();
 }
-VIRTUAL int NormalizationLayer::getPersistSize() const {
+VIRTUAL int ForceBackpropLayer::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool NormalizationLayer::needsBackProp() {
+VIRTUAL bool ForceBackpropLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL void NormalizationLayer::printOutput() const {
+VIRTUAL void ForceBackpropLayer::printOutput() const {
     if( results == 0 ) {
          return;
     }
     for( int n = 0; n < std::min(5,batchSize); n++ ) {
-        std::cout << "NormalizationLayer n " << n << ":" << std::endl;
+        std::cout << "ForceBackpropLayer n " << n << ":" << std::endl;
         for( int plane = 0; plane < std::min( 5, outputPlanes); plane++ ) {
             if( outputPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
             for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
@@ -70,13 +68,13 @@ VIRTUAL void NormalizationLayer::printOutput() const {
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
-VIRTUAL void NormalizationLayer::print() const {
+VIRTUAL void ForceBackpropLayer::print() const {
     printOutput();
 }
-VIRTUAL bool NormalizationLayer::needErrorsBackprop() {
-    return false;
+VIRTUAL bool ForceBackpropLayer::needErrorsBackprop() {
+    return true; // the main reason for this layer :-)
 }
-VIRTUAL void NormalizationLayer::setBatchSize( int batchSize ) {
+VIRTUAL void ForceBackpropLayer::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;
         return;
@@ -88,34 +86,33 @@ VIRTUAL void NormalizationLayer::setBatchSize( int batchSize ) {
     this->allocatedSize = allocatedSize;
     results = new float[ getResultsSize() ];
 }
-VIRTUAL void NormalizationLayer::propagate() {
+VIRTUAL void ForceBackpropLayer::propagate() {
     int totalLinearLength = getResultsSize();
     float *upstreamResults = previousLayer->getResults();
     for( int i = 0; i < totalLinearLength; i++ ) {
-        results[i] = ( upstreamResults[i] + translate ) * scale;
+        results[i] = upstreamResults[i];
     }
 }
-VIRTUAL void NormalizationLayer::backPropErrors( float learningRate, float const *errors ) {
+VIRTUAL void ForceBackpropLayer::backPropErrors( float learningRate, float const *errors ) {
   // do nothing...
 }
-VIRTUAL int NormalizationLayer::getOutputImageSize() const {
+VIRTUAL int ForceBackpropLayer::getOutputImageSize() const {
     return outputImageSize;
 }
-VIRTUAL int NormalizationLayer::getOutputPlanes() const {
+VIRTUAL int ForceBackpropLayer::getOutputPlanes() const {
     return outputPlanes;
 }
-VIRTUAL int NormalizationLayer::getOutputCubeSize() const {
+VIRTUAL int ForceBackpropLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int NormalizationLayer::getResultsSize() const {
+VIRTUAL int ForceBackpropLayer::getResultsSize() const {
     return batchSize * getOutputCubeSize();
 }
-VIRTUAL std::string NormalizationLayer::toString() {
+VIRTUAL std::string ForceBackpropLayer::toString() {
     return toString();
 }
-VIRTUAL std::string NormalizationLayer::asString() const {
-    return std::string("") + "NormalizationLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " translate=" + ::toString( translate ) + 
-        " scale=" + ::toString( scale ) + " }";
+VIRTUAL std::string ForceBackpropLayer::asString() const {
+    return std::string("") + "ForceBackpropLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
 }
 
 

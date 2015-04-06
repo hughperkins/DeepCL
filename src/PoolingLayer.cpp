@@ -72,6 +72,9 @@ VIRTUAL PoolingLayer::~PoolingLayer() {
         delete[] errorsForUpstream;
     }
 }
+VIRTUAL std::string PoolingLayer::getClassName() const {
+    return "PoolingLayer";
+}
 VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
 //    cout << "PoolingLayer::setBatchSize" << endl;
     if( batchSize <= allocatedSize ) {

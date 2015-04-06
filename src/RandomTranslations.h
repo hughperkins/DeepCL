@@ -37,6 +37,7 @@ public:
     // generated, using cog:
     RandomTranslations( Layer *previousLayer, RandomTranslationsMaker *maker );
     VIRTUAL ~RandomTranslations();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();

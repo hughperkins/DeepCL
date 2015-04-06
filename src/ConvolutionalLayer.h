@@ -96,6 +96,7 @@ public:
     // generated, using cog:
     ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker *maker );
     VIRTUAL ~ConvolutionalLayer();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL float *getErrorsForUpstream();
     VIRTUAL bool providesErrorsForUpstreamWrapper() const;

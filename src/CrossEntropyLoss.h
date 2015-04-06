@@ -28,6 +28,7 @@ public:
     // generated, using cog:
     CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker );
     VIRTUAL ~CrossEntropyLoss();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL float*getErrorsForUpstream();
     VIRTUAL int getPersistSize() const;
     VIRTUAL float calcLoss( float const *expected );

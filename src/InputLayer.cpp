@@ -24,6 +24,9 @@ template< typename T > InputLayer<T>::InputLayer( InputLayerMaker<T> *maker ) :
 }
 template< typename T > VIRTUAL InputLayer<T>::~InputLayer() {
 }
+template< typename T > VIRTUAL std::string InputLayer<T>::getClassName() const {
+    return "InputLayer";
+}
 template< typename T > VIRTUAL float *InputLayer<T>::getResults() {
     return results;
 }

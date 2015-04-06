@@ -30,6 +30,7 @@ public:
     // generated, using cog:
     FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker *maker );
     VIRTUAL ~FullyConnectedLayer();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;

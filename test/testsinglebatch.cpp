@@ -191,7 +191,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 
     EXPECT_EQ( true, allOk );
 
-    float *results = (float*)(net->getResults());
+//    float *results = (float*)(net->getResults());
 //    Sampler::printSamples( "net->getResults()", resultsSize, (float*)results );
 
     delete[]currentWeights;
@@ -243,7 +243,7 @@ TEST( testsinglebatch, imagesize28_filtersize5 ) {
 float sumWeightChangesSquared( float *__restrict oldWeights, float * __restrict newWeights, NeuralNet *net ) {
     int offset = 0;
     float sum = 0;
-    for( int i = 1; i < net->layers.size(); i++ ) {
+    for( int i = 1; i < (int)net->layers.size(); i++ ) {
         Layer *layer = net->layers[i];
         int numWeights = layer->getPersistSize();
         if( numWeights == 0 ) {
@@ -306,7 +306,7 @@ void testLabelled( TestArgs args ) {
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
-    const int resultsSize = net->getLastLayer()->getResultsSize();
+//    const int resultsSize = net->getLastLayer()->getResultsSize();
     int *labels = new int[args.batchSize];
     for( int i = 0; i < args.batchSize; i++ ) {
         labels[i] = random() % args.numCats;
@@ -341,7 +341,7 @@ void testLabelled( TestArgs args ) {
         net->propagate( inputData );
         net->backPropFromLabels( args.learningRate, labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
-        for( int layer = 1; layer < net->layers.size(); layer++ ) {
+        for( int layer = 1; layer < (int)net->layers.size(); layer++ ) {
             checkErrorsForLayer( layer, lastloss, net, lastWeights, currentWeights, args.learningRate, inputData, labels );
         }
         WeightsPersister::copyArrayToNetWeights( currentWeights, net );
@@ -388,7 +388,7 @@ void testLabelled( TestArgs args ) {
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
 
-    float *results = (float*)(net->getResults());
+//    float *results = (float*)(net->getResults());
 //    Sampler::printSamples( "net->getResults()", resultsSize, (float*)results );
 
     delete[]currentWeights;

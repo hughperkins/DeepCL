@@ -52,6 +52,7 @@ public:
     // generated, using cog:
     PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker *maker );
     VIRTUAL ~PoolingLayer();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();

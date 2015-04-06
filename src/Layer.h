@@ -32,6 +32,7 @@ public:
 //    virtual Layer *clone() = 0;
     virtual int getPersistSize() const = 0;
     virtual int getResultsSize() const = 0;
+    virtual std::string getClassName() const = 0;
 
     // [[[cog
     // import cog_addheaders

@@ -36,6 +36,9 @@ VIRTUAL SoftMaxLayer::~SoftMaxLayer() {
         delete[] results;
     }
 }
+VIRTUAL std::string SoftMaxLayer::getClassName() const {
+    return "SoftMaxLayer";
+}
 VIRTUAL float *SoftMaxLayer::getResults() {
     return results;
 }

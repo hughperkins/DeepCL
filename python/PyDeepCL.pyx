@@ -86,6 +86,10 @@ cdef class Layer:
         cdef c_array.array weightsArray = array('f')
         weightsArray.fromlist( weightsList )
         self.setWeights( weightsArray )
+    def asString(self):
+        return self.thisptr.asString()
+    def getClassName(self):
+        return self.thisptr.getClassName()
 
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
@@ -310,6 +314,17 @@ cdef class PoolingMaker(LayerMaker2):
     @staticmethod
     def instance():
         return PoolingMaker()
+
+cdef class ForceBackpropMaker(LayerMaker2):
+    cdef cDeepCL.ForceBackpropLayerMaker *thisptr
+    def __cinit__( self ):
+        self.thisptr = new cDeepCL.ForceBackpropLayerMaker()
+        self.baseptr = self.thisptr
+    def __dealloc__(self):
+        del self.thisptr
+    @staticmethod
+    def instance():
+        return ForceBackpropMaker()
 
 cdef class SquareLossMaker(LayerMaker2):
     cdef cDeepCL.SquareLossMaker *thisptr

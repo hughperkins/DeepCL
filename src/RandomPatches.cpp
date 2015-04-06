@@ -45,6 +45,9 @@ VIRTUAL RandomPatches::~RandomPatches() {
         delete[] results;
     }
 }
+VIRTUAL std::string RandomPatches::getClassName() const {
+    return "RandomPatches";
+}
 VIRTUAL void RandomPatches::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;

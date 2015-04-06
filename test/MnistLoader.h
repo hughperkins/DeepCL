@@ -22,7 +22,7 @@ public:
         char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
         char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
         unsigned char *imagesData = reinterpret_cast< unsigned char *>(imagesDataSigned);
-        unsigned char *labelsData = reinterpret_cast< unsigned char *>(labelsDataSigned);
+//        unsigned char *labelsData = reinterpret_cast< unsigned char *>(labelsDataSigned);
 
         int numImages = readUInt( imagesData, 1 );
         int numRows = readUInt( imagesData, 2 );

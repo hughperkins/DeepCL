@@ -37,6 +37,7 @@ public:
     // generated, using cog:
     RandomPatches( Layer *previousLayer, RandomPatchesMaker *maker );
     VIRTUAL ~RandomPatches();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();

@@ -25,6 +25,9 @@ VIRTUAL SquareLossLayer::~SquareLossLayer(){
         delete[] errors;
     }
 }
+VIRTUAL std::string SquareLossLayer::getClassName() const {
+    return "SquareLossLayer";
+}
 VIRTUAL float*SquareLossLayer::getErrorsForUpstream() {
     return errors;
 }

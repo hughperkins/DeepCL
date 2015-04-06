@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -10,21 +10,27 @@
 #include "ActivationFunction.h"
 #include "stringhelper.h"
 
-template<typename T> class InputLayerMaker;
-
 #define VIRTUAL virtual
 
-template< typename T >
-class InputLayer : public Layer, IHasToString {
-public:
-    int batchSize;
-    int allocatedSize;
+class ForceBackpropLayerMaker;
 
+// This layer is very simple.  It has one role in life: it forces the layer after it
+// to do backprop of gradients, to this layer
+// otherwise, it is just a 'pass-thru' layer, does nothing
+// It's usecase is very simple: in benchmarking, we can put this layer just
+// before the layer we want to benchmark, to force that layer to calc
+// gradients for this layer
+//
+// It runs only on cpu, since it will sit just after the input layer, which is
+// cpu too
+class ForceBackpropLayer : public Layer, IHasToString {
+public:
     const int outputPlanes;
     const int outputImageSize;
 
-    T const*input; // we dont own this
-    float *results; // we own this :-)
+    int batchSize;
+    int allocatedSize;
+    float *results;
 
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
@@ -38,19 +44,18 @@ public:
 
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add_templated()
+    // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    InputLayer( InputLayerMaker<T> *maker );
-    VIRTUAL ~InputLayer();
+    ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayerMaker *maker );
+    VIRTUAL ~ForceBackpropLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();
-    VIRTUAL bool needsBackProp();
     VIRTUAL int getPersistSize() const;
+    VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
-    void in( T const*images );
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
@@ -65,6 +70,6 @@ public:
     // [[[end]]]
 };
 
-template< typename T > std::ostream &operator<<( std::ostream &os, InputLayer<T> &layer );
-template< typename T > std::ostream &operator<<( std::ostream &os, InputLayer<T> const*layer );
+std::ostream &operator<<( std::ostream &os, ForceBackpropLayer &layer );
+std::ostream &operator<<( std::ostream &os, ForceBackpropLayer const*layer );
 

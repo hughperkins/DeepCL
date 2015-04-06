@@ -38,6 +38,7 @@ public:
     // generated, using cog:
     SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker );
     VIRTUAL ~SoftMaxLayer();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL float *getResults();
     VIRTUAL float *getErrorsForUpstream();
     VIRTUAL void setBatchSize( int batchSize );

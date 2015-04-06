@@ -129,3 +129,19 @@ def test_getsetweights():
     assert len(weights) == 5 # since not biased
     assert weights.tolist() == [2.5,1,3,2,7]
 
+def test_forcebackprop():
+    # check can be instantiated ok
+    # not sure how we check if it forces backprop...
+
+    net = PyDeepCL.NeuralNet()
+    net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(3).imageSize(28) )
+    net.addLayer( PyDeepCL.ForceBackpropMaker() )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased().linear() )
+    net.setBatchSize(32)
+    print( net.asString() )
+    assert 3 == net.getNumLayers()
+    print( net.getLayer(1) )
+    print( net.getLayer(1).asString() )
+    print( net.getLayer(1).getClassName() )
+    assert "ForceBackpropMaker", net.getLayer(1).getClassName() 
+

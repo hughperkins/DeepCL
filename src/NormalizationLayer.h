@@ -43,6 +43,7 @@ public:
     // generated, using cog:
     NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker );
     VIRTUAL ~NormalizationLayer();
+    VIRTUAL std::string getClassName() const;
     VIRTUAL float *getResults();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL int getPersistSize() const;

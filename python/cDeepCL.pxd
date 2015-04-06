@@ -24,6 +24,8 @@ cdef extern from "Layer.h":
         int getPersistSize()
         void persistToArray(float *array)
         void unpersistFromArray(const float *array)
+        string asString()
+        string getClassName()
 
 cdef extern from "NeuralNet.h":
     cdef cppclass NeuralNet:
@@ -111,6 +113,11 @@ cdef extern from "PoolingMaker.h":
         PoolingMaker *padZeros( int _padZeros ) except +
         @staticmethod
         PoolingMaker *instance() except +
+
+cdef extern from "ForceBackpropLayerMaker.h":
+    cdef cppclass ForceBackpropLayerMaker(LayerMaker2):
+        @staticmethod
+        ForceBackpropLayerMaker *instance() except +
 
 cdef extern from "LayerMaker.h":
     cdef cppclass SquareLossMaker(LayerMaker2):

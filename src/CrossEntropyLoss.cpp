@@ -24,6 +24,9 @@ VIRTUAL CrossEntropyLoss::~CrossEntropyLoss(){
         delete[] errors;
     }
 }
+VIRTUAL std::string CrossEntropyLoss::getClassName() const {
+    return "CrossEntropyLoss";
+}
 VIRTUAL float*CrossEntropyLoss::getErrorsForUpstream() {
     return errors;
 }
