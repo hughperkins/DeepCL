@@ -24,9 +24,14 @@ class ScenarioImage(PyDeepCL.Scenario):
         print('pretending to act :-)')
         return 0
     def hasFinished(self):
-        return False
+        return True
     def show(self):
         print('showing')
+    def showQ(self,net):
+        print('showQ()')
+        print('net num layers: ' + str(net.getNumLayers() ) ) # proves we do have a copy of the network :-)
+    def reset(self):
+        pass
 
 def go():
     scenario = ScenarioImage(5,False)

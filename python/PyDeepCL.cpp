@@ -851,7 +851,7 @@ struct __pyx_obj_8PyDeepCL_NetdefToNet {
 };
 
 
-/* "PyDeepCL.pyx":113
+/* "PyDeepCL.pyx":118
  * #        floats[i] = pyFloats[i]
  * 
  * cdef class Scenario:             # <<<<<<<<<<<<<<
@@ -864,7 +864,7 @@ struct __pyx_obj_8PyDeepCL_Scenario {
 };
 
 
-/* "PyDeepCL.pyx":205
+/* "PyDeepCL.pyx":214
  * #        return [] # placeholder
  * 
  * cdef class QLearner:             # <<<<<<<<<<<<<<
@@ -1719,6 +1719,7 @@ static int __pyx_f_8PyDeepCL_Scenario_getNumActions(void *); /*proto*/
 static float __pyx_f_8PyDeepCL_Scenario_act(int, void *); /*proto*/
 static bool __pyx_f_8PyDeepCL_Scenario_hasFinished(void *); /*proto*/
 static void __pyx_f_8PyDeepCL_Scenario_print(void *); /*proto*/
+static void __pyx_f_8PyDeepCL_Scenario_printQRepresentation(NeuralNet *, void *); /*proto*/
 static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *, void *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
@@ -1869,6 +1870,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_14getNumActions(CYTHON_UNUSED stru
 static PyObject *__pyx_pf_8PyDeepCL_8Scenario_16act(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_index); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Scenario_18hasFinished(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Scenario_20show(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_8Scenario_22showQ(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self); /* proto */
 static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_scenario, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net); /* proto */
 static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self); /* proto */
@@ -1966,6 +1968,7 @@ static char __pyx_k_print[] = "print";
 static char __pyx_k_range[] = "range";
 static char __pyx_k_reset[] = "reset";
 static char __pyx_k_shape[] = "shape";
+static char __pyx_k_showQ[] = "showQ";
 static char __pyx_k_start[] = "start";
 static char __pyx_k_total[] = "total";
 static char __pyx_k_Ntrain[] = "Ntrain";
@@ -2059,6 +2062,7 @@ static char __pyx_k_Index_out_of_bounds_axis_d[] = "Index out of bounds (axis %d
 static char __pyx_k_Step_may_not_be_zero_axis_d[] = "Step may not be zero (axis %d)";
 static char __pyx_k_cdef_Scenario_getNumActions[] = "cdef Scenario_getNumActions";
 static char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cython.array";
+static char __pyx_k_Scenario_printQRepresentation[] = "Scenario_printQRepresentation";
 static char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
 static char __pyx_k_strided_and_direct_or_indirect[] = "<strided and direct or indirect>";
 static char __pyx_k_cdef_Scenario_getPerceptionSize[] = "cdef Scenario_getPerceptionSize";
@@ -2087,6 +2091,7 @@ static char __pyx_k_Method_needs_to_be_overridden_Sc_6[] = "Method needs to be o
 static char __pyx_k_Method_needs_to_be_overridden_Sc_7[] = "Method needs to be overridden: Scenario.act()";
 static char __pyx_k_Method_needs_to_be_overridden_Sc_8[] = "Method needs to be overridden: Scenario.hasFinished()";
 static char __pyx_k_Method_needs_to_be_overridden_Sc_9[] = "Method needs to be overridden: Scenario.show()";
+static char __pyx_k_Method_needs_to_be_overridden_Sc_10[] = "Method needs to be overridden: Scenario.showQ()";
 static PyObject *__pyx_n_s_B;
 static PyObject *__pyx_kp_s_Buffer_view_does_not_expose_stri;
 static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
@@ -2102,6 +2107,7 @@ static PyObject *__pyx_n_s_MemoryError;
 static PyObject *__pyx_kp_s_MemoryView_of_r_at_0x_x;
 static PyObject *__pyx_kp_s_MemoryView_of_r_object;
 static PyObject *__pyx_kp_s_Method_needs_to_be_overridden_Sc;
+static PyObject *__pyx_kp_s_Method_needs_to_be_overridden_Sc_10;
 static PyObject *__pyx_kp_s_Method_needs_to_be_overridden_Sc_2;
 static PyObject *__pyx_kp_s_Method_needs_to_be_overridden_Sc_3;
 static PyObject *__pyx_kp_s_Method_needs_to_be_overridden_Sc_4;
@@ -2117,6 +2123,7 @@ static PyObject *__pyx_n_b_O;
 static PyObject *__pyx_kp_s_Out_of_bounds_on_buffer_access_a;
 static PyObject *__pyx_n_s_PyDeepCL;
 static PyObject *__pyx_n_s_RuntimeError;
+static PyObject *__pyx_n_s_Scenario_printQRepresentation;
 static PyObject *__pyx_n_s_Thread;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
@@ -2216,6 +2223,7 @@ static PyObject *__pyx_n_s_scenario;
 static PyObject *__pyx_n_s_setWeights;
 static PyObject *__pyx_n_s_shape;
 static PyObject *__pyx_n_s_show;
+static PyObject *__pyx_n_s_showQ;
 static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_start;
 static PyObject *__pyx_n_s_startN;
@@ -2256,9 +2264,9 @@ static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
 static PyObject *__pyx_tuple__9;
-static PyObject *__pyx_slice__22;
 static PyObject *__pyx_slice__23;
 static PyObject *__pyx_slice__24;
+static PyObject *__pyx_slice__25;
 static PyObject *__pyx_tuple__10;
 static PyObject *__pyx_tuple__11;
 static PyObject *__pyx_tuple__12;
@@ -2271,20 +2279,20 @@ static PyObject *__pyx_tuple__18;
 static PyObject *__pyx_tuple__19;
 static PyObject *__pyx_tuple__20;
 static PyObject *__pyx_tuple__21;
-static PyObject *__pyx_tuple__25;
-static PyObject *__pyx_tuple__34;
-static PyObject *__pyx_tuple__36;
-static PyObject *__pyx_tuple__38;
-static PyObject *__pyx_tuple__40;
-static PyObject *__pyx_tuple__42;
-static PyObject *__pyx_tuple__44;
-static PyObject *__pyx_tuple__46;
-static PyObject *__pyx_tuple__48;
+static PyObject *__pyx_tuple__22;
+static PyObject *__pyx_tuple__26;
+static PyObject *__pyx_tuple__35;
+static PyObject *__pyx_tuple__37;
+static PyObject *__pyx_tuple__39;
+static PyObject *__pyx_tuple__41;
+static PyObject *__pyx_tuple__43;
+static PyObject *__pyx_tuple__45;
+static PyObject *__pyx_tuple__47;
 static PyObject *__pyx_tuple__49;
 static PyObject *__pyx_tuple__50;
 static PyObject *__pyx_tuple__51;
 static PyObject *__pyx_tuple__52;
-static PyObject *__pyx_codeobj__26;
+static PyObject *__pyx_tuple__53;
 static PyObject *__pyx_codeobj__27;
 static PyObject *__pyx_codeobj__28;
 static PyObject *__pyx_codeobj__29;
@@ -2292,13 +2300,14 @@ static PyObject *__pyx_codeobj__30;
 static PyObject *__pyx_codeobj__31;
 static PyObject *__pyx_codeobj__32;
 static PyObject *__pyx_codeobj__33;
-static PyObject *__pyx_codeobj__35;
-static PyObject *__pyx_codeobj__37;
-static PyObject *__pyx_codeobj__39;
-static PyObject *__pyx_codeobj__41;
-static PyObject *__pyx_codeobj__43;
-static PyObject *__pyx_codeobj__45;
-static PyObject *__pyx_codeobj__47;
+static PyObject *__pyx_codeobj__34;
+static PyObject *__pyx_codeobj__36;
+static PyObject *__pyx_codeobj__38;
+static PyObject *__pyx_codeobj__40;
+static PyObject *__pyx_codeobj__42;
+static PyObject *__pyx_codeobj__44;
+static PyObject *__pyx_codeobj__46;
+static PyObject *__pyx_codeobj__48;
 
 /* "NeuralNet.pyx":4
  *     cdef cDeepCL.NeuralNet *thisptr
@@ -10822,7 +10831,7 @@ static void __pyx_f_8PyDeepCL_Scenario_print(void *__pyx_v_pyObject) {
  * cdef void Scenario_print(  void *pyObject ):
  *     (<object>pyObject).show()             # <<<<<<<<<<<<<<
  * 
- * cdef void Scenario_getPerception( float *perception, void *pyObject ):
+ * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_show); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 100; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
@@ -10868,6 +10877,109 @@ static void __pyx_f_8PyDeepCL_Scenario_print(void *__pyx_v_pyObject) {
 /* "PyDeepCL.pyx":102
  *     (<object>pyObject).show()
  * 
+ * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):             # <<<<<<<<<<<<<<
+ *     print('Scenario_printQRepresentation')
+ *     scenario = <object>pyObject
+ */
+
+static void __pyx_f_8PyDeepCL_Scenario_printQRepresentation(CYTHON_UNUSED NeuralNet *__pyx_v_net, void *__pyx_v_pyObject) {
+  PyObject *__pyx_v_scenario = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("Scenario_printQRepresentation", 0);
+
+  /* "PyDeepCL.pyx":103
+ * 
+ * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
+ *     print('Scenario_printQRepresentation')             # <<<<<<<<<<<<<<
+ *     scenario = <object>pyObject
+ *     scenario.showQ(scenario.net)
+ */
+  if (__Pyx_PrintOne(0, __pyx_n_s_Scenario_printQRepresentation) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "PyDeepCL.pyx":104
+ * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
+ *     print('Scenario_printQRepresentation')
+ *     scenario = <object>pyObject             # <<<<<<<<<<<<<<
+ *     scenario.showQ(scenario.net)
+ * 
+ */
+  __pyx_t_1 = ((PyObject *)__pyx_v_pyObject);
+  __Pyx_INCREF(__pyx_t_1);
+  __pyx_v_scenario = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "PyDeepCL.pyx":105
+ *     print('Scenario_printQRepresentation')
+ *     scenario = <object>pyObject
+ *     scenario.showQ(scenario.net)             # <<<<<<<<<<<<<<
+ * 
+ * cdef void Scenario_getPerception( float *perception, void *pyObject ):
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_scenario, __pyx_n_s_showQ); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_scenario, __pyx_n_s_net); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_4 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (!__pyx_t_4) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
+    PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_3);
+    __pyx_t_3 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "PyDeepCL.pyx":102
+ *     (<object>pyObject).show()
+ * 
+ * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):             # <<<<<<<<<<<<<<
+ *     print('Scenario_printQRepresentation')
+ *     scenario = <object>pyObject
+ */
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_WriteUnraisable("PyDeepCL.Scenario_printQRepresentation", __pyx_clineno, __pyx_lineno, __pyx_filename, 0);
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_scenario);
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "PyDeepCL.pyx":107
+ *     scenario.showQ(scenario.net)
+ * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):             # <<<<<<<<<<<<<<
  *     pyPerception = (<object>pyObject).getPerception()
  *     for i in range(len(pyPerception)):
@@ -10888,14 +11000,14 @@ static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *__pyx_v_perception, 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_getPerception", 0);
 
-  /* "PyDeepCL.pyx":103
+  /* "PyDeepCL.pyx":108
  * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):
  *     pyPerception = (<object>pyObject).getPerception()             # <<<<<<<<<<<<<<
  *     for i in range(len(pyPerception)):
  *         perception[i] = pyPerception[i]
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerception); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerception); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10908,43 +11020,43 @@ static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *__pyx_v_perception, 
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_pyPerception = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "PyDeepCL.pyx":104
+  /* "PyDeepCL.pyx":109
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):
  *     pyPerception = (<object>pyObject).getPerception()
  *     for i in range(len(pyPerception)):             # <<<<<<<<<<<<<<
  *         perception[i] = pyPerception[i]
  * 
  */
-  __pyx_t_4 = PyObject_Length(__pyx_v_pyPerception); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 104; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_Length(__pyx_v_pyPerception); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "PyDeepCL.pyx":105
+    /* "PyDeepCL.pyx":110
  *     pyPerception = (<object>pyObject).getPerception()
  *     for i in range(len(pyPerception)):
  *         perception[i] = pyPerception[i]             # <<<<<<<<<<<<<<
  * 
  * #cdef void MyInterface_getFloats( float *floats, void *pyObject ):
  */
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_pyPerception, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_pyPerception, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 110; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_6 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 105; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_6 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 110; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     (__pyx_v_perception[__pyx_v_i]) = __pyx_t_6;
   }
 
-  /* "PyDeepCL.pyx":102
- *     (<object>pyObject).show()
+  /* "PyDeepCL.pyx":107
+ *     scenario.showQ(scenario.net)
  * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):             # <<<<<<<<<<<<<<
  *     pyPerception = (<object>pyObject).getPerception()
@@ -10963,7 +11075,7 @@ static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *__pyx_v_perception, 
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":115
+/* "PyDeepCL.pyx":120
  * cdef class Scenario:
  *     cdef cDeepCL.CyScenario *thisptr
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -10992,7 +11104,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "PyDeepCL.pyx":116
+  /* "PyDeepCL.pyx":121
  *     cdef cDeepCL.CyScenario *thisptr
  *     def __cinit__(self):
  *         self.thisptr = new cDeepCL.CyScenario(<void *>self )             # <<<<<<<<<<<<<<
@@ -11001,26 +11113,35 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr = new CyScenario(((void *)__pyx_v_self));
 
-  /* "PyDeepCL.pyx":126
+  /* "PyDeepCL.pyx":131
  *         #]]]
  *         # generated using cog:
  *         self.thisptr.setPrint( Scenario_print )             # <<<<<<<<<<<<<<
+ *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
- *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
  */
   __pyx_v_self->thisptr->setPrint(__pyx_f_8PyDeepCL_Scenario_print);
 
-  /* "PyDeepCL.pyx":127
+  /* "PyDeepCL.pyx":132
  *         # generated using cog:
  *         self.thisptr.setPrint( Scenario_print )
+ *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )             # <<<<<<<<<<<<<<
+ *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
+ *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
+ */
+  __pyx_v_self->thisptr->setPrintQRepresentation(__pyx_f_8PyDeepCL_Scenario_printQRepresentation);
+
+  /* "PyDeepCL.pyx":133
+ *         self.thisptr.setPrint( Scenario_print )
+ *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )             # <<<<<<<<<<<<<<
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
  *         self.thisptr.setGetPerception( Scenario_getPerception )
  */
   __pyx_v_self->thisptr->setGetPerceptionSize(__pyx_f_8PyDeepCL_Scenario_getPerceptionSize);
 
-  /* "PyDeepCL.pyx":128
- *         self.thisptr.setPrint( Scenario_print )
+  /* "PyDeepCL.pyx":134
+ *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )             # <<<<<<<<<<<<<<
  *         self.thisptr.setGetPerception( Scenario_getPerception )
@@ -11028,7 +11149,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetPerceptionPlanes(__pyx_f_8PyDeepCL_Scenario_getPerceptionPlanes);
 
-  /* "PyDeepCL.pyx":129
+  /* "PyDeepCL.pyx":135
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
  *         self.thisptr.setGetPerception( Scenario_getPerception )             # <<<<<<<<<<<<<<
@@ -11037,7 +11158,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetPerception(__pyx_f_8PyDeepCL_Scenario_getPerception);
 
-  /* "PyDeepCL.pyx":130
+  /* "PyDeepCL.pyx":136
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
  *         self.thisptr.setGetPerception( Scenario_getPerception )
  *         self.thisptr.setReset( Scenario_reset )             # <<<<<<<<<<<<<<
@@ -11046,7 +11167,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setReset(__pyx_f_8PyDeepCL_Scenario_reset);
 
-  /* "PyDeepCL.pyx":131
+  /* "PyDeepCL.pyx":137
  *         self.thisptr.setGetPerception( Scenario_getPerception )
  *         self.thisptr.setReset( Scenario_reset )
  *         self.thisptr.setGetNumActions( Scenario_getNumActions )             # <<<<<<<<<<<<<<
@@ -11055,7 +11176,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetNumActions(__pyx_f_8PyDeepCL_Scenario_getNumActions);
 
-  /* "PyDeepCL.pyx":132
+  /* "PyDeepCL.pyx":138
  *         self.thisptr.setReset( Scenario_reset )
  *         self.thisptr.setGetNumActions( Scenario_getNumActions )
  *         self.thisptr.setAct( Scenario_act )             # <<<<<<<<<<<<<<
@@ -11064,7 +11185,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setAct(__pyx_f_8PyDeepCL_Scenario_act);
 
-  /* "PyDeepCL.pyx":133
+  /* "PyDeepCL.pyx":139
  *         self.thisptr.setGetNumActions( Scenario_getNumActions )
  *         self.thisptr.setAct( Scenario_act )
  *         self.thisptr.setHasFinished( Scenario_hasFinished )             # <<<<<<<<<<<<<<
@@ -11073,7 +11194,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setHasFinished(__pyx_f_8PyDeepCL_Scenario_hasFinished);
 
-  /* "PyDeepCL.pyx":115
+  /* "PyDeepCL.pyx":120
  * cdef class Scenario:
  *     cdef cDeepCL.CyScenario *thisptr
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -11087,7 +11208,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":137
+/* "PyDeepCL.pyx":143
  * #        self.thisptr.setGetNumberCallback( MyInterface_getNumber )
  * #        self.thisptr.setGetFloatsCallback( MyInterface_getFloats )
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -11110,7 +11231,7 @@ static void __pyx_pf_8PyDeepCL_8Scenario_2__dealloc__(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "PyDeepCL.pyx":138
+  /* "PyDeepCL.pyx":144
  * #        self.thisptr.setGetFloatsCallback( MyInterface_getFloats )
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -11119,7 +11240,7 @@ static void __pyx_pf_8PyDeepCL_8Scenario_2__dealloc__(struct __pyx_obj_8PyDeepCL
  */
   delete __pyx_v_self->thisptr;
 
-  /* "PyDeepCL.pyx":137
+  /* "PyDeepCL.pyx":143
  * #        self.thisptr.setGetNumberCallback( MyInterface_getNumber )
  * #        self.thisptr.setGetFloatsCallback( MyInterface_getFloats )
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -11131,7 +11252,7 @@ static void __pyx_pf_8PyDeepCL_8Scenario_2__dealloc__(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":163
+/* "PyDeepCL.pyx":169
  *     #]]]
  *     # generated using cog:
  *     def printQRepresentation(self, net):             # <<<<<<<<<<<<<<
@@ -11161,29 +11282,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_4printQRepresentation(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("printQRepresentation", 0);
 
-  /* "PyDeepCL.pyx":164
+  /* "PyDeepCL.pyx":170
  *     # generated using cog:
  *     def printQRepresentation(self, net):
  *         print("printQRepresentation()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.printQRepresentation()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_printQRepresentation) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 164; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_printQRepresentation) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":166
+  /* "PyDeepCL.pyx":172
  *         print("printQRepresentation()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.printQRepresentation()")             # <<<<<<<<<<<<<<
  *     def getPerceptionSize(self):
  *         print("getPerceptionSize()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":163
+  /* "PyDeepCL.pyx":169
  *     #]]]
  *     # generated using cog:
  *     def printQRepresentation(self, net):             # <<<<<<<<<<<<<<
@@ -11201,7 +11322,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_4printQRepresentation(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":167
+/* "PyDeepCL.pyx":173
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.printQRepresentation()")
  *     def getPerceptionSize(self):             # <<<<<<<<<<<<<<
@@ -11231,29 +11352,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_6getPerceptionSize(CYTHON_UNUSED s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getPerceptionSize", 0);
 
-  /* "PyDeepCL.pyx":168
+  /* "PyDeepCL.pyx":174
  *         raise Exception("Method needs to be overridden: Scenario.printQRepresentation()")
  *     def getPerceptionSize(self):
  *         print("getPerceptionSize()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_getPerceptionSize_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_getPerceptionSize_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 174; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":170
+  /* "PyDeepCL.pyx":176
  *         print("getPerceptionSize()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")             # <<<<<<<<<<<<<<
  *     def getPerceptionPlanes(self):
  *         print("getPerceptionPlanes()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":167
+  /* "PyDeepCL.pyx":173
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.printQRepresentation()")
  *     def getPerceptionSize(self):             # <<<<<<<<<<<<<<
@@ -11271,7 +11392,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_6getPerceptionSize(CYTHON_UNUSED s
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":171
+/* "PyDeepCL.pyx":177
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")
  *     def getPerceptionPlanes(self):             # <<<<<<<<<<<<<<
@@ -11301,29 +11422,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_8getPerceptionPlanes(CYTHON_UNUSED
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getPerceptionPlanes", 0);
 
-  /* "PyDeepCL.pyx":172
+  /* "PyDeepCL.pyx":178
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")
  *     def getPerceptionPlanes(self):
  *         print("getPerceptionPlanes()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_getPerceptionPlanes_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_getPerceptionPlanes_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 178; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":174
+  /* "PyDeepCL.pyx":180
  *         print("getPerceptionPlanes()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")             # <<<<<<<<<<<<<<
  *     def getPerception(self, perception):
  *         print("getPerception()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 174; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 174; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":171
+  /* "PyDeepCL.pyx":177
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")
  *     def getPerceptionPlanes(self):             # <<<<<<<<<<<<<<
@@ -11341,7 +11462,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_8getPerceptionPlanes(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":175
+/* "PyDeepCL.pyx":181
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")
  *     def getPerception(self, perception):             # <<<<<<<<<<<<<<
@@ -11371,29 +11492,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_10getPerception(CYTHON_UNUSED stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getPerception", 0);
 
-  /* "PyDeepCL.pyx":176
+  /* "PyDeepCL.pyx":182
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")
  *     def getPerception(self, perception):
  *         print("getPerception()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_getPerception_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_getPerception_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":178
+  /* "PyDeepCL.pyx":184
  *         print("getPerception()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")             # <<<<<<<<<<<<<<
  *     def reset(self):
  *         print("reset()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 178; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 184; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 178; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 184; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":175
+  /* "PyDeepCL.pyx":181
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")
  *     def getPerception(self, perception):             # <<<<<<<<<<<<<<
@@ -11411,7 +11532,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_10getPerception(CYTHON_UNUSED stru
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":179
+/* "PyDeepCL.pyx":185
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  *     def reset(self):             # <<<<<<<<<<<<<<
@@ -11441,29 +11562,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_12reset(CYTHON_UNUSED struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset", 0);
 
-  /* "PyDeepCL.pyx":180
+  /* "PyDeepCL.pyx":186
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  *     def reset(self):
  *         print("reset()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.reset()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_reset_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_reset_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":182
+  /* "PyDeepCL.pyx":188
  *         print("reset()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.reset()")             # <<<<<<<<<<<<<<
  *     def getNumActions(self):
  *         print("getNumActions()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":179
+  /* "PyDeepCL.pyx":185
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  *     def reset(self):             # <<<<<<<<<<<<<<
@@ -11481,7 +11602,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_12reset(CYTHON_UNUSED struct __pyx
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":183
+/* "PyDeepCL.pyx":189
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.reset()")
  *     def getNumActions(self):             # <<<<<<<<<<<<<<
@@ -11511,29 +11632,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_14getNumActions(CYTHON_UNUSED stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getNumActions", 0);
 
-  /* "PyDeepCL.pyx":184
+  /* "PyDeepCL.pyx":190
  *         raise Exception("Method needs to be overridden: Scenario.reset()")
  *     def getNumActions(self):
  *         print("getNumActions()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_getNumActions_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 184; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_getNumActions_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":186
+  /* "PyDeepCL.pyx":192
  *         print("getNumActions()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")             # <<<<<<<<<<<<<<
  *     def act(self, index):
  *         print("act()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":183
+  /* "PyDeepCL.pyx":189
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.reset()")
  *     def getNumActions(self):             # <<<<<<<<<<<<<<
@@ -11551,7 +11672,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_14getNumActions(CYTHON_UNUSED stru
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":187
+/* "PyDeepCL.pyx":193
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")
  *     def act(self, index):             # <<<<<<<<<<<<<<
@@ -11581,29 +11702,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_16act(CYTHON_UNUSED struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("act", 0);
 
-  /* "PyDeepCL.pyx":188
+  /* "PyDeepCL.pyx":194
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")
  *     def act(self, index):
  *         print("act()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.act()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_act_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_act_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 194; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":190
+  /* "PyDeepCL.pyx":196
  *         print("act()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.act()")             # <<<<<<<<<<<<<<
  *     def hasFinished(self):
  *         print("hasFinished()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 196; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 196; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":187
+  /* "PyDeepCL.pyx":193
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")
  *     def act(self, index):             # <<<<<<<<<<<<<<
@@ -11621,7 +11742,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_16act(CYTHON_UNUSED struct __pyx_o
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":191
+/* "PyDeepCL.pyx":197
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.act()")
  *     def hasFinished(self):             # <<<<<<<<<<<<<<
@@ -11651,29 +11772,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_18hasFinished(CYTHON_UNUSED struct
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("hasFinished", 0);
 
-  /* "PyDeepCL.pyx":192
+  /* "PyDeepCL.pyx":198
  *         raise Exception("Method needs to be overridden: Scenario.act()")
  *     def hasFinished(self):
  *         print("hasFinished()")             # <<<<<<<<<<<<<<
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")
  */
-  if (__Pyx_PrintOne(0, __pyx_kp_s_hasFinished_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_kp_s_hasFinished_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":194
+  /* "PyDeepCL.pyx":200
  *         print("hasFinished()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")             # <<<<<<<<<<<<<<
  *     #[[[end]]]
  *     def show(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 194; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 194; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":191
+  /* "PyDeepCL.pyx":197
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.act()")
  *     def hasFinished(self):             # <<<<<<<<<<<<<<
@@ -11691,7 +11812,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_18hasFinished(CYTHON_UNUSED struct
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":196
+/* "PyDeepCL.pyx":202
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")
  *     #[[[end]]]
  *     def show(self):             # <<<<<<<<<<<<<<
@@ -11721,29 +11842,29 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_20show(CYTHON_UNUSED struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("show", 0);
 
-  /* "PyDeepCL.pyx":197
+  /* "PyDeepCL.pyx":203
  *     #[[[end]]]
  *     def show(self):
  *         print('show')             # <<<<<<<<<<<<<<
  *         raise Exception("Method needs to be overridden: Scenario.show()")
- * 
+ *     def showQ(self):
  */
-  if (__Pyx_PrintOne(0, __pyx_n_s_show) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 197; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PrintOne(0, __pyx_n_s_show) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 203; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":198
+  /* "PyDeepCL.pyx":204
  *     def show(self):
  *         print('show')
  *         raise Exception("Method needs to be overridden: Scenario.show()")             # <<<<<<<<<<<<<<
- * 
- * #    def getNumber(self):
+ *     def showQ(self):
+ *         print('showQ')
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":196
+  /* "PyDeepCL.pyx":202
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")
  *     #[[[end]]]
  *     def show(self):             # <<<<<<<<<<<<<<
@@ -11761,12 +11882,82 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_20show(CYTHON_UNUSED struct __pyx_
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":207
+/* "PyDeepCL.pyx":205
+ *         print('show')
+ *         raise Exception("Method needs to be overridden: Scenario.show()")
+ *     def showQ(self):             # <<<<<<<<<<<<<<
+ *         print('showQ')
+ *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_8Scenario_23showQ(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_8Scenario_23showQ(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("showQ (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_8Scenario_22showQ(((struct __pyx_obj_8PyDeepCL_Scenario *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_8Scenario_22showQ(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("showQ", 0);
+
+  /* "PyDeepCL.pyx":206
+ *         raise Exception("Method needs to be overridden: Scenario.show()")
+ *     def showQ(self):
+ *         print('showQ')             # <<<<<<<<<<<<<<
+ *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ * 
+ */
+  if (__Pyx_PrintOne(0, __pyx_n_s_showQ) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 206; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "PyDeepCL.pyx":207
+ *     def showQ(self):
+ *         print('showQ')
+ *         raise Exception("Method needs to be overridden: Scenario.showQ()")             # <<<<<<<<<<<<<<
+ * 
+ * #    def getNumber(self):
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "PyDeepCL.pyx":205
+ *         print('show')
+ *         raise Exception("Method needs to be overridden: Scenario.show()")
+ *     def showQ(self):             # <<<<<<<<<<<<<<
+ *         print('showQ')
+ *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.Scenario.showQ", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "PyDeepCL.pyx":216
  * cdef class QLearner:
  *     cdef cDeepCL.QLearner *thisptr
  *     def __cinit__(self,Scenario scenario,NeuralNet net):             # <<<<<<<<<<<<<<
+ *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
- *     def __dealloc__(self):
  */
 
 /* Python wrapper */
@@ -11800,11 +11991,11 @@ static int __pyx_pw_8PyDeepCL_8QLearner_1__cinit__(PyObject *__pyx_v_self, PyObj
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_net)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -11817,14 +12008,14 @@ static int __pyx_pw_8PyDeepCL_8QLearner_1__cinit__(PyObject *__pyx_v_self, PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("PyDeepCL.QLearner.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_scenario), __pyx_ptype_8PyDeepCL_Scenario, 1, "scenario", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_net), __pyx_ptype_8PyDeepCL_NeuralNet, 1, "net", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_scenario), __pyx_ptype_8PyDeepCL_Scenario, 1, "scenario", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_net), __pyx_ptype_8PyDeepCL_NeuralNet, 1, "net", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_8QLearner___cinit__(((struct __pyx_obj_8PyDeepCL_QLearner *)__pyx_v_self), __pyx_v_scenario, __pyx_v_net);
 
   /* function exit code */
@@ -11845,9 +12036,18 @@ static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLe
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "PyDeepCL.pyx":208
+  /* "PyDeepCL.pyx":217
  *     cdef cDeepCL.QLearner *thisptr
  *     def __cinit__(self,Scenario scenario,NeuralNet net):
+ *         scenario.net = net             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
+ *     def __dealloc__(self):
+ */
+  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_scenario), __pyx_n_s_net, ((PyObject *)__pyx_v_net)) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 217; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "PyDeepCL.pyx":218
+ *     def __cinit__(self,Scenario scenario,NeuralNet net):
+ *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)             # <<<<<<<<<<<<<<
  *     def __dealloc__(self):
  *         del self.thisptr
@@ -11856,16 +12056,16 @@ static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLe
     __pyx_t_1 = new QLearner(__pyx_v_scenario->thisptr, __pyx_v_net->thisptr);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 208; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 218; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "PyDeepCL.pyx":207
+  /* "PyDeepCL.pyx":216
  * cdef class QLearner:
  *     cdef cDeepCL.QLearner *thisptr
  *     def __cinit__(self,Scenario scenario,NeuralNet net):             # <<<<<<<<<<<<<<
+ *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
- *     def __dealloc__(self):
  */
 
   /* function exit code */
@@ -11879,8 +12079,8 @@ static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLe
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":209
- *     def __cinit__(self,Scenario scenario,NeuralNet net):
+/* "PyDeepCL.pyx":219
+ *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -11902,7 +12102,7 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "PyDeepCL.pyx":210
+  /* "PyDeepCL.pyx":220
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -11911,8 +12111,8 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
  */
   delete __pyx_v_self->thisptr;
 
-  /* "PyDeepCL.pyx":209
- *     def __cinit__(self,Scenario scenario,NeuralNet net):
+  /* "PyDeepCL.pyx":219
+ *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -11923,7 +12123,7 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":211
+/* "PyDeepCL.pyx":221
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def run(self):             # <<<<<<<<<<<<<<
@@ -11952,7 +12152,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("run", 0);
 
-  /* "PyDeepCL.pyx":212
+  /* "PyDeepCL.pyx":222
  *         del self.thisptr
  *     def run(self):
  *         self.thisptr.run()             # <<<<<<<<<<<<<<
@@ -11962,10 +12162,10 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
     __pyx_v_self->thisptr->run();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 212; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 222; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "PyDeepCL.pyx":211
+  /* "PyDeepCL.pyx":221
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def run(self):             # <<<<<<<<<<<<<<
@@ -12805,7 +13005,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if itemsize <= 0:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -12829,7 +13029,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if isinstance(format, unicode):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -12927,7 +13127,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -13178,7 +13378,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *             if self.dtype_is_object:
  */
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_Raise(__pyx_t_3, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -13396,7 +13596,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
  *         info.buf = self.data
  *         info.len = self.len
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -15989,7 +16189,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
  *         else:
  *             if len(self.view.format) == 1:
  */
-      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L5_except_error;}
+      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L5_except_error;}
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -16771,7 +16971,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
  * 
  *             return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 521; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 521; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -16880,7 +17080,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->view.ndim); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 529; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__21, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 529; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__22, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 529; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_r = __pyx_t_3;
@@ -18188,9 +18388,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
         __Pyx_GOTREF(__pyx_t_7);
         { Py_ssize_t __pyx_temp;
           for (__pyx_temp=0; __pyx_temp < ((__pyx_v_ndim - __pyx_t_8) + 1); __pyx_temp++) {
-            __Pyx_INCREF(__pyx_slice__22);
-            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__22);
-            __Pyx_GIVEREF(__pyx_slice__22);
+            __Pyx_INCREF(__pyx_slice__23);
+            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__23);
+            __Pyx_GIVEREF(__pyx_slice__23);
           }
         }
         __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_7); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -18215,7 +18415,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
  *             have_slices = True
  *         else:
  */
-        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__23); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 641; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__24); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 641; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
       __pyx_L7:;
 
@@ -18344,9 +18544,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
     __Pyx_GOTREF(__pyx_t_3);
     { Py_ssize_t __pyx_temp;
       for (__pyx_temp=0; __pyx_temp < __pyx_v_nslices; __pyx_temp++) {
-        __Pyx_INCREF(__pyx_slice__24);
-        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__24);
-        __Pyx_GIVEREF(__pyx_slice__24);
+        __Pyx_INCREF(__pyx_slice__25);
+        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__25);
+        __Pyx_GIVEREF(__pyx_slice__25);
       }
     }
     __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_3); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -18467,7 +18667,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
  * 
  * 
  */
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 659; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__26, NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 659; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -24713,6 +24913,7 @@ static PyMethodDef __pyx_methods_8PyDeepCL_Scenario[] = {
   {"act", (PyCFunction)__pyx_pw_8PyDeepCL_8Scenario_17act, METH_O, 0},
   {"hasFinished", (PyCFunction)__pyx_pw_8PyDeepCL_8Scenario_19hasFinished, METH_NOARGS, 0},
   {"show", (PyCFunction)__pyx_pw_8PyDeepCL_8Scenario_21show, METH_NOARGS, 0},
+  {"showQ", (PyCFunction)__pyx_pw_8PyDeepCL_8Scenario_23showQ, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 
@@ -25559,6 +25760,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_MemoryView_of_r_at_0x_x, __pyx_k_MemoryView_of_r_at_0x_x, sizeof(__pyx_k_MemoryView_of_r_at_0x_x), 0, 0, 1, 0},
   {&__pyx_kp_s_MemoryView_of_r_object, __pyx_k_MemoryView_of_r_object, sizeof(__pyx_k_MemoryView_of_r_object), 0, 0, 1, 0},
   {&__pyx_kp_s_Method_needs_to_be_overridden_Sc, __pyx_k_Method_needs_to_be_overridden_Sc, sizeof(__pyx_k_Method_needs_to_be_overridden_Sc), 0, 0, 1, 0},
+  {&__pyx_kp_s_Method_needs_to_be_overridden_Sc_10, __pyx_k_Method_needs_to_be_overridden_Sc_10, sizeof(__pyx_k_Method_needs_to_be_overridden_Sc_10), 0, 0, 1, 0},
   {&__pyx_kp_s_Method_needs_to_be_overridden_Sc_2, __pyx_k_Method_needs_to_be_overridden_Sc_2, sizeof(__pyx_k_Method_needs_to_be_overridden_Sc_2), 0, 0, 1, 0},
   {&__pyx_kp_s_Method_needs_to_be_overridden_Sc_3, __pyx_k_Method_needs_to_be_overridden_Sc_3, sizeof(__pyx_k_Method_needs_to_be_overridden_Sc_3), 0, 0, 1, 0},
   {&__pyx_kp_s_Method_needs_to_be_overridden_Sc_4, __pyx_k_Method_needs_to_be_overridden_Sc_4, sizeof(__pyx_k_Method_needs_to_be_overridden_Sc_4), 0, 0, 1, 0},
@@ -25574,6 +25776,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Out_of_bounds_on_buffer_access_a, __pyx_k_Out_of_bounds_on_buffer_access_a, sizeof(__pyx_k_Out_of_bounds_on_buffer_access_a), 0, 0, 1, 0},
   {&__pyx_n_s_PyDeepCL, __pyx_k_PyDeepCL, sizeof(__pyx_k_PyDeepCL), 0, 0, 1, 1},
   {&__pyx_n_s_RuntimeError, __pyx_k_RuntimeError, sizeof(__pyx_k_RuntimeError), 0, 0, 1, 1},
+  {&__pyx_n_s_Scenario_printQRepresentation, __pyx_k_Scenario_printQRepresentation, sizeof(__pyx_k_Scenario_printQRepresentation), 0, 0, 1, 1},
   {&__pyx_n_s_Thread, __pyx_k_Thread, sizeof(__pyx_k_Thread), 0, 0, 1, 1},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
@@ -25673,6 +25876,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_setWeights, __pyx_k_setWeights, sizeof(__pyx_k_setWeights), 0, 0, 1, 1},
   {&__pyx_n_s_shape, __pyx_k_shape, sizeof(__pyx_k_shape), 0, 0, 1, 1},
   {&__pyx_n_s_show, __pyx_k_show, sizeof(__pyx_k_show), 0, 0, 1, 1},
+  {&__pyx_n_s_showQ, __pyx_k_showQ, sizeof(__pyx_k_showQ), 0, 0, 1, 1},
   {&__pyx_n_s_size, __pyx_k_size, sizeof(__pyx_k_size), 0, 0, 1, 1},
   {&__pyx_n_s_start, __pyx_k_start, sizeof(__pyx_k_start), 0, 0, 1, 1},
   {&__pyx_n_s_startN, __pyx_k_startN, sizeof(__pyx_k_startN), 0, 0, 1, 1},
@@ -25757,104 +25961,115 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "PyDeepCL.pyx":166
+  /* "PyDeepCL.pyx":172
  *         print("printQRepresentation()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.printQRepresentation()")             # <<<<<<<<<<<<<<
  *     def getPerceptionSize(self):
  *         print("getPerceptionSize()")
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 166; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 172; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "PyDeepCL.pyx":170
+  /* "PyDeepCL.pyx":176
  *         print("getPerceptionSize()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")             # <<<<<<<<<<<<<<
  *     def getPerceptionPlanes(self):
  *         print("getPerceptionPlanes()")
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_2); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_2); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 176; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "PyDeepCL.pyx":174
+  /* "PyDeepCL.pyx":180
  *         print("getPerceptionPlanes()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")             # <<<<<<<<<<<<<<
  *     def getPerception(self, perception):
  *         print("getPerception()")
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_3); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 174; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_3); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 180; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "PyDeepCL.pyx":178
+  /* "PyDeepCL.pyx":184
  *         print("getPerception()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")             # <<<<<<<<<<<<<<
  *     def reset(self):
  *         print("reset()")
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_4); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 178; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_4); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 184; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "PyDeepCL.pyx":182
+  /* "PyDeepCL.pyx":188
  *         print("reset()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.reset()")             # <<<<<<<<<<<<<<
  *     def getNumActions(self):
  *         print("getNumActions()")
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_5); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 182; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_5); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 188; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__9);
   __Pyx_GIVEREF(__pyx_tuple__9);
 
-  /* "PyDeepCL.pyx":186
+  /* "PyDeepCL.pyx":192
  *         print("getNumActions()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")             # <<<<<<<<<<<<<<
  *     def act(self, index):
  *         print("act()")
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_6); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_6); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "PyDeepCL.pyx":190
+  /* "PyDeepCL.pyx":196
  *         print("act()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.act()")             # <<<<<<<<<<<<<<
  *     def hasFinished(self):
  *         print("hasFinished()")
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_7); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_7); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 196; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "PyDeepCL.pyx":194
+  /* "PyDeepCL.pyx":200
  *         print("hasFinished()")
  *         #return None # placeholder
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")             # <<<<<<<<<<<<<<
  *     #[[[end]]]
  *     def show(self):
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_8); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 194; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_8); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 200; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "PyDeepCL.pyx":198
+  /* "PyDeepCL.pyx":204
  *     def show(self):
  *         print('show')
  *         raise Exception("Method needs to be overridden: Scenario.show()")             # <<<<<<<<<<<<<<
+ *     def showQ(self):
+ *         print('showQ')
+ */
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_9); if (unlikely(!__pyx_tuple__13)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 204; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
+
+  /* "PyDeepCL.pyx":207
+ *     def showQ(self):
+ *         print('showQ')
+ *         raise Exception("Method needs to be overridden: Scenario.showQ()")             # <<<<<<<<<<<<<<
  * 
  * #    def getNumber(self):
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_9); if (unlikely(!__pyx_tuple__13)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 198; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_10); if (unlikely(!__pyx_tuple__14)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
 
   /* "View.MemoryView":127
  * 
@@ -25863,9 +26078,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *         if itemsize <= 0:
  */
-  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__14)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__15)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
 
   /* "View.MemoryView":130
  * 
@@ -25874,9 +26089,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *         if isinstance(format, unicode):
  */
-  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__15)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__15);
-  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__16)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
 
   /* "View.MemoryView":142
  * 
@@ -25885,9 +26100,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__16)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__17)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
 
   /* "View.MemoryView":170
  *             self.data = <char *>malloc(self.len)
@@ -25896,9 +26111,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             if self.dtype_is_object:
  */
-  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__17)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__17);
-  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__18)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 170; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
 
   /* "View.MemoryView":186
  *             bufmode = PyBUF_F_CONTIGUOUS | PyBUF_ANY_CONTIGUOUS
@@ -25907,9 +26122,9 @@ static int __Pyx_InitCachedConstants(void) {
  *         info.buf = self.data
  *         info.len = self.len
  */
-  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__18)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__19)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
 
   /* "View.MemoryView":445
  *             result = struct.unpack(self.view.format, bytesitem)
@@ -25918,9 +26133,9 @@ static int __Pyx_InitCachedConstants(void) {
  *         else:
  *             if len(self.view.format) == 1:
  */
-  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__19)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
+  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__20)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 445; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
 
   /* "View.MemoryView":521
  *             if self.view.strides == NULL:
@@ -25929,9 +26144,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__20)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 521; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__20);
-  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__21)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 521; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__21);
 
   /* "View.MemoryView":529
  *         def __get__(self):
@@ -25940,12 +26155,12 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             return tuple([suboffset for suboffset in self.view.suboffsets[:self.view.ndim]])
  */
-  __pyx_tuple__21 = PyTuple_New(1); if (unlikely(!__pyx_tuple__21)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 529; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__21);
+  __pyx_tuple__22 = PyTuple_New(1); if (unlikely(!__pyx_tuple__22)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 529; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__22);
   __Pyx_INCREF(__pyx_int_neg_1);
-  PyTuple_SET_ITEM(__pyx_tuple__21, 0, __pyx_int_neg_1);
+  PyTuple_SET_ITEM(__pyx_tuple__22, 0, __pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__22);
 
   /* "View.MemoryView":638
  *         if item is Ellipsis:
@@ -25954,9 +26169,9 @@ static int __Pyx_InitCachedConstants(void) {
  *                 seen_ellipsis = True
  *             else:
  */
-  __pyx_slice__22 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__22)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_slice__22);
-  __Pyx_GIVEREF(__pyx_slice__22);
+  __pyx_slice__23 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__23)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 638; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_slice__23);
+  __Pyx_GIVEREF(__pyx_slice__23);
 
   /* "View.MemoryView":641
  *                 seen_ellipsis = True
@@ -25965,9 +26180,9 @@ static int __Pyx_InitCachedConstants(void) {
  *             have_slices = True
  *         else:
  */
-  __pyx_slice__23 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__23)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 641; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_slice__23);
-  __Pyx_GIVEREF(__pyx_slice__23);
+  __pyx_slice__24 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__24)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 641; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_slice__24);
+  __Pyx_GIVEREF(__pyx_slice__24);
 
   /* "View.MemoryView":652
  *     nslices = ndim - len(result)
@@ -25976,9 +26191,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *     return have_slices or nslices, tuple(result)
  */
-  __pyx_slice__24 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__24)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_slice__24);
-  __Pyx_GIVEREF(__pyx_slice__24);
+  __pyx_slice__25 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__25)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 652; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_slice__25);
+  __Pyx_GIVEREF(__pyx_slice__25);
 
   /* "View.MemoryView":659
  *     for suboffset in suboffsets[:ndim]:
@@ -25987,9 +26202,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__25)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 659; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
+  __pyx_tuple__26 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__26)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 659; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__26);
+  __Pyx_GIVEREF(__pyx_tuple__26);
 
   /* "LayerMaker.pyx":18
  *         return self
@@ -25998,7 +26213,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return NormalizationLayerMaker()
  * 
  */
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 18, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 18, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":53
  *         return self
@@ -26007,7 +26222,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return FullyConnectedMaker()
  * 
  */
-  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 53, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 53, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":94
  *         return self
@@ -26016,7 +26231,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return ConvolutionalMaker()
  * 
  */
-  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 94, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 94; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 94, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 94; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":108
  *         return self
@@ -26025,7 +26240,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return PoolingMaker()
  * 
  */
-  __pyx_codeobj__29 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 108, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__29)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 108, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":119
  * #        del self.thisptr
@@ -26034,7 +26249,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return ForceBackpropMaker()
  * 
  */
-  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 119, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 119; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 119, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 119; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":130
  * #        del self.thisptr
@@ -26043,7 +26258,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return SquareLossMaker()
  * 
  */
-  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 130, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 130, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 130; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":141
  * #        del self.thisptr
@@ -26052,7 +26267,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return SoftMaxMaker()
  * 
  */
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 141, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 141; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 141, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 141; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "LayerMaker.pyx":158
  *         return self
@@ -26061,7 +26276,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         return InputLayerMaker()
  * 
  */
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 158, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 158; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 158, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 158; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "GenericLoader.pyx":3
  * cdef class GenericLoader:
@@ -26070,10 +26285,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         cdef int N
  *         cdef int planes
  */
-  __pyx_tuple__34 = PyTuple_Pack(4, __pyx_n_s_trainFilePath, __pyx_n_s_N, __pyx_n_s_planes, __pyx_n_s_size); if (unlikely(!__pyx_tuple__34)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__34);
-  __Pyx_GIVEREF(__pyx_tuple__34);
-  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_getDimensions, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__35 = PyTuple_Pack(4, __pyx_n_s_trainFilePath, __pyx_n_s_N, __pyx_n_s_planes, __pyx_n_s_size); if (unlikely(!__pyx_tuple__35)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__35);
+  __Pyx_GIVEREF(__pyx_tuple__35);
+  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__35, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_getDimensions, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "GenericLoader.pyx":11
  *         return (N,planes,size)
@@ -26082,10 +26297,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         #(N, planes, size) = getDimensions(trainFilepath)
  *         #images = view.array(shape=(N,planes,size,size),itemsize=1,
  */
-  __pyx_tuple__36 = PyTuple_Pack(5, __pyx_n_s_trainFilepath, __pyx_n_s_images, __pyx_n_s_labels, __pyx_n_s_startN, __pyx_n_s_numExamples); if (unlikely(!__pyx_tuple__36)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
-  __pyx_codeobj__37 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__36, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_loaduc, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__37)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__37 = PyTuple_Pack(5, __pyx_n_s_trainFilepath, __pyx_n_s_images, __pyx_n_s_labels, __pyx_n_s_startN, __pyx_n_s_numExamples); if (unlikely(!__pyx_tuple__37)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(5, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_loaduc, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 11; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "GenericLoader.pyx":19
  *         #return (images, labels)
@@ -26094,10 +26309,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         (N, planes, size) = GenericLoader.getDimensions(toCppString(trainFilepath))
  *         #images = view.array(shape=(N,planes,size,size),itemsize=1,
  */
-  __pyx_tuple__38 = PyTuple_Pack(12, __pyx_n_s_trainFilepath, __pyx_n_s_images, __pyx_n_s_labels, __pyx_n_s_startN, __pyx_n_s_numExamples, __pyx_n_s_N, __pyx_n_s_planes, __pyx_n_s_size, __pyx_n_s_ucImages, __pyx_n_s_ucImagesMv, __pyx_n_s_i, __pyx_n_s_total); if (unlikely(!__pyx_tuple__38)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__38);
-  __Pyx_GIVEREF(__pyx_tuple__38);
-  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(5, 0, 12, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_load, 19, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__39 = PyTuple_Pack(12, __pyx_n_s_trainFilepath, __pyx_n_s_images, __pyx_n_s_labels, __pyx_n_s_startN, __pyx_n_s_numExamples, __pyx_n_s_N, __pyx_n_s_planes, __pyx_n_s_size, __pyx_n_s_ucImages, __pyx_n_s_ucImagesMv, __pyx_n_s_i, __pyx_n_s_total); if (unlikely(!__pyx_tuple__39)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__39);
+  __Pyx_GIVEREF(__pyx_tuple__39);
+  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(5, 0, 12, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__39, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_load, 19, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "NetDefToNet.pyx":3
  * cdef class NetdefToNet:
@@ -26106,10 +26321,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
  * 
  */
-  __pyx_tuple__40 = PyTuple_Pack(2, __pyx_n_s_neuralnet, __pyx_n_s_netdef); if (unlikely(!__pyx_tuple__40)) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__40);
-  __Pyx_GIVEREF(__pyx_tuple__40);
-  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ne, __pyx_n_s_createNetFromNetdef, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__41 = PyTuple_Pack(2, __pyx_n_s_neuralnet, __pyx_n_s_netdef); if (unlikely(!__pyx_tuple__41)) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__41);
+  __Pyx_GIVEREF(__pyx_tuple__41);
+  __pyx_codeobj__42 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__41, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ne, __pyx_n_s_createNetFromNetdef, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__42)) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "PyDeepCL.pyx":23
  * include "NetDefToNet.pyx"
@@ -26118,10 +26333,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     cdef int threwException = 0
  *     cdef string message = ""
  */
-  __pyx_tuple__42 = PyTuple_Pack(2, __pyx_n_s_threwException, __pyx_n_s_message); if (unlikely(!__pyx_tuple__42)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__42);
-  __Pyx_GIVEREF(__pyx_tuple__42);
-  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(0, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_checkException, 23, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__43 = PyTuple_Pack(2, __pyx_n_s_threwException, __pyx_n_s_message); if (unlikely(!__pyx_tuple__43)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__43);
+  __Pyx_GIVEREF(__pyx_tuple__43);
+  __pyx_codeobj__44 = (PyObject*)__Pyx_PyCode_New(0, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__43, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_checkException, 23, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__44)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "PyDeepCL.pyx":31
  *         raise RuntimeError(message)
@@ -26130,10 +26345,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     mythread = threading.Thread( target=function, args = args )
  *     mythread.daemon = True
  */
-  __pyx_tuple__44 = PyTuple_Pack(3, __pyx_n_s_function, __pyx_n_s_args, __pyx_n_s_mythread); if (unlikely(!__pyx_tuple__44)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__44);
-  __Pyx_GIVEREF(__pyx_tuple__44);
-  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_interruptableCall, 31, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__45 = PyTuple_Pack(3, __pyx_n_s_function, __pyx_n_s_args, __pyx_n_s_mythread); if (unlikely(!__pyx_tuple__45)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__45);
+  __Pyx_GIVEREF(__pyx_tuple__45);
+  __pyx_codeobj__46 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__45, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_interruptableCall, 31, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__46)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "PyDeepCL.pyx":39
  *         #print('join timed out')
@@ -26142,10 +26357,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')
  */
-  __pyx_tuple__46 = PyTuple_Pack(1, __pyx_n_s_pyString); if (unlikely(!__pyx_tuple__46)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__46);
-  __Pyx_GIVEREF(__pyx_tuple__46);
-  __pyx_codeobj__47 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__46, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_toCppString, 39, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__47)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__47 = PyTuple_Pack(1, __pyx_n_s_pyString); if (unlikely(!__pyx_tuple__47)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__47);
+  __Pyx_GIVEREF(__pyx_tuple__47);
+  __pyx_codeobj__48 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__47, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_toCppString, 39, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__48)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "View.MemoryView":276
  *         return self.name
@@ -26154,9 +26369,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__48 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__48)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__48);
-  __Pyx_GIVEREF(__pyx_tuple__48);
+  __pyx_tuple__49 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__49)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__49);
+  __Pyx_GIVEREF(__pyx_tuple__49);
 
   /* "View.MemoryView":277
  * 
@@ -26165,9 +26380,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__49 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__49)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 277; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__49);
-  __Pyx_GIVEREF(__pyx_tuple__49);
+  __pyx_tuple__50 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__50)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 277; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__50);
+  __Pyx_GIVEREF(__pyx_tuple__50);
 
   /* "View.MemoryView":278
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -26176,9 +26391,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__50 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__50)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__50);
-  __Pyx_GIVEREF(__pyx_tuple__50);
+  __pyx_tuple__51 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__51)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__51);
+  __Pyx_GIVEREF(__pyx_tuple__51);
 
   /* "View.MemoryView":281
  * 
@@ -26187,9 +26402,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__51 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__51)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 281; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__51);
-  __Pyx_GIVEREF(__pyx_tuple__51);
+  __pyx_tuple__52 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__52)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 281; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__52);
+  __Pyx_GIVEREF(__pyx_tuple__52);
 
   /* "View.MemoryView":282
  * 
@@ -26198,9 +26413,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__52 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__52)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 282; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_tuple__52);
-  __Pyx_GIVEREF(__pyx_tuple__52);
+  __pyx_tuple__53 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__53)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 282; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_tuple__53);
+  __Pyx_GIVEREF(__pyx_tuple__53);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -26372,13 +26587,13 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_type_8PyDeepCL_NetdefToNet.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "NetdefToNet", (PyObject *)&__pyx_type_8PyDeepCL_NetdefToNet) < 0) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_NetdefToNet = &__pyx_type_8PyDeepCL_NetdefToNet;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_8PyDeepCL_Scenario.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Scenario", (PyObject *)&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 113; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Scenario", (PyObject *)&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_Scenario = &__pyx_type_8PyDeepCL_Scenario;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_8PyDeepCL_QLearner.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "QLearner", (PyObject *)&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "QLearner", (PyObject *)&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 214; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_QLearner = &__pyx_type_8PyDeepCL_QLearner;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type___pyx_array.tp_print = 0;
@@ -27213,7 +27428,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__48, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__49, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_2);
@@ -27227,7 +27442,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__49, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 277; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__50, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 277; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_2);
@@ -27241,7 +27456,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__50, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__51, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 278; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_2);
@@ -27255,7 +27470,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__51, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 281; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__52, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 281; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_2);
@@ -27269,7 +27484,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__52, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 282; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_Call(((PyObject *)((PyObject *)__pyx_MemviewEnum_type)), __pyx_tuple__53, NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 282; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_2);

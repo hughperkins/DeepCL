@@ -99,6 +99,11 @@ cdef bool Scenario_hasFinished(  void *pyObject ):
 cdef void Scenario_print(  void *pyObject ):
     (<object>pyObject).show()
 
+cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
+    print('Scenario_printQRepresentation')
+    scenario = <object>pyObject
+    scenario.showQ(scenario.net)
+
 cdef void Scenario_getPerception( float *perception, void *pyObject ):
     pyPerception = (<object>pyObject).getPerception()
     for i in range(len(pyPerception)):
@@ -118,12 +123,13 @@ cdef class Scenario:
         # cog.outl("# generated using cog:")
         # for thisdef in defs:
         #     ( name, returnType, parameters ) = thisdef
-        #     if name in ['printQRepresentation']:
+        #     if name in []:
         #         continue
         #     cog.outl('self.thisptr.set' + upperFirst( name ) + '( Scenario_' + name + ' )' )
         #]]]
         # generated using cog:
         self.thisptr.setPrint( Scenario_print )
+        self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
         self.thisptr.setGetPerception( Scenario_getPerception )
@@ -196,6 +202,9 @@ cdef class Scenario:
     def show(self):
         print('show')
         raise Exception("Method needs to be overridden: Scenario.show()")
+    def showQ(self):
+        print('showQ')
+        raise Exception("Method needs to be overridden: Scenario.showQ()")
 
 #    def getNumber(self):
 #        return 0 # placeholder
@@ -205,6 +214,7 @@ cdef class Scenario:
 cdef class QLearner:
     cdef cDeepCL.QLearner *thisptr
     def __cinit__(self,Scenario scenario,NeuralNet net):
+        scenario.net = net
         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
     def __dealloc__(self):
         del self.thisptr
