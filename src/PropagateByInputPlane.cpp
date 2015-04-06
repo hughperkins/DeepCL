@@ -29,7 +29,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
 
-    int MBAllocRequired = batchSize * dim.numFilters * dim.outputImageSizeSquared * dim.numInputPlanes * 4 / 1024 / 1024;
+    int MBAllocRequired = (int) ( (long)batchSize * dim.numFilters * dim.outputImageSizeSquared * dim.numInputPlanes * 4 / 1024 / 1024 );
     if( MBAllocRequired >= cl->getMaxAllocSizeMB() ) {
         throw runtime_error( "memallocsize too small to use this kernel on this device.  Need: " + 
             toString( MBAllocRequired ) + "MB, but only have: " + 
