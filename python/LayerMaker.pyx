@@ -6,8 +6,8 @@ cdef class NormalizationLayerMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.NormalizationLayerMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     def translate( self, float _translate ):
         self.thisptr.translate( _translate )
         return self
@@ -23,8 +23,8 @@ cdef class FullyConnectedMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.FullyConnectedMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     def numPlanes( self, int _numPlanes ):
         self.thisptr.numPlanes( _numPlanes )
         return self
@@ -58,8 +58,8 @@ cdef class ConvolutionalMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.ConvolutionalMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+        #del self.thisptr
     def numFilters( self, int _numFilters ):
         self.thisptr.numFilters( _numFilters )
         return self
@@ -99,8 +99,8 @@ cdef class PoolingMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.PoolingMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     def poolingSize( self, int _poolingSize ):
         self.thisptr.poolingSize( _poolingSize )
         return self
@@ -113,8 +113,8 @@ cdef class ForceBackpropMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.ForceBackpropLayerMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     @staticmethod
     def instance():
         return ForceBackpropMaker()
@@ -124,8 +124,8 @@ cdef class SquareLossMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.SquareLossMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     @staticmethod
     def instance():
         return SquareLossMaker()
@@ -135,8 +135,8 @@ cdef class SoftMaxMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.SoftMaxMaker()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     @staticmethod
     def instance():
         return SoftMaxMaker()
@@ -146,8 +146,8 @@ cdef class InputLayerMaker(LayerMaker2):
     def __cinit__( self ):
         self.thisptr = new cDeepCL.InputLayerMaker[float]()
         self.baseptr = self.thisptr
-    def __dealloc__(self):
-        del self.thisptr
+#    def __dealloc__(self):
+#        del self.thisptr
     def numPlanes( self, int _numPlanes ):
         self.thisptr.numPlanes( _numPlanes )
         return self
