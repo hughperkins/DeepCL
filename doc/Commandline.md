@@ -25,23 +25,23 @@
   * `300N` means a fully connected layer with 300 hidden units
 * Thus, you can do, for example:
 ```bash
-./clconvolve1 netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 dataset=mnist
+./deepclrun netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 dataset=mnist
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 dataset=norb
+./deepclrun netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 dataset=norb
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./clconvolve1 netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 dataset=norb
+./deepclrun netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 dataset=norb
 ```
 
 ## Additional net-def options
 
 * You can add additional options in `{}` brackets after each layer, eg:
 ```bash
-./clconvolve1 netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 dataset=mnist
+./deepclrun netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 * Options currently available:
   * For convolution layers:
@@ -53,23 +53,23 @@
     * `padzeros` (or simply `z`)
 * can be combined, comma-separated (no spaces), eg:
 ```bash
-./clconvolve1 netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 dataset=mnist
+./deepclrun netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 
 ## Repeated layers
 
 * simply prefix a layer with eg `3*` to repeat it.  `3*` will repeat the layer 3 times, and similar for other numbers, eg:
 ```
-./clconvolve1 netdef=6*32c5{z}-500n-361n learningrate=0.0001 dataset=kgsgoall
+./deepclrun netdef=6*32c5{z}-500n-361n learningrate=0.0001 dataset=kgsgoall
 ```
 ... will create 6 convolutional layers of 32 5x5 filters each.
 * you can also use parentheses `(...)` to repeat multiple layers, eg:
 ```
-./clconvolve1 netdef=3*(32c5{z}-mp2)-150n-10n
+./deepclrun netdef=3*(32c5{z}-mp2)-150n-10n
 ```
 ... will be expanded to:
 ```
-./clconvolve1 netdef=32c5{z}-mp2-32c5{z}-mp2-32c5{z}-mp2-150n-10n
+./deepclrun netdef=32c5{z}-mp2-32c5{z}-mp2-32c5{z}-mp2-150n-10n
 ```
 
 

@@ -19,7 +19,7 @@
 ```
 * Run training, eg, based on LeCun's lenet-7:
 ```bash
-./clconvolve1 netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.00001 dataset=norb
+./deepclrun netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.00001 dataset=norb
 ```
 * On an Amazon AWS GPU instance, which has an NVidia GRID K520 GPU, this has epoch time of 76 seconds, and reaches test accuracy of around 91.7% after around 200 epochs (train accuracy 99.996%!)
 
@@ -33,11 +33,11 @@
 ```
 * Run as per the [convnetjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 dataset=mnist
+./deepclrun netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 dataset=mnist
 ```
 * On an Amazon AWS GPU instance, epoch time is about 13.8 seconds, giving about 98.7% test accuracy, after 12 epochs
 * Actually, I think the following gives slightly better test accuracy, about 99.0%, using 17.2seconds per epoch:
 ```bash
-./clconvolve1 netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 dataset=mnist
+./deepclrun netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n learningrate=0.002 dataset=mnist
 ```
 
