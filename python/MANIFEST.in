@@ -1,12 +1,7 @@
-# include ../src/*.h
-# include ../src/*.cpp
-# include ../qlearning/*.cpp
-# include ../qlearning/*.h
-# include ../OpenCLHelper/*.h
-# include ../OpenCLHelper/*.cpp
-
 include cDeepCL.pxd
 include Cy*.cpp
 include Cy*.h
 include mysrc/*
+include *.pxd
+include *.pyx
 

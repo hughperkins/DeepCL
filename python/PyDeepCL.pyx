@@ -17,6 +17,7 @@ include "Layer.pyx"
 include "LayerMaker.pyx"
 include "GenericLoader.pyx"
 include "NetLearner.pyx"
+include "NetDefToNet.pyx"
 
 def checkException():
     cdef int threwException = 0
@@ -38,10 +39,5 @@ def toCppString( pyString ):
     if isinstance( pyString, unicode ):
         return pyString.encode('utf8')
     return pyString
-
-cdef class NetdefToNet:
-    @staticmethod
-    def createNetFromNetdef( NeuralNet neuralnet, netdef ):
-        return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
 
 

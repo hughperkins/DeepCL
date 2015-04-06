@@ -10,44 +10,12 @@ from libcpp cimport bool
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
 include "cGenericLoader.pxd"
+include "cNetDefToNet.pxd"
+include "cNetLearner.pxd"
+include "cLayer.pxd"
 
 cdef extern from "CyWrappers.h":
     cdef void checkException( int *wasRaised, string *message )
-
-cdef extern from "Layer.h":
-    cdef cppclass Layer:
-        void propagate()
-        void backProp( float learningRate )
-        bool needsBackProp()
-        bool getBiased()
-        int getOutputCubeSize()
-        int getOutputPlanes()
-        int getOutputImageSize()
-        float * getResults()
-        int getResultsSize()
-        int getPersistSize()
-        void persistToArray(float *array)
-        void unpersistFromArray(const float *array)
-        string asString()
-        string getClassName()
-
-cdef extern from "NetdefToNet.h":
-    cdef cppclass NetdefToNet:
-        @staticmethod
-        bool createNetFromNetdef( NeuralNet *net, string netdef ) except +
-
-cdef extern from "CyNetLearner.h":
-    cdef cppclass CyNetLearner[T]:
-        CyNetLearner( NeuralNet *net ) except +
-        void setTrainingData( int Ntrain, T *trainData, int *trainLabels ) except +
-        void setTestingData( int Ntest, T *testData, int *testLabels ) except +
-        void setSchedule( int numEpochs ) except +
-        void setDumpTimings( bool dumpTimings ) except +
-        void setBatchSize( int batchSize ) except +
-        void learn( float learningRate ) nogil
-        #void setSchedule( int numEpochs, int startEpoch )
-        # VIRTUAL void addPostEpochAction( PostEpochAction *action );
-        #void learn( float learningRate, float annealLearningRate )
 
 cdef extern from "QLearner.h":
     cdef cppclass QLearner:
