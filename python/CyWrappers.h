@@ -11,6 +11,9 @@ void checkException( int *wasRaised, std::string *message );
 
 #include "NetLearner.h"
 
+// we need this, so we can catch the c++ exception, and raise
+// it in our altenrative way, all without needing to use the gil
+// (which I *think* adding 'except +' requires?)
 template<typename T>
 class CyNetLearner : public NetLearner<T> {
 public:

@@ -47,6 +47,7 @@ from setuptools import setup
 from setuptools import Extension
 from Cython.Build import cythonize
 import pypandoc
+import cogapp
 
 for arg in sys.argv:
     if arg == 'upload' or arg == 'register' or arg == 'testarg':
@@ -62,6 +63,9 @@ def get_so_suffix():
     return ""
 
 pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
+
+cog = cogapp.cogapp.Cog()
+cog.callableMain(['','--verbosity=1','-r','CyScenario.h','PyDeepCL.pyx','cDeepCL.pxd'])
 
 # from http://stackoverflow.com/questions/14320220/testing-python-c-libraries-get-build-path
 def distutils_dir_name(dname):
