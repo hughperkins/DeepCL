@@ -26,7 +26,7 @@
 ## MNIST
 
 * You can download the MNIST data from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
-* Convert from idx to mat format:
+* in v3.2.1 and lower, MNIST format is not native, and you need to do the following to convert to NORB format:
 ```bash
 ./idx-to-mat ../data/mnist train
 ./idx-to-mat ../data/mnist t10k

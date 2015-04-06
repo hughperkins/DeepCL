@@ -126,8 +126,8 @@ public:
         netDef = "RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N";
 //        dataDir = "../data/mnist";
         dataDir = "../data/mnist";
-        trainFile = "train-dat.mat";
-        validateFile = "t10k-dat.mat";
+        trainFile = "train-images-idx3-ubyte";
+        validateFile = "t10k-images-idx3-ubyte";
         weightsFile = "weights.dat";
         normalization = "stddev";
         batchSize = 128;
@@ -456,8 +456,8 @@ int main( int argc, char *argv[] ) {
     if( dataset != "" ) {
         if( dataset == "mnist" ) {
             config.dataDir = "../data/mnist";
-            config.trainFile = "train-dat.mat";
-            config.validateFile = "t10k-dat.mat";
+            config.trainFile = "train-images-idx3-ubyte";
+            config.validateFile = "t10k-images-idx3-ubyte";
         } else if( dataset == "norb" ) {
             config.dataDir = "../data/norb";
             config.trainFile = "training-shuffled-dat.mat";

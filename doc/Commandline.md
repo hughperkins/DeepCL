@@ -104,8 +104,13 @@
 * When specifying a training or validation file, if there is both a labels and an images file, then specify the images file, and the labels file will be detected automatically
 * Currently, the following filetypes are supported:
   * Norb .mat format as specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
-  * MNIST format, as specified at [MNIST dataset](http://yann.lecun.com/exdb/mnist/)
+  * MNIST format, as specified at [MNIST dataset](http://yann.lecun.com/exdb/mnist/) (New! In future v3.3.0 and later)
   * kgs go v2 format, [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+* in v3.2.1 and lower, MNIST format is not native, and you need to do the following to convert to NORB format:
+```bash
+./idx-to-mat ../data/mnist train
+./idx-to-mat ../data/mnist t10k
+```
 * For other formats, as long as the format has a recognizable header section, there's no particular reason why it couldnt be added
 
 ## Weight persistence
