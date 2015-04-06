@@ -42,6 +42,9 @@ cdef extern from "NeuralNet.h":
         void addLayer( LayerMaker2 *maker ) except +
         Layer *getLayer( int index )
         int getNumLayers()
+        const float *getResults()
+        int getResultsSize()
+        void setTraining( bool training )
 
 cdef extern from "NetdefToNet.h":
     cdef cppclass NetdefToNet:

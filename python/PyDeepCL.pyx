@@ -138,6 +138,17 @@ cdef class NeuralNet:
         return layer
     def getNumLayers( self ):
         return self.thisptr.getNumLayers()
+    def getResults(self):
+        cdef const float *results = self.thisptr.getResults()
+        cdef int resultsSize = self.thisptr.getResultsSize()
+        cdef c_array.array resultsArray = array('f', [0] * resultsSize )
+        for i in range(resultsSize):
+            resultsArray[i] = results[i]
+        return resultsArray
+    def setTraining(self, training): # 1 is, we are training net, 0 is we are not
+                            # used for example by randomtranslations layer (for now,
+                            # used only by randomtranslations layer)
+        self.thisptr.setTraining( training )
 
 cdef class NetdefToNet:
     @staticmethod

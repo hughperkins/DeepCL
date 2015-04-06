@@ -85,6 +85,11 @@ def test_getResults():
     print('results', results )
     assert [4,8] == results.tolist()
 
+    # check net.getResults() ,should be the same
+    results = net.getResults()
+    print('results', results )
+    assert [4,8] == results.tolist()
+
 def test_getsetweights():
     # set some weights, try getting them, should give same values, and
     # not crash etc :-)
