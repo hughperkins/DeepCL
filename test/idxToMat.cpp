@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 #include "NorbLoader.h"
-#include "test/MnistLoader.h"
+#include "MnistLoader.h"
 
 using namespace std;
 

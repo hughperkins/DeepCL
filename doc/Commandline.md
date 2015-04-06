@@ -98,29 +98,15 @@
 * You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
 * Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
 
-## Pre-processing
-
-* Note that the datasets must be in the NORB .mat format specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/) page
-    * For mnist, you can convert from idx to mat format using `idx-to-mat`:
-```bash
-./idx-to-mat ../data/mnist train
-./idx-to-mat ../data/mnist t10k
-```
-* For NORB, the training set as originally downloaded is unshuffled.  In addition, the test set is far larger than is needed for evaluating accuracy up to 0.1%.  Therefore, you might want to run `prepare-norb`:
-  * shuffles the training set, creating `training-shuffled-dat.mat` and `training-shuffled-cat.mat`
-  * draws 1000 test samples, and writes them to `testing-sampled-dat.mat` and `testing-sampled-cat.mat`
-```bash
-./prepare-norb ../data/norb
-```
-
 ## File types
 
 * Using the new `GenericLoader.cpp`, it's possible to automatically detect various filetypes
 * When specifying a training or validation file, if there is both a labels and an images file, then specify the images file, and the labels file will be detected automatically
 * Currently, the following filetypes are supported:
-  * Norb .mat format
+  * Norb .mat format as specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
+  * MNIST format, as specified at [MNIST dataset](http://yann.lecun.com/exdb/mnist/)
   * kgs go v2 format, [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-* As long as the format has a header section, there's no particular reason why it couldnt be supported
+* For other formats, as long as the format has a recognizable header section, there's no particular reason why it couldnt be added
 
 ## Weight persistence
 
@@ -156,4 +142,6 @@
 | filebatchsize=50 | When loadondemand=1, load this many batches at a time.  Numbers larger than 1 increase efficiency of disk reads, speeding up learning, but use up more memory |
 | weightsfile=weights.dat | file to store weights in, after each epoch.  If blank, then weights not stored |
 | loadweights=1 | load weights at start, from weightsfile.  Current training config, ie netdef and trainingfile, should match that used to create the weightsfile.  Note that epoch number will continue from file, so make sure to increase numepochs sufficiently |
+
+
 

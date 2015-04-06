@@ -58,7 +58,7 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
     PoolingBackpropGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
-    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp
+    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
  )
 foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
@@ -133,7 +133,7 @@ endif(PYTHON_AVAILABLE)
 #)
 
 set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
- test/testMnistLoader.cpp test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
+ test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp 
