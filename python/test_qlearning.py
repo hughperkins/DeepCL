@@ -58,8 +58,36 @@ class ScenarioImage(PyDeepCL.Scenario):
 #        print('showing')
         print('pos',self.posX,self.posY,'apple',self.appleX,self.appleY)
     def showQ(self,net):
-        print('showQ()')
-        print('net num layers: ' + str(net.getNumLayers() ) ) # proves we do have a copy of the network :-)
+#        print('showQ()')
+#        print('net num layers: ' + str(net.getNumLayers() ) ) # proves we do have a copy of the network :-)
+        scenario = self
+        print( "q directions:" )
+        size = self.size
+        netinput = array.array( 'f', [0] * (2*size*size) )
+        netinput[ self.appleY * size + self .appleX ] = 1
+        for y in range(size):
+            thisLine = ''
+            for x in range(size):
+                highestQ = 0
+                bestAction = 0
+                netinput[ size * size + y * size + x ] = 1
+                net.propagate( netinput )
+                netinput[ size * size + y * size + x ] = 0
+                results = net.getResults()
+                for action in range(4):
+                    thisQ = results[action]
+                    if action == 0 or thisQ > highestQ:
+                        highestQ = thisQ
+                        bestAction = action
+                if bestAction == 0:
+                    thisLine += ">"
+                elif bestAction == 1:
+                    thisLine += "<"
+                elif bestAction == 2:
+                    thisLine += "V"
+                else:
+                    thisLine += "^"
+            print(thisLine)
     def reset(self):
         print('scenarioimage.reset()') 
         if self.appleMoves:
