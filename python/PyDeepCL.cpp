@@ -4,40 +4,42 @@
 {
     "distutils": {
         "language": "c++", 
-        "runtime_library_dirs": [
-            "../build"
+        "define_macros": [
+            [
+                "DeepCL_EXPORTS", 
+                1
+            ], 
+            [
+                "OpenCLHelper_EXPORTS", 
+                1
+            ]
         ], 
-        "libraries": [
-            "DeepCL"
+        "runtime_library_dirs": [
+            "."
         ], 
         "depends": [
             "CyNetLearner.h", 
-            "../src/Layer.h", 
-            "../src/FullyConnectedMaker.h", 
-            "../src/ForceBackpropLayerMaker.h", 
-            "../qlearning/QLearner.h", 
-            "../src/NormalizationLayerMaker.h", 
-            "../src/ConvolutionalMaker.h", 
-            "../src/GenericLoader.h", 
-            "../src/NetdefToNet.h", 
-            "../src/PoolingMaker.h", 
-            "../src/LayerMaker.h", 
+            "mysrc/InputLayerMaker.h", 
+            "mysrc/FullyConnectedMaker.h", 
             "CyWrappers.h", 
+            "mysrc/LayerMaker.h", 
+            "mysrc/NeuralNet.h", 
+            "mysrc/GenericLoader.h", 
+            "mysrc/ConvolutionalMaker.h", 
+            "mysrc/NetdefToNet.h", 
+            "mysrc/NormalizationLayerMaker.h", 
+            "mysrc/PoolingMaker.h", 
             "CyScenario.h", 
-            "../src/InputLayerMaker.h", 
-            "../src/NeuralNet.h"
+            "mysrc/QLearner.h", 
+            "mysrc/Layer.h", 
+            "mysrc/ForceBackpropLayerMaker.h"
         ], 
         "extra_compile_args": [
             "-std=c++0x", 
             "-g"
         ], 
-        "library_dirs": [
-            "../build"
-        ], 
         "include_dirs": [
-            "../src", 
-            "../OpenCLHelper", 
-            "../qlearning"
+            "mysrc"
         ]
     }
 }

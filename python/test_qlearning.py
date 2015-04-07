@@ -113,7 +113,7 @@ class ScenarioImage(PyDeepCL.Scenario):
             sampledOnce = True
 
 def go():
-    scenario = ScenarioImage(5,False)
+    scenario = ScenarioImage(5,True)
 
     size = scenario.getPerceptionSize();
     planes = scenario.getPerceptionPlanes();
