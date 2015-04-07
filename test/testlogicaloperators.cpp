@@ -201,10 +201,10 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    LogicalDataCreator ldc(new TanhActivation());
 //    ldc.applyXorGate();
 
-    int imageSize = 1;
-    int inPlanes = 2;
+//    int imageSize = 1;
+//    int inPlanes = 2;
     int numExamples = 4;
-    int filterSize = 1;
+//    int filterSize = 1;
     float data[] = { -1, -1,
                      -1, 1,
                      1, -1,

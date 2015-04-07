@@ -393,7 +393,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
             ->run();
 //        cout << "loss, E, " << net->calcLoss(expectedResults) << endl;
 //        net->print();
-        float const*results = net->getResults();
+//        float const*results = net->getResults();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, results );
     }
 //    net->print();

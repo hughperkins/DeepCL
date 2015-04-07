@@ -39,7 +39,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     float *expectedResults = new float[std::max<int>(10000, resultsSize )];
     memset( inputData, 0, sizeof(float) * std::max<int>(10000, inputSize ) );
     memset( expectedResults, 0, sizeof(float) * std::max<int>(10000, resultsSize ) );
-    int seed = 0;
+//    int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, std::max<int>(10000, inputSize ), -2.0f, 2.0f );
     WeightRandomizer::randomize( random, expectedResults, std::max<int>(10000, resultsSize ), -2.0f, 2.0f );
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weights, weightsSize1, -2.0f, 2.0f );
@@ -62,7 +62,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
         net->propagate( inputData );
     //    net->print();
         float loss = net->calcLoss(expectedResults);
-        float losslayer1 = dynamic_cast<LossLayer*>(net->layers[3])->calcLoss(expectedResults);
+        dynamic_cast<LossLayer*>(net->layers[3])->calcLoss(expectedResults);
         net->backProp( learningRate, expectedResults );
         dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
