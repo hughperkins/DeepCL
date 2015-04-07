@@ -20,6 +20,9 @@ For examples of using lower-level entrypoints, see
 -  creating layers directly
 -  running epochs and forward/backprop directly
 
+For example of using q-learning, see
+`test\_qlearning.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py>`__.
+
 Notes on how the wrapper works
 ==============================
 

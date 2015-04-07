@@ -15,6 +15,8 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 * creating layers directly
 * running epochs and forward/backprop directly
 
+For example of using q-learning, see [test_qlearning.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py).
+
 # Notes on how the wrapper works
 
 * [cDeepCL.pxd](https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd) contains the definitions of the underlying DeepCL c++ libraries classes
