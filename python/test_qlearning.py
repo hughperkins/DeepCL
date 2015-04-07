@@ -159,8 +159,7 @@ def go():
     print( net.asString() )
 
     qlearner = PyDeepCL.QLearner( scenario, net )
-    # qlearner.setLambda(0.9) # lambda in the q-learning equations, to do with how far in the future
-                            # we look at each learning step
+    # qlearner.setLambda(0.9) # decay of the eligibility trace decay rate
     # qlearner.setMaxSamples(32) # how many samples to learn from after each move
     # qlearner.setEpsilon(0.1) # probability of exploring, instead of exploiting
     # qlearner.setLearningRate(0.1) # learning rate of the neural net
