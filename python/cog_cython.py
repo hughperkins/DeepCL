@@ -16,6 +16,13 @@
 # - in the .pyx, you need to write a wrapper class, that can be 
 #   overridden in the python files
 #   => pyx_write_overrideable_class
+#
+# in all cases, you need to provide a 'defs' file, which is a python
+# file with a list of method definitions, provided as tuples like:
+# defs.append( ( 'act', 'float', [('int','index')] ) ) 
+# here: - act is the name of the method
+#       - float is the return type
+#       - there is one parameter 'index', of type 'int'
 
 import cog
 
