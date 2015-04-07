@@ -77,16 +77,6 @@ cdef extern from "CyScenario.h":
         void setHasFinished ( CyScenario_hasFinishedDef cHasFinished )
         # [[[end]]]
 
-        #void printScenario()
-        #void printQRepresentation(NeuralNet *net)
-        #int getPerceptionSize()
-        #int getPerceptionPlanes()
-        #void getPerception( float *perception )
-        #void reset()
-        #int getNumActions()
-        #float act( int index )
-        #bool hasFinished()
-
     ctypedef int(*CyMyInterface_getNumberDef)(void *pyObject)
     ctypedef void(*CyMyInterface_getFloatsDef)(float *floats, void *pyObject)
 

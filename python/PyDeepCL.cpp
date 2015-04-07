@@ -4,42 +4,40 @@
 {
     "distutils": {
         "language": "c++", 
-        "define_macros": [
-            [
-                "DeepCL_EXPORTS", 
-                1
-            ], 
-            [
-                "OpenCLHelper_EXPORTS", 
-                1
-            ]
-        ], 
         "runtime_library_dirs": [
-            "."
+            "../build"
+        ], 
+        "libraries": [
+            "DeepCL"
         ], 
         "depends": [
             "CyNetLearner.h", 
-            "mysrc/InputLayerMaker.h", 
-            "mysrc/FullyConnectedMaker.h", 
+            "../src/Layer.h", 
+            "../src/FullyConnectedMaker.h", 
+            "../src/ForceBackpropLayerMaker.h", 
+            "../qlearning/QLearner.h", 
+            "../src/NormalizationLayerMaker.h", 
+            "../src/ConvolutionalMaker.h", 
+            "../src/GenericLoader.h", 
+            "../src/NetdefToNet.h", 
+            "../src/PoolingMaker.h", 
+            "../src/LayerMaker.h", 
             "CyWrappers.h", 
-            "mysrc/LayerMaker.h", 
-            "mysrc/NeuralNet.h", 
-            "mysrc/GenericLoader.h", 
-            "mysrc/ConvolutionalMaker.h", 
-            "mysrc/NetdefToNet.h", 
-            "mysrc/NormalizationLayerMaker.h", 
-            "mysrc/PoolingMaker.h", 
             "CyScenario.h", 
-            "mysrc/QLearner.h", 
-            "mysrc/Layer.h", 
-            "mysrc/ForceBackpropLayerMaker.h"
+            "../src/InputLayerMaker.h", 
+            "../src/NeuralNet.h"
         ], 
         "extra_compile_args": [
             "-std=c++0x", 
             "-g"
         ], 
+        "library_dirs": [
+            "../build"
+        ], 
         "include_dirs": [
-            "mysrc"
+            "../src", 
+            "../OpenCLHelper", 
+            "../qlearning"
         ]
     }
 }
@@ -866,8 +864,8 @@ struct __pyx_obj_8PyDeepCL_Scenario {
 };
 
 
-/* "PyDeepCL.pyx":208
- * #        return [] # placeholder
+/* "PyDeepCL.pyx":203
+ *         raise Exception("Method needs to be overridden: Scenario.showQ()")
  * 
  * cdef class QLearner:             # <<<<<<<<<<<<<<
  *     cdef cDeepCL.QLearner *thisptr
@@ -11851,7 +11849,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_22showQ(CYTHON_UNUSED struct __pyx
  *         print('showQ')
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")             # <<<<<<<<<<<<<<
  * 
- * #    def getNumber(self):
+ * cdef class QLearner:
  */
   __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 201; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
@@ -11877,7 +11875,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_22showQ(CYTHON_UNUSED struct __pyx
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":210
+/* "PyDeepCL.pyx":205
  * cdef class QLearner:
  *     cdef cDeepCL.QLearner *thisptr
  *     def __cinit__(self,Scenario scenario,NeuralNet net):             # <<<<<<<<<<<<<<
@@ -11916,11 +11914,11 @@ static int __pyx_pw_8PyDeepCL_8QLearner_1__cinit__(PyObject *__pyx_v_self, PyObj
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_net)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -11933,14 +11931,14 @@ static int __pyx_pw_8PyDeepCL_8QLearner_1__cinit__(PyObject *__pyx_v_self, PyObj
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("PyDeepCL.QLearner.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_scenario), __pyx_ptype_8PyDeepCL_Scenario, 1, "scenario", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_net), __pyx_ptype_8PyDeepCL_NeuralNet, 1, "net", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 210; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_scenario), __pyx_ptype_8PyDeepCL_Scenario, 1, "scenario", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_net), __pyx_ptype_8PyDeepCL_NeuralNet, 1, "net", 0))) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 205; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_8QLearner___cinit__(((struct __pyx_obj_8PyDeepCL_QLearner *)__pyx_v_self), __pyx_v_scenario, __pyx_v_net);
 
   /* function exit code */
@@ -11961,16 +11959,16 @@ static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLe
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "PyDeepCL.pyx":211
+  /* "PyDeepCL.pyx":206
  *     cdef cDeepCL.QLearner *thisptr
  *     def __cinit__(self,Scenario scenario,NeuralNet net):
  *         scenario.net = net             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):
  */
-  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_scenario), __pyx_n_s_net, ((PyObject *)__pyx_v_net)) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_scenario), __pyx_n_s_net, ((PyObject *)__pyx_v_net)) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 206; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":212
+  /* "PyDeepCL.pyx":207
  *     def __cinit__(self,Scenario scenario,NeuralNet net):
  *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)             # <<<<<<<<<<<<<<
@@ -11981,11 +11979,11 @@ static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLe
     __pyx_t_1 = new QLearner(__pyx_v_scenario->thisptr, __pyx_v_net->thisptr);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 212; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 207; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "PyDeepCL.pyx":210
+  /* "PyDeepCL.pyx":205
  * cdef class QLearner:
  *     cdef cDeepCL.QLearner *thisptr
  *     def __cinit__(self,Scenario scenario,NeuralNet net):             # <<<<<<<<<<<<<<
@@ -12004,7 +12002,7 @@ static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLe
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":213
+/* "PyDeepCL.pyx":208
  *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -12027,7 +12025,7 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "PyDeepCL.pyx":214
+  /* "PyDeepCL.pyx":209
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -12036,7 +12034,7 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
  */
   delete __pyx_v_self->thisptr;
 
-  /* "PyDeepCL.pyx":213
+  /* "PyDeepCL.pyx":208
  *         scenario.net = net
  *         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -12048,7 +12046,7 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":215
+/* "PyDeepCL.pyx":210
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def run(self):             # <<<<<<<<<<<<<<
@@ -12077,7 +12075,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("run", 0);
 
-  /* "PyDeepCL.pyx":216
+  /* "PyDeepCL.pyx":211
  *         del self.thisptr
  *     def run(self):
  *         self.thisptr.run()             # <<<<<<<<<<<<<<
@@ -12087,10 +12085,10 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
     __pyx_v_self->thisptr->run();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 216; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 211; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "PyDeepCL.pyx":215
+  /* "PyDeepCL.pyx":210
  *     def __dealloc__(self):
  *         del self.thisptr
  *     def run(self):             # <<<<<<<<<<<<<<
@@ -25983,7 +25981,7 @@ static int __Pyx_InitCachedConstants(void) {
  *         print('showQ')
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")             # <<<<<<<<<<<<<<
  * 
- * #    def getNumber(self):
+ * cdef class QLearner:
  */
   __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_10); if (unlikely(!__pyx_tuple__14)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 201; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__14);
@@ -26509,9 +26507,9 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_type_8PyDeepCL_Scenario.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "Scenario", (PyObject *)&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_Scenario = &__pyx_type_8PyDeepCL_Scenario;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 208; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 203; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_8PyDeepCL_QLearner.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "QLearner", (PyObject *)&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 208; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "QLearner", (PyObject *)&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 203; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_QLearner = &__pyx_type_8PyDeepCL_QLearner;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type___pyx_array.tp_print = 0;

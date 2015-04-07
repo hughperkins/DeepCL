@@ -200,11 +200,6 @@ cdef class Scenario:
         print('showQ')
         raise Exception("Method needs to be overridden: Scenario.showQ()")
 
-#    def getNumber(self):
-#        return 0 # placeholder
-#    def getFloats(self):
-#        return [] # placeholder
-
 cdef class QLearner:
     cdef cDeepCL.QLearner *thisptr
     def __cinit__(self,Scenario scenario,NeuralNet net):
