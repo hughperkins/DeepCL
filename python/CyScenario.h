@@ -49,7 +49,7 @@ public:
                 cog.out( ptype + ' ' + pname )
                 isFirstParam = False
             cog.outl(') {')
-            cog.outl('    std::cout << "CyScenario.' + name + '()" << std::endl;')
+            # cog.outl('    std::cout << "CyScenario.' + name + '()" << std::endl;')
             cog.out('    ')
             if returnType != 'void':
                 cog.out('return ')
@@ -111,39 +111,30 @@ public:
     }
 
     virtual void print() {
-        std::cout << "CyScenario.print()" << std::endl;
         cPrint(pyObject );
     }
     virtual void printQRepresentation(NeuralNet * net) {
-        std::cout << "CyScenario.printQRepresentation()" << std::endl;
         cPrintQRepresentation(net, pyObject );
     }
     virtual int getPerceptionSize() {
-        std::cout << "CyScenario.getPerceptionSize()" << std::endl;
         return cGetPerceptionSize(pyObject );
     }
     virtual int getPerceptionPlanes() {
-        std::cout << "CyScenario.getPerceptionPlanes()" << std::endl;
         return cGetPerceptionPlanes(pyObject );
     }
     virtual void getPerception(float * perception) {
-        std::cout << "CyScenario.getPerception()" << std::endl;
         cGetPerception(perception, pyObject );
     }
     virtual void reset() {
-        std::cout << "CyScenario.reset()" << std::endl;
         cReset(pyObject );
     }
     virtual int getNumActions() {
-        std::cout << "CyScenario.getNumActions()" << std::endl;
         return cGetNumActions(pyObject );
     }
     virtual float act(int index) {
-        std::cout << "CyScenario.act()" << std::endl;
         return cAct(index, pyObject );
     }
     virtual bool hasFinished() {
-        std::cout << "CyScenario.hasFinished()" << std::endl;
         return cHasFinished(pyObject );
     }
     // [[[end]]]

@@ -55,7 +55,7 @@ def toCppString( pyString ):
 #             cog.out( ptype + ' ' + pname + ', ' )
 #             isFirst = False
 #         cog.outl( ' void *pyObject ):')
-#         cog.outl('    print("cdef Scenario_' + name + '")')
+#         # cog.outl('    print("cdef Scenario_' + name + '")')
 #         cog.out( '    ')
 #         if returnType != 'void':
 #             cog.out( 'return ')
@@ -71,27 +71,21 @@ def toCppString( pyString ):
 #]]]
 # generated using cog:
 cdef int Scenario_getPerceptionSize(  void *pyObject ):
-    print("cdef Scenario_getPerceptionSize")
     return (<object>pyObject).getPerceptionSize()
 
 cdef int Scenario_getPerceptionPlanes(  void *pyObject ):
-    print("cdef Scenario_getPerceptionPlanes")
     return (<object>pyObject).getPerceptionPlanes()
 
 cdef void Scenario_reset(  void *pyObject ):
-    print("cdef Scenario_reset")
     (<object>pyObject).reset()
 
 cdef int Scenario_getNumActions(  void *pyObject ):
-    print("cdef Scenario_getNumActions")
     return (<object>pyObject).getNumActions()
 
 cdef float Scenario_act( int index,  void *pyObject ):
-    print("cdef Scenario_act")
     return (<object>pyObject).act(index)
 
 cdef bool Scenario_hasFinished(  void *pyObject ):
-    print("cdef Scenario_hasFinished")
     return (<object>pyObject).hasFinished()
 
 #[[[end]]]
@@ -100,7 +94,7 @@ cdef void Scenario_print(  void *pyObject ):
     (<object>pyObject).show()
 
 cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
-    print('Scenario_printQRepresentation')
+    # print('Scenario_printQRepresentation')
     scenario = <object>pyObject
     scenario.showQ(scenario.net)
 
