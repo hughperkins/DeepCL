@@ -93,4 +93,50 @@ def pxd_write_proxy_class( proxy_name, defs ):
         ( name, returnType, parameters ) = thisdef
         cog.outl( '    void set' + upperFirst( name ) + ' ( ' + proxy_name + '_' + name + 'Def c' + upperFirst( name ) + ' )')
 
+def pyx_write_overrideable_class( pxd_module, pxd_class, pyx_class, defs, skip_names ):
+    """writes the python class in the pyx file that the .py modules
+    can override, and receives callbacks from
+    any method names in skip_names will be skipped, and you can write them
+    manually before/after the cog block"""
+
+    cog.outl('# generated using cog (as far as the [[end]] bit:')
+    for thisdef in defs:
+        ( name, returnType, parameters ) = thisdef
+        if not name in skip_names:
+            cog.out('cdef ' + returnType + ' ' + pyx_class + '_' + name + '( ')
+            for (ptype,pname) in parameters:
+                cog.out( ptype + ' ' + pname + ', ' )
+                isFirst = False
+            cog.outl( ' void *pyObject ):')
+            cog.out( '    ')
+            if returnType != 'void':
+                cog.out( 'return ')
+            cog.out( '(<object>pyObject).' + name + '(')
+            isFirst = True
+            for (ptype,pname) in parameters:
+                if not isFirst:
+                    cog.out(', ')
+                cog.out( pname )
+                isFirst = False
+            cog.outl( ')' )
+            cog.outl( '' )
+    cog.outl( 'cdef class ' + pyx_class + ':')
+    cog.outl( '    cdef ' + pxd_module + '.' + pxd_class + ' *thisptr')
+    cog.outl( '    def __cinit__(self):')
+    cog.outl( '        self.thisptr = new ' + pxd_module + '.' + pxd_class + '(<void *>self )')
+    cog.outl( '' )
+    for thisdef in defs:
+        ( name, returnType, parameters ) = thisdef
+        cog.outl('        self.thisptr.set' + upperFirst( name ) + '( ' + pyx_class + '_' + name + ' )' )
+    cog.outl( '' )
+    for thisdef in defs:
+        ( name, returnType, parameters ) = thisdef
+        if name in skip_names:
+            continue
+        cog.out( '    def ' + name + '(self')
+        for (ptype,pname) in parameters:
+            cog.out( ', ' + pname )
+        cog.outl( '):')
+        cog.outl('        raise Exception("Method needs to be overridden: ' + pyx_class + '.' + name + '()")')
+        cog.outl('')
 
