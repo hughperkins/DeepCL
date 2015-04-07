@@ -8,26 +8,38 @@ import array
 import random
 import PyDeepCL
 
+# This is an example scenario.  It overrides the PyDeepCL.Scenario class
+# The Q-learning module will call into this object each time it makes a move
+# This class can therefore represent any world you want to expose to the
+# q-learning module
 class ScenarioImage(PyDeepCL.Scenario):
     def __init__(self, size, apple_moves):
+        """Standard constructor.  Do whatever you need to set up the world"""
         super(ScenarioImage,self).__init__()
         self.size = size
         self.appleMoves = apple_moves
         self.finished = False
         self.reset()
     def getPerceptionSize(self):
+        """Assumes perception is square.  This is the length of one edge"""
         return self.size
     def getNumActions(self):
+        """How many possible virtual 'buttons' can the computer push?"""
         return 4
     def getPerceptionPlanes(self):
+        """We can feed one or more planes to the qleaning module"""
         return 2
     def getPerception(self):
+        """Need to provide the current perception to the qlearning module,
+        which should be of size numPlanes * size * size"""
         perception = [0] * 2 * self.size * self.size
         perception[self.appleY * self.size + self.appleX] = 1;
         perception[self.size * self.size + self.posY * self.size + self.posX] = 1; 
         return perception
     def act(self,index):
-#        print('pretending to act :-)')
+        """The computer chooses one of the numActions available actions
+        this method needs to update the world, and return the reward
+        (positive or negative)"""
         dx = 0
         dy = 0
         if index == 0:
@@ -52,10 +64,16 @@ class ScenarioImage(PyDeepCL.Scenario):
             self.posY = newY
             return -0.1
     def hasFinished(self):
+        """If the last action ended this particular game/world-instance
+        then this should return True.  After 'reset' has been called
+        it should return False again"""
         #print('scenarioimage.hasFinished()') 
         return self.finished
     def show(self):
-#        print('showing')
+        """can do nothing, or it can print the world somehow.
+        This provides no information to the qlearning module: it's
+        simply an opportunity for you to see how the world looks
+        occasionally"""
         print('pos',self.posX,self.posY,'apple',self.appleX,self.appleY)
         for y in range(self.size):
             line = ''
@@ -68,6 +86,11 @@ class ScenarioImage(PyDeepCL.Scenario):
                     line += "."
             print(line)
     def showQ(self,net):
+        """can do nothing, or it can print the current q 
+        values somehow.
+        This provides no information to the qlearning module: it's
+        simply an opportunity for you to see how the q value look
+        occasionally"""
 #        print('showQ()')
 #        print('net num layers: ' + str(net.getNumLayers() ) ) # proves we do have a copy of the network :-)
         scenario = self
@@ -99,6 +122,7 @@ class ScenarioImage(PyDeepCL.Scenario):
                     thisLine += "^"
             print(thisLine)
     def reset(self):
+        """starts a new game / world-instance"""
         print('scenarioimage.reset()') 
         if self.appleMoves:
             self.appleX = random.randint(0, self.size-1)
@@ -113,6 +137,8 @@ class ScenarioImage(PyDeepCL.Scenario):
             sampledOnce = True
 
 def go():
+    """creates a net, instantiates the scenario, and calls into the qlearning
+    module, to start learning"""
     scenario = ScenarioImage(5,True)
 
     size = scenario.getPerceptionSize();
