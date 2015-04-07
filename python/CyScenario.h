@@ -2,6 +2,14 @@
 
 #include "Scenario.h"
 
+
+
+// [[[cog
+// import ScenarioDefs
+// import cog_cython
+// cog_cython.write_proxy_class( 'CyScenario', 'Scenario', ScenarioDefs.defs )
+// ]]]
+// generated using cog (as far as the [[end]] bit:
 class CyScenario : public Scenario {
 public:
     void *pyObject;
@@ -10,58 +18,6 @@ public:
         pyObject(pyObject) {
     }
 
-    // a lot of boilerplate stuff, so let's cog it :-)
-    /* [[[cog
-        cog.outl('// generated using cog (as far as the [[end]] bit:')
-        import ScenarioDefs
-        defs = ScenarioDefs.defs
-        upperFirst = ScenarioDefs.upperFirst
-
-        for thisdef in defs:
-            ( name, returnType, parameters ) = thisdef
-            cog.out('typedef ' + returnType + '(*' + name + 'Def)(')
-            for parameter in parameters:
-                (ptype,pname) = parameter
-                cog.out( ptype + ' ' + pname + ',')
-            cog.outl( ' void *pyObject);')
-        cog.outl('')
-
-        for thisdef in defs:
-            ( name, returnType, parameters ) = thisdef
-            cog.outl( name + 'Def c' + upperFirst( name ) + ';' )   
-        cog.outl('')     
-
-        for thisdef in defs:
-            ( name, returnType, parameters ) = thisdef
-            cog.outl( 'void set' + upperFirst( name ) + ' ( ' + name + 'Def c' + upperFirst( name ) + ' ) {' )   
-            cog.outl( '    this->c' + upperFirst( name ) + ' = c' + upperFirst( name ) + ';' )
-            cog.outl( '}')
-        cog.outl('')     
-
-        for thisdef in defs:
-            ( name, returnType, parameters ) = thisdef
-            cog.out( 'virtual ' + returnType + ' ' + name + '(' )
-            isFirstParam = True
-            for param in parameters:
-                (ptype,pname) = param
-                if not isFirstParam:
-                    cog.out(', ')
-                cog.out( ptype + ' ' + pname )
-                isFirstParam = False
-            cog.outl(') {')
-            # cog.outl('    std::cout << "CyScenario.' + name + '()" << std::endl;')
-            cog.out('    ')
-            if returnType != 'void':
-                cog.out('return ')
-            cog.out('c' + upperFirst( name ) + '(')
-            for param in parameters:
-                (ptype,pname) = param
-                cog.out( pname + ', ' )
-            cog.outl( 'pyObject );' )
-            cog.outl('}')
-
-    */// ]]]
-    // generated using cog (as far as the [[end]] bit:
     typedef void(*printDef)( void *pyObject);
     typedef void(*printQRepresentationDef)(NeuralNet * net, void *pyObject);
     typedef int(*getPerceptionSizeDef)( void *pyObject);
@@ -137,6 +93,6 @@ public:
     virtual bool hasFinished() {
         return cHasFinished(pyObject );
     }
-    // [[[end]]]
 };
+// [[[end]]]
 
