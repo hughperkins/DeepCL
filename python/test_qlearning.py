@@ -57,6 +57,16 @@ class ScenarioImage(PyDeepCL.Scenario):
     def show(self):
 #        print('showing')
         print('pos',self.posX,self.posY,'apple',self.appleX,self.appleY)
+        for y in range(self.size):
+            line = ''
+            for x in range(self.size):
+                if x == self.posX and y == self.posY:
+                    line += "X"
+                elif x == self.appleX and y == self.appleY:
+                    line += "O"
+                else:
+                    line += "."
+            print(line)
     def showQ(self,net):
 #        print('showQ()')
 #        print('net num layers: ' + str(net.getNumLayers() ) ) # proves we do have a copy of the network :-)
