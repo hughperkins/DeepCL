@@ -48,8 +48,10 @@ cdef class QLearner:
         self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
     def __dealloc__(self):
         del self.thisptr
-    def run(self):
+    def _run( self ):
         self.thisptr.run()
+    def run( self ):
+        interruptableCall( self._run, [] ) 
     def setLambda( self, float thislambda ):
         self.thisptr.setLambda( thislambda )
     def setMaxSamples( self, int maxSamples ):
@@ -132,6 +134,7 @@ cdef class Scenario:
         raise Exception("Method needs to be overridden: Scenario.hasFinished()")
 
 #[[[end]]]
+ 
     def show(self):
         raise Exception("Method needs to be overridden: Scenario.show()")
 
