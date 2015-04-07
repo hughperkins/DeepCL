@@ -783,7 +783,7 @@ struct __pyx_obj_8PyDeepCL_QLearner {
 };
 
 
-/* "PyDeepCL.pyx":93
+/* "PyDeepCL.pyx":101
  *     return (<object>pyObject).hasFinished()
  * 
  * cdef class Scenario:             # <<<<<<<<<<<<<<
@@ -1781,6 +1781,10 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
 static int __pyx_pf_8PyDeepCL_8QLearner___cinit__(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_scenario, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net); /* proto */
 static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_6setLambda(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, float __pyx_v_thislambda); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_8setMaxSamples(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, int __pyx_v_maxSamples); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_10setEpsilon(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, float __pyx_v_epsilon); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_12setLearningRate(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Scenario_2getPerceptionSize(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Scenario_4getPerceptionPlanes(CYTHON_UNUSED struct __pyx_obj_8PyDeepCL_Scenario *__pyx_v_self); /* proto */
@@ -10374,7 +10378,7 @@ static void __pyx_pf_8PyDeepCL_8QLearner_2__dealloc__(struct __pyx_obj_8PyDeepCL
  *         del self.thisptr
  *     def run(self):             # <<<<<<<<<<<<<<
  *         self.thisptr.run()
- * 
+ *     def setLambda( self, float thislambda ):
  */
 
 /* Python wrapper */
@@ -10402,8 +10406,8 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
  *         del self.thisptr
  *     def run(self):
  *         self.thisptr.run()             # <<<<<<<<<<<<<<
- * 
- * 
+ *     def setLambda( self, float thislambda ):
+ *         self.thisptr.setLambda( thislambda )
  */
   try {
     __pyx_v_self->thisptr->run();
@@ -10417,7 +10421,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
  *         del self.thisptr
  *     def run(self):             # <<<<<<<<<<<<<<
  *         self.thisptr.run()
- * 
+ *     def setLambda( self, float thislambda ):
  */
 
   /* function exit code */
@@ -10432,7 +10436,259 @@ static PyObject *__pyx_pf_8PyDeepCL_8QLearner_4run(struct __pyx_obj_8PyDeepCL_QL
   return __pyx_r;
 }
 
+/* "PyDeepCL.pyx":53
+ *     def run(self):
+ *         self.thisptr.run()
+ *     def setLambda( self, float thislambda ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setLambda( thislambda )
+ *     def setMaxSamples( self, int maxSamples ):
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_7setLambda(PyObject *__pyx_v_self, PyObject *__pyx_arg_thislambda); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_7setLambda(PyObject *__pyx_v_self, PyObject *__pyx_arg_thislambda) {
+  float __pyx_v_thislambda;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setLambda (wrapper)", 0);
+  assert(__pyx_arg_thislambda); {
+    __pyx_v_thislambda = __pyx_PyFloat_AsFloat(__pyx_arg_thislambda); if (unlikely((__pyx_v_thislambda == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 53; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("PyDeepCL.QLearner.setLambda", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8PyDeepCL_8QLearner_6setLambda(((struct __pyx_obj_8PyDeepCL_QLearner *)__pyx_v_self), ((float)__pyx_v_thislambda));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_6setLambda(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, float __pyx_v_thislambda) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setLambda", 0);
+
+  /* "PyDeepCL.pyx":54
+ *         self.thisptr.run()
+ *     def setLambda( self, float thislambda ):
+ *         self.thisptr.setLambda( thislambda )             # <<<<<<<<<<<<<<
+ *     def setMaxSamples( self, int maxSamples ):
+ *         self.thisptr.setMaxSamples( maxSamples )
+ */
+  __pyx_v_self->thisptr->setLambda(__pyx_v_thislambda);
+
+  /* "PyDeepCL.pyx":53
+ *     def run(self):
+ *         self.thisptr.run()
+ *     def setLambda( self, float thislambda ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setLambda( thislambda )
+ *     def setMaxSamples( self, int maxSamples ):
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
 /* "PyDeepCL.pyx":55
+ *     def setLambda( self, float thislambda ):
+ *         self.thisptr.setLambda( thislambda )
+ *     def setMaxSamples( self, int maxSamples ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setMaxSamples( maxSamples )
+ *     def setEpsilon( self, float epsilon ):
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_9setMaxSamples(PyObject *__pyx_v_self, PyObject *__pyx_arg_maxSamples); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_9setMaxSamples(PyObject *__pyx_v_self, PyObject *__pyx_arg_maxSamples) {
+  int __pyx_v_maxSamples;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setMaxSamples (wrapper)", 0);
+  assert(__pyx_arg_maxSamples); {
+    __pyx_v_maxSamples = __Pyx_PyInt_As_int(__pyx_arg_maxSamples); if (unlikely((__pyx_v_maxSamples == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 55; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("PyDeepCL.QLearner.setMaxSamples", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8PyDeepCL_8QLearner_8setMaxSamples(((struct __pyx_obj_8PyDeepCL_QLearner *)__pyx_v_self), ((int)__pyx_v_maxSamples));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_8setMaxSamples(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, int __pyx_v_maxSamples) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setMaxSamples", 0);
+
+  /* "PyDeepCL.pyx":56
+ *         self.thisptr.setLambda( thislambda )
+ *     def setMaxSamples( self, int maxSamples ):
+ *         self.thisptr.setMaxSamples( maxSamples )             # <<<<<<<<<<<<<<
+ *     def setEpsilon( self, float epsilon ):
+ *         self.thisptr.setEpsilon( epsilon )
+ */
+  __pyx_v_self->thisptr->setMaxSamples(__pyx_v_maxSamples);
+
+  /* "PyDeepCL.pyx":55
+ *     def setLambda( self, float thislambda ):
+ *         self.thisptr.setLambda( thislambda )
+ *     def setMaxSamples( self, int maxSamples ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setMaxSamples( maxSamples )
+ *     def setEpsilon( self, float epsilon ):
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "PyDeepCL.pyx":57
+ *     def setMaxSamples( self, int maxSamples ):
+ *         self.thisptr.setMaxSamples( maxSamples )
+ *     def setEpsilon( self, float epsilon ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setEpsilon( epsilon )
+ *     def setLearningRate( self, float learningRate ):
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_11setEpsilon(PyObject *__pyx_v_self, PyObject *__pyx_arg_epsilon); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_11setEpsilon(PyObject *__pyx_v_self, PyObject *__pyx_arg_epsilon) {
+  float __pyx_v_epsilon;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setEpsilon (wrapper)", 0);
+  assert(__pyx_arg_epsilon); {
+    __pyx_v_epsilon = __pyx_PyFloat_AsFloat(__pyx_arg_epsilon); if (unlikely((__pyx_v_epsilon == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 57; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("PyDeepCL.QLearner.setEpsilon", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8PyDeepCL_8QLearner_10setEpsilon(((struct __pyx_obj_8PyDeepCL_QLearner *)__pyx_v_self), ((float)__pyx_v_epsilon));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_10setEpsilon(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, float __pyx_v_epsilon) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setEpsilon", 0);
+
+  /* "PyDeepCL.pyx":58
+ *         self.thisptr.setMaxSamples( maxSamples )
+ *     def setEpsilon( self, float epsilon ):
+ *         self.thisptr.setEpsilon( epsilon )             # <<<<<<<<<<<<<<
+ *     def setLearningRate( self, float learningRate ):
+ *         self.thisptr.setLearningRate( learningRate )
+ */
+  __pyx_v_self->thisptr->setEpsilon(__pyx_v_epsilon);
+
+  /* "PyDeepCL.pyx":57
+ *     def setMaxSamples( self, int maxSamples ):
+ *         self.thisptr.setMaxSamples( maxSamples )
+ *     def setEpsilon( self, float epsilon ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setEpsilon( epsilon )
+ *     def setLearningRate( self, float learningRate ):
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "PyDeepCL.pyx":59
+ *     def setEpsilon( self, float epsilon ):
+ *         self.thisptr.setEpsilon( epsilon )
+ *     def setLearningRate( self, float learningRate ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setLearningRate( learningRate )
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_13setLearningRate(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_8QLearner_13setLearningRate(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate) {
+  float __pyx_v_learningRate;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setLearningRate (wrapper)", 0);
+  assert(__pyx_arg_learningRate); {
+    __pyx_v_learningRate = __pyx_PyFloat_AsFloat(__pyx_arg_learningRate); if (unlikely((__pyx_v_learningRate == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 59; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("PyDeepCL.QLearner.setLearningRate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8PyDeepCL_8QLearner_12setLearningRate(((struct __pyx_obj_8PyDeepCL_QLearner *)__pyx_v_self), ((float)__pyx_v_learningRate));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_8QLearner_12setLearningRate(struct __pyx_obj_8PyDeepCL_QLearner *__pyx_v_self, float __pyx_v_learningRate) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setLearningRate", 0);
+
+  /* "PyDeepCL.pyx":60
+ *         self.thisptr.setEpsilon( epsilon )
+ *     def setLearningRate( self, float learningRate ):
+ *         self.thisptr.setLearningRate( learningRate )             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_v_self->thisptr->setLearningRate(__pyx_v_learningRate);
+
+  /* "PyDeepCL.pyx":59
+ *     def setEpsilon( self, float epsilon ):
+ *         self.thisptr.setEpsilon( epsilon )
+ *     def setLearningRate( self, float learningRate ):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setLearningRate( learningRate )
+ * 
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "PyDeepCL.pyx":63
  * 
  * 
  * cdef void Scenario_print(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10450,14 +10706,14 @@ static void __pyx_f_8PyDeepCL_Scenario_print(void *__pyx_v_pyObject) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_print", 0);
 
-  /* "PyDeepCL.pyx":56
+  /* "PyDeepCL.pyx":64
  * 
  * cdef void Scenario_print(  void *pyObject ):
  *     (<object>pyObject).show()             # <<<<<<<<<<<<<<
  * 
  * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_show); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_show); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10470,16 +10726,16 @@ static void __pyx_f_8PyDeepCL_Scenario_print(void *__pyx_v_pyObject) {
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 56; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "PyDeepCL.pyx":55
+  /* "PyDeepCL.pyx":63
  * 
  * 
  * cdef void Scenario_print(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10498,7 +10754,7 @@ static void __pyx_f_8PyDeepCL_Scenario_print(void *__pyx_v_pyObject) {
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":58
+/* "PyDeepCL.pyx":66
  *     (<object>pyObject).show()
  * 
  * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10519,7 +10775,7 @@ static void __pyx_f_8PyDeepCL_Scenario_printQRepresentation(CYTHON_UNUSED Neural
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_printQRepresentation", 0);
 
-  /* "PyDeepCL.pyx":60
+  /* "PyDeepCL.pyx":68
  * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
  *     # print('Scenario_printQRepresentation')
  *     scenario = <object>pyObject             # <<<<<<<<<<<<<<
@@ -10531,16 +10787,16 @@ static void __pyx_f_8PyDeepCL_Scenario_printQRepresentation(CYTHON_UNUSED Neural
   __pyx_v_scenario = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "PyDeepCL.pyx":61
+  /* "PyDeepCL.pyx":69
  *     # print('Scenario_printQRepresentation')
  *     scenario = <object>pyObject
  *     scenario.showQ(scenario.net)             # <<<<<<<<<<<<<<
  * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_scenario, __pyx_n_s_showQ); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_scenario, __pyx_n_s_showQ); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_scenario, __pyx_n_s_net); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_scenario, __pyx_n_s_net); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10553,24 +10809,24 @@ static void __pyx_f_8PyDeepCL_Scenario_printQRepresentation(CYTHON_UNUSED Neural
     }
   }
   if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 61; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "PyDeepCL.pyx":58
+  /* "PyDeepCL.pyx":66
  *     (<object>pyObject).show()
  * 
  * cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10592,7 +10848,7 @@ static void __pyx_f_8PyDeepCL_Scenario_printQRepresentation(CYTHON_UNUSED Neural
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":63
+/* "PyDeepCL.pyx":71
  *     scenario.showQ(scenario.net)
  * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10615,14 +10871,14 @@ static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *__pyx_v_perception, 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_getPerception", 0);
 
-  /* "PyDeepCL.pyx":64
+  /* "PyDeepCL.pyx":72
  * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):
  *     pyPerception = (<object>pyObject).getPerception()             # <<<<<<<<<<<<<<
  *     for i in range(len(pyPerception)):
  *         perception[i] = pyPerception[i]
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerception); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerception); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10635,42 +10891,42 @@ static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *__pyx_v_perception, 
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 64; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_pyPerception = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "PyDeepCL.pyx":65
+  /* "PyDeepCL.pyx":73
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):
  *     pyPerception = (<object>pyObject).getPerception()
  *     for i in range(len(pyPerception)):             # <<<<<<<<<<<<<<
  *         perception[i] = pyPerception[i]
  * 
  */
-  __pyx_t_4 = PyObject_Length(__pyx_v_pyPerception); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 65; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyObject_Length(__pyx_v_pyPerception); if (unlikely(__pyx_t_4 == -1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "PyDeepCL.pyx":66
+    /* "PyDeepCL.pyx":74
  *     pyPerception = (<object>pyObject).getPerception()
  *     for i in range(len(pyPerception)):
  *         perception[i] = pyPerception[i]             # <<<<<<<<<<<<<<
  * 
  * #[[[cog
  */
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_pyPerception, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_pyPerception, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(__pyx_t_1 == NULL)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_6 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_6 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 66; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_6 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_6 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 74; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     (__pyx_v_perception[__pyx_v_i]) = __pyx_t_6;
   }
 
-  /* "PyDeepCL.pyx":63
+  /* "PyDeepCL.pyx":71
  *     scenario.showQ(scenario.net)
  * 
  * cdef void Scenario_getPerception( float *perception, void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10690,7 +10946,7 @@ static void __pyx_f_8PyDeepCL_Scenario_getPerception(float *__pyx_v_perception, 
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":75
+/* "PyDeepCL.pyx":83
  * #]]]
  * # generated using cog (as far as the [[end]] bit:
  * cdef int Scenario_getPerceptionSize(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10710,14 +10966,14 @@ static int __pyx_f_8PyDeepCL_Scenario_getPerceptionSize(void *__pyx_v_pyObject) 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_getPerceptionSize", 0);
 
-  /* "PyDeepCL.pyx":76
+  /* "PyDeepCL.pyx":84
  * # generated using cog (as far as the [[end]] bit:
  * cdef int Scenario_getPerceptionSize(  void *pyObject ):
  *     return (<object>pyObject).getPerceptionSize()             # <<<<<<<<<<<<<<
  * 
  * cdef int Scenario_getPerceptionPlanes(  void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerceptionSize); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerceptionSize); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10730,19 +10986,19 @@ static int __pyx_f_8PyDeepCL_Scenario_getPerceptionSize(void *__pyx_v_pyObject) 
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 76; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 84; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_4;
   goto __pyx_L0;
 
-  /* "PyDeepCL.pyx":75
+  /* "PyDeepCL.pyx":83
  * #]]]
  * # generated using cog (as far as the [[end]] bit:
  * cdef int Scenario_getPerceptionSize(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10762,7 +11018,7 @@ static int __pyx_f_8PyDeepCL_Scenario_getPerceptionSize(void *__pyx_v_pyObject) 
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":78
+/* "PyDeepCL.pyx":86
  *     return (<object>pyObject).getPerceptionSize()
  * 
  * cdef int Scenario_getPerceptionPlanes(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10782,14 +11038,14 @@ static int __pyx_f_8PyDeepCL_Scenario_getPerceptionPlanes(void *__pyx_v_pyObject
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_getPerceptionPlanes", 0);
 
-  /* "PyDeepCL.pyx":79
+  /* "PyDeepCL.pyx":87
  * 
  * cdef int Scenario_getPerceptionPlanes(  void *pyObject ):
  *     return (<object>pyObject).getPerceptionPlanes()             # <<<<<<<<<<<<<<
  * 
  * cdef void Scenario_reset(  void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerceptionPlanes); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getPerceptionPlanes); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10802,19 +11058,19 @@ static int __pyx_f_8PyDeepCL_Scenario_getPerceptionPlanes(void *__pyx_v_pyObject
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 79; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 87; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_4;
   goto __pyx_L0;
 
-  /* "PyDeepCL.pyx":78
+  /* "PyDeepCL.pyx":86
  *     return (<object>pyObject).getPerceptionSize()
  * 
  * cdef int Scenario_getPerceptionPlanes(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10834,7 +11090,7 @@ static int __pyx_f_8PyDeepCL_Scenario_getPerceptionPlanes(void *__pyx_v_pyObject
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":81
+/* "PyDeepCL.pyx":89
  *     return (<object>pyObject).getPerceptionPlanes()
  * 
  * cdef void Scenario_reset(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10852,14 +11108,14 @@ static void __pyx_f_8PyDeepCL_Scenario_reset(void *__pyx_v_pyObject) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_reset", 0);
 
-  /* "PyDeepCL.pyx":82
+  /* "PyDeepCL.pyx":90
  * 
  * cdef void Scenario_reset(  void *pyObject ):
  *     (<object>pyObject).reset()             # <<<<<<<<<<<<<<
  * 
  * cdef int Scenario_getNumActions(  void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_reset); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_reset); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10872,16 +11128,16 @@ static void __pyx_f_8PyDeepCL_Scenario_reset(void *__pyx_v_pyObject) {
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 82; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 90; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "PyDeepCL.pyx":81
+  /* "PyDeepCL.pyx":89
  *     return (<object>pyObject).getPerceptionPlanes()
  * 
  * cdef void Scenario_reset(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10900,7 +11156,7 @@ static void __pyx_f_8PyDeepCL_Scenario_reset(void *__pyx_v_pyObject) {
   __Pyx_RefNannyFinishContext();
 }
 
-/* "PyDeepCL.pyx":84
+/* "PyDeepCL.pyx":92
  *     (<object>pyObject).reset()
  * 
  * cdef int Scenario_getNumActions(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10920,14 +11176,14 @@ static int __pyx_f_8PyDeepCL_Scenario_getNumActions(void *__pyx_v_pyObject) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_getNumActions", 0);
 
-  /* "PyDeepCL.pyx":85
+  /* "PyDeepCL.pyx":93
  * 
  * cdef int Scenario_getNumActions(  void *pyObject ):
  *     return (<object>pyObject).getNumActions()             # <<<<<<<<<<<<<<
  * 
  * cdef float Scenario_act( int index,  void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getNumActions); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_getNumActions); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10940,19 +11196,19 @@ static int __pyx_f_8PyDeepCL_Scenario_getNumActions(void *__pyx_v_pyObject) {
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 85; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_4;
   goto __pyx_L0;
 
-  /* "PyDeepCL.pyx":84
+  /* "PyDeepCL.pyx":92
  *     (<object>pyObject).reset()
  * 
  * cdef int Scenario_getNumActions(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10972,7 +11228,7 @@ static int __pyx_f_8PyDeepCL_Scenario_getNumActions(void *__pyx_v_pyObject) {
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":87
+/* "PyDeepCL.pyx":95
  *     return (<object>pyObject).getNumActions()
  * 
  * cdef float Scenario_act( int index,  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -10994,16 +11250,16 @@ static float __pyx_f_8PyDeepCL_Scenario_act(int __pyx_v_index, void *__pyx_v_pyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_act", 0);
 
-  /* "PyDeepCL.pyx":88
+  /* "PyDeepCL.pyx":96
  * 
  * cdef float Scenario_act( int index,  void *pyObject ):
  *     return (<object>pyObject).act(index)             # <<<<<<<<<<<<<<
  * 
  * cdef bool Scenario_hasFinished(  void *pyObject ):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_act); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_act); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_index); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_index); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -11016,27 +11272,27 @@ static float __pyx_f_8PyDeepCL_Scenario_act(int __pyx_v_index, void *__pyx_v_pyO
     }
   }
   if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_6 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_6 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_6 = __pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_6 == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_6;
   goto __pyx_L0;
 
-  /* "PyDeepCL.pyx":87
+  /* "PyDeepCL.pyx":95
  *     return (<object>pyObject).getNumActions()
  * 
  * cdef float Scenario_act( int index,  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -11058,7 +11314,7 @@ static float __pyx_f_8PyDeepCL_Scenario_act(int __pyx_v_index, void *__pyx_v_pyO
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":90
+/* "PyDeepCL.pyx":98
  *     return (<object>pyObject).act(index)
  * 
  * cdef bool Scenario_hasFinished(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -11078,14 +11334,14 @@ static bool __pyx_f_8PyDeepCL_Scenario_hasFinished(void *__pyx_v_pyObject) {
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Scenario_hasFinished", 0);
 
-  /* "PyDeepCL.pyx":91
+  /* "PyDeepCL.pyx":99
  * 
  * cdef bool Scenario_hasFinished(  void *pyObject ):
  *     return (<object>pyObject).hasFinished()             # <<<<<<<<<<<<<<
  * 
  * cdef class Scenario:
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_hasFinished); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_pyObject), __pyx_n_s_hasFinished); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -11098,19 +11354,19 @@ static bool __pyx_f_8PyDeepCL_Scenario_hasFinished(void *__pyx_v_pyObject) {
     }
   }
   if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_4 == (bool)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 91; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_4 == (bool)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_4;
   goto __pyx_L0;
 
-  /* "PyDeepCL.pyx":90
+  /* "PyDeepCL.pyx":98
  *     return (<object>pyObject).act(index)
  * 
  * cdef bool Scenario_hasFinished(  void *pyObject ):             # <<<<<<<<<<<<<<
@@ -11130,7 +11386,7 @@ static bool __pyx_f_8PyDeepCL_Scenario_hasFinished(void *__pyx_v_pyObject) {
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":95
+/* "PyDeepCL.pyx":103
  * cdef class Scenario:
  *     cdef cDeepCL.CyScenario *thisptr
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -11159,7 +11415,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "PyDeepCL.pyx":96
+  /* "PyDeepCL.pyx":104
  *     cdef cDeepCL.CyScenario *thisptr
  *     def __cinit__(self):
  *         self.thisptr = new cDeepCL.CyScenario(<void *>self )             # <<<<<<<<<<<<<<
@@ -11168,7 +11424,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr = new CyScenario(((void *)__pyx_v_self));
 
-  /* "PyDeepCL.pyx":98
+  /* "PyDeepCL.pyx":106
  *         self.thisptr = new cDeepCL.CyScenario(<void *>self )
  * 
  *         self.thisptr.setPrint( Scenario_print )             # <<<<<<<<<<<<<<
@@ -11177,7 +11433,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setPrint(__pyx_f_8PyDeepCL_Scenario_print);
 
-  /* "PyDeepCL.pyx":99
+  /* "PyDeepCL.pyx":107
  * 
  *         self.thisptr.setPrint( Scenario_print )
  *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )             # <<<<<<<<<<<<<<
@@ -11186,7 +11442,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setPrintQRepresentation(__pyx_f_8PyDeepCL_Scenario_printQRepresentation);
 
-  /* "PyDeepCL.pyx":100
+  /* "PyDeepCL.pyx":108
  *         self.thisptr.setPrint( Scenario_print )
  *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )             # <<<<<<<<<<<<<<
@@ -11195,7 +11451,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetPerceptionSize(__pyx_f_8PyDeepCL_Scenario_getPerceptionSize);
 
-  /* "PyDeepCL.pyx":101
+  /* "PyDeepCL.pyx":109
  *         self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )             # <<<<<<<<<<<<<<
@@ -11204,7 +11460,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetPerceptionPlanes(__pyx_f_8PyDeepCL_Scenario_getPerceptionPlanes);
 
-  /* "PyDeepCL.pyx":102
+  /* "PyDeepCL.pyx":110
  *         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
  *         self.thisptr.setGetPerception( Scenario_getPerception )             # <<<<<<<<<<<<<<
@@ -11213,7 +11469,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetPerception(__pyx_f_8PyDeepCL_Scenario_getPerception);
 
-  /* "PyDeepCL.pyx":103
+  /* "PyDeepCL.pyx":111
  *         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
  *         self.thisptr.setGetPerception( Scenario_getPerception )
  *         self.thisptr.setReset( Scenario_reset )             # <<<<<<<<<<<<<<
@@ -11222,7 +11478,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setReset(__pyx_f_8PyDeepCL_Scenario_reset);
 
-  /* "PyDeepCL.pyx":104
+  /* "PyDeepCL.pyx":112
  *         self.thisptr.setGetPerception( Scenario_getPerception )
  *         self.thisptr.setReset( Scenario_reset )
  *         self.thisptr.setGetNumActions( Scenario_getNumActions )             # <<<<<<<<<<<<<<
@@ -11231,7 +11487,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setGetNumActions(__pyx_f_8PyDeepCL_Scenario_getNumActions);
 
-  /* "PyDeepCL.pyx":105
+  /* "PyDeepCL.pyx":113
  *         self.thisptr.setReset( Scenario_reset )
  *         self.thisptr.setGetNumActions( Scenario_getNumActions )
  *         self.thisptr.setAct( Scenario_act )             # <<<<<<<<<<<<<<
@@ -11240,7 +11496,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setAct(__pyx_f_8PyDeepCL_Scenario_act);
 
-  /* "PyDeepCL.pyx":106
+  /* "PyDeepCL.pyx":114
  *         self.thisptr.setGetNumActions( Scenario_getNumActions )
  *         self.thisptr.setAct( Scenario_act )
  *         self.thisptr.setHasFinished( Scenario_hasFinished )             # <<<<<<<<<<<<<<
@@ -11249,7 +11505,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
  */
   __pyx_v_self->thisptr->setHasFinished(__pyx_f_8PyDeepCL_Scenario_hasFinished);
 
-  /* "PyDeepCL.pyx":95
+  /* "PyDeepCL.pyx":103
  * cdef class Scenario:
  *     cdef cDeepCL.CyScenario *thisptr
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -11263,7 +11519,7 @@ static int __pyx_pf_8PyDeepCL_8Scenario___cinit__(struct __pyx_obj_8PyDeepCL_Sce
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":108
+/* "PyDeepCL.pyx":116
  *         self.thisptr.setHasFinished( Scenario_hasFinished )
  * 
  *     def getPerceptionSize(self):             # <<<<<<<<<<<<<<
@@ -11293,20 +11549,20 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_2getPerceptionSize(CYTHON_UNUSED s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getPerceptionSize", 0);
 
-  /* "PyDeepCL.pyx":109
+  /* "PyDeepCL.pyx":117
  * 
  *     def getPerceptionSize(self):
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")             # <<<<<<<<<<<<<<
  * 
  *     def getPerceptionPlanes(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":108
+  /* "PyDeepCL.pyx":116
  *         self.thisptr.setHasFinished( Scenario_hasFinished )
  * 
  *     def getPerceptionSize(self):             # <<<<<<<<<<<<<<
@@ -11324,7 +11580,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_2getPerceptionSize(CYTHON_UNUSED s
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":111
+/* "PyDeepCL.pyx":119
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")
  * 
  *     def getPerceptionPlanes(self):             # <<<<<<<<<<<<<<
@@ -11354,20 +11610,20 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_4getPerceptionPlanes(CYTHON_UNUSED
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getPerceptionPlanes", 0);
 
-  /* "PyDeepCL.pyx":112
+  /* "PyDeepCL.pyx":120
  * 
  *     def getPerceptionPlanes(self):
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")             # <<<<<<<<<<<<<<
  * 
  *     def reset(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":111
+  /* "PyDeepCL.pyx":119
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")
  * 
  *     def getPerceptionPlanes(self):             # <<<<<<<<<<<<<<
@@ -11385,7 +11641,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_4getPerceptionPlanes(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":114
+/* "PyDeepCL.pyx":122
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")
  * 
  *     def reset(self):             # <<<<<<<<<<<<<<
@@ -11415,20 +11671,20 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_6reset(CYTHON_UNUSED struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset", 0);
 
-  /* "PyDeepCL.pyx":115
+  /* "PyDeepCL.pyx":123
  * 
  *     def reset(self):
  *         raise Exception("Method needs to be overridden: Scenario.reset()")             # <<<<<<<<<<<<<<
  * 
  *     def getNumActions(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":114
+  /* "PyDeepCL.pyx":122
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")
  * 
  *     def reset(self):             # <<<<<<<<<<<<<<
@@ -11446,7 +11702,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_6reset(CYTHON_UNUSED struct __pyx_
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":117
+/* "PyDeepCL.pyx":125
  *         raise Exception("Method needs to be overridden: Scenario.reset()")
  * 
  *     def getNumActions(self):             # <<<<<<<<<<<<<<
@@ -11476,20 +11732,20 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_8getNumActions(CYTHON_UNUSED struc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getNumActions", 0);
 
-  /* "PyDeepCL.pyx":118
+  /* "PyDeepCL.pyx":126
  * 
  *     def getNumActions(self):
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")             # <<<<<<<<<<<<<<
  * 
  *     def act(self, index):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 126; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 126; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":117
+  /* "PyDeepCL.pyx":125
  *         raise Exception("Method needs to be overridden: Scenario.reset()")
  * 
  *     def getNumActions(self):             # <<<<<<<<<<<<<<
@@ -11507,7 +11763,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_8getNumActions(CYTHON_UNUSED struc
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":120
+/* "PyDeepCL.pyx":128
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")
  * 
  *     def act(self, index):             # <<<<<<<<<<<<<<
@@ -11537,20 +11793,20 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_10act(CYTHON_UNUSED struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("act", 0);
 
-  /* "PyDeepCL.pyx":121
+  /* "PyDeepCL.pyx":129
  * 
  *     def act(self, index):
  *         raise Exception("Method needs to be overridden: Scenario.act()")             # <<<<<<<<<<<<<<
  * 
  *     def hasFinished(self):
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":120
+  /* "PyDeepCL.pyx":128
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")
  * 
  *     def act(self, index):             # <<<<<<<<<<<<<<
@@ -11568,7 +11824,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_10act(CYTHON_UNUSED struct __pyx_o
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":123
+/* "PyDeepCL.pyx":131
  *         raise Exception("Method needs to be overridden: Scenario.act()")
  * 
  *     def hasFinished(self):             # <<<<<<<<<<<<<<
@@ -11598,20 +11854,20 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_12hasFinished(CYTHON_UNUSED struct
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("hasFinished", 0);
 
-  /* "PyDeepCL.pyx":124
+  /* "PyDeepCL.pyx":132
  * 
  *     def hasFinished(self):
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")             # <<<<<<<<<<<<<<
  * 
  * #[[[end]]]
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":123
+  /* "PyDeepCL.pyx":131
  *         raise Exception("Method needs to be overridden: Scenario.act()")
  * 
  *     def hasFinished(self):             # <<<<<<<<<<<<<<
@@ -11629,12 +11885,12 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_12hasFinished(CYTHON_UNUSED struct
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":127
+/* "PyDeepCL.pyx":135
  * 
  * #[[[end]]]
  *     def show(self):             # <<<<<<<<<<<<<<
- *         print('show')
  *         raise Exception("Method needs to be overridden: Scenario.show()")
+ * 
  */
 
 /* Python wrapper */
@@ -11659,34 +11915,25 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_14show(CYTHON_UNUSED struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("show", 0);
 
-  /* "PyDeepCL.pyx":128
+  /* "PyDeepCL.pyx":136
  * #[[[end]]]
  *     def show(self):
- *         print('show')             # <<<<<<<<<<<<<<
- *         raise Exception("Method needs to be overridden: Scenario.show()")
- *     def showQ(self):
- */
-  if (__Pyx_PrintOne(0, __pyx_n_s_show) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 128; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "PyDeepCL.pyx":129
- *     def show(self):
- *         print('show')
  *         raise Exception("Method needs to be overridden: Scenario.show()")             # <<<<<<<<<<<<<<
+ * 
  *     def showQ(self):
- *         print('showQ')
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 136; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 136; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":127
+  /* "PyDeepCL.pyx":135
  * 
  * #[[[end]]]
  *     def show(self):             # <<<<<<<<<<<<<<
- *         print('show')
  *         raise Exception("Method needs to be overridden: Scenario.show()")
+ * 
  */
 
   /* function exit code */
@@ -11699,12 +11946,12 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_14show(CYTHON_UNUSED struct __pyx_
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":130
- *         print('show')
+/* "PyDeepCL.pyx":138
  *         raise Exception("Method needs to be overridden: Scenario.show()")
+ * 
  *     def showQ(self):             # <<<<<<<<<<<<<<
- *         print('showQ')
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ * 
  */
 
 /* Python wrapper */
@@ -11729,34 +11976,25 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_16showQ(CYTHON_UNUSED struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("showQ", 0);
 
-  /* "PyDeepCL.pyx":131
- *         raise Exception("Method needs to be overridden: Scenario.show()")
+  /* "PyDeepCL.pyx":139
+ * 
  *     def showQ(self):
- *         print('showQ')             # <<<<<<<<<<<<<<
- *         raise Exception("Method needs to be overridden: Scenario.showQ()")
- *     def getPerception(self, perception):
- */
-  if (__Pyx_PrintOne(0, __pyx_n_s_showQ) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 131; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-
-  /* "PyDeepCL.pyx":132
- *     def showQ(self):
- *         print('showQ')
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")             # <<<<<<<<<<<<<<
+ * 
  *     def getPerception(self, perception):
- *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 139; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 139; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":130
- *         print('show')
+  /* "PyDeepCL.pyx":138
  *         raise Exception("Method needs to be overridden: Scenario.show()")
+ * 
  *     def showQ(self):             # <<<<<<<<<<<<<<
- *         print('showQ')
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ * 
  */
 
   /* function exit code */
@@ -11769,9 +12007,9 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_16showQ(CYTHON_UNUSED struct __pyx
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":133
- *         print('showQ')
+/* "PyDeepCL.pyx":141
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ * 
  *     def getPerception(self, perception):             # <<<<<<<<<<<<<<
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  * 
@@ -11799,21 +12037,21 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_18getPerception(CYTHON_UNUSED stru
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("getPerception", 0);
 
-  /* "PyDeepCL.pyx":134
- *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+  /* "PyDeepCL.pyx":142
+ * 
  *     def getPerception(self, perception):
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")             # <<<<<<<<<<<<<<
  * 
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 134; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 134; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  {__pyx_filename = __pyx_f[2]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":133
- *         print('showQ')
+  /* "PyDeepCL.pyx":141
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+ * 
  *     def getPerception(self, perception):             # <<<<<<<<<<<<<<
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  * 
@@ -24549,6 +24787,10 @@ static void __pyx_tp_dealloc_8PyDeepCL_QLearner(PyObject *o) {
 
 static PyMethodDef __pyx_methods_8PyDeepCL_QLearner[] = {
   {"run", (PyCFunction)__pyx_pw_8PyDeepCL_8QLearner_5run, METH_NOARGS, 0},
+  {"setLambda", (PyCFunction)__pyx_pw_8PyDeepCL_8QLearner_7setLambda, METH_O, 0},
+  {"setMaxSamples", (PyCFunction)__pyx_pw_8PyDeepCL_8QLearner_9setMaxSamples, METH_O, 0},
+  {"setEpsilon", (PyCFunction)__pyx_pw_8PyDeepCL_8QLearner_11setEpsilon, METH_O, 0},
+  {"setLearningRate", (PyCFunction)__pyx_pw_8PyDeepCL_8QLearner_13setLearningRate, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -25580,101 +25822,101 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "PyDeepCL.pyx":109
+  /* "PyDeepCL.pyx":117
  * 
  *     def getPerceptionSize(self):
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionSize()")             # <<<<<<<<<<<<<<
  * 
  *     def getPerceptionPlanes(self):
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 109; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc); if (unlikely(!__pyx_tuple__5)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "PyDeepCL.pyx":112
+  /* "PyDeepCL.pyx":120
  * 
  *     def getPerceptionPlanes(self):
  *         raise Exception("Method needs to be overridden: Scenario.getPerceptionPlanes()")             # <<<<<<<<<<<<<<
  * 
  *     def reset(self):
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_2); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 112; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_2); if (unlikely(!__pyx_tuple__6)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 120; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "PyDeepCL.pyx":115
+  /* "PyDeepCL.pyx":123
  * 
  *     def reset(self):
  *         raise Exception("Method needs to be overridden: Scenario.reset()")             # <<<<<<<<<<<<<<
  * 
  *     def getNumActions(self):
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_3); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 115; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_3); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 123; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "PyDeepCL.pyx":118
+  /* "PyDeepCL.pyx":126
  * 
  *     def getNumActions(self):
  *         raise Exception("Method needs to be overridden: Scenario.getNumActions()")             # <<<<<<<<<<<<<<
  * 
  *     def act(self, index):
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_4); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 118; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_4); if (unlikely(!__pyx_tuple__8)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 126; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "PyDeepCL.pyx":121
+  /* "PyDeepCL.pyx":129
  * 
  *     def act(self, index):
  *         raise Exception("Method needs to be overridden: Scenario.act()")             # <<<<<<<<<<<<<<
  * 
  *     def hasFinished(self):
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_5); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 121; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_5); if (unlikely(!__pyx_tuple__9)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__9);
   __Pyx_GIVEREF(__pyx_tuple__9);
 
-  /* "PyDeepCL.pyx":124
+  /* "PyDeepCL.pyx":132
  * 
  *     def hasFinished(self):
  *         raise Exception("Method needs to be overridden: Scenario.hasFinished()")             # <<<<<<<<<<<<<<
  * 
  * #[[[end]]]
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_6); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 124; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_6); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "PyDeepCL.pyx":129
+  /* "PyDeepCL.pyx":136
+ * #[[[end]]]
  *     def show(self):
- *         print('show')
  *         raise Exception("Method needs to be overridden: Scenario.show()")             # <<<<<<<<<<<<<<
+ * 
  *     def showQ(self):
- *         print('showQ')
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_7); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 129; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_7); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 136; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "PyDeepCL.pyx":132
+  /* "PyDeepCL.pyx":139
+ * 
  *     def showQ(self):
- *         print('showQ')
  *         raise Exception("Method needs to be overridden: Scenario.showQ()")             # <<<<<<<<<<<<<<
+ * 
  *     def getPerception(self, perception):
- *         raise Exception("Method needs to be overridden: Scenario.getPerception()")
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_8); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_8); if (unlikely(!__pyx_tuple__12)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 139; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "PyDeepCL.pyx":134
- *         raise Exception("Method needs to be overridden: Scenario.showQ()")
+  /* "PyDeepCL.pyx":142
+ * 
  *     def getPerception(self, perception):
  *         raise Exception("Method needs to be overridden: Scenario.getPerception()")             # <<<<<<<<<<<<<<
  * 
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_9); if (unlikely(!__pyx_tuple__13)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 134; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Method_needs_to_be_overridden_Sc_9); if (unlikely(!__pyx_tuple__13)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 142; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
 
@@ -26198,9 +26440,9 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_type_8PyDeepCL_QLearner.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "QLearner", (PyObject *)&__pyx_type_8PyDeepCL_QLearner) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_QLearner = &__pyx_type_8PyDeepCL_QLearner;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_8PyDeepCL_Scenario.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "Scenario", (PyObject *)&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 93; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyObject_SetAttrString(__pyx_m, "Scenario", (PyObject *)&__pyx_type_8PyDeepCL_Scenario) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_8PyDeepCL_Scenario = &__pyx_type_8PyDeepCL_Scenario;
   if (PyType_Ready(&__pyx_type___pyx_array) < 0) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type___pyx_array.tp_print = 0;

@@ -50,6 +50,14 @@ cdef class QLearner:
         del self.thisptr
     def run(self):
         self.thisptr.run()
+    def setLambda( self, float thislambda ):
+        self.thisptr.setLambda( thislambda )
+    def setMaxSamples( self, int maxSamples ):
+        self.thisptr.setMaxSamples( maxSamples )
+    def setEpsilon( self, float epsilon ):
+        self.thisptr.setEpsilon( epsilon )
+    def setLearningRate( self, float learningRate ):
+        self.thisptr.setLearningRate( learningRate )
 
 
 cdef void Scenario_print(  void *pyObject ):
