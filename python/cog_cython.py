@@ -13,7 +13,7 @@ def upperFirst( word ):
     word = word[0].upper() + word[1:]
     return word
 
-def write_proxy_class( proxy_name, parent_name, defs ):
+def cpp_write_proxy_class( proxy_name, parent_name, defs ):
     """use to create a c++ class that inherits from a (possibly abstract) c++ class
     and handles the c++ side of receiving callback functions into cython,
     and calling these appropriately"""
@@ -71,4 +71,26 @@ def write_proxy_class( proxy_name, parent_name, defs ):
         cog.outl( 'pyObject );' )
         cog.outl('    }')
     cog.outl( '};' )
+
+def pxd_write_proxy_class( proxy_name, defs ):
+    """writes the pxd declaration of the same class that was created using
+    'cpp_write_proxy_class' for C++ above.
+    This should be used inside 'cdef extern from "somefile.h":' section"""
+
+    cog.outl('# generated using cog (as far as the [[end]] bit:')
+    for thisdef in defs:
+        ( name, returnType, parameters ) = thisdef
+        cog.out('ctypedef ' + returnType + '(*' + proxy_name + '_' + name + 'Def)(')
+        for parameter in parameters:
+            (ptype,pname) = parameter
+            cog.out( ptype + ' ' + pname + ',')
+        cog.outl( ' void *pyObject)')
+
+    cog.outl( 'cdef cppclass ' + proxy_name + ':')
+    cog.outl( '    ' + proxy_name + '(void *pyObject)')
+    cog.outl( '' )
+    for thisdef in defs:
+        ( name, returnType, parameters ) = thisdef
+        cog.outl( '    void set' + upperFirst( name ) + ' ( ' + proxy_name + '_' + name + 'Def c' + upperFirst( name ) + ' )')
+
 

@@ -7,7 +7,7 @@
 // [[[cog
 // import ScenarioDefs
 // import cog_cython
-// cog_cython.write_proxy_class( 'CyScenario', 'Scenario', ScenarioDefs.defs )
+// cog_cython.cpp_write_proxy_class( 'CyScenario', 'Scenario', ScenarioDefs.defs )
 // ]]]
 // generated using cog (as far as the [[end]] bit:
 class CyScenario : public Scenario {

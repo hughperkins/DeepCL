@@ -22,50 +22,25 @@ cdef extern from "QLearner.h":
         QLearner( CyScenario *scenario, NeuralNet *net ) except +
         void run() except +
 
-#[[[cog
-# import ScenarioDefs
-# defs = ScenarioDefs.defs
-# upperFirst = ScenarioDefs.upperFirst
-#]]]
-#[[[end]]]
-
-#[[[cog
-# cog.outl("# generated using cog:")
-# import ScenarioDefs
-# defs = ScenarioDefs.defs
-# upperFirst = ScenarioDefs.upperFirst
-#
-# for thisdef in defs:
-#     ( name, returnType, parameters ) = thisdef
-#     cog.out('ctypedef ' + returnType + '(*CyScenario_' + name + 'Def)(')
-#     for parameter in parameters:
-#         (ptype,pname) = parameter
-#         cog.out( ptype + ' ' + pname + ',')
-#     cog.outl( ' void *pyObject)')
-#]]]
-# generated using cog:
-ctypedef void(*CyScenario_printDef)( void *pyObject)
-ctypedef void(*CyScenario_printQRepresentationDef)(NeuralNet * net, void *pyObject)
-ctypedef int(*CyScenario_getPerceptionSizeDef)( void *pyObject)
-ctypedef int(*CyScenario_getPerceptionPlanesDef)( void *pyObject)
-ctypedef void(*CyScenario_getPerceptionDef)(float * perception, void *pyObject)
-ctypedef void(*CyScenario_resetDef)( void *pyObject)
-ctypedef int(*CyScenario_getNumActionsDef)( void *pyObject)
-ctypedef float(*CyScenario_actDef)(int index, void *pyObject)
-ctypedef bool(*CyScenario_hasFinishedDef)( void *pyObject)
-#[[[end]]]
-
 cdef extern from "CyScenario.h":
+    #[[[cog
+    # import ScenarioDefs
+    # import cog_cython
+    # cog_cython.pxd_write_proxy_class( 'CyScenario', ScenarioDefs.defs )
+    #]]]
+    # generated using cog (as far as the [[end]] bit:
+    ctypedef void(*CyScenario_printDef)( void *pyObject)
+    ctypedef void(*CyScenario_printQRepresentationDef)(NeuralNet * net, void *pyObject)
+    ctypedef int(*CyScenario_getPerceptionSizeDef)( void *pyObject)
+    ctypedef int(*CyScenario_getPerceptionPlanesDef)( void *pyObject)
+    ctypedef void(*CyScenario_getPerceptionDef)(float * perception, void *pyObject)
+    ctypedef void(*CyScenario_resetDef)( void *pyObject)
+    ctypedef int(*CyScenario_getNumActionsDef)( void *pyObject)
+    ctypedef float(*CyScenario_actDef)(int index, void *pyObject)
+    ctypedef bool(*CyScenario_hasFinishedDef)( void *pyObject)
     cdef cppclass CyScenario:
         CyScenario(void *pyObject)
 
-        #[[[cog
-        # cog.outl("# generated using cog:")
-        # for thisdef in defs:
-        #     ( name, returnType, parameters ) = thisdef
-        #     cog.outl( 'void set' + upperFirst( name ) + ' ( CyScenario_' + name + 'Def c' + upperFirst( name ) + ' )')
-        # ]]]
-        # generated using cog:
         void setPrint ( CyScenario_printDef cPrint )
         void setPrintQRepresentation ( CyScenario_printQRepresentationDef cPrintQRepresentation )
         void setGetPerceptionSize ( CyScenario_getPerceptionSizeDef cGetPerceptionSize )
@@ -75,8 +50,6 @@ cdef extern from "CyScenario.h":
         void setGetNumActions ( CyScenario_getNumActionsDef cGetNumActions )
         void setAct ( CyScenario_actDef cAct )
         void setHasFinished ( CyScenario_hasFinishedDef cHasFinished )
-        # [[[end]]]
+    #[[[end]]]
 
-    ctypedef int(*CyMyInterface_getNumberDef)(void *pyObject)
-    ctypedef void(*CyMyInterface_getFloatsDef)(float *floats, void *pyObject)
 
