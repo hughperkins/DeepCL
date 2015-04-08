@@ -33,8 +33,6 @@ cdef extern from "CyScenario.h":
     # cog_cython.pxd_write_proxy_class( 'CyScenario', ScenarioDefs.defs )
     #]]]
     # generated using cog (as far as the [[end]] bit:
-    ctypedef void(*CyScenario_printDef)( void *pyObject)
-    ctypedef void(*CyScenario_printQRepresentationDef)(NeuralNet * net, void *pyObject)
     ctypedef int(*CyScenario_getPerceptionSizeDef)( void *pyObject)
     ctypedef int(*CyScenario_getPerceptionPlanesDef)( void *pyObject)
     ctypedef void(*CyScenario_getPerceptionDef)(float * perception, void *pyObject)
@@ -45,8 +43,6 @@ cdef extern from "CyScenario.h":
     cdef cppclass CyScenario:
         CyScenario(void *pyObject)
 
-        void setPrint ( CyScenario_printDef cPrint )
-        void setPrintQRepresentation ( CyScenario_printQRepresentationDef cPrintQRepresentation )
         void setGetPerceptionSize ( CyScenario_getPerceptionSizeDef cGetPerceptionSize )
         void setGetPerceptionPlanes ( CyScenario_getPerceptionPlanesDef cGetPerceptionPlanes )
         void setGetPerception ( CyScenario_getPerceptionDef cGetPerception )

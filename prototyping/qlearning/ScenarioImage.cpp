@@ -15,7 +15,8 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL
 
-ScenarioImage::ScenarioImage(int size, bool appleMoves) :
+ScenarioImage::ScenarioImage( int size, bool appleMoves ) :
+        net(0), // this is simply used by the showQRepresentation method
         size(size),
         appleMoves(appleMoves) {
 //    size = 7;
@@ -28,7 +29,10 @@ ScenarioImage::ScenarioImage(int size, bool appleMoves) :
     reset();
     print();
 }
-void ScenarioImage::printQRepresentation( NeuralNet *net ) {
+void ScenarioImage::setNet( NeuralNet *net ) {
+    this->net = net;
+}
+void ScenarioImage::printQRepresentation() {
     ScenarioImage *scenario = this;
     cout << "q directions:" << endl;
     int size = scenario->getPerceptionSize();
@@ -139,6 +143,8 @@ VIRTUAL int ScenarioImage::getWorldSize() {
     return size;
 }
 VIRTUAL void ScenarioImage::reset() {
+    this->print();
+    this->printQRepresentation();
     if( appleMoves ) {
         appleX = myrand() % size;
         appleY = myrand() % size;

@@ -19,6 +19,7 @@ class ScenarioImage(PyDeepCL.Scenario):
         self.size = size
         self.appleMoves = apple_moves
         self.finished = False
+        self.game = 0
         self.reset()
     def getPerceptionSize(self):
         """Assumes perception is square.  This is the length of one edge"""
@@ -69,7 +70,12 @@ class ScenarioImage(PyDeepCL.Scenario):
         it should return False again"""
         #print('scenarioimage.hasFinished()') 
         return self.finished
-    def show(self):
+    def setNet(self, net):
+        """This doesnt override anything from the base class, we're simply using 
+        it, because then we can use it to print a q representation, eg at the
+        end of each game"""
+        self.net = net
+    def _show(self):
         """can do nothing, or it can print the world somehow.
         This provides no information to the qlearning module: it's
         simply an opportunity for you to see how the world looks
@@ -85,7 +91,7 @@ class ScenarioImage(PyDeepCL.Scenario):
                 else:
                     line += "."
             print(line)
-    def showQ(self,net):
+    def _showQ(self):
         """can do nothing, or it can print the current q 
         values somehow.
         This provides no information to the qlearning module: it's
@@ -94,6 +100,7 @@ class ScenarioImage(PyDeepCL.Scenario):
 #        print('showQ()')
 #        print('net num layers: ' + str(net.getNumLayers() ) ) # proves we do have a copy of the network :-)
         scenario = self
+        net = self.net
         print( "q directions:" )
         size = self.size
         netinput = array.array( 'f', [0] * (2*size*size) )
@@ -123,6 +130,15 @@ class ScenarioImage(PyDeepCL.Scenario):
             print(thisLine)
     def reset(self):
         """starts a new game / world-instance"""
+        # first, lets print the final world and q-state:
+        # this used to be called by the qlearning module
+        # but seems to make more sense - and be more 
+        # flexible :-) - to call it from here, ourselves
+        # we can then call it ourselves from 'act' etc
+        # too, if we wish
+        if self.game >= 1:
+            self._show()
+            self._showQ()
         print('scenarioimage.reset()') 
         if self.appleMoves:
             self.appleX = random.randint(0, self.size-1)
@@ -135,17 +151,18 @@ class ScenarioImage(PyDeepCL.Scenario):
             self.posX = random.randint(0, self.size-1)
             self.posY =random.randint(0, self.size-1)
             sampledOnce = True
+        self.game += 1
 
 def go():
     """creates a net, instantiates the scenario, and calls into the qlearning
     module, to start learning"""
+
     scenario = ScenarioImage(5,True)
 
     size = scenario.getPerceptionSize();
     planes = scenario.getPerceptionPlanes();
     numActions = scenario.getNumActions();
     #size = 5
-    #numActions = 4
     #planes = 2
     print('size',size,'planes',planes,'numActions',numActions)
 
@@ -157,6 +174,8 @@ def go():
     net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(numActions).imageSize(1).biased().linear() )
     net.addLayer( PyDeepCL.SquareLossMaker() )
     print( net.asString() )
+
+    scenario.setNet(net)
 
     qlearner = PyDeepCL.QLearner( scenario, net )
     # qlearner.setLambda(0.9) # sets decay of the eligibility trace decay rate

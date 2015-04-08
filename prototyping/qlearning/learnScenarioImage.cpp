@@ -17,7 +17,7 @@ using namespace std;
 int main( int argc, char *argv[] ) {
 //    ScenarioImage scenario;
 
-    Scenario *scenario = new ScenarioImage(7,true);
+    ScenarioImage *scenario = new ScenarioImage( 7, true);
 
     NeuralNet *net = new NeuralNet();
 
@@ -31,6 +31,8 @@ int main( int argc, char *argv[] ) {
     net->addLayer( FullyConnectedMaker::instance()->imageSize(1)->numPlanes(numActions)->linear()->biased() );
     net->addLayer( SquareLossMaker::instance() );
     net->print();
+
+    scenario->setNet( net ); // used by the printQRepresentation method
 
     QLearner qLearner( scenario, net );
     qLearner.run();

@@ -62,13 +62,13 @@ cdef class QLearner:
         self.thisptr.setLearningRate( learningRate )
 
 
-cdef void Scenario_print(  void *pyObject ):
-    (<object>pyObject).show()
+#cdef void Scenario_print(  void *pyObject ):
+#    (<object>pyObject).show()
 
-cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
-    # print('Scenario_printQRepresentation')
-    scenario = <object>pyObject
-    scenario.showQ(scenario.net)
+#cdef void Scenario_printQRepresentation( cDeepCL.NeuralNet *net, void *pyObject ):
+#    # print('Scenario_printQRepresentation')
+#    scenario = <object>pyObject
+#    scenario.showQ(scenario.net)
 
 cdef void Scenario_getPerception( float *perception, void *pyObject ):
     pyPerception = (<object>pyObject).getPerception()
@@ -79,7 +79,7 @@ cdef void Scenario_getPerception( float *perception, void *pyObject ):
 # import ScenarioDefs
 # import cog_cython
 # cog_cython.pyx_write_overrideable_class( 'cDeepCL', 'CyScenario', 'Scenario',
-#     ScenarioDefs.defs, ['print', 'printQRepresentation', 'getPerception'] )
+#     ScenarioDefs.defs, ['getPerception'] )
 #]]]
 # generated using cog (as far as the [[end]] bit:
 cdef int Scenario_getPerceptionSize(  void *pyObject ):
@@ -105,8 +105,6 @@ cdef class Scenario:
     def __cinit__(self):
         self.thisptr = new cDeepCL.CyScenario(<void *>self )
 
-        self.thisptr.setPrint( Scenario_print )
-        self.thisptr.setPrintQRepresentation( Scenario_printQRepresentation )
         self.thisptr.setGetPerceptionSize( Scenario_getPerceptionSize )
         self.thisptr.setGetPerceptionPlanes( Scenario_getPerceptionPlanes )
         self.thisptr.setGetPerception( Scenario_getPerception )
@@ -135,11 +133,11 @@ cdef class Scenario:
 
 #[[[end]]]
  
-    def show(self):
-        raise Exception("Method needs to be overridden: Scenario.show()")
+#    def show(self):
+#        raise Exception("Method needs to be overridden: Scenario.show()")
 
-    def showQ(self):
-        raise Exception("Method needs to be overridden: Scenario.showQ()")
+#    def showQ(self):
+#        r aise Exception("Method needs to be overridden: Scenario.showQ()")
 
     def getPerception(self, perception):
         raise Exception("Method needs to be overridden: Scenario.getPerception()")

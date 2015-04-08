@@ -18,8 +18,6 @@ public:
         pyObject(pyObject) {
     }
 
-    typedef void(*printDef)( void *pyObject);
-    typedef void(*printQRepresentationDef)(NeuralNet * net, void *pyObject);
     typedef int(*getPerceptionSizeDef)( void *pyObject);
     typedef int(*getPerceptionPlanesDef)( void *pyObject);
     typedef void(*getPerceptionDef)(float * perception, void *pyObject);
@@ -28,8 +26,6 @@ public:
     typedef float(*actDef)(int index, void *pyObject);
     typedef bool(*hasFinishedDef)( void *pyObject);
 
-    printDef cPrint;
-    printQRepresentationDef cPrintQRepresentation;
     getPerceptionSizeDef cGetPerceptionSize;
     getPerceptionPlanesDef cGetPerceptionPlanes;
     getPerceptionDef cGetPerception;
@@ -38,12 +34,6 @@ public:
     actDef cAct;
     hasFinishedDef cHasFinished;
 
-    void setPrint ( printDef cPrint ) {
-        this->cPrint = cPrint;
-    }
-    void setPrintQRepresentation ( printQRepresentationDef cPrintQRepresentation ) {
-        this->cPrintQRepresentation = cPrintQRepresentation;
-    }
     void setGetPerceptionSize ( getPerceptionSizeDef cGetPerceptionSize ) {
         this->cGetPerceptionSize = cGetPerceptionSize;
     }
@@ -66,12 +56,6 @@ public:
         this->cHasFinished = cHasFinished;
     }
 
-    virtual void print() {
-        cPrint(pyObject );
-    }
-    virtual void printQRepresentation(NeuralNet * net) {
-        cPrintQRepresentation(net, pyObject );
-    }
     virtual int getPerceptionSize() {
         return cGetPerceptionSize(pyObject );
     }

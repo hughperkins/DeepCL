@@ -162,10 +162,10 @@ void QLearner::run () {
 //            expectedOutputs[ lastAction ] = rewardToEnd;
 //            net->backProp(learningRate, expectedOutputs );
 //            if( game % 10 == 0 ) {
-                scenario->print();
-                cout << "game " << game << endl;
+                //scenario->print();
+                //cout << "game " << game << endl;
 //                printDirections( scenario, net );
-                scenario->printQRepresentation(net);
+                //scenario->printQRepresentation(net);
 //            }
 //            cout << "scenario finished, resetting..." << endl;
             scenario->reset();

@@ -5,6 +5,8 @@
 
 #include "Scenario.h"
 
+class NeuralNet;
+
 #define STATIC static
 #define VIRTUAL virtual
 
@@ -23,6 +25,7 @@
 // - make a move: -0.1
 class ScenarioImage : public Scenario {
 public:
+    NeuralNet *net;
     const int size;
     bool appleMoves; // does apple move when reset?
 
@@ -43,8 +46,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ScenarioImage(int size, bool appleMoves);
-    void printQRepresentation( NeuralNet *net );
+    ScenarioImage( int size, bool appleMoves );
+    void setNet( NeuralNet *net );
+    void printQRepresentation();
     VIRTUAL void print();
     VIRTUAL ~ScenarioImage();
     VIRTUAL int getNumActions();

@@ -6,8 +6,6 @@ def upperFirst( word ):
 
 defs = []
 # def format is: ( name, returntype, list_of_parameters )
-defs.append( ( 'print', 'void', [] ) ) 
-defs.append( ( 'printQRepresentation', 'void', [('NeuralNet *','net')] ) ) 
 defs.append( ( 'getPerceptionSize', 'int', [] ) ) 
 defs.append( ( 'getPerceptionPlanes', 'int', [] ) ) 
 defs.append( ( 'getPerception', 'void', [('float *','perception')] ) ) 
@@ -15,5 +13,7 @@ defs.append( ( 'reset', 'void', [] ) )
 defs.append( ( 'getNumActions', 'int', [] ) ) 
 defs.append( ( 'act', 'float', [('int','index')] ) ) 
 defs.append( ( 'hasFinished', 'bool', [] ) ) 
+# defs.append( ( 'print', 'void', [] ) ) 
+# defs.append( ( 'printQRepresentation', 'void', [('NeuralNet *','net')] ) ) 
 
 
