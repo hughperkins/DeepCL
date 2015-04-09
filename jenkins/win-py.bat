@@ -3,6 +3,7 @@ echo args: %1
 call \%1\scripts\activate
 
 python -c "from __future__ import print_function; import platform; print( platform.uname() )"
+python -c "from __future__ import print_function; import platform; print( platform.architecture() )"
 
 cd python
 
@@ -25,6 +26,7 @@ if errorlevel 1 goto :error
 set HOME=%HOMEPATH%
 python setup.py bdist_egg upload
 rem ignore any error?
+exit /B 0
 
 goto :eof
 
