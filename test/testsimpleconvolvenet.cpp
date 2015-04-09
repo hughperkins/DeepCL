@@ -20,21 +20,21 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     const float learningRate = 0.1f;
     const int batchSize = 2;
     float *data = new float[batchSize];
-    data[0] = 0.5;
-    data[1] = -0.5;
+    data[0] = 0.5f;
+    data[1] = -0.5f;
     int *labels = new int[batchSize];
     labels[0] = 0;
     labels[1] = 1;
     float *expectedResults = new float[4];
-    expectedResults[0] = 0.5;
-    expectedResults[1] = -0.5;
-    expectedResults[2] = -0.5;
-    expectedResults[3] = 0.5;
+    expectedResults[0] = 0.5f;
+    expectedResults[1] = -0.5f;
+    expectedResults[2] = -0.5f;
+    expectedResults[3] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(1) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0)->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
-    float weights1[] = {0.382147, -1.77522};
+    float weights1[] = {0.382147f, -1.77522f};
     net->initWeights(1, weights1);
 
     BatchLearner<float> batchLearner( net );
@@ -65,22 +65,22 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     const float learningRate = 1.0f;
     const int batchSize = 2;
     float *data = new float[batchSize];
-    data[0] = 0.5;
-    data[1] = -0.5;
+    data[0] = 0.5f;
+    data[1] = -0.5f;
     int *labels = new int[batchSize];
     labels[0] = 0;
     labels[1] = 1;
     float *expectedResults = new float[4];
-    expectedResults[0] = 0.5;
-    expectedResults[1] = -0.5;
-    expectedResults[2] = -0.5;
-    expectedResults[3] = 0.5;
+    expectedResults[0] = 0.5f;
+    expectedResults[1] = -0.5f;
+    expectedResults[2] = -0.5f;
+    expectedResults[3] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(1) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased()->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
-    float weights1[] = {0.382147, -1.77522};
-    float biasweights1[] = {-1.00181, 0.891056};
+    float weights1[] = {0.382147f, -1.77522f};
+    float biasweights1[] = {-1.00181f, 0.891056f};
     net->initWeights(1, weights1);
     net->initBiasWeights(1, biasweights1);
 
@@ -109,21 +109,21 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     Timer timer;
-    float data[] = { 0.5, 0.5, 0.5,
-                    -0.5, 0.5, 0.5,
-                    0.5, 0.5, 0.5,
+    float data[] = { 0.5f, 0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f,
     
-                   0.5, 0.5, 0.5,
-                   0.5, -0.5, 0.5,
-                   0.5, 0.5, 0.5,
+                   0.5f, 0.5f, 0.5f,
+                   0.5f, -0.5f, 0.5f,
+                   0.5f, 0.5f, 0.5f,
 
-                    -0.5, -0.5, -0.5,
-                    -0.5, 0.5, -0.5,
-                    -0.5, -0.5, -0.5,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
     
-                   -0.5, -0.5, -0.5,
-                   0.5, -0.5, -0.5,
-                   -0.5, -0.5, -0.5
+                   -0.5f, -0.5f, -0.5f,
+                   0.5f, -0.5f, -0.5f,
+                   -0.5f, -0.5f, -0.5f
  };
 
     int *labels = new int[4];
@@ -132,20 +132,20 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     labels[2] = 0;
     labels[3] = 1;
     float *expectedResults = new float[8];
-    expectedResults[0] = 0.5;
-    expectedResults[1] = -0.5;
-    expectedResults[2] = -0.5;
-    expectedResults[3] = 0.5;
-    expectedResults[4] = 0.5;
-    expectedResults[5] = -0.5;
-    expectedResults[6] = -0.5;
-    expectedResults[7] = 0.5;
+    expectedResults[0] = 0.5f;
+    expectedResults[1] = -0.5f;
+    expectedResults[2] = -0.5f;
+    expectedResults[3] = 0.5f;
+    expectedResults[4] = 0.5f;
+    expectedResults[5] = -0.5f;
+    expectedResults[6] = -0.5f;
+    expectedResults[7] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(3) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
     net->addLayer( SquareLossMaker::instance() );;
-    float weights1[] = {-0.171115, 0.28369, 0.201354, -0.496124, 0.391512, 0.120458, 0.396952, -0.1356, -0.319595, 0.251043, 0.318859, 0.220892, -0.480651, -0.51708, 0.2173, 0.365935, 0.304687, -0.712624};
-    float biasWeights1[] = {0.375101, 0.00130748};
+    float weights1[] = {-0.171115f, 0.28369f, 0.201354f, -0.496124f, 0.391512f, 0.120458f, 0.396952f, -0.1356f, -0.319595f, 0.251043f, 0.318859f, 0.220892f, -0.480651f, -0.51708f, 0.2173f, 0.365935f, 0.304687f, -0.712624f};
+    float biasWeights1[] = {0.375101f, 0.00130748f};
     net->initWeights(1, weights1);
     net->initBiasWeights(1, biasWeights1 );
     float const*results = 0;
@@ -167,7 +167,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     int numCorrect = AccuracyHelper::calcNumRight( 4, 2, labels, net->getResults() );
     cout << "accuracy: " << numCorrect << "/" << 4 << endl;
     assertEquals( numCorrect, 4 );
-    assertLessThan( 0.0001, loss );
+    assertLessThan( 0.0001f, loss );
 
     delete net;
 }
@@ -175,8 +175,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
 TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
     Timer timer;
     float *data = new float[2];
-    data[0] = 0.5;
-    data[1] = -0.5;
+    data[0] = 0.5f;
+    data[1] = -0.5f;
     int *labels = new int[2];
     labels[0] = 0;
     labels[1] = 1;
@@ -190,8 +190,8 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
-    float weights1[] = {-0.380177, -1.5738};
-    float biasWeights1[] = {0.5, 0.0606055};
+    float weights1[] = {-0.380177f, -1.5738f};
+    float biasWeights1[] = {0.5f, 0.0606055f};
     net->initWeights( 1, weights1, biasWeights1 );
     BatchLearner<float> batchLearner( net );
     for( int epoch = 0; epoch < 5; epoch++ ) {
@@ -215,28 +215,28 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.001, loss );
+    assertLessThan( 0.001f, loss );
 
     delete net;
 }
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     Timer timer;
-    float data[] = { 0.5, 0.5, 0.5,
-                    -0.5, 0.5, 0.5,
-                    0.5, 0.5, 0.5,
+    float data[] = { 0.5f, 0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f,
     
-                   0.5, 0.5, 0.5,
-                   0.5, -0.5, 0.5,
-                   0.5, 0.5, 0.5,
+                   0.5f, 0.5f, 0.5f,
+                   0.5f, -0.5f, 0.5f,
+                   0.5f, 0.5f, 0.5f,
 
-                    -0.5, -0.5, -0.5,
-                    -0.5, 0.5, -0.5,
-                    -0.5, -0.5, -0.5,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
     
-                   -0.5, -0.5, -0.5,
-                   0.5, -0.5, -0.5,
-                   -0.5, -0.5, -0.5
+                   -0.5f, -0.5f, -0.5f,
+                   0.5f, -0.5f, -0.5f,
+                   -0.5f, -0.5f, -0.5f
  };
 
     int *labels = new int[4];
