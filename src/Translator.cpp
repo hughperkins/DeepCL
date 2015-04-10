@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <cstdlib>
+
 #include "Translator.h"
 
 using namespace std;
