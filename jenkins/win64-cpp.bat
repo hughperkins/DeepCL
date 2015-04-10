@@ -20,7 +20,7 @@ if errorlevel 1 exit /B 1
 "c:\program files\7-Zip\7z.exe" x vc2010redist.zip
 if errorlevel 1 exit /B 1
 
-cp vc2010redist\win64\* Release
+copy vc2010redist\win64\* Release
 
 cd Release
 "c:\program files\7-Zip\7z.exe" a deepcl-win64-%version%.zip *
