@@ -50,6 +50,7 @@ if docopy:
             thisfilepath = thisdir +'/' + thisfile
             if os.path.isfile(thisfilepath):
                 distutils.file_util.copy_file( thisfilepath, 'mysrc/' + thisfile )
+    distutils.file_util.copy_file( '../jenkins/version.txt', 'version.txt' )
 
 #        distutils.dir_util.copy_tree( thisdir, 'mysrc' )
 
@@ -234,9 +235,16 @@ ext_modules = [
     )
 ]
 
+def read_if_exists(filename):
+    filepath = os.path.join(os.path.dirname(__file__), filename)
+    if os.path.isfile(filepath):
+        return open(filepath).read()
+    else:
+        ""
+
 setup(
   name = 'DeepCL',
-  version = read('version.txt'),
+  version = read_if_exists('version.txt'),
 #  version = "3.4.0rc1",  # synchronize to deepcl main version
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",

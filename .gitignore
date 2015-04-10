@@ -60,5 +60,5 @@ dist/
 python/src/
 # python/qlearning/
 python/mysrc/
-
+python/version.txt
 
