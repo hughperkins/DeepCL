@@ -260,8 +260,10 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     float const*results = 0;
-    float weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
-    float biasWeights1[] = {0.0418723, 0.158733};
+    double _weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
+    vector<float> __weights1( _weights1, _weights1 + sizeof( _weights1 ) / sizeof(double) );
+    float *weights1 = &__weights1[0];
+    float biasWeights1[] = {0.0418723f, 0.158733f};
     net->initWeights( 1, weights1, biasWeights1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
@@ -630,7 +632,7 @@ float biasWeights2[] = {0.232961f, 0.141537f, 0.159074f};
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 500; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.04)
+            ->learningRate(0.04f)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)
@@ -656,7 +658,7 @@ float biasWeights2[] = {0.232961f, 0.141537f, 0.159074f};
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.00001, loss );
+    assertLessThan( 0.00001f, loss );
 
     delete net;
 }
@@ -724,20 +726,24 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
     net->addLayer( SquareLossMaker::instance() );;
 //    net->print();
-float weights1[] = {-0.171255, 0.374466, -0.224289, -0.196481, 0.162787, 0.418841, 0.230909, 0.23731, -0.244594, -0.469993, 0.221895, -0.0145731, 0.163359, 0.276707, -0.533498, -0.376532, 0.275129, -0.298299, -0.162541, -0.497442, 0.0331104, 
+double _weights1[] = {-0.171255, 0.374466, -0.224289, -0.196481, 0.162787, 0.418841, 0.230909, 0.23731, -0.244594, -0.469993, 0.221895, -0.0145731, 0.163359, 0.276707, -0.533498, -0.376532, 0.275129, -0.298299, -0.162541, -0.497442, 0.0331104, 
 0.140816, 0.339377, -0.466528, -0.260578, -0.373026, -0.0151962};
-float weights2[] = {0.11266, 0.199489, 0.193306, -0.0574513, 0.266716, -0.271093, 0.0622974, 0.276959, 0.234103, -0.0329131, 0.111828, 0.255213, 0.0546736, -0.14267, -0.195783, 0.140402, -0.225388, 0.143696, 0.00776717, -0.216402, 0.13755, 
+double _weights2[] = {0.11266, 0.199489, 0.193306, -0.0574513, 0.266716, -0.271093, 0.0622974, 0.276959, 0.234103, -0.0329131, 0.111828, 0.255213, 0.0546736, -0.14267, -0.195783, 0.140402, -0.225388, 0.143696, 0.00776717, -0.216402, 0.13755, 
 -0.0404622, 0.321655, -0.218655, -0.140874, 0.0361279, 0.227149, -0.0224601, -0.0438027, 0.0945921, 0.264248, -0.212632, 0.125262, 0.303234, 0.265334, 0.0165108, -0.119786, 0.0967013, -0.316602, 0.0735333, -0.298583, 
 -0.131285, 0.158645, 0.0816884, 0.0191159, 0.233569, -0.0288674, 0.166787, 0.0839494, -0.232928, 0.32289, 0.259277, 0.28396, 0.0585126, 0.0419515, -0.315813, 0.32489, -0.208887, -0.157422, 0.223066, 0.235666, 
 -0.286893, -0.00949466, -0.0232266, 0.000597281, -0.28573, 0.23746, -0.12194, 0.211189, 0.114797, 0.334012, 0.195305, 0.0269026, 0.191523, -0.0801473, 0.323508, 0.214993, -0.0651319, 0.268872, -0.270865, 0.0842015
 };
-float biasWeights1[] = {0.224118, -0.246188, -0.22282};
-float biasWeights2[] = {-0.0863176, -0.227985, -0.147554};
+vector<float> __weights1( _weights1, _weights1 + sizeof( _weights1 ) / sizeof(double) );
+vector<float> __weights2( _weights2, _weights2 + sizeof( _weights2  ) / sizeof(double) );
+float *weights1 = &__weights1[0];
+float *weights2 = &__weights2[0];
+float biasWeights1[] = {0.224118f, -0.246188f, -0.22282f};
+float biasWeights2[] = {-0.0863176f, -0.227985f, -0.147554f};
     net->initWeights(1, weights1, biasWeights1 );
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.04)
+            ->learningRate(0.04f)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)
@@ -763,7 +769,7 @@ float biasWeights2[] = {-0.0863176, -0.227985, -0.147554};
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.1, loss );
+    assertLessThan( 0.1f, loss );
 
     delete net;
 }
@@ -908,7 +914,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
 //    net->print();
     for( int epoch = 0; epoch < 3000; epoch++ ) {
         net->epochMaker()
-            ->learningRate(0.02)
+            ->learningRate(0.02f)
             ->batchSize(N)
             ->numExamples(N)
             ->inputData(data)
@@ -934,7 +940,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.1, loss );
+    assertLessThan( 0.1f, loss );
 
     delete net;
 }
