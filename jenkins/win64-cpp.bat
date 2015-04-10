@@ -11,6 +11,17 @@ dir
 "c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010 Win64" ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
+
+rem copy down the redistributables (maybe they're on the server somewhere?)
+powershell Set-ExecutionPolicy unrestricted
+powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/vc2010redist.zip', 'vc2010redist.zip')
+if errorlevel 1 exit /B 1
+
+"c:\program files\7-Zip\7z.exe" x vc2010redist.zip
+if errorlevel 1 exit /B 1
+
+cp vc2010redist\win64\* Release
+
 cd Release
 "c:\program files\7-Zip\7z.exe" a deepcl-win64-%version%.zip *
 if errorlevel 1 exit /B 1
