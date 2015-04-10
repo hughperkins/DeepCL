@@ -15,12 +15,6 @@
 
 using namespace std;
 
-void copyArray( float *target, double *source, int N ) {
-    for( int i = 0; i < N; i++ ) {
-        target[i] = source[i];
-    }
-}
-
 TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     Timer timer;
     const float learningRate = 0.1f;
@@ -300,7 +294,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     Timer timer;
-    double _data[] = { 0.5, 0.5, 0.5,
+    float data[] = { 0.5, 0.5, 0.5,
                     -0.5, 0.5, 0.5,
                     0.5, 0.5, 0.5,
     
@@ -316,8 +310,6 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
                    0.5, -0.5, -0.5,
                    -0.5, -0.5, -0.5
  };
-    float data[9*4];
-    copyArray( data, _data, 9*4);
 
     int *labels = new int[4];
     labels[0] = 0;
@@ -487,7 +479,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     int N = 3;
     int numInPlanes = 1;
     int numOutPlanes = 3;
-    double _data[] = {
+    float data[] = {
                     1,0,1,0,1,
                     0,1,0,1,0,
                     1,0,1,0,1,
@@ -507,8 +499,6 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
                     1,1,1,1,1,
 };
     int inputSize = imageSize * imageSize * numInPlanes * N;
-    float data[inputSize];
-    copyArray(data, _data, inputSize);
     for( int i = 0; i < inputSize; i++ ) {
         data[i] -= 0.5f;
     }
@@ -563,7 +553,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     int N = 6;
     int numInPlanes = 1;
     int numOutPlanes = 3;
-    double _data[] = {
+    float data[] = {
                     1,0,1,0,1,
                     0,1,0,1,0,
                     1,0,1,0,1,
@@ -601,8 +591,6 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
                     0,0,0,0,0,
 };
     int inputSize = imageSize * imageSize * numInPlanes * N;
-    float data[inputSize];
-    copyArray(data, _data, inputSize);
     for( int i = 0; i < inputSize; i++ ) {
         data[i] -= 0.5f;
     }
@@ -674,7 +662,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     int N = 6;
     int numInPlanes = 1;
     int numOutPlanes = 3;
-    double _data[] = {
+    float data[] = {
                     1,0,1,0,1,
                     0,1,0,1,0,
                     1,0,1,0,1,
@@ -712,8 +700,6 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
                     0,0,0,0,0,
 };
     int inputSize = imageSize * imageSize * numInPlanes * N;
-    float data[inputSize];
-    copyArray(data, _data, inputSize);
     for( int i = 0; i < inputSize; i++ ) {
         data[i] -= 0.5f;
     }
@@ -783,7 +769,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     int N = 18;
     int numInPlanes = 1;
     int numOutPlanes = 3;
-    double _data[] = {
+    float data[] = {
                     1,0,1,0,1,
                     0,1,0,1,0,
                     1,0,1,0,1,
@@ -894,8 +880,6 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
                     0,0,0,0,0,
 };
     int inputSize = imageSize * imageSize * numInPlanes * N;
-    float data[inputSize];
-    copyArray(data, _data, inputSize);
     for( int i = 0; i < inputSize; i++ ) {
         data[i] -= 0.5f;
     }
