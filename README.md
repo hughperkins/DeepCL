@@ -86,13 +86,13 @@ Pre-built binaries are available for Windows.  In order to use them you need:
 * An OpenCL driver for your GPU
 * A recent release with Windows binaries is [v3.2.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.2.1)
 
- A Jenkins continuous integration server also delivers built binaries to [http://www.deepcl.hughperkins.com/](http://www.deepcl.hughperkins.com/)
+Binaries are also built regularly to [deepcl.hughperkins.com/](http://www.deepcl.hughperkins.com/)
 
 ## Linux
 
 Pre-built binaries are available for Windows.  In order to use them you need:
 * An OpenCL driver for your GPU
-* A Jenkins continuous integration server delivers buildt binaries to [http://www.deepcl.hughperkins.com/](http://www.deepcl.hughperkins.com/)
+* Binaries are built regularly to [deepcl.hughperkins.com/](http://www.deepcl.hughperkins.com/)
 * If an appropriate binary isn't available for your system, please [build from source](doc/Build.md)
 
 ## What if it doesn't run?
