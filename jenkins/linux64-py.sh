@@ -4,6 +4,7 @@ pyenv=$1
 echo pyenv: $pyenv
 
 pwd
+cp jenkins/version.txt python
 cd python
 pwd
 rm -Rf dist mysrc build PyDeepCL.cpp

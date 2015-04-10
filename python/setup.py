@@ -242,6 +242,8 @@ def read_if_exists(filename):
     else:
         ""
 
+print('version: ', read_if_exists('version.txt') )
+
 setup(
   name = 'DeepCL',
   version = read_if_exists('version.txt'),
