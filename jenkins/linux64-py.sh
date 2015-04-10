@@ -16,5 +16,9 @@ python setup.py bdist_egg || exit 1
 
 # just ignore the error on next line for now (if already uploaded this version)
 python setup.py bdist_egg upload
+
+# just ignore the error on next line for now (if already uploaded this version)
+python setup.py sdist upload
+
 exit 0
 
