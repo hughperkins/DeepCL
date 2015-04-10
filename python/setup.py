@@ -236,7 +236,8 @@ ext_modules = [
 
 setup(
   name = 'DeepCL',
-  version = "3.4.0rc1",  # synchronize to deepcl main version
+  version = read('version.txt'),
+#  version = "3.4.0rc1",  # synchronize to deepcl main version
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
   description = 'python wrapper for DeepCL deep convolutional neural network library for OpenCL',

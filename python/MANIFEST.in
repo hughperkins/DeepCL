@@ -4,4 +4,5 @@ include Cy*.h
 include mysrc/*
 include *.pxd
 include *.pyx
+include version.txt
 
