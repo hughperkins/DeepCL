@@ -138,7 +138,7 @@ Related projects
 Credits
 =======
 
-Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state.
+Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state, and for everyone who has clicked on the 'star' button above :-)
 
 License
 =======
