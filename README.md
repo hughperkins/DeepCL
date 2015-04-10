@@ -120,6 +120,11 @@ Related projects
 
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
 
+Credits
+=======
+
+Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state.
+
 License
 =======
 
