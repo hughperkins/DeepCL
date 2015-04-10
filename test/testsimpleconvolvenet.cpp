@@ -2,6 +2,7 @@
 //#include "ClConvolve.h"
 
 #include <iostream>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -294,21 +295,21 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     Timer timer;
-    float data[] = { 0.5, 0.5, 0.5,
-                    -0.5, 0.5, 0.5,
-                    0.5, 0.5, 0.5,
+    float data[] = { 0.5f, 0.5f, 0.5f,
+                    -0.5f, 0.5f, 0.5f,
+                    0.5f, 0.5f, 0.5f,
     
-                   0.5, 0.5, 0.5,
-                   0.5, -0.5, 0.5,
-                   0.5, 0.5, 0.5,
+                   0.5f, 0.5f, 0.5f,
+                   0.5f, -0.5f, 0.5f,
+                   0.5f, 0.5f, 0.5f,
 
-                    -0.5, -0.5, -0.5,
-                    -0.5, 0.5, -0.5,
-                    -0.5, -0.5, -0.5,
+                    -0.5f, -0.5f, -0.5f,
+                    -0.5f, 0.5f, -0.5f,
+                    -0.5f, -0.5f, -0.5f,
     
-                   -0.5, -0.5, -0.5,
-                   0.5, -0.5, -0.5,
-                   -0.5, -0.5, -0.5
+                   -0.5f, -0.5f, -0.5f,
+                   0.5f, -0.5f, -0.5f,
+                   -0.5f, -0.5f, -0.5
  };
 
     int *labels = new int[4];
@@ -331,8 +332,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased()->linear() );
     net->addLayer( SquareLossMaker::instance() );;
     float const*results = 0;
-    float weights1[] = {0.715867, -0.428623, -0.281465, -0.736675, -0.224507, 0.335028, -0.384762, -0.213304, 0.679177, -0.170055, 0.335075, -0.572057, -0.175718, -0.410962, -0.175277, 0.536131, -0.0568329, -0.00297278};
-    float biasWeights1[] = {0.5, 0.5};
+    float weights1[] = {0.715867f, -0.428623f, -0.281465f, -0.736675f, -0.224507f, 0.335028f, -0.384762f, -0.213304f, 0.679177f, -0.170055f, 0.335075f, -0.572057f, -0.175718f, -0.410962f, -0.175277f, 0.536131f, -0.0568329f, -0.00297278f};
+    float biasWeights1[] = {0.5f, 0.5f};
     net->initWeights( 1, weights1, biasWeights1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
@@ -359,7 +360,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.001, loss );
+    assertLessThan( 0.001f, loss );
 
     delete net;
 }
@@ -367,16 +368,16 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
 TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     Timer timer;
     float *data = new float[2];
-    data[0] = 0.5;
-    data[1] = -0.5;
+    data[0] = 0.5f;
+    data[1] = -0.5f;
     int *labels = new int[2];
     labels[0] = 0;
     labels[1] = 1;
     float *expectedResults = new float[4];
-    expectedResults[0] = 0.5;
-    expectedResults[1] = -0.5;
-    expectedResults[2] = -0.5;
-    expectedResults[3] = 0.5;
+    expectedResults[0] = 0.5f;
+    expectedResults[1] = -0.5f;
+    expectedResults[2] = -0.5f;
+    expectedResults[3] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
@@ -407,7 +408,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.0001, loss );
+    assertLessThan( 0.0001f, loss );
 
     delete net;
 }
@@ -415,26 +416,26 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
 TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     Timer timer;
     float *data = new float[2];
-    data[0] = 0.5;
-    data[1] = -0.5;
+    data[0] = 0.5f;
+    data[1] = -0.5f;
     int *labels = new int[2];
     labels[0] = 0;
     labels[1] = 1;
     float *expectedResults = new float[4];
-    expectedResults[0] = 0.5;
-    expectedResults[1] = -0.5;
-    expectedResults[2] = -0.5;
-    expectedResults[3] = 0.5;
+    expectedResults[0] = 0.5f;
+    expectedResults[1] = -0.5f;
+    expectedResults[2] = -0.5f;
+    expectedResults[3] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
     net->addLayer( SquareLossMaker::instance() );;
-float weights1[] = {1.12739, 1.21476};
-float weights2[] = {-0.352846, 0.534554, -1.13343, -0.191175};
-float biasWeights1[] = {0.971267, 1.42629};
-float biasWeights2[] = {-0.071288, 0.443919};
+float weights1[] = {1.12739f, 1.21476f};
+float weights2[] = {-0.352846f, 0.534554f, -1.13343f, -0.191175f};
+float biasWeights1[] = {0.971267f, 1.42629f};
+float biasWeights2[] = {-0.071288f, 0.443919f};
     net->initWeights(1, weights1, biasWeights1 );
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
@@ -468,7 +469,7 @@ float biasWeights2[] = {-0.071288, 0.443919};
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.0001, loss );
+    assertLessThan( 0.0001f, loss );
 
     delete net;
 }
@@ -507,9 +508,9 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     float *expectedResults = new float[resultsSize];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
-            expectedResults[ n * numOutPlanes + plane] = -0.5;
+            expectedResults[ n * numOutPlanes + plane] = -0.5f;
         }
-        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(5) );
@@ -542,7 +543,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.01, loss );
+    assertLessThan( 0.01f, loss );
 
     delete net;
 }
@@ -599,9 +600,9 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     float *expectedResults = new float[resultsSize];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
-            expectedResults[ n * numOutPlanes + plane] = -0.5;
+            expectedResults[ n * numOutPlanes + plane] = -0.5f;
         }
-        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(5) );
@@ -610,8 +611,8 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(4)->biased() );
     net->addLayer( SquareLossMaker::instance() );;
 //    net->print();
-float weights1[] = {-0.69664, 0.58017, 0.140447, -0.205859, 0.0198638, 0.0110593, -0.388923, -0.844424, -0.472903, 0.453888, -0.616155, -0.454998};
-float weights2[] = {0.207138, -0.106497, -0.1228, -0.162173, 0.1822, -0.100027, 0.0447708, 0.165723, -0.0147989, 0.109204, -0.0334504, 0.00452646, 0.198443, -0.23725, 0.105671, 0.192242, -0.0268933, 0.150674, 0.160054, -0.116846, 0.222009, 
+double _weights1[] = {-0.69664, 0.58017, 0.140447, -0.205859, 0.0198638, 0.0110593, -0.388923, -0.844424, -0.472903, 0.453888, -0.616155, -0.454998};
+double _weights2[] = {0.207138, -0.106497, -0.1228, -0.162173, 0.1822, -0.100027, 0.0447708, 0.165723, -0.0147989, 0.109204, -0.0334504, 0.00452646, 0.198443, -0.23725, 0.105671, 0.192242, -0.0268933, 0.150674, 0.160054, -0.116846, 0.222009, 
 0.226935, 0.113873, -0.153742, 0.0273874, -0.216493, 0.177896, 0.155068, -0.0809009, 0.0305763, 0.198926, -0.115796, -0.179839, -0.133567, -0.0386595, -0.166771, -0.11833, -0.219205, -0.0115777, 0.122457, 0.0984342, 
 0.0616336, 0.130647, 0.192949, 0.143467, -0.130633, -0.221122, -0.154317, 0.11901, 0.00502961, 0.213079, -0.0373076, -0.0461127, -0.156646, -0.148074, -0.105763, -0.140191, 0.136911, -0.217382, 0.17574, -0.0312263, 
 0.0931478, 0.0789604, -0.00794073, -0.218235, 0.0418423, 0.234828, 0.225359, -0.191966, 0.241517, 0.182442, -0.216337, -0.228462, -0.140195, 0.0493267, 0.0383108, -0.0124946, -0.093023, 0.0322872, 0.0855678, -0.0466207, 
@@ -619,8 +620,12 @@ float weights2[] = {0.207138, -0.106497, -0.1228, -0.162173, 0.1822, -0.100027, 
 0.0528438, 0.0157539, 0.161637, -0.199882, 0.171727, 0.171146, -0.237469, -0.226088, 0.2026, -0.131614, 0.0631847, -0.0949208, -0.137853, -0.177839, -0.237589, -0.229862, 0.202094, 0.0531539, -0.0467284, 0.125544, 
 -0.0750956, 0.225228, 0.255915, 0.076901, -0.0596187, 0.16937, -0.104811, -0.0815879, -0.196806, 0.0526821, 0.136622, -0.12163, 0.170657, -0.0956968, -0.00985565, 0.0455411, 0.0242914, 0.107953, -0.0594324, 0.124928, 
 0.0875922, -0.100952, 0.155045};
-float biasWeights1[] = {0.0998941, -0.365008, 0.188937};
-float biasWeights2[] = {0.232961, 0.141537, 0.159074};
+vector<float> vweights1( _weights1, _weights1 + sizeof(_weights1) / sizeof(_weights1[0] ) );
+float *weights1 = &vweights1[0];
+vector<float> vweights2( _weights2, _weights2 + sizeof(_weights2) / sizeof(_weights2[0] ) );
+float *weights2 = &vweights2[0];
+float biasWeights1[] = {0.0998941f, -0.365008f, 0.188937f};
+float biasWeights2[] = {0.232961f, 0.141537f, 0.159074f};
     net->initWeights(1, weights1, biasWeights1 );
     net->initWeights(2, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 500; epoch++ ) {
@@ -708,9 +713,9 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     float *expectedResults = new float[resultsSize];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
-            expectedResults[ n * numOutPlanes + plane] = -0.5;
+            expectedResults[ n * numOutPlanes + plane] = -0.5f;
         }
-        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(5) );
@@ -890,9 +895,9 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     float *expectedResults = new float[resultsSize];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
-            expectedResults[ n * numOutPlanes + plane] = -0.5;
+            expectedResults[ n * numOutPlanes + plane] = -0.5f;
         }
-        expectedResults[ n * numOutPlanes + labels[n]] = +0.5;
+        expectedResults[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker<float>::instance()->numPlanes(1)->imageSize(5) );
