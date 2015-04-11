@@ -11,7 +11,7 @@
   * I'm also tempted to write a LuaJIT wrapper since Yann LeCun mentioned LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/) , ie at [http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw)
   * I'm also running kgs-go dataset in the background, but at 2 days per epoch (32 million records, and 12 layers...), I'm mostly just sitting and waiting :-)
 * Plausible, medium-term (pull requests welcome):
-  * drop-out ... pretty important :-)
+  * [drop-out](http://arxiv.org/abs/1207.0580) ... pretty important :-)
   * scaling? rotations? mirroring?
   * testing result averaged over several propagations (used in conjunction with `rp`)
   * sparse connectivity between feature maps in adjacent layers
