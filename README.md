@@ -84,16 +84,13 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 Pre-built binaries are available for Windows.  In order to use them you need:
 * An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v3.2.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.2.1)
-
-Binaries are also built regularly to [deepcl.hughperkins.com/](http://www.deepcl.hughperkins.com/)
+* A recent release with Windows binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1)
 
 ## Linux
 
-Pre-built binaries are available for Windows.  In order to use them you need:
+Pre-built binaries are available for linux.  In order to use them you need:
 * An OpenCL driver for your GPU
-* Binaries are built regularly to [deepcl.hughperkins.com/](http://www.deepcl.hughperkins.com/)
-* If an appropriate binary isn't available for your system, please [build from source](doc/Build.md)
+* A recent release with linux binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1)
 
 ## What if it doesn't run?
 
