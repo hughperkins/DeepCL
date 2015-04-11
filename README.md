@@ -78,7 +78,7 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 ## Python
 
-* For python, please see [python/README.md](python/README.md)
+* For python, please use [pip](https://pypi.python.org/pypi/DeepCL/3.4.1)
 
 ## Windows
 
