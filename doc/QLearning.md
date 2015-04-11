@@ -1,6 +1,6 @@
 # Q-learning (draft)
 
-Q-learning is available from 2 ways:
+Q-learning can be used:
 * from C++
 * from Python
 
