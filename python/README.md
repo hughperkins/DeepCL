@@ -1,4 +1,4 @@
-# PyDeepCL
+# DeepCL Python wrappers
 
 Python wrapper for  [DeepCL](https://github.com/hughperkins/DeepCL)
 
