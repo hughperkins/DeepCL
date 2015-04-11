@@ -17,12 +17,6 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 
 For example of using q-learning, see [test_qlearning.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py).
 
-# Notes on how the wrapper works
-
-* [cDeepCL.pxd](https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd) contains the definitions of the underlying DeepCL c++ libraries classes
-* [PyDeepCL.pyx](https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx) contains Cython wrapper classes around the underlying c++ classes
-* [setup.py](https://github.com/hughperkins/DeepCL/blob/master/python/setup.py) is a setup file for compiling the `PyDeepCL.pyx` Cython file
-
 # To install from pip
 
 ```bash
@@ -36,14 +30,18 @@ pip install DeepCL
 ## Pre-requisites:
 
 ### Compilers
+
 * on Windows:
   * Python 2.7 build: need [Visual Studio 2008 for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266) from Microsoft
   * Python 3.4 build: need Visual Studio 2010, eg [Visual C++ 2010 Express](https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
 
 ### Python packages
 
-* Need the following python packages installed, eg via `pip install`:
-  * cython
+* If you just want to build the existing source, you just need python and an appropriate compiler
+* If you want to modify the sourcecode, you'll need to re-run, cython, so you'll need:
+  * `pip install cython`
+* If you want to update this readme, you'll need to re-generate the README.rst, so you'll need: 
+  * `pip install pypandoc` (which depends itself on pandoc)
 
 ## To build:
 
@@ -52,14 +50,27 @@ cd python
 python setup.py build_ext -i
 ```
 
-# Considerations for Python wrapper developers
+Then, you can run from this directory, by making sure to add it to the path, eg:
+```
+PYTHONPATH=. python test_lowlevel.py /my/mnist/data/dir 
+```
 
-* By default, cython disables ctrl-c, so need to handle this ourselves somehow, eg see `NetLearner.learn` for an example
-* To handle ctrl-c, we need to use `nogil`, which means we cant use the `except +` syntax, I think, hence need to handle this ourselves too :-)  see again `Netlearner.learn for an example
+## To install from source:
+
+```bash
+cd python
+python setup.py install
+```
+
+## Notes on how the wrapper works
+
+* [cDeepCL.pxd](https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd) contains the definitions of the underlying DeepCL c++ libraries classes
+* [PyDeepCL.pyx](https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx) contains Cython wrapper classes around the underlying c++ classes
+* [setup.py](https://github.com/hughperkins/DeepCL/blob/master/python/setup.py) is a setup file for compiling the `PyDeepCL.pyx` Cython file
 
 ## to run unit-tests
 
-(Draft) From this directory:
+From the python directory:
 
 ```bash
 nosetests -sv
