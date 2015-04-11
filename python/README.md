@@ -2,6 +2,14 @@
 
 Python wrapper for  [DeepCL](https://github.com/hughperkins/DeepCL)
 
+# To install from pip
+
+```bash
+pip install DeepCL 
+```
+
+* related pypi page: [https://pypi.python.org/pypi/DeepCL](https://pypi.python.org/pypi/DeepCL)
+
 # How to use
 
 See [test_clconvolve.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_clconvolve.py) for an example of:
@@ -17,15 +25,7 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 
 For example of using q-learning, see [test_qlearning.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py).
 
-# To install from pip
-
-```bash
-pip install DeepCL 
-```
-
-* related pypi page: [https://pypi.python.org/pypi/DeepCL](https://pypi.python.org/pypi/DeepCL)
-
-# To build directly
+# To build from source
 
 ## Pre-requisites:
 
@@ -55,7 +55,7 @@ Then, you can run from this directory, by making sure to add it to the path, eg:
 PYTHONPATH=. python test_lowlevel.py /my/mnist/data/dir 
 ```
 
-## To install from source:
+## To install:
 
 ```bash
 cd python
