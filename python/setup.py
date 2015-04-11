@@ -246,7 +246,7 @@ print('version: ', read_if_exists('version.txt') )
 
 setup(
   name = 'DeepCL',
-  version = read_if_exists('version.txt'),
+  version = read_if_exists('version.txt').strip(),
 #  version = "3.4.0rc1",  # synchronize to deepcl main version
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
