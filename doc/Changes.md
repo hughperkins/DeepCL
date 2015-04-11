@@ -3,7 +3,7 @@
 * Planned, short-term:
   * Currently, I'm interested in:
     * the [Atari paper](http://arxiv.org/abs/1312.5602)
-    * [LTSM](ftp://ftp.idsia.ch/pub/juergen/lstm.pdf), eg as used in the [Google caption](http://arxiv.org/pdf/1411.4555v1.pdf) paper, and as alluded to a lot in [Hinton's AMA](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/), eg [http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh)
+    * [LTSM](http://people.idsia.ch/~juergen/rnn.html), paper at ftp://ftp.idsia.ch/pub/juergen/lstm.pdf , eg as used in the [Google caption](http://arxiv.org/pdf/1411.4555v1.pdf) paper, and as alluded to a lot in [Hinton's AMA](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/), eg [http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh)
     * So, anything which furthers being able to pursue either of these is likely to be sooner rather than later
     * Specifically, these need things like:
       * Q-learning (for Atari)
