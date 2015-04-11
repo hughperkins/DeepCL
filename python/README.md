@@ -29,19 +29,14 @@ For example of using q-learning, see [test_qlearning.py](https://github.com/hugh
 
 ## Pre-requisites:
 
-### Compilers
-
 * on Windows:
-  * Python 2.7 build: need [Visual Studio 2008 for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266) from Microsoft
-  * Python 3.4 build: need Visual Studio 2010, eg [Visual C++ 2010 Express](https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
-
-### Python packages
-
-* If you just want to build the existing source, you just need python and an appropriate compiler
-* If you want to modify the sourcecode, you'll need to re-run, cython, so you'll need:
-  * `pip install cython`
-* If you want to update this readme, you'll need to re-generate the README.rst, so you'll need: 
-  * `pip install pypandoc` (which depends itself on pandoc)
+  * Python 2.7 or Python 3.4
+  * A compiler:
+    * Python 2.7 build: need [Visual Studio 2008 for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266) from Microsoft
+    * Python 3.4 build: need Visual Studio 2010, eg [Visual C++ 2010 Express](https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
+* on linux:
+  * Python 2.7 or Python 3.4
+  * g++, supporting c++0x, eg 4.4 or higher
 
 ## To build:
 
@@ -75,4 +70,16 @@ From the python directory:
 ```bash
 nosetests -sv
 ```
+
+## Development builds
+
+* If you want to modify the sourcecode, you'll need to re-run cython, so you'll need cython:
+```
+pip install cython
+```
+* If you want to update this readme, you might want to re-generate the README.rst, so you'll need pypandoc:
+```
+pip install pypandoc
+```
+  * (note that pypandoc depends on pandoc)
 
