@@ -19,7 +19,7 @@ python setup.py bdist_egg || exit 1
 python setup.py bdist_egg upload
 
 # just ignore the error on next line for now (if already uploaded this version)
-python setup.py sdist upload
+python setup.py sdist register upload
 
 exit 0
 
