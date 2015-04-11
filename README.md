@@ -80,17 +80,11 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 * For python, please use [pip](https://pypi.python.org/pypi/DeepCL/3.4.1)
 
-## Windows
+## Commandline tools, and c++ libraries
 
-Pre-built binaries are available for Windows.  In order to use them you need:
+Pre-built binaries are available for Windows and linux.  In order to use them you need:
 * An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1)
-
-## Linux
-
-Pre-built binaries are available for linux.  In order to use them you need:
-* An OpenCL driver for your GPU
-* A recent release with linux binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1)
+* A recent release with Windows and linux binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1) 
 
 ## What if it doesn't run?
 
