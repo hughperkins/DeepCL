@@ -1,7 +1,6 @@
 # What's done / what's planned
 
 * Planned, short-term:
-  * Reading papers right now...
   * Currently, I'm interested in:
     * the Atari paper
     * LTSM
@@ -9,9 +8,7 @@
     * Specifically, these need things like:
       * Q-learning (for Atari)
       * probably more generalized network, maybe even more general than a DAG even, for LTSM
-  * I'm also tempted to write a LuaJIT wrapper since:
-    * sounds easy, close to my skill-set, I've done lua before
-    * Yann LeCun spoke about LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/)
+  * I'm also tempted to write a LuaJIT wrapper since Yann LeCun mentioned LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/)
 * Plausible, medium-term (pull requests welcome):
   * drop-out ... pretty important :-)
   * scaling? rotations? mirroring?
