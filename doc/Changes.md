@@ -2,13 +2,14 @@
 
 * Planned, short-term:
   * Currently, I'm interested in:
-    * the Atari paper
-    * LTSM
+    * the [Atari paper](http://arxiv.org/abs/1312.5602)
+    * [LTSM](ftp://ftp.idsia.ch/pub/juergen/lstm.pdf), eg as used in the [Google caption](http://arxiv.org/pdf/1411.4555v1.pdf) paper, and as alluded to a lot in [Hinton's AMA](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/), eg [http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh)
     * So, anything which furthers being able to pursue either of these is likely to be sooner rather than later
     * Specifically, these need things like:
       * Q-learning (for Atari)
       * probably more generalized network, maybe even more general than a DAG even, for LTSM
   * I'm also tempted to write a LuaJIT wrapper since Yann LeCun mentioned LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/)
+  * I'm also running kgs-go dataset in the background, but at 2 days per epoch (32 million records, and 12 layers...), I'm mostly just sitting and waiting :-)
 * Plausible, medium-term (pull requests welcome):
   * drop-out ... pretty important :-)
   * scaling? rotations? mirroring?
