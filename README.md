@@ -90,7 +90,7 @@ Pre-built binaries are available for Windows.  In order to use them you need:
 
 ### linux
 
-For linux, please [build from source](doc/Build.md)
+For linux, please [build from source](doc/Build.md), (though you could try the binaries at [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1), which were built using Ubuntu 14.04)
 
 ## What if it doesn't run?
 
