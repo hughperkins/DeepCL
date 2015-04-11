@@ -57,8 +57,3 @@
   * max-pooling
   * read network from a config file => soft of done with the `netdef` syntax
 
-# Recent changes
-
-Dates are dates of code change / commit, rather than date merged into master, or tagged.
-* ( cleaned this for now :-) )
-
