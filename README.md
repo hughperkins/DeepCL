@@ -74,7 +74,7 @@ Example usage:
 
 For Python wrappers, please see [python/README.md](python/README.md)
 
-# To use the pre-built binaries
+# To install
 
 ## Python
 
@@ -82,9 +82,15 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 ## Commandline tools, and c++ libraries
 
-Pre-built binaries are available for Windows and linux.  In order to use them you need:
+### Windows
+
+Pre-built binaries are available for Windows.  In order to use them you need:
 * An OpenCL driver for your GPU
-* A recent release with Windows and linux binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1) 
+* A recent release with Windows binaries is [v3.4.1](https://github.com/hughperkins/DeepCL/releases/tag/v3.4.1) 
+
+### linux
+
+For linux, please [build from source](doc/Build.md)
 
 ## What if it doesn't run?
 
