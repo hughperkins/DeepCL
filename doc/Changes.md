@@ -3,6 +3,7 @@
 ## To do
 
 ### Planned, short-term
+
   * Currently, I'm interested in:
     * the [Atari paper](http://arxiv.org/abs/1312.5602)
     * LTSM, ftp://ftp.idsia.ch/pub/juergen/lstm.pdf , eg as used in the [Google caption](http://arxiv.org/pdf/1411.4555v1.pdf) paper, and as alluded to a lot in [Hinton's AMA](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/), eg [http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh)
@@ -12,7 +13,9 @@
       * probably more generalized network, maybe even more general than a DAG even, for LTSM
   * I'm also tempted to write a LuaJIT wrapper since Yann LeCun mentioned LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/) , ie at [http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw)
   * I'm also running kgs-go dataset in the background, but at 2 days per epoch (32 million records, and 12 layers...), I'm mostly just sitting and waiting :-)
+
 ### Plausible, medium-term (pull requests welcome)
+
   * [drop-out](http://arxiv.org/abs/1207.0580) ... pretty important :-)
   * scaling? rotations? mirroring?
   * testing result averaged over several propagations (used in conjunction with `rp`)
@@ -23,14 +26,19 @@
   * maybe L2 regularization?
   * generalization to non-square images
   * more general DAGs?
+
 ### Maybe sometime, possibly
+
   * mpi so can run over several gpus, spread across multiple hosts???
     * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent => since it didnt seem obvious how to use it, ie you have to divide the learningrate by the number of nodes, I never use this at the moment
+
 ### On hold
+
   * migrate to use `async_work_group_copy`? => on hold, seems it's actually slower, in my experiments, at least on nvidia?
   * [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) => on hold, since, per [Sandle Dieleman's solution to the Galaxy Zoo challenge](http://benanne.github.io/2014/04/05/galaxy-zoo.html), seems like dropconnect is slower and doesnt convincingly add value, compared to dropout
 
 ## Done
+
   * forward/backward propagation, for convolutional networks, using OpenCL
   * square loss
   * zero-padding
