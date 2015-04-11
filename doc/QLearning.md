@@ -1,4 +1,4 @@
-# Q-learning (draft)
+# Q-learning
 
 Q-learning can be used:
 * from C++
