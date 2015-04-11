@@ -6,6 +6,13 @@ Q-learning can be used:
 
 ## Concepts
 
+Q-learning places the agent in an entirely unknown environment, and the agent needs to learn to maximize its reward.  Well, it's not quite entirely unknown environment.  The agent knows:
+* it has some buttons to push, though it doesnt know what they can do
+* it has a view of the current environment, available as an image, of one or more planes
+* and that it wants to receive as much reward as possible, after each action
+
+More concepts are described very well in [Lin's 1993 thesis](http://www.dtic.mil/dtic/tr/fulltext/u2/a261434.pdf).
+
 The q-learning implementation implements experience replay (parameterized by `maxSamples`), and will act in an environment where the agent can 'see' an image, which updates after each `act`.  The image is the `perception`, and can have one or more planes.  Each move the agent will `act`, and be rewarded appropriately.
 
 We write a Scenario implementation, which inherits from the Scenario class, and override the `act` and `getPerception` methods to return these to the agent.  `act` should return the reward, as a float. `getPerception` should return an array of floats, corresponding to the planes of images, ordered as: plane, row, column.  ie, point [plane][row][col] should be at [plane * numrows * numcols + row * numcols + col].
