@@ -17,7 +17,7 @@
 
 Do you want to use DeepCL via python, or from the commandline, or from C++?
 * to use from Python, please see [python/README.md](../python/README.md)
-* To use from the commandline, or from C++, please continue reading :-)
+* To use from the commandline, or from C++, please continue reading this page :-)
 
 ## linux
 
