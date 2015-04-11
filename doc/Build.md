@@ -15,6 +15,10 @@
 
 #To build
 
+Do you want to use DeepCL via python, or from the commandline, or from C++?
+* to use from Python, please see [python/README.md](../python/README.md)
+* To use from the commandline, or from C++, please continue reading :-)
+
 ## linux
 
 ### Pre-requisites
@@ -65,10 +69,7 @@ Note:
 
 ## Linking
 
-You will need:
-- libDeepCL.so (or DeepCL.dll)
-- ~~*.cl files~~ *.cl files no longer needed at runtime :-)  They're packaged inside the dll/so now.
-
-~~The *.cl files should be in the current working directory at the time that you call into any DeepCL methods.~~
-
+If you want to use the DeepCL library from C++, you will need to link with the following libraries:
+- libDeepCL.so (or DeepCL.dll, on Windows)
+- libOpenCLHelper.so (or OpenCLHelper.dll, on Windows)
 
