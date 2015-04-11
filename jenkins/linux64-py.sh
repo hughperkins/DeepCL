@@ -9,7 +9,7 @@ cd python
 pwd
 rm -Rf dist mysrc build PyDeepCL.cpp
 ls
-. $HOME/env-2.7/bin/activate
+. $HOME/${pyenv}/bin/activate
 pwd
 pip install cython pypandoc || exit 1
 python setup.py build_ext -i || exit 1
