@@ -41,7 +41,7 @@ OpenCL library to train deep convolutional networks
 - Deep convolutional
 - includes Q-learning module
 - Python wrappers available
-- (New!) Lua wrappers available (poc)
+- (New!) Lua wrappers available
 
 Functionalities:
 * convolutional layers
