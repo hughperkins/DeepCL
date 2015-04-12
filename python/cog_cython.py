@@ -41,7 +41,7 @@ def cpp_write_proxy_class( proxy_name, parent_name, defs ):
     cog.outl( 'public:')
     cog.outl( '    void *pyObject;')
     cog.outl( '')
-    cog.outl( '    CyScenario(void *pyObject) :')
+    cog.outl( '    ' + proxy_name + '(void *pyObject) :')
     cog.outl( '        pyObject(pyObject) {')
     cog.outl( '    }')
     cog.outl( '')
