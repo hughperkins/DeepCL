@@ -20,6 +20,8 @@ This is enough to load data, create a net, and train it :-)
 
 For a demo, you can have a look at the method `test_basic` in [test_lua.lua](test_lua.lua)
 
+For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_lua.lua](test_lua.lua).
+
 ## To build
 
 * Firstly read the assumptions and pre-requisites in [build.sh](build.sh)
