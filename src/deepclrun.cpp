@@ -43,8 +43,8 @@ using namespace std;
         'netdef': 'network definition',
         'learningrate': 'learning rate, a float value',
         'anneallearningrate': 'multiply learning rate by this, each epoch',
-        'loadweights': 'weights are persistent?',
-        'weightsfile': 'load weights from weights file at startup?',
+        'loadweights': 'load weights from file at startup?',
+        'weightsfile': 'file to write weights to',
         'normalization': '[stddev|maxmin]',
         'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
         'dumptimings': 'dump detailed timings each epoch? [1|0]',
@@ -353,14 +353,14 @@ void printUsage( char *argv[], Config config ) {
     cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
     cout << "    validatefile=[path to validation data file] (" << config.validateFile << ")" << endl;
     cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
-    cout << "    weightsfile=[load weights from weights file at startup?] (" << config.weightsFile << ")" << endl;
+    cout << "    weightsfile=[file to write weights to] (" << config.weightsFile << ")" << endl;
     cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
     cout << "    dataset=[choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]] (" << config.dataset << ")" << endl;
     cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
     cout << "    numtest=[num test examples]] (" << config.numTest << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
-    cout << "    loadweights=[weights are persistent?] (" << config.loadWeights << ")" << endl;
+    cout << "    loadweights=[load weights from file at startup?] (" << config.loadWeights << ")" << endl;
     cout << "    dumptimings=[dump detailed timings each epoch? [1|0]] (" << config.dumpTimings << ")" << endl;
     cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
