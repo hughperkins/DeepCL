@@ -2,10 +2,8 @@
 
 ## Concept
 
-These are at the POC stage at the moment.  They're strictly Ubuntu 14.04 only at the moment.
-There is no build method for any other environment. Actually, they should probably
-work and build on other environments, but you'll need to supply your own build 
-mechanism, in place of [build.sh](build.sh)
+Lua wrappers are available.  You'll need to build them yourself for now though.
+For linux, Ubuntu 14.04, there is a batch file to run the build.
 
 ## Demo
 
@@ -15,13 +13,11 @@ mechanism, in place of [build.sh](build.sh)
 
 ## To build
 
-* Firstly read the assumptions and pre-requisites in [build.sh](build.sh)
-* Now, simply run:
+* If you're on linux, firstly read the assumptions and pre-requisites in [build.sh](build.sh)
+* Now run:
 ```
 bash build.sh
 ```
-* This will also run the first unit-test, which uses the GenericLoader wrapper to
-load mnist labels and images
 
 ## To run
 
@@ -34,4 +30,8 @@ or:
 ./run.sh test_qlearning.lua
 ```
 
+## Unit-testing
+
+* The source-code includes the thirdparty lua unit-test tool luaunit.  [test_lua.lua](test_lua.lua)
+creates some first initial unit tests
 
