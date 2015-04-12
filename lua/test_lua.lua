@@ -41,11 +41,38 @@ function test_genericloader()
     luaunit.assertEquals(labels[9], 4)
 end
 
-function test_neuralnet()
+function test_basic()
+
+    deepcl = luaDeepCL
+
+    genericLoader = deepcl.GenericLoader()
+
+    trainfilepath = '../data/mnist/train-images-idx3-ubyte'
+    N,planes,size = deepcl.GenericLoader_getDimensions( trainfilepath )
+    print('N='..N..' planes='..planes..' size='..size)
+
+    N = 1280
+
+    images = deepcl.floatArray(N * planes * size * size )
+    labels = deepcl.intArray(N)
+    deepcl.GenericLoader_load( trainfilepath, images, labels, 0, N )
+    print('images',images)
+    print('labels',labels)
+
     net = deepcl.NeuralNet(1,28)
+    print(net:asString())
+    normmaker = deepcl.NormalizationLayerMaker()
+    net:addLayer( deepcl.NormalizationLayerMaker():translate(-40):scale(1/255.0) )
     print(net:asString())
     deepcl.NetdefToNet_createNetFromNetdef( net, "rt2-8c5-mp2-16c5-mp3-150n-10n" ) 
     print(net:asString())
+
+    learner = deepcl.NetLearnerFloats( net )
+    learner:setTrainingData( N, images, labels )
+    learner:setTestingData( N, images, labels )
+    learner:setSchedule( 12 )
+    learner:setBatchSize( 128 )
+    learner:learn( 0.002 )
 end
 
 os.exit( luaunit.LuaUnit.run() )

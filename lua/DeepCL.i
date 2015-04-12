@@ -20,6 +20,10 @@
                            // hard to test things...
 #include "NeuralNet.h"
 #include "NetdefToNet.h"
+#include "NetLearner.h"
+#include "NormalizationLayerMaker.h"
+#include "LayerMaker.h"
+//#include "LuaWrappers.h"
 %}
 
 /*%typemap*/
@@ -64,9 +68,14 @@ void GenericLoader_load( std::string trainFilepath, float *images, int *labels, 
 %}
 void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, int startN, int numExamples );
 
+//class LayerMaker2 {
+//public:
+//};
+
 class NeuralNet {
 public:
     NeuralNet( int numPlanes, int imageSize );
+    void addLayer( LayerMaker2 *maker );
     std::string asString();
 };
 
@@ -75,8 +84,29 @@ public:
     static bool createNetFromNetdef( NeuralNet *net, std::string netdef );
 };
 
-/*class NetLearner {*/
-/*};*/
+%rename (NetLearnerBase) NetLearner;
+template<typename T>
+class NetLearner {
+public:
+    NetLearner( NeuralNet *net );
+    void setTrainingData( int Ntrain, float *images, int *labels );
+    void setTestingData( int Ntest, float *images, int *labels );
+    void setSchedule( int numEpochs );
+    void setBatchSize( int batchSize );
+    void learn( float learningRate );
+};
+
+%template(NetLearnerFloats) NetLearner<float>;
+
+// we can probalby just %include these actually, but writing 
+// explicitly means we can pick and choose which methods we want
+// and also tweak things easily
+class NormalizationLayerMaker : public LayerMaker2 {
+public:
+    NormalizationLayerMaker();
+    NormalizationLayerMaker *translate( float _translate );
+    NormalizationLayerMaker *scale( float _scale );
+};
 
 // %apply float *IN { float *values };
 //%apply int *OUT { p_numExamples };
