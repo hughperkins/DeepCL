@@ -9,18 +9,9 @@ mechanism, in place of [build.sh](build.sh)
 
 ## Demo
 
-The following classes are available from lua now:
-* NeuralNet
-* NetLearner
-* GenericLoader
-* NetdefToNet
-* NormalizationLayerMaker
-
-This is enough to load data, create a net, and train it :-)
-
-For a demo, you can have a look at the method `test_basic` in [test_lua.lua](test_lua.lua)
-
-For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_lua.lua](test_lua.lua).
+* For a demo of high-level functions, to create a network and train it, you can have a look at the method `test_basic` in [test_lua.lua](test_lua.lua)
+* For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_lua.lua](test_lua.lua).
+* For a demo of q-learning, you can look at [test_qlearning.lua](test_qlearning.lua)
 
 ## To build
 
@@ -31,4 +22,16 @@ bash build.sh
 ```
 * This will also run the first unit-test, which uses the GenericLoader wrapper to
 load mnist labels and images
+
+## To run
+
+According to which module you want to run, you can run one of:
+```bash
+./run.sh test_lua.lua
+```
+or:
+```bash
+./run.sh test_qlearning.lua
+```
+
 
