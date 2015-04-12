@@ -1,7 +1,16 @@
-PyDeepCL
-========
+DeepCL Python wrappers
+======================
 
 Python wrapper for `DeepCL <https://github.com/hughperkins/DeepCL>`__
+
+To install from pip
+===================
+
+.. code:: bash
+
+    pip install DeepCL 
+
+-  related pypi page: https://pypi.python.org/pypi/DeepCL
 
 How to use
 ==========
@@ -23,47 +32,25 @@ For examples of using lower-level entrypoints, see
 For example of using q-learning, see
 `test\_qlearning.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py>`__.
 
-Notes on how the wrapper works
-==============================
-
--  `cDeepCL.pxd <https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd>`__
-   contains the definitions of the underlying DeepCL c++ libraries
-   classes
--  `PyDeepCL.pyx <https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx>`__
-   contains Cython wrapper classes around the underlying c++ classes
--  `setup.py <https://github.com/hughperkins/DeepCL/blob/master/python/setup.py>`__
-   is a setup file for compiling the ``PyDeepCL.pyx`` Cython file
-
-To install from pip
-===================
-
-.. code:: bash
-
-    pip install DeepCL 
-
--  related pypi page: https://pypi.python.org/pypi/DeepCL
-
-To build directly
-=================
+To build from source
+====================
 
 Pre-requisites:
 ---------------
 
-Compilers
-~~~~~~~~~
-
 -  on Windows:
--  Python 2.7 build: need `Visual Studio 2008 for Python
-   2.7 <http://www.microsoft.com/en-us/download/details.aspx?id=44266>`__
-   from Microsoft
--  Python 3.4 build: need Visual Studio 2010, eg `Visual C++ 2010
-   Express <https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4>`__
+-  Python 2.7 or Python 3.4
+-  A compiler:
 
-Python packages
-~~~~~~~~~~~~~~~
+   -  Python 2.7 build: need `Visual Studio 2008 for Python
+      2.7 <http://www.microsoft.com/en-us/download/details.aspx?id=44266>`__
+      from Microsoft
+   -  Python 3.4 build: need Visual Studio 2010, eg `Visual C++ 2010
+      Express <https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4>`__
 
--  Need the following python packages installed, eg via ``pip install``:
--  cython
+-  on linux:
+-  Python 2.7 or Python 3.4
+-  g++, supporting c++0x, eg 4.4 or higher
 
 To build:
 ---------
@@ -73,21 +60,58 @@ To build:
     cd python
     python setup.py build_ext -i
 
-Considerations for Python wrapper developers
-============================================
+Then, you can run from this directory, by making sure to add it to the
+path, eg:
 
--  By default, cython disables ctrl-c, so need to handle this ourselves
-   somehow, eg see ``NetLearner.learn`` for an example
--  To handle ctrl-c, we need to use ``nogil``, which means we cant use
-   the ``except +`` syntax, I think, hence need to handle this ourselves
-   too :-) see again \`Netlearner.learn for an example
+::
+
+    PYTHONPATH=. python test_lowlevel.py /my/mnist/data/dir 
+
+To install:
+-----------
+
+.. code:: bash
+
+    cd python
+    python setup.py install
+
+Notes on how the wrapper works
+------------------------------
+
+-  `cDeepCL.pxd <https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd>`__
+   contains the definitions of the underlying DeepCL c++ libraries
+   classes
+-  `PyDeepCL.pyx <https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx>`__
+   contains Cython wrapper classes around the underlying c++ classes
+-  `setup.py <https://github.com/hughperkins/DeepCL/blob/master/python/setup.py>`__
+   is a setup file for compiling the ``PyDeepCL.pyx`` Cython file
 
 to run unit-tests
 -----------------
 
-(Draft) From this directory:
+From the python directory:
 
 .. code:: bash
 
     nosetests -sv
+
+Development builds
+------------------
+
+-  If you want to modify the sourcecode, you'll need to re-run cython,
+   so you'll need cython:
+
+   ::
+
+       pip install cython
+
+-  If you want to update this readme, you might want to re-generate the
+   README.rst, so you'll need pypandoc:
+
+   ::
+
+       pip install pypandoc
+
+-  (note that pypandoc depends on pandoc)
+
 
