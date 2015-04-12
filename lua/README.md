@@ -5,7 +5,7 @@
 These are at the POC stage at the moment.  They're strictly Ubuntu 14.04 only at the moment.
 There is no build method for any other environment. Actually, they should probably
 work and build on other environments, but you'll need to supply your own build 
-mechanism, in place of `build.sh`
+mechanism, in place of [build.sh](build.sh)
 
 ## Demo
 
