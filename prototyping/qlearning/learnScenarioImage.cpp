@@ -17,7 +17,7 @@ using namespace std;
 int main( int argc, char *argv[] ) {
 //    ScenarioImage scenario;
 
-    ScenarioImage *scenario = new ScenarioImage( 7, true);
+    ScenarioImage *scenario = new ScenarioImage( 5, true);
 
     NeuralNet *net = new NeuralNet();
 

@@ -35,6 +35,8 @@ public:
                         // network design
 
     QLearner( Scenario *scenario, NeuralNet *net );
+    // do one frame:
+    int step( float lastReward, bool wasReset, float *perception );
     void run();  // main entry point
     virtual ~QLearner();
 
@@ -50,7 +52,10 @@ protected:
     int planes;
     int numActions;
 
-    float *perception;
+  //  float *perception;
+    float *lastPerception;
+    int game;
+    int lastAction;
 
     MT19937 myrand;
 

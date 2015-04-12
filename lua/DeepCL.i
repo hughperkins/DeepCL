@@ -25,7 +25,11 @@
 #include "NormalizationLayerMaker.h"
 #include "LayerMaker.h"
 #include "InputLayerMaker.h"
+#include "LuaWrappers.h"
+#include "QLearner2.h"
 %}
+
+%include "LuaWrappers.h"
 
 class GenericLoader {
 public:
@@ -67,6 +71,7 @@ public:
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);
     int calcNumRight( int const *labels );
+    float *getResults();
     std::string asString();
 };
 
@@ -168,6 +173,19 @@ public:
                                   // wrappers
 %array_class(unsigned char, unsignedCharArray);
 %array_class(int, intArray);
+
+class QLearner2 {
+public:
+    QLearner2( NeuralNet *net, int numActions, int planes, int size );
+    //QLearner2 *setPlanes( int planes );
+    //QLearner2 *setSize( int size );
+    //QLearner2 *setNumActions( int numActions );
+    int step(double lastReward, bool wasReset, float *perception);
+    void setLambda( float lambda );
+    void setMaxSamples( int maxSamples );
+    void setEpsilon( float epsilon );
+    void setLearningRate( float learningRate );
+};
 
 /*%inline %{
     void sliceArray( float *array, float *slice, int offset ) {

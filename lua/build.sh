@@ -5,19 +5,30 @@
 # - Ubuntu 14.04 linux
 # - libDeepCL.so should be built into ../build
 # - 4-core machine (hence  '-j 4', but you can modify this of course)
-# - luajit built source at ~/lua (eg via a symlink is ok)
+# - luajit should be in the PATH (eg via `sudo apt-get install luajit`)
+# - should have `sudo apt-get install liblua5.1.0-dev`
+# - cog.py should be in the PATH (eg create virtualenv, then
+#   `pip install cogapp`)
 # - swig is in the PATH (installed via `sudo apt-get install swig`)
 # - mnist data directory is at ../data/mnist (eg, via symlink)
 
-#alias luajit='~/lua/src/luajit' # could also add to PATH of course
-                            # but this way keeps PATH clean
-# (cd ../build; make -j 4)  # this builds the .so's into ../build
-echo running swig:
-swig -c++ -lua -I../src -I$HOME/lua/src DeepCL.i || exit 1
+if [[ x${NO_BUILD} == x ]]; then {
+    (cd ../build; make -j 4)  # this builds the .so's into ../build
+} fi
+
+echo running cog...
+cog.py -r --verbosity=1 LuaWrappers.h LuaWrappers.lua || exit 1
+
+echo running swig...
+swig -c++ -lua -I../src -I/usr/include/lua5.1/ DeepCL.i || exit 1
+
 # should migrate g++ call to CMake sooner or later
-echo running g++:
-g++ -shared -I../src -I../OpenCLHelper -std=c++0x -I$HOME/lua/src -o luaDeepCL.so -fPIC DeepCL_wrap.cxx -L../build -lDeepCL || exit 1
-#alias
-echo running luajit:
-LD_LIBRARY_PATH=.:../build ~/lua/src/luajit test_lua.lua $1 $2 || exit 1
+echo running g++...
+g++ -g -shared -I../src -I../OpenCLHelper -I../qlearning -std=c++0x -I/usr/include/lua5.1/ -o luaDeepCL.so -fPIC DeepCL_wrap.cxx -L../build -lDeepCL || exit 1
+
+echo 'build finished successfully'
+
+# echo running luajit:
+# LD_LIBRARY_PATH=.:../build luajit test_lua.lua $1 $2 || exit 1
+
 

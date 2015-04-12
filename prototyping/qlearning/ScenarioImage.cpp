@@ -24,6 +24,8 @@ ScenarioImage::ScenarioImage( int size, bool appleMoves ) :
     posY = 1;
     appleX = 2;
     appleY = 2;
+    game = 0;
+    numMoves = 0;
 //    appleMoves = true; // does apple move when reset?
 
     reset();
@@ -91,6 +93,7 @@ VIRTUAL int ScenarioImage::getNumActions() {
     return 4;
 }
 VIRTUAL float ScenarioImage::act( int index ) { // returns reward
+    numMoves++;
     int dx = 0;
     int dy = 0;
     switch( index ) {
@@ -143,8 +146,11 @@ VIRTUAL int ScenarioImage::getWorldSize() {
     return size;
 }
 VIRTUAL void ScenarioImage::reset() {
-    this->print();
-    this->printQRepresentation();
+    if( net != 0 ) {
+        this->print();
+        this->printQRepresentation();
+        cout << "game: " << game << " moves: " << numMoves << endl;
+    }
     if( appleMoves ) {
         appleX = myrand() % size;
         appleY = myrand() % size;
@@ -158,5 +164,7 @@ VIRTUAL void ScenarioImage::reset() {
         posY = myrand() % size;
         sampledOnce = true;
     }
+    game++;
+    numMoves = 0;
 }
 

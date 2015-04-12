@@ -1873,19 +1873,20 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_NeuralNet swig_types[8]
 #define SWIGTYPE_p_NormalizationLayerMaker swig_types[9]
 #define SWIGTYPE_p_PoolingMaker swig_types[10]
-#define SWIGTYPE_p_SoftMaxMaker swig_types[11]
-#define SWIGTYPE_p_SquareLossMaker swig_types[12]
-#define SWIGTYPE_p_float swig_types[13]
-#define SWIGTYPE_p_floatArray swig_types[14]
-#define SWIGTYPE_p_floatSlice swig_types[15]
-#define SWIGTYPE_p_int swig_types[16]
-#define SWIGTYPE_p_intArray swig_types[17]
-#define SWIGTYPE_p_intSlice swig_types[18]
-#define SWIGTYPE_p_std__string swig_types[19]
-#define SWIGTYPE_p_unsignedCharArray swig_types[20]
-#define SWIGTYPE_p_unsigned_char swig_types[21]
-static swig_type_info *swig_types[23];
-static swig_module_info swig_module = {swig_types, 22, 0, 0, 0, 0};
+#define SWIGTYPE_p_QLearner2 swig_types[11]
+#define SWIGTYPE_p_SoftMaxMaker swig_types[12]
+#define SWIGTYPE_p_SquareLossMaker swig_types[13]
+#define SWIGTYPE_p_float swig_types[14]
+#define SWIGTYPE_p_floatArray swig_types[15]
+#define SWIGTYPE_p_floatSlice swig_types[16]
+#define SWIGTYPE_p_int swig_types[17]
+#define SWIGTYPE_p_intArray swig_types[18]
+#define SWIGTYPE_p_intSlice swig_types[19]
+#define SWIGTYPE_p_std__string swig_types[20]
+#define SWIGTYPE_p_unsignedCharArray swig_types[21]
+#define SWIGTYPE_p_unsigned_char swig_types[22]
+static swig_type_info *swig_types[24];
+static swig_module_info swig_module = {swig_types, 23, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2078,6 +2079,8 @@ SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
 #include "NormalizationLayerMaker.h"
 #include "LayerMaker.h"
 #include "InputLayerMaker.h"
+#include "LuaWrappers.h"
+#include "QLearner2.h"
 
 
 void GenericLoader_load( std::string trainFilepath, float *images, int *labels, int startN, int numExamples ) {
@@ -2883,6 +2886,30 @@ fail:
 }
 
 
+static int _wrap_NeuralNet_getResults(lua_State* L) {
+  int SWIG_arg = 0;
+  NeuralNet *arg1 = (NeuralNet *) 0 ;
+  float *result = 0 ;
+  
+  SWIG_check_num_args("NeuralNet::getResults",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResults",1,"NeuralNet *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("NeuralNet_getResults",1,SWIGTYPE_p_NeuralNet);
+  }
+  
+  result = (float *)(arg1)->getResults();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_NeuralNet_asString(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
@@ -2918,6 +2945,7 @@ static swig_lua_method swig_NeuralNet_methods[] = {
     {"backPropFromLabels", _wrap_NeuralNet_backPropFromLabels}, 
     {"backProp", _wrap_NeuralNet_backProp}, 
     {"calcNumRight", _wrap_NeuralNet_calcNumRight}, 
+    {"getResults", _wrap_NeuralNet_getResults}, 
     {"asString", _wrap_NeuralNet_asString}, 
     {0,0}
 };
@@ -4794,6 +4822,208 @@ static swig_lua_class *swig_intArray_bases[] = {0};
 static const char *swig_intArray_base_names[] = {0};
 static swig_lua_class _wrap_class_intArray = { "intArray", &SWIGTYPE_p_intArray,_wrap_new_intArray, swig_delete_intArray, swig_intArray_methods, swig_intArray_attributes, { "intArray", swig_intArray_cls_methods, swig_intArray_cls_attributes, swig_intArray_cls_constants }, swig_intArray_bases, swig_intArray_base_names };
 
+static int _wrap_new_QLearner2(lua_State* L) {
+  int SWIG_arg = 0;
+  NeuralNet *arg1 = (NeuralNet *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  QLearner2 *result = 0 ;
+  
+  SWIG_check_num_args("QLearner2::QLearner2",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::QLearner2",1,"NeuralNet *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::QLearner2",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("QLearner2::QLearner2",3,"int");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("QLearner2::QLearner2",4,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("new_QLearner2",1,SWIGTYPE_p_NeuralNet);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  arg4 = (int)lua_tonumber(L, 4);
+  result = (QLearner2 *)new QLearner2(arg1,arg2,arg3,arg4);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_QLearner2,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_QLearner2_step(lua_State* L) {
+  int SWIG_arg = 0;
+  QLearner2 *arg1 = (QLearner2 *) 0 ;
+  double arg2 ;
+  bool arg3 ;
+  float *arg4 = (float *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("QLearner2::step",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::step",1,"QLearner2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::step",2,"double");
+  if(!lua_isboolean(L,3)) SWIG_fail_arg("QLearner2::step",3,"bool");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("QLearner2::step",4,"float *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_QLearner2,0))){
+    SWIG_fail_ptr("QLearner2_step",1,SWIGTYPE_p_QLearner2);
+  }
+  
+  arg2 = (double)lua_tonumber(L, 2);
+  arg3 = (lua_toboolean(L, 3)!=0);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("QLearner2_step",4,SWIGTYPE_p_float);
+  }
+  
+  result = (int)(arg1)->step(arg2,arg3,arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_QLearner2_setLambda(lua_State* L) {
+  int SWIG_arg = 0;
+  QLearner2 *arg1 = (QLearner2 *) 0 ;
+  float arg2 ;
+  
+  SWIG_check_num_args("QLearner2::setLambda",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::setLambda",1,"QLearner2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::setLambda",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_QLearner2,0))){
+    SWIG_fail_ptr("QLearner2_setLambda",1,SWIGTYPE_p_QLearner2);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  (arg1)->setLambda(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_QLearner2_setMaxSamples(lua_State* L) {
+  int SWIG_arg = 0;
+  QLearner2 *arg1 = (QLearner2 *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("QLearner2::setMaxSamples",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::setMaxSamples",1,"QLearner2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::setMaxSamples",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_QLearner2,0))){
+    SWIG_fail_ptr("QLearner2_setMaxSamples",1,SWIGTYPE_p_QLearner2);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  (arg1)->setMaxSamples(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_QLearner2_setEpsilon(lua_State* L) {
+  int SWIG_arg = 0;
+  QLearner2 *arg1 = (QLearner2 *) 0 ;
+  float arg2 ;
+  
+  SWIG_check_num_args("QLearner2::setEpsilon",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::setEpsilon",1,"QLearner2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::setEpsilon",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_QLearner2,0))){
+    SWIG_fail_ptr("QLearner2_setEpsilon",1,SWIGTYPE_p_QLearner2);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  (arg1)->setEpsilon(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_QLearner2_setLearningRate(lua_State* L) {
+  int SWIG_arg = 0;
+  QLearner2 *arg1 = (QLearner2 *) 0 ;
+  float arg2 ;
+  
+  SWIG_check_num_args("QLearner2::setLearningRate",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::setLearningRate",1,"QLearner2 *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::setLearningRate",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_QLearner2,0))){
+    SWIG_fail_ptr("QLearner2_setLearningRate",1,SWIGTYPE_p_QLearner2);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  (arg1)->setLearningRate(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_QLearner2(void *obj) {
+QLearner2 *arg1 = (QLearner2 *) obj;
+delete arg1;
+}
+static swig_lua_method swig_QLearner2_methods[] = {
+    {"step", _wrap_QLearner2_step}, 
+    {"setLambda", _wrap_QLearner2_setLambda}, 
+    {"setMaxSamples", _wrap_QLearner2_setMaxSamples}, 
+    {"setEpsilon", _wrap_QLearner2_setEpsilon}, 
+    {"setLearningRate", _wrap_QLearner2_setLearningRate}, 
+    {0,0}
+};
+static swig_lua_attribute swig_QLearner2_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_attribute swig_QLearner2_cls_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_method swig_QLearner2_cls_methods[] = {
+    {0,0}
+};
+static swig_lua_const_info swig_QLearner2_cls_constants[] = {
+    {0,0,0,0,0,0}
+};
+static swig_lua_class *swig_QLearner2_bases[] = {0};
+static const char *swig_QLearner2_base_names[] = {0};
+static swig_lua_class _wrap_class_QLearner2 = { "QLearner2", &SWIGTYPE_p_QLearner2,_wrap_new_QLearner2, swig_delete_QLearner2, swig_QLearner2_methods, swig_QLearner2_attributes, { "QLearner2", swig_QLearner2_cls_methods, swig_QLearner2_cls_attributes, swig_QLearner2_cls_constants }, swig_QLearner2_bases, swig_QLearner2_base_names };
+
 static int _wrap_new_floatSlice(lua_State* L) {
   int SWIG_arg = 0;
   float *arg1 = (float *) 0 ;
@@ -5018,6 +5248,7 @@ static swig_type_info _swigt__p_NetdefToNet = {"_p_NetdefToNet", "NetdefToNet *"
 static swig_type_info _swigt__p_NeuralNet = {"_p_NeuralNet", "NeuralNet *", 0, 0, (void*)&_wrap_class_NeuralNet, 0};
 static swig_type_info _swigt__p_NormalizationLayerMaker = {"_p_NormalizationLayerMaker", "NormalizationLayerMaker *", 0, 0, (void*)&_wrap_class_NormalizationLayerMaker, 0};
 static swig_type_info _swigt__p_PoolingMaker = {"_p_PoolingMaker", "PoolingMaker *", 0, 0, (void*)&_wrap_class_PoolingMaker, 0};
+static swig_type_info _swigt__p_QLearner2 = {"_p_QLearner2", "QLearner2 *", 0, 0, (void*)&_wrap_class_QLearner2, 0};
 static swig_type_info _swigt__p_SoftMaxMaker = {"_p_SoftMaxMaker", "SoftMaxMaker *", 0, 0, (void*)&_wrap_class_SoftMaxMaker, 0};
 static swig_type_info _swigt__p_SquareLossMaker = {"_p_SquareLossMaker", "SquareLossMaker *", 0, 0, (void*)&_wrap_class_SquareLossMaker, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
@@ -5042,6 +5273,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_NeuralNet,
   &_swigt__p_NormalizationLayerMaker,
   &_swigt__p_PoolingMaker,
+  &_swigt__p_QLearner2,
   &_swigt__p_SoftMaxMaker,
   &_swigt__p_SquareLossMaker,
   &_swigt__p_float,
@@ -5066,6 +5298,7 @@ static swig_cast_info _swigc__p_NetdefToNet[] = {  {&_swigt__p_NetdefToNet, 0, 0
 static swig_cast_info _swigc__p_NeuralNet[] = {  {&_swigt__p_NeuralNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NormalizationLayerMaker[] = {  {&_swigt__p_NormalizationLayerMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_PoolingMaker[] = {  {&_swigt__p_PoolingMaker, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_QLearner2[] = {  {&_swigt__p_QLearner2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SoftMaxMaker[] = {  {&_swigt__p_SoftMaxMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SquareLossMaker[] = {  {&_swigt__p_SquareLossMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},  {&_swigt__p_floatArray, _p_floatArrayTo_p_float, 0, 0},  {&_swigt__p_floatSlice, _p_floatSliceTo_p_float, 0, 0},{0, 0, 0, 0}};
@@ -5090,6 +5323,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_NeuralNet,
   _swigc__p_NormalizationLayerMaker,
   _swigc__p_PoolingMaker,
+  _swigc__p_QLearner2,
   _swigc__p_SoftMaxMaker,
   _swigc__p_SquareLossMaker,
   _swigc__p_float,

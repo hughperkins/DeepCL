@@ -33,6 +33,8 @@ public:
     int posY;
     int appleX;
     int appleY;
+    int game;
+    int numMoves;
 
     int width;
     int height;

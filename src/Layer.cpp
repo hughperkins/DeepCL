@@ -18,7 +18,8 @@ Layer::Layer( Layer *previousLayer, LayerMaker2 *maker ) :
 }
 VIRTUAL Layer::~Layer() {
     if( maker != 0 ) {
-        delete maker;
+        //delete maker; // this segfaults sometimes, (probably because it already
+                        // self-deleted)
     }
 }
 VIRTUAL void Layer::setTraining( bool training ) {
