@@ -8,6 +8,7 @@ Global Contents
 - [Command line usage](doc/Commandline.md)
 - [Neural Net API](doc/NeuralNetAPI.md)
 - [Python wrapper](python/README.md)
+- [Lua wrappers](lua/README.md)
 - [Q-learning](doc/QLearning.md)
 - [To build](doc/Build.md)
 - [Testing](doc/Testing.md)
@@ -38,8 +39,9 @@ OpenCL library to train deep convolutional networks
 - C++
 - OpenCL
 - Deep convolutional
-- (New!) includes Q-learning module (draft)
-- (New!) Python wrappers available (draft too :-) )
+- includes Q-learning module
+- Python wrappers available
+- (New!) Lua wrappers available (poc)
 
 Functionalities:
 * convolutional layers

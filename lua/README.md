@@ -7,6 +7,19 @@ There is no build method for any other environment. Actually, they should probab
 work and build on other environments, but you'll need to supply your own build 
 mechanism, in place of `build.sh`
 
+## Demo
+
+The following classes are available from lua now:
+* NeuralNet
+* NetLearner
+* GenericLoader
+* NetdefToNet
+* NormalizationLayerMaker
+
+This is enough to load data, create a net, and train it :-)
+
+For a demo, you can have a look at the method `test_basic` in [test_lua.lua](test_lua.lua)
+
 ## To build
 
 * Firstly read the assumptions and pre-requisites in [build.sh](build.sh)
