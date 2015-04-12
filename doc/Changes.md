@@ -12,6 +12,7 @@
       * [Q-learning](http://www.dtic.mil/dtic/tr/fulltext/u2/a261434.pdf) (for Atari)
       * probably more generalized network, maybe even more general than a DAG even, for LTSM
   * I'm also running kgs-go dataset in the background, but at 2 days per epoch (32 million records, and 12 layers...), I'm mostly just sitting and waiting :-)
+  * Maybe write the weights to file more often than once an epoch, so each time my machine goes down, after 1 day and 23 hours, I dont lose 2 days of learning :-P
 
 ### Plausible, medium-term (pull requests welcome)
 
