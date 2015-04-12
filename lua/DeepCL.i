@@ -8,6 +8,7 @@
 // we might be able to reuse this for python wrappers too
 // directors in swig are *much* easier than in Cython
 // well... there are no directors in Cython, have to code them by hand :-P
+// hmmm, correction: directors arent supported in swig for lua :-P
 
 %module(directors="1") luaDeepCL
 
