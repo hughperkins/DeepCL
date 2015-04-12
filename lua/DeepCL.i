@@ -23,32 +23,12 @@
 #include "NetLearner.h"
 #include "NormalizationLayerMaker.h"
 #include "LayerMaker.h"
-//#include "LuaWrappers.h"
+#include "InputLayerMaker.h"
 %}
-
-/*%typemap*/
-
-/*// deepcl.GenericLoader_getDimensions*/
-/*%rename(GenericLoader_getDimensions) mywrap_GenericLoader_getDimensions;*/
-/*%inline %{*/
-/*void mywrap_GenericLoader_getDimensions( std::string filepath, int *N_out, int *planes_out, int *size_out ) {*/
-/*    std::cout << "wrap_GenericLoader_getDimensions" << std::endl;*/
-/*/*    int N, planes, size;*/
-/*    GenericLoader::getDimensions( filepath, N_out, planes_out, size_out );*/
-/*    */
-/*}*/
-/*%}*/
-/*//%rename(_GenericLoader_getDimensions) GenericLoader_getDimensions;*/
-/*%ignore GenericLoader::getDimensions;*/
-/*#define DeepCL_EXPORT*/
-/*%include "GenericLoader.h"*/
-
-/*%typemap*/
 
 class GenericLoader {
 public:
     static void getDimensions( std::string filepath, int *OUTPUT, int *OUTPUT, int *OUTPUT );
-/*    static void load( std::string trainFilepath, unsigned char *INOUT, int *INOUT, int startN, int numExamples );*/
 };
 
 %inline %{
@@ -68,14 +48,24 @@ void GenericLoader_load( std::string trainFilepath, float *images, int *labels, 
 %}
 void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, int startN, int numExamples );
 
+//%ignore LayerMaker2;
 //class LayerMaker2 {
 //public:
 //};
 
+// class LayerMaker2;
+
 class NeuralNet {
 public:
+    NeuralNet();
     NeuralNet( int numPlanes, int imageSize );
     void addLayer( LayerMaker2 *maker );
+    void setBatchSize( int batchSize );
+    void propagate( float const*images);
+    void propagate( unsigned char const*images);
+    void backPropFromLabels( float learningRate, int const *labels);
+    void backProp( float learningRate, float const *expectedResults);
+    int calcNumRight( int const *labels );
     std::string asString();
 };
 
@@ -95,8 +85,8 @@ public:
     void setBatchSize( int batchSize );
     void learn( float learningRate );
 };
-
-%template(NetLearnerFloats) NetLearner<float>;
+/*%rename(NetLearner) NetLearnerFloats;*/
+%template(NetLearner) NetLearner<float>;
 
 // we can probalby just %include these actually, but writing 
 // explicitly means we can pick and choose which methods we want
@@ -108,10 +98,66 @@ public:
     NormalizationLayerMaker *scale( float _scale );
 };
 
-// %apply float *IN { float *values };
-//%apply int *OUT { p_numExamples };
-//int *p_numExamples, int *p_numPlanes, int *p_imageSize
-//%typemap 
+%rename (InputLayerMakerBase) InputLayerMaker;
+template<typename T>
+class InputLayerMaker : public LayerMaker2 {
+public:
+    InputLayerMaker();
+    InputLayerMaker *numPlanes( int _numPlanes );
+    InputLayerMaker *imageSize( int _imageSize );
+};
+%template(InputLayerMaker) InputLayerMaker<float>;
+
+class ConvolutionalMaker : public LayerMaker2 {
+public:
+    ConvolutionalMaker();
+    ConvolutionalMaker *numFilters(int numFilters);
+    ConvolutionalMaker *filterSize(int filterSize);
+    ConvolutionalMaker *padZeros();
+    ConvolutionalMaker *padZeros( bool value );
+    ConvolutionalMaker *biased();
+    ConvolutionalMaker *biased(int _biased);
+    ConvolutionalMaker *tanh();
+    ConvolutionalMaker *relu();
+    ConvolutionalMaker *sigmoid();
+    ConvolutionalMaker *linear();
+};
+
+class FullyConnectedMaker : public LayerMaker2 {
+public:
+    FullyConnectedMaker();
+    FullyConnectedMaker *numPlanes(int numPlanes);
+    FullyConnectedMaker *imageSize(int imageSize);
+    FullyConnectedMaker *biased();
+    FullyConnectedMaker *biased(int _biased);
+    FullyConnectedMaker *linear();
+    FullyConnectedMaker *tanh();
+    FullyConnectedMaker *sigmoid();
+    FullyConnectedMaker *relu();
+};
+
+class PoolingMaker : public LayerMaker2 {
+public:
+    PoolingMaker();
+    PoolingMaker *poolingSize( int _poolingSize );
+};
+
+class SoftMaxMaker : public LayerMaker2 {
+public:
+    SoftMaxMaker();
+    SoftMaxMaker *perColumn();
+    SoftMaxMaker *perPlane();
+};
+
+class SquareLossMaker : public LayerMaker2 {
+public:
+    SquareLossMaker();
+};
+
+class CrossEntropyLossMaker : public LayerMaker2 {
+public:
+    CrossEntropyLossMaker();
+};
 
 %array_class(float, floatArray);  // this creates a brand-new lua type called 
                                   // `floatArray`, which represents a `float *`
@@ -121,4 +167,45 @@ public:
                                   // wrappers
 %array_class(unsigned char, unsignedCharArray);
 %array_class(int, intArray);
+
+/*%inline %{
+    void sliceArray( float *array, float *slice, int offset ) {
+        slice = array + offset;
+    }
+%}
+
+void sliceArray( float *array, float *OUTPUT, int offset );
+*/
+
+%define %array_slice(TYPE,NAME) // copy-pasted-hacked from carrays.i
+                  // this will wrap a pointer, but not own it, ie shouldnt delete it
+                  // we can create it from a carray, and an offset
+         // for now, no accessors, just black box
+%{
+typedef TYPE NAME;
+%}
+typedef struct {
+  /* Put language specific enhancements here */
+} NAME;
+
+%extend NAME {
+
+NAME(TYPE *base, int offset) {
+  return base + offset;
+}
+~NAME() {
+}
+
+TYPE * cast() {
+  return self;
+}
+
+};
+
+%types(NAME = TYPE);
+
+%enddef
+
+%array_slice( float, floatSlice );
+%array_slice( int, intSlice );
 

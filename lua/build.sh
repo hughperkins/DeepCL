@@ -19,5 +19,5 @@ echo running g++:
 g++ -shared -I../src -I../OpenCLHelper -std=c++0x -I$HOME/lua/src -o luaDeepCL.so -fPIC DeepCL_wrap.cxx -L../build -lDeepCL || exit 1
 #alias
 echo running luajit:
-LD_LIBRARY_PATH=.:../build ~/lua/src/luajit test_lua.lua || exit 1
+LD_LIBRARY_PATH=.:../build ~/lua/src/luajit test_lua.lua $1 $2 || exit 1
 
