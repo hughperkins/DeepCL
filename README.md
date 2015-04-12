@@ -80,7 +80,7 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 ## Python
 
-* For python, please use [pip](https://pypi.python.org/pypi/DeepCL/3.4.1)
+* For python, please use [pip](https://pypi.python.org/pypi/DeepCL/3.5.0)
 
 ## Commandline tools, and c++ libraries
 
