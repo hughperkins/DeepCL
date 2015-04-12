@@ -2097,6 +2097,13 @@ void GenericLoader_load( std::string trainFilepath, float *images, int *labels, 
     delete[] ucarray;
 }
 
+SWIGINTERN void NeuralNet_getResults__SWIG_1(NeuralNet *self,float *resultsParam){
+            int resultsSize = self->getResultsSize();
+            float const*results = self->getResults();
+            for( int i = 0; i < resultsSize; i++ ) {
+                resultsParam[i] = results[i];
+            }
+        }
 
 typedef float floatArray;
 
@@ -2163,8 +2170,11 @@ SWIGINTERN intArray *intArray_frompointer(int *t){
 
 typedef float floatSlice;
 
-SWIGINTERN floatSlice *new_floatSlice(float *base,int offset){
+SWIGINTERN floatSlice *new_floatSlice__SWIG_0(float *base,int offset){
   return base + offset;
+}
+SWIGINTERN floatSlice *new_floatSlice__SWIG_1(float *base){ // will try using this for `float *getResults()`
+  return base;
 }
 SWIGINTERN void delete_floatSlice(floatSlice *self){
 }
@@ -2174,8 +2184,11 @@ SWIGINTERN float *floatSlice_cast(floatSlice *self){
 
 typedef int intSlice;
 
-SWIGINTERN intSlice *new_intSlice(int *base,int offset){
+SWIGINTERN intSlice *new_intSlice__SWIG_0(int *base,int offset){
   return base + offset;
+}
+SWIGINTERN intSlice *new_intSlice__SWIG_1(int *base){ // will try using this for `float *getResults()`
+  return base;
 }
 SWIGINTERN void delete_intSlice(intSlice *self){
 }
@@ -2886,20 +2899,44 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_getResults(lua_State* L) {
+static int _wrap_NeuralNet_getResults__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float *result = 0 ;
   
   SWIG_check_num_args("NeuralNet::getResults",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResults",1,"NeuralNet *");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResults",1,"NeuralNet const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
     SWIG_fail_ptr("NeuralNet_getResults",1,SWIGTYPE_p_NeuralNet);
   }
   
-  result = (float *)(arg1)->getResults();
+  result = (float *)((NeuralNet const *)arg1)->getResults();
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_NeuralNet_getResultsSize(lua_State* L) {
+  int SWIG_arg = 0;
+  NeuralNet *arg1 = (NeuralNet *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("NeuralNet::getResultsSize",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResultsSize",1,"NeuralNet const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("NeuralNet_getResultsSize",1,SWIGTYPE_p_NeuralNet);
+  }
+  
+  result = (int)((NeuralNet const *)arg1)->getResultsSize();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2934,6 +2971,90 @@ fail:
 }
 
 
+static int _wrap_NeuralNet_getResults__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  NeuralNet *arg1 = (NeuralNet *) 0 ;
+  float *arg2 = (float *) 0 ;
+  
+  SWIG_check_num_args("NeuralNet::getResults",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResults",1,"NeuralNet *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("NeuralNet::getResults",2,"float *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("NeuralNet_getResults",1,SWIGTYPE_p_NeuralNet);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("NeuralNet_getResults",2,SWIGTYPE_p_float);
+  }
+  
+  NeuralNet_getResults__SWIG_1(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_NeuralNet_getResults(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_NeuralNet, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_NeuralNet_getResults__SWIG_0(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_NeuralNet, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        void *ptr;
+        if (SWIG_isptrtype(L,argv[1])==0 || SWIG_ConvertPtr(L,argv[1], (void **) &ptr, SWIGTYPE_p_float, 0)) {
+          _v = 0;
+        } else {
+          _v = 1;
+        }
+      }
+      if (_v) {
+        return _wrap_NeuralNet_getResults__SWIG_1(L);
+      }
+    }
+  }
+  
+  SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'NeuralNet_getResults'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    NeuralNet::getResults() const\n"
+    "    NeuralNet::getResults(float *)\n");
+  lua_error(L);return 0;
+}
+
+
 static void swig_delete_NeuralNet(void *obj) {
 NeuralNet *arg1 = (NeuralNet *) obj;
 delete arg1;
@@ -2945,8 +3066,9 @@ static swig_lua_method swig_NeuralNet_methods[] = {
     {"backPropFromLabels", _wrap_NeuralNet_backPropFromLabels}, 
     {"backProp", _wrap_NeuralNet_backProp}, 
     {"calcNumRight", _wrap_NeuralNet_calcNumRight}, 
-    {"getResults", _wrap_NeuralNet_getResults}, 
+    {"getResultsSize", _wrap_NeuralNet_getResultsSize}, 
     {"asString", _wrap_NeuralNet_asString}, 
+    {"getResults", _wrap_NeuralNet_getResults}, 
     {0,0}
 };
 static swig_lua_attribute swig_NeuralNet_attributes[] = {
@@ -5024,7 +5146,7 @@ static swig_lua_class *swig_QLearner2_bases[] = {0};
 static const char *swig_QLearner2_base_names[] = {0};
 static swig_lua_class _wrap_class_QLearner2 = { "QLearner2", &SWIGTYPE_p_QLearner2,_wrap_new_QLearner2, swig_delete_QLearner2, swig_QLearner2_methods, swig_QLearner2_attributes, { "QLearner2", swig_QLearner2_cls_methods, swig_QLearner2_cls_attributes, swig_QLearner2_cls_constants }, swig_QLearner2_bases, swig_QLearner2_base_names };
 
-static int _wrap_new_floatSlice(lua_State* L) {
+static int _wrap_new_floatSlice__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   float *arg1 = (float *) 0 ;
   int arg2 ;
@@ -5039,7 +5161,7 @@ static int _wrap_new_floatSlice(lua_State* L) {
   }
   
   arg2 = (int)lua_tonumber(L, 2);
-  result = (floatSlice *)new_floatSlice(arg1,arg2);
+  result = (floatSlice *)new_floatSlice__SWIG_0(arg1,arg2);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_floatSlice,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -5048,6 +5170,79 @@ static int _wrap_new_floatSlice(lua_State* L) {
 fail:
   lua_error(L);
   return SWIG_arg;
+}
+
+
+static int _wrap_new_floatSlice__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  float *arg1 = (float *) 0 ;
+  floatSlice *result = 0 ;
+  
+  SWIG_check_num_args("floatSlice::floatSlice",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("floatSlice::floatSlice",1,"float *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("new_floatSlice",1,SWIGTYPE_p_float);
+  }
+  
+  result = (floatSlice *)new_floatSlice__SWIG_1(arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_floatSlice,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_floatSlice(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_float, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_new_floatSlice__SWIG_1(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_float, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_new_floatSlice__SWIG_0(L);
+      }
+    }
+  }
+  
+  SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'new_floatSlice'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    floatSlice::floatSlice(float *,int)\n"
+    "    floatSlice::floatSlice(float *)\n");
+  lua_error(L);return 0;
 }
 
 
@@ -5099,7 +5294,7 @@ static swig_lua_class *swig_floatSlice_bases[] = {0};
 static const char *swig_floatSlice_base_names[] = {0};
 static swig_lua_class _wrap_class_floatSlice = { "floatSlice", &SWIGTYPE_p_floatSlice,_wrap_new_floatSlice, swig_delete_floatSlice, swig_floatSlice_methods, swig_floatSlice_attributes, { "floatSlice", swig_floatSlice_cls_methods, swig_floatSlice_cls_attributes, swig_floatSlice_cls_constants }, swig_floatSlice_bases, swig_floatSlice_base_names };
 
-static int _wrap_new_intSlice(lua_State* L) {
+static int _wrap_new_intSlice__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   int *arg1 = (int *) 0 ;
   int arg2 ;
@@ -5114,7 +5309,7 @@ static int _wrap_new_intSlice(lua_State* L) {
   }
   
   arg2 = (int)lua_tonumber(L, 2);
-  result = (intSlice *)new_intSlice(arg1,arg2);
+  result = (intSlice *)new_intSlice__SWIG_0(arg1,arg2);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_intSlice,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -5123,6 +5318,79 @@ static int _wrap_new_intSlice(lua_State* L) {
 fail:
   lua_error(L);
   return SWIG_arg;
+}
+
+
+static int _wrap_new_intSlice__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  int *arg1 = (int *) 0 ;
+  intSlice *result = 0 ;
+  
+  SWIG_check_num_args("intSlice::intSlice",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("intSlice::intSlice",1,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("new_intSlice",1,SWIGTYPE_p_int);
+  }
+  
+  result = (intSlice *)new_intSlice__SWIG_1(arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_intSlice,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_intSlice(lua_State* L) {
+  int argc;
+  int argv[3]={
+    1,2,3
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 1) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_int, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      return _wrap_new_intSlice__SWIG_1(L);
+    }
+  }
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_int, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_new_intSlice__SWIG_0(L);
+      }
+    }
+  }
+  
+  SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'new_intSlice'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    intSlice::intSlice(int *,int)\n"
+    "    intSlice::intSlice(int *)\n");
+  lua_error(L);return 0;
 }
 
 

@@ -27,6 +27,7 @@ function ScenarioImage.new(parent, size, appleMoves)
     self.size = size
     self.appleMoves = appleMoves
     self.finished = false
+    self.numActions = 4
     self.game = 0
     --self:reset()
     return self
@@ -126,7 +127,8 @@ function ScenarioImage.showQ(self, net)
             net:setBatchSize(1)
             net:propagate( netinput )
             netinput[ size * size + y * size + x ] = 0
-            local results = net:getResults()
+            local results = deepcl.floatArray(self.numActions)
+            net:getResults(results)
             for action = 0, 3 do
                 local thisQ = results[action]
                 if action == 0 or thisQ > highestQ then
@@ -151,7 +153,7 @@ function ScenarioImage.getNumMoves(self)
     return self.numMoves
 end
 function ScenarioImage.reset(self)
-    print('ScenarioImage.reset()')
+--    print('ScenarioImage.reset()')
     -- starts a new game / world-instance"
     if self.appleMoves then
         self.appleX = math.random(0, self.size-1)
@@ -160,7 +162,7 @@ function ScenarioImage.reset(self)
         self.appleX = math.floor(self.size / 2)
         self.appleY = math.floor(self.size / 2)
     end
-    print('apple ' .. self.appleX..', '..self.appleY)
+--    print('apple ' .. self.appleX..', '..self.appleY)
     self.finished = false
     local sampledOnce = false
     while not sampledOnce or ( self.posX == self.appleX and self.posY == self.appleY ) do

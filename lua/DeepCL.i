@@ -71,8 +71,21 @@ public:
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);
     int calcNumRight( int const *labels );
-    float *getResults();
+/*    int getResultsSize();*/
+/*    float *getResults();*/
+    float const *getResults() const;
+    virtual int getResultsSize() const;
+    //floatSlice getResults();
     std::string asString();
+    %extend {
+        void getResults( float *resultsParam ) {
+            int resultsSize = $self->getResultsSize();
+            float const*results = $self->getResults();
+            for( int i = 0; i < resultsSize; i++ ) {
+                resultsParam[i] = results[i];
+            }
+        }
+    }
 };
 
 class NetdefToNet {
@@ -211,6 +224,9 @@ typedef struct {
 
 NAME(TYPE *base, int offset) {
   return base + offset;
+}
+NAME(TYPE *base) { // will try using this for `float *getResults()`
+  return base;
 }
 ~NAME() {
 }
