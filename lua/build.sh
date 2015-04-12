@@ -1,23 +1,22 @@
 #!/bin/bash
 
 # this is just for prototyping, so not terribly clean for now
-# Expectations:
+# Assumptions :
 # - Ubuntu 14.04 linux
-# - libDeepCL.so should be built into ../build
+# - libDeepCL.so built into ../build
 # - 4-core machine (hence  '-j 4', but you can modify this of course)
-# - luajit should be in the PATH (eg via `sudo apt-get install luajit`)
-# - should have `sudo apt-get install liblua5.1.0-dev`
-# - cog.py should be in the PATH (eg create virtualenv, then
-#   `pip install cogapp`)
-# - swig is in the PATH (installed via `sudo apt-get install swig`)
+# - following are on the PATH (eg using `sudo apt-get install`):
+#    - luajit
+#    - liblua5.1.0-dev
+#    - swig
 # - mnist data directory is at ../data/mnist (eg, via symlink)
 
 if [[ x${NO_BUILD} == x ]]; then {
     (cd ../build; make -j 4)  # this builds the .so's into ../build
 } fi
 
-echo running cog...
-cog.py -r --verbosity=1 LuaWrappers.h LuaWrappers.lua || exit 1
+# echo running cog...
+# cog.py -r --verbosity=1 LuaWrappers.h LuaWrappers.lua || exit 1
 
 echo running swig...
 swig -c++ -lua -I../src -I/usr/include/lua5.1/ DeepCL.i || exit 1
