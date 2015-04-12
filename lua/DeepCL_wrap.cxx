@@ -1863,15 +1863,17 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_GenericLoader swig_types[0]
-#define SWIGTYPE_p_float swig_types[1]
-#define SWIGTYPE_p_floatArray swig_types[2]
-#define SWIGTYPE_p_int swig_types[3]
-#define SWIGTYPE_p_intArray swig_types[4]
-#define SWIGTYPE_p_std__string swig_types[5]
-#define SWIGTYPE_p_unsignedCharArray swig_types[6]
-#define SWIGTYPE_p_unsigned_char swig_types[7]
-static swig_type_info *swig_types[9];
-static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
+#define SWIGTYPE_p_NetdefToNet swig_types[1]
+#define SWIGTYPE_p_NeuralNet swig_types[2]
+#define SWIGTYPE_p_float swig_types[3]
+#define SWIGTYPE_p_floatArray swig_types[4]
+#define SWIGTYPE_p_int swig_types[5]
+#define SWIGTYPE_p_intArray swig_types[6]
+#define SWIGTYPE_p_std__string swig_types[7]
+#define SWIGTYPE_p_unsignedCharArray swig_types[8]
+#define SWIGTYPE_p_unsigned_char swig_types[9]
+static swig_type_info *swig_types[11];
+static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2058,6 +2060,8 @@ SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
 
 #include "GenericLoader.h" // start with this first, since, if no data, kind of 
                            // hard to test things...
+#include "NeuralNet.h"
+#include "NetdefToNet.h"
 
 
 void GenericLoader_load( std::string trainFilepath, float *images, int *labels, int startN, int numExamples ) {
@@ -2490,6 +2494,145 @@ fail:
   return SWIG_arg;
 }
 
+
+static int _wrap_new_NeuralNet(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  int arg2 ;
+  NeuralNet *result = 0 ;
+  
+  SWIG_check_num_args("NeuralNet::NeuralNet",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("NeuralNet::NeuralNet",1,"int");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("NeuralNet::NeuralNet",2,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (NeuralNet *)new NeuralNet(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_NeuralNet,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_NeuralNet_asString(lua_State* L) {
+  int SWIG_arg = 0;
+  NeuralNet *arg1 = (NeuralNet *) 0 ;
+  std::string result;
+  
+  SWIG_check_num_args("NeuralNet::asString",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::asString",1,"NeuralNet *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("NeuralNet_asString",1,SWIGTYPE_p_NeuralNet);
+  }
+  
+  result = (arg1)->asString();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_NeuralNet(void *obj) {
+NeuralNet *arg1 = (NeuralNet *) obj;
+delete arg1;
+}
+static swig_lua_method swig_NeuralNet_methods[] = {
+    {"asString", _wrap_NeuralNet_asString}, 
+    {0,0}
+};
+static swig_lua_attribute swig_NeuralNet_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_attribute swig_NeuralNet_cls_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_method swig_NeuralNet_cls_methods[] = {
+    {0,0}
+};
+static swig_lua_const_info swig_NeuralNet_cls_constants[] = {
+    {0,0,0,0,0,0}
+};
+static swig_lua_class *swig_NeuralNet_bases[] = {0};
+static const char *swig_NeuralNet_base_names[] = {0};
+static swig_lua_class _wrap_class_NeuralNet = { "NeuralNet", &SWIGTYPE_p_NeuralNet,_wrap_new_NeuralNet, swig_delete_NeuralNet, swig_NeuralNet_methods, swig_NeuralNet_attributes, { "NeuralNet", swig_NeuralNet_cls_methods, swig_NeuralNet_cls_attributes, swig_NeuralNet_cls_constants }, swig_NeuralNet_bases, swig_NeuralNet_base_names };
+
+static int _wrap_NetdefToNet_createNetFromNetdef(lua_State* L) {
+  int SWIG_arg = 0;
+  NeuralNet *arg1 = (NeuralNet *) 0 ;
+  std::string arg2 ;
+  bool result;
+  
+  SWIG_check_num_args("NetdefToNet::createNetFromNetdef",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NetdefToNet::createNetFromNetdef",1,"NeuralNet *");
+  if(!lua_isstring(L,2)) SWIG_fail_arg("NetdefToNet::createNetFromNetdef",2,"std::string");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("NetdefToNet_createNetFromNetdef",1,SWIGTYPE_p_NeuralNet);
+  }
+  
+  (&arg2)->assign(lua_tostring(L,2),lua_rawlen(L,2));
+  result = (bool)NetdefToNet::createNetFromNetdef(arg1,arg2);
+  lua_pushboolean(L,(int)(result!=0)); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_NetdefToNet(lua_State* L) {
+  int SWIG_arg = 0;
+  NetdefToNet *result = 0 ;
+  
+  SWIG_check_num_args("NetdefToNet::NetdefToNet",0,0)
+  result = (NetdefToNet *)new NetdefToNet();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_NetdefToNet,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_NetdefToNet(void *obj) {
+NetdefToNet *arg1 = (NetdefToNet *) obj;
+delete arg1;
+}
+static swig_lua_method swig_NetdefToNet_methods[] = {
+    {0,0}
+};
+static swig_lua_attribute swig_NetdefToNet_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_attribute swig_NetdefToNet_cls_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_method swig_NetdefToNet_cls_methods[] = {
+    {"createNetFromNetdef", _wrap_NetdefToNet_createNetFromNetdef}, 
+    {0,0}
+};
+static swig_lua_const_info swig_NetdefToNet_cls_constants[] = {
+    {0,0,0,0,0,0}
+};
+static swig_lua_class *swig_NetdefToNet_bases[] = {0};
+static const char *swig_NetdefToNet_base_names[] = {0};
+static swig_lua_class _wrap_class_NetdefToNet = { "NetdefToNet", &SWIGTYPE_p_NetdefToNet,_wrap_new_NetdefToNet, swig_delete_NetdefToNet, swig_NetdefToNet_methods, swig_NetdefToNet_attributes, { "NetdefToNet", swig_NetdefToNet_cls_methods, swig_NetdefToNet_cls_attributes, swig_NetdefToNet_cls_constants }, swig_NetdefToNet_bases, swig_NetdefToNet_base_names };
 
 static int _wrap_new_floatArray(lua_State* L) {
   int SWIG_arg = 0;
@@ -2952,6 +3095,7 @@ static swig_lua_class _wrap_class_intArray = { "intArray", &SWIGTYPE_p_intArray,
 static const struct luaL_Reg swig_commands[] = {
     { "GenericLoader_getDimensions", _wrap_GenericLoader_getDimensions},
     { "GenericLoader_load", _wrap_GenericLoader_load},
+    { "NetdefToNet_createNetFromNetdef", _wrap_NetdefToNet_createNetFromNetdef},
     { "floatArray_frompointer", _wrap_floatArray_frompointer},
     { "unsignedCharArray_frompointer", _wrap_unsignedCharArray_frompointer},
     { "intArray_frompointer", _wrap_intArray_frompointer},
@@ -2978,6 +3122,8 @@ static void *_p_floatArrayTo_p_float(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((float *)  ((floatArray *) x));
 }
 static swig_type_info _swigt__p_GenericLoader = {"_p_GenericLoader", "GenericLoader *", 0, 0, (void*)&_wrap_class_GenericLoader, 0};
+static swig_type_info _swigt__p_NetdefToNet = {"_p_NetdefToNet", "NetdefToNet *", 0, 0, (void*)&_wrap_class_NetdefToNet, 0};
+static swig_type_info _swigt__p_NeuralNet = {"_p_NeuralNet", "NeuralNet *", 0, 0, (void*)&_wrap_class_NeuralNet, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_floatArray = {"_p_floatArray", "floatArray *", 0, 0, (void*)&_wrap_class_floatArray, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
@@ -2988,6 +3134,8 @@ static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned c
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_GenericLoader,
+  &_swigt__p_NetdefToNet,
+  &_swigt__p_NeuralNet,
   &_swigt__p_float,
   &_swigt__p_floatArray,
   &_swigt__p_int,
@@ -2998,6 +3146,8 @@ static swig_type_info *swig_type_initial[] = {
 };
 
 static swig_cast_info _swigc__p_GenericLoader[] = {  {&_swigt__p_GenericLoader, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_NetdefToNet[] = {  {&_swigt__p_NetdefToNet, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_NeuralNet[] = {  {&_swigt__p_NeuralNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},  {&_swigt__p_floatArray, _p_floatArrayTo_p_float, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_floatArray[] = {  {&_swigt__p_floatArray, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_intArray, _p_intArrayTo_p_int, 0, 0},  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
@@ -3008,6 +3158,8 @@ static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_GenericLoader,
+  _swigc__p_NetdefToNet,
+  _swigc__p_NeuralNet,
   _swigc__p_float,
   _swigc__p_floatArray,
   _swigc__p_int,

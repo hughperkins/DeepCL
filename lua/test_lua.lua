@@ -13,9 +13,10 @@
 print('test_lua.lua')
 
 luaunit = require('thirdparty.luaunit')
+require('luaDeepCL')
+deepcl = luaDeepCL
 
 function test_genericloader()
-    require('luaDeepCL')
 
     deepcl = luaDeepCL
 
@@ -38,6 +39,13 @@ function test_genericloader()
     luaunit.assertEquals(labels[1], 0)
     luaunit.assertEquals(labels[5], 2)
     luaunit.assertEquals(labels[9], 4)
+end
+
+function test_neuralnet()
+    net = deepcl.NeuralNet(1,28)
+    print(net:asString())
+    deepcl.NetdefToNet_createNetFromNetdef( net, "rt2-8c5-mp2-16c5-mp3-150n-10n" ) 
+    print(net:asString())
 end
 
 os.exit( luaunit.LuaUnit.run() )

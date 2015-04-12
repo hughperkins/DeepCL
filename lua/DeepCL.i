@@ -18,6 +18,8 @@
 %{
 #include "GenericLoader.h" // start with this first, since, if no data, kind of 
                            // hard to test things...
+#include "NeuralNet.h"
+#include "NetdefToNet.h"
 %}
 
 /*%typemap*/
@@ -61,6 +63,20 @@ void GenericLoader_load( std::string trainFilepath, float *images, int *labels, 
 }
 %}
 void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, int startN, int numExamples );
+
+class NeuralNet {
+public:
+    NeuralNet( int numPlanes, int imageSize );
+    std::string asString();
+};
+
+class NetdefToNet {
+public:
+    static bool createNetFromNetdef( NeuralNet *net, std::string netdef );
+};
+
+/*class NetLearner {*/
+/*};*/
 
 // %apply float *IN { float *values };
 //%apply int *OUT { p_numExamples };
