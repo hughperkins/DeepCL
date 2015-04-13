@@ -27,100 +27,95 @@ using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
-    strings = [ 'dataDir', 'trainFile', 'validateFile', 'netDef', 'weightsFile', 'normalization', 'dataset' ]
-    ints = [ 'numTrain', 'numTest', 'batchSize', 'numEpochs', 'loadWeights', 'dumpTimings', 'multiNet',
-        'loadOnDemand', 'fileReadBatches', 'normalizationExamples' ]
-    floats = [ 'learningRate', 'annealLearningRate', 'normalizationNumStds' ]
-    descriptions = {
-        'dataset': 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]',
-        'datadir': 'directory to search for train and validate files',
-        'trainfile': 'path to training data file',
-        'validatefile': 'path to validation data file',
-        'numtrain': 'num training examples',
-        'numtest': 'num test examples]',
-        'batchsize': 'batch size',
-        'numepochs': 'number epochs',
-        'netdef': 'network definition',
-        'learningrate': 'learning rate, a float value',
-        'anneallearningrate': 'multiply learning rate by this, each epoch',
-        'loadweights': 'load weights from file at startup?',
-        'weightsfile': 'file to write weights to',
-        'normalization': '[stddev|maxmin]',
-        'normalizationnumstds': 'with stddev normalization, how many stddevs from mean is 1?',
-        'dumptimings': 'dump detailed timings each epoch? [1|0]',
-        'multinet': 'number of Mcdnn columns to train',
-        'loadondemand': 'load data on demand [1|0]',
-        'filereadbatches': 'how many batches to read from file each time? (for loadondemand=1)',
-        'normalizationexamples': 'number of examples to read to determine normalization parameters'
-    }
+    options = [
+        ('dataDir', 'string', 'directory to search for train and validate files' ),
+        ('trainFile', 'string', 'path to training data file' ),
+        ('dataset', 'string', 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]'),
+        ('validateFile', 'string', 'path to validation data file'),
+        ('numTrain', 'int', 'num training examples'),
+        ('numTest', 'int', 'num test examples]'),
+        ('batchSize', 'int', 'batch size'),
+        ('numEpochs', 'int', 'number epochs'),
+        ('netDef', 'string', 'network definition'),
+        ('learningRate', 'float', 'learning rate, a float value'),
+        ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch'),
+        ('loadWeights', 'int', 'load weights from file at startup?'),
+        ('weightsFile', 'string', 'file to write weights to'),
+        ('normalization', 'string', '[stddev|maxmin]'),
+        ('normalizationNumStds', 'float', 'with stddev normalization, how many stddevs from mean is 1?'),
+        ('dumpTimings', 'int', 'dump detailed timings each epoch? [1|0]'),
+        ('multiNet', 'int', 'number of Mcdnn columns to train'),
+        ('loadOnDemand', 'int', 'load data on demand [1|0]'),
+        ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)'),
+        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters')
+    ]
 *///]]]
 // [[[end]]]
 
 class Config {
 public:
-    // [[[cog
-    // cog.outl('// generated using cog:')
-    // for astring in strings:
-    //    cog.outl( 'string ' + astring + ';')
-    // for anint in ints:
-    //    cog.outl( 'int ' + anint + ';')
-    // for name in floats:
-    //    cog.outl( 'float ' + name + ';')
-    // ]]]
+    /* [[[cog
+        cog.outl('// generated using cog:')
+        for (name,type,description) in options:
+            cog.outl( type + ' ' + name + ';')
+    */// ]]]
     // generated using cog:
     string dataDir;
     string trainFile;
-    string validateFile;
-    string netDef;
-    string weightsFile;
-    string normalization;
     string dataset;
+    string validateFile;
     int numTrain;
     int numTest;
     int batchSize;
     int numEpochs;
+    string netDef;
+    float learningRate;
+    float annealLearningRate;
     int loadWeights;
+    string weightsFile;
+    string normalization;
+    float normalizationNumStds;
     int dumpTimings;
     int multiNet;
     int loadOnDemand;
     int fileReadBatches;
     int normalizationExamples;
-    float learningRate;
-    float annealLearningRate;
-    float normalizationNumStds;
     // [[[end]]]
 
     Config() {
-        // [[[cog
-        // cog.outl('// generated using cog:')
-        // for astring in strings:
-        //    cog.outl( astring + ' = "";')
-        // for anint in ints:
-        //    cog.outl( anint + ' = 0;')
-        // for name in floats:
-        //    cog.outl( name + ' = 0.0f;')
-        // ]]]
+        /* [[[cog
+            cog.outl('// generated using cog:')
+            for (name,type,description) in options:
+                initializer = ''
+                if type == 'string':
+                    initializer = '""'
+                elif type == 'int':
+                    initializer = '0'
+                else:
+                    initializer = '0.0f'
+                cog.outl( name + ' = ' + initializer + ';')                    
+        */// ]]]
         // generated using cog:
         dataDir = "";
         trainFile = "";
-        validateFile = "";
-        netDef = "";
-        weightsFile = "";
-        normalization = "";
         dataset = "";
+        validateFile = "";
         numTrain = 0;
         numTest = 0;
         batchSize = 0;
         numEpochs = 0;
+        netDef = "";
+        learningRate = 0.0f;
+        annealLearningRate = 0.0f;
         loadWeights = 0;
+        weightsFile = "";
+        normalization = "";
+        normalizationNumStds = 0.0f;
         dumpTimings = 0;
         multiNet = 0;
         loadOnDemand = 0;
         fileReadBatches = 0;
         normalizationExamples = 0;
-        learningRate = 0.0f;
-        annealLearningRate = 0.0f;
-        normalizationNumStds = 0.0f;
         // [[[end]]]
 
         netDef = "RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N";
@@ -339,36 +334,32 @@ void printUsage( char *argv[], Config config ) {
     cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
     cout << endl;
     cout << "Possible key=value pairs:" << endl;
-    // [[[cog
-    // cog.outl('// generated using cog:')
-    // for name in strings:
-    //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
-    // for name in ints:
-    //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
-    // for name in floats:
-    //    cog.outl( 'cout << "    ' + name.lower() + '=[' + descriptions[name.lower()] + '] (" << config.' + name + ' << ")" << endl;')
-    // ]]]
+    /* [[[cog
+        cog.outl('// generated using cog:')
+        for (name,type,description) in options:
+            cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
+    *///]]]
     // generated using cog:
     cout << "    datadir=[directory to search for train and validate files] (" << config.dataDir << ")" << endl;
     cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
-    cout << "    validatefile=[path to validation data file] (" << config.validateFile << ")" << endl;
-    cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
-    cout << "    weightsfile=[file to write weights to] (" << config.weightsFile << ")" << endl;
-    cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
     cout << "    dataset=[choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]] (" << config.dataset << ")" << endl;
+    cout << "    validatefile=[path to validation data file] (" << config.validateFile << ")" << endl;
     cout << "    numtrain=[num training examples] (" << config.numTrain << ")" << endl;
     cout << "    numtest=[num test examples]] (" << config.numTest << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
+    cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
+    cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
+    cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    loadweights=[load weights from file at startup?] (" << config.loadWeights << ")" << endl;
+    cout << "    weightsfile=[file to write weights to] (" << config.weightsFile << ")" << endl;
+    cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
+    cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
     cout << "    dumptimings=[dump detailed timings each epoch? [1|0]] (" << config.dumpTimings << ")" << endl;
     cout << "    multinet=[number of Mcdnn columns to train] (" << config.multiNet << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
-    cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
-    cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
-    cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
     // [[[end]]]
 }
 
@@ -386,61 +377,60 @@ int main( int argc, char *argv[] ) {
             string key = splitkeyval[0];
             string value = splitkeyval[1];
 //            cout << "key [" << key << "]" << endl;
-            // [[[cog
-            // cog.outl('// generated using cog:')
-            // cog.outl('if( false ) {')
-            // for name in strings:
-            //    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
-            //    cog.outl( '    config.' + name + ' = value;')
-            // for name in ints:
-            //    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
-            //    cog.outl( '    config.' + name + ' = atoi( value );')
-            // for name in floats:
-            //    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
-            //    cog.outl( '    config.' + name + ' = atof( value );')
-            // ]]]
+            /* [[[cog
+                cog.outl('// generated using cog:')
+                cog.outl('if( false ) {')
+                for (name,type,description) in options:
+                    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
+                    converter = '';
+                    if type == 'int':
+                        converter = 'atoi';
+                    elif type == 'float':
+                        converter = 'atof';
+                    cog.outl( '    config.' + name + ' = ' + converter + '(value);')
+            */// ]]]
             // generated using cog:
             if( false ) {
             } else if( key == "datadir" ) {
-                config.dataDir = value;
+                config.dataDir = (value);
             } else if( key == "trainfile" ) {
-                config.trainFile = value;
-            } else if( key == "validatefile" ) {
-                config.validateFile = value;
-            } else if( key == "netdef" ) {
-                config.netDef = value;
-            } else if( key == "weightsfile" ) {
-                config.weightsFile = value;
-            } else if( key == "normalization" ) {
-                config.normalization = value;
+                config.trainFile = (value);
             } else if( key == "dataset" ) {
-                config.dataset = value;
+                config.dataset = (value);
+            } else if( key == "validatefile" ) {
+                config.validateFile = (value);
             } else if( key == "numtrain" ) {
-                config.numTrain = atoi( value );
+                config.numTrain = atoi(value);
             } else if( key == "numtest" ) {
-                config.numTest = atoi( value );
+                config.numTest = atoi(value);
             } else if( key == "batchsize" ) {
-                config.batchSize = atoi( value );
+                config.batchSize = atoi(value);
             } else if( key == "numepochs" ) {
-                config.numEpochs = atoi( value );
-            } else if( key == "loadweights" ) {
-                config.loadWeights = atoi( value );
-            } else if( key == "dumptimings" ) {
-                config.dumpTimings = atoi( value );
-            } else if( key == "multinet" ) {
-                config.multiNet = atoi( value );
-            } else if( key == "loadondemand" ) {
-                config.loadOnDemand = atoi( value );
-            } else if( key == "filereadbatches" ) {
-                config.fileReadBatches = atoi( value );
-            } else if( key == "normalizationexamples" ) {
-                config.normalizationExamples = atoi( value );
+                config.numEpochs = atoi(value);
+            } else if( key == "netdef" ) {
+                config.netDef = (value);
             } else if( key == "learningrate" ) {
-                config.learningRate = atof( value );
+                config.learningRate = atof(value);
             } else if( key == "anneallearningrate" ) {
-                config.annealLearningRate = atof( value );
+                config.annealLearningRate = atof(value);
+            } else if( key == "loadweights" ) {
+                config.loadWeights = atoi(value);
+            } else if( key == "weightsfile" ) {
+                config.weightsFile = (value);
+            } else if( key == "normalization" ) {
+                config.normalization = (value);
             } else if( key == "normalizationnumstds" ) {
-                config.normalizationNumStds = atof( value );
+                config.normalizationNumStds = atof(value);
+            } else if( key == "dumptimings" ) {
+                config.dumpTimings = atoi(value);
+            } else if( key == "multinet" ) {
+                config.multiNet = atoi(value);
+            } else if( key == "loadondemand" ) {
+                config.loadOnDemand = atoi(value);
+            } else if( key == "filereadbatches" ) {
+                config.fileReadBatches = atoi(value);
+            } else if( key == "normalizationexamples" ) {
+                config.normalizationExamples = atoi(value);
             // [[[end]]]
             } else {
                 cout << endl;
