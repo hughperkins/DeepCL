@@ -8,6 +8,8 @@
 
 #include <vector>
 
+#include "BatchLearner.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -19,6 +21,25 @@ class Trainable;
 class DeepCL_EXPORT PostEpochAction {
 public:
     virtual void run( int epoch ) = 0;
+};
+
+class DeepCL_EXPORT NetLearner_PostBatchAction {
+public:
+    virtual void run( int epoch, int batch, float lossSoFar, int numRightSoFar ) = 0;
+};
+
+class NetLearnerPostBatchRunner : public PostBatchAction {
+public:
+    int epoch;
+    std::vector<NetLearner_PostBatchAction *> postBatchActions; // note: we DONT own these, dont delete, caller owns
+    NetLearnerPostBatchRunner() {
+        epoch = 0;
+    }
+    virtual void run( int batch, float lossSoFar, int numRightSoFar ) {
+        for( std::vector<NetLearner_PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
+            ( *it )->run( epoch, batch, lossSoFar, numRightSoFar );
+        }
+    }
 };
 
 // handles learning the neural net, ie running multiple epochs,
@@ -46,6 +67,7 @@ public:
     int numEpochs;
 
     std::vector<PostEpochAction *> postEpochActions; // note: we DONT own these, dont delete, caller owns
+    std::vector<NetLearner_PostBatchAction *> postBatchActions; // note: we DONT own these, dont delete, caller owns
 
     // [[[cog
     // import cog_addheaders
@@ -61,6 +83,7 @@ public:
     void setBatchSize( int batchSize );
     VIRTUAL ~NetLearner();
     VIRTUAL void addPostEpochAction( PostEpochAction *action );
+    VIRTUAL void addPostBatchAction( NetLearner_PostBatchAction *action );
     void learn( float learningRate );
     void learn( float learningRate, float annealLearningRate );
 

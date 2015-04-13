@@ -66,14 +66,23 @@ template< typename T > VIRTUAL NetLearner<T>::~NetLearner() {
 template< typename T > VIRTUAL void NetLearner<T>::addPostEpochAction( PostEpochAction *action ) {
     postEpochActions.push_back( action );
 }
+template< typename T > VIRTUAL void NetLearner<T>::addPostBatchAction( NetLearner_PostBatchAction *action ) {
+    postBatchActions.push_back( action );
+}
 template< typename T > void NetLearner<T>::learn( float learningRate ) {
     learn( learningRate, 1.0f );
 }
 
 template< typename T > void NetLearner<T>::learn( float learningRate, float annealLearningRate ) {
     BatchLearner<T> batchLearner( net );
+    NetLearnerPostBatchRunner postRunner;
+    batchLearner.addPostBatchAction( &postRunner );
+    for( vector<NetLearner_PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
+        postRunner.postBatchActions.push_back( *it );
+    }
     Timer timer;
     for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
+        postRunner.epoch = epoch;
         float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
         EpochResult epochResult = batchLearner.runEpochFromLabels( annealedLearningRate, batchSize, Ntrain, trainData, trainLabels );
         if( dumpTimings ) {

@@ -24,6 +24,10 @@ template< typename T > BatchLearnerOnDemand<T>::BatchLearnerOnDemand( Trainable 
     net( net ) {
 }
 
+template< typename T > VIRTUAL void BatchLearnerOnDemand<T>::addPostBatchAction( PostBatchAction *action ) {
+    postBatchActions.push_back( action );
+}
+
 template< typename T > EpochResult BatchLearnerOnDemand<T>::batchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction<T> *netAction ) {
     int numRight = 0;
     float loss = 0;
@@ -35,6 +39,9 @@ template< typename T > EpochResult BatchLearnerOnDemand<T>::batchedNetAction( st
     int numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
     int thisFileBatchSize = fileBatchSize;
     BatchLearner<unsigned char> batchLearner( net );
+    for( vector<PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
+         batchLearner.addPostBatchAction( (*it) );
+    }
     for( int fileBatch = 0; fileBatch < numFileBatches; fileBatch++ ) {
         int fileBatchStart = fileBatch * fileBatchSize;
         if( fileBatch == numFileBatches - 1 ) {
@@ -45,6 +52,9 @@ template< typename T > EpochResult BatchLearnerOnDemand<T>::batchedNetAction( st
         EpochResult epochResult = batchLearner.batchedNetAction( batchSize, thisFileBatchSize, dataBuffer, labelsBuffer, netAction );
         loss += epochResult.loss;
         numRight += epochResult.numRight;
+//        for( vector<PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
+//            (*it)->run( batch, loss, numRight );
+//        }
 //        cout << "fileBatch " << fileBatch << " batchSize " << batchSize << " filebatchsize " << fileBatchSize << " filebatchStart " << fileBatchStart << " thisFileBatchSize " << thisFileBatchSize << " numRight " << epochResult.numRight << endl;
     }
     EpochResult epochResult( loss, numRight );

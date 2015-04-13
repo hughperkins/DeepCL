@@ -52,6 +52,7 @@ public:
     int numEpochs;
 
     std::vector<PostEpochAction *> postEpochActions;
+    std::vector<NetLearner_PostBatchAction *> postBatchActions; // note: we DONT own these, dont delete, caller owns
 
     // [[[cog
     // import cog_addheaders
@@ -67,6 +68,7 @@ public:
     void setBatchSize( int fileReadBatches, int batchSize );
     VIRTUAL ~NetLearnerOnDemand();
     VIRTUAL void addPostEpochAction( PostEpochAction *action );
+    VIRTUAL void addPostBatchAction( NetLearner_PostBatchAction *action );
     void learn( float learningRate );
     void learn( float learningRate, float annealLearningRate );
 

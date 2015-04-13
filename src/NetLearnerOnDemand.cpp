@@ -71,6 +71,9 @@ template< typename T > VIRTUAL NetLearnerOnDemand<T>::~NetLearnerOnDemand() {
 template< typename T > VIRTUAL void NetLearnerOnDemand<T>::addPostEpochAction( PostEpochAction *action ) {
     postEpochActions.push_back( action );
 }
+template< typename T > VIRTUAL void NetLearnerOnDemand<T>::addPostBatchAction( NetLearner_PostBatchAction *action ) {
+    postBatchActions.push_back( action );
+}
 template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate ) {
     learn( learningRate, 1.0f );
 }
@@ -81,8 +84,14 @@ template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate, fl
 //    testData = new T[ batchSize * net->getInputCubeSize() ];
 //    testLabels = new int[ batchSize ];
     BatchLearnerOnDemand<T> batchLearnerOnDemand( net );
+    NetLearnerPostBatchRunner postRunner;
+    batchLearnerOnDemand.addPostBatchAction( &postRunner );
+    for( vector<NetLearner_PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
+        postRunner.postBatchActions.push_back( *it );
+    }
     Timer timer;
     for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
+        postRunner.epoch = epoch;
         float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
         EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, fileReadBatches, batchSize, Ntrain );
         cout << "dumpTimings " << dumpTimings << endl;

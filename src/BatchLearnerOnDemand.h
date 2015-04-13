@@ -28,12 +28,15 @@ class DeepCL_EXPORT BatchLearnerOnDemand {
 public:
     Trainable *net; // NOT owned by us, dont delete
 
+    std::vector<PostBatchAction *> postBatchActions; // note: we DONT own these, dont delete, caller owns
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
     BatchLearnerOnDemand( Trainable *net );
+    VIRTUAL void addPostBatchAction( PostBatchAction *action );
     EpochResult batchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction<T> *netAction );
     int test( std::string filepath, int fileReadBatches, int batchSize, int Ntest );
     EpochResult runEpochFromLabels( float learningRate, std::string filepath, int fileReadBatches, int batchSize, int Ntrain );

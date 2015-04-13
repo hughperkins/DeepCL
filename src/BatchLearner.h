@@ -18,6 +18,11 @@ class Trainable;
 
 #include "DeepCLDllExport.h"
 
+class DeepCL_EXPORT PostBatchAction {
+public:
+    virtual void run( int batch, float lossSoFar, int numRightSoFar ) = 0;
+};
+
 class DeepCL_EXPORT EpochResult {
 public:
     float loss;
@@ -71,12 +76,15 @@ class DeepCL_EXPORT BatchLearner {
 public:
     Trainable *net; // NOT owned by us, dont delete
 
+    std::vector<PostBatchAction *> postBatchActions; // note: we DONT own these, dont delete, caller owns
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add_templated()
     // ]]]
     // generated, using cog:
     BatchLearner( Trainable *net );
+    VIRTUAL void addPostBatchAction( PostBatchAction *action );
     EpochResult batchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction );
     int test( int batchSize, int N, T *testData, int const*testLabels );
     int propagateForTrain( int batchSize, int N, T *data, int const*labels );
