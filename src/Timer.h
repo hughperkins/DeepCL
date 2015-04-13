@@ -63,6 +63,19 @@ public:
       std::cout << label << " " << timemilliseconds << " ms" << std::endl;
    }
 
+    double interval() { // gets interval since last 'lap' or 'timecheck', 
+                        // without updating 'last'
+    #ifdef WINNOCHRONO
+       DWORD thistime = getCount();
+      DWORD timemilliseconds = ( thistime - last );
+       #else
+      std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
+    std::chrono::duration<double> change = thistime - last;
+      double timemilliseconds = static_cast<double>( std::chrono::duration_cast<std::chrono::milliseconds> ( change ).count() );
+       #endif
+      return timemilliseconds;
+    }
+
    double lap() {
 //       #ifdef _WIN32
     #ifdef WINNOCHRONO
