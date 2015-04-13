@@ -157,17 +157,24 @@ class IntervalWeightsWriter : public NetLearner_PostBatchAction {
 public:
     NeuralNet *net;
     Config *config;
-    int intervalMinutes;
-    double lastTime;
-    IntervalWeightsWriter( NeuralNet *net, Config *config, int intervalMinutes ) :
+    double intervalMinutes;
+//    double lastTime;
+    Timer timer;
+    IntervalWeightsWriter( NeuralNet *net, Config *config, double intervalMinutes ) :
             net( net ),
             config( config ),
             intervalMinutes( intervalMinutes ) {
-        lastTime = 0;
+//        lastTime = 0;
     }
-    virtual void run( int epoch, int batch, float loss, int numRight ) {
-        cout << "intervalweightswriter" << endl;
-        //WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch + 1, 0, 0, 0, 0 );
+    virtual void run( int epoch, int batch, int numRight, float loss ) {
+        float timeMinutes = timer.interval() / 1000.0f / 60.0f;
+        //cout << "timeMinutes " << timeMinutes << endl;
+        if( timeMinutes > intervalMinutes ) {
+            cout << "intervalweightswriter triggered " << timeMinutes << endl;
+            cout << "epoch=" << epoch << " batch=" << batch << " numRight=" << numRight << " loss=" << loss << endl;
+            WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, batch, 0, numRight, loss );
+            timer.lap();
+        }
     }
 };
 
@@ -284,6 +291,7 @@ void go(Config config) {
             cout << "Please either check the training options, or choose a weights file that doesnt exist yet" << endl;
             return;
         }
+        cout << "reloaded epoch=" << restartEpoch << " batch=" << restartBatch << " numRight=" << restartNumRight << " loss=" << restartLoss << endl;
     }
 
     timer.timeCheck("before learning start");
