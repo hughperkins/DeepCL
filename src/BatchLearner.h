@@ -20,7 +20,7 @@ class Trainable;
 
 class DeepCL_EXPORT PostBatchAction {
 public:
-    virtual void run( int batch, float lossSoFar, int numRightSoFar ) = 0;
+    virtual void run( int batch, int numRightSoFar, float lossSoFar ) = 0;
 };
 
 class DeepCL_EXPORT EpochResult {

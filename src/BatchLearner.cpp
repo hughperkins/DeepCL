@@ -63,7 +63,7 @@ template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchS
         numRight += thisNumRight;
 //        cout << "batchlearner batch=" << batch << " thisbatchsize=" << thisBatchSize << " thisnumright " << thisNumRight << " numright=" << numRight << " batchstart=" << batchStart << endl;
         for( vector<PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
-            (*it)->run( batch, loss, numRight );
+            (*it)->run( batch, numRight, loss );
         }
     }
     EpochResult epochResult( loss, numRight );

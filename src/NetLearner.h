@@ -25,7 +25,7 @@ public:
 
 class DeepCL_EXPORT NetLearner_PostBatchAction {
 public:
-    virtual void run( int epoch, int batch, float lossSoFar, int numRightSoFar ) = 0;
+    virtual void run( int epoch, int batch, int numRightSoFar, float lossSoFar ) = 0;
 };
 
 class NetLearnerPostBatchRunner : public PostBatchAction {
@@ -35,9 +35,9 @@ public:
     NetLearnerPostBatchRunner() {
         epoch = 0;
     }
-    virtual void run( int batch, float lossSoFar, int numRightSoFar ) {
+    virtual void run( int batch, int numRightSoFar, float lossSoFar ) {
         for( std::vector<NetLearner_PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
-            ( *it )->run( epoch, batch, lossSoFar, numRightSoFar );
+            ( *it )->run( epoch, batch, numRightSoFar, lossSoFar );
         }
     }
 };
