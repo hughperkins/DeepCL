@@ -142,7 +142,7 @@ public:
 };
 
 void sampleWeights( NeuralNet *net ) {
-    for( int layerId = 0; layerId < net->layers.size();  layerId++ ) {
+    for( int layerId = 0; layerId < (int)net->layers.size();  layerId++ ) {
         Layer *layer = net->layers[layerId];
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
@@ -155,7 +155,7 @@ void sampleWeights( NeuralNet *net ) {
 
         cout << "layer " << layerId << endl;
         float const*weights = conv->getWeights();
-        float const*biases = conv->getBiasWeights();
+        conv->getBiasWeights();
         LayerDimensions &dim = conv->dim;
         int numFilters = dim.numFilters;
         int inputPlanes = dim.inputPlanes;
@@ -238,8 +238,8 @@ void go(Config config) {
     cout << " image norm translate " << translate << " scale " << scale << endl;
     timer.timeCheck("after getting stats");
 
-    const int numToTrain = Ntrain;
-    const int batchSize = config.batchSize;
+//    const int numToTrain = Ntrain;
+//    const int batchSize = config.batchSize;
     NeuralNet *net = new NeuralNet();
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
@@ -248,7 +248,7 @@ void go(Config config) {
         return;
     }
     net->print();
-    for( int i = 1; i < net->layers.size() - 1; i++ ) {
+    for( int i = 1; i < (int)net->layers.size() - 1; i++ ) {
         Layer *layer = net->layers[i];
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >(layer);
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >(layer);
@@ -290,10 +290,10 @@ void go(Config config) {
 
     bool afterRestart = false;
     int restartEpoch = 0;
-    int restartBatch = 0;
-    float restartAnnealedLearningRate = 0;
-    int restartNumRight = 0;
-    float restartLoss = 0;
+//    int restartBatch = 0;
+//    float restartAnnealedLearningRate = 0;
+//    int restartNumRight = 0;
+//    float restartLoss = 0;
 
     timer.timeCheck("before learning start");
     if( config.dumpTimings ) {
@@ -311,7 +311,7 @@ void go(Config config) {
     netLearner.learn( config.learningRate, 1.0f );
 
     cout << "forward results" << endl;
-    for( int layerId = 0; layerId < net->layers.size(); layerId++ ) {
+    for( int layerId = 0; layerId < (int)net->layers.size(); layerId++ ) {
         Layer *layer = net->layers[layerId];
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
