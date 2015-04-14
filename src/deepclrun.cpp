@@ -90,13 +90,6 @@ public:
         /* [[[cog
             cog.outl('// generated using cog:')
             for (name,type,description,default) in options:
-                # initializer = ''
-                # if type == 'string':
-                #     initializer = '""'
-                # elif type == 'int':
-                #     initializer = '0'
-                # else:
-                #     initializer = '0.0f'
                 defaultString = ''
                 if type == 'string':
                     defaultString = '"' + default + '"'
@@ -153,30 +146,30 @@ public:
     }
 };
 
-class IntervalWeightsWriter : public NetLearner_PostBatchAction {
-public:
-    NeuralNet *net;
-    Config *config;
-    double intervalMinutes;
-//    double lastTime;
-    Timer timer;
-    IntervalWeightsWriter( NeuralNet *net, Config *config, double intervalMinutes ) :
-            net( net ),
-            config( config ),
-            intervalMinutes( intervalMinutes ) {
-//        lastTime = 0;
-    }
-    virtual void run( int epoch, int batch, int numRight, float loss ) {
-        float timeMinutes = timer.interval() / 1000.0f / 60.0f;
-        //cout << "timeMinutes " << timeMinutes << endl;
-        if( timeMinutes > intervalMinutes ) {
-            cout << "intervalweightswriter triggered " << timeMinutes << endl;
-            cout << "epoch=" << epoch << " batch=" << batch << " numRight=" << numRight << " loss=" << loss << endl;
-            WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, batch, 0, numRight, loss );
-            timer.lap();
-        }
-    }
-};
+//class IntervalWeightsWriter : public NetLearner_PostBatchAction {
+//public:
+//    NeuralNet *net;
+//    Config *config;
+//    double intervalMinutes;
+////    double lastTime;
+//    Timer timer;
+//    IntervalWeightsWriter( NeuralNet *net, Config *config, double intervalMinutes ) :
+//            net( net ),
+//            config( config ),
+//            intervalMinutes( intervalMinutes ) {
+////        lastTime = 0;
+//    }
+//    virtual void run( int epoch, int batch, int numRight, float loss ) {
+//        float timeMinutes = timer.interval() / 1000.0f / 60.0f;
+//        //cout << "timeMinutes " << timeMinutes << endl;
+//        if( timeMinutes > intervalMinutes ) {
+//            cout << "intervalweightswriter triggered " << timeMinutes << endl;
+//            cout << "epoch=" << epoch << " batch=" << batch << " numRight=" << numRight << " loss=" << loss << endl;
+//            WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, batch, 0, numRight, loss );
+//            timer.lap();
+//        }
+//    }
+//};
 
 void go(Config config) {
     Timer timer;
@@ -317,10 +310,10 @@ void go(Config config) {
         if( config.weightsFile != "" ) {
             netLearner.addPostEpochAction( &weightsWriter );
         }
-        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
-        if( config.writeWeightsInterval > 0 ) {
-            netLearner.addPostBatchAction( &intervalWeightsWriter );
-        }
+//        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
+//        if( config.writeWeightsInterval > 0 ) {
+//            netLearner.addPostBatchAction( &intervalWeightsWriter );
+//        }
         netLearner.learn( config.learningRate, config.annealLearningRate );
     } else {
         NetLearner<unsigned char> netLearner( trainable );
@@ -333,10 +326,10 @@ void go(Config config) {
         if( config.weightsFile != "" ) {
             netLearner.addPostEpochAction( &weightsWriter );
         }
-        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
-        if( config.writeWeightsInterval > 0 ) {
-            netLearner.addPostBatchAction( &intervalWeightsWriter );
-        }
+//        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
+//        if( config.writeWeightsInterval > 0 ) {
+//            netLearner.addPostBatchAction( &intervalWeightsWriter );
+//        }
         netLearner.learn( config.learningRate, config.annealLearningRate );
     }
 

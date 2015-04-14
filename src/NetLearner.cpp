@@ -20,28 +20,38 @@ using namespace std;
 #define VIRTUAL
 
 template< typename T > NetLearner<T>::NetLearner( Trainable *net ) :
-        net( net ) {
-    batchSize = 128;
+        net( net ), 
+        learnAction(0),
+        testAction(),
+        trainBatcher( net, 0, 0, 0, 0, &learnAction ),
+        testBatcher( net, 0, 0, 0, 0, &testAction ) {
+//    batchSize = 128;
     annealLearningRate = 1.0f;
     numEpochs = 12;
-    startEpoch = 1;
+    nextEpoch = 0;
     dumpTimings = false;
+//    batcher = 0;
+//    learnAction = 0;
+    learningDone = false;
+    
+//    reset();
 }
 
 template< typename T > void NetLearner<T>::setTrainingData( int Ntrain, T *trainData, int *trainLabels ) {
-    this->Ntrain = Ntrain;
-    this->trainData = trainData;
-    this->trainLabels = trainLabels;
+    this->trainBatcher.N = Ntrain;
+    this->trainBatcher.data = trainData;
+    this->trainBatcher.labels = trainLabels;
+//    cout << "NetLearner.settrainingdata data=" << (void *)trainData << endl;
 }
 
 template< typename T > void NetLearner<T>::setTestingData( int Ntest, T *testData, int *testLabels ) {
-    this->Ntest = Ntest;
-    this->testData = testData;
-    this->testLabels = testLabels;
+    this->testBatcher.N = Ntest;
+    this->testBatcher.data = testData;
+    this->testBatcher.labels = testLabels;
 }
 
 template< typename T > void NetLearner<T>::setSchedule( int numEpochs ) {
-    setSchedule( numEpochs, 1 );
+    setSchedule( numEpochs, 0 );
 }
 
 template< typename T > void NetLearner<T>::setDumpTimings( bool dumpTimings ) {
@@ -50,55 +60,70 @@ template< typename T > void NetLearner<T>::setDumpTimings( bool dumpTimings ) {
 
 template< typename T > void NetLearner<T>::setSchedule( int numEpochs, int startEpoch ) {
     this->numEpochs = numEpochs;
-    this->startEpoch = startEpoch;
+    this->nextEpoch = startEpoch;
 }
 
 template< typename T > void NetLearner<T>::setBatchSize( int batchSize ) {
-    this->batchSize = batchSize;
+    this->trainBatcher.batchSize = batchSize;
+    this->testBatcher.batchSize = batchSize;
 }
 
 template< typename T > VIRTUAL NetLearner<T>::~NetLearner() {
-//    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
-//        delete (*it);
-//    }
 }
 
 template< typename T > VIRTUAL void NetLearner<T>::addPostEpochAction( PostEpochAction *action ) {
     postEpochActions.push_back( action );
 }
-template< typename T > VIRTUAL void NetLearner<T>::addPostBatchAction( NetLearner_PostBatchAction *action ) {
-    postBatchActions.push_back( action );
+
+template< typename T > void NetLearner<T>::reset() {
+    learningDone = false;
+    nextEpoch = 0;
+    net->setTraining( true );
+    trainBatcher.reset();
+    testBatcher.reset();
+    timer.lap();
 }
+
+template< typename T > bool NetLearner<T>::tickEpoch() {
+    int epoch = nextEpoch;
+    cout << "NetLearner.tickEpoch epoch=" << epoch << endl;
+    learnAction.learningRate = learningRate * pow( annealLearningRate, epoch );
+    trainBatcher.run();
+    if( dumpTimings ) {
+        StatefulTimer::dump(true);
+    }
+//        cout << "-----------------------" << endl;
+    cout << endl;
+    timer.timeCheck("after epoch " + toString(epoch+1) );
+    cout << "annealed learning rate: " << learnAction.learningRate << " training loss: " << trainBatcher.loss << endl;
+    cout << " train accuracy: " << trainBatcher.numRight << "/" << trainBatcher.N << " " << (trainBatcher.numRight * 100.0f/ trainBatcher.N) << "%" << std::endl;
+    testBatcher.run();
+    cout << "test accuracy: " << testBatcher.numRight << "/" << testBatcher.N << " " << 
+        (testBatcher.numRight * 100.0f / testBatcher.N ) << "%" << endl;
+    timer.timeCheck("after tests");
+
+    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
+        (*it)->run( epoch );
+    }
+
+    nextEpoch++;
+    if( nextEpoch == numEpochs ) {
+        learningDone = true;
+    }
+    return !learningDone;
+}
+
 template< typename T > void NetLearner<T>::learn( float learningRate ) {
     learn( learningRate, 1.0f );
 }
-
 template< typename T > void NetLearner<T>::learn( float learningRate, float annealLearningRate ) {
-    BatchLearner<T> batchLearner( net );
-    NetLearnerPostBatchRunner postRunner;
-    batchLearner.addPostBatchAction( &postRunner );
-    for( vector<NetLearner_PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
-        postRunner.postBatchActions.push_back( *it );
+    this->learningRate = learningRate;
+    this->annealLearningRate = annealLearningRate;
+    if( learningDone ) {
+        reset();
     }
-    Timer timer;
-    for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
-        postRunner.epoch = epoch;
-        float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
-        EpochResult epochResult = batchLearner.runEpochFromLabels( annealedLearningRate, batchSize, Ntrain, trainData, trainLabels );
-        if( dumpTimings ) {
-            StatefulTimer::dump(true);
-        }
-//        cout << "-----------------------" << endl;
-        cout << endl;
-        timer.timeCheck("after epoch " + toString(epoch ) );
-        cout << "annealed learning rate: " << annealedLearningRate << " training loss: " << epochResult.loss << endl;
-        cout << " train accuracy: " << epochResult.numRight << "/" << Ntrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
-        int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
-        cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
-        timer.timeCheck("after tests");
-        for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
-            (*it)->run( epoch );
-        }
+    while( !learningDone ) {
+        tickEpoch();
     }
 }
 
