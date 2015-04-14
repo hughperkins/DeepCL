@@ -27,7 +27,7 @@ class DeepCL_EXPORT MultiNet : public Trainable {
     float *results;
     int batchSize;
     int allocatedSize;
-    InputLayer<float> *proxyInputLayer; // used to feed in output from children, to give to lossLayer
+    InputLayer *proxyInputLayer; // used to feed in output from children, to give to lossLayer
     LossLayer *lossLayer;
 
 public:
@@ -51,7 +51,6 @@ public:
     VIRTUAL int calcNumRight( int const *labels );
     void propagateToOurselves();
     VIRTUAL void propagate( float const*images);
-    VIRTUAL void propagate( unsigned char const*images);
     VIRTUAL void backPropFromLabels( float learningRate, int const *labels);
     VIRTUAL void backProp( float learningRate, float const *expectedResults);
     VIRTUAL float const *getResults() const;

@@ -10,11 +10,10 @@
 #include "ActivationFunction.h"
 #include "stringhelper.h"
 
-template<typename T> class InputLayerMaker;
+class InputLayerMaker;
 
 #define VIRTUAL virtual
 
-template< typename T >
 class InputLayer : public Layer, IHasToString {
 public:
     int batchSize;
@@ -23,7 +22,7 @@ public:
     const int outputPlanes;
     const int outputImageSize;
 
-    T const*input; // we dont own this
+    float const*input; // we dont own this
     float *results; // we own this :-)
 
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
@@ -38,10 +37,10 @@ public:
 
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add_templated()
+    // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    InputLayer( InputLayerMaker<T> *maker );
+    InputLayer( InputLayerMaker *maker );
     VIRTUAL ~InputLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getResults();
@@ -50,7 +49,7 @@ public:
     VIRTUAL int getPersistSize() const;
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
-    void in( T const*images );
+    void in( float const*images );
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
@@ -65,6 +64,6 @@ public:
     // [[[end]]]
 };
 
-template< typename T > std::ostream &operator<<( std::ostream &os, InputLayer<T> &layer );
-template< typename T > std::ostream &operator<<( std::ostream &os, InputLayer<T> const*layer );
+ std::ostream &operator<<( std::ostream &os, InputLayer &layer );
+ std::ostream &operator<<( std::ostream &os, InputLayer const*layer );
 

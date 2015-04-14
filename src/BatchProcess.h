@@ -14,12 +14,11 @@
 
 #include "DeepCLDllExport.h"
 
-template< typename T >
 class BatchAction {
 public:
-    T *data;
+    float *data;
     int *labels;
-    BatchAction( T *data, int *labels ) :
+    BatchAction( float *data, int *labels ) :
         data(data),
         labels(labels) { // have to provide appropriate buffers for this
     }
@@ -28,16 +27,14 @@ public:
 
 class DeepCL_EXPORT BatchProcess {
 public:
-    template< typename T>
-    static void run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<T> *batchAction);
+    static void run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction);
 };
 
-template< typename T >
-class NormalizeGetStdDev : public BatchAction<T> {
+class NormalizeGetStdDev : public BatchAction {
 public:
-    Statistics<T> statistics; 
-    NormalizeGetStdDev( T *data, int *labels ) :
-        BatchAction<T>::BatchAction( data, labels ) {
+    Statistics statistics; 
+    NormalizeGetStdDev( float *data, int *labels ) :
+        BatchAction::BatchAction( data, labels ) {
     }
     virtual void processBatch( int batchSize, int cubeSize ) {
         NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );
@@ -47,12 +44,12 @@ public:
     }
 };
 
-template< typename T >
-class NormalizeGetMinMax : public BatchAction<T> {
+
+class NormalizeGetMinMax : public BatchAction {
 public:
-    Statistics<T> statistics; 
-    NormalizeGetMinMax( T *data, int *labels ) :
-        BatchAction<T>( data, labels ) {
+    Statistics statistics; 
+    NormalizeGetMinMax( float *data, int *labels ) :
+        BatchAction( data, labels ) {
     }
     virtual void processBatch( int batchSize, int cubeSize ) {
         NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );

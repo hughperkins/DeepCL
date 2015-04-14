@@ -28,7 +28,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    const int imageSize = 1;
 
     NeuralNet *net = NeuralNet::maker()->instance();
-    net->addLayer( InputLayerMaker<float>::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );

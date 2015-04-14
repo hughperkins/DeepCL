@@ -12,7 +12,7 @@
 #include "DeepCLDllExport.h"
 #include "LayerMaker.h"
 
-template< typename T > class DeepCL_EXPORT InputLayerMaker : public LayerMaker2 {
+class DeepCL_EXPORT InputLayerMaker : public LayerMaker2 {
 public:
     int _numPlanes;
     int _imageSize;

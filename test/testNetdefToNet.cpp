@@ -16,7 +16,7 @@
 
 TEST( testNetdefToNet, empty ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "" ) );
     EXPECT_EQ( 2, net->layers.size() );
     EXPECT_TRUE( dynamic_cast< SoftMaxLayer * >( net->layers[1] ) != 0 );
@@ -25,7 +25,7 @@ TEST( testNetdefToNet, empty ) {
 
 TEST( testNetdefToNet, onefc ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n" ) );
     EXPECT_EQ( 3, net->layers.size() );
     EXPECT_TRUE( dynamic_cast< FullyConnectedLayer * >( net->layers[1] ) != 0 );
@@ -40,7 +40,7 @@ TEST( testNetdefToNet, onefc ) {
 
 TEST( testNetdefToNet, onefclinear ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n" ) );
     EXPECT_EQ( 3, net->layers.size() );
     EXPECT_TRUE( dynamic_cast< FullyConnectedLayer * >( net->layers[1] ) != 0 );
@@ -55,7 +55,7 @@ TEST( testNetdefToNet, onefclinear ) {
 
 TEST( testNetdefToNet, 150n_10n ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n-10n" ) );
     EXPECT_EQ( 4, net->layers.size() );
     EXPECT_TRUE( dynamic_cast< FullyConnectedLayer * >( net->layers[1] ) != 0 );
@@ -76,7 +76,7 @@ TEST( testNetdefToNet, 150n_10n ) {
 
 TEST( testNetdefToNet, 3xfclinear ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*150n{linear}" ) );
     net->print();
     EXPECT_EQ( 5, net->layers.size() );
@@ -93,7 +93,7 @@ TEST( testNetdefToNet, 3xfclinear ) {
 
 TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "mp2-3*32c5{z}-10n " ) );
     net->print();
     EXPECT_EQ( 7, net->layers.size() );
@@ -112,7 +112,7 @@ TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
 
 TEST( testNetdefToNet, 3x32c5zmp2 ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(128) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(128) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*(32c5{z}-mp2)-10n" ) );
     net->print();
     EXPECT_EQ( 9, net->layers.size() );
@@ -136,7 +136,7 @@ TEST( testNetdefToNet, 3x32c5zmp2 ) {
 
 TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     NeuralNet *net = new NeuralNet();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(1)->imageSize(19) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7{z}-3*32c5{z}-10n" ) );
     net->print();
     EXPECT_EQ( 8, net->layers.size() );

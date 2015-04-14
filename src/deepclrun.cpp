@@ -142,7 +142,7 @@ public:
         config( config ) {
     }
     virtual void run( int epoch ) {
-        WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch + 1, 0, 0, 0, 0 );
+        WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, 0, 0, 0, 0 );
     }
 };
 
@@ -179,8 +179,8 @@ void go(Config config) {
     int numPlanes;
     int imageSize;
 
-    unsigned char *trainData = 0;
-    unsigned char *testData = 0;
+    float *trainData = 0;
+    float *testData = 0;
     int *trainLabels = 0;
     int *testLabels = 0;
 
@@ -197,7 +197,7 @@ void go(Config config) {
     } else {
         trainAllocateN = Ntrain;
     }
-    trainData = new unsigned char[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
+    trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if( !config.loadOnDemand && Ntrain > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
@@ -210,7 +210,7 @@ void go(Config config) {
     } else {
         testAllocateN = Ntest;
     }
-    testData = new unsigned char[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
+    testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if( !config.loadOnDemand && Ntest > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
@@ -242,14 +242,14 @@ void go(Config config) {
     } else {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
-            NormalizeGetStdDev<unsigned char> normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run<unsigned char>( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
+            NormalizeGetStdDev normalizeGetStdDev( trainData, trainLabels ); 
+            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
             cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
-            NormalizeGetMinMax<unsigned char> normalizeGetMinMax( trainData, trainLabels );
+            NormalizeGetMinMax normalizeGetMinMax( trainData, trainLabels );
             BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
             normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
         } else {
@@ -264,7 +264,7 @@ void go(Config config) {
 //    const int batchSize = config.batchSize;
     NeuralNet *net = new NeuralNet();
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;
@@ -299,38 +299,44 @@ void go(Config config) {
         multiNet = new MultiNet( config.multiNet, net );
         trainable = multiNet;
     }
+    NetLearnerBase *netLearnerBase = 0;
     if( config.loadOnDemand ) {
-        NetLearnerOnDemand<unsigned char> netLearner( trainable );
-        netLearner.setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
-        netLearner.setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
-        netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
-        netLearner.setBatchSize( config.fileReadBatches, config.batchSize );
-        netLearner.setDumpTimings( config.dumpTimings );
-        WeightsWriter weightsWriter( net, &config );
-        if( config.weightsFile != "" ) {
-            netLearner.addPostEpochAction( &weightsWriter );
-        }
+        NetLearnerOnDemand netLearnerOnDemand( trainable );
+        netLearnerOnDemand.setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
+        netLearnerOnDemand.setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
+        netLearnerOnDemand.setBatchSize( config.fileReadBatches, config.batchSize );
+        netLearnerBase = &netLearnerOnDemand;
+//        WeightsWriter weightsWriter( net, &config );
+//        if( config.weightsFile != "" ) {
+//            netLearner.addPostEpochAction( &weightsWriter );
+//        }
 //        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
 //        if( config.writeWeightsInterval > 0 ) {
 //            netLearner.addPostBatchAction( &intervalWeightsWriter );
 //        }
-        netLearner.learn( config.learningRate, config.annealLearningRate );
+//        netLearner.learn( config.learningRate, config.annealLearningRate );
     } else {
-        NetLearner<unsigned char> netLearner( trainable );
+        NetLearner netLearner( trainable );
         netLearner.setTrainingData( Ntrain, trainData, trainLabels );
         netLearner.setTestingData( Ntest, testData, testLabels );
-        netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
         netLearner.setBatchSize( config.batchSize );
-        netLearner.setDumpTimings( config.dumpTimings );
-        WeightsWriter weightsWriter( net, &config );
-        if( config.weightsFile != "" ) {
-            netLearner.addPostEpochAction( &weightsWriter );
-        }
+        netLearnerBase = &netLearner;
+//        WeightsWriter weightsWriter( net, &config );
+//        if( config.weightsFile != "" ) {
+//            netLearner.addPostEpochAction( &weightsWriter );
+//        }
 //        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
 //        if( config.writeWeightsInterval > 0 ) {
 //            netLearner.addPostBatchAction( &intervalWeightsWriter );
 //        }
-        netLearner.learn( config.learningRate, config.annealLearningRate );
+//        netLearner.learn( config.learningRate, config.annealLearningRate );
+    }
+    netLearnerBase->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
+    netLearnerBase->setDumpTimings( config.dumpTimings );
+    netLearnerBase->setLearningRate( config.learningRate, config.annealLearningRate );
+    netLearnerBase->reset();
+    while( !netLearnerBase->isLearningDone() ) {
+        netLearnerBase->tickEpoch();
     }
 
     if( multiNet != 0 ) {

@@ -12,11 +12,7 @@
 
 using namespace std;
 
-template< typename T > Layer *InputLayerMaker<T>::createLayer( Layer *previousLayer ) {
-    return new InputLayer<T>( this );
+Layer *InputLayerMaker::createLayer( Layer *previousLayer ) {
+    return new InputLayer( this );
 }
-
-template class InputLayerMaker<float>;
-template class InputLayerMaker<unsigned char>;
-
 

@@ -11,12 +11,11 @@
 #include <cmath>
 #include <iostream>
 
-template<typename T>
 class Statistics {
 public:
     int count;
-    T maxY;
-    T minY;
+    float maxY;
+    float minY;
     float sumY;
     float sumYSquared;
     Statistics() {
@@ -26,12 +25,11 @@ public:
 
 class NormalizationHelper {
 public:
-    template<typename T>
-    static void updateStatistics( T *Y, int length, int cubeSize, Statistics<T> *statistics ) {
+    static void updateStatistics( float *Y, int length, int cubeSize, Statistics *statistics ) {
         float thisSumY = 0;
         float thisSumYSquared = 0;
-        T thisMin = Y[0];
-        T thisMax = Y[0];
+        float thisMin = Y[0];
+        float thisMax = Y[0];
         for( int i = 0; i < length * cubeSize; i++ ) {
             float thisValue = Y[i];
             thisSumY += thisValue;
@@ -48,14 +46,12 @@ public:
         statistics->sumYSquared += thisSumYSquared;
     }
 
-    template<typename T>
-    static void calcMeanAndStdDev( Statistics<T> *statistics, float *p_mean, float *p_stdDev ) {
+    static void calcMeanAndStdDev( Statistics *statistics, float *p_mean, float *p_stdDev ) {
         *p_mean = (float)statistics->sumY / statistics->count;
         *p_stdDev = sqrt( ( statistics->sumYSquared - statistics->sumY * statistics->sumY / statistics->count ) / (statistics->count - 1 ) );
     }
-
-    template<typename T>
-    static void getMeanAndStdDev( T *data, int length, float *p_mean, float *p_stdDev ) {
+    
+    static void getMeanAndStdDev( float *data, int length, float *p_mean, float *p_stdDev ) {
         // get mean of the dataset, and stddev
     //    float thismax = 0;
         float sum = 0;
@@ -78,9 +74,8 @@ public:
         *p_mean = mean;
         *p_stdDev = stdDev;
     }
-
-    template<typename T>
-    static void getMeanAndMaxDev( T *data, int length, float *p_mean, float *p_maxDev ) {
+    
+    static void getMeanAndMaxDev( float *data, int length, float *p_mean, float *p_maxDev ) {
         // get mean of the dataset, and stddev
     //    float thismax = 0;
         float sum = 0;
@@ -102,9 +97,8 @@ public:
         *p_mean = mean;
         *p_maxDev = std::max<float>( 255-mean, mean );
     }
-
-    template<typename T>
-    static void getMinMax( T *data, int length, float *p_middle, float *p_maxDev ) {
+    
+    static void getMinMax( float *data, int length, float *p_middle, float *p_maxDev ) {
         // get mean of the dataset, and stddev
         float thismin = 0;
         float thismax = 0;
@@ -118,9 +112,8 @@ public:
         *p_middle = ( thismax + thismin ) / 2; // pick number in the middle
         *p_maxDev = ( thismax - thismin ) / 2; // distance from middle of range to either end
     }
-
-    template<typename T>
-    static void normalize( T *data, int length, float mean, float scaling ) {
+    
+    static void normalize( float *data, int length, float mean, float scaling ) {
         for( int i = 0; i < length; i++ ) {
             data[i] = ( data[i] - mean ) / scaling;
         }

@@ -45,6 +45,19 @@ STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numE
     }
 }
 
+STATIC void GenericLoader::load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples ) {
+    int N, planes, size;
+    getDimensions( imagesFilePath, &N, &planes, &size );
+    unsigned char *ucImages = new unsigned char[ N * planes * size * size ];
+    load( imagesFilePath, ucImages, labels, startN, numExamples );
+    int linearSize = N * planes * size * size;
+
+    for( int i = 0; i < linearSize; i++ ) {
+        images[i] = ucImages[i];
+    }
+    delete[] ucImages;
+}
+
 STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *images, int *labels ) {
     load( trainFilepath, images, labels, 0, 0 );
 }

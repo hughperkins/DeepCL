@@ -19,83 +19,113 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-template< typename T > NetLearnerOnDemand<T>::NetLearnerOnDemand( Trainable *net ) :
-        net( net ) {
+NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net ) :
+        net( net ),
+        batchLearnerOnDemand( net ) {
     batchSize = 128;
     annealLearningRate = 1.0f;
     numEpochs = 12;
-    startEpoch = 1;
+    nextEpoch = 0;
+    learningDone = false;
     dumpTimings = false;
-//    trainData = 0;
-//    trainLabels = 0;
-//    testData = 0;
-//    testLabels = 0;
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setTrainingData( std::string trainFilepath, int Ntrain ) {
+VIRTUAL NetLearnerOnDemand::~NetLearnerOnDemand() {
+}
+
+VIRTUAL void NetLearnerOnDemand::setTrainingData( std::string trainFilepath, int Ntrain ) {
     this->Ntrain = Ntrain;
     this->trainFilepath = trainFilepath;
-//    this->trainData = trainData;
-//    this->trainLabels = trainLabels;
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setTestingData( std::string testFilepath, int Ntest ) {
+VIRTUAL void NetLearnerOnDemand::setTestingData( std::string testFilepath, int Ntest ) {
     this->testFilepath = testFilepath;
     this->Ntest = Ntest;
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setSchedule( int numEpochs ) {
+VIRTUAL void NetLearnerOnDemand::setSchedule( int numEpochs ) {
     setSchedule( numEpochs, 1 );
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setDumpTimings( bool dumpTimings ) {
+VIRTUAL void NetLearnerOnDemand::setDumpTimings( bool dumpTimings ) {
     this->dumpTimings = dumpTimings;
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setSchedule( int numEpochs, int startEpoch ) {
+VIRTUAL void NetLearnerOnDemand::setSchedule( int numEpochs, int nextEpoch ) {
     this->numEpochs = numEpochs;
-    this->startEpoch = startEpoch;
+    this->nextEpoch = nextEpoch;
 }
 
-template< typename T > void NetLearnerOnDemand<T>::setBatchSize( int fileReadBatches, int batchSize ) {
+VIRTUAL void NetLearnerOnDemand::setBatchSize( int fileReadBatches, int batchSize ) {
     this->batchSize = batchSize;
     this->fileReadBatches = fileReadBatches;
 }
 
-template< typename T > VIRTUAL NetLearnerOnDemand<T>::~NetLearnerOnDemand() {
-}
-
-template< typename T > VIRTUAL void NetLearnerOnDemand<T>::addPostEpochAction( PostEpochAction *action ) {
+VIRTUAL void NetLearnerOnDemand::addPostEpochAction( PostEpochAction *action ) {
     postEpochActions.push_back( action );
 }
-template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate ) {
-    learn( learningRate, 1.0f );
+
+VIRTUAL void NetLearnerOnDemand::setLearningRate( float learningRate ) {
+    this->setLearningRate( learningRate, 1.0f );
 }
 
-template< typename T > void NetLearnerOnDemand<T>::learn( float learningRate, float annealLearningRate ) {
-    BatchLearnerOnDemand<T> batchLearnerOnDemand( net );
-    Timer timer;
-    for( int epoch = startEpoch; epoch <= numEpochs; epoch++ ) {
-        float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
-        EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, fileReadBatches, batchSize, Ntrain );
-        cout << "dumpTimings " << dumpTimings << endl;
-        if( dumpTimings ) {
-            StatefulTimer::dump(true);
-        }
+VIRTUAL void NetLearnerOnDemand::setLearningRate( float learningRate, float annealLearningRate ) {
+    this->learningRate = learningRate;
+    this->annealLearningRate = annealLearningRate;
+}
+
+VIRTUAL void NetLearnerOnDemand::reset() {
+    timer.lap();
+    learningDone = false;
+    nextEpoch = 0;
+}
+
+VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
+    int epoch = nextEpoch;
+    float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
+    EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, fileReadBatches, batchSize, Ntrain );
+    cout << "dumpTimings " << dumpTimings << endl;
+    if( dumpTimings ) {
+        StatefulTimer::dump(true);
+    }
 //        cout << "-----------------------" << endl;
-        cout << endl;
-        timer.timeCheck("after epoch " + toString(epoch ) );
-        cout << "annealed learning rate: " << annealedLearningRate << " training loss: " << epochResult.loss << endl;
-        cout << " train accuracy: " << epochResult.numRight << "/" << Ntrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
-        int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
-        cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
-        timer.timeCheck("after tests");
-        for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
-            (*it)->run( epoch );
-        }
+    cout << endl;
+    timer.timeCheck("after epoch " + toString(epoch ) );
+    cout << "annealed learning rate: " << annealedLearningRate << " training loss: " << epochResult.loss << endl;
+    cout << " train accuracy: " << epochResult.numRight << "/" << Ntrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
+    int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
+    cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
+    timer.timeCheck("after tests");
+    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
+        (*it)->run( epoch );
+    }
+    nextEpoch++;
+    if( nextEpoch == numEpochs ) {
+        learningDone = true;
+    }
+    return !learningDone;
+}
+
+VIRTUAL void NetLearnerOnDemand::run() {
+    if( learningDone ) {
+        reset();
+    }
+    while( !learningDone ) {
+        tickEpoch();
     }
 }
 
-template class NetLearnerOnDemand<unsigned char>;
-//template class NetLearnerOnDemand<float>;
+VIRTUAL bool NetLearnerOnDemand::isLearningDone() {
+    return learningDone;
+}
+
+VIRTUAL void NetLearnerOnDemand::learn( float learningRate ) {
+    learn( learningRate, 1.0f );
+}
+
+VIRTUAL void NetLearnerOnDemand::learn( float learningRate, float annealLearningRate ) {
+    setLearningRate( learningRate, annealLearningRate );
+    run();
+}
+
 

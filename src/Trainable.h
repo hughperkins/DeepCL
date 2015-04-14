@@ -25,7 +25,6 @@ public:
     virtual void setTraining( bool training ) = 0;
     virtual int calcNumRight( int const *labels ) = 0;
     virtual void propagate( float const*images) = 0;
-    virtual void propagate( unsigned char const*images) = 0;
     virtual void backPropFromLabels( float learningRate, int const *labels) = 0;
     virtual void backProp( float learningRate, float const *expectedResults) = 0;
     virtual float const *getResults() const = 0;
@@ -41,9 +40,7 @@ public:
     // ]]]
     // generated, using cog:
     void learnBatch( float learningRate, float const*images, float const *expectedResults );
-    void learnBatch( float learningRate, unsigned char const*images, float const *expectedResults );
     void learnBatchFromLabels( float learningRate, float const*images, int const *labels );
-    void learnBatchFromLabels( float learningRate, unsigned char const*images, int const *labels );
 
     // [[[end]]]
 };

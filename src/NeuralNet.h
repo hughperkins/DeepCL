@@ -30,7 +30,7 @@ class OpenCLHelper;
 class ConvolutionalMaker;
 class LayerMaker;
 class RandomTranslatorMaker;
-template< typename T> class InputLayerMaker;
+class InputLayerMaker;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -62,7 +62,7 @@ public:
     float calcLossFromLabels(int const *labels );
     EpochMaker *epochMaker();
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
-    template< typename T > InputLayer<T> *getFirstLayer();
+    InputLayer *getFirstLayer();
     Layer *getLastLayer();
     int getNumLayers() const;
     Layer *getLayer( int index );
@@ -73,7 +73,6 @@ public:
     void setTraining( bool training );
     int calcNumRight( int const *labels );
     void propagate( float const*images);
-    void propagate( unsigned char const*images);
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);
     int getNumLayers();

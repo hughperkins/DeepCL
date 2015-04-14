@@ -1,8 +1,8 @@
 cdef extern from "CyNetLearner.h":
-    cdef cppclass CyNetLearner[T]:
+    cdef cppclass CyNetLearner:
         CyNetLearner( NeuralNet *net ) except +
-        void setTrainingData( int Ntrain, T *trainData, int *trainLabels ) except +
-        void setTestingData( int Ntest, T *testData, int *testLabels ) except +
+        void setTrainingData( int Ntrain, float *trainData, int *trainLabels ) except +
+        void setTestingData( int Ntest, float *testData, int *testLabels ) except +
         void setSchedule( int numEpochs ) except +
         void setDumpTimings( bool dumpTimings ) except +
         void setBatchSize( int batchSize ) except +

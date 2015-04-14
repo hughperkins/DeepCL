@@ -15,7 +15,7 @@ void go( string trainFilepath, int startN, int numExamples ) {
 //    int totalSize;
     GenericLoader::getDimensions( trainFilepath, &N, &numPlanes, &imageSize );
     cout << "N " << N << " numplanes " << numPlanes << " imageSize " << imageSize << endl;
-    unsigned char *images = new unsigned char[ numExamples * numPlanes * imageSize * imageSize ];
+    float *images = new float[ numExamples * numPlanes * imageSize * imageSize ];
     int *labels = new int[ numExamples ];
     GenericLoader::load( trainFilepath, images, labels, startN, numExamples );
 //    float *images = new float[ N * numPlanes * imageSize * imageSize ];

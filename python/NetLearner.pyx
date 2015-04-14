@@ -1,7 +1,7 @@
 cdef class NetLearner: 
-    cdef cDeepCL.CyNetLearner[float] *thisptr
+    cdef cDeepCL.CyNetLearner *thisptr
     def __cinit__( self, NeuralNet neuralnet ):
-        self.thisptr = new cDeepCL.CyNetLearner[float]( neuralnet.thisptr )
+        self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )
     def __dealloc(self):
         del self.thisptr
     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):

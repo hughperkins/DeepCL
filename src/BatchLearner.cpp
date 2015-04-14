@@ -18,74 +18,183 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-template< typename T>
-void NetLearnLabeledBatch<T>::run( Trainable *net, T const*const batchData, int const*const batchLabels ) {
+
+Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
+        net(net),
+        batchSize(batchSize),
+        N(N),
+        data(data),
+        labels(labels),
+        inputCubeSize( net->getInputCubeSize() )
+    {
+    updateVars();
+    reset();
+}
+
+void Batcher::updateVars() {
+    if( batchSize != 0 ) {
+        numBatches = ( N + batchSize - 1 ) / batchSize;
+    }
+}
+
+void Batcher::reset() {
+    nextBatch = 0;
+    numRight = 0;
+    loss = 0;
+    epochDone = false;
+}
+//
+//void Batcher::_tick( float const*batchData, int const*batchLabels ) {
+//}
+
+bool Batcher::tick() {
+    updateVars();
+    int batch = nextBatch;
+    std::cout << "BatchLearner.tick() batch=" << batch << std::endl;
+    int batchStart = batch * batchSize;
+    int thisBatchSize = batchSize;
+    if( batch == numBatches - 1 ) {
+        thisBatchSize = N - batchStart;
+        net->setBatchSize( thisBatchSize );
+    }
+        std::cout << "batchSize=" << batchSize << " thisBatchSize=" << thisBatchSize << " batch=" << batch <<
+            " batchStart=" << batchStart << " data=" << (void *)data << " labels=" << labels << 
+            std::endl;
+    net->setBatchSize( thisBatchSize );
+    this->_tick(  &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
+//        netAction->run( net, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
+    float thisLoss = net->calcLossFromLabels( &(labels[batchStart]) );
+    int thisNumRight = net->calcNumRight( &(labels[batchStart]) );
+//        std::cout << "thisloss " << thisLoss << " thisnumright " << thisNumRight << std::endl; 
+    loss += thisLoss;
+    numRight += thisNumRight;
+    for( std::vector<PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
+        (*it)->run( batch, numRight, loss );
+    }
+    nextBatch++;
+    if( nextBatch == numBatches ) {
+        epochDone = true;
+    }
+    return !epochDone;
+}
+
+EpochResult Batcher::run() {
+    if( epochDone ) {
+        reset();
+    }
+    while( !epochDone ) {
+        tick();
+    }
+    EpochResult epochResult( loss, numRight );
+    return epochResult;
+}
+
+void Batcher::addPostBatchAction( PostBatchAction *action ) {
+    postBatchActions.push_back( action );
+}
+
+
+void NetLearnLabeledBatch::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
     net->learnBatchFromLabels( learningRate, batchData, batchLabels );
 }
 
-template< typename T>
-void NetPropagateBatch<T>::run( Trainable *net, T const*const batchData, int const*const batchLabels ) {
+
+LearnBatcher::LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate ) :
+    Batcher( net, batchSize, N, data, labels ),
+    learningRate( learningRate ) {
+}
+
+
+void LearnBatcher::_tick( float const*batchData, int const*batchLabels) {
+    cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
+        " batchLabels=" << batchLabels << endl;
+    this->net->learnBatchFromLabels( learningRate, batchData, batchLabels );
+}
+ 
+
+NetActionBatcher::NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction *netAction) :
+    Batcher( net, batchSize, N, data, labels ),
+    netAction( netAction ) {
+}
+
+
+void NetActionBatcher::_tick( float const*batchData, int const*batchLabels ) {
+    netAction->run( this->net, batchData, batchLabels );
+}
+
+
+PropagateBatcher::PropagateBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
+    Batcher( net, batchSize, N, data, labels ) {
+}
+
+
+void PropagateBatcher::_tick( float const*batchData, int const*batchLabels) {
+    this->net->propagate( batchData );
+}
+
+
+void NetPropagateBatch::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetPropagateBatch" << endl;
     net->propagate( batchData );
 }
 
-template< typename T>
-void NetBackpropBatch<T>::run( Trainable *net, T const*const batchData, int const*const batchLabels ) {
+
+void NetBackpropBatch::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
     net->backPropFromLabels( learningRate, batchLabels );
 }
 
-template< typename T > BatchLearner<T>::BatchLearner( Trainable *net ) :
+ BatchLearner::BatchLearner( Trainable *net ) :
     net( net ) {
 }
 
-template< typename T > VIRTUAL void BatchLearner<T>::addPostBatchAction( PostBatchAction *action ) {
+ VIRTUAL void BatchLearner::addPostBatchAction( PostBatchAction *action ) {
     postBatchActions.push_back( action );
 }
 
-template< typename T > EpochResult BatchLearner<T>::batchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction ) {
+ EpochResult BatchLearner::batchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction ) {
     return runBatchedNetAction( batchSize, N, data, labels, netAction );
 }
 
-template< typename T > EpochResult BatchLearner<T>::runBatchedNetAction( int batchSize, int N, T *data, int const*labels, NetAction<T> *netAction ) {
-    Batcher<T> batcher(net, batchSize, N, data, labels, netAction);
+ EpochResult BatchLearner::runBatchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction ) {
+    NetActionBatcher batcher(net, batchSize, N, data, labels, netAction);
     return batcher.run();
 }
 
-template< typename T > int BatchLearner<T>::test( int batchSize, int N, T *testData, int const*testLabels ) {
+ int BatchLearner::test( int batchSize, int N, float *testData, int const*testLabels ) {
     net->setTraining( false );
-    NetAction<T> *action = new NetPropagateBatch<T>();
+    NetPropagateBatch *action = new NetPropagateBatch();
     int numRight = runBatchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
     delete action;
     return numRight;
 }
 
-template< typename T > int BatchLearner<T>::propagateForTrain( int batchSize, int N, T *data, int const*labels ) {
+ int BatchLearner::propagateForTrain( int batchSize, int N, float *data, int const*labels ) {
     net->setTraining( true );
-    NetAction<T> *action = new NetPropagateBatch<T>();
+    NetPropagateBatch *action = new NetPropagateBatch();
     int numRight = runBatchedNetAction( batchSize, N, data, labels, action ).numRight;
     delete action;
     return numRight;
 }
 
-template< typename T > EpochResult BatchLearner<T>::backprop( float learningRate, int batchSize, int N, T *data, int const*labels ) {
+ EpochResult BatchLearner::backprop( float learningRate, int batchSize, int N, float *data, int const*labels ) {
     net->setTraining( true );
-    NetAction<T> *action = new NetBackpropBatch<T>( learningRate );
+    NetBackpropBatch *action = new NetBackpropBatch( learningRate );
     EpochResult epochResult = runBatchedNetAction( batchSize, N, data, labels, action );
     delete action;
     return epochResult;
 }
 
-template< typename T > EpochResult BatchLearner<T>::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, T *trainData, int const*trainLabels ) {
+ EpochResult BatchLearner::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, float *trainData, int const*trainLabels ) {
     net->setTraining( true );
-    NetAction<T> *action = new NetLearnLabeledBatch<T>( learningRate );
+    NetLearnLabeledBatch *action = new NetLearnLabeledBatch( learningRate );
     EpochResult epochResult = runBatchedNetAction( batchSize, Ntrain, trainData, trainLabels, action );
     delete action;
     return epochResult;
 }
 
-template< typename T > float BatchLearner<T>::runEpochFromExpected( float learningRate, int batchSize, int N, T *data, float *expectedResults ) {
+ float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedResults ) {
     net->setTraining( true );
     float loss = 0;
     net->setBatchSize( batchSize );
@@ -103,7 +212,7 @@ template< typename T > float BatchLearner<T>::runEpochFromExpected( float learni
     return loss;
 }
 
-//template< typename T > EpochResult BatchLearner<T>::runEpochFromExpectedWithLabels( float learningRate, int batchSize, int Ntrain, T *trainData, float *expectedValues, int *labels ) {
+// EpochResult BatchLearner::runEpochFromExpectedWithLabels( float learningRate, int batchSize, int Ntrain, float *trainData, float *expectedValues, int *labels ) {
 //    net->setTraining( true );
 //    int numRight = 0;
 //    float loss = 0;
@@ -124,9 +233,4 @@ template< typename T > float BatchLearner<T>::runEpochFromExpected( float learni
 //    return epochResult;
 //}
 
-template class Batcher<unsigned char>;
-template class Batcher<float>;
-
-template class BatchLearner<unsigned char>;
-template class BatchLearner<float>;
 

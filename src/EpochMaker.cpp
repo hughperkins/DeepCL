@@ -21,7 +21,7 @@ float EpochMaker::run() {
     if( _expectedOutputs == 0 ) {
         throw runtime_error("must provide expectedOutputs if using runWithCalcTrainingAccuracy");
     }
-    BatchLearner<float> batchLearner( net );
+    BatchLearner batchLearner( net );
     return batchLearner.runEpochFromExpected( _learningRate, _batchSize, _numExamples, _inputData, _expectedOutputs );
 }
 
@@ -42,7 +42,7 @@ float EpochMaker::runFromLabels( int *p_numRight ) {
     if( _labels == 0 ) {
         throw runtime_error("must provide labels if using Epoch::runFromLabels");
     }
-    BatchLearner<float> batchLearner( net );
+    BatchLearner batchLearner( net );
     EpochResult epochResult = batchLearner.runEpochFromLabels( _learningRate, _batchSize, _numExamples, _inputData, _labels );
     *p_numRight = epochResult.numRight;
     return epochResult.loss;

@@ -9,12 +9,15 @@
 #include <vector>
 
 #include "BatchLearner.h"
+#include "NetLearnerBase.h"
+#include "Trainable.h"
+#include "Timer.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
 class NeuralNet;
-class Trainable;
+//class Trainable;
 
 #include "DeepCLDllExport.h"
 
@@ -25,14 +28,13 @@ public:
 
 // handles learning the neural net, ie running multiple epochs,
 // using a BatchLearner, to learn each epoch
-template<typename T>
-class DeepCL_EXPORT NetLearner {
+class DeepCL_EXPORT NetLearner : public NetLearnerBase {
 public:
     Trainable *net;
-    NetLearnLabeledBatch<T> learnAction;
-    NetPropagateBatch<T> testAction;
-    Batcher<T> trainBatcher;
-    Batcher<T> testBatcher;
+//    NetLearnLabeledBatch<T> learnAction;
+//    NetPropagateBatch<T> testAction;
+    LearnBatcher trainBatcher;
+    PropagateBatcher testBatcher;
 
     float learningRate;
     float annealLearningRate;
@@ -49,22 +51,26 @@ public:
 
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add_templated()
+    // cog_addheaders.add()
     // ]]]
     // generated, using cog:
     NetLearner( Trainable *net );
-    void setTrainingData( int Ntrain, T *trainData, int *trainLabels );
-    void setTestingData( int Ntest, T *testData, int *testLabels );
-    void setSchedule( int numEpochs );
-    void setDumpTimings( bool dumpTimings );
-    void setSchedule( int numEpochs, int startEpoch );
-    void setBatchSize( int batchSize );
     VIRTUAL ~NetLearner();
+    VIRTUAL void setTrainingData( int Ntrain, float *trainData, int *trainLabels );
+    VIRTUAL void setTestingData( int Ntest, float *testData, int *testLabels );
+    VIRTUAL void setSchedule( int numEpochs );
+    VIRTUAL void setDumpTimings( bool dumpTimings );
+    VIRTUAL void setSchedule( int numEpochs, int startEpoch );
+    VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void addPostEpochAction( PostEpochAction *action );
-    void reset();
-    bool tickEpoch();
-    void learn( float learningRate );
-    void learn( float learningRate, float annealLearningRate );
+    VIRTUAL void reset();
+    VIRTUAL bool tickEpoch();
+    VIRTUAL void run();
+    VIRTUAL bool isLearningDone();
+    VIRTUAL void setLearningRate( float learningRate );
+    VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
+    VIRTUAL void learn( float learningRate );
+    VIRTUAL void learn( float learningRate, float annealLearningRate );
 
     // [[[end]]]
 };

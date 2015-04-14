@@ -142,9 +142,9 @@ cdef class SoftMaxMaker(LayerMaker2):
         return SoftMaxMaker()
 
 cdef class InputLayerMaker(LayerMaker2):
-    cdef cDeepCL.InputLayerMaker[float] *thisptr
+    cdef cDeepCL.InputLayerMaker *thisptr
     def __cinit__( self ):
-        self.thisptr = new cDeepCL.InputLayerMaker[float]()
+        self.thisptr = new cDeepCL.InputLayerMaker()
         self.baseptr = self.thisptr
 #    def __dealloc__(self):
 #        del self.thisptr

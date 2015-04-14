@@ -19,8 +19,6 @@ cdef class NeuralNet:
 
     def setBatchSize( self, int batchSize ):
         self.thisptr.setBatchSize( batchSize ) 
-    #def propagate( self, const unsigned char[:] images):
-    #    self.thisptr.propagate( &images[0] )
     def propagate( self, const float[:] images):
         self.thisptr.propagate( &images[0] )
     def propagateList( self, imagesList):

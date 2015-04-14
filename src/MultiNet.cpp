@@ -31,10 +31,10 @@ MultiNet::MultiNet( int numNets, NeuralNet *model ) :
     for( int i = 0; i < numNets; i++ ) {
         trainables.push_back( model->clone() );
     }
-    InputLayerMaker<float> *inputLayerMaker = InputLayerMaker<float>::instance();
+    InputLayerMaker *inputLayerMaker = InputLayerMaker::instance();
     inputLayerMaker->numPlanes( trainables[0]->getOutputPlanes() );
     inputLayerMaker->imageSize( trainables[0]->getOutputImageSize() );
-    proxyInputLayer = new InputLayer<float>( inputLayerMaker );
+    proxyInputLayer = new InputLayer( inputLayerMaker );
     lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker()->createLayer(proxyInputLayer) );
 }
 VIRTUAL MultiNet::~MultiNet() {
@@ -162,12 +162,6 @@ void MultiNet::propagateToOurselves() {
 //    proxyInputLayer->in( results );
 }
 VIRTUAL void MultiNet::propagate( float const*images) {
-    for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->propagate( images );
-    }
-    propagateToOurselves();
-}
-VIRTUAL void MultiNet::propagate( unsigned char const*images) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
         (*it)->propagate( images );
     }

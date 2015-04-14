@@ -38,7 +38,7 @@ NeuralNet::NeuralNet() :
     isTraining( true ) {
 //    cout << "NeuralNet()" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    InputLayerMaker<T> *maker = new InputLayerMaker<T>( this, numPlanes, imageSize );
+//    InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, imageSize );
 //    maker->insert();
 }
 NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
@@ -49,7 +49,7 @@ NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
 //    maker->insert();
 //    InputLayerMaker<float> *maker = In;
 //    maker;
-    addLayer( InputLayerMaker<float>::instance()->numPlanes( numPlanes )->imageSize( imageSize ) );
+    addLayer( InputLayerMaker::instance()->numPlanes( numPlanes )->imageSize( imageSize ) );
 //    print();
 }
 NeuralNet::~NeuralNet() {
@@ -90,9 +90,9 @@ OpenCLHelper *NeuralNet::getCl() {
 STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
-//template< typename T > void NeuralNet::insert( InputLayerMaker<T> inputLayerMaker ) {
+//void NeuralNet::insert( InputLayerMaker inputLayerMaker ) {
 ////    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
-//    InputLayer<T> *inputLayer = new InputLayer<T>( inputLayerMaker );
+//    InputLayer *inputLayer = new InputLayer( inputLayerMaker );
 //    layers.push_back( inputLayer );
 //}
 void NeuralNet::addLayer( LayerMaker2 *maker ) {
@@ -101,11 +101,11 @@ void NeuralNet::addLayer( LayerMaker2 *maker ) {
     Layer *layer = maker->createLayer( getLastLayer() );
     layers.push_back( layer );
 }
-//template< typename T >InputLayerMaker<T> *NeuralNet::inputMaker() {
+//template< typename T >InputLayerMaker *NeuralNet::inputMaker() {
 //    if( layers.size() != 0 ) {
 //        throw runtime_error("Already added an InputLayer to this net");
 //    }
-//    return new InputLayerMaker<T>( this );
+//    return new InputLayerMaker( this );
 //}
 //FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
 //    return new FullyConnectedMaker( this, getLastLayer() );
@@ -173,8 +173,8 @@ VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker() const {
 //    LossLayer const*lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
 //    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) ) ;
 }
-template< typename T > InputLayer<T> *NeuralNet::getFirstLayer() {
-    return dynamic_cast<InputLayer<T> *>( layers[0] );
+InputLayer *NeuralNet::getFirstLayer() {
+    return dynamic_cast<InputLayer *>( layers[0] );
 }
 Layer *NeuralNet::getLastLayer() {
     if( layers.size() == 0 ) {
@@ -235,16 +235,7 @@ int NeuralNet::calcNumRight( int const *labels ) {
 }
 void NeuralNet::propagate( float const*images) {
     // forward...
-    dynamic_cast<InputLayer<float> *>(layers[0])->in( images );
-    for( int layerId = 0; layerId < (int)layers.size(); layerId++ ) {
-        StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
-        layers[layerId]->propagate();
-        StatefulTimer::setPrefix("" );
-    }
-}
-void NeuralNet::propagate( unsigned char const*images) {
-    // forward...
-    dynamic_cast<InputLayer<unsigned char> *>(layers[0])->in( images );
+    dynamic_cast<InputLayer *>(layers[0])->in( images );
     for( int layerId = 0; layerId < (int)layers.size(); layerId++ ) {
         StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
         layers[layerId]->propagate();

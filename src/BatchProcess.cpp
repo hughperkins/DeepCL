@@ -16,8 +16,7 @@
 
 using namespace std;
 
-template< typename T>
-void BatchProcess::run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<T> *batchAction) {
+void BatchProcess::run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction) {
     int numBatches = ( totalN + batchSize - 1 ) / batchSize;
     int thisBatchSize = batchSize;
 //    cout << "batchProcess::run batchsize " << batchSize << " startN " << startN << " totalN " << totalN << " numBatches " << numBatches << endl;
@@ -32,6 +31,4 @@ void BatchProcess::run(std::string filepath, int startN, int batchSize, int tota
         batchAction->processBatch( thisBatchSize, cubeSize );
     }
 }
-
-template DeepCL_EXPORT void BatchProcess::run<unsigned char>( std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction<unsigned char> *batchAction);
 

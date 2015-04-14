@@ -4,7 +4,7 @@ cdef extern from "LayerMaker.h":
         pass
 
 cdef extern from "InputLayerMaker.h":
-    cdef cppclass InputLayerMaker[T](LayerMaker2):
+    cdef cppclass InputLayerMaker(LayerMaker2):
         InputLayerMaker *numPlanes( int _numPlanes ) except +
         InputLayerMaker *imageSize( int _imageSize ) except +
         @staticmethod

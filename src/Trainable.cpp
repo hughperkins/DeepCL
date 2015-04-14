@@ -21,17 +21,7 @@ void Trainable::learnBatch( float learningRate, float const*images, float const 
     propagate( images);
     backProp( learningRate, expectedResults );
 }
-void Trainable::learnBatch( float learningRate, unsigned char const*images, float const *expectedResults ) {
-    setTraining( true );
-    propagate( images);
-    backProp( learningRate, expectedResults );
-}
 void Trainable::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
-    setTraining( true );
-    propagate( images);
-    backPropFromLabels( learningRate, labels );
-}
-void Trainable::learnBatchFromLabels( float learningRate, unsigned char const*images, int const *labels ) {
     setTraining( true );
     propagate( images);
     backPropFromLabels( learningRate, labels );

@@ -14,15 +14,14 @@ void checkException( int *wasRaised, std::string *message );
 // we need this, so we can catch the c++ exception, and raise
 // it in our altenrative way, all without needing to use the gil
 // (which I *think* adding 'except +' requires?)
-template<typename T>
-class CyNetLearner : public NetLearner<T> {
+class CyNetLearner : public NetLearner {
 public:
-    CyNetLearner(NeuralNet *neuralNet ) :
-        NetLearner<T>( neuralNet ) {
+    CyNetLearner(Trainable *neuralNet ) :
+        NetLearner( neuralNet ) {
     }
     void learn( float learningRate ) {
         try {
-            NetLearner<T>::learn(learningRate);
+            NetLearner::learn(learningRate);
         } catch( std::runtime_error &e ) {
             std::cout << e.what() << std::endl;
             raiseException( e.what() );

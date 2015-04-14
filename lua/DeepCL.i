@@ -25,11 +25,11 @@
 #include "NormalizationLayerMaker.h"
 #include "LayerMaker.h"
 #include "InputLayerMaker.h"
-#include "LuaWrappers.h"
+//#include "LuaWrappers.h"
 #include "QLearner2.h"
 %}
 
-%include "LuaWrappers.h"
+//%include "LuaWrappers.h"
 
 class GenericLoader {
 public:
@@ -38,17 +38,17 @@ public:
 
 %inline %{
 void GenericLoader_load( std::string trainFilepath, float *images, int *labels, int startN, int numExamples ) {
-    int N, planes, size;
-    GenericLoader::getDimensions( trainFilepath, &N, &planes, &size );
-    int linearSize = numExamples * planes * size * size;
+    //int N, planes, size;
+    //GenericLoader::getDimensions( trainFilepath, &N, &planes, &size );
+    //int linearSize = numExamples * planes * size * size;
     // let's just convert to floats for now... since swig apparently makes floats easy, and
     // I'd need a bit of effort to persuade it to accept unsigned char * arrays plausibly
-    unsigned char *ucarray = new unsigned char[linearSize];
-    GenericLoader::load( trainFilepath, ucarray, labels, startN, numExamples );
-    for( int i = 0; i < linearSize; i++ ) {
-        images[i] = ucarray[i];
-    }
-    delete[] ucarray;
+/*    unsigned char *ucarray = new unsigned char[linearSize];*/
+    GenericLoader::load( trainFilepath, images, labels, startN, numExamples );
+//    for( int i = 0; i < linearSize; i++ ) {
+//        images[i] = ucarray[i];
+ //   }
+  //  delete[] ucarray;
 }
 %}
 void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, int startN, int numExamples );
@@ -67,7 +67,6 @@ public:
     void addLayer( LayerMaker2 *maker );
     void setBatchSize( int batchSize );
     void propagate( float const*images);
-    void propagate( unsigned char const*images);
     void backPropFromLabels( float learningRate, int const *labels);
     void backProp( float learningRate, float const *expectedResults);
     int calcNumRight( int const *labels );
@@ -94,7 +93,6 @@ public:
 };
 
 %rename (NetLearnerBase) NetLearner;
-template<typename T>
 class NetLearner {
 public:
     NetLearner( NeuralNet *net );
@@ -105,7 +103,7 @@ public:
     void learn( float learningRate );
 };
 /*%rename(NetLearner) NetLearnerFloats;*/
-%template(NetLearner) NetLearner<float>;
+/*%template(NetLearner) NetLearner<float>;*/
 
 // we can probalby just %include these actually, but writing 
 // explicitly means we can pick and choose which methods we want
@@ -118,14 +116,14 @@ public:
 };
 
 %rename (InputLayerMakerBase) InputLayerMaker;
-template<typename T>
+
 class InputLayerMaker : public LayerMaker2 {
 public:
     InputLayerMaker();
     InputLayerMaker *numPlanes( int _numPlanes );
     InputLayerMaker *imageSize( int _imageSize );
 };
-%template(InputLayerMaker) InputLayerMaker<float>;
+/*%template(InputLayerMaker) InputLayerMaker<float>;*/
 
 class ConvolutionalMaker : public LayerMaker2 {
 public:
@@ -184,7 +182,7 @@ public:
                                   // we can construct it, and set values in it,
                                   // from lua, and pass it to c++, via swig 
                                   // wrappers
-%array_class(unsigned char, unsignedCharArray);
+/*%array_class(unsigned char, unsignedCharArray);*/
 %array_class(int, intArray);
 
 class QLearner2 {
