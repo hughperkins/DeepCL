@@ -38,6 +38,13 @@
   * migrate to use `async_work_group_copy`? => on hold, seems it's actually slower, in my experiments, at least on nvidia?
   * [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) => on hold, since, per [Sandle Dieleman's solution to the Galaxy Zoo challenge](http://benanne.github.io/2014/04/05/galaxy-zoo.html), seems like dropconnect is slower and doesnt convincingly add value, compared to dropout
 
+## Deprecated, in next version, 4.x.x
+
+* templates removed; everything is `float` now, no `unsigned char`, or `T`
+  * basically, templates work not great with pure virtual inheritance, nor are they very
+    supported by scripting languages we might be using to run DeepCL
+* removing callbacks from BatchLearner, NetLearner, NetLearnerOnDemand, BatchLearnerOnDemand
+
 ## Done
 
   * forward/backward propagation, for convolutional networks, using OpenCL
