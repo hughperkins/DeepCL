@@ -48,7 +48,6 @@ public:
     // generated, using cog:
     Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );
     VIRTUAL ~Batcher();
-    void updateVars();
     void reset();
     int getNextBatch();
     VIRTUAL float getLoss();
@@ -56,6 +55,7 @@ public:
     VIRTUAL int getN();
     VIRTUAL bool getEpochDone();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
+    VIRTUAL void setN( int N );
     bool tick();
     EpochResult run();
 

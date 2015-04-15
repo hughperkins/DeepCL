@@ -234,6 +234,7 @@ void go(Config config) {
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;
     }
+    net->setBatchSize( config.batchSize );
     net->print();
 
     bool afterRestart = false;

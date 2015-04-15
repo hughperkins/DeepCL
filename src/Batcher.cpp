@@ -26,18 +26,19 @@ Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, int const*la
         labels(labels)
             {
     inputCubeSize = net->getInputCubeSize();
-    updateVars();
+    numBatches = ( N + batchSize - 1 ) / batchSize;
+//    updateVars();
     reset();
 }
 VIRTUAL Batcher::~Batcher() {
 }
 
-void Batcher::updateVars() {
-    cout << "updateVars()" << endl;
-    if( batchSize != 0 ) {
-        numBatches = ( N + batchSize - 1 ) / batchSize;
-    }
-}
+//void Batcher::updateVars() {
+//    cout << "updateVars()" << endl;
+//    if( batchSize != 0 ) {
+//        numBatches = ( N + batchSize - 1 ) / batchSize;
+//    }
+//}
 
 void Batcher::reset() {
     nextBatch = 0;
@@ -70,6 +71,10 @@ VIRTUAL void Batcher::setBatchState( int nextBatch, int numRight, float loss ) {
     this->numRight = numRight;
     this->loss = loss;
 }
+VIRTUAL void Batcher::setN( int N ) {
+    this->N = N;
+    this->numBatches = (N + batchSize - 1 ) / batchSize;
+}
 
 //
 //void Batcher::_tick( float const*batchData, int const*batchLabels ) {
@@ -77,7 +82,7 @@ VIRTUAL void Batcher::setBatchState( int nextBatch, int numRight, float loss ) {
 
 bool Batcher::tick() {
     cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
-    updateVars();
+//    updateVars();
     if( epochDone ) {
         reset();
     }
