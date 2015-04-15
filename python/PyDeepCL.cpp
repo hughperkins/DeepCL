@@ -11,7 +11,6 @@
             "DeepCL"
         ], 
         "depends": [
-            "CyNetLearner.h", 
             "../src/Layer.h", 
             "../src/FullyConnectedMaker.h", 
             "../src/ForceBackpropLayerMaker.h", 
@@ -305,9 +304,8 @@ class __Pyx_FakeReference {
 #include "NeuralNet.h"
 #include "GenericLoader.h"
 #include "NetdefToNet.h"
-#include "CyNetLearner.h"
-#include "Layer.h"
 #include "CyWrappers.h"
+#include "Layer.h"
 #include "QLearner.h"
 #include "CyScenario.h"
 #include "stdlib.h"
@@ -1747,15 +1745,12 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_4imageSize(struct __pyx_ob
 static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_6instance(); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_getDimensions(PyObject *__pyx_v_trainFilePath); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_2load(PyObject *__pyx_v_trainFilepath, __Pyx_memviewslice __pyx_v_images, __Pyx_memviewslice __pyx_v_labels, PyObject *__pyx_v_startN, PyObject *__pyx_v_numExamples); /* proto */
-static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_neuralnet); /* proto */
+static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_neuralnet, PyObject *__pyx_v_Ntrain, __Pyx_memviewslice __pyx_v_trainData, __Pyx_memviewslice __pyx_v_trainLabels, PyObject *__pyx_v_Ntest, __Pyx_memviewslice __pyx_v_testData, __Pyx_memviewslice __pyx_v_testLabels, PyObject *__pyx_v_batchSize); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_2__dealloc(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_4setTrainingData(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_Ntrain, __Pyx_memviewslice __pyx_v_trainData, __Pyx_memviewslice __pyx_v_trainLabels); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_6setTestingData(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_Ntest, __Pyx_memviewslice __pyx_v_testData, __Pyx_memviewslice __pyx_v_testLabels); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_8setSchedule(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_numEpochs); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_10setDumpTimings(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, int __pyx_v_dumpTimings); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_12setBatchSize(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_batchSize); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_16learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_4setSchedule(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_numEpochs); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_6setDumpTimings(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, int __pyx_v_dumpTimings); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_8_learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_10learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_11NetdefToNet_createNetFromNetdef(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_neuralnet, PyObject *__pyx_v_netdef); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_2interruptableCall(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_function, PyObject *__pyx_v_args); /* proto */
@@ -1896,6 +1891,7 @@ static char __pyx_k_scenario[] = "scenario";
 static char __pyx_k_testData[] = "testData";
 static char __pyx_k_Exception[] = "Exception";
 static char __pyx_k_TypeError[] = "TypeError";
+static char __pyx_k_batchSize[] = "batchSize";
 static char __pyx_k_enumerate[] = "enumerate";
 static char __pyx_k_neuralnet[] = "neuralnet";
 static char __pyx_k_not_found[] = " not found";
@@ -2003,6 +1999,7 @@ static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_array;
 static PyObject *__pyx_n_s_base;
+static PyObject *__pyx_n_s_batchSize;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
 static PyObject *__pyx_n_s_checkException;
@@ -8147,15 +8144,22 @@ static PyObject *__pyx_pf_8PyDeepCL_13GenericLoader_2load(PyObject *__pyx_v_trai
 /* "NetLearner.pyx":3
  * cdef class NetLearner:
  *     cdef cDeepCL.CyNetLearner *thisptr
- *     def __cinit__( self, NeuralNet neuralnet ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )
- *     def __dealloc(self):
+ *     def __cinit__( self, NeuralNet neuralnet,             # <<<<<<<<<<<<<<
+ *             Ntrain, float[:] trainData, int[:] trainLabels,
+ *             Ntest, float[:] testData, int[:] testLabels,
  */
 
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_10NetLearner_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_10NetLearner_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_neuralnet = 0;
+  PyObject *__pyx_v_Ntrain = 0;
+  __Pyx_memviewslice __pyx_v_trainData = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_trainLabels = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject *__pyx_v_Ntest = 0;
+  __Pyx_memviewslice __pyx_v_testData = { 0, 0, { 0 }, { 0 }, { 0 } };
+  __Pyx_memviewslice __pyx_v_testLabels = { 0, 0, { 0 }, { 0 }, { 0 } };
+  PyObject *__pyx_v_batchSize = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -8163,172 +8167,17 @@ static int __pyx_pw_8PyDeepCL_10NetLearner_1__cinit__(PyObject *__pyx_v_self, Py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_neuralnet,0};
-    PyObject* values[1] = {0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_neuralnet,&__pyx_n_s_Ntrain,&__pyx_n_s_trainData,&__pyx_n_s_trainLabels,&__pyx_n_s_Ntest,&__pyx_n_s_testData,&__pyx_n_s_testLabels,&__pyx_n_s_batchSize,0};
+    PyObject* values[8] = {0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_neuralnet)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-    }
-    __pyx_v_neuralnet = ((struct __pyx_obj_8PyDeepCL_NeuralNet *)values[0]);
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return -1;
-  __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_neuralnet), __pyx_ptype_8PyDeepCL_NeuralNet, 1, "neuralnet", 0))) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner___cinit__(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), __pyx_v_neuralnet);
-
-  /* function exit code */
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __pyx_r = -1;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_neuralnet) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  CyNetLearner *__pyx_t_1;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__cinit__", 0);
-
-  /* "NetLearner.pyx":4
- *     cdef cDeepCL.CyNetLearner *thisptr
- *     def __cinit__( self, NeuralNet neuralnet ):
- *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )             # <<<<<<<<<<<<<<
- *     def __dealloc(self):
- *         del self.thisptr
- */
-  try {
-    __pyx_t_1 = new CyNetLearner(__pyx_v_neuralnet->thisptr);
-  } catch(...) {
-    __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_v_self->thisptr = __pyx_t_1;
-
-  /* "NetLearner.pyx":3
- * cdef class NetLearner:
- *     cdef cDeepCL.CyNetLearner *thisptr
- *     def __cinit__( self, NeuralNet neuralnet ):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )
- *     def __dealloc(self):
- */
-
-  /* function exit code */
-  __pyx_r = 0;
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = -1;
-  __pyx_L0:;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "NetLearner.pyx":5
- *     def __cinit__( self, NeuralNet neuralnet ):
- *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )
- *     def __dealloc(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_2__dealloc(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_2__dealloc(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc", 0);
-
-  /* "NetLearner.pyx":6
- *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )
- *     def __dealloc(self):
- *         del self.thisptr             # <<<<<<<<<<<<<<
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
- */
-  delete __pyx_v_self->thisptr;
-
-  /* "NetLearner.pyx":5
- *     def __cinit__( self, NeuralNet neuralnet ):
- *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr )
- *     def __dealloc(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "NetLearner.pyx":7
- *     def __dealloc(self):
- *         del self.thisptr
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):             # <<<<<<<<<<<<<<
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_5setTrainingData(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_5setTrainingData(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_Ntrain = 0;
-  __Pyx_memviewslice __pyx_v_trainData = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_trainLabels = { 0, 0, { 0 }, { 0 }, { 0 } };
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("setTrainingData (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_Ntrain,&__pyx_n_s_trainData,&__pyx_n_s_trainLabels,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
+        case  8: values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
+        case  7: values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
+        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
         case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
         case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
         case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -8338,66 +8187,110 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_5setTrainingData(PyObject *__py
       kw_args = PyDict_Size(__pyx_kwds);
       switch (pos_args) {
         case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ntrain)) != 0)) kw_args--;
+        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_neuralnet)) != 0)) kw_args--;
         else goto __pyx_L5_argtuple_error;
         case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_trainData)) != 0)) kw_args--;
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ntrain)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("setTrainingData", 1, 3, 3, 1); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 1); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_trainLabels)) != 0)) kw_args--;
+        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_trainData)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("setTrainingData", 1, 3, 3, 2); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 2); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  3:
+        if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_trainLabels)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 3); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  4:
+        if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ntest)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 4); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  5:
+        if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_testData)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 5); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  6:
+        if (likely((values[6] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_testLabels)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 6); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
+        case  7:
+        if (likely((values[7] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_batchSize)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, 7); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "setTrainingData") < 0)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 8) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
+      values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+      values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+      values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
+      values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
     }
-    __pyx_v_Ntrain = values[0];
-    __pyx_v_trainData = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[1]); if (unlikely(!__pyx_v_trainData.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_trainLabels = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[2]); if (unlikely(!__pyx_v_trainLabels.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_neuralnet = ((struct __pyx_obj_8PyDeepCL_NeuralNet *)values[0]);
+    __pyx_v_Ntrain = values[1];
+    __pyx_v_trainData = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[2]); if (unlikely(!__pyx_v_trainData.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_trainLabels = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[3]); if (unlikely(!__pyx_v_trainLabels.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_Ntest = values[4];
+    __pyx_v_testData = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[5]); if (unlikely(!__pyx_v_testData.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_testLabels = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[6]); if (unlikely(!__pyx_v_testLabels.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_batchSize = values[7];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("setTrainingData", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 8, 8, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.setTrainingData", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("PyDeepCL.NetLearner.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
-  return NULL;
+  return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_4setTrainingData(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), __pyx_v_Ntrain, __pyx_v_trainData, __pyx_v_trainLabels);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_neuralnet), __pyx_ptype_8PyDeepCL_NeuralNet, 1, "neuralnet", 0))) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner___cinit__(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), __pyx_v_neuralnet, __pyx_v_Ntrain, __pyx_v_trainData, __pyx_v_trainLabels, __pyx_v_Ntest, __pyx_v_testData, __pyx_v_testLabels, __pyx_v_batchSize);
 
   /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = -1;
+  __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_4setTrainingData(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_Ntrain, __Pyx_memviewslice __pyx_v_trainData, __Pyx_memviewslice __pyx_v_trainLabels) {
-  PyObject *__pyx_r = NULL;
+static int __pyx_pf_8PyDeepCL_10NetLearner___cinit__(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_neuralnet, PyObject *__pyx_v_Ntrain, __Pyx_memviewslice __pyx_v_trainData, __Pyx_memviewslice __pyx_v_trainLabels, PyObject *__pyx_v_Ntest, __Pyx_memviewslice __pyx_v_testData, __Pyx_memviewslice __pyx_v_testLabels, PyObject *__pyx_v_batchSize) {
+  int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
   int __pyx_t_3;
   Py_ssize_t __pyx_t_4;
+  Py_ssize_t __pyx_t_5;
+  int __pyx_t_6;
+  Py_ssize_t __pyx_t_7;
+  CyNetLearner *__pyx_t_8;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("setTrainingData", 0);
+  __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "NetLearner.pyx":8
- *         del self.thisptr
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )             # <<<<<<<<<<<<<<
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
+ *             batchSize ):
+ *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr,
+ *             Ntrain, &trainData[0], &trainLabels[0],             # <<<<<<<<<<<<<<
+ *             Ntest, &testData[0], &testLabels[0],
+ *             batchSize )
  */
   __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_Ntrain); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_t_2 = 0;
@@ -8420,204 +8313,155 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_4setTrainingData(struct __pyx_o
     __Pyx_RaiseBufferIndexError(__pyx_t_3);
     {__pyx_filename = __pyx_f[5]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
-  try {
-    __pyx_v_self->thisptr->setTrainingData(__pyx_t_1, (&(*((float *) ( /* dim=0 */ (__pyx_v_trainData.data + __pyx_t_2 * __pyx_v_trainData.strides[0]) )))), (&(*((int *) ( /* dim=0 */ (__pyx_v_trainLabels.data + __pyx_t_4 * __pyx_v_trainLabels.strides[0]) )))));
-  } catch(...) {
-    __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "NetLearner.pyx":9
+ *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr,
+ *             Ntrain, &trainData[0], &trainLabels[0],
+ *             Ntest, &testData[0], &testLabels[0],             # <<<<<<<<<<<<<<
+ *             batchSize )
+ *     def __dealloc(self):
+ */
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_Ntest); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = 0;
+  __pyx_t_6 = -1;
+  if (__pyx_t_5 < 0) {
+    __pyx_t_5 += __pyx_v_testData.shape[0];
+    if (unlikely(__pyx_t_5 < 0)) __pyx_t_6 = 0;
+  } else if (unlikely(__pyx_t_5 >= __pyx_v_testData.shape[0])) __pyx_t_6 = 0;
+  if (unlikely(__pyx_t_6 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_6);
+    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_t_7 = 0;
+  __pyx_t_6 = -1;
+  if (__pyx_t_7 < 0) {
+    __pyx_t_7 += __pyx_v_testLabels.shape[0];
+    if (unlikely(__pyx_t_7 < 0)) __pyx_t_6 = 0;
+  } else if (unlikely(__pyx_t_7 >= __pyx_v_testLabels.shape[0])) __pyx_t_6 = 0;
+  if (unlikely(__pyx_t_6 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_6);
+    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "NetLearner.pyx":7
+  /* "NetLearner.pyx":10
+ *             Ntrain, &trainData[0], &trainLabels[0],
+ *             Ntest, &testData[0], &testLabels[0],
+ *             batchSize )             # <<<<<<<<<<<<<<
  *     def __dealloc(self):
  *         del self.thisptr
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):             # <<<<<<<<<<<<<<
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
+ */
+  __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_batchSize); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+
+  /* "NetLearner.pyx":7
+ *             Ntest, float[:] testData, int[:] testLabels,
+ *             batchSize ):
+ *         self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr,             # <<<<<<<<<<<<<<
+ *             Ntrain, &trainData[0], &trainLabels[0],
+ *             Ntest, &testData[0], &testLabels[0],
+ */
+  try {
+    __pyx_t_8 = new CyNetLearner(__pyx_v_neuralnet->thisptr, __pyx_t_1, (&(*((float *) ( /* dim=0 */ (__pyx_v_trainData.data + __pyx_t_2 * __pyx_v_trainData.strides[0]) )))), (&(*((int *) ( /* dim=0 */ (__pyx_v_trainLabels.data + __pyx_t_4 * __pyx_v_trainLabels.strides[0]) )))), __pyx_t_3, (&(*((float *) ( /* dim=0 */ (__pyx_v_testData.data + __pyx_t_5 * __pyx_v_testData.strides[0]) )))), (&(*((int *) ( /* dim=0 */ (__pyx_v_testLabels.data + __pyx_t_7 * __pyx_v_testLabels.strides[0]) )))), __pyx_t_6);
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  }
+  __pyx_v_self->thisptr = __pyx_t_8;
+
+  /* "NetLearner.pyx":3
+ * cdef class NetLearner:
+ *     cdef cDeepCL.CyNetLearner *thisptr
+ *     def __cinit__( self, NeuralNet neuralnet,             # <<<<<<<<<<<<<<
+ *             Ntrain, float[:] trainData, int[:] trainLabels,
+ *             Ntest, float[:] testData, int[:] testLabels,
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.setTrainingData", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
+  __Pyx_AddTraceback("PyDeepCL.NetLearner.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_trainData, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_trainLabels, 1);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "NetLearner.pyx":9
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):             # <<<<<<<<<<<<<<
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
- *     def setSchedule( self, numEpochs ):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_7setTestingData(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_7setTestingData(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_Ntest = 0;
-  __Pyx_memviewslice __pyx_v_testData = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_memviewslice __pyx_v_testLabels = { 0, 0, { 0 }, { 0 }, { 0 } };
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("setTestingData (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_Ntest,&__pyx_n_s_testData,&__pyx_n_s_testLabels,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ntest)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_testData)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("setTestingData", 1, 3, 3, 1); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-        case  2:
-        if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_testLabels)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("setTestingData", 1, 3, 3, 2); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "setTestingData") < 0)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-    }
-    __pyx_v_Ntest = values[0];
-    __pyx_v_testData = __Pyx_PyObject_to_MemoryviewSlice_ds_float(values[1]); if (unlikely(!__pyx_v_testData.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-    __pyx_v_testLabels = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[2]); if (unlikely(!__pyx_v_testLabels.memview)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("setTestingData", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[5]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.setTestingData", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_6setTestingData(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), __pyx_v_Ntest, __pyx_v_testData, __pyx_v_testLabels);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_6setTestingData(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_Ntest, __Pyx_memviewslice __pyx_v_testData, __Pyx_memviewslice __pyx_v_testLabels) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  int __pyx_t_3;
-  Py_ssize_t __pyx_t_4;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("setTestingData", 0);
-
-  /* "NetLearner.pyx":10
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )             # <<<<<<<<<<<<<<
- *     def setSchedule( self, numEpochs ):
- *         self.thisptr.setSchedule( numEpochs )
- */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_Ntest); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_2 = 0;
-  __pyx_t_3 = -1;
-  if (__pyx_t_2 < 0) {
-    __pyx_t_2 += __pyx_v_testData.shape[0];
-    if (unlikely(__pyx_t_2 < 0)) __pyx_t_3 = 0;
-  } else if (unlikely(__pyx_t_2 >= __pyx_v_testData.shape[0])) __pyx_t_3 = 0;
-  if (unlikely(__pyx_t_3 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __pyx_t_4 = 0;
-  __pyx_t_3 = -1;
-  if (__pyx_t_4 < 0) {
-    __pyx_t_4 += __pyx_v_testLabels.shape[0];
-    if (unlikely(__pyx_t_4 < 0)) __pyx_t_3 = 0;
-  } else if (unlikely(__pyx_t_4 >= __pyx_v_testLabels.shape[0])) __pyx_t_3 = 0;
-  if (unlikely(__pyx_t_3 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_3);
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  try {
-    __pyx_v_self->thisptr->setTestingData(__pyx_t_1, (&(*((float *) ( /* dim=0 */ (__pyx_v_testData.data + __pyx_t_2 * __pyx_v_testData.strides[0]) )))), (&(*((int *) ( /* dim=0 */ (__pyx_v_testLabels.data + __pyx_t_4 * __pyx_v_testLabels.strides[0]) )))));
-  } catch(...) {
-    __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-
-  /* "NetLearner.pyx":9
- *     def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
- *         self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):             # <<<<<<<<<<<<<<
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
- *     def setSchedule( self, numEpochs ):
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.setTestingData", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_testData, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_testLabels, 1);
-  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
 /* "NetLearner.pyx":11
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
+ *             Ntest, &testData[0], &testLabels[0],
+ *             batchSize )
+ *     def __dealloc(self):             # <<<<<<<<<<<<<<
+ *         del self.thisptr
+ * #    def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_2__dealloc(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_2__dealloc(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc", 0);
+
+  /* "NetLearner.pyx":12
+ *             batchSize )
+ *     def __dealloc(self):
+ *         del self.thisptr             # <<<<<<<<<<<<<<
+ * #    def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
+ * #        self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
+ */
+  delete __pyx_v_self->thisptr;
+
+  /* "NetLearner.pyx":11
+ *             Ntest, &testData[0], &testLabels[0],
+ *             batchSize )
+ *     def __dealloc(self):             # <<<<<<<<<<<<<<
+ *         del self.thisptr
+ * #    def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "NetLearner.pyx":17
+ * #    def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
+ * #        self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
  *     def setSchedule( self, numEpochs ):             # <<<<<<<<<<<<<<
  *         self.thisptr.setSchedule( numEpochs )
  *     def setDumpTimings( self, bint dumpTimings ):
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_9setSchedule(PyObject *__pyx_v_self, PyObject *__pyx_v_numEpochs); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_9setSchedule(PyObject *__pyx_v_self, PyObject *__pyx_v_numEpochs) {
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_5setSchedule(PyObject *__pyx_v_self, PyObject *__pyx_v_numEpochs); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_5setSchedule(PyObject *__pyx_v_self, PyObject *__pyx_v_numEpochs) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("setSchedule (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_8setSchedule(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((PyObject *)__pyx_v_numEpochs));
+  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_4setSchedule(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((PyObject *)__pyx_v_numEpochs));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_8setSchedule(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_numEpochs) {
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_4setSchedule(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_numEpochs) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8626,24 +8470,24 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_8setSchedule(struct __pyx_obj_8
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("setSchedule", 0);
 
-  /* "NetLearner.pyx":12
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
+  /* "NetLearner.pyx":18
+ * #        self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
  *     def setSchedule( self, numEpochs ):
  *         self.thisptr.setSchedule( numEpochs )             # <<<<<<<<<<<<<<
  *     def setDumpTimings( self, bint dumpTimings ):
  *         self.thisptr.setDumpTimings( dumpTimings )
  */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_numEpochs); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_numEpochs); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   try {
     __pyx_v_self->thisptr->setSchedule(__pyx_t_1);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 18; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "NetLearner.pyx":11
- *     def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
- *         self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
+  /* "NetLearner.pyx":17
+ * #    def setTestingData( self, Ntest, float[:] testData, int[:] testLabels ):
+ * #        self.thisptr.setTestingData( Ntest, &testData[0], &testLabels[0] )
  *     def setSchedule( self, numEpochs ):             # <<<<<<<<<<<<<<
  *         self.thisptr.setSchedule( numEpochs )
  *     def setDumpTimings( self, bint dumpTimings ):
@@ -8661,17 +8505,17 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_8setSchedule(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "NetLearner.pyx":13
+/* "NetLearner.pyx":19
  *     def setSchedule( self, numEpochs ):
  *         self.thisptr.setSchedule( numEpochs )
  *     def setDumpTimings( self, bint dumpTimings ):             # <<<<<<<<<<<<<<
  *         self.thisptr.setDumpTimings( dumpTimings )
- *     def setBatchSize( self, batchSize ):
+ * #    def setBatchSize( self, batchSize ):
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_11setDumpTimings(PyObject *__pyx_v_self, PyObject *__pyx_arg_dumpTimings); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_11setDumpTimings(PyObject *__pyx_v_self, PyObject *__pyx_arg_dumpTimings) {
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_7setDumpTimings(PyObject *__pyx_v_self, PyObject *__pyx_arg_dumpTimings); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_7setDumpTimings(PyObject *__pyx_v_self, PyObject *__pyx_arg_dumpTimings) {
   int __pyx_v_dumpTimings;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -8680,7 +8524,7 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_11setDumpTimings(PyObject *__py
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("setDumpTimings (wrapper)", 0);
   assert(__pyx_arg_dumpTimings); {
-    __pyx_v_dumpTimings = __Pyx_PyObject_IsTrue(__pyx_arg_dumpTimings); if (unlikely((__pyx_v_dumpTimings == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_dumpTimings = __Pyx_PyObject_IsTrue(__pyx_arg_dumpTimings); if (unlikely((__pyx_v_dumpTimings == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 19; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8688,14 +8532,14 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_11setDumpTimings(PyObject *__py
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_10setDumpTimings(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((int)__pyx_v_dumpTimings));
+  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_6setDumpTimings(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((int)__pyx_v_dumpTimings));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_10setDumpTimings(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, int __pyx_v_dumpTimings) {
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_6setDumpTimings(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, int __pyx_v_dumpTimings) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
@@ -8703,26 +8547,26 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_10setDumpTimings(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("setDumpTimings", 0);
 
-  /* "NetLearner.pyx":14
+  /* "NetLearner.pyx":20
  *         self.thisptr.setSchedule( numEpochs )
  *     def setDumpTimings( self, bint dumpTimings ):
  *         self.thisptr.setDumpTimings( dumpTimings )             # <<<<<<<<<<<<<<
- *     def setBatchSize( self, batchSize ):
- *         self.thisptr.setBatchSize( batchSize )
+ * #    def setBatchSize( self, batchSize ):
+ * #        self.thisptr.setBatchSize( batchSize )
  */
   try {
     __pyx_v_self->thisptr->setDumpTimings(__pyx_v_dumpTimings);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "NetLearner.pyx":13
+  /* "NetLearner.pyx":19
  *     def setSchedule( self, numEpochs ):
  *         self.thisptr.setSchedule( numEpochs )
  *     def setDumpTimings( self, bint dumpTimings ):             # <<<<<<<<<<<<<<
  *         self.thisptr.setDumpTimings( dumpTimings )
- *     def setBatchSize( self, batchSize ):
+ * #    def setBatchSize( self, batchSize ):
  */
 
   /* function exit code */
@@ -8737,82 +8581,17 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_10setDumpTimings(struct __pyx_o
   return __pyx_r;
 }
 
-/* "NetLearner.pyx":15
- *     def setDumpTimings( self, bint dumpTimings ):
- *         self.thisptr.setDumpTimings( dumpTimings )
- *     def setBatchSize( self, batchSize ):             # <<<<<<<<<<<<<<
- *         self.thisptr.setBatchSize( batchSize )
- *     def _learn( self, float learningRate ):
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_13setBatchSize(PyObject *__pyx_v_self, PyObject *__pyx_v_batchSize); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_13setBatchSize(PyObject *__pyx_v_self, PyObject *__pyx_v_batchSize) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("setBatchSize (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_12setBatchSize(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((PyObject *)__pyx_v_batchSize));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_12setBatchSize(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, PyObject *__pyx_v_batchSize) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("setBatchSize", 0);
-
-  /* "NetLearner.pyx":16
- *         self.thisptr.setDumpTimings( dumpTimings )
- *     def setBatchSize( self, batchSize ):
- *         self.thisptr.setBatchSize( batchSize )             # <<<<<<<<<<<<<<
- *     def _learn( self, float learningRate ):
- *         with nogil:
- */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_batchSize); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  try {
-    __pyx_v_self->thisptr->setBatchSize(__pyx_t_1);
-  } catch(...) {
-    __Pyx_CppExn2PyErr();
-    {__pyx_filename = __pyx_f[5]; __pyx_lineno = 16; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-
-  /* "NetLearner.pyx":15
- *     def setDumpTimings( self, bint dumpTimings ):
- *         self.thisptr.setDumpTimings( dumpTimings )
- *     def setBatchSize( self, batchSize ):             # <<<<<<<<<<<<<<
- *         self.thisptr.setBatchSize( batchSize )
- *     def _learn( self, float learningRate ):
- */
-
-  /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.NetLearner.setBatchSize", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "NetLearner.pyx":17
- *     def setBatchSize( self, batchSize ):
- *         self.thisptr.setBatchSize( batchSize )
+/* "NetLearner.pyx":23
+ * #    def setBatchSize( self, batchSize ):
+ * #        self.thisptr.setBatchSize( batchSize )
  *     def _learn( self, float learningRate ):             # <<<<<<<<<<<<<<
  *         with nogil:
  *             self.thisptr.learn( learningRate )
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_15_learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_15_learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate) {
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_9_learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_9_learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate) {
   float __pyx_v_learningRate;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -8821,7 +8600,7 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_15_learn(PyObject *__pyx_v_self
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_learn (wrapper)", 0);
   assert(__pyx_arg_learningRate); {
-    __pyx_v_learningRate = __pyx_PyFloat_AsFloat(__pyx_arg_learningRate); if (unlikely((__pyx_v_learningRate == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_learningRate = __pyx_PyFloat_AsFloat(__pyx_arg_learningRate); if (unlikely((__pyx_v_learningRate == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 23; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8829,20 +8608,20 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_15_learn(PyObject *__pyx_v_self
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_14_learn(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((float)__pyx_v_learningRate));
+  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_8_learn(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((float)__pyx_v_learningRate));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate) {
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_8_learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_learn", 0);
 
-  /* "NetLearner.pyx":18
- *         self.thisptr.setBatchSize( batchSize )
+  /* "NetLearner.pyx":24
+ * #        self.thisptr.setBatchSize( batchSize )
  *     def _learn( self, float learningRate ):
  *         with nogil:             # <<<<<<<<<<<<<<
  *             self.thisptr.learn( learningRate )
@@ -8855,7 +8634,7 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDe
       #endif
       /*try:*/ {
 
-        /* "NetLearner.pyx":19
+        /* "NetLearner.pyx":25
  *     def _learn( self, float learningRate ):
  *         with nogil:
  *             self.thisptr.learn( learningRate )             # <<<<<<<<<<<<<<
@@ -8865,8 +8644,8 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDe
         __pyx_v_self->thisptr->learn(__pyx_v_learningRate);
       }
 
-      /* "NetLearner.pyx":18
- *         self.thisptr.setBatchSize( batchSize )
+      /* "NetLearner.pyx":24
+ * #        self.thisptr.setBatchSize( batchSize )
  *     def _learn( self, float learningRate ):
  *         with nogil:             # <<<<<<<<<<<<<<
  *             self.thisptr.learn( learningRate )
@@ -8883,9 +8662,9 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDe
       }
   }
 
-  /* "NetLearner.pyx":17
- *     def setBatchSize( self, batchSize ):
- *         self.thisptr.setBatchSize( batchSize )
+  /* "NetLearner.pyx":23
+ * #    def setBatchSize( self, batchSize ):
+ * #        self.thisptr.setBatchSize( batchSize )
  *     def _learn( self, float learningRate ):             # <<<<<<<<<<<<<<
  *         with nogil:
  *             self.thisptr.learn( learningRate )
@@ -8898,7 +8677,7 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDe
   return __pyx_r;
 }
 
-/* "NetLearner.pyx":20
+/* "NetLearner.pyx":26
  *         with nogil:
  *             self.thisptr.learn( learningRate )
  *     def learn( self, float learningRate ):             # <<<<<<<<<<<<<<
@@ -8907,8 +8686,8 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_14_learn(struct __pyx_obj_8PyDe
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_17learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_17learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate) {
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_11learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_11learn(PyObject *__pyx_v_self, PyObject *__pyx_arg_learningRate) {
   float __pyx_v_learningRate;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -8917,7 +8696,7 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_17learn(PyObject *__pyx_v_self,
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("learn (wrapper)", 0);
   assert(__pyx_arg_learningRate); {
-    __pyx_v_learningRate = __pyx_PyFloat_AsFloat(__pyx_arg_learningRate); if (unlikely((__pyx_v_learningRate == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 20; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_learningRate = __pyx_PyFloat_AsFloat(__pyx_arg_learningRate); if (unlikely((__pyx_v_learningRate == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 26; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8925,14 +8704,14 @@ static PyObject *__pyx_pw_8PyDeepCL_10NetLearner_17learn(PyObject *__pyx_v_self,
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_16learn(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((float)__pyx_v_learningRate));
+  __pyx_r = __pyx_pf_8PyDeepCL_10NetLearner_10learn(((struct __pyx_obj_8PyDeepCL_NetLearner *)__pyx_v_self), ((float)__pyx_v_learningRate));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_16learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate) {
+static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_10learn(struct __pyx_obj_8PyDeepCL_NetLearner *__pyx_v_self, float __pyx_v_learningRate) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8947,20 +8726,20 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_16learn(struct __pyx_obj_8PyDee
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("learn", 0);
 
-  /* "NetLearner.pyx":21
+  /* "NetLearner.pyx":27
  *             self.thisptr.learn( learningRate )
  *     def learn( self, float learningRate ):
  *         interruptableCall( self._learn, [ learningRate ] )             # <<<<<<<<<<<<<<
  * #        with nogil:
  * #            thisptr._learn( learningRate )
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_interruptableCall); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_interruptableCall); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_learn); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_learn); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_learningRate); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_4 = PyFloat_FromDouble(__pyx_v_learningRate); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyList_New(1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_5 = PyList_New(1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_5);
   PyList_SET_ITEM(__pyx_t_5, 0, __pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_4);
@@ -8977,7 +8756,7 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_16learn(struct __pyx_obj_8PyDee
       __pyx_t_6 = 1;
     }
   }
-  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_7);
   if (__pyx_t_4) {
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
@@ -8988,20 +8767,20 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_16learn(struct __pyx_obj_8PyDee
   __Pyx_GIVEREF(__pyx_t_5);
   __pyx_t_3 = 0;
   __pyx_t_5 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "NetLearner.pyx":24
+  /* "NetLearner.pyx":30
  * #        with nogil:
  * #            thisptr._learn( learningRate )
  *         checkException()             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_checkException); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_checkException); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_7 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -9014,16 +8793,16 @@ static PyObject *__pyx_pf_8PyDeepCL_10NetLearner_16learn(struct __pyx_obj_8PyDee
     }
   }
   if (__pyx_t_7) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_7); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_7); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "NetLearner.pyx":20
+  /* "NetLearner.pyx":26
  *         with nogil:
  *             self.thisptr.learn( learningRate )
  *     def learn( self, float learningRate ):             # <<<<<<<<<<<<<<
@@ -23843,13 +23622,10 @@ static void __pyx_tp_dealloc_8PyDeepCL_NetLearner(PyObject *o) {
 
 static PyMethodDef __pyx_methods_8PyDeepCL_NetLearner[] = {
   {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_3__dealloc, METH_NOARGS, 0},
-  {"setTrainingData", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_5setTrainingData, METH_VARARGS|METH_KEYWORDS, 0},
-  {"setTestingData", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_7setTestingData, METH_VARARGS|METH_KEYWORDS, 0},
-  {"setSchedule", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_9setSchedule, METH_O, 0},
-  {"setDumpTimings", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_11setDumpTimings, METH_O, 0},
-  {"setBatchSize", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_13setBatchSize, METH_O, 0},
-  {"_learn", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_15_learn, METH_O, 0},
-  {"learn", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_17learn, METH_O, 0},
+  {"setSchedule", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_5setSchedule, METH_O, 0},
+  {"setDumpTimings", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_7setDumpTimings, METH_O, 0},
+  {"_learn", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_9_learn, METH_O, 0},
+  {"learn", (PyCFunction)__pyx_pw_8PyDeepCL_10NetLearner_11learn, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -24896,6 +24672,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
   {&__pyx_n_s_array, __pyx_k_array, sizeof(__pyx_k_array), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
+  {&__pyx_n_s_batchSize, __pyx_k_batchSize, sizeof(__pyx_k_batchSize), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},
   {&__pyx_n_s_checkException, __pyx_k_checkException, sizeof(__pyx_k_checkException), 0, 0, 1, 1},
