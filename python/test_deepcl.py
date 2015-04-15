@@ -31,11 +31,11 @@ images = array.array( 'f', [0] * (N*planes*size*size) )
 labels = array.array('i',[0] * N )
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N )
 
-netLearner = PyDeepCL.NetLearner( net )
-netLearner.setTrainingData( N, images, labels )
-netLearner.setTestingData( N, images, labels )
+netLearner = PyDeepCL.NetLearner( net,
+    N, images, labels,
+    N, images, labels,
+    128 )
 netLearner.setSchedule( 12 )
-netLearner.setBatchSize( 128 )
 netLearner.learn( 0.002 )
  
 
