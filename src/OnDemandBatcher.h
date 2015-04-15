@@ -6,8 +6,12 @@
 
 #pragma once
 
-#include "Trainable.h"
-#include "BatchLearner.h"
+//#include "Trainable.h"
+//#include "BatchLearner.h"
+
+class NetActionBatcher;
+class Trainable;
+class NetAction;
 
 #include "DeepCLDllExport.h"
 
@@ -19,16 +23,17 @@
 // If you want to run multiple epochs, you'll need a 'NetLearner' class
 class OnDemandBatcher {
 protected:
-    int allocatedSize;
-public:
+//    int allocatedSize;
+
     Trainable *net;
-    BatchLearner batchLearner;
+//    BatchLearner *batchLearner;
     NetAction *netAction; // NOt owned by us, dont delete
+    NetActionBatcher *netActionBatcher;
     std::string filepath;
-    int N;
-    int fileReadBatches;
-    int batchSize;
-    int fileBatchSize;
+    const int N;
+    const int fileReadBatches;
+    const int batchSize;
+    const int fileBatchSize;
     const int inputCubeSize;
     int numFileBatches;
 
@@ -40,6 +45,8 @@ public:
     float loss;
     int nextFileBatch;
 
+public:
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
@@ -48,7 +55,13 @@ public:
     OnDemandBatcher( Trainable *net, NetAction *netAction,
     std::string filepath, int N, int fileReadBatches, int batchSize );
     VIRTUAL ~OnDemandBatcher();
-    void updateBuffers();
+    VIRTUAL void setBatchState( int nextFileBatch, int numRight, float loss );
+    VIRTUAL int getBatchSize();
+    VIRTUAL int getNextFileBatch();
+    VIRTUAL float getLoss();
+    VIRTUAL float getNumRight();
+    VIRTUAL bool getEpochDone();
+    VIRTUAL int getN();
     void reset();
     bool tick();
     EpochResult run();

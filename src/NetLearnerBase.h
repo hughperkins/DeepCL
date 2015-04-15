@@ -24,12 +24,12 @@ public:
     virtual void reset() = 0;
     virtual bool tickEpoch() = 0;
     virtual bool tickBatch() = 0;
-    virtual bool isEpochDone() = 0;
+    virtual bool getEpochDone() = 0;
     virtual int getNextEpoch() = 0;
-    virtual int getNextBatch() { throw std::runtime_error("getNextBatch not implemented");}
-    virtual int getBatchNumRight() { throw std::runtime_error("getBatchNumRight not implemented");}
-    virtual float getBatchLoss() { throw std::runtime_error("getBatchLoss not implemented");}
-    virtual void setBatchState( int batch, int numRight, float loss ) { throw std::runtime_error("setBatchState not implemented");}
+    virtual int getNextBatch() = 0;
+    virtual int getBatchNumRight() = 0;
+    virtual float getBatchLoss() = 0;
+    virtual void setBatchState( int batch, int numRight, float loss ) = 0;
     virtual void run() = 0;
 };
 

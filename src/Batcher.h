@@ -23,7 +23,7 @@ class NetAction;
 // Note however that, what OnDemandBatcher does is, it loads in some data, and
 // then it calls this Batcher class.  so they work together
 class DeepCL_EXPORT Batcher {
-public:
+protected:
     Trainable *net;
     int batchSize;
     int N;
@@ -38,6 +38,7 @@ public:
     int numRight;
     float loss;
 
+public:
     virtual void internalTick( float const*batchData, int const*batchLabels) = 0;
 
     // [[[cog
@@ -50,6 +51,11 @@ public:
     void updateVars();
     void reset();
     int getNextBatch();
+    VIRTUAL float getLoss();
+    VIRTUAL int getNumRight();
+    VIRTUAL int getN();
+    VIRTUAL bool getEpochDone();
+    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     bool tick();
     EpochResult run();
 
@@ -68,10 +74,15 @@ public:
 class DeepCL_EXPORT LearnBatcher : public Batcher {
 public:
     float learningRate;
+    virtual void setLearningRate( float learningRate ) {
+        this->learningRate = learningRate;
+    }
     LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate );
     virtual void internalTick( float const*batchData, int const*batchLabels);
+    float getLearningRate() {
+        return learningRate;
+    }
 };
-
 
 class DeepCL_EXPORT NetActionBatcher : public Batcher {
 public:

@@ -6,6 +6,8 @@
 
 #include "GenericLoader.h"
 #include "NetAction.h"
+#include "Trainable.h"
+#include "Batcher.h"
 
 #include "OnDemandBatcher.h"
 
@@ -19,8 +21,8 @@ using namespace std;
 OnDemandBatcher::OnDemandBatcher( Trainable *net, NetAction *netAction, 
             std::string filepath, int N, int fileReadBatches, int batchSize ) :
             net( net ),
-            batchLearner( net ),
             netAction( netAction ),
+            netActionBatcher( 0 ),
             filepath( filepath ),
             N( N ),
             fileReadBatches( fileReadBatches ),
@@ -28,15 +30,18 @@ OnDemandBatcher::OnDemandBatcher( Trainable *net, NetAction *netAction,
             fileBatchSize( batchSize * fileReadBatches ),
             inputCubeSize( net->getInputCubeSize() )
         {
-    dataBuffer = 0;
-    labelsBuffer = 0;
-    allocatedSize = 0;
-//    dataBuffer = new float[ fileBatchSize * inputCubeSize ];
-//    labelsBuffer = new int[ fileBatchSize * inputCubeSize ];
+    numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
+//    dataBuffer = 0;
+//    labelsBuffer = 0;
+//    allocatedSize = 0;
+    dataBuffer = new float[ fileBatchSize * inputCubeSize ];
+    labelsBuffer = new int[ fileBatchSize * inputCubeSize ];
+    netActionBatcher = new NetActionBatcher( net, batchSize, N, dataBuffer, labelsBuffer, netAction );
 //    updateVars();
     reset();
 }
 VIRTUAL OnDemandBatcher::~OnDemandBatcher() {
+    delete netActionBatcher;
     if( dataBuffer != 0 ) {
         delete[] dataBuffer;
     }
@@ -44,34 +49,81 @@ VIRTUAL OnDemandBatcher::~OnDemandBatcher() {
         delete[] labelsBuffer;
     }
 }
-void OnDemandBatcher::updateBuffers() {
-    fileBatchSize = batchSize * fileReadBatches;
-    fileBatchSize = fileBatchSize > N ? N : fileBatchSize;
-    if( fileBatchSize == 0 ) {
-        return;
-    }
-    numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
-    int newAllocatedSize = fileBatchSize;
-    if( newAllocatedSize != allocatedSize ) {
-        if( dataBuffer != 0 ) {
-            delete[] dataBuffer;
-        }
-        if( labelsBuffer != 0 ) {
-            delete[] labelsBuffer;
-        }
-        dataBuffer = new float[ newAllocatedSize * inputCubeSize ];
-        labelsBuffer = new int[ newAllocatedSize ];
-        allocatedSize = newAllocatedSize;
-    }
+//void OnDemandBatcher::updateBuffers() {
+//    fileBatchSize = batchSize * fileReadBatches;
+//    fileBatchSize = fileBatchSize > N ? N : fileBatchSize;
+//    if( fileBatchSize == 0 ) {
+//        return;
+//    }
+//    numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
+//    int newAllocatedSize = fileBatchSize;
+//    if( newAllocatedSize != allocatedSize ) {
+//        if( dataBuffer != 0 ) {
+//            delete[] dataBuffer;
+//        }
+//        if( labelsBuffer != 0 ) {
+//            delete[] labelsBuffer;
+//        }
+//        dataBuffer = new float[ newAllocatedSize * inputCubeSize ];
+//        labelsBuffer = new int[ newAllocatedSize ];
+//        netActionBatcher->setData( dataBuffer, labelsBuffer );
+////        netActionBatcher->labels = labelsBuffer;
+//        allocatedSize = newAllocatedSize;
+//    }
+//}
+VIRTUAL void OnDemandBatcher::setBatchState( int nextFileBatch, int numRight, float loss ) {
+    this->nextFileBatch = nextFileBatch;
+    this->numRight = numRight;
+    this->loss = loss;
+    epochDone = false;
 }
+//VIRTUAL void OnDemandBatcher::setData( std::string filepath ) {
+//    this->filepath = filepath;
+//}
+//VIRTUAL void OnDemandBatcher::setN( int N ) {
+//    if( N != this->N ) {
+//        this->N = N;
+////        updateBuffers();
+//    }
+//}
+VIRTUAL int OnDemandBatcher::getBatchSize() {
+    return batchSize;
+}
+VIRTUAL int OnDemandBatcher::getNextFileBatch() {
+    return nextFileBatch;
+}
+VIRTUAL float OnDemandBatcher::getLoss() {
+    return loss;
+}
+VIRTUAL float OnDemandBatcher::getNumRight() {
+    return numRight;
+}
+VIRTUAL bool OnDemandBatcher::getEpochDone() {
+    return epochDone;
+}
+VIRTUAL int OnDemandBatcher::getN() {
+    return N;
+}
+//VIRTUAL void OnDemandBatcher::setLearningRate( float learningRate ) {
+//    this->learningRate = learningRate;
+//}
+//VIRTUAL void OnDemandBatcher::setBatchSize( int batchSize ) {
+//    if( batchSize != this->batchSize ) {
+//        this->batchSize = batchSize;
+////        updateBuffers();
+//    }
+//}
 void OnDemandBatcher::reset() {
+    cout << "OnDemandBatcher::reset()" << endl;
     numRight = 0;
     loss = 0;
     nextFileBatch = 0;
     epochDone = false;
 }
 bool OnDemandBatcher::tick() {
-    updateBuffers();
+    cout << "OnDemandBatcher::tick nextFileBatch=" << nextFileBatch << " numRight=" << numRight << 
+        " loss=" << loss << " epochDone=" << epochDone << endl;
+//    updateBuffers();
     if( epochDone ) {
         reset();
     }
@@ -83,7 +135,7 @@ bool OnDemandBatcher::tick() {
     }
     cout << "batchlearnerondemand, read data... filebatchstart=" << fileBatchStart << " filebatchsize=" << thisFileBatchSize << endl;
     GenericLoader::load( filepath, dataBuffer, labelsBuffer, fileBatchStart, thisFileBatchSize );
-    EpochResult epochResult = batchLearner.batchedNetAction( batchSize, thisFileBatchSize, dataBuffer, labelsBuffer, netAction );
+    EpochResult epochResult = netActionBatcher->run();
     loss += epochResult.loss;
     numRight += epochResult.numRight;
 
@@ -94,6 +146,7 @@ bool OnDemandBatcher::tick() {
     return !epochDone;
 }
 EpochResult OnDemandBatcher::run() {
+    cout << "OnDemandBatcher::run() epochDone=" << epochDone << endl;
     if( epochDone ) {
         reset();
     }
@@ -103,5 +156,4 @@ EpochResult OnDemandBatcher::run() {
     EpochResult epochResult( loss, numRight );
     return epochResult;
 }
-
 

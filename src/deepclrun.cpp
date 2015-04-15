@@ -128,7 +128,10 @@ public:
     }
     string getTrainingString() {
         string configString = "";
-        configString += "netDef=" + netDef + " trainFile=" + trainFile;
+        configString += "netDef=" + netDef; // lets just force that at least
+                   // need same network structure, otherwise weights wont
+                   // really make sense at all.  Evreything else is up to the
+                   // end-user plausibly?
         return configString;
     }
 };
@@ -261,36 +264,36 @@ void go(Config config) {
         multiNet = new MultiNet( config.multiNet, net );
         trainable = multiNet;
     }
-    NetLearnerBase *netLearnerBase = 0;
+    NetLearnerBase *netLearner = 0;
     if( config.loadOnDemand ) {
-        NetLearnerOnDemand *netLearnerOnDemand = new NetLearnerOnDemand( trainable );
-        netLearnerOnDemand->setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
-        netLearnerOnDemand->setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
-        netLearnerOnDemand->setBatchSize( config.fileReadBatches, config.batchSize );
-        netLearnerBase = netLearnerOnDemand;
+        netLearner = new NetLearnerOnDemand( trainable,
+            config.dataDir + "/" + config.trainFile, Ntrain,
+            config.dataDir + "/" + config.validateFile, Ntest,
+            config.fileReadBatches, config.batchSize
+        );
     } else {
-        NetLearner *netLearner = new NetLearner( trainable );
-        netLearner->setTrainingData( Ntrain, trainData, trainLabels );
-        netLearner->setTestingData( Ntest, testData, testLabels );
-        netLearner->setBatchSize( config.batchSize );
-        netLearnerBase = netLearner;
+        netLearner = new NetLearner( trainable,
+            Ntrain, trainData, trainLabels,
+            Ntest, testData, testLabels,
+            config.batchSize 
+        );
     }
-    netLearnerBase->reset();
-    netLearnerBase->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
+    netLearner->reset();
+    netLearner->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
     if( afterRestart ) {
-        netLearnerBase->setBatchState( restartBatch, restartNumRight, restartLoss ); 
+        netLearner->setBatchState( restartBatch, restartNumRight, restartLoss ); 
     }
-    netLearnerBase->setDumpTimings( config.dumpTimings );
-    netLearnerBase->setLearningRate( config.learningRate, config.annealLearningRate );
+    netLearner->setDumpTimings( config.dumpTimings );
+    netLearner->setLearningRate( config.learningRate, config.annealLearningRate );
     Timer weightsWriteTimer;
-    while( !netLearnerBase->isLearningDone() ) {
+    while( !netLearner->isLearningDone() ) {
 //        netLearnerBase->tickEpoch();
-        netLearnerBase->tickBatch();
-        if( netLearnerBase->isEpochDone() ) {
+        netLearner->tickBatch();
+        if( netLearner->getEpochDone() ) {
             cout << "epoch done" << endl;
             if( config.weightsFile != "" ) {
-                cout << "record epoch=" << netLearnerBase->getNextEpoch() << endl;
-                WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearnerBase->getNextEpoch(), 0, 0, 0, 0 );
+                cout << "record epoch=" << netLearner->getNextEpoch() << endl;
+                WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0 );
                 weightsWriteTimer.lap();
             }
         } else {
@@ -299,10 +302,10 @@ void go(Config config) {
                 float timeMinutes = weightsWriteTimer.interval() / 1000.0f / 60.0f;
                 cout << "timeMinutes " << timeMinutes << endl;
                 if( timeMinutes >= config.writeWeightsInterval ) {
-                    int nextEpoch = netLearnerBase->getNextEpoch();
-                    int nextBatch = netLearnerBase->getNextBatch();
-                    int batchNumRight = netLearnerBase->getBatchNumRight();
-                    float batchLoss = netLearnerBase->getBatchLoss();
+                    int nextEpoch = netLearner->getNextEpoch();
+                    int nextBatch = netLearner->getNextBatch();
+                    int batchNumRight = netLearner->getBatchNumRight();
+                    float batchLoss = netLearner->getBatchLoss();
                     cout << "record epoch=" << nextEpoch << " batch=" << nextBatch <<
                         " numRight=" << batchNumRight << " loss=" << batchLoss << endl;
                     WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net,
@@ -313,7 +316,7 @@ void go(Config config) {
         }
     }
 
-    delete netLearnerBase;
+    delete netLearner;
     if( multiNet != 0 ) {
         delete multiNet;
     }

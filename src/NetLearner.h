@@ -47,23 +47,23 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NetLearner( Trainable *net );
+    NetLearner( Trainable *net,
+    int Ntrain, float *trainData, int *trainLabels,
+    int Ntest, float *testData, int *testLabels,
+    int batchSize );
     VIRTUAL ~NetLearner();
-    VIRTUAL void setTrainingData( int Ntrain, float *trainData, int *trainLabels );
-    VIRTUAL void setTestingData( int Ntest, float *testData, int *testLabels );
     VIRTUAL void setSchedule( int numEpochs );
     VIRTUAL void setDumpTimings( bool dumpTimings );
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
-    VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void reset();
     VIRTUAL void postEpochTesting();
     VIRTUAL bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
-    VIRTUAL bool isEpochDone();
+    VIRTUAL bool getEpochDone();
     VIRTUAL int getNextEpoch();
     VIRTUAL int getNextBatch();
     VIRTUAL int getBatchNumRight();
     VIRTUAL float getBatchLoss();
-    VIRTUAL void setBatchState( int batch, int numRight, float loss );
+    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     VIRTUAL bool tickEpoch();
     VIRTUAL void run();
     VIRTUAL bool isLearningDone();

@@ -33,6 +33,9 @@ public:
 class DeepCL_EXPORT NetLearnLabeledAction : public NetAction {
 public:
     float learningRate;
+    float getLearningRate() {
+        return learningRate;
+    }
     NetLearnLabeledAction( float learningRate ) :
         learningRate( learningRate ) {
     }   
@@ -51,6 +54,9 @@ public:
 class DeepCL_EXPORT NetBackpropAction : public NetAction {
 public:
     float learningRate;
+    float getLearningRate() {
+        return learningRate;
+    }
     NetBackpropAction( float learningRate ) :
         learningRate( learningRate ) {
     }

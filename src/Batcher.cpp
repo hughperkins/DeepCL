@@ -33,6 +33,7 @@ VIRTUAL Batcher::~Batcher() {
 }
 
 void Batcher::updateVars() {
+    cout << "updateVars()" << endl;
     if( batchSize != 0 ) {
         numBatches = ( N + batchSize - 1 ) / batchSize;
     }
@@ -51,6 +52,23 @@ int Batcher::getNextBatch() {
     } else {
         return nextBatch;
     }
+}
+VIRTUAL float Batcher::getLoss() {
+    return loss;
+}
+VIRTUAL int Batcher::getNumRight() {
+    return numRight;
+}
+VIRTUAL int Batcher::getN() {
+    return N;
+}
+VIRTUAL bool Batcher::getEpochDone() {
+    return epochDone;
+}
+VIRTUAL void Batcher::setBatchState( int nextBatch, int numRight, float loss ) {
+    this->nextBatch = nextBatch;
+    this->numRight = numRight;
+    this->loss = loss;
 }
 
 //
@@ -104,6 +122,18 @@ EpochResult Batcher::run() {
     EpochResult epochResult( loss, numRight );
     return epochResult;
 }
+
+//VIRTUAL void Batcher::setData( float *data, int const*labels ) {
+//    this->data = data;
+//    this->labels = labels;
+//}
+
+//VIRTUAL void Batcher::setN( int N ) {
+//    if( N != this->N  ) {
+//        this->N = N;
+//        updateVars();
+//    }
+//}
 
 LearnBatcher::LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate ) :
     Batcher( net, batchSize, N, data, labels ),

@@ -110,6 +110,8 @@ STATIC bool WeightsPersister::loadWeights( std::string filepath, std::string tra
         }
         if( trainingConfigString != std::string( data + 7 * 4 ) ) {
             std::cout << "training options dont match weights file" << std::endl;
+            std::cout << "in file: [" + std::string( data + 7 * 4 ) + "]" << std::endl;
+            std::cout << "current options: [" + trainingConfigString + "]" << std::endl;
             return false;
         }
         *p_epoch = dataAsInts[2];
