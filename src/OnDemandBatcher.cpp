@@ -70,8 +70,8 @@ VIRTUAL OnDemandBatcher::~OnDemandBatcher() {
 //        allocatedSize = newAllocatedSize;
 //    }
 //}
-VIRTUAL void OnDemandBatcher::setBatchState( int nextFileBatch, int numRight, float loss ) {
-    this->nextFileBatch = nextFileBatch;
+VIRTUAL void OnDemandBatcher::setBatchState( int nextBatch, int numRight, float loss ) {
+    this->nextFileBatch = nextBatch / fileReadBatches;
     this->numRight = numRight;
     this->loss = loss;
     epochDone = false;
@@ -90,6 +90,9 @@ VIRTUAL int OnDemandBatcher::getBatchSize() {
 }
 VIRTUAL int OnDemandBatcher::getNextFileBatch() {
     return nextFileBatch;
+}
+VIRTUAL int OnDemandBatcher::getNextBatch() {
+    return nextFileBatch * fileReadBatches;
 }
 VIRTUAL float OnDemandBatcher::getLoss() {
     return loss;

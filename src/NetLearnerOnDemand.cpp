@@ -106,7 +106,7 @@ VIRTUAL void NetLearnerOnDemand::setLearningRate( float learningRate, float anne
 }
 
 VIRTUAL int NetLearnerOnDemand::getNextBatch() {
-    return learnBatcher->getNextFileBatch();
+    return learnBatcher->getNextBatch();
 }
 
 VIRTUAL int NetLearnerOnDemand::getBatchNumRight() {
@@ -117,8 +117,8 @@ VIRTUAL float NetLearnerOnDemand::getBatchLoss() {
     return learnBatcher->getLoss();
 }
 
-VIRTUAL void NetLearnerOnDemand::setBatchState( int nextFileBatch, int numRight, float loss ) {
-    learnBatcher->setBatchState( nextFileBatch, numRight, loss );
+VIRTUAL void NetLearnerOnDemand::setBatchState( int nextBatch, int numRight, float loss ) {
+    learnBatcher->setBatchState( nextBatch, numRight, loss );
 }
 VIRTUAL void NetLearnerOnDemand::reset() {
     timer.lap();

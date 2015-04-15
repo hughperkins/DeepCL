@@ -55,9 +55,10 @@ public:
     OnDemandBatcher( Trainable *net, NetAction *netAction,
     std::string filepath, int N, int fileReadBatches, int batchSize );
     VIRTUAL ~OnDemandBatcher();
-    VIRTUAL void setBatchState( int nextFileBatch, int numRight, float loss );
+    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     VIRTUAL int getBatchSize();
     VIRTUAL int getNextFileBatch();
+    VIRTUAL int getNextBatch();
     VIRTUAL float getLoss();
     VIRTUAL float getNumRight();
     VIRTUAL bool getEpochDone();

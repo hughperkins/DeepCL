@@ -81,7 +81,7 @@ public:
     VIRTUAL int getNextBatch();
     VIRTUAL int getBatchNumRight();
     VIRTUAL float getBatchLoss();
-    VIRTUAL void setBatchState( int nextFileBatch, int numRight, float loss );
+    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     VIRTUAL void reset();
     VIRTUAL void postEpochTesting();
     VIRTUAL bool tickBatch();  // means: filebatch, not low-level batch
