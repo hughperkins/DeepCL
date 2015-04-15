@@ -70,6 +70,14 @@ VIRTUAL void NetLearnerOnDemand::setSchedule( int numEpochs, int nextEpoch ) {
     this->nextEpoch = nextEpoch;
 }
 
+VIRTUAL bool NetLearnerOnDemand::isEpochDone() {
+    return learnBatcher->epochDone;
+}
+
+VIRTUAL int NetLearnerOnDemand::getNextEpoch() {
+    return nextEpoch;
+}
+
 VIRTUAL void NetLearnerOnDemand::setBatchSize( int fileReadBatches, int batchSize ) {
 //    this->batchSize = batchSize;
 //    this->fileReadBatches = fileReadBatches;
@@ -92,6 +100,8 @@ VIRTUAL void NetLearnerOnDemand::reset() {
     timer.lap();
     learningDone = false;
     nextEpoch = 0;
+    learnBatcher->reset();
+    testBatcher->reset();
 }
 
 VIRTUAL void NetLearnerOnDemand::postEpochTesting() {
@@ -129,18 +139,29 @@ VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, not low-leve
 
 VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
     int epoch = nextEpoch;
-    learnAction->learningRate = learningRate * pow( annealLearningRate, epoch );
-    learnBatcher->tick();       // returns false once all learning done (all epochs)
+    cout << "NetLearnerOnDemand.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << learnBatcher->epochDone << endl;
+    cout << "numEpochs=" << numEpochs << endl;
     if( learnBatcher->epochDone ) {
-        postEpochTesting();
-        nextEpoch++;
+        learnBatcher->reset();
     }
-    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
-    if( nextEpoch == numEpochs ) {
-        cout << "setting learningdone to true" << endl;
-        learningDone = true;
+    while(!learnBatcher->epochDone ) {
+        tickBatch();
     }
     return !learningDone;
+
+//    int epoch = nextEpoch;
+//    learnAction->learningRate = learningRate * pow( annealLearningRate, epoch );
+//    learnBatcher->tick();       // returns false once all learning done (all epochs)
+//    if( learnBatcher->epochDone ) {
+//        postEpochTesting();
+//        nextEpoch++;
+//    }
+//    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
+//    if( nextEpoch == numEpochs ) {
+//        cout << "setting learningdone to true" << endl;
+//        learningDone = true;
+//    }
+//    return !learningDone;
 }
 
 VIRTUAL void NetLearnerOnDemand::run() {

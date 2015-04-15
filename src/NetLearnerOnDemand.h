@@ -73,6 +73,8 @@ public:
     VIRTUAL void setSchedule( int numEpochs );
     VIRTUAL void setDumpTimings( bool dumpTimings );
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
+    VIRTUAL bool isEpochDone();
+    VIRTUAL int getNextEpoch();
     VIRTUAL void setBatchSize( int fileReadBatches, int batchSize );
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );

@@ -23,9 +23,9 @@ public:
     virtual void learn( float learningRate, float annealLearningRate ) = 0;
     virtual void reset() = 0;
     virtual bool tickEpoch() = 0;
-    virtual bool tickBatch() {throw std::runtime_error("tickBatch not implemented");}
-    virtual bool isEpochDone() {throw std::runtime_error("isEpochDone not implemented");}
-    virtual int getNextEpoch() { throw std::runtime_error("getNextEpoch not implemented");}
+    virtual bool tickBatch() = 0;
+    virtual bool isEpochDone() = 0;
+    virtual int getNextEpoch() = 0;
     virtual int getNextBatch() { throw std::runtime_error("getNextBatch not implemented");}
     virtual int getBatchNumRight() { throw std::runtime_error("getBatchNumRight not implemented");}
     virtual float getBatchLoss() { throw std::runtime_error("getBatchLoss not implemented");}

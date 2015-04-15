@@ -18,6 +18,8 @@
 // and then passing it to 'Batcher' class, to train/test each chunk
 // If you want to run multiple epochs, you'll need a 'NetLearner' class
 class OnDemandBatcher {
+protected:
+    int allocatedSize;
 public:
     Trainable *net;
     BatchLearner batchLearner;
@@ -27,7 +29,7 @@ public:
     int fileReadBatches;
     int batchSize;
     int fileBatchSize;
-    int inputCubeSize;
+    const int inputCubeSize;
     int numFileBatches;
 
     float *dataBuffer;
@@ -46,7 +48,7 @@ public:
     OnDemandBatcher( Trainable *net, NetAction *netAction,
     std::string filepath, int N, int fileReadBatches, int batchSize );
     VIRTUAL ~OnDemandBatcher();
-    void updateVars();
+    void updateBuffers();
     void reset();
     bool tick();
     EpochResult run();
