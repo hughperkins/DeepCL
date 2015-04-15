@@ -75,7 +75,7 @@ VIRTUAL void NetLearner::setSchedule( int numEpochs, int nextEpoch ) {
 //}
 
 VIRTUAL void NetLearner::reset() {
-    cout << "NetLearner::reset()" << endl;
+//    cout << "NetLearner::reset()" << endl;
     learningDone = false;
     nextEpoch = 0;
 //    net->setTraining( true );
@@ -107,9 +107,9 @@ VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, once all do
         postEpochTesting();
         nextEpoch++;
     }
-    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
+//    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
     if( nextEpoch == numEpochs ) {
-        cout << "setting learningdone to true" << endl;
+//        cout << "setting learningdone to true" << endl;
         learningDone = true;
     }
     return !learningDone;
@@ -142,9 +142,9 @@ VIRTUAL void NetLearner::setBatchState( int nextBatch, int numRight, float loss 
 }
 
 VIRTUAL bool NetLearner::tickEpoch() {
-    int epoch = nextEpoch;
-    cout << "NetLearner.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << trainBatcher->getEpochDone() << endl;
-    cout << "numEpochs=" << numEpochs << endl;
+//    int epoch = nextEpoch;
+//    cout << "NetLearner.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << trainBatcher->getEpochDone() << endl;
+//    cout << "numEpochs=" << numEpochs << endl;
     if( trainBatcher->getEpochDone() ) {
         trainBatcher->reset();
     }

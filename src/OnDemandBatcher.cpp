@@ -34,7 +34,7 @@ OnDemandBatcher::OnDemandBatcher( Trainable *net, NetAction *netAction,
 //    dataBuffer = 0;
 //    labelsBuffer = 0;
 //    allocatedSize = 0;
-    cout << "OnDemandBatcher::OnDemandBatcher inputCubeSize " << inputCubeSize << " filebatchsize " << fileBatchSize << endl;
+//    cout << "OnDemandBatcher::OnDemandBatcher inputCubeSize " << inputCubeSize << " filebatchsize " << fileBatchSize << endl;
     dataBuffer = new float[ fileBatchSize * inputCubeSize ];
     labelsBuffer = new int[ fileBatchSize ];
 //    int lastFileBatchSize = N - ( numFileBatches - 1 ) * fileBatchSize;
@@ -116,15 +116,15 @@ VIRTUAL int OnDemandBatcher::getN() {
 //    }
 //}
 void OnDemandBatcher::reset() {
-    cout << "OnDemandBatcher::reset()" << endl;
+//    cout << "OnDemandBatcher::reset()" << endl;
     numRight = 0;
     loss = 0;
     nextFileBatch = 0;
     epochDone = false;
 }
 bool OnDemandBatcher::tick() {
-    cout << "OnDemandBatcher::tick nextFileBatch=" << nextFileBatch << " numRight=" << numRight << 
-        " loss=" << loss << " epochDone=" << epochDone << endl;
+//    cout << "OnDemandBatcher::tick nextFileBatch=" << nextFileBatch << " numRight=" << numRight << 
+//        " loss=" << loss << " epochDone=" << epochDone << endl;
 //    updateBuffers();
     if( epochDone ) {
         reset();
@@ -136,7 +136,7 @@ bool OnDemandBatcher::tick() {
         thisFileBatchSize = N - fileBatchStart;
     }
     netActionBatcher->setN( thisFileBatchSize );
-    cout << "batchlearnerondemand, read data... filebatchstart=" << fileBatchStart << " filebatchsize=" << thisFileBatchSize << endl;
+//    cout << "batchlearnerondemand, read data... filebatchstart=" << fileBatchStart << " filebatchsize=" << thisFileBatchSize << endl;
     GenericLoader::load( filepath, dataBuffer, labelsBuffer, fileBatchStart, thisFileBatchSize );
     EpochResult epochResult = netActionBatcher->run();
     loss += epochResult.loss;
@@ -149,7 +149,7 @@ bool OnDemandBatcher::tick() {
     return !epochDone;
 }
 EpochResult OnDemandBatcher::run() {
-    cout << "OnDemandBatcher::run() epochDone=" << epochDone << endl;
+//    cout << "OnDemandBatcher::run() epochDone=" << epochDone << endl;
     if( epochDone ) {
         reset();
     }

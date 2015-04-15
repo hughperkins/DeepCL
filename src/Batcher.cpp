@@ -81,7 +81,7 @@ VIRTUAL void Batcher::setN( int N ) {
 //}
 
 bool Batcher::tick() {
-    cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
+//    cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
 //    updateVars();
     if( epochDone ) {
         reset();

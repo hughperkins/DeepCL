@@ -291,7 +291,7 @@ void go(Config config) {
 //        netLearnerBase->tickEpoch();
         netLearner->tickBatch();
         if( netLearner->getEpochDone() ) {
-            cout << "epoch done" << endl;
+//            cout << "epoch done" << endl;
             if( config.weightsFile != "" ) {
                 cout << "record epoch=" << netLearner->getNextEpoch() << endl;
                 WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0 );
@@ -299,9 +299,9 @@ void go(Config config) {
             }
         } else {
             if( config.writeWeightsInterval > 0 ) {
-                cout << "batch done" << endl;
+//                cout << "batch done" << endl;
                 float timeMinutes = weightsWriteTimer.interval() / 1000.0f / 60.0f;
-                cout << "timeMinutes " << timeMinutes << endl;
+//                cout << "timeMinutes " << timeMinutes << endl;
                 if( timeMinutes >= config.writeWeightsInterval ) {
                     int nextEpoch = netLearner->getNextEpoch();
                     int nextBatch = netLearner->getNextBatch();

@@ -153,18 +153,18 @@ VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, not low-leve
         postEpochTesting();
         nextEpoch++;
     }
-    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
+//    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
     if( nextEpoch == numEpochs ) {
-        cout << "setting learningdone to true" << endl;
+//        cout << "setting learningdone to true" << endl;
         learningDone = true;
     }
     return !learningDone;
 }
 
 VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
-    int epoch = nextEpoch;
-    cout << "NetLearnerOnDemand.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << learnBatcher->getEpochDone() << endl;
-    cout << "numEpochs=" << numEpochs << endl;
+//    int epoch = nextEpoch;
+//    cout << "NetLearnerOnDemand.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << learnBatcher->getEpochDone() << endl;
+//    cout << "numEpochs=" << numEpochs << endl;
     if( learnBatcher->getEpochDone() ) {
         learnBatcher->reset();
     }
