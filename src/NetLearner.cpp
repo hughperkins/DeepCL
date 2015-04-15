@@ -62,9 +62,9 @@ VIRTUAL void NetLearner::setDumpTimings( bool dumpTimings ) {
     this->dumpTimings = dumpTimings;
 }
 
-VIRTUAL void NetLearner::setSchedule( int numEpochs, int startEpoch ) {
+VIRTUAL void NetLearner::setSchedule( int numEpochs, int nextEpoch ) {
     this->numEpochs = numEpochs;
-    this->nextEpoch = startEpoch;
+    this->nextEpoch = nextEpoch;
 }
 
 VIRTUAL void NetLearner::setBatchSize( int batchSize ) {

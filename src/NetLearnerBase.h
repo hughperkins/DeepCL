@@ -12,6 +12,7 @@
 
 class DeepCL_EXPORT NetLearnerBase {
 public:
+    virtual ~NetLearnerBase() {}
     virtual bool isLearningDone() = 0;
     virtual void setSchedule( int numEpochs ) = 0;
     virtual void setDumpTimings( bool dumpTimings ) = 0;

@@ -301,11 +301,11 @@ void go(Config config) {
     }
     NetLearnerBase *netLearnerBase = 0;
     if( config.loadOnDemand ) {
-        NetLearnerOnDemand netLearnerOnDemand( trainable );
-        netLearnerOnDemand.setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
-        netLearnerOnDemand.setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
-        netLearnerOnDemand.setBatchSize( config.fileReadBatches, config.batchSize );
-        netLearnerBase = &netLearnerOnDemand;
+        NetLearnerOnDemand *netLearnerOnDemand = new NetLearnerOnDemand( trainable );
+        netLearnerOnDemand->setTrainingData( config.dataDir + "/" + config.trainFile, Ntrain );
+        netLearnerOnDemand->setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
+        netLearnerOnDemand->setBatchSize( config.fileReadBatches, config.batchSize );
+        netLearnerBase = netLearnerOnDemand;
 //        WeightsWriter weightsWriter( net, &config );
 //        if( config.weightsFile != "" ) {
 //            netLearner.addPostEpochAction( &weightsWriter );
@@ -316,11 +316,13 @@ void go(Config config) {
 //        }
 //        netLearner.learn( config.learningRate, config.annealLearningRate );
     } else {
-        NetLearner netLearner( trainable );
-        netLearner.setTrainingData( Ntrain, trainData, trainLabels );
-        netLearner.setTestingData( Ntest, testData, testLabels );
-        netLearner.setBatchSize( config.batchSize );
-        netLearnerBase = &netLearner;
+        NetLearner *netLearner = new NetLearner( trainable );
+        netLearner->setTrainingData( Ntrain, trainData, trainLabels );
+        netLearner->setTestingData( Ntest, testData, testLabels );
+        netLearner->setBatchSize( config.batchSize );
+        netLearnerBase = netLearner;
+        //netLearnerBase->tickEpoch();
+        //netLearner.tickEpoch();
 //        WeightsWriter weightsWriter( net, &config );
 //        if( config.weightsFile != "" ) {
 //            netLearner.addPostEpochAction( &weightsWriter );
@@ -339,11 +341,11 @@ void go(Config config) {
         netLearnerBase->tickEpoch();
     }
 
+    delete netLearnerBase;
     if( multiNet != 0 ) {
         delete multiNet;
     }
     delete net;
-
     if( trainData != 0 ) {
         delete[] trainData;
     }

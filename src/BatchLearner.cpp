@@ -50,15 +50,15 @@ void Batcher::reset() {
 bool Batcher::tick() {
     updateVars();
     int batch = nextBatch;
-    std::cout << "BatchLearner.tick() batch=" << batch << std::endl;
+//    std::cout << "BatchLearner.tick() batch=" << batch << std::endl;
     int batchStart = batch * batchSize;
     int thisBatchSize = batchSize;
     if( batch == numBatches - 1 ) {
         thisBatchSize = N - batchStart;
     }
-    std::cout << "batchSize=" << batchSize << " thisBatchSize=" << thisBatchSize << " batch=" << batch <<
-            " batchStart=" << batchStart << " data=" << (void *)data << " labels=" << labels << 
-            std::endl;
+//    std::cout << "batchSize=" << batchSize << " thisBatchSize=" << thisBatchSize << " batch=" << batch <<
+//            " batchStart=" << batchStart << " data=" << (void *)data << " labels=" << labels << 
+//            std::endl;
     net->setBatchSize( thisBatchSize );
     internalTick(  &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
 //        netAction->run( net, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
@@ -104,8 +104,8 @@ LearnBatcher::LearnBatcher(Trainable *net, int batchSize, int N, float *data, in
 
 
 void LearnBatcher::internalTick( float const*batchData, int const*batchLabels) {
-    cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
-        " batchLabels=" << batchLabels << endl;
+//    cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
+//        " batchLabels=" << batchLabels << endl;
     net->learnBatchFromLabels( learningRate, batchData, batchLabels );
 }
  

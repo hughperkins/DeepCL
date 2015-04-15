@@ -51,7 +51,7 @@ public:
     VIRTUAL void setTestingData( int Ntest, float *testData, int *testLabels );
     VIRTUAL void setSchedule( int numEpochs );
     VIRTUAL void setDumpTimings( bool dumpTimings );
-    VIRTUAL void setSchedule( int numEpochs, int startEpoch );
+    VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void reset();
     VIRTUAL bool tickEpoch();
