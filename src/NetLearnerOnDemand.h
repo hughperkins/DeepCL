@@ -50,8 +50,6 @@ public:
     int numEpochs;
     bool learningDone;
 
-    std::vector<PostEpochAction *> postEpochActions;
-
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
@@ -65,7 +63,6 @@ public:
     VIRTUAL void setDumpTimings( bool dumpTimings );
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
     VIRTUAL void setBatchSize( int fileReadBatches, int batchSize );
-    VIRTUAL void addPostEpochAction( PostEpochAction *action );
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
     VIRTUAL void reset();

@@ -31,18 +31,11 @@ public:
     }
 };
 
-class DeepCL_EXPORT PostBatchAction {
-public:
-    virtual void run( int batch, int numRightSoFar, float lossSoFar ) = 0;
-};
-
-
 class DeepCL_EXPORT NetAction {
 public:
     virtual ~NetAction() {}
     virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels ) = 0;
 };
-
 
 class DeepCL_EXPORT Batcher {
 public:
@@ -60,18 +53,13 @@ public:
     int numRight;
     float loss;
 
-    std::vector< PostBatchAction * > postBatchActions; // note: we DONT own these, dont delete, caller owns
-
     Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );
     virtual ~Batcher(){}
     void updateVars();
     void reset();
-    virtual void _tick( float const*batchData, int const*batchLabels ) {
-        throw std::runtime_error("batcher::_tick() not implemeneted");
-    }
+    virtual void internalTick( float const*batchData, int const*batchLabels ) = 0;
     virtual bool tick();
     EpochResult run();
-    void addPostBatchAction( PostBatchAction *action );
 };
 
 
@@ -79,7 +67,7 @@ class DeepCL_EXPORT LearnBatcher : public Batcher {
 public:
     float learningRate;
     LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate );
-    virtual void _tick( float const*batchData, int const*batchLabels);
+    virtual void internalTick( float const*batchData, int const*batchLabels);
 };
 
 
@@ -87,14 +75,14 @@ class DeepCL_EXPORT NetActionBatcher : public Batcher {
 public:
     NetAction * netAction;
     NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction * netAction);
-    virtual void _tick( float const*batchData, int const*batchLabels );
+    virtual void internalTick( float const*batchData, int const*batchLabels );
 };
 
 
 class DeepCL_EXPORT PropagateBatcher : public Batcher {
 public:
     PropagateBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels);
-    virtual void _tick( float const*batchData, int const*batchLabels);
+    virtual void internalTick( float const*batchData, int const*batchLabels);
 };
 
 
@@ -133,15 +121,12 @@ class DeepCL_EXPORT BatchLearner {
 public:
     Trainable *net; // NOT owned by us, dont delete
 
-    std::vector<PostBatchAction *> postBatchActions; // note: we DONT own these, dont delete, caller owns
-
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
     BatchLearner( Trainable *net );
-    VIRTUAL void addPostBatchAction( PostBatchAction *action );
     EpochResult batchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
     EpochResult runBatchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
     int test( int batchSize, int N, float *testData, int const*testLabels );

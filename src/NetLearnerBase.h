@@ -21,7 +21,7 @@ public:
     virtual void learn( float learningRate ) = 0;
     virtual void learn( float learningRate, float annealLearningRate ) = 0;
     virtual void reset() = 0;
-    virtual bool tickEpoch() { throw std::runtime_error("tickEpoch not overridden"); }
+    virtual bool tickEpoch() = 0;
     virtual void run() = 0;
 };
 

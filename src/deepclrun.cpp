@@ -133,18 +133,18 @@ public:
     }
 };
 
-class WeightsWriter : public PostEpochAction {
-public:
-    NeuralNet *net;
-    Config *config;
-    WeightsWriter( NeuralNet *net, Config *config ) :
-        net( net ),
-        config( config ) {
-    }
-    virtual void run( int epoch ) {
-        WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, 0, 0, 0, 0 );
-    }
-};
+//class WeightsWriter : public PostEpochAction {
+//public:
+//    NeuralNet *net;
+//    Config *config;
+//    WeightsWriter( NeuralNet *net, Config *config ) :
+//        net( net ),
+//        config( config ) {
+//    }
+//    virtual void run( int epoch ) {
+//        WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, 0, 0, 0, 0 );
+//    }
+//};
 
 //class IntervalWeightsWriter : public NetLearner_PostBatchAction {
 //public:

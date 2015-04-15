@@ -24,9 +24,9 @@ Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, int const*la
         batchSize(batchSize),
         N(N),
         data(data),
-        labels(labels),
-        inputCubeSize( net->getInputCubeSize() )
-    {
+        labels(labels)
+            {
+    inputCubeSize = net->getInputCubeSize();
     updateVars();
     reset();
 }
@@ -55,22 +55,18 @@ bool Batcher::tick() {
     int thisBatchSize = batchSize;
     if( batch == numBatches - 1 ) {
         thisBatchSize = N - batchStart;
-        net->setBatchSize( thisBatchSize );
     }
-        std::cout << "batchSize=" << batchSize << " thisBatchSize=" << thisBatchSize << " batch=" << batch <<
+    std::cout << "batchSize=" << batchSize << " thisBatchSize=" << thisBatchSize << " batch=" << batch <<
             " batchStart=" << batchStart << " data=" << (void *)data << " labels=" << labels << 
             std::endl;
     net->setBatchSize( thisBatchSize );
-    this->_tick(  &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
+    internalTick(  &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
 //        netAction->run( net, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
     float thisLoss = net->calcLossFromLabels( &(labels[batchStart]) );
     int thisNumRight = net->calcNumRight( &(labels[batchStart]) );
 //        std::cout << "thisloss " << thisLoss << " thisnumright " << thisNumRight << std::endl; 
     loss += thisLoss;
     numRight += thisNumRight;
-    for( std::vector<PostBatchAction *>::iterator it = postBatchActions.begin(); it != postBatchActions.end(); it++ ) {
-        (*it)->run( batch, numRight, loss );
-    }
     nextBatch++;
     if( nextBatch == numBatches ) {
         epochDone = true;
@@ -79,6 +75,12 @@ bool Batcher::tick() {
 }
 
 EpochResult Batcher::run() {
+    if( data == 0 ) {
+        throw runtime_error("Batcher: no data set");
+    }
+    if( labels == 0 ) {
+        throw runtime_error("Batcher: no labels set");
+    }
     if( epochDone ) {
         reset();
     }
@@ -88,11 +90,6 @@ EpochResult Batcher::run() {
     EpochResult epochResult( loss, numRight );
     return epochResult;
 }
-
-void Batcher::addPostBatchAction( PostBatchAction *action ) {
-    postBatchActions.push_back( action );
-}
-
 
 void NetLearnLabeledBatch::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
@@ -106,10 +103,10 @@ LearnBatcher::LearnBatcher(Trainable *net, int batchSize, int N, float *data, in
 }
 
 
-void LearnBatcher::_tick( float const*batchData, int const*batchLabels) {
+void LearnBatcher::internalTick( float const*batchData, int const*batchLabels) {
     cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
         " batchLabels=" << batchLabels << endl;
-    this->net->learnBatchFromLabels( learningRate, batchData, batchLabels );
+    net->learnBatchFromLabels( learningRate, batchData, batchLabels );
 }
  
 
@@ -119,7 +116,7 @@ NetActionBatcher::NetActionBatcher(Trainable *net, int batchSize, int N, float *
 }
 
 
-void NetActionBatcher::_tick( float const*batchData, int const*batchLabels ) {
+void NetActionBatcher::internalTick( float const*batchData, int const*batchLabels ) {
     netAction->run( this->net, batchData, batchLabels );
 }
 
@@ -129,7 +126,7 @@ PropagateBatcher::PropagateBatcher(Trainable *net, int batchSize, int N, float *
 }
 
 
-void PropagateBatcher::_tick( float const*batchData, int const*batchLabels) {
+void PropagateBatcher::internalTick( float const*batchData, int const*batchLabels) {
     this->net->propagate( batchData );
 }
 
@@ -147,10 +144,6 @@ void NetBackpropBatch::run( Trainable *net, float const*const batchData, int con
 
  BatchLearner::BatchLearner( Trainable *net ) :
     net( net ) {
-}
-
- VIRTUAL void BatchLearner::addPostBatchAction( PostBatchAction *action ) {
-    postBatchActions.push_back( action );
 }
 
  EpochResult BatchLearner::batchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction ) {

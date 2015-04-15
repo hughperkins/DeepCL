@@ -61,10 +61,6 @@ VIRTUAL void NetLearnerOnDemand::setBatchSize( int fileReadBatches, int batchSiz
     this->fileReadBatches = fileReadBatches;
 }
 
-VIRTUAL void NetLearnerOnDemand::addPostEpochAction( PostEpochAction *action ) {
-    postEpochActions.push_back( action );
-}
-
 VIRTUAL void NetLearnerOnDemand::setLearningRate( float learningRate ) {
     this->setLearningRate( learningRate, 1.0f );
 }
@@ -96,9 +92,6 @@ VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
     int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
     cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
     timer.timeCheck("after tests");
-    for( vector<PostEpochAction *>::iterator it = postEpochActions.begin(); it != postEpochActions.end(); it++ ) {
-        (*it)->run( epoch );
-    }
     nextEpoch++;
     if( nextEpoch == numEpochs ) {
         learningDone = true;
