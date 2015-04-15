@@ -54,6 +54,14 @@ public:
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void reset();
+    VIRTUAL void postEpochTesting();
+    VIRTUAL bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
+    VIRTUAL bool isEpochDone();
+    VIRTUAL int getNextEpoch();
+    VIRTUAL int getNextBatch();
+    VIRTUAL int getBatchNumRight();
+    VIRTUAL float getBatchLoss();
+    VIRTUAL void setBatchState( int batch, int numRight, float loss );
     VIRTUAL bool tickEpoch();
     VIRTUAL void run();
     VIRTUAL bool isLearningDone();

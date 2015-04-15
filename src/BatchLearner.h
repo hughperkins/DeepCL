@@ -60,6 +60,7 @@ public:
     virtual void internalTick( float const*batchData, int const*batchLabels ) = 0;
     virtual bool tick();
     EpochResult run();
+    int getNextBatch();
 };
 
 

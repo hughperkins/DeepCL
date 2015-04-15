@@ -43,12 +43,25 @@ void Batcher::reset() {
     loss = 0;
     epochDone = false;
 }
+
+int Batcher::getNextBatch() {
+    if( epochDone ) {
+        return 0;
+    } else {
+        return nextBatch;
+    }
+}
+
 //
 //void Batcher::_tick( float const*batchData, int const*batchLabels ) {
 //}
 
 bool Batcher::tick() {
+    cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
     updateVars();
+    if( epochDone ) {
+        reset();
+    }
     int batch = nextBatch;
 //    std::cout << "BatchLearner.tick() batch=" << batch << std::endl;
     int batchStart = batch * batchSize;

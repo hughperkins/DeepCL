@@ -73,6 +73,7 @@ VIRTUAL void NetLearner::setBatchSize( int batchSize ) {
 }
 
 VIRTUAL void NetLearner::reset() {
+    cout << "NetLearner::reset()" << endl;
     learningDone = false;
     nextEpoch = 0;
 //    net->setTraining( true );
@@ -81,27 +82,72 @@ VIRTUAL void NetLearner::reset() {
     timer.lap();
 }
 
-VIRTUAL bool NetLearner::tickEpoch() {
-    int epoch = nextEpoch;
-    cout << "NetLearner.tickEpoch epoch=" << epoch << endl;
-    trainBatcher->learningRate = learningRate * pow( annealLearningRate, epoch );
-    trainBatcher->run();
+VIRTUAL void NetLearner::postEpochTesting() {
     if( dumpTimings ) {
         StatefulTimer::dump(true);
     }
 //        cout << "-----------------------" << endl;
     cout << endl;
-    timer.timeCheck("after epoch " + toString(epoch+1) );
+    timer.timeCheck("after epoch " + toString(nextEpoch+1) );
     cout << "annealed learning rate: " << trainBatcher->learningRate << " training loss: " << trainBatcher->loss << endl;
     cout << " train accuracy: " << trainBatcher->numRight << "/" << trainBatcher->N << " " << (trainBatcher->numRight * 100.0f/ trainBatcher->N) << "%" << std::endl;
     testBatcher->run();
     cout << "test accuracy: " << testBatcher->numRight << "/" << testBatcher->N << " " << 
         (testBatcher->numRight * 100.0f / testBatcher->N ) << "%" << endl;
     timer.timeCheck("after tests");
+}
 
-    nextEpoch++;
+VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, once all done, then run testing etc
+    int epoch = nextEpoch;
+    trainBatcher->learningRate = learningRate * pow( annealLearningRate, epoch );
+    trainBatcher->tick();       // returns false once all learning done (all epochs)
+    if( trainBatcher->epochDone ) {
+        postEpochTesting();
+        nextEpoch++;
+    }
+    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
     if( nextEpoch == numEpochs ) {
+        cout << "setting learningdone to true" << endl;
         learningDone = true;
+    }
+    return !learningDone;
+}
+
+VIRTUAL bool NetLearner::isEpochDone() {
+    return trainBatcher->epochDone;
+}
+
+VIRTUAL int NetLearner::getNextEpoch() {
+    return nextEpoch;
+}
+
+VIRTUAL int NetLearner::getNextBatch() {
+    return trainBatcher->getNextBatch();
+}
+
+VIRTUAL int NetLearner::getBatchNumRight() {
+    return trainBatcher->numRight;
+}
+
+VIRTUAL float NetLearner::getBatchLoss() {
+    return trainBatcher->loss;
+}
+
+VIRTUAL void NetLearner::setBatchState( int batch, int numRight, float loss ) {
+    trainBatcher->nextBatch = batch;
+    trainBatcher->numRight = numRight;
+    trainBatcher->loss = loss;
+}
+
+VIRTUAL bool NetLearner::tickEpoch() {
+    int epoch = nextEpoch;
+    cout << "NetLearner.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << trainBatcher->epochDone << endl;
+    cout << "numEpochs=" << numEpochs << endl;
+    if( trainBatcher->epochDone ) {
+        trainBatcher->reset();
+    }
+    while(!trainBatcher->epochDone ) {
+        tickBatch();
     }
     return !learningDone;
 }

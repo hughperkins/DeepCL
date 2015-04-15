@@ -133,44 +133,6 @@ public:
     }
 };
 
-//class WeightsWriter : public PostEpochAction {
-//public:
-//    NeuralNet *net;
-//    Config *config;
-//    WeightsWriter( NeuralNet *net, Config *config ) :
-//        net( net ),
-//        config( config ) {
-//    }
-//    virtual void run( int epoch ) {
-//        WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, 0, 0, 0, 0 );
-//    }
-//};
-
-//class IntervalWeightsWriter : public NetLearner_PostBatchAction {
-//public:
-//    NeuralNet *net;
-//    Config *config;
-//    double intervalMinutes;
-////    double lastTime;
-//    Timer timer;
-//    IntervalWeightsWriter( NeuralNet *net, Config *config, double intervalMinutes ) :
-//            net( net ),
-//            config( config ),
-//            intervalMinutes( intervalMinutes ) {
-////        lastTime = 0;
-//    }
-//    virtual void run( int epoch, int batch, int numRight, float loss ) {
-//        float timeMinutes = timer.interval() / 1000.0f / 60.0f;
-//        //cout << "timeMinutes " << timeMinutes << endl;
-//        if( timeMinutes > intervalMinutes ) {
-//            cout << "intervalweightswriter triggered " << timeMinutes << endl;
-//            cout << "epoch=" << epoch << " batch=" << batch << " numRight=" << numRight << " loss=" << loss << endl;
-//            WeightsPersister::persistWeights( config->weightsFile, config->getTrainingString(), net, epoch, batch, 0, numRight, loss );
-//            timer.lap();
-//        }
-//    }
-//};
-
 void go(Config config) {
     Timer timer;
 
@@ -306,39 +268,49 @@ void go(Config config) {
         netLearnerOnDemand->setTestingData( config.dataDir + "/" + config.validateFile, Ntest );
         netLearnerOnDemand->setBatchSize( config.fileReadBatches, config.batchSize );
         netLearnerBase = netLearnerOnDemand;
-//        WeightsWriter weightsWriter( net, &config );
-//        if( config.weightsFile != "" ) {
-//            netLearner.addPostEpochAction( &weightsWriter );
-//        }
-//        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
-//        if( config.writeWeightsInterval > 0 ) {
-//            netLearner.addPostBatchAction( &intervalWeightsWriter );
-//        }
-//        netLearner.learn( config.learningRate, config.annealLearningRate );
     } else {
         NetLearner *netLearner = new NetLearner( trainable );
         netLearner->setTrainingData( Ntrain, trainData, trainLabels );
         netLearner->setTestingData( Ntest, testData, testLabels );
         netLearner->setBatchSize( config.batchSize );
         netLearnerBase = netLearner;
-        //netLearnerBase->tickEpoch();
-        //netLearner.tickEpoch();
-//        WeightsWriter weightsWriter( net, &config );
-//        if( config.weightsFile != "" ) {
-//            netLearner.addPostEpochAction( &weightsWriter );
-//        }
-//        IntervalWeightsWriter intervalWeightsWriter( net, &config, config.writeWeightsInterval );
-//        if( config.writeWeightsInterval > 0 ) {
-//            netLearner.addPostBatchAction( &intervalWeightsWriter );
-//        }
-//        netLearner.learn( config.learningRate, config.annealLearningRate );
     }
+    netLearnerBase->reset();
     netLearnerBase->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
+    if( afterRestart ) {
+        netLearnerBase->setBatchState( restartBatch, restartNumRight, restartLoss ); 
+    }
     netLearnerBase->setDumpTimings( config.dumpTimings );
     netLearnerBase->setLearningRate( config.learningRate, config.annealLearningRate );
-    netLearnerBase->reset();
+    Timer weightsWriteTimer;
     while( !netLearnerBase->isLearningDone() ) {
-        netLearnerBase->tickEpoch();
+//        netLearnerBase->tickEpoch();
+        netLearnerBase->tickBatch();
+        if( netLearnerBase->isEpochDone() ) {
+            cout << "epoch done" << endl;
+            if( config.weightsFile != "" ) {
+                cout << "record epoch=" << netLearnerBase->getNextEpoch() << endl;
+                WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearnerBase->getNextEpoch(), 0, 0, 0, 0 );
+                weightsWriteTimer.lap();
+            }
+        } else {
+            if( config.writeWeightsInterval > 0 ) {
+                cout << "batch done" << endl;
+                float timeMinutes = weightsWriteTimer.interval() / 1000.0f / 60.0f;
+                cout << "timeMinutes " << timeMinutes << endl;
+                if( timeMinutes >= config.writeWeightsInterval ) {
+                    int nextEpoch = netLearnerBase->getNextEpoch();
+                    int nextBatch = netLearnerBase->getNextBatch();
+                    int batchNumRight = netLearnerBase->getBatchNumRight();
+                    float batchLoss = netLearnerBase->getBatchLoss();
+                    cout << "record epoch=" << nextEpoch << " batch=" << nextBatch <<
+                        " numRight=" << batchNumRight << " loss=" << batchLoss << endl;
+                    WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net,
+                        nextEpoch, nextBatch, 0, batchNumRight, batchLoss );
+                    weightsWriteTimer.lap();
+                }
+            }
+        }
     }
 
     delete netLearnerBase;

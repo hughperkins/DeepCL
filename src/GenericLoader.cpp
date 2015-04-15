@@ -46,6 +46,7 @@ STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numE
 }
 
 STATIC void GenericLoader::load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples ) {
+//    cout << "GenericLoader::load " << numExamples << endl;
     int N, planes, size;
     getDimensions( imagesFilePath, &N, &planes, &size );
     unsigned char *ucImages = new unsigned char[ numExamples * planes * size * size ];
