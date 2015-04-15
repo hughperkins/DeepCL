@@ -14,9 +14,13 @@
 #include "NetLearnerBase.h"
 #include "NetLearner.h"
 #include "BatchLearnerOnDemand.h"
+//#include "OnDemandBatcher.h"
 
 class NeuralNet;
 class Trainable;
+class NetLearnLabeledAction;
+class NetPropagateAction;
+class OnDemandBatcher;
 
 #include "DeepCLDllExport.h"
 
@@ -26,20 +30,27 @@ class Trainable;
 //};
 
 // handles learning the neural net, ie running multiple epochs,
-// using a BatchLearner, to learn each epoch
+// using two OnDemandBatchers, one for training, one for testing, to learn 
+// the epochs
+// Note that there's no particular reason why this class couldnt be 
+// merged completely with the 'NetLeaner' class, simply passing 
+// in either 'Batcher' objects, or 'OnDemandBatcher' objects
 class DeepCL_EXPORT NetLearnerOnDemand : public NetLearnerBase {
 public:
     Trainable *net;
-    BatchLearnerOnDemand batchLearnerOnDemand;
+    NetLearnLabeledAction *learnAction;
+    NetPropagateAction *testAction;
+    OnDemandBatcher *learnBatcher;
+    OnDemandBatcher *testBatcher;
     Timer timer;
 
-    int Ntrain;
-    int Ntest;
-    std::string trainFilepath;
-    std::string testFilepath;
+//    int Ntrain;
+//    int Ntest;
+//    std::string trainFilepath;
+//    std::string testFilepath;
 
-    int batchSize;
-    int fileReadBatches;
+//    int batchSize;
+//    int fileReadBatches;
 
     float learningRate;
     float annealLearningRate;
@@ -66,6 +77,8 @@ public:
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
     VIRTUAL void reset();
+    VIRTUAL void postEpochTesting();
+    VIRTUAL bool tickBatch();  // means: filebatch, not low-level batch
     VIRTUAL bool tickEpoch();
     VIRTUAL void run();
     VIRTUAL bool isLearningDone();

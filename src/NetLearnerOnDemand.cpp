@@ -9,6 +9,8 @@
 #include "BatchLearnerOnDemand.h"
 #include "NeuralNet.h"
 #include "Trainable.h"
+#include "NetAction.h"
+#include "OnDemandBatcher.h"
 
 #include "NetLearnerOnDemand.h"
 
@@ -20,9 +22,13 @@ using namespace std;
 #define VIRTUAL
 
 NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net ) :
-        net( net ),
-        batchLearnerOnDemand( net ) {
-    batchSize = 128;
+        net( net )
+//    batchSize = 128;
+        {
+    learnAction = new NetLearnLabeledAction( 0 );
+    testAction = new NetPropagateAction();
+    learnBatcher = new OnDemandBatcher( net, learnAction, "", 0, 0, 0 );
+    testBatcher = new OnDemandBatcher( net, testAction, "", 0, 0, 0 );
     annealLearningRate = 1.0f;
     numEpochs = 12;
     nextEpoch = 0;
@@ -31,16 +37,24 @@ NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net ) :
 }
 
 VIRTUAL NetLearnerOnDemand::~NetLearnerOnDemand() {
+    delete learnBatcher;
+    delete testBatcher;
+    delete testAction;
+    delete learnAction;
 }
 
 VIRTUAL void NetLearnerOnDemand::setTrainingData( std::string trainFilepath, int Ntrain ) {
-    this->Ntrain = Ntrain;
-    this->trainFilepath = trainFilepath;
+    //this->Ntrain = Ntrain;
+    //this->trainFilepath = trainFilepath;
+    learnBatcher->filepath = trainFilepath;
+    learnBatcher->N = Ntrain;
 }
 
 VIRTUAL void NetLearnerOnDemand::setTestingData( std::string testFilepath, int Ntest ) {
-    this->testFilepath = testFilepath;
-    this->Ntest = Ntest;
+//    this->testFilepath = testFilepath;
+//    this->Ntest = Ntest;
+    testBatcher->filepath = testFilepath;
+    testBatcher->N = Ntest;
 }
 
 VIRTUAL void NetLearnerOnDemand::setSchedule( int numEpochs ) {
@@ -57,8 +71,12 @@ VIRTUAL void NetLearnerOnDemand::setSchedule( int numEpochs, int nextEpoch ) {
 }
 
 VIRTUAL void NetLearnerOnDemand::setBatchSize( int fileReadBatches, int batchSize ) {
-    this->batchSize = batchSize;
-    this->fileReadBatches = fileReadBatches;
+//    this->batchSize = batchSize;
+//    this->fileReadBatches = fileReadBatches;
+    learnBatcher->batchSize = batchSize;
+    testBatcher->batchSize = batchSize;
+    learnBatcher->fileReadBatches = fileReadBatches;
+    testBatcher->fileReadBatches = fileReadBatches;
 }
 
 VIRTUAL void NetLearnerOnDemand::setLearningRate( float learningRate ) {
@@ -76,24 +94,50 @@ VIRTUAL void NetLearnerOnDemand::reset() {
     nextEpoch = 0;
 }
 
-VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
-    int epoch = nextEpoch;
-    float annealedLearningRate = learningRate * pow( annealLearningRate, epoch );
-    EpochResult epochResult = batchLearnerOnDemand.runEpochFromLabels( annealedLearningRate, trainFilepath, fileReadBatches, batchSize, Ntrain );
+VIRTUAL void NetLearnerOnDemand::postEpochTesting() {
     cout << "dumpTimings " << dumpTimings << endl;
     if( dumpTimings ) {
         StatefulTimer::dump(true);
     }
 //        cout << "-----------------------" << endl;
     cout << endl;
-    timer.timeCheck("after epoch " + toString(epoch ) );
-    cout << "annealed learning rate: " << annealedLearningRate << " training loss: " << epochResult.loss << endl;
-    cout << " train accuracy: " << epochResult.numRight << "/" << Ntrain << " " << (epochResult.numRight * 100.0f/ Ntrain) << "%" << std::endl;
-    int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
-    cout << "test accuracy: " << testNumRight << "/" << Ntest << " " << (testNumRight * 100.0f / Ntest ) << "%" << endl;
+    timer.timeCheck("after epoch " + toString(nextEpoch + 1 ) );
+    cout << "annealed learning rate: " << learnAction->learningRate << " training loss: " << learnBatcher->loss << endl;
+    cout << " train accuracy: " << learnBatcher->numRight << "/" << learnBatcher->N << " " << (learnBatcher->numRight * 100.0f/ learnBatcher->N) << "%" << std::endl;
+    testBatcher->run();
+//    int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
+    cout << "test accuracy: " << testBatcher->numRight << "/" << testBatcher->N << " " << (testBatcher->numRight * 100.0f / testBatcher->N ) << "%" << endl;
     timer.timeCheck("after tests");
-    nextEpoch++;
+}
+
+VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, not low-level batch
+                                               // probalby good enough for now?    
+    int epoch = nextEpoch;
+    learnAction->learningRate = learningRate * pow( annealLearningRate, epoch );
+    learnBatcher->tick();       // returns false once all learning done (all epochs)
+    if( learnBatcher->epochDone ) {
+        postEpochTesting();
+        nextEpoch++;
+    }
+    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
     if( nextEpoch == numEpochs ) {
+        cout << "setting learningdone to true" << endl;
+        learningDone = true;
+    }
+    return !learningDone;
+}
+
+VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
+    int epoch = nextEpoch;
+    learnAction->learningRate = learningRate * pow( annealLearningRate, epoch );
+    learnBatcher->tick();       // returns false once all learning done (all epochs)
+    if( learnBatcher->epochDone ) {
+        postEpochTesting();
+        nextEpoch++;
+    }
+    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
+    if( nextEpoch == numEpochs ) {
+        cout << "setting learningdone to true" << endl;
         learningDone = true;
     }
     return !learningDone;

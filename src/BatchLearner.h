@@ -11,108 +11,17 @@
 #include <stdexcept>
 #include <vector>
 
-#include "Trainable.h"
+//#include "Trainable.h"
 
 // class NeuralNet;
-//class Trainable;
+class Trainable;
+class EpochResult;
+class NetAction;
 
 #define VIRTUAL virtual
 #define STATIC static
 
 #include "DeepCLDllExport.h"
-
-class DeepCL_EXPORT EpochResult {
-public:
-    float loss;
-    int numRight;
-    EpochResult( float loss, int numRight ) :
-        loss( loss ),
-        numRight( numRight ) {
-    }
-};
-
-class DeepCL_EXPORT NetAction {
-public:
-    virtual ~NetAction() {}
-    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels ) = 0;
-};
-
-class DeepCL_EXPORT Batcher {
-public:
-    Trainable *net;
-    int batchSize;
-    int N;
-    float const* data;
-    int const* labels;
-
-    int numBatches;
-    int inputCubeSize;
-
-    bool epochDone;
-    int nextBatch;
-    int numRight;
-    float loss;
-
-    Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );
-    virtual ~Batcher(){}
-    void updateVars();
-    void reset();
-    virtual void internalTick( float const*batchData, int const*batchLabels ) = 0;
-    virtual bool tick();
-    EpochResult run();
-    int getNextBatch();
-};
-
-
-class DeepCL_EXPORT LearnBatcher : public Batcher {
-public:
-    float learningRate;
-    LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate );
-    virtual void internalTick( float const*batchData, int const*batchLabels);
-};
-
-
-class DeepCL_EXPORT NetActionBatcher : public Batcher {
-public:
-    NetAction * netAction;
-    NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction * netAction);
-    virtual void internalTick( float const*batchData, int const*batchLabels );
-};
-
-
-class DeepCL_EXPORT PropagateBatcher : public Batcher {
-public:
-    PropagateBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels);
-    virtual void internalTick( float const*batchData, int const*batchLabels);
-};
-
-
-class DeepCL_EXPORT NetLearnLabeledBatch : public NetAction {
-public:
-    float learningRate;
-    NetLearnLabeledBatch( float learningRate ) :
-        learningRate( learningRate ) {
-    }   
-    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
-};
-
-
-class DeepCL_EXPORT NetPropagateBatch : public NetAction {
-public:
-    NetPropagateBatch() {
-    }
-    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
-};
-
-
-class DeepCL_EXPORT NetBackpropBatch : public NetAction {
-public:
-    float learningRate;
-    NetBackpropBatch( float learningRate ) :
-        learningRate( learningRate ) {
-    }
-    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
-};
 
 // this handles learning one single epoch, breaking up the incoming training or testing
 // data into batches, which are then sent to the NeuralNet for forward and backward

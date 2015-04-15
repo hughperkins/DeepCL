@@ -9,7 +9,7 @@
 #include "Layer.h"
 #include "NeuralNet.h"
 #include "BatchLearner.h"
-
+#include "NetAction.h"
 #include "EpochMaker.h"
 
 using namespace std;

@@ -9,6 +9,7 @@
 #include "BatchLearner.h"
 #include "NeuralNet.h"
 #include "Trainable.h"
+#include "NetAction.h"
 
 #include "NetLearner.h"
 

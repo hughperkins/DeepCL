@@ -12,6 +12,7 @@
 #include "NetLearnerBase.h"
 #include "Trainable.h"
 #include "Timer.h"
+#include "Batcher.h"
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -22,7 +23,8 @@ class NeuralNet;
 #include "DeepCLDllExport.h"
 
 // handles learning the neural net, ie running multiple epochs,
-// using a BatchLearner, to learn each epoch
+// using two Batchers, one for training, one for testing, to learn 
+// the epochs
 class DeepCL_EXPORT NetLearner : public NetLearnerBase {
 public:
     Trainable *net;
