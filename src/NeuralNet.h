@@ -38,11 +38,11 @@ class InputLayerMaker;
 class DeepCL_EXPORT NeuralNet : public Trainable {
 protected:
 #ifdef _WIN32
-#pragma warning( disable: 4251 )
+#pragma warning disable 4251
 #endif
     std::vector< Layer *> layers;
 #ifdef _WIN32
-#pragma warning( restore: 4251 )
+#pragma warning restore 4251
 #endif
     OpenCLHelper *cl;
 public:
