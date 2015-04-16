@@ -135,7 +135,7 @@ endif(PYTHON_AVAILABLE)
 
 set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
- test/testbackproperrors.cpp test/testsinglebatch.cpp test/testmnistlearn_unit.cpp
+ test/testbackproperrors.cpp test/testsinglebatch.cpp 
  test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp 
  src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
