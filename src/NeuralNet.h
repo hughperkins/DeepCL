@@ -36,8 +36,9 @@ class InputLayerMaker;
 #define STATIC static
 
 class DeepCL_EXPORT NeuralNet : public Trainable {
-protected:
+private:
     std::vector< Layer *> layers;
+protected:
     OpenCLHelper *cl;
 public:
     int isTraining; // = true;
