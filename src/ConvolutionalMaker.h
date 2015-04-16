@@ -18,7 +18,7 @@ public:
     int _numFilters;
     int _filterSize;
     bool _padZeros;
-    int _biased;
+    bool _biased;
     ActivationFunction const *_activationFunction;
     ConvolutionalMaker() :
             _numFilters(0),
@@ -49,7 +49,7 @@ public:
         this->_biased = true;
         return this;
     }    
-    ConvolutionalMaker *biased(int _biased) {
+    ConvolutionalMaker *biased(bool _biased) {
         this->_biased = _biased;
         return this;
     }    

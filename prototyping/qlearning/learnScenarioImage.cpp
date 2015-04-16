@@ -24,7 +24,7 @@ int main( int argc, char *argv[] ) {
     const int size = scenario->getPerceptionSize();
     const int planes = scenario->getPerceptionPlanes();
     const int numActions = scenario->getNumActions();
-    net->addLayer( InputLayerMaker<float>::instance()->numPlanes(planes)->imageSize(size) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(planes)->imageSize(size) );
     net->addLayer( ConvolutionalMaker::instance()->filterSize(5)->numFilters(8)->biased()->padZeros()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->filterSize(5)->numFilters(8)->biased()->padZeros()->relu() );
     net->addLayer( FullyConnectedMaker::instance()->imageSize(1)->numPlanes(100)->biased()->tanh() );

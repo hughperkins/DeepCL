@@ -149,10 +149,10 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
 #
 
 add_executable( deepclrun src/deepclrun.cpp src/stringhelper.cpp )
-add_executable( clconvolve1 src/deepclrun.cpp src/stringhelper.cpp ) # same as deepcl, just for 
+#add_executable( clconvolve1 src/deepclrun.cpp src/stringhelper.cpp ) # same as deepcl, just for 
               # backwards compatibility, so dont need to increment major version :-P
 
-add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
+#add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
 #add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
@@ -168,7 +168,7 @@ add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
 #    add_executable( printMnist test/printMnist.cpp src/stringhelper.cpp )
-    set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testimageshelper.cpp )
+#    set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testimageshelper.cpp )
 #    add_executable( printmat test/printMat.cpp src/stringhelper.cpp )
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/stringhelper.cpp src/PatchExtractor.cpp )
     add_executable( testtranslator test/testTranslator.cpp src/stringhelper.cpp src/Translator.cpp )

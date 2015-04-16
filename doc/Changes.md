@@ -43,6 +43,8 @@
   * basically, templates work not great with pure virtual inheritance, nor are they very
     supported by scripting languages we might be using to run DeepCL
 * removing callbacks from BatchLearner, NetLearner, NetLearnerOnDemand, BatchLearnerOnDemand
+* idx-to-mat removed; since can directly load mnist format now
+* clconvolve1 executable removed (replaced by deeplclrun)
 
 ## Done
 

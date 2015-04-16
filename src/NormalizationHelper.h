@@ -11,7 +11,9 @@
 #include <cmath>
 #include <iostream>
 
-class Statistics {
+#include "DeepCLDllExport.h"
+
+class DeepCL_EXPORT Statistics {
 public:
     int count;
     float maxY;
@@ -23,7 +25,7 @@ public:
     }
 };
 
-class NormalizationHelper {
+class DeepCL_EXPORT NormalizationHelper {
 public:
     static void updateStatistics( float *Y, int length, int cubeSize, Statistics *statistics ) {
         float thisSumY = 0;

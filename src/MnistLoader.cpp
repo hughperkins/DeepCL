@@ -61,52 +61,52 @@ STATIC void MnistLoader::load( std::string imagesFilePath, unsigned char *images
     }
     delete[]labelsAsCharArray;
 }
-STATIC int **MnistLoader::loadImage( std::string dir, std::string set, int idx, int *p_size ) {
-    long imagesFilesize = 0;
-    long labelsFilesize = 0;
-    char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
-    char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
-    unsigned char *imagesData = reinterpret_cast< unsigned char *>(imagesDataSigned);
-//        unsigned char *labelsData = reinterpret_cast< unsigned char *>(labelsDataSigned);
+//STATIC int **MnistLoader::loadImage( std::string dir, std::string set, int idx, int *p_size ) {
+//    long imagesFilesize = 0;
+//    long labelsFilesize = 0;
+//    char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
+//    char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );
+//    unsigned char *imagesData = reinterpret_cast< unsigned char *>(imagesDataSigned);
+////        unsigned char *labelsData = reinterpret_cast< unsigned char *>(labelsDataSigned);
 
-//    int numImages = readUInt( imagesData, 1 );
-    int numRows = readUInt( imagesData, 2 );
-    int numCols = readUInt( imagesData, 3 );
-    *p_size = numRows;
-//    std::cout << "numimages " << numImages << " " << numRows << "*" << numCols << std::endl;
+////    int numImages = readUInt( imagesData, 1 );
+//    int numRows = readUInt( imagesData, 2 );
+//    int numCols = readUInt( imagesData, 3 );
+//    *p_size = numRows;
+////    std::cout << "numimages " << numImages << " " << numRows << "*" << numCols << std::endl;
 
-    int **image = ImageHelper::allocateImage( numRows );
-    for( int i = 0; i < numRows; i++ ) {
-        for( int j = 0; j < numRows; j++ ) {
-            image[i][j] = (int)imagesData[idx * numRows * numCols + i * numCols + j];
-        }
-    }
-    delete[] imagesDataSigned;
-    delete[] labelsDataSigned;
-    return image;
-}
-STATIC int ***MnistLoader::loadImages( std::string dir, std::string set, int *p_numImages, int *p_size ) {
-    long imagesFilesize = 0;
-    char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
-    unsigned char *imagesData = reinterpret_cast<unsigned char *>(imagesDataSigned);
-    int totalNumImages = readUInt( imagesData, 1 );
-    int numRows = readUInt( imagesData, 2 );
-    int numCols = readUInt( imagesData, 3 );
-//        *p_numImages = min(100,totalNumImages);
-    *p_numImages = totalNumImages;
-    *p_size = numRows;
-//    std::cout << "totalNumImages " << *p_numImages << " " << *p_size << "*" << numCols << std::endl;
-    int ***images = ImagesHelper::allocateImages( *p_numImages, numRows );
-    for( int n = 0; n < *p_numImages; n++ ) {
-        for( int i = 0; i < numRows; i++ ) {
-            for( int j = 0; j < numRows; j++ ) {
-                images[n][i][j] = (int)imagesData[16 + n * numRows * numCols + i * numCols + j];
-            }
-        }
-    }
-    delete[] imagesDataSigned;
-    return images;
-}
+//    int **image = ImageHelper::allocateImage( numRows );
+//    for( int i = 0; i < numRows; i++ ) {
+//        for( int j = 0; j < numRows; j++ ) {
+//            image[i][j] = (int)imagesData[idx * numRows * numCols + i * numCols + j];
+//        }
+//    }
+//    delete[] imagesDataSigned;
+//    delete[] labelsDataSigned;
+//    return image;
+//}
+//STATIC int ***MnistLoader::loadImages( std::string dir, std::string set, int *p_numImages, int *p_size ) {
+//    long imagesFilesize = 0;
+//    char *imagesDataSigned = FileHelper::readBinary( dir + "/" + set + "-images-idx3-ubyte", &imagesFilesize );
+//    unsigned char *imagesData = reinterpret_cast<unsigned char *>(imagesDataSigned);
+//    int totalNumImages = readUInt( imagesData, 1 );
+//    int numRows = readUInt( imagesData, 2 );
+//    int numCols = readUInt( imagesData, 3 );
+////        *p_numImages = min(100,totalNumImages);
+//    *p_numImages = totalNumImages;
+//    *p_size = numRows;
+////    std::cout << "totalNumImages " << *p_numImages << " " << *p_size << "*" << numCols << std::endl;
+//    int ***images = ImagesHelper::allocateImages( *p_numImages, numRows );
+//    for( int n = 0; n < *p_numImages; n++ ) {
+//        for( int i = 0; i < numRows; i++ ) {
+//            for( int j = 0; j < numRows; j++ ) {
+//                images[n][i][j] = (int)imagesData[16 + n * numRows * numCols + i * numCols + j];
+//            }
+//        }
+//    }
+//    delete[] imagesDataSigned;
+//    return images;
+//}
 STATIC int *MnistLoader::loadLabels( std::string dir, std::string set, int *p_numImages ) {
     long labelsFilesize = 0;
     char *labelsDataSigned = FileHelper::readBinary( dir + "/" + set + "-labels-idx1-ubyte", &labelsFilesize );

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "FileHelper.h"
-#include "ImagesHelper.h"
+//#include "ImagesHelper.h"
 
 #include "DeepCLDllExport.h"
 
@@ -25,8 +25,6 @@ public:
     STATIC void getDimensions( std::string imagesFilePath,
     int *p_numExamples, int *p_numPlanes, int *p_imageSize );
     STATIC void load( std::string imagesFilePath, unsigned char *images, int *labels, int startN, int numExamples );
-    STATIC int **loadImage( std::string dir, std::string set, int idx, int *p_size );
-    STATIC int ***loadImages( std::string dir, std::string set, int *p_numImages, int *p_size );
     STATIC int *loadLabels( std::string dir, std::string set, int *p_numImages );
     STATIC int readUInt( unsigned char *data, int location );
     STATIC void writeUInt( unsigned char *data, int location, int value );

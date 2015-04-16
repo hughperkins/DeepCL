@@ -142,8 +142,8 @@ public:
 };
 
 void sampleWeights( NeuralNet *net ) {
-    for( int layerId = 0; layerId < (int)net->layers.size();  layerId++ ) {
-        Layer *layer = net->layers[layerId];
+    for( int layerId = 0; layerId < net->getNumLayers();  layerId++ ) {
+        Layer *layer = net->getLayer(layerId);
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
         if( fc != 0 ) {
@@ -184,8 +184,8 @@ void go(Config config) {
     int numPlanes;
     int imageSize;
 
-    unsigned char *trainData = 0;
-    unsigned char *testData = 0;
+    float *trainData = 0;
+    float *testData = 0;
     int *trainLabels = 0;
     int *testLabels = 0;
 
@@ -198,7 +198,7 @@ void go(Config config) {
 //    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
     trainAllocateN = Ntrain;
-    trainData = new unsigned char[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
+    trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if( Ntrain > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
@@ -207,7 +207,7 @@ void go(Config config) {
     GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &imageSize );
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
     testAllocateN = Ntest;
-    testData = new unsigned char[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
+    testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if( Ntest > 0 ) {
         GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
@@ -242,14 +242,14 @@ void go(Config config) {
 //    const int batchSize = config.batchSize;
     NeuralNet *net = new NeuralNet();
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
-    net->addLayer( InputLayerMaker<unsigned char>::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
+    net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
         return;
     }
     net->print();
-    for( int i = 1; i < (int)net->layers.size() - 1; i++ ) {
-        Layer *layer = net->layers[i];
+    for( int i = 1; i < net->getNumLayers() - 1; i++ ) {
+        Layer *layer = net->getLayer(i);
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >(layer);
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >(layer);
         if( fc != 0 ) {
@@ -302,17 +302,18 @@ void go(Config config) {
     StatefulTimer::timeCheck("START");
 
     Trainable *trainable = net;
-    NetLearner<unsigned char> netLearner( trainable );
-    netLearner.setTrainingData( Ntrain, trainData, trainLabels );
-    netLearner.setTestingData( Ntest, testData, testLabels );
+    NetLearner netLearner( trainable,
+        Ntrain, trainData, trainLabels,
+        Ntest, testData, testLabels,
+        config.batchSize );
     netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
-    netLearner.setBatchSize( config.batchSize );
+//    netLearner.setBatchSize( config.batchSize );
     netLearner.setDumpTimings( config.dumpTimings );  
     netLearner.learn( config.learningRate, 1.0f );
 
     cout << "forward results" << endl;
-    for( int layerId = 0; layerId < (int)net->layers.size(); layerId++ ) {
-        Layer *layer = net->layers[layerId];
+    for( int layerId = 0; layerId < net->getNumLayers(); layerId++ ) {
+        Layer *layer = net->getLayer(layerId);
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
         PoolingLayer *pool = dynamic_cast< PoolingLayer * >( layer );
@@ -361,8 +362,8 @@ void go(Config config) {
     sampleWeights(net);
 
     cout << "backprop results" << endl;
-    for( int layerId = net->layers.size() - 1; layerId >= 0; layerId-- ) {
-        Layer *layer = net->layers[layerId];
+    for( int layerId = net->getNumLayers() - 1; layerId >= 0; layerId-- ) {
+        Layer *layer = net->getLayer(layerId);
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
         ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( layer );
         if( fc != 0 ) {
