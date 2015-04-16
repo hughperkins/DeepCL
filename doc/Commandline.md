@@ -147,6 +147,7 @@
 | loadondemand=1 | Load the file in chunks, as learning proceeds, to reduce memory requirements. Default 0 |
 | filebatchsize=50 | When loadondemand=1, load this many batches at a time.  Numbers larger than 1 increase efficiency of disk reads, speeding up learning, but use up more memory |
 | weightsfile=weights.dat | file to store weights in, after each epoch.  If blank, then weights not stored |
+| writeweightsinterval=5 | write the weights to file every 5 minutes of training, even if epoch hasnt finished yet.  Default is 0, ie only write weights after each epoch |
 | loadweights=1 | load weights at start, from weightsfile.  Current training config, ie netdef and trainingfile, should match that used to create the weightsfile.  Note that epoch number will continue from file, so make sure to increase numepochs sufficiently |
 
 
