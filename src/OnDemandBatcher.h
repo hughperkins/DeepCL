@@ -60,7 +60,7 @@ public:
     VIRTUAL int getNextFileBatch();
     VIRTUAL int getNextBatch();
     VIRTUAL float getLoss();
-    VIRTUAL float getNumRight();
+    VIRTUAL int getNumRight();
     VIRTUAL bool getEpochDone();
     VIRTUAL int getN();
     void reset();

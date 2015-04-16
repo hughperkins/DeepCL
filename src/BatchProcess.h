@@ -14,7 +14,7 @@
 
 #include "DeepCLDllExport.h"
 
-class BatchAction {
+class DeepCL_EXPORT BatchAction {
 public:
     float *data;
     int *labels;
@@ -30,7 +30,7 @@ public:
     static void run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction);
 };
 
-class NormalizeGetStdDev : public BatchAction {
+class DeepCL_EXPORT NormalizeGetStdDev : public BatchAction {
 public:
     Statistics statistics; 
     NormalizeGetStdDev( float *data, int *labels ) :
@@ -45,7 +45,7 @@ public:
 };
 
 
-class NormalizeGetMinMax : public BatchAction {
+class DeepCL_EXPORT NormalizeGetMinMax : public BatchAction {
 public:
     Statistics statistics; 
     NormalizeGetMinMax( float *data, int *labels ) :

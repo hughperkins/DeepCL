@@ -154,7 +154,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
 
     float loss = net->calcLoss(ldc.expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4, loss );
+    assertLessThan( 0.4f, loss );
 
     delete net;
 }
@@ -178,7 +178,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
 
     float loss = net->calcLoss(ldc.expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4, loss );
+    assertLessThan( 0.4f, loss );
 
     delete net;
 }
@@ -211,19 +211,19 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
                      1, 1 };
     float layer1weights[] = {  // going to preset these, to near an optimal solution,
                               //  and at least show the network is stable, and gives the correct
-         -0.4,-0.55,                      // result...
-         0.52, 0.53,
+         -0.4f,-0.55f,                      // result...
+         0.52f, 0.53f,
     };
     float layer1bias[] = {
-       0.1,
-       -0.1
+       0.1f,
+       -0.1f
     };
     float layer2weights[] = {
-        1.1, 0.9,
-        -0.8, -1.2
+        1.1f, 0.9f,
+        -0.8f, -1.2f
     };
     float layer2bias[] = {
-       0.1,
+       0.1f,
        1.1
     };
     float expectedResults[] = {
@@ -260,7 +260,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 
     float loss = net->calcLoss(expectedResults);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.0000001, loss );
+    assertLessThan( 0.0000001f, loss );
 
     delete net;
 }

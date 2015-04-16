@@ -97,7 +97,7 @@ VIRTUAL int OnDemandBatcher::getNextBatch() {
 VIRTUAL float OnDemandBatcher::getLoss() {
     return loss;
 }
-VIRTUAL float OnDemandBatcher::getNumRight() {
+VIRTUAL int OnDemandBatcher::getNumRight() {
     return numRight;
 }
 VIRTUAL bool OnDemandBatcher::getEpochDone() {

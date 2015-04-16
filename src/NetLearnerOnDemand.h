@@ -36,13 +36,14 @@ class OnDemandBatcher;
 // merged completely with the 'NetLeaner' class, simply passing 
 // in either 'Batcher' objects, or 'OnDemandBatcher' objects
 class DeepCL_EXPORT NetLearnerOnDemand : public NetLearnerBase {
-public:
+protected:
+    Timer timer;
     Trainable *net;
     NetLearnLabeledAction *learnAction;
     NetPropagateAction *testAction;
     OnDemandBatcher *learnBatcher;
     OnDemandBatcher *testBatcher;
-    Timer timer;
+public:
 
 //    int Ntrain;
 //    int Ntest;
