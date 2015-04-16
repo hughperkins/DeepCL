@@ -30,10 +30,10 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
-    int inputSize = net->layers[0]->getResultsSize();
-    int resultsSize = net->layers[2]->getResultsSize();
-    int weightsSize1 = net->layers[1]->getWeightsSize();
-    int weightsSize2 = net->layers[2]->getWeightsSize();
+    int inputSize = net->getLayer(0)->getResultsSize();
+    int resultsSize = net->getLayer(2)->getResultsSize();
+    int weightsSize1 = net->getLayer(1)->getWeightsSize();
+    int weightsSize2 = net->getLayer(2)->getWeightsSize();
 
     float *inputData = new float[std::max<int>(10000, inputSize )];
     float *expectedResults = new float[std::max<int>(10000, resultsSize )];
@@ -42,19 +42,19 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
 //    int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, std::max<int>(10000, inputSize ), -2.0f, 2.0f );
     WeightRandomizer::randomize( random, expectedResults, std::max<int>(10000, resultsSize ), -2.0f, 2.0f );
-    WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weights, weightsSize1, -2.0f, 2.0f );
-    dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToDevice();
-    WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weights, weightsSize2, -2.0f, 2.0f );
-    dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToDevice();
+    WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weights, weightsSize1, -2.0f, 2.0f );
+    dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
+    WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weights, weightsSize2, -2.0f, 2.0f );
+    dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weightsWrapper->copyToDevice();
 
     for( int it = 0; it < its; it++ ) {
         float *weightsBefore1 = new float[weightsSize1];
-        float *currentWeights = net->layers[1]->getWeights();
+        float *currentWeights = net->getLayer(1)->getWeights();
         for( int i = 0; i < weightsSize1; i++ ) {
             weightsBefore1[i] = currentWeights[i];
         }
         float *weightsBefore2 = new float[weightsSize2];
-        currentWeights = net->layers[2]->getWeights();
+        currentWeights = net->getLayer(2)->getWeights();
         for( int i = 0; i < weightsSize2; i++ ) {
             weightsBefore2[i] = currentWeights[i];
         }
@@ -62,21 +62,21 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
         net->propagate( inputData );
     //    net->print();
         float loss = net->calcLoss(expectedResults);
-        dynamic_cast<LossLayer*>(net->layers[3])->calcLoss(expectedResults);
+        dynamic_cast<LossLayer*>(net->getLayer(3))->calcLoss(expectedResults);
         net->backProp( learningRate, expectedResults );
-        dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToHost();
+        dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
-//            dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weights[i] = weightsBefore2[i];
+//            dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weights[i] = weightsBefore2[i];
         }
-        dynamic_cast<ConvolutionalLayer*>(net->layers[2])->weightsWrapper->copyToDevice();
+        dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weightsWrapper->copyToDevice();
         net->propagate( inputData );
 
         float loss2 = net->calcLoss(expectedResults);
         float lossChange = loss - loss2;
         cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
 
-        float *newWeights = net->layers[1]->getWeights();
+        float *newWeights = net->getLayer(1)->getWeights();
         float sumWeightDiff = 0;
         float sumWeightDiffSquared = 0;
         for( int i = 0; i < weightsSize1; i++ ) {
@@ -84,7 +84,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
             sumWeightDiff += diff;
             sumWeightDiffSquared += diff * diff;
         }
-        newWeights = net->layers[2]->getWeights();
+        newWeights = net->getLayer(2)->getWeights();
         for( int i = 0; i < weightsSize2; i++ ) {
             float diff = newWeights[i] - weightsBefore2[i];
             sumWeightDiff += diff;

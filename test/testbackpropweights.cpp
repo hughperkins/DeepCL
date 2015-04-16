@@ -33,9 +33,9 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
-    int inputSize = net->layers[0]->getResultsSize();
-    int resultsSize = net->layers[1]->getResultsSize();
-    int weightsSize = net->layers[1]->getWeightsSize();
+    int inputSize = net->getLayer(0)->getResultsSize();
+    int resultsSize = net->getLayer(1)->getResultsSize();
+    int weightsSize = net->getLayer(1)->getWeightsSize();
 
     float *inputData = new float[max(10000, inputSize )];
     float *expectedResults = new float[max(10000, resultsSize )];
@@ -44,8 +44,8 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, expectedResults, max(10000, resultsSize ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, net->layers[1]->getWeights(), weightsSize, -0.1f, 0.1f );
-    dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToDevice();
+    WeightRandomizer::randomize( random, net->getLayer(1)->getWeights(), weightsSize, -0.1f, 0.1f );
+    dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
 //    for( int i = 0; i < inputSize; i++ ) {
 //        cout << "inputData[" << i << "]=" << inputData[i] << endl;
 //    }
@@ -54,7 +54,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    }
 
     float *weightsBefore = new float[weightsSize];
-    float const*currentWeights = net->layers[1]->getWeights();
+    float const*currentWeights = net->getLayer(1)->getWeights();
     for( int i = 0; i < weightsSize; i++ ) {
         weightsBefore[i] = currentWeights[i];
     }
@@ -64,22 +64,22 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     net->propagate( inputData );
 //    net->print();
     float loss = net->calcLoss(expectedResults);
-//    float losslayer1 = dynamic_cast<LossLayer*>(net->layers[1])->calcLoss(expectedResults);
+//    float losslayer1 = dynamic_cast<LossLayer*>(net->getLayer(1))->calcLoss(expectedResults);
 //    cout << "losslayer1 " << losslayer1 << endl;
 
 //    cout << "backprop now" <<endl;
     net->print();
     net->backProp( learningRate, expectedResults );
-//    net->layers[1]->print();
+//    net->getLayer(1)->print();
     net->propagate( inputData );
     net->print();
-//    net->layers[1]->print();
+//    net->getLayer(1)->print();
     float loss2 = net->calcLoss(expectedResults);
     float lossChange = loss - loss2;
     cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
 
-    dynamic_cast<ConvolutionalLayer*>(net->layers[1])->weightsWrapper->copyToHost();
-    float const*newWeights = net->layers[1]->getWeights();
+    dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
+    float const*newWeights = net->getLayer(1)->getWeights();
     float sumWeightDiff = 0;
     float sumWeightDiffSquared = 0;
     for( int i = 0; i < weightsSize; i++ ) {

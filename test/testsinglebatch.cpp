@@ -118,7 +118,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     }
 
     for (int layerIndex = 1; layerIndex < net->getNumLayers(); layerIndex++ ) {
-        ConvolutionalLayer *layer = dynamic_cast< ConvolutionalLayer * >( net->layers[layerIndex] );
+        ConvolutionalLayer *layer = dynamic_cast< ConvolutionalLayer * >( net->getLayer(layerIndex) );
         if( layer == 0 ) {
             continue;
         }
@@ -243,8 +243,8 @@ TEST( testsinglebatch, imagesize28_filtersize5 ) {
 float sumWeightChangesSquared( float *__restrict oldWeights, float * __restrict newWeights, NeuralNet *net ) {
     int offset = 0;
     float sum = 0;
-    for( int i = 1; i < (int)net->layers.size(); i++ ) {
-        Layer *layer = net->layers[i];
+    for( int i = 1; i < (int)net->getNumLayers(); i++ ) {
+        Layer *layer = net->getLayer(i);
         int numWeights = layer->getPersistSize();
         if( numWeights == 0 ) {
             continue;
@@ -266,7 +266,7 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
     WeightsPersister::copyArrayToNetWeights( lastWeights, net );
     int offset = WeightsPersister::getArrayOffsetForLayer( net, layerId );
     cout << "layer " << layerId << " offset: " << offset << endl;
-    Layer *layer = net->layers[layerId];
+    Layer *layer = net->getLayer(layerId);
     int numWeights = layer->getPersistSize();
     if( numWeights == 0 ) {
         return;
@@ -313,7 +313,7 @@ void testLabelled( TestArgs args ) {
     }
 
     for (int layerIndex = 1; layerIndex <= args.numLayers; layerIndex++ ) {
-        ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
+        ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->getLayer(layerIndex) );
         if( layer != 0 ) {
             int weightsSize = layer->getWeightsSize();
     //        cout << "weightsSize, layer " << 1 << "= " << weightsSize << endl;
@@ -341,7 +341,7 @@ void testLabelled( TestArgs args ) {
         net->propagate( inputData );
         net->backPropFromLabels( args.learningRate, labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
-        for( int layer = 1; layer < (int)net->layers.size(); layer++ ) {
+        for( int layer = 1; layer < (int)net->getNumLayers(); layer++ ) {
             checkErrorsForLayer( layer, lastloss, net, lastWeights, currentWeights, args.learningRate, inputData, labels );
         }
         WeightsPersister::copyArrayToNetWeights( currentWeights, net );

@@ -728,7 +728,7 @@ TEST( testpropagate, softmax ) {
     NeuralNet *net = NeuralNet::maker()->imageSize(1)->planes(4)->instance();
     net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
-    float *input = new float[net->layers[0]->getOutputPlanes()];
+    float *input = new float[net->getLayer(0)->getOutputPlanes()];
     input[0] = 0;
     input[1] = 1;
     input[2] = 3;
@@ -736,7 +736,7 @@ TEST( testpropagate, softmax ) {
     net->propagate( input );
     float const*results = net->getResults();
     float sum = 0;
-    for( int i = 0; i < net->layers[0]->getOutputPlanes(); i++ ) {
+    for( int i = 0; i < net->getLayer(0)->getOutputPlanes(); i++ ) {
         cout << "results[" << i << "]=" << results[i] << endl;
         sum += results[i];
         EXPECT_LE( 0, results[i] );
@@ -748,29 +748,29 @@ TEST( testpropagate, softmax ) {
     EXPECT_FLOAT_NEAR( (float)( exp(3.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[2] );
     EXPECT_FLOAT_NEAR( (float)( exp(2.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[3] );
 
-    float *expected = new float[net->layers[0]->getOutputPlanes()];
-    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    float *expected = new float[net->getLayer(0)->getOutputPlanes()];
+    memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[2] = 1;
     float loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
     EXPECT_FLOAT_NEAR( - log(results[2]), loss );
 
-    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[0] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
     EXPECT_FLOAT_NEAR( - log(results[0]), loss );
 
-    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[1] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
     EXPECT_FLOAT_NEAR( - log(results[1]), loss );
 
-    memset( expected, 0, sizeof(float) * net->layers[0]->getOutputPlanes() );
+    memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[3] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
@@ -786,7 +786,7 @@ TEST( testpropagate, softmax_byplane ) {
     NeuralNet *net = NeuralNet::maker()->imageSize(2)->planes(1)->instance();
     net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
-    int imageSizeSquared = net->layers[0]->getOutputImageSize() * net->layers[0]->getOutputImageSize();
+    int imageSizeSquared = net->getLayer(0)->getOutputImageSize() * net->getLayer(0)->getOutputImageSize();
     float *input = new float[imageSizeSquared];
     input[0] = 0;
     input[1] = 1;

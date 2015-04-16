@@ -25,8 +25,8 @@ template< typename T > STATIC void WeightsPersister::copyArray( T *dst, T const*
 STATIC int WeightsPersister::getTotalNumWeights( NeuralNet *net ) {
     int totalWeightsSize = 0;
 //    cout << "layers size " << net->layers.size() << endl;
-    for( int layerIdx = 1; layerIdx < (int)net->layers.size(); layerIdx++ ) {
-        Layer *layer = net->layers[layerIdx];
+    for( int layerIdx = 1; layerIdx < net->getNumLayers(); layerIdx++ ) {
+        Layer *layer = net->getLayer( layerIdx );
         int thisPersistSize = layer->getPersistSize();
 //        cout << "layer " << layerIdx << " this persist size " << thisPersistSize << endl;
         totalWeightsSize += thisPersistSize;
@@ -35,8 +35,8 @@ STATIC int WeightsPersister::getTotalNumWeights( NeuralNet *net ) {
 }
 STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *target ) {
     int pos = 0;
-    for( int layerIdx = 1; layerIdx < (int)net->layers.size(); layerIdx++ ) {
-        Layer *layer = net->layers[layerIdx];
+    for( int layerIdx = 1; layerIdx < net->getNumLayers(); layerIdx++ ) {
+        Layer *layer = net->getLayer( layerIdx );
         int persistSize = layer->getPersistSize();
         if( persistSize > 0 ) {
             layer->persistToArray( &(target[pos]) );
@@ -46,8 +46,8 @@ STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *targ
 }
 STATIC void WeightsPersister::copyArrayToNetWeights( float const*source, NeuralNet *net ) {
     int pos = 0;
-    for( int layerIdx = 1; layerIdx < (int)net->layers.size(); layerIdx++ ) {
-    Layer *layer = net->layers[layerIdx];
+    for( int layerIdx = 1; layerIdx < net->getNumLayers(); layerIdx++ ) {
+    Layer *layer = net->getLayer( layerIdx );
         int persistSize = layer->getPersistSize();
         if( persistSize > 0 ) {
             layer->unpersistFromArray( &(source[pos]) );
@@ -58,7 +58,7 @@ STATIC void WeightsPersister::copyArrayToNetWeights( float const*source, NeuralN
 STATIC int WeightsPersister::getArrayOffsetForLayer( NeuralNet *net, int layer ) {
     int pos = 0;
     for( int layerIdx = 1; layerIdx < layer; layerIdx++ ) {
-    Layer *layer = net->layers[layerIdx];
+    Layer *layer = net->getLayer( layerIdx );
         pos += layer->getPersistSize();
     }
     return pos;
