@@ -34,7 +34,7 @@ class DeepCL_EXPORT NormalizeGetStdDev : public BatchAction {
 public:
     Statistics statistics; 
     NormalizeGetStdDev( float *data, int *labels ) :
-        BatchAction::BatchAction( data, labels ) {
+        BatchAction( data, labels ) {
     }
     virtual void processBatch( int batchSize, int cubeSize ) {
         NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );
