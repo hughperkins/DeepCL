@@ -24,7 +24,7 @@
 
 #include "DeepCLDllExport.h"
 
-class DeepCL_EXPORT StatefulTimer {
+class StatefulTimer {
 public:
     static StatefulTimer *instance() {
         static StatefulTimer *_instance = new StatefulTimer();
