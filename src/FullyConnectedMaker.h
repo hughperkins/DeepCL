@@ -16,7 +16,7 @@ class DeepCL_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:
     int _numPlanes;
     int _imageSize;
-    int _biased;
+    bool _biased;
     ActivationFunction const*_activationFunction;
     FullyConnectedMaker() :
         _numPlanes(0),
@@ -35,7 +35,7 @@ public:
         this->_biased = true;
         return this;
     }    
-    FullyConnectedMaker *biased(int _biased) {
+    FullyConnectedMaker *biased(bool _biased) {
         this->_biased = _biased;
         return this;
     }    

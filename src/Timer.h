@@ -20,7 +20,9 @@
 
 #include <string>
 
-class Timer{
+#include "DeepCLDllExport.h"
+
+class DeepCL_EXPORT Timer{
 public:
     #ifdef WINNOCHRONO
     DWORD last;
