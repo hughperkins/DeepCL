@@ -63,6 +63,11 @@ STATIC int WeightsPersister::getArrayOffsetForLayer( NeuralNet *net, int layer )
     }
     return pos;
 }
+// this will either succeed or fail in general
+// in the worst case, you can find the weights in a file postfixed with '~', if 
+// the machine fails right in between the 'delete' and the 'rename', but you 
+// should ideally never actually lose the weights file (unless the drive itself
+// fails of course...)
 STATIC void WeightsPersister::persistWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int epoch, int batch, float annealedLearningRate, int numRight, float loss ) {
     int headerLength = 1024;
     int totalWeightsSize = getTotalNumWeights( net );
@@ -78,10 +83,10 @@ STATIC void WeightsPersister::persistWeights( std::string filepath, std::string 
     persistArrayFloats[6] = annealedLearningRate;
     strcpy_safe( persistArray + 7 * 4, trainingConfigString.c_str(), 800 );
     copyNetWeightsToArray( net, reinterpret_cast<float *>(persistArray + headerLength) );
-    FileHelper::writeBinary( "~" + filepath, reinterpret_cast<char *>(persistArray), 
+    FileHelper::writeBinary( filepath + "~", reinterpret_cast<char *>(persistArray), 
         headerLength + totalWeightsSize * sizeof(float) );
     FileHelper::remove( filepath );
-    FileHelper::rename( "~" + filepath, filepath );
+    FileHelper::rename( filepath + "~", filepath );
     std::cout << "wrote weights to file, filesize " << ( ( headerLength + totalWeightsSize ) *sizeof(float)/1024) << "KB" << std::endl;
     delete[] persistArray;
 }

@@ -117,6 +117,7 @@
 
 * If we're going to train for hours or days, we probably want to make sure that if our process gets interrupted, we don't lose our training so far
 * By default, weights will be written to `weights.dat`, after each epoch
+  * You can add option `writeweightsinterval=5` to write weights every 5 minutes, even if the epoch hasnt finished yet.  Just replace `5` with the number of minutes between each write
 * If you specify option `loadweights=1`, the weights will be loadeded at the start
 * You can change the weights file with option `weightsfile=somefilename.dat`
 * If you specify option `loadweights=1`:
