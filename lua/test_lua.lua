@@ -66,11 +66,11 @@ function test_basic()
     deepcl.NetdefToNet_createNetFromNetdef( net, "rt2-8c5-mp2-16c5-mp3-150n-10n" ) 
     print(net:asString())
 
-    local learner = deepcl.NetLearner( net )
-    learner:setTrainingData( N, images, labels )
-    learner:setTestingData( N, images, labels )
+    local learner = deepcl.NetLearner( net,
+        N, images, labels,
+        N, images, labels,
+        128 )
     learner:setSchedule( 12 )
-    learner:setBatchSize( 128 )
     learner:learn( 0.002 )
 end
 

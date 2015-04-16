@@ -92,14 +92,15 @@ public:
     static bool createNetFromNetdef( NeuralNet *net, std::string netdef );
 };
 
-%rename (NetLearnerBase) NetLearner;
+/*%rename (NetLearnerBase) NetLearner;*/
 class NetLearner {
 public:
-    NetLearner( NeuralNet *net );
-    void setTrainingData( int Ntrain, float *images, int *labels );
-    void setTestingData( int Ntest, float *images, int *labels );
+    NetLearner( NeuralNet *net,
+        int Ntrain, float *images, int *labels,
+        int Ntest, float *images, int *labels,
+        int batchSize );
     void setSchedule( int numEpochs );
-    void setBatchSize( int batchSize );
+/*    void setBatchSize( int batchSize );*/
     void learn( float learningRate );
 };
 /*%rename(NetLearner) NetLearnerFloats;*/
@@ -115,7 +116,7 @@ public:
     NormalizationLayerMaker *scale( float _scale );
 };
 
-%rename (InputLayerMakerBase) InputLayerMaker;
+/*%rename (InputLayerMakerBase) InputLayerMaker;*/
 
 class InputLayerMaker : public LayerMaker2 {
 public:
