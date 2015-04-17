@@ -10,7 +10,7 @@
 // well... there are no directors in Cython, have to code them by hand :-P
 // hmmm, correction: directors arent supported in swig for lua :-P
 
-%module(directors="1") luaDeepCL
+%module(directors="1") LuaDeepCL
 
 %include "typemaps.i"
 %include "carrays.i"

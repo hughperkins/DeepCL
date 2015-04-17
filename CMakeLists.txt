@@ -65,9 +65,10 @@ foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
 endforeach()
 
-add_library( OpenCLHelper SHARED OpenCLHelper/OpenCLHelper.cpp
+set( OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
     OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
+add_library( OpenCLHelper SHARED ${OpenCLHelper_sources} )
 link_libraries( OpenCLHelper )
 
 add_executable( gpuinfo OpenCLHelper/gpuinfo.cpp OpenCLHelper/thirdparty/clew/src/clew.c 
