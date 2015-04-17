@@ -26,11 +26,6 @@
 ## MNIST
 
 * You can download the MNIST data from [MNIST database](http://yann.lecun.com/exdb/mnist/) , and place in the `data\mnist` directory, (g)unzipped.
-* in v3.2.1 and lower, MNIST format is not native, and you need to do the following to convert to NORB format:
-```bash
-./idx-to-mat ../data/mnist train
-./idx-to-mat ../data/mnist t10k
-```
 * Run as per the [convnetjs MNIST demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html) architecture as follows:
 ```bash
 ./deepclrun netdef=8c5{padzeros}-mp2-16c5{padzeros}-mp3-10n learningrate=0.002 dataset=mnist

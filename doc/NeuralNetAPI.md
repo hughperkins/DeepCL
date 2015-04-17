@@ -23,7 +23,7 @@
 * You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
 ```c++
 NeuralNet *net = new NeuralNet();
-net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(1)->imageSize(28) );
+net->addLayer( InputMaker::instance()->numPlanes(1)->imageSize(28) );
 net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
 net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
 net->addLayer( PoolingMaker::instance()->poolingSize(2) );
@@ -47,14 +47,9 @@ NeuralNet *net = new NeuralNet();
 
 ## Add an input layer
 
-* You need exactly one input layer
-* This is templated, so you can feed it an array of `unsigned char *`, or `float *`, later, as you wish.  If you want to feed in data as `float *`, then do:
+* You need exactly one input layer:
 ```c++
-net->addLayer( InputMaker<float>::instance()->numPlanes(10)->imageSize(19) );
-```
-* If you want to feed in data as `unsigned char *`, then do:
-```c++
-net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(10)->imageSize(19) );
+net->addLayer( InputMaker::instance()->numPlanes(10)->imageSize(19) );
 ```
 * You need to set the number of input planes, and the image size.
 
@@ -63,7 +58,7 @@ net->addLayer( InputMaker<unsigned char>::instance()->numPlanes(10)->imageSize(1
 * You can add a normalization layer, to translate and scale input data.  Put it just after the input layer, like this:
 ```c++
 NeuralNet *net = new NeuralNet();
-net->addLayer( InputMaker<float>::instance()->numPlanes(10)->imageSize(19) );
+net->addLayer( InputMaker::instance()->numPlanes(10)->imageSize(19) );
 net->addLayer( NormalizationMaker::instance()->translate( - mean )->scale( 1.0f / standardDeviation ) );
 // other layers here...
 ```
@@ -158,7 +153,7 @@ net->addLayer( SoftMaxLayer::instance() );
 
 ## Data format
 
-Input data should be provided in a contiguous array, of `float`s (edit: or `unsigned char` now!  Or anything that is castable to a float).  "group by" order should be:
+Input data should be provided in a contiguous array, of `float`s.  "group by" order should be:
 
 * training example id
 * input plane
@@ -182,8 +177,8 @@ For non-categorical data, you can provide expected output values as a contiguous
 eg:
 ```c++
 // (create a net, as above)
-// train, eg on unsigned char input data:
-NetLearner<unsigned char> netLearner( net );
+// train, eg:
+NetLearner netLearner( net );
 netLearner.setTrainingData( Ntrain, trainData, trainLabels );
 netLearner.setTestingData( Ntest, testData, testLabels );
 netLearner.setSchedule( numEpochs );
@@ -199,8 +194,8 @@ eg
 ```c++
 // (create a net, as above)
 // (train it, as above)
-// test, eg for unsigned char input data:
-BatchLearner<unsigned char> batchLearner( net );
+// test, eg:
+BatchLearner batchLearner( net );
 int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
 
