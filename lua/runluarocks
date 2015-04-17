@@ -1,5 +1,0 @@
-#!/bin/bash
-
-LUA_PATH=~/git/luarocks/src/?.lua ~/git/luarocks/src/bin/luarocks $@
-
-
