@@ -12,7 +12,7 @@
 
 print('test_lua.lua')
 
-luaunit = require('thirdparty.luaunit.luaunit')
+luaunit = require('luaunit')
 require('LuaDeepCL')
 deepcl = LuaDeepCL
 

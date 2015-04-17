@@ -50,4 +50,8 @@ target_include_directories(LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
 
 SET_TARGET_PROPERTIES(LuaDeepCL PROPERTIES PREFIX "") 
 
+ADD_CUSTOM_TARGET(install 
+)
+
+
 

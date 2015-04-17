@@ -34,6 +34,7 @@
 
 debug/
 build/
+build.luarocks/
 build-win32/
 build-win64/
 build-*/
