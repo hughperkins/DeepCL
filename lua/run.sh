@@ -5,5 +5,5 @@ if [[ x$1 == x ]]; then {
     exit 1
 } fi
 
-LD_LIBRARY_PATH=../build:. luajit $1
+LUA_CPATH=build/?.so luajit $1
 

@@ -65,7 +65,6 @@ Note:
 - open visual studio, and load any of the projects in the `build` directory
   - change release type to `Release`
   - choose `build` from the `build` menu
-- after building, you will need to copy the *.cl files by hand, from the `cl` directory
 
 ## Linking
 

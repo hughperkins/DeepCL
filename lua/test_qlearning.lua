@@ -11,8 +11,8 @@
 --
 
 -- luaunit = require('thirdparty.luaunit')
-require('luaDeepCL')
-deepcl = luaDeepCL
+require('LuaDeepCL')
+deepcl = LuaDeepCL
 
 function zeroArray( N, floatarray )
     for i = 0, N-1 do
