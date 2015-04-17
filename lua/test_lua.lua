@@ -12,8 +12,8 @@
 
 print('test_lua.lua')
 
-luaunit = require('thirdparty.luaunit')
-require('luaDeepCL')
+luaunit = require('thirdparty.luaunit.luaunit')
+require('libluaDeepCL')
 deepcl = luaDeepCL
 
 function test_genericloader()
