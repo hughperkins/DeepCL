@@ -15,23 +15,6 @@ Global Contents
 - [Architecture](doc/Architecture.md)
 - [Changes](doc/Changes.md)
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [DeepCL](#deepcl)
-- [To use the pre-built binaries](#to-use-the-pre-built-binaries)
-  - [What if it doesn't run?](#what-if-it-doesnt-run)
-- [What if I need a new feature?](#what-if-i-need-a-new-feature)
-- [What if I want to contribute myself?](#what-if-i-want-to-contribute-myself)
-  - [Development technical details](#development-technical-details)
-  - [Architecture](#architecture)
-- [Third-party libraries](#third-party-libraries)
-- [Related projects](#related-projects)
-- [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 DeepCL
 ==========
 
@@ -134,16 +117,20 @@ Related projects
 
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
 
-Credits
-=======
-
-* Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state.
-* Thank-you very, very much to everyone who has clicked on the 'star' button above.  It is highly motivational, and very encouraging.  Every star pushes me forward to keep going, and gradually improve DeepCL :-)
-* Also, very happy to whoever submitted a link to DeepCL to Reddit, and for everyone who upvoted that link.  Thank-you very much :-)
-
 License
 =======
 
 [Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
 
+Credits
+=======
+
+* Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state.
+* Thank-you very, very much to everyone who has clicked on the 'star' button above.  It is highly motivational, and very encouraging.  Every star pushes me forward to keep going, and gradually improve DeepCL :-)
+* Also, very happy to the person who submitted a link to DeepCL to Reddit MachineLearning, and for everyone who upvoted that link.  Thank-you very much :-)
+
+To get in contact
+=================
+
+There is a mailing list at http://lists.hughperkins.com/listinfo.cgi/deepcl-hughperkins.com for discussions, ideas, or just to say 'hi'.  You can also just create issues, in github, in the top right of this page.
 
