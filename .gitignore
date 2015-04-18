@@ -63,3 +63,7 @@ python/src/
 python/mysrc/
 python/version.txt
 
+# lua
+lua/*-*.rock
+
+

@@ -12,6 +12,7 @@ Global Contents
 - [Lua wrappers](lua/README.md)
 - [Q-learning](doc/QLearning.md)
 - [To build](doc/Build.md)
+- [Stable API](doc/PublicApis.md)
 - [Testing](doc/Testing.md)
 - [Architecture](doc/Architecture.md)
 - [Changes](doc/Changes.md)
