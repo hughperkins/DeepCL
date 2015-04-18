@@ -45,6 +45,7 @@ foreach(source ${OpenCLHelper_sources})
     set( OpenCLHelper_sources_prefixed ${OpenCLHelper_sources_prefixed} ../${source})
 endforeach()
 
+set(CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_SOURCE_DIR} )
 SWIG_ADD_MODULE(PyDeepCL python PyDeepCL.i ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed})
 target_include_directories( _PyDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
 target_include_directories( _PyDeepCL PRIVATE ${PYTHON_INCLUDE_DIR})
