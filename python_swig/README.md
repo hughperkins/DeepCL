@@ -8,7 +8,6 @@ This directory contains python wrappers built using swig
 
 ### Pre-requisites
 
-* swig
 * cmake
 * compiler, ie:
   * visual studio 2010, on Windows, or
