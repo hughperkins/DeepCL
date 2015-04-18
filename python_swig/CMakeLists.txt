@@ -77,6 +77,7 @@ if(DEV_RUN_SWIG)
 find_package(SWIG REQUIRED)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/PyDeepCL_wrap.cxx
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/PyDeepCL.i
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND swig -c++ -python PyDeepCL.i
 )
