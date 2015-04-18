@@ -322,7 +322,9 @@ void go(Config config) {
                     int batchNumRight = netLearner->getBatchNumRight();
                     float batchLoss = netLearner->getBatchLoss();
                     cout << "record epoch=" << nextEpoch << " batch=" << nextBatch <<
-                        " numRight=" << batchNumRight << " loss=" << batchLoss << endl;
+                        "(" << ( (float)nextBatch * 100.0f / netLearner->getNTrain() * config.batchSize ) << "% of epoch)" <<
+                        " numRight=" << batchNumRight << "(" << (batchNumRight * 100.0f / nextBatch / config.batchSize ) << "%)" <<
+                        " loss=" << batchLoss << endl;
                     WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net,
                         nextEpoch, nextBatch, 0, batchNumRight, batchLoss );
                     weightsWriteTimer.lap();

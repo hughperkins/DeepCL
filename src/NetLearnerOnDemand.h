@@ -80,6 +80,7 @@ public:
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
     PUBLICAPI VIRTUAL int getNextBatch();
+    PUBLICAPI VIRTUAL int getNTrain();
     PUBLICAPI VIRTUAL int getBatchNumRight();
     PUBLICAPI VIRTUAL float getBatchLoss();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );

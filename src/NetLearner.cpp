@@ -127,6 +127,10 @@ PUBLICAPI VIRTUAL int NetLearner::getNextBatch() {
     return trainBatcher->getNextBatch();
 }
 
+PUBLICAPI VIRTUAL int NetLearner::getNTrain() {
+    return trainBatcher->getN();
+}
+
 PUBLICAPI VIRTUAL int NetLearner::getBatchNumRight() {
     return trainBatcher->getNumRight();
 }

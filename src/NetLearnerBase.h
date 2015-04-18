@@ -29,6 +29,7 @@ public:
     virtual int getNextBatch() = 0;
     virtual int getBatchNumRight() = 0;
     virtual float getBatchLoss() = 0;
+    virtual int getNTrain() = 0;
     virtual void setBatchState( int batch, int numRight, float loss ) = 0;
     virtual void run() = 0;
 };

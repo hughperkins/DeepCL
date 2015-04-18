@@ -61,6 +61,7 @@ public:
     PUBLICAPI VIRTUAL bool getEpochDone();
     PUBLICAPI VIRTUAL int getNextEpoch();
     PUBLICAPI VIRTUAL int getNextBatch();
+    PUBLICAPI VIRTUAL int getNTrain();
     PUBLICAPI VIRTUAL int getBatchNumRight();
     PUBLICAPI VIRTUAL float getBatchLoss();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
