@@ -8,7 +8,7 @@ rmdir /s /q build
 mkdir -p build
 cd build
 dir
-"c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010 Win64" ..
+"c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010 Win64" -D BUILD_PYTHON_WRAPPERS:BOOL=OFF -D BUILD_LUA_WRAPPERS:BOOL=OFF ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
 
