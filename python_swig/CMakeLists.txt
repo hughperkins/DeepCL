@@ -67,7 +67,7 @@ endforeach()
 #target_include_directories( _PyDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
 #target_include_directories( _PyDeepCL PRIVATE ${PYTHON_INCLUDE_DIR})
 
-add_library( _PyDeepCL SHARED PyDeepCL_wrap.cxx )
+add_library( _PyDeepCL SHARED PyDeepCL_wrap.cxx ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed} )
 target_include_directories( _PyDeepCL PRIVATE ${PYTHON_INCLUDE_DIR})
 target_include_directories( _PyDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
 SET_TARGET_PROPERTIES( _PyDeepCL PROPERTIES PREFIX "") 
