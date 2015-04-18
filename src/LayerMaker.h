@@ -108,11 +108,11 @@ public:
     }
     SoftMaxMaker *perColumn() {
         this->_perPlane = false;
-        return this;
+        return clone();
     }
     SoftMaxMaker *perPlane() {
         this->_perPlane = true;
-        return this;
+        return clone();
     }
     static SoftMaxMaker *instance() {
         return new SoftMaxMaker();
