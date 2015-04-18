@@ -40,9 +40,8 @@
 ## New, in next version, 4.x.x
 
 * lua wrappers created, using swig
-* new set of python wrappers, in `python_swig` directory, also using swig
-  * plausibly will replace the original cython wrappers, because swig can be used for many
-different scripting languages
+* new set of python wrappers, in `python_swig` directory, using swig instead of cython
+  * plausibly will be published to pypi as 'PyDeepCLSwig', in parallel to the existing Cython version
 
 ## Changes, in next version, 4.x.x
 
@@ -52,10 +51,12 @@ different scripting languages
 ## Deprecated, in next version, 4.x.x
 
 * templates removed; everything is `float` now, no `unsigned char`, or `T`
-  * basically, templates work not great with pure virtual inheritance, nor are they very
-    supported by scripting languages we might be using to run DeepCL
+  * basically, templates are not very
+    supported by scripting languages, complicating writing wrappers
 * removing callbacks from BatchLearner, NetLearner, NetLearnerOnDemand, BatchLearnerOnDemand
-* idx-to-mat removed; since can directly load mnist format now
+  * replaced by simply calling `tickEpoch` or `tickBatch`, and doing what you want after each call, ie no longer actually need the callbacks
+  * again, more compatible with writing wrappers for scripting languages, since inter-language callbacks tend to be hard work to implement
+* idx-to-mat removed; since GenericLoader can directly handle reading mnist format now
 * clconvolve1 executable removed (replaced by deeplclrun)
 
 ## Done

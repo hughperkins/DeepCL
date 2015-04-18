@@ -71,12 +71,7 @@ python test_lowlevel.py c:\data\mnist
 
 * the `python` directory uses Cython to create the wrappers
 * this `python_swig` directory uses swig
-
-## What are the future of these two directories?
-
-* Since using swig is significantly lower maintenance, because portable languages, eg between python and lua,
-the swig wrappers will almost certainly replace the cython wrappers, and the cython wrappers will become
-deprecated
+* Both have their good and bad points, and can exist in parallel for a while :-)
 
 ## Development
 
