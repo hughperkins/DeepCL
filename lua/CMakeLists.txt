@@ -65,6 +65,7 @@ if(DEV_RUN_SWIG)
 find_package(SWIG REQUIRED)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/LuaDeepCL_wrap.cxx
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/LuaDeepCL.i
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND swig -c++ -lua LuaDeepCL.i
 )
