@@ -69,7 +69,7 @@ public:
     PUBLICAPI VIRTUAL bool isLearningDone();
     PUBLICAPI VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
-    VIRTUAL void learn( float learningRate );
+    PUBLICAPI VIRTUAL void learn( float learningRate );
     VIRTUAL void learn( float learningRate, float annealLearningRate );
 
     // [[[end]]]

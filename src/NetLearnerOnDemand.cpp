@@ -21,7 +21,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net, 
+PUBLICAPI NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net, 
             std::string trainFilepath, int Ntrain,
             std::string testFilepath, int Ntest,
             int fileReadBatches, int batchSize ) :
@@ -79,11 +79,11 @@ VIRTUAL void NetLearnerOnDemand::setSchedule( int numEpochs, int nextEpoch ) {
     this->nextEpoch = nextEpoch;
 }
 
-VIRTUAL bool NetLearnerOnDemand::getEpochDone() {
+PUBLICAPI VIRTUAL bool NetLearnerOnDemand::getEpochDone() {
     return learnBatcher->getEpochDone();
 }
 
-VIRTUAL int NetLearnerOnDemand::getNextEpoch() {
+PUBLICAPI VIRTUAL int NetLearnerOnDemand::getNextEpoch() {
     return nextEpoch;
 }
 
@@ -105,22 +105,22 @@ VIRTUAL void NetLearnerOnDemand::setLearningRate( float learningRate, float anne
     this->annealLearningRate = annealLearningRate;
 }
 
-VIRTUAL int NetLearnerOnDemand::getNextBatch() {
+PUBLICAPI VIRTUAL int NetLearnerOnDemand::getNextBatch() {
     return learnBatcher->getNextBatch();
 }
 
-VIRTUAL int NetLearnerOnDemand::getBatchNumRight() {
+PUBLICAPI VIRTUAL int NetLearnerOnDemand::getBatchNumRight() {
     return learnBatcher->getNumRight();
 }
 
-VIRTUAL float NetLearnerOnDemand::getBatchLoss() {
+PUBLICAPI VIRTUAL float NetLearnerOnDemand::getBatchLoss() {
     return learnBatcher->getLoss();
 }
 
 VIRTUAL void NetLearnerOnDemand::setBatchState( int nextBatch, int numRight, float loss ) {
     learnBatcher->setBatchState( nextBatch, numRight, loss );
 }
-VIRTUAL void NetLearnerOnDemand::reset() {
+PUBLICAPI VIRTUAL void NetLearnerOnDemand::reset() {
     timer.lap();
     learningDone = false;
     nextEpoch = 0;
@@ -144,7 +144,7 @@ VIRTUAL void NetLearnerOnDemand::postEpochTesting() {
     timer.timeCheck("after tests");
 }
 
-VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, not low-level batch
+PUBLICAPI VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, not low-level batch
                                                // probalby good enough for now?    
     int epoch = nextEpoch;
     learnAction->learningRate = learningRate * pow( annealLearningRate, epoch );
@@ -161,7 +161,7 @@ VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, not low-leve
     return !learningDone;
 }
 
-VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
+PUBLICAPI VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
 //    int epoch = nextEpoch;
 //    cout << "NetLearnerOnDemand.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << learnBatcher->getEpochDone() << endl;
 //    cout << "numEpochs=" << numEpochs << endl;
@@ -188,7 +188,7 @@ VIRTUAL bool NetLearnerOnDemand::tickEpoch() {
 //    return !learningDone;
 }
 
-VIRTUAL void NetLearnerOnDemand::run() {
+PUBLICAPI VIRTUAL void NetLearnerOnDemand::run() {
     if( learningDone ) {
         reset();
     }
@@ -197,11 +197,11 @@ VIRTUAL void NetLearnerOnDemand::run() {
     }
 }
 
-VIRTUAL bool NetLearnerOnDemand::isLearningDone() {
+PUBLICAPI VIRTUAL bool NetLearnerOnDemand::isLearningDone() {
     return learningDone;
 }
 
-VIRTUAL void NetLearnerOnDemand::learn( float learningRate ) {
+PUBLICAPI VIRTUAL void NetLearnerOnDemand::learn( float learningRate ) {
     learn( learningRate, 1.0f );
 }
 

@@ -23,6 +23,7 @@ is to mark methods that should be stable within major versions
   * Batcher
   * OnDemandBatcher
   * NetLearner
+  * NetLearnerOnDemand (although we might merge the functionality into NetLearner class, this class itself can remain in place, until the next subsequent major release)
 * Compiler standards should ideally be covered, to the extent that the ability to compile on linux
 using g++ with only `-std=c++0x`, and on Windows, using Visual Studio 2010 Express should not be removed without a major version change
 
@@ -51,4 +52,10 @@ The following APIs are currently unstable, and can be modified in between major 
 need something added to this document, please let me know, eg via email, raising a Github issue, or through
 the mailing list
 * Classes and methods can ideally only be removed from this document on a major version change
+
+## Recent changes to this document
+
+* 19th April: add PUBLICAPI to NetLearnerOnDemand methods
+* 19th April: add is_public_api marker to commandline options of deepclrun, and document that here
+* 18th April: First created
 

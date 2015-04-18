@@ -176,7 +176,7 @@ VIRTUAL void NetLearner::setLearningRate( float learningRate, float annealLearni
     this->annealLearningRate = annealLearningRate;
 }
 
-VIRTUAL void NetLearner::learn( float learningRate ) {
+PUBLICAPI VIRTUAL void NetLearner::learn( float learningRate ) {
     learn( learningRate, 1.0f );
 }
 VIRTUAL void NetLearner::learn( float learningRate, float annealLearningRate ) {
