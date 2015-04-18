@@ -92,3 +92,8 @@
   * write a LuaJIT wrapper since Yann LeCun mentioned LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/) , ie at [http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw)
   * write the weights to file more often than once an epoch, so each time my machine goes down, after 1 day and 23 hours, I dont lose 2 days of learning :-P => added writeweightsinterval option
 
+## Recent changes
+
+* 18th April: with `loadweights=1`, will load old weights file format too, not just refuse to load
+* 18th April: with `loadweights=1`, if the file doesnt match current options, you can now override if you want, at the risk of crashing, or loading inappropriate weights
+

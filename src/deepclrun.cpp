@@ -134,6 +134,11 @@ public:
                    // end-user plausibly?
         return configString;
     }
+    string getOldTrainingString() {
+        string configString = "";
+        configString += "netDef=" + netDef + " trainFile=" + trainFile;
+        return configString;
+    }
 };
 
 void go(Config config) {
@@ -246,9 +251,18 @@ void go(Config config) {
     if( config.loadWeights && config.weightsFile != "" ) {
         afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
         if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
-            cout << "Weights file " << config.weightsFile << " exists, but doesnt match training options provided => aborting" << endl;
-            cout << "Please either check the training options, or choose a weights file that doesnt exist yet" << endl;
-            return;
+            // try old trainingstring
+            afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getOldTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
+        }
+        if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
+            cout << "Weights file " << config.weightsFile << " exists, but doesnt match training options provided." << endl;
+            cout << "Continue loading anyway (might crash, or weights might be completely inappropriate)? (y/n)" << endl;
+            string response;
+            cin >> response;
+            if( response != "y" ) {
+                cout << "Please either check the training options, or choose a weights file that doesnt exist yet" << endl;
+                return;
+            }
         }
         cout << "reloaded epoch=" << restartEpoch << " batch=" << restartBatch << " numRight=" << restartNumRight << " loss=" << restartLoss << endl;
     }
