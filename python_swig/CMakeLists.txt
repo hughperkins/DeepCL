@@ -17,12 +17,12 @@ find_package(SWIG QUIET)
 # INCLUDE(${SWIG_USE_FILE})
 
 if(SWIG_EXECUTABLE AND ON_LINUX)
-    OPTION(RUN_SWIG "Re-runs swig.  Only needed for development.  Linux only." ON)
+    OPTION(DEV_RUN_SWIG "Re-runs swig.  Only needed for development.  Linux only." ON)
 else()
-    OPTION(RUN_SWIG "Re-runs swig.  Only needed for development." OFF)
+    OPTION(DEV_RUN_SWIG "Re-runs swig.  Only needed for development." OFF)
 endif()
 
-set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
+set( pyswig_DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
      ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
     Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
     Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
@@ -44,16 +44,16 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp
  )
 
-set(OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
+set(pyswig_OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
     OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c)
 
-foreach(source ${DeepCL_sources})
-    set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} ../src/${source})
+foreach(source ${pyswig_DeepCL_sources})
+    set( pyswig_DeepCL_sources_prefixed ${pyswig_DeepCL_sources_prefixed} ../src/${source})
 endforeach()
 
-foreach(source ${OpenCLHelper_sources})
-    set( OpenCLHelper_sources_prefixed ${OpenCLHelper_sources_prefixed} ../${source})
+foreach(source ${pyswig_OpenCLHelper_sources})
+    set( pyswig_OpenCLHelper_sources_prefixed ${pyswig_OpenCLHelper_sources_prefixed} ../${source})
 endforeach()
 
 #SET_SOURCE_FILES_PROPERTIES(PyDeepCL.i PROPERTIES SWIG_FLAGS "-o;${CMAKE_CURRENT_SOURCE_DIR}/PyDeepCLPYTHON_wrap.cxx")
@@ -68,13 +68,12 @@ endforeach()
 #target_include_directories( _PyDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
 #target_include_directories( _PyDeepCL PRIVATE ${PYTHON_INCLUDE_DIR})
 
-add_library( _PyDeepCL SHARED PyDeepCL_wrap.cxx ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed} )
+add_library( _PyDeepCL SHARED PyDeepCL_wrap.cxx ${pyswig_DeepCL_sources_prefixed} ${pyswig_OpenCLHelper_sources_prefixed} )
 target_include_directories( _PyDeepCL PRIVATE ${PYTHON_INCLUDE_DIR})
 target_include_directories( _PyDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
 SET_TARGET_PROPERTIES( _PyDeepCL PROPERTIES PREFIX "") 
 
-if(RUN_SWIG)
-message("run swig...")
+if(DEV_RUN_SWIG)
 find_package(SWIG REQUIRED)
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/PyDeepCL_wrap.cxx
@@ -85,8 +84,8 @@ add_dependencies( _PyDeepCL run_swig )
 endif()
 
 
-ADD_CUSTOM_TARGET(install 
-)
+#ADD_CUSTOM_TARGET(install 
+#)
 
 
 

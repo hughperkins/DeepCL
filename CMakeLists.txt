@@ -98,12 +98,12 @@ add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/sr
 add_dependencies( DeepCL git_submodules_update )
 endif()
 
-find_package(Lua51 QUIET)
-if( LUA51_FOUND )
-    OPTION(LUA51_AVAILABLE "Builds lua wrappers." ON)
-else()
-    OPTION(LUA51_AVAILABLE "Builds lua wrappers." OFF)
-endif()
+#find_package(Lua51 QUIET)
+#if( LUA51_FOUND )
+#    OPTION(LUA51_AVAILABLE "Builds lua wrappers." ON)
+#else()
+#    OPTION(LUA51_AVAILABLE "Builds lua wrappers." OFF)
+#endif()
 
 find_package(PNG QUIET)
 if( PNG_FOUND )
@@ -112,12 +112,12 @@ else()
     OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
 endif()
 
-if( LUA51_AVAILABLE )
-    find_package(Lua51 REQUIRED)
-    add_library( luaDeepCL SHARED lua/DeepCL_wrap.cxx )
-    target_include_directories(luaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
-    target_link_libraries(luaDeepCL ${LUA_LIBRARIES})
-endif()
+#if( LUA51_AVAILABLE )
+#    find_package(Lua51 REQUIRED)
+#    add_library( luaDeepCL SHARED lua/DeepCL_wrap.cxx )
+#    target_include_directories(luaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
+#    target_link_libraries(luaDeepCL ${LUA_LIBRARIES})
+#endif()
 
 if( LIBPNGPP_AVAILABLE)
 find_package(PNG REQUIRED)
@@ -129,19 +129,19 @@ link_libraries(DeepCL)
 execute_process( COMMAND python -V ERROR_VARIABLE python_test )
 if( ${python_test} MATCHES "Python 2\\.7\\..*" )
     #message("Python 2.7 found")
-    OPTION(PYTHON_AVAILABLE "Facilitates development, doesnt build the wrappers" ON)
+    OPTION(DEV_RUN_COG "For developers: re-run cogapp." ON)
 else()
-    OPTION(PYTHON_AVAILABLE "Facilitates development, doesnt build the wrappers." OFF)
+    OPTION(DEV_RUN_COG "For developers: re-run cogapp." OFF)
 endif()
 
-if(PYTHON_AVAILABLE)
+if(DEV_RUN_COG)
     add_custom_target( 
         cog
         python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/qlearning/*.h
     )
     add_dependencies( DeepCL cog )
-endif(PYTHON_AVAILABLE)
+endif(DEV_RUN_COG)
 
 #add_custom_target(
 #    git-submodule-update
@@ -241,5 +241,27 @@ target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 ##    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
 ##)
 #endif()
+
+find_package(Lua51 QUIET)
+if(LUA51_FOUND)
+    OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" ON)
+else()
+    OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
+endif()
+
+if( BUILD_LUA_WRAPPERS )
+add_subdirectory(lua)
+endif()
+
+find_package(PythonLibs QUIET)
+if(PYTHONLIBS_FOUND)
+    OPTION(BUILD_PYTHON_WRAPPERS "Builds Python wrappers (swig-version)" ON)
+else()
+    OPTION(BUILD_PYTHON_WRAPPERS "Builds Python wrappers (swig-version)" OFF)
+endif()
+
+if( BUILD_PYTHON_WRAPPERS)
+add_subdirectory(python_swig)
+endif()
 
 
