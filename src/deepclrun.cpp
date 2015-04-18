@@ -28,29 +28,29 @@ using namespace std;
 /* [[[cog
     # These are used in the later cog sections in this file:
     # format:
-    # ( name, type, description, default )
+    # ( name, type, description, default, ispublicapi )
     options = [
-        ('dataDir', 'string', 'directory to search for train and validate files', '../data/mnist' ),
-        ('trainFile', 'string', 'path to training data file',"train-images-idx3-ubyte"),
-        ('dataset', 'string', 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]',''),
-        ('validateFile', 'string', 'path to validation data file',"t10k-images-idx3-ubyte"),
-        ('numTrain', 'int', 'num training examples',-1),
-        ('numTest', 'int', 'num test examples]',-1),
-        ('batchSize', 'int', 'batch size',128),
-        ('numEpochs', 'int', 'number epochs',12),
-        ('netDef', 'string', 'network definition',"RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N"),
-        ('learningRate', 'float', 'learning rate, a float value', 0.002),
-        ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1),
-        ('loadWeights', 'int', 'load weights from file at startup?', 0),
-        ('weightsFile', 'string', 'file to write weights to','weights.dat'),
-        ('writeWeightsInterval', 'float', 'write weights every this many minutes', 0 ),
-        ('normalization', 'string', '[stddev|maxmin]', 'stddev'),
-        ('normalizationNumStds', 'float', 'with stddev normalization, how many stddevs from mean is 1?', 2.0),
-        ('dumpTimings', 'int', 'dump detailed timings each epoch? [1|0]', 0),
-        ('multiNet', 'int', 'number of Mcdnn columns to train', 1),
-        ('loadOnDemand', 'int', 'load data on demand [1|0]', 0),
-        ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50),
-        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000)
+        ('dataDir', 'string', 'directory to search for train and validate files', '../data/mnist', True),
+        ('trainFile', 'string', 'path to training data file',"train-images-idx3-ubyte", True),
+        ('dataset', 'string', 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]','', True),
+        ('validateFile', 'string', 'path to validation data file',"t10k-images-idx3-ubyte", True),
+        ('numTrain', 'int', 'num training examples',-1, True),
+        ('numTest', 'int', 'num test examples]',-1, True),
+        ('batchSize', 'int', 'batch size',128, True),
+        ('numEpochs', 'int', 'number epochs',12, True),
+        ('netDef', 'string', 'network definition',"RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N", True),
+        ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
+        ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, True),
+        ('loadWeights', 'int', 'load weights from file at startup?', 0, True),
+        ('weightsFile', 'string', 'file to write weights to','weights.dat', True),
+        ('writeWeightsInterval', 'float', 'write weights every this many minutes', 0, True),
+        ('normalization', 'string', '[stddev|maxmin]', 'stddev', True),
+        ('normalizationNumStds', 'float', 'with stddev normalization, how many stddevs from mean is 1?', 2.0, True),
+        ('dumpTimings', 'int', 'dump detailed timings each epoch? [1|0]', 0, True),
+        ('multiNet', 'int', 'number of Mcdnn columns to train', 1, True),
+        ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
+        ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50, True),
+        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True)
     ]
 *///]]]
 // [[[end]]]
@@ -59,7 +59,7 @@ class Config {
 public:
     /* [[[cog
         cog.outl('// generated using cog:')
-        for (name,type,description,default) in options:
+        for (name,type,description,default,_) in options:
             cog.outl( type + ' ' + name + ';')
     */// ]]]
     // generated using cog:
@@ -89,7 +89,7 @@ public:
     Config() {
         /* [[[cog
             cog.outl('// generated using cog:')
-            for (name,type,description,default) in options:
+            for (name,type,description,default,_) in options:
                 defaultString = ''
                 if type == 'string':
                     defaultString = '"' + default + '"'
@@ -356,8 +356,9 @@ void printUsage( char *argv[], Config config ) {
     cout << "Possible key=value pairs:" << endl;
     /* [[[cog
         cog.outl('// generated using cog:')
-        for (name,type,description,_) in options:
-            cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
+        for (name,type,description,_, is_public_api) in options:
+            if is_public_api:
+                cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
     *///]]]
     // generated using cog:
     cout << "    datadir=[directory to search for train and validate files] (" << config.dataDir << ")" << endl;
@@ -401,7 +402,7 @@ int main( int argc, char *argv[] ) {
             /* [[[cog
                 cog.outl('// generated using cog:')
                 cog.outl('if( false ) {')
-                for (name,type,description,_) in options:
+                for (name,type,description,_,_) in options:
                     cog.outl( '} else if( key == "' + name.lower() + '" ) {')
                     converter = '';
                     if type == 'int':

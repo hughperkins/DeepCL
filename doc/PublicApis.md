@@ -8,7 +8,8 @@ will hopefully be stable in between major version changes.
 ## Stable APIs
 
 The following APIs will aim to only be modified in major version changes:
-* commandline parameters and options for `deepclrun`
+* commandline parameters and options for `deepclrun` which have 'is_public_api' set to 'True', in the options list created on around line 31
+  * concretely, this means any option that appears in the 'usage' when you run `deepclrun -h`
 * Cython Python wrappers API: all existing wrapped classes and methods, except for q-learning
 * Any C++ methods marked as `PUBLICAPI`.  This is a null macro, that does nothing.  Its sole job
 is to mark methods that should be stable within major versions
