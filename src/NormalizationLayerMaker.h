@@ -25,14 +25,14 @@ public:
 //    }
     NormalizationLayerMaker *translate( float _translate ) {
         this->_translate = _translate;
-        return clone(); // have to clone, otherwise python wrappers 
+        return this; // have to clone, otherwise python wrappers 
                               // crash.  but if you have a better idea...
                               // (of course, this will leak, when used in fluent
                               // style, but hopefully not too much :-) )
     }
     NormalizationLayerMaker *scale( float _scale ) {
         this->_scale = _scale;
-        return clone();
+        return this;
     }
     static NormalizationLayerMaker *instance() {
         return new NormalizationLayerMaker();

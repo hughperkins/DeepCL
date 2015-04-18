@@ -59,7 +59,7 @@ class LayerMaker2 {
 public:
     LayerMaker2();
     virtual ~LayerMaker2() {}
-    virtual LayerMaker2 *clone() const = 0; // we have to mark this class pure abstract, otherwise
+//    virtual LayerMaker2 *clone() const = 0; // we have to mark this class pure abstract, otherwise
                               // things dont build.  shouldnt call this method though
 //    virtual Layer *createLayer( Layer *previousLayer ) = 0;
 };
@@ -110,8 +110,41 @@ public:
 /*    void setBatchSize( int batchSize );*/
     void learn( float learningRate );
 };
-/*%rename(NetLearner) NetLearnerFloats;*/
-/*%template(NetLearner) NetLearner<float>;*/
+
+// not sure why we need these, but segfaults without these :-(
+%typemap(ret) InputLayerMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_InputLayerMaker, 0 |  0 );
+%}
+%typemap(ret) NormalizationLayerMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_NormalizationLayerMaker, 0 |  0 );
+%}
+%typemap(ret) ConvolutionalMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
+%}
+%typemap(ret) FullyConnectedMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
+%}
+%typemap(ret) PoolingMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PoolingMaker, 0 |  0 );
+%}
+%typemap(ret) SoftMaxMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SoftMaxMaker, 0 |  0 );
+%}
+%typemap(ret) SquareLossMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SquareLossMaker, 0 |  0 );
+%}
+%typemap(ret) CrossEntropyLossMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CrossEntropyLossMaker, 0 |  0 );
+%}
+
 
 // we can probalby just %include these actually, but writing 
 // explicitly means we can pick and choose which methods we want
@@ -122,9 +155,22 @@ public:
     NormalizationLayerMaker();
     NormalizationLayerMaker *translate( float _translate );
     NormalizationLayerMaker *scale( float _scale );
-    virtual NormalizationLayerMaker *clone() const;
+//    virtual NormalizationLayerMaker *clone() const;
 //    virtual Layer *createLayer( Layer *previousLayer );
+    %extend {
+        float getTranslate(){ 
+            return $self->_translate; 
+        }
+        float getScale(){ 
+            return $self->_scale; 
+        }
+        void show(){ 
+            std::cout << "normalizationlayermaker scale=" << $self->_scale << " translate=" << $self->_translate
+                << std::endl; 
+        }
+    }
 };
+
 
 /*%rename (InputLayerMakerBase) InputLayerMaker;*/
 
@@ -135,6 +181,18 @@ public:
     InputLayerMaker *imageSize( int _imageSize );
     virtual NormalizationLayerMaker *clone() const;
 //    virtual Layer *createLayer( Layer *previousLayer );
+    %extend {
+        int getPlanes(){ 
+            return $self->_numPlanes; 
+        }
+        int getSize(){ 
+            return $self->_imageSize; 
+        }
+        void show(){ 
+            std::cout << "InputLayerMaker numPlanes=" << $self->_numPlanes << " imageSize=" << $self->_imageSize
+                << std::endl; 
+        }
+    }
 };
 /*%template(InputLayerMaker) InputLayerMaker<float>;*/
 
