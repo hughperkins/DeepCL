@@ -59,7 +59,7 @@ class LayerMaker2 {
 public:
     LayerMaker2();
     virtual ~LayerMaker2() {}
-//    virtual LayerMaker2 *clone() const = 0; // we have to mark this class pure abstract, otherwise
+    virtual LayerMaker2 *clone() const = 0; // we have to mark this class pure abstract, otherwise
                               // things dont build.  shouldnt call this method though
 //    virtual Layer *createLayer( Layer *previousLayer ) = 0;
 };
@@ -155,7 +155,7 @@ public:
     NormalizationLayerMaker();
     NormalizationLayerMaker *translate( float _translate );
     NormalizationLayerMaker *scale( float _scale );
-//    virtual NormalizationLayerMaker *clone() const;
+    virtual NormalizationLayerMaker *clone() const;
 //    virtual Layer *createLayer( Layer *previousLayer );
     %extend {
         float getTranslate(){ 
