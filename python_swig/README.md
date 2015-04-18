@@ -10,9 +10,9 @@ This directory contains python wrappers built using swig
 
 * cmake
 * compiler, ie:
-  * visual studio 2010, on Windows, or
+  * visual studio 2010, or later, on Windows, or
   * g++, supporting c++0x, on linux
-* python development libraries (python.h, etc)
+* python development libraries (python.h, etc) (eg, if on Ubuntu, do something like `sudo apt-get install python2.7-dev python3.4-dev`)
 
 ### On linux
 
@@ -44,6 +44,11 @@ make -j 4
 
 ## To run
 
+### Pre-requisites
+
+* have done build, or downloaded binaries
+* An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+
 ### On linux
 
 From this directory, the one with this README.md in, eg:
@@ -61,7 +66,7 @@ From this directory, the one with this README.md in:
 python test_lowlevel.py c:\data\mnist
 ```
   * Make sure to change `c:\data\mnist` to the directory path of your mnist data directory
- 
+
 ## Why two python directories
 
 * the `python` directory uses Cython to create the wrappers
@@ -72,4 +77,9 @@ python test_lowlevel.py c:\data\mnist
 * Since using swig is significantly lower maintenance, because portable languages, eg between python and lua,
 the swig wrappers will almost certainly replace the cython wrappers, and the cython wrappers will become
 deprecated
+
+## Development
+
+* If you want to update the wrappers, you should install [swig](http://www.swig.org), and turn on the option 'RUN_SWIG' in cmake
+ 
 

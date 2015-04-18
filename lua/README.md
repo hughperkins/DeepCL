@@ -15,10 +15,8 @@ Lua wrappers are available.  [luajit](http://luajit.org) is becoming big in mach
 ### Pre-requisites
 
 * cmake
-* g++
-* swig
-* lua development libraries (eg `sudo apt-get install liblua5.1-0-dev`) 
-* An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+* g++, supporting c++0x, on linux
+* lua development libraries (eg `sudo apt-get install liblua5.1-0-dev`)
 
 ### Procedure
 
@@ -35,10 +33,8 @@ make -j 4
 ### Pre-requisites
 
 * cmake
-* Visual Studio Express 2010, or later
-* swig (should be in the PATH)
+* visual studio 2010, or later
 * lua development libraries
-* An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 ### Procedure
 
@@ -53,23 +49,36 @@ make -j 4
 
 ## To run
 
+### Pre-requisites
+
+* have done build, or downloaded binaries
+* An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+
 ### On linux
 
-According to which module you want to run, you can run one of:
+From this directory, the one with this README.md in, do eg:
 ```bash
-./run.sh test_lua.lua
+LUA_CPATH=build/?.so luajit test_lua.lua
 ```
 or:
 ```bash
-./run.sh test_qlearning.lua
+LUA_CPATH=build/?.so luajit test_qlearning.lua
 ```
 
 ### On Windows
 
-(this section looking for authors :-) )
+Something like (not tested, at all...), from this directory, the one with this README.md in:
+```cmd
+set LUA_CPATH=build/win32/Release/?.dll
+luajit test_lua.lua
+```
 
 ## Unit-testing
 
 * The source-code includes the thirdparty lua unit-test tool luaunit.  [test_lua.lua](test_lua.lua)
 creates some first initial unit tests
+
+## Development
+
+* If you want to update the wrappers, you should install [swig](http://www.swig.org), and turn on the option 'RUN_SWIG' in cmake
 

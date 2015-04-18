@@ -2,13 +2,25 @@ cmake_minimum_required(VERSION 2.8)
 
 find_package(Lua51 REQUIRED)
 
+if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
+  set( ON_LINUX 1 )
+endif()
+if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
+  set( ON_WINDOWS 1 )
+endif()
+
+if( ON_LINUX )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+endif()
 
-find_package(SWIG REQUIRED)
-INCLUDE(${SWIG_USE_FILE})
-SET_SOURCE_FILES_PROPERTIES(LuaDeepCL.i PROPERTIES CPLUSPLUS ON)
-#SET_SOURCE_FILES_PROPERTIES(LuaTest.i PROPERTIES SWIG_FLAGS "-lua")
+find_package(SWIG QUIET)
+# INCLUDE(${SWIG_USE_FILE})
 
+if(SWIG_EXECUTABLE AND ON_LINUX)
+    OPTION(RUN_SWIG "Re-runs swig.  Only needed for development.  Linux only." ON)
+else()
+    OPTION(RUN_SWIG "Re-runs swig.  Only needed for development." OFF)
+endif()
 
 set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
      ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
@@ -44,11 +56,33 @@ foreach(source ${OpenCLHelper_sources})
     set( OpenCLHelper_sources_prefixed ${OpenCLHelper_sources_prefixed} ../${source})
 endforeach()
 
-SWIG_ADD_MODULE(LuaDeepCL lua LuaDeepCL.i ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed})
-target_include_directories(LuaDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
-target_include_directories(LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
+add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed} )
+target_include_directories( LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
+target_include_directories( LuaDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
+SET_TARGET_PROPERTIES( LuaDeepCL PROPERTIES PREFIX "") 
 
-SET_TARGET_PROPERTIES(LuaDeepCL PROPERTIES PREFIX "") 
+if(RUN_SWIG)
+message("run swig...")
+find_package(SWIG REQUIRED)
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/LuaDeepCL_wrap.cxx
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND swig -c++ -lua LuaDeepCL.i
+)
+add_dependencies( LuaDeepCL run_swig )
+endif()
+
+
+
+#INCLUDE(${SWIG_USE_FILE})
+#SET_SOURCE_FILES_PROPERTIES(LuaDeepCL.i PROPERTIES CPLUSPLUS ON)
+##SET_SOURCE_FILES_PROPERTIES(LuaTest.i PROPERTIES SWIG_FLAGS "-lua")
+
+#SWIG_ADD_MODULE(LuaDeepCL lua LuaDeepCL.i ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed})
+#target_include_directories(LuaDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
+#target_include_directories(LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
+
+#SET_TARGET_PROPERTIES(LuaDeepCL PROPERTIES PREFIX "") 
 
 ADD_CUSTOM_TARGET(install 
 )
