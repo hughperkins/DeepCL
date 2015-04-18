@@ -11,6 +11,9 @@
     homepage = "https://github.com/hughperkins/DeepCL",
     license = "MPL"
  }
+ dependencies = {
+    "lua >= 5.1",
+ }
  build = {
     type = "cmake",
     install = {
