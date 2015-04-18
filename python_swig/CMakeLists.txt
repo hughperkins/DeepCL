@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 find_package(PythonLibs REQUIRED)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++0x -Wall")
-
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
   set( ON_LINUX 1 )
 endif()
@@ -11,11 +9,14 @@ if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
   set( ON_WINDOWS 1 )
 endif()
 
+if( ON_LINUX )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+endif()
 
 find_package(SWIG QUIET)
 # INCLUDE(${SWIG_USE_FILE})
 
-if(${SWIG_EXECUTABLE} AND ${CMAKE_SYSTEM_NAME}=="Linux")
+if(SWIG_EXECUTABLE AND ON_LINUX)
     OPTION(RUN_SWIG "Re-runs swig.  Only needed for development.  Linux only." ON)
 else()
     OPTION(RUN_SWIG "Re-runs swig.  Only needed for development." OFF)
@@ -80,10 +81,6 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND swig -c++ -python PyDeepCL.i
 )
-#add_custom_target(run_swig
-#cd ${CMAKE_CURRENT_SOURCE_DIR}
-#swig -c++ -python PyDeepCL.i
-#)
 add_dependencies( _PyDeepCL run_swig )
 endif()
 
