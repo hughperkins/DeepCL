@@ -67,7 +67,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NetLearnerOnDemand( Trainable *net,
+    PUBLICAPI NetLearnerOnDemand( Trainable *net,
     std::string trainFilepath, int Ntrain,
     std::string testFilepath, int Ntest,
     int fileReadBatches, int batchSize );
@@ -75,21 +75,21 @@ public:
     VIRTUAL void setSchedule( int numEpochs );
     VIRTUAL void setDumpTimings( bool dumpTimings );
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
-    VIRTUAL bool getEpochDone();
-    VIRTUAL int getNextEpoch();
+    PUBLICAPI VIRTUAL bool getEpochDone();
+    PUBLICAPI VIRTUAL int getNextEpoch();
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
-    VIRTUAL int getNextBatch();
-    VIRTUAL int getBatchNumRight();
-    VIRTUAL float getBatchLoss();
+    PUBLICAPI VIRTUAL int getNextBatch();
+    PUBLICAPI VIRTUAL int getBatchNumRight();
+    PUBLICAPI VIRTUAL float getBatchLoss();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
-    VIRTUAL void reset();
+    PUBLICAPI VIRTUAL void reset();
     VIRTUAL void postEpochTesting();
-    VIRTUAL bool tickBatch();  // means: filebatch, not low-level batch
-    VIRTUAL bool tickEpoch();
-    VIRTUAL void run();
-    VIRTUAL bool isLearningDone();
-    VIRTUAL void learn( float learningRate );
+    PUBLICAPI VIRTUAL bool tickBatch();  // means: filebatch, not low-level batch
+    PUBLICAPI VIRTUAL bool tickEpoch();
+    PUBLICAPI VIRTUAL void run();
+    PUBLICAPI VIRTUAL bool isLearningDone();
+    PUBLICAPI VIRTUAL void learn( float learningRate );
     VIRTUAL void learn( float learningRate, float annealLearningRate );
 
     // [[[end]]]

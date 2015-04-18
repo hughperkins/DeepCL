@@ -20,60 +20,60 @@ public:
     bool _padZeros;
     bool _biased;
     ActivationFunction const *_activationFunction;
-    ConvolutionalMaker() :
+    PUBLICAPI ConvolutionalMaker() :
             _numFilters(0),
             _filterSize(0),
             _padZeros(false),
         _activationFunction( new TanhActivation() ) {
     }
-    static ConvolutionalMaker *instance() {
+    PUBLICAPI static ConvolutionalMaker *instance() {
         return new ConvolutionalMaker();
     }    
-    ConvolutionalMaker *numFilters(int numFilters) {
+    PUBLICAPI ConvolutionalMaker *numFilters(int numFilters) {
         this->_numFilters = numFilters;
         return this;
     }    
-    ConvolutionalMaker *filterSize(int filterSize) {
+    PUBLICAPI ConvolutionalMaker *filterSize(int filterSize) {
         this->_filterSize = filterSize;
         return this;
     }    
-    ConvolutionalMaker *padZeros() {
+    PUBLICAPI ConvolutionalMaker *padZeros() {
         this->_padZeros = true;
         return this;
     }    
-    ConvolutionalMaker *padZeros( bool value ) {
+    PUBLICAPI ConvolutionalMaker *padZeros( bool value ) {
         this->_padZeros = value;
         return this;
     }    
-    ConvolutionalMaker *biased() {
+    PUBLICAPI ConvolutionalMaker *biased() {
         this->_biased = true;
         return this;
     }    
-    ConvolutionalMaker *biased(bool _biased) {
+    PUBLICAPI ConvolutionalMaker *biased(bool _biased) {
         this->_biased = _biased;
         return this;
     }    
-    ConvolutionalMaker *tanh() {
+    PUBLICAPI ConvolutionalMaker *tanh() {
         delete this->_activationFunction;
         this->_activationFunction = new TanhActivation();
         return this;
     }
-    ConvolutionalMaker *relu() {
+    PUBLICAPI ConvolutionalMaker *relu() {
         delete this->_activationFunction;
         this->_activationFunction = new ReluActivation();
         return this;
     }
-    ConvolutionalMaker *sigmoid() {
+    PUBLICAPI ConvolutionalMaker *sigmoid() {
         delete this->_activationFunction;
         this->_activationFunction = new SigmoidActivation();
         return this;
     }
-    ConvolutionalMaker *linear() {
+    PUBLICAPI ConvolutionalMaker *linear() {
         delete this->_activationFunction;
         this->_activationFunction = new LinearActivation();
         return this;
     }
-    ConvolutionalMaker *fn(ActivationFunction const*_fn) {
+    PUBLICAPI ConvolutionalMaker *fn(ActivationFunction const*_fn) {
         this->_activationFunction = _fn;
         return this;
     }

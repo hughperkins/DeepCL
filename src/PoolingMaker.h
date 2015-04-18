@@ -14,11 +14,11 @@ public:
 //    Layer *previousLayer;
     int _poolingSize;
     bool _padZeros;
-    PoolingMaker() :
+    PUBLICAPI PoolingMaker() :
         _poolingSize( 2 ),
         _padZeros( false ) {
     }
-    PoolingMaker *poolingSize( int _poolingSize ) {
+    PUBLICAPI PoolingMaker *poolingSize( int _poolingSize ) {
         this->_poolingSize = _poolingSize;
         return this;
     }
@@ -26,7 +26,7 @@ public:
         this->_padZeros = true;
         return this;
     }
-    static PoolingMaker *instance() {
+    PUBLICAPI static PoolingMaker *instance() {
         return new PoolingMaker();
     }
     virtual PoolingMaker *clone() const {

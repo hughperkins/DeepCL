@@ -46,18 +46,18 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );
+    PUBLICAPI Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );
     VIRTUAL ~Batcher();
-    void reset();
-    int getNextBatch();
-    VIRTUAL float getLoss();
-    VIRTUAL int getNumRight();
-    VIRTUAL int getN();
-    VIRTUAL bool getEpochDone();
+    PUBLICAPI void reset();
+    PUBLICAPI int getNextBatch();
+    PUBLICAPI VIRTUAL float getLoss();
+    PUBLICAPI VIRTUAL int getNumRight();
+    PUBLICAPI VIRTUAL int getN();
+    PUBLICAPI VIRTUAL bool getEpochDone();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     VIRTUAL void setN( int N );
-    bool tick();
-    EpochResult run();
+    PUBLICAPI bool tick();
+    PUBLICAPI EpochResult run();
 
     // [[[end]]]
 //    Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );

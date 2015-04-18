@@ -5,7 +5,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-Layer::Layer( Layer *previousLayer, LayerMaker2 *maker ) :
+PUBLICAPI Layer::Layer( Layer *previousLayer, LayerMaker2 *maker ) :
     previousLayer( previousLayer ),
     nextLayer( 0 ),
     layerIndex( previousLayer == 0 ? 0 : previousLayer->layerIndex + 1 ),
@@ -22,11 +22,11 @@ VIRTUAL Layer::~Layer() {
                         // self-deleted)
     }
 }
-VIRTUAL void Layer::setTraining( bool training ) {
+PUBLICAPI VIRTUAL void Layer::setTraining( bool training ) {
     this->training = training;
 }
 // used to set up internal buffers and stuff
-VIRTUAL void Layer::setBatchSize( int batchSize ) {
+PUBLICAPI VIRTUAL void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");
 }
 VIRTUAL bool Layer::providesErrorsForUpstreamWrapper() const {
@@ -38,36 +38,36 @@ VIRTUAL float *Layer::getErrorsForUpstream() {
 VIRTUAL CLWrapper *Layer::getErrorsForUpstreamWrapper() {
     throw std::runtime_error("getErrorsForUpstreamWrapper not implemented for this layer type, layer " + toString(layerIndex) );
 }
-VIRTUAL bool Layer::getBiased() const {
+PUBLICAPI VIRTUAL bool Layer::getBiased() const {
      throw std::runtime_error("getBiased not implemented for this layer type, layer " + toString(layerIndex) );
 }
-VIRTUAL bool Layer::hasResultsWrapper() const {
+PUBLICAPI VIRTUAL bool Layer::hasResultsWrapper() const {
     return false;
 }
-VIRTUAL CLWrapper *Layer::getResultsWrapper() {
+PUBLICAPI VIRTUAL CLWrapper *Layer::getResultsWrapper() {
     throw std::runtime_error("getResultsWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
+PUBLICAPI VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
     throw std::runtime_error("getActivationFunction not implemetned for this layer type, layer " + toString(layerIndex) );
 }
 //VIRTUAL int Layer::getResultsSize() const {
 //    throw std::runtime_error("getResultsSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 // //     return numPlanes * imageSize * imageSize * batchSize;
 //}
-VIRTUAL int Layer::getOutputCubeSize() const {
+PUBLICAPI VIRTUAL int Layer::getOutputCubeSize() const {
     throw std::runtime_error("getOutputCubeSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
  //     return numPlanes * imageSize * imageSize * batchSize;
 }
-VIRTUAL int Layer::getOutputPlanes() const {
+PUBLICAPI VIRTUAL int Layer::getOutputPlanes() const {
     throw std::runtime_error("getOutputPlanes not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 }
-VIRTUAL int Layer::getOutputImageSize() const {
+PUBLICAPI VIRTUAL int Layer::getOutputImageSize() const {
     throw std::runtime_error("getOutputImageSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 }
-VIRTUAL void Layer::propagate() {
+PUBLICAPI VIRTUAL void Layer::propagate() {
     throw std::runtime_error("propagate not implemented for this layer type");
 }
-VIRTUAL bool Layer::needsBackProp() {
+PUBLICAPI VIRTUAL bool Layer::needsBackProp() {
     throw std::runtime_error("needsBackProp not implemented for this layer type");
 }
 VIRTUAL void Layer::print() {
@@ -79,14 +79,14 @@ VIRTUAL void Layer::print() {
 //        std::cout << "No results yet " << std::endl;
 //    }
 }
-VIRTUAL void Layer::initWeights( float const*weights ) {
+PUBLICAPI VIRTUAL void Layer::initWeights( float const*weights ) {
     throw std::runtime_error("initWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 //    int numWeights = getWeightsSize();
 //    for( int i = 0; i < numWeights; i++ ) {
 //        this->weights[i] = weights[i];
 //    }
 }
-VIRTUAL void Layer::initBiasWeights( float const *biasWeights ) {
+PUBLICAPI VIRTUAL void Layer::initBiasWeights( float const *biasWeights ) {
     throw std::runtime_error("initBiasWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 //    int numBiasWeights = getBiasWeightsSize();
 //    for( int i = 0; i < numBiasWeights; i++ ) {
@@ -123,22 +123,22 @@ VIRTUAL void Layer::printWeights() {
 VIRTUAL void Layer::printOutput() const {
     std::cout << "printOutpu() not implemented for this layer type" << std:: endl; 
 }
-VIRTUAL void Layer::backProp( float learningRate ) {
+PUBLICAPI VIRTUAL void Layer::backProp( float learningRate ) {
     throw std::runtime_error("backProp not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
-VIRTUAL int Layer::getWeightsSize() const {
+PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
     throw std::runtime_error("getWeightsSize not implemented for this layertype");
 }
-VIRTUAL int Layer::getBiasWeightsSize() const {
+PUBLICAPI VIRTUAL int Layer::getBiasWeightsSize() const {
     throw std::runtime_error("getBiasWeightsSize not implemented for this layertype");
 }
 //VIRTUAL int Layer::getPersistSize() const {
 //    throw std::runtime_error("getPersistSize not implemented for this layertype, layerindex " + toString(layerIndex ) );
 //}
-VIRTUAL void Layer::persistToArray(float *array) {
+PUBLICAPI VIRTUAL void Layer::persistToArray(float *array) {
     throw std::runtime_error("persistToArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
-VIRTUAL void Layer::unpersistFromArray(float const*array) {
+PUBLICAPI VIRTUAL void Layer::unpersistFromArray(float const*array) {
     throw std::runtime_error("unpersistFromArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
 VIRTUAL void Layer::setWeights(float *weights, float *biasWeights) {
@@ -153,7 +153,7 @@ VIRTUAL float *Layer::getWeights() {
 VIRTUAL float const*Layer::getBiasWeights() const {
     throw std::runtime_error("getBiasWeights not implemented for this layertype");
 }
-VIRTUAL std::string Layer::asString() const {
+PUBLICAPI VIRTUAL std::string Layer::asString() const {
     return "Layer{}";
 }
 

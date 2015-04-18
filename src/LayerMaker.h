@@ -70,9 +70,9 @@ public:
 
 class DeepCL_EXPORT SquareLossMaker : public LossLayerMaker {
 public:
-    SquareLossMaker() {
+    PUBLICAPI SquareLossMaker() {
     }
-    static SquareLossMaker *instance() {
+    PUBLICAPI static SquareLossMaker *instance() {
         return new SquareLossMaker();
     }
     virtual SquareLossMaker *clone() const {
@@ -85,9 +85,9 @@ public:
 
 class DeepCL_EXPORT CrossEntropyLossMaker : public LossLayerMaker {
 public:
-    CrossEntropyLossMaker() {
+    PUBLICAPI CrossEntropyLossMaker() {
     }
-    static CrossEntropyLossMaker *instance() {
+    PUBLICAPI static CrossEntropyLossMaker *instance() {
         return new CrossEntropyLossMaker();
     }
     virtual CrossEntropyLossMaker *clone() const {
@@ -103,18 +103,18 @@ public:
 class DeepCL_EXPORT SoftMaxMaker : public LossLayerMaker {
 public:
     bool _perPlane; // = false;
-    SoftMaxMaker() {
+    PUBLICAPI SoftMaxMaker() {
         _perPlane = false;
     }
-    SoftMaxMaker *perColumn() {
+    PUBLICAPI SoftMaxMaker *perColumn() {
         this->_perPlane = false;
         return clone();
     }
-    SoftMaxMaker *perPlane() {
+    PUBLICAPI SoftMaxMaker *perPlane() {
         this->_perPlane = true;
         return clone();
     }
-    static SoftMaxMaker *instance() {
+    PUBLICAPI static SoftMaxMaker *instance() {
         return new SoftMaxMaker();
     }
     virtual SoftMaxMaker *clone() const {

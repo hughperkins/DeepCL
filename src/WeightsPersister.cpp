@@ -22,7 +22,7 @@ using namespace std;
 template< typename T > STATIC void WeightsPersister::copyArray( T *dst, T const*src, int length ) { // this might already be in standard C++ library?
     memcpy( dst, src, length * sizeof(T) );
 }
-STATIC int WeightsPersister::getTotalNumWeights( NeuralNet *net ) {
+PUBLICAPI STATIC int WeightsPersister::getTotalNumWeights( NeuralNet *net ) {
     int totalWeightsSize = 0;
 //    cout << "layers size " << net->layers.size() << endl;
     for( int layerIdx = 1; layerIdx < net->getNumLayers(); layerIdx++ ) {
@@ -33,7 +33,7 @@ STATIC int WeightsPersister::getTotalNumWeights( NeuralNet *net ) {
     }
     return totalWeightsSize;
 }
-STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *target ) {
+PUBLICAPI STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *target ) {
     int pos = 0;
     for( int layerIdx = 1; layerIdx < net->getNumLayers(); layerIdx++ ) {
         Layer *layer = net->getLayer( layerIdx );
@@ -44,7 +44,7 @@ STATIC void WeightsPersister::copyNetWeightsToArray( NeuralNet *net, float *targ
         pos += persistSize;
     }
 }
-STATIC void WeightsPersister::copyArrayToNetWeights( float const*source, NeuralNet *net ) {
+PUBLICAPI STATIC void WeightsPersister::copyArrayToNetWeights( float const*source, NeuralNet *net ) {
     int pos = 0;
     for( int layerIdx = 1; layerIdx < net->getNumLayers(); layerIdx++ ) {
     Layer *layer = net->getLayer( layerIdx );

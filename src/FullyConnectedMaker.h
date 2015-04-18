@@ -18,20 +18,20 @@ public:
     int _imageSize;
     bool _biased;
     ActivationFunction const*_activationFunction;
-    FullyConnectedMaker() :
+    PUBLICAPI FullyConnectedMaker() :
         _numPlanes(0),
         _imageSize(0),
         _activationFunction( new TanhActivation() ) {
     }
-    FullyConnectedMaker *numPlanes(int numPlanes) {
+    PUBLICAPI FullyConnectedMaker *numPlanes(int numPlanes) {
         this->_numPlanes = numPlanes;
         return this;
     }    
-    FullyConnectedMaker *imageSize(int imageSize) {
+    PUBLICAPI FullyConnectedMaker *imageSize(int imageSize) {
         this->_imageSize = imageSize;
         return this;
     }
-    FullyConnectedMaker *biased() {
+    PUBLICAPI FullyConnectedMaker *biased() {
         this->_biased = true;
         return this;
     }    
@@ -39,31 +39,31 @@ public:
         this->_biased = _biased;
         return this;
     }    
-    FullyConnectedMaker *linear() {
+    PUBLICAPI FullyConnectedMaker *linear() {
         delete this->_activationFunction;
         this->_activationFunction = new LinearActivation();
         return this;
     }
-    FullyConnectedMaker *tanh() {
+    PUBLICAPI FullyConnectedMaker *tanh() {
         delete this->_activationFunction;
         this->_activationFunction = new TanhActivation();
         return this;
     }
-    FullyConnectedMaker *sigmoid() {
+    PUBLICAPI FullyConnectedMaker *sigmoid() {
         delete this->_activationFunction;
         this->_activationFunction = new SigmoidActivation();
         return this;
     }
-    FullyConnectedMaker *relu() {
+    PUBLICAPI FullyConnectedMaker *relu() {
         delete this->_activationFunction;
         this->_activationFunction = new ReluActivation();
         return this;
     }
-    FullyConnectedMaker *fn(ActivationFunction const*_fn) {
+    PUBLICAPI FullyConnectedMaker *fn(ActivationFunction const*_fn) {
         this->_activationFunction = _fn;
         return this;
     }
-    static FullyConnectedMaker *instance() {
+    PUBLICAPI static FullyConnectedMaker *instance() {
         return new FullyConnectedMaker();
     }
     virtual FullyConnectedMaker *clone() const {

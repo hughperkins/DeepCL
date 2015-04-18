@@ -18,7 +18,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-OnDemandBatcher::OnDemandBatcher( Trainable *net, NetAction *netAction, 
+PUBLICAPI OnDemandBatcher::OnDemandBatcher( Trainable *net, NetAction *netAction, 
             std::string filepath, int N, int fileReadBatches, int batchSize ) :
             net( net ),
             netAction( netAction ),
@@ -88,22 +88,22 @@ VIRTUAL void OnDemandBatcher::setBatchState( int nextBatch, int numRight, float 
 VIRTUAL int OnDemandBatcher::getBatchSize() {
     return batchSize;
 }
-VIRTUAL int OnDemandBatcher::getNextFileBatch() {
+PUBLICAPI VIRTUAL int OnDemandBatcher::getNextFileBatch() {
     return nextFileBatch;
 }
-VIRTUAL int OnDemandBatcher::getNextBatch() {
+PUBLICAPI VIRTUAL int OnDemandBatcher::getNextBatch() {
     return nextFileBatch * fileReadBatches;
 }
-VIRTUAL float OnDemandBatcher::getLoss() {
+PUBLICAPI VIRTUAL float OnDemandBatcher::getLoss() {
     return loss;
 }
-VIRTUAL int OnDemandBatcher::getNumRight() {
+PUBLICAPI VIRTUAL int OnDemandBatcher::getNumRight() {
     return numRight;
 }
-VIRTUAL bool OnDemandBatcher::getEpochDone() {
+PUBLICAPI VIRTUAL bool OnDemandBatcher::getEpochDone() {
     return epochDone;
 }
-VIRTUAL int OnDemandBatcher::getN() {
+PUBLICAPI VIRTUAL int OnDemandBatcher::getN() {
     return N;
 }
 //VIRTUAL void OnDemandBatcher::setLearningRate( float learningRate ) {
@@ -115,14 +115,14 @@ VIRTUAL int OnDemandBatcher::getN() {
 ////        updateBuffers();
 //    }
 //}
-void OnDemandBatcher::reset() {
+PUBLICAPI void OnDemandBatcher::reset() {
 //    cout << "OnDemandBatcher::reset()" << endl;
     numRight = 0;
     loss = 0;
     nextFileBatch = 0;
     epochDone = false;
 }
-bool OnDemandBatcher::tick() {
+PUBLICAPI bool OnDemandBatcher::tick() {
 //    cout << "OnDemandBatcher::tick nextFileBatch=" << nextFileBatch << " numRight=" << numRight << 
 //        " loss=" << loss << " epochDone=" << epochDone << endl;
 //    updateBuffers();
@@ -148,7 +148,7 @@ bool OnDemandBatcher::tick() {
     }
     return !epochDone;
 }
-EpochResult OnDemandBatcher::run() {
+PUBLICAPI EpochResult OnDemandBatcher::run() {
 //    cout << "OnDemandBatcher::run() epochDone=" << epochDone << endl;
     if( epochDone ) {
         reset();

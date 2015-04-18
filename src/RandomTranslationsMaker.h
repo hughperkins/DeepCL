@@ -14,13 +14,13 @@
 class DeepCL_EXPORT RandomTranslationsMaker : public LayerMaker2 {
 public:
     int _translateSize;
-    RandomTranslationsMaker() :
+    PUBLICAPI RandomTranslationsMaker() :
         _translateSize(0) {
     }
-    static RandomTranslationsMaker *instance() {
+    PUBLICAPI static RandomTranslationsMaker *instance() {
         return new RandomTranslationsMaker();
     }    
-    RandomTranslationsMaker *translateSize( int _translateSize ) {
+    PUBLICAPI RandomTranslationsMaker *translateSize( int _translateSize ) {
         this->_translateSize = _translateSize;
         return this;
     }

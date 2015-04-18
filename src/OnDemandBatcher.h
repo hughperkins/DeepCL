@@ -52,20 +52,20 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    OnDemandBatcher( Trainable *net, NetAction *netAction,
+    PUBLICAPI OnDemandBatcher( Trainable *net, NetAction *netAction,
     std::string filepath, int N, int fileReadBatches, int batchSize );
     VIRTUAL ~OnDemandBatcher();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     VIRTUAL int getBatchSize();
-    VIRTUAL int getNextFileBatch();
-    VIRTUAL int getNextBatch();
-    VIRTUAL float getLoss();
-    VIRTUAL int getNumRight();
-    VIRTUAL bool getEpochDone();
-    VIRTUAL int getN();
-    void reset();
-    bool tick();
-    EpochResult run();
+    PUBLICAPI VIRTUAL int getNextFileBatch();
+    PUBLICAPI VIRTUAL int getNextBatch();
+    PUBLICAPI VIRTUAL float getLoss();
+    PUBLICAPI VIRTUAL int getNumRight();
+    PUBLICAPI VIRTUAL bool getEpochDone();
+    PUBLICAPI VIRTUAL int getN();
+    PUBLICAPI void reset();
+    PUBLICAPI bool tick();
+    PUBLICAPI EpochResult run();
 
     // [[[end]]]
 

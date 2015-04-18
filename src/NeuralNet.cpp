@@ -34,14 +34,14 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-NeuralNet::NeuralNet() :
+PUBLICAPI NeuralNet::NeuralNet() :
     isTraining( true ) {
 //    cout << "NeuralNet()" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, imageSize );
 //    maker->insert();
 }
-NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
+PUBLICAPI NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
 //    cout << "NeuralNet( " << numPlanes << ", " << imageSize << " )" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 //    InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
@@ -95,7 +95,7 @@ STATIC NeuralNetMould *NeuralNet::maker() {
 //    InputLayer *inputLayer = new InputLayer( inputLayerMaker );
 //    layers.push_back( inputLayer );
 //}
-void NeuralNet::addLayer( LayerMaker2 *maker ) {
+PUBLICAPI void NeuralNet::addLayer( LayerMaker2 *maker ) {
 //    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
     maker->setCl( cl );
     Layer *layer = maker->createLayer( getLastLayer() );
@@ -134,14 +134,14 @@ void NeuralNet::addLayer( LayerMaker2 *maker ) {
 //SoftMaxMaker *NeuralNet::softMaxLossMaker() {
 //    return new SoftMaxMaker( this, getLastLayer() );
 //}
-void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {
+PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {
     initWeights( layerIndex, weights );
     initBiasWeights( layerIndex, biasWeights );
 }
-void NeuralNet::initWeights( int layerIndex, float *weights ) {
+PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights ) {
     layers[layerIndex]->initWeights( weights );
 }
-void NeuralNet::initBiasWeights( int layerIndex, float *weights ) {
+PUBLICAPI void NeuralNet::initBiasWeights( int layerIndex, float *weights ) {
     layers[layerIndex]->initBiasWeights( weights );
 }
 void NeuralNet::printWeightsAsCode() {
@@ -154,10 +154,10 @@ void NeuralNet::printBiasWeightsAsCode() {
         layers[layer]->printBiasWeightsAsCode();
     }
 }
-float NeuralNet::calcLoss(float const *expectedValues ) {
+PUBLICAPI float NeuralNet::calcLoss(float const *expectedValues ) {
     return dynamic_cast<LossLayer*>(layers[layers.size()-1])->calcLoss( expectedValues );
 }
-float NeuralNet::calcLossFromLabels(int const *labels ) {
+PUBLICAPI float NeuralNet::calcLossFromLabels(int const *labels ) {
     return dynamic_cast<IAcceptsLabels*>(layers[layers.size()-1])->calcLossFromLabels( labels );
 }
 EpochMaker *NeuralNet::epochMaker() {
@@ -173,19 +173,19 @@ VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker() const {
 //    LossLayer const*lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );
 //    return dynamic_cast< LossLayerMaker *>( lossLayer->maker->clone( clonePreviousLayer ) ) ;
 }
-InputLayer *NeuralNet::getFirstLayer() {
+PUBLICAPI InputLayer *NeuralNet::getFirstLayer() {
     return dynamic_cast<InputLayer *>( layers[0] );
 }
-Layer *NeuralNet::getLastLayer() {
+PUBLICAPI Layer *NeuralNet::getLastLayer() {
     if( layers.size() == 0 ) {
         return 0;
     }
     return layers[layers.size() - 1];
 }
-int NeuralNet::getNumLayers() const {
+PUBLICAPI int NeuralNet::getNumLayers() const {
     return (int)layers.size();
 }
-Layer *NeuralNet::getLayer( int index ) {
+PUBLICAPI Layer *NeuralNet::getLayer( int index ) {
     if( layers.size() == 0 ) {
         return 0;
     }
@@ -194,16 +194,16 @@ Layer *NeuralNet::getLayer( int index ) {
     }
     return layers[index];
 }
-Layer const*NeuralNet::getLastLayer() const {
+PUBLICAPI Layer const*NeuralNet::getLastLayer() const {
     if( layers.size() == 0 ) {
         return 0;
     }
     return layers[layers.size() - 1];
 }
-VIRTUAL int NeuralNet::getOutputPlanes() const {
+PUBLICAPI VIRTUAL int NeuralNet::getOutputPlanes() const {
     return getLastLayer()->getOutputPlanes();
 }
-VIRTUAL int NeuralNet::getOutputImageSize() const {
+PUBLICAPI VIRTUAL int NeuralNet::getOutputImageSize() const {
     return getLastLayer()->getOutputImageSize();
 }
 //Layer *NeuralNet::addLayer( LayerMaker *maker ) {
@@ -216,24 +216,24 @@ VIRTUAL int NeuralNet::getOutputImageSize() const {
 //    layers.push_back( layer );
 //    return layer;
 //}
-void NeuralNet::setBatchSize( int batchSize ) {
+PUBLICAPI void NeuralNet::setBatchSize( int batchSize ) {
     for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         (*it)->setBatchSize( batchSize );
     }
 }
-void NeuralNet::setTraining( bool training ) {
+PUBLICAPI void NeuralNet::setTraining( bool training ) {
     for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         (*it)->setTraining( training );
     }
 }
-int NeuralNet::calcNumRight( int const *labels ) {
+PUBLICAPI int NeuralNet::calcNumRight( int const *labels ) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
     if( acceptsLabels == 0 ) {
         THROW("You need to add a IAcceptsLabels as the last layer, in order to use calcNumRight");
     }
     return acceptsLabels->calcNumRight( labels );
 }
-void NeuralNet::propagate( float const*images) {
+PUBLICAPI void NeuralNet::propagate( float const*images) {
     // forward...
     dynamic_cast<InputLayer *>(layers[0])->in( images );
     for( int layerId = 0; layerId < (int)layers.size(); layerId++ ) {
@@ -242,7 +242,7 @@ void NeuralNet::propagate( float const*images) {
         StatefulTimer::setPrefix("" );
     }
 }
-void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
+PUBLICAPI void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
     if( acceptsLabels == 0 ) {
         throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backPropFromLabels");
@@ -257,7 +257,7 @@ void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
         StatefulTimer::setPrefix("" );
     }
 }
-void NeuralNet::backProp( float learningRate, float const *expectedResults) {
+PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedResults) {
     LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
     if( lossLayer == 0 ) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
@@ -269,22 +269,22 @@ void NeuralNet::backProp( float learningRate, float const *expectedResults) {
         StatefulTimer::setPrefix("" );
     }
 }
-int NeuralNet::getNumLayers() {
+PUBLICAPI int NeuralNet::getNumLayers() {
     return (int)layers.size();
 }
-float const *NeuralNet::getResults( int layer ) const {
+PUBLICAPI float const *NeuralNet::getResults( int layer ) const {
     return layers[layer]->getResults();
 }
-int NeuralNet::getInputCubeSize() const {
+PUBLICAPI int NeuralNet::getInputCubeSize() const {
     return layers[ 0 ]->getOutputCubeSize();
 }
-int NeuralNet::getOutputCubeSize() const {
+PUBLICAPI int NeuralNet::getOutputCubeSize() const {
     return layers[ layers.size() - 1 ]->getOutputCubeSize();
 }
-float const *NeuralNet::getResults() const {
+PUBLICAPI float const *NeuralNet::getResults() const {
     return getResults( (int)layers.size() - 1 );
 }
-VIRTUAL int NeuralNet::getResultsSize() const {
+PUBLICAPI VIRTUAL int NeuralNet::getResultsSize() const {
     return getLastLayer()->getResultsSize();
 }
 void NeuralNet::print() {
@@ -311,7 +311,7 @@ void NeuralNet::printOutput() {
         i++;
     }
 }
-std::string NeuralNet::asString() {
+PUBLICAPI std::string NeuralNet::asString() {
     std::string result = "";
     int i = 0; 
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {

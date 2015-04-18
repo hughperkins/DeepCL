@@ -14,14 +14,14 @@
 class DeepCL_EXPORT RandomPatchesMaker : public LayerMaker2 {
 public:
     int _patchSize;
-    RandomPatchesMaker() :
+    PUBLICAPI RandomPatchesMaker() :
         _patchSize(0) {
     }
-    RandomPatchesMaker *patchSize( int _patchSize ) {
+    PUBLICAPI RandomPatchesMaker *patchSize( int _patchSize ) {
         this->_patchSize = _patchSize;
         return this;
     }
-    static RandomPatchesMaker *instance() {
+    PUBLICAPI static RandomPatchesMaker *instance() {
         return new RandomPatchesMaker();
     }
     virtual RandomPatchesMaker *clone() const {

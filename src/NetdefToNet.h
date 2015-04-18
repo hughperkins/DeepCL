@@ -24,7 +24,7 @@ public:
     // ]]]
     // generated, using cog:
     STATIC bool parseSubstring( NeuralNet *net, std::string substring, bool isLast );
-    STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef );
+    PUBLICAPI STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef );
 
     // [[[end]]]
 };

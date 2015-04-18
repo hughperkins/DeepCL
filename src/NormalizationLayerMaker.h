@@ -15,7 +15,7 @@ class DeepCL_EXPORT NormalizationLayerMaker : public LayerMaker2 {
 public:
     float _translate;
     float _scale;
-    NormalizationLayerMaker() :
+    PUBLICAPI NormalizationLayerMaker() :
         _translate(0.0f),
         _scale( 1.0f ) {
     }
@@ -23,18 +23,15 @@ public:
 //        _translate(_translate),
 //        _scale( _scale ) {
 //    }
-    NormalizationLayerMaker *translate( float _translate ) {
+    PUBLICAPI NormalizationLayerMaker *translate( float _translate ) {
         this->_translate = _translate;
-        return this; // have to clone, otherwise python wrappers 
-                              // crash.  but if you have a better idea...
-                              // (of course, this will leak, when used in fluent
-                              // style, but hopefully not too much :-) )
+        return this;
     }
-    NormalizationLayerMaker *scale( float _scale ) {
+    PUBLICAPI NormalizationLayerMaker *scale( float _scale ) {
         this->_scale = _scale;
         return this;
     }
-    static NormalizationLayerMaker *instance() {
+    PUBLICAPI static NormalizationLayerMaker *instance() {
         return new NormalizationLayerMaker();
     }
     virtual NormalizationLayerMaker *clone() const {

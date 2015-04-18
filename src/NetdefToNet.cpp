@@ -207,7 +207,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
     return true;
 }
 
-STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
+PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
     string netDefLower = toLower( netdef );
     try {
         netDefLower = expandMultipliers( netDefLower );

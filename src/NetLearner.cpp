@@ -20,7 +20,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-NetLearner::NetLearner( Trainable *net,
+PUBLICAPI NetLearner::NetLearner( Trainable *net,
         int Ntrain, float *trainData, int *trainLabels,
         int Ntest, float *testData, int *testLabels,
         int batchSize ) :
@@ -74,7 +74,7 @@ VIRTUAL void NetLearner::setSchedule( int numEpochs, int nextEpoch ) {
 //    this->testBatcher->batchSize = batchSize;
 //}
 
-VIRTUAL void NetLearner::reset() {
+PUBLICAPI VIRTUAL void NetLearner::reset() {
 //    cout << "NetLearner::reset()" << endl;
     learningDone = false;
     nextEpoch = 0;
@@ -99,7 +99,7 @@ VIRTUAL void NetLearner::postEpochTesting() {
     timer.timeCheck("after tests");
 }
 
-VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, once all done, then run testing etc
+PUBLICAPI VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, once all done, then run testing etc
     int epoch = nextEpoch;
     trainBatcher->setLearningRate( learningRate * pow( annealLearningRate, epoch ) );
     trainBatcher->tick();       // returns false once all learning done (all epochs)
@@ -115,23 +115,23 @@ VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, once all do
     return !learningDone;
 }
 
-VIRTUAL bool NetLearner::getEpochDone() {
+PUBLICAPI VIRTUAL bool NetLearner::getEpochDone() {
     return trainBatcher->getEpochDone();
 }
 
-VIRTUAL int NetLearner::getNextEpoch() {
+PUBLICAPI VIRTUAL int NetLearner::getNextEpoch() {
     return nextEpoch;
 }
 
-VIRTUAL int NetLearner::getNextBatch() {
+PUBLICAPI VIRTUAL int NetLearner::getNextBatch() {
     return trainBatcher->getNextBatch();
 }
 
-VIRTUAL int NetLearner::getBatchNumRight() {
+PUBLICAPI VIRTUAL int NetLearner::getBatchNumRight() {
     return trainBatcher->getNumRight();
 }
 
-VIRTUAL float NetLearner::getBatchLoss() {
+PUBLICAPI VIRTUAL float NetLearner::getBatchLoss() {
     return trainBatcher->getLoss();
 }
 
@@ -141,7 +141,7 @@ VIRTUAL void NetLearner::setBatchState( int nextBatch, int numRight, float loss 
 //    trainBatcher->loss = loss;
 }
 
-VIRTUAL bool NetLearner::tickEpoch() {
+PUBLICAPI VIRTUAL bool NetLearner::tickEpoch() {
 //    int epoch = nextEpoch;
 //    cout << "NetLearner.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << trainBatcher->getEpochDone() << endl;
 //    cout << "numEpochs=" << numEpochs << endl;
@@ -154,7 +154,7 @@ VIRTUAL bool NetLearner::tickEpoch() {
     return !learningDone;
 }
 
-VIRTUAL void NetLearner::run() {
+PUBLICAPI VIRTUAL void NetLearner::run() {
     if( learningDone ) {
         reset();
     }
@@ -163,11 +163,11 @@ VIRTUAL void NetLearner::run() {
     }
 }
 
-VIRTUAL bool NetLearner::isLearningDone() {
+PUBLICAPI VIRTUAL bool NetLearner::isLearningDone() {
     return learningDone;
 }
 
-VIRTUAL void NetLearner::setLearningRate( float learningRate ) {
+PUBLICAPI VIRTUAL void NetLearner::setLearningRate( float learningRate ) {
     this->setLearningRate( learningRate, 1.0f );
 }
 

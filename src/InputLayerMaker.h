@@ -16,20 +16,20 @@ class DeepCL_EXPORT InputLayerMaker : public LayerMaker2 {
 public:
     int _numPlanes;
     int _imageSize;
-    InputLayerMaker() :
+    PUBLICAPI InputLayerMaker() :
 //            LayerMaker( net, 0 ),
             _numPlanes(0),
             _imageSize(0) {
     }
-    InputLayerMaker *numPlanes( int _numPlanes ) {
+    PUBLICAPI InputLayerMaker *numPlanes( int _numPlanes ) {
         this->_numPlanes = _numPlanes;
         return this;
     }    
-    InputLayerMaker *imageSize( int _imageSize ) {
+    PUBLICAPI InputLayerMaker *imageSize( int _imageSize ) {
         this->_imageSize = _imageSize;
         return this;
     }    
-    static InputLayerMaker *instance() {
+    PUBLICAPI static InputLayerMaker *instance() {
         return new InputLayerMaker();
     }    
     virtual InputLayerMaker *clone() const {

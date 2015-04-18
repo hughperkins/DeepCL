@@ -18,7 +18,7 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
+PUBLICAPI Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
         net(net),
         batchSize(batchSize),
         N(N),
@@ -40,30 +40,30 @@ VIRTUAL Batcher::~Batcher() {
 //    }
 //}
 
-void Batcher::reset() {
+PUBLICAPI void Batcher::reset() {
     nextBatch = 0;
     numRight = 0;
     loss = 0;
     epochDone = false;
 }
 
-int Batcher::getNextBatch() {
+PUBLICAPI int Batcher::getNextBatch() {
     if( epochDone ) {
         return 0;
     } else {
         return nextBatch;
     }
 }
-VIRTUAL float Batcher::getLoss() {
+PUBLICAPI VIRTUAL float Batcher::getLoss() {
     return loss;
 }
-VIRTUAL int Batcher::getNumRight() {
+PUBLICAPI VIRTUAL int Batcher::getNumRight() {
     return numRight;
 }
-VIRTUAL int Batcher::getN() {
+PUBLICAPI VIRTUAL int Batcher::getN() {
     return N;
 }
-VIRTUAL bool Batcher::getEpochDone() {
+PUBLICAPI VIRTUAL bool Batcher::getEpochDone() {
     return epochDone;
 }
 VIRTUAL void Batcher::setBatchState( int nextBatch, int numRight, float loss ) {
@@ -80,7 +80,7 @@ VIRTUAL void Batcher::setN( int N ) {
 //void Batcher::_tick( float const*batchData, int const*batchLabels ) {
 //}
 
-bool Batcher::tick() {
+PUBLICAPI bool Batcher::tick() {
 //    cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
 //    updateVars();
     if( epochDone ) {
@@ -111,7 +111,7 @@ bool Batcher::tick() {
     return !epochDone;
 }
 
-EpochResult Batcher::run() {
+PUBLICAPI EpochResult Batcher::run() {
     if( data == 0 ) {
         throw runtime_error("Batcher: no data set");
     }

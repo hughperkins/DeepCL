@@ -47,7 +47,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NetLearner( Trainable *net,
+    PUBLICAPI NetLearner( Trainable *net,
     int Ntrain, float *trainData, int *trainLabels,
     int Ntest, float *testData, int *testLabels,
     int batchSize );
@@ -55,19 +55,19 @@ public:
     VIRTUAL void setSchedule( int numEpochs );
     VIRTUAL void setDumpTimings( bool dumpTimings );
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
-    VIRTUAL void reset();
+    PUBLICAPI VIRTUAL void reset();
     VIRTUAL void postEpochTesting();
-    VIRTUAL bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
-    VIRTUAL bool getEpochDone();
-    VIRTUAL int getNextEpoch();
-    VIRTUAL int getNextBatch();
-    VIRTUAL int getBatchNumRight();
-    VIRTUAL float getBatchLoss();
+    PUBLICAPI VIRTUAL bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
+    PUBLICAPI VIRTUAL bool getEpochDone();
+    PUBLICAPI VIRTUAL int getNextEpoch();
+    PUBLICAPI VIRTUAL int getNextBatch();
+    PUBLICAPI VIRTUAL int getBatchNumRight();
+    PUBLICAPI VIRTUAL float getBatchLoss();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
-    VIRTUAL bool tickEpoch();
-    VIRTUAL void run();
-    VIRTUAL bool isLearningDone();
-    VIRTUAL void setLearningRate( float learningRate );
+    PUBLICAPI VIRTUAL bool tickEpoch();
+    PUBLICAPI VIRTUAL void run();
+    PUBLICAPI VIRTUAL bool isLearningDone();
+    PUBLICAPI VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
     VIRTUAL void learn( float learningRate );
     VIRTUAL void learn( float learningRate, float annealLearningRate );

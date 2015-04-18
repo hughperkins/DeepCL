@@ -24,8 +24,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC void getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize );
-    STATIC void load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples );
+    PUBLICAPI STATIC void getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize );
+    PUBLICAPI STATIC void load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples );
     STATIC void load( std::string trainFilepath, unsigned char *images, int *labels );
     STATIC void load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples );
 

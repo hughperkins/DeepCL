@@ -10,27 +10,18 @@ will hopefully be stable in between major version changes.
 The following APIs will aim to only be modified in major version changes:
 * commandline parameters and options for `deepclrun`
 * Cython Python wrappers API: all existing wrapped classes and methods, except for q-learning
-* The methods and classnames of the following C++ classes, not including properties/attributes:
-  * NeuralNet class, except for the following methods:
-    * cloneLossLayerMaker
-    * epochMaker
-    * printBiasWeightsAsCode
-    * printWeightsAsCode
-    * maker
-    * getCl
-    * clone
-    * printOutput
-    * printWeights
-  * All xxxMaker classes and class methods
-  * Following methods from GenericLoader class:
-    * `void getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize );`
-    * `STATIC void load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples );`
-  * NetDeftoNet.createNetFromNetdef method
-  * WeightsPersister class, except for `copyArray` method
-  * NetLearner class, except for `postEpochTesting` method
-  * Batcher class class methods
-  * OnDemandBatcher class methods
-  * NetLearnerOnDemand class methods, except for `postEpochTesting` method
+* Any C++ methods marked as `PUBLICAPI`.  This is a null macro, that does nothing.  Its sole job
+is to mark methods that should be stable within major versions
+  * their containing class should also not be removed or change name
+* The following classes contain methods tagged as `PUBLICAPI`, and therefore should not be removed, or change name, except in major version changes:
+  * NeuralNet
+  * Most xxxMaker classes (but not all)
+  * NetdefToNet
+  * GenericLoader
+  * WeightsPersister
+  * Batcher
+  * OnDemandBatcher
+  * NetLearner
 * Compiler standards should ideally be covered, to the extent that the ability to compile on linux
 using g++ with only `-std=c++0x`, and on Windows, using Visual Studio 2010 Express should not be removed without a major version change
 
@@ -45,6 +36,7 @@ The following APIs are currently unstable, and can be modified in between major 
 * Swig Python wrappers API
   * eg, might change to use numpy arrays for input, plausibly
 * The C++ q-learning module and classes
+* NetLearnerOnDemand c++ class might be merged into NetLearner class plausibly
 * All other C++ classes and methods not stated explicitly in 'Stable APIs' section above
 * All attributes and properties on C++ classes
 * Build process is not included

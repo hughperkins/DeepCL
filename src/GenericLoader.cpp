@@ -25,7 +25,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize ) {
+PUBLICAPI STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize ) {
     char *headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 1024 );
     char type[1025];
     strncpy( type, headerBytes, 4 );
@@ -45,7 +45,7 @@ STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numE
     }
 }
 
-STATIC void GenericLoader::load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples ) {
+PUBLICAPI STATIC void GenericLoader::load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples ) {
 //    cout << "GenericLoader::load " << numExamples << endl;
     int N, planes, size;
     getDimensions( imagesFilePath, &N, &planes, &size );
