@@ -26,3 +26,6 @@ cd Release
 "c:\program files\7-Zip\7z.exe" a deepcl-win32-%version%.zip *
 if errorlevel 1 exit /B 1
 
+cd ..
+echo %version%>latestUnstable.txt
+
