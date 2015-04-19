@@ -30,12 +30,13 @@ public:
 
     LayerMaker2 *maker;
 
-    // \brief Get the output from this layer, after forward propagation
+    // \brief Get the activated output from this layer, after forward propagation
     PUBLICAPI virtual float * getResults() = 0;
 //    virtual Layer *clone() = 0;
     /// \brief Get the size of array needed for persisting to/from an array
     PUBLICAPI virtual int getPersistSize() const = 0;
-    virtual int getResultsSize() const = 0;
+    /// \brief Get the size of the activated output from this layer
+    PUBLICAPI virtual int getResultsSize() const = 0;
     virtual std::string getClassName() const = 0;
 
     // [[[cog
