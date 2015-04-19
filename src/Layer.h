@@ -30,7 +30,8 @@ public:
 
     LayerMaker2 *maker;
 
-    virtual float * getResults() = 0;
+    // \brief Get the output from this layer, after forward propagation
+    PUBLICAPI virtual float * getResults() = 0;
 //    virtual Layer *clone() = 0;
     /// \brief Get the size of array needed for persisting to/from an array
     PUBLICAPI virtual int getPersistSize() const = 0;
