@@ -16,7 +16,7 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-// not so generic, since only handles unsigned char for now :-P  But it's a start :-)
+PUBLICAPI
 class DeepCL_EXPORT GenericLoader {
 public:
     // [[[cog

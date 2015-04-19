@@ -11,6 +11,7 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+PUBLICAPI
 class DeepCL_EXPORT NormalizationLayerMaker : public LayerMaker2 {
 public:
     float _translate;

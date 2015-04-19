@@ -9,6 +9,7 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+PUBLICAPI
 class DeepCL_EXPORT PoolingMaker : public LayerMaker2 {
 public:
 //    Layer *previousLayer;

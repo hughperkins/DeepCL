@@ -11,6 +11,7 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+PUBLICAPI
 class DeepCL_EXPORT RandomPatchesMaker : public LayerMaker2 {
 public:
     int _patchSize;

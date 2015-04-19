@@ -12,6 +12,7 @@
 #include "ActivationFunction.h"
 #include "DeepCLDllExport.h"
 
+PUBLICAPI
 class DeepCL_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:
     int _numPlanes;

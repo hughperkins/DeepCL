@@ -36,19 +36,12 @@ using namespace std;
 
 PUBLICAPI NeuralNet::NeuralNet() :
     isTraining( true ) {
-//    cout << "NeuralNet()" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    InputLayerMaker *maker = new InputLayerMaker( this, numPlanes, imageSize );
-//    maker->insert();
 }
+/// Constructor
 PUBLICAPI NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
 //    cout << "NeuralNet( " << numPlanes << ", " << imageSize << " )" << endl;
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    InputLayerMaker<float> *maker = ( new InputLayerMaker<float>( this ) )
-//        ->numPlanes( numPlanes )->imageSize( imageSize );
-//    maker->insert();
-//    InputLayerMaker<float> *maker = In;
-//    maker;
     addLayer( InputLayerMaker::instance()->numPlanes( numPlanes )->imageSize( imageSize ) );
 //    print();
 }
@@ -60,25 +53,11 @@ NeuralNet::~NeuralNet() {
 }
 NeuralNet *NeuralNet::clone() {
     NeuralNet *copy = new NeuralNet();
-//    Layer *previousLayer = 0;
     for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         LayerMaker2 *maker = (*it)->maker;
 
         LayerMaker2 *makerCopy = maker->clone();
-//        Layer *layerCopy  = makerCopy->createLayer( previousLayer );
         copy->addLayer( makerCopy );
-//        previousLayer = layerCopy;
-
-//        LayerMaker const*maker1 = dynamic_cast< LayerMaker const*>( maker );
-//        LayerMaker2 const*maker2 = dynamic_cast< LayerMaker2 const*>( maker );
-//        if( maker1 != 0 ) {
-//            LayerMaker const*makerCopy = maker1->clone( previousLayer );
-//            Layer *layerCopy = makerCopy->instance();
-//            copy->layers.push_back( layerCopy );
-//            previousLayer = layerCopy;
-//        } else {
-//            throw runtime_error("not implemetned yet, layermaker2 clone");
-//        }
     }
     copy->print();
     cout << "outputimagesize: " << copy->getOutputImageSize() << endl;
@@ -90,50 +69,14 @@ OpenCLHelper *NeuralNet::getCl() {
 STATIC NeuralNetMould *NeuralNet::maker() {
     return new NeuralNetMould();
 }
-//void NeuralNet::insert( InputLayerMaker inputLayerMaker ) {
-////    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
-//    InputLayer *inputLayer = new InputLayer( inputLayerMaker );
-//    layers.push_back( inputLayer );
-//}
+
+/// Add a network layer, using a LayerMaker2 object
 PUBLICAPI void NeuralNet::addLayer( LayerMaker2 *maker ) {
 //    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
     maker->setCl( cl );
     Layer *layer = maker->createLayer( getLastLayer() );
     layers.push_back( layer );
 }
-//template< typename T >InputLayerMaker *NeuralNet::inputMaker() {
-//    if( layers.size() != 0 ) {
-//        throw runtime_error("Already added an InputLayer to this net");
-//    }
-//    return new InputLayerMaker( this );
-//}
-//FullyConnectedMaker *NeuralNet::fullyConnectedMaker() {
-//    return new FullyConnectedMaker( this, getLastLayer() );
-//}
-//ConvolutionalMaker *NeuralNet::convolutionalMaker() {
-//    return new ConvolutionalMaker( this, getLastLayer() );
-//}
-//PoolingMaker *NeuralNet::poolingMaker() {
-//    return new PoolingMaker( this, getLastLayer() );
-//}
-//NormalizationLayerMaker *NeuralNet::normalizationMaker() {
-//    return new NormalizationLayerMaker( this, getLastLayer() );
-//}
-//RandomPatchesMaker *NeuralNet::randomPatchesMaker() {
-//    return new RandomPatchesMaker( this, getLastLayer() );
-//}
-//RandomTranslationsMaker *NeuralNet::randomTranslationsMaker() {
-//    return new RandomTranslationsMaker( this, getLastLayer() );
-//}
-//SquareLossMaker *NeuralNet::squareLossMaker() {
-//    return new SquareLossMaker( this, getLastLayer() );
-//}
-//CrossEntropyLossMaker *NeuralNet::crossEntropyLossMaker() {
-//    return new CrossEntropyLossMaker( this, getLastLayer() );
-//}
-//SoftMaxMaker *NeuralNet::softMaxLossMaker() {
-//    return new SoftMaxMaker( this, getLastLayer() );
-//}
 PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {
     initWeights( layerIndex, weights );
     initBiasWeights( layerIndex, biasWeights );
@@ -154,13 +97,20 @@ void NeuralNet::printBiasWeightsAsCode() {
         layers[layer]->printBiasWeightsAsCode();
     }
 }
+/// \brief calculate the loss, based on the passed in expectedValues array
+///
+/// \publicapi
+///
+/// Calculate the loss, based on the passed in expectedValues array
+/// which should be the same size as the results of the final layer
+/// of the network
 PUBLICAPI float NeuralNet::calcLoss(float const *expectedValues ) {
     return dynamic_cast<LossLayer*>(layers[layers.size()-1])->calcLoss( expectedValues );
 }
 PUBLICAPI float NeuralNet::calcLossFromLabels(int const *labels ) {
     return dynamic_cast<IAcceptsLabels*>(layers[layers.size()-1])->calcLossFromLabels( labels );
 }
-EpochMaker *NeuralNet::epochMaker() {
+/** \brief **/EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
 }
 VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker() const {

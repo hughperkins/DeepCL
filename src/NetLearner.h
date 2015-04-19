@@ -22,9 +22,10 @@ class NeuralNet;
 
 #include "DeepCLDllExport.h"
 
-// handles learning the neural net, ie running multiple epochs,
-// using two Batchers, one for training, one for testing, to learn 
-// the epochs
+/// handles learning the neural net, ie running multiple epochs,
+/// using two Batchers, one for training, one for testing, to learn 
+/// the epochs
+PUBLICAPI
 class DeepCL_EXPORT NetLearner : public NetLearnerBase {
 public:
     Trainable *net;

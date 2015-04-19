@@ -13,6 +13,8 @@
 
 #include "LayerMaker.h"
 
+/// Use to create a convolutional layer
+PUBLICAPI
 class DeepCL_EXPORT ConvolutionalMaker : public LayerMaker2 {
 public:
     int _numFilters;

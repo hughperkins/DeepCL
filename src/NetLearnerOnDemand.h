@@ -24,17 +24,13 @@ class OnDemandBatcher;
 
 #include "DeepCLDllExport.h"
 
-//class DeepCL_EXPORT PostEpochAction {
-//public:
-//    virtual void run( int epoch ) = 0;
-//};
-
-// handles learning the neural net, ie running multiple epochs,
-// using two OnDemandBatchers, one for training, one for testing, to learn 
-// the epochs
-// Note that there's no particular reason why this class couldnt be 
-// merged completely with the 'NetLeaner' class, simply passing 
-// in either 'Batcher' objects, or 'OnDemandBatcher' objects
+/// handles learning the neural net, ie running multiple epochs,
+/// using two OnDemandBatchers, one for training, one for testing, to learn 
+/// the epochs
+/// Note that there's no particular reason why this class couldnt be 
+/// merged completely with the 'NetLeaner' class, simply passing 
+/// in either 'Batcher' objects, or 'OnDemandBatcher' objects
+PUBLICAPI
 class DeepCL_EXPORT NetLearnerOnDemand : public NetLearnerBase {
 protected:
     Timer timer;

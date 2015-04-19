@@ -16,12 +16,13 @@ class NetAction;
 #define VIRTUAL virtual
 #define STATIC static
 
-// This class is responsible for running all batches once (ie one 'epoch'), but
-// for a single set of already-loaded data
-// If you want to have a class that loads the data in chunks, then you'll need
-// OnDemandBatcher
-// Note however that, what OnDemandBatcher does is, it loads in some data, and
-// then it calls this Batcher class.  so they work together
+/// This class is responsible for running all batches once (ie one 'epoch'), but
+/// for a single set of already-loaded data
+/// If you want to have a class that loads the data in chunks, then you'll need
+/// OnDemandBatcher
+/// Note however that, what OnDemandBatcher does is, it loads in some data, and
+/// then it calls this Batcher class.  so they work together
+PUBLICAPI
 class DeepCL_EXPORT Batcher {
 protected:
     Trainable *net;

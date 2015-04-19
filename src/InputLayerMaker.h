@@ -12,6 +12,7 @@
 #include "DeepCLDllExport.h"
 #include "LayerMaker.h"
 
+PUBLICAPI
 class DeepCL_EXPORT InputLayerMaker : public LayerMaker2 {
 public:
     int _numPlanes;

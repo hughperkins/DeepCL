@@ -12,7 +12,12 @@
       * [Q-learning](http://www.dtic.mil/dtic/tr/fulltext/u2/a261434.pdf) (for Atari)
       * probably more generalized network, maybe even more general than a DAG even, for LTSM
   * I'm also running kgs-go dataset in the background, but at 2 days per epoch (32 million records, and 12 layers...), I'm mostly just sitting and waiting :-)
-  * Standardize lua wrapper build, generalize to other platforms
+  * improve the wrappers:
+    * get lua wrappers into luarocks repository
+    * get ctrl-c working with swig py wrapper
+    * add numpy to swig py wrapper
+    * accept torch arrays in lua wrappers
+  * migrate some of the #defines in the cl code to functions
 
 ### Plausible, medium-term (pull requests welcome)
 

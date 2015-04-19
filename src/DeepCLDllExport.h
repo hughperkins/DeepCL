@@ -10,6 +10,7 @@
 # define DeepCL_EXPORT
 #endif
 
-#define PUBLICAPI // does nothing, just a marker, means it is part of
+// does nothing, just a marker, means it is part of
 // our semantic versioning 'stable' api
+#define PUBLICAPI
 

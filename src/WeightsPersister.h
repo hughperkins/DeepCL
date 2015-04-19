@@ -10,13 +10,14 @@ class NeuralNet;
 
 #include "DeepCLDllExport.h"
 
-// whilst this class is portable, the weights files created totally are not (ie: endianness)
-// but okish for now... (since it's not like weights files tend to be shared around much, and
-// if they are, then the quickly-written file created by this could be converted by another
-// utility into a portable datafile
-// target usage for this class:
-// - quickly snapshotting the weights after each epoch, therefore should be:
-//    - fast, low IO :-)
+/// whilst this class is portable, the weights files created totally are not (ie: endianness)
+/// but okish for now... (since it's not like weights files tend to be shared around much, and
+/// if they are, then the quickly-written file created by this could be converted by another
+/// utility into a portable datafile
+/// target usage for this class:
+/// - quickly snapshotting the weights after each epoch, therefore should be:
+///    - fast, low IO :-)
+PUBLICAPI
 class DeepCL_EXPORT WeightsPersister {
 public:
     

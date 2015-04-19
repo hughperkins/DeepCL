@@ -35,6 +35,8 @@ class InputLayerMaker;
 #define VIRTUAL virtual
 #define STATIC static
 
+/// NeuralNet: main container class for network layers
+PUBLICAPI
 class DeepCL_EXPORT NeuralNet : public Trainable {
 protected:
 #ifdef _WIN32

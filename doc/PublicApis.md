@@ -11,19 +11,13 @@ The following APIs will aim to only be modified in major version changes:
 * commandline parameters and options for `deepclrun` which have 'is_public_api' set to 'True', in the options list created on around line 31
   * concretely, this means any option that appears in the 'usage' when you run `deepclrun -h`
 * Cython Python wrappers API: all existing wrapped classes and methods, except for q-learning
-* Any C++ methods marked as `PUBLICAPI`.  This is a null macro, that does nothing.  Its sole job
-is to mark methods that should be stable within major versions
+* Any C++ classes marked as `PUBLICAPI` should not be removed, or change their names, within a major
+release version  `PUBLICAPI` is a null macro within the C++ code, does nothing.
+* Any C++ methods marked as `PUBLICAPI` should not be removed, nor change their names, or approximate
+function, within a major release version.  This is a null macro, within the C++ code, does nothing
+* You can check which classes and methods have been tagged with `PUBLICAPI` by browsing the code, or
+looking at the Doxygen-generated documentation at [4.x.x doxy docs](http://hughperkins.github.io/DeepCL/4.x.x/annotated.html)
   * their containing class should also not be removed or change name
-* The following classes contain methods tagged as `PUBLICAPI`, and therefore should not be removed, or change name, except in major version changes:
-  * NeuralNet
-  * Most xxxMaker classes (but not all)
-  * NetdefToNet
-  * GenericLoader
-  * WeightsPersister
-  * Batcher
-  * OnDemandBatcher
-  * NetLearner
-  * NetLearnerOnDemand (although we might merge the functionality into NetLearner class, this class itself can remain in place, until the next subsequent major release)
 * Compiler standards should ideally be covered, to the extent that the ability to compile on linux
 using g++ with only `-std=c++0x`, and on Windows, using Visual Studio 2010 Express should not be removed without a major version change
 

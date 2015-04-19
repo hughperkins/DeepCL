@@ -18,9 +18,10 @@ class NetAction;
 #define VIRTUAL virtual
 #define STATIC static
 
-// This handles an entire epoch of training, loading in data in chunks
-// and then passing it to 'Batcher' class, to train/test each chunk
-// If you want to run multiple epochs, you'll need a 'NetLearner' class
+/// This handles an entire epoch of training, loading in data in chunks
+/// and then passing it to 'Batcher' class, to train/test each chunk
+/// If you want to run multiple epochs, you'll need a 'NetLearner' class
+PUBLICAPI
 class OnDemandBatcher {
 protected:
 //    int allocatedSize;

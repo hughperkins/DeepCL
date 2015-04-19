@@ -11,6 +11,7 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+PUBLICAPI
 class DeepCL_EXPORT RandomTranslationsMaker : public LayerMaker2 {
 public:
     int _translateSize;

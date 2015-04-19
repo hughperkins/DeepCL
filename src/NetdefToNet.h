@@ -15,6 +15,7 @@ class NeuralNet;
 #define VIRTUAL virtual
 #define STATIC static
 
+PUBLICAPI
 class DeepCL_EXPORT NetdefToNet {
 public:
 
