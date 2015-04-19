@@ -15,6 +15,7 @@
   - [Data format](#data-format)
   - [Train](#train)
   - [Test](#test)
+  - [More details](#more-details)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -198,4 +199,8 @@ eg
 BatchLearner batchLearner( net );
 int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
+
+## More details
+
+You can find more details in the Doxygen-generated docs at [doxy docs for 4.x.x](http://hughperkins.github.io/DeepCL/4.x.x/annotated.html)
 
