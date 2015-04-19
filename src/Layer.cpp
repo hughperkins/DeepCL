@@ -22,10 +22,12 @@ VIRTUAL Layer::~Layer() {
                         // self-deleted)
     }
 }
+/// \brief Are we training or predicting?
+/// Only affects the Random translations and patches layers currently
 PUBLICAPI VIRTUAL void Layer::setTraining( bool training ) {
     this->training = training;
 }
-// used to set up internal buffers and stuff
+/// used to set up internal buffers and stuff
 PUBLICAPI VIRTUAL void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");
 }
@@ -64,10 +66,10 @@ PUBLICAPI VIRTUAL int Layer::getOutputPlanes() const {
 PUBLICAPI VIRTUAL int Layer::getOutputImageSize() const {
     throw std::runtime_error("getOutputImageSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 }
-PUBLICAPI VIRTUAL void Layer::propagate() {
+VIRTUAL void Layer::propagate() {
     throw std::runtime_error("propagate not implemented for this layer type");
 }
-PUBLICAPI VIRTUAL bool Layer::needsBackProp() {
+VIRTUAL bool Layer::needsBackProp() {
     throw std::runtime_error("needsBackProp not implemented for this layer type");
 }
 VIRTUAL void Layer::print() {
@@ -79,14 +81,14 @@ VIRTUAL void Layer::print() {
 //        std::cout << "No results yet " << std::endl;
 //    }
 }
-PUBLICAPI VIRTUAL void Layer::initWeights( float const*weights ) {
+VIRTUAL void Layer::initWeights( float const*weights ) {
     throw std::runtime_error("initWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 //    int numWeights = getWeightsSize();
 //    for( int i = 0; i < numWeights; i++ ) {
 //        this->weights[i] = weights[i];
 //    }
 }
-PUBLICAPI VIRTUAL void Layer::initBiasWeights( float const *biasWeights ) {
+VIRTUAL void Layer::initBiasWeights( float const *biasWeights ) {
     throw std::runtime_error("initBiasWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 //    int numBiasWeights = getBiasWeightsSize();
 //    for( int i = 0; i < numBiasWeights; i++ ) {
@@ -135,9 +137,12 @@ PUBLICAPI VIRTUAL int Layer::getBiasWeightsSize() const {
 //VIRTUAL int Layer::getPersistSize() const {
 //    throw std::runtime_error("getPersistSize not implemented for this layertype, layerindex " + toString(layerIndex ) );
 //}
+/// \brief store the current weights and biases to array
+/// Note that you need to allocate array first
 PUBLICAPI VIRTUAL void Layer::persistToArray(float *array) {
     throw std::runtime_error("persistToArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
+/// \brief initialize the current weights and biases from array
 PUBLICAPI VIRTUAL void Layer::unpersistFromArray(float const*array) {
     throw std::runtime_error("unpersistFromArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
@@ -153,6 +158,7 @@ VIRTUAL float *Layer::getWeights() {
 VIRTUAL float const*Layer::getBiasWeights() const {
     throw std::runtime_error("getBiasWeights not implemented for this layertype");
 }
+/// \brief Get a string representation of the layer
 PUBLICAPI VIRTUAL std::string Layer::asString() const {
     return "Layer{}";
 }

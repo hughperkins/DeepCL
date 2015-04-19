@@ -1,9 +1,0 @@
-var searchData=
-[
-  ['imagesize',['imageSize',['../classFullyConnectedMaker.html#a293d6f8da3375ef878ad1c4da788b87c',1,'FullyConnectedMaker::imageSize()'],['../classInputLayerMaker.html#a0be24032966f868c1bcd86291ad141ba',1,'InputLayerMaker::imageSize()']]],
-  ['initbiasweights',['initBiasWeights',['../classNeuralNet.html#a7d0a31fc104af25ec31587545243e794',1,'NeuralNet']]],
-  ['initweights',['initWeights',['../classNeuralNet.html#a21ee7f451c902841af4e982ed6778f9c',1,'NeuralNet::initWeights(int layerIndex, float *weights, float *biasWeights)'],['../classNeuralNet.html#a254fcda33e374b004ea4bd2b89d27ca7',1,'NeuralNet::initWeights(int layerIndex, float *weights)']]],
-  ['inputlayermaker',['InputLayerMaker',['../classInputLayerMaker.html',1,'InputLayerMaker'],['../classInputLayerMaker.html#ab07f09c59b8f3b376c473310f25a5f5a',1,'InputLayerMaker::InputLayerMaker()']]],
-  ['instance',['instance',['../classConvolutionalMaker.html#a2cf0d1e45a7ca4e786e795faebc44991',1,'ConvolutionalMaker::instance()'],['../classFullyConnectedMaker.html#ae6f686bad62af8d723c010da1da21823',1,'FullyConnectedMaker::instance()'],['../classInputLayerMaker.html#a5f929cc46beba91c7ffe8c50ba812531',1,'InputLayerMaker::instance()'],['../classNormalizationLayerMaker.html#a2111256b400f82bdeebade32e23da5c0',1,'NormalizationLayerMaker::instance()'],['../classPoolingMaker.html#ad2ac0ab098babb5f331d2deec11ad762',1,'PoolingMaker::instance()'],['../classRandomPatchesMaker.html#ad92cc08bc586e7ab9a88f22b422c5787',1,'RandomPatchesMaker::instance()'],['../classRandomTranslationsMaker.html#a69ccda5923d035f84bd0830489459d81',1,'RandomTranslationsMaker::instance()']]],
-  ['islearningdone',['isLearningDone',['../classNetLearner.html#a777ce89028748d1fc22a4f4f3c0bd4a4',1,'NetLearner::isLearningDone()'],['../classNetLearnerOnDemand.html#a499c7487bb3a56298ddefdd71e3e58f2',1,'NetLearnerOnDemand::isLearningDone()']]]
-];

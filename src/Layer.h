@@ -19,6 +19,8 @@
 
 #define VIRTUAL virtual
 
+PUBLICAPI
+/// A single layer within the neural net
 class Layer {
 public:
     Layer *previousLayer;
@@ -30,7 +32,8 @@ public:
 
     virtual float * getResults() = 0;
 //    virtual Layer *clone() = 0;
-    virtual int getPersistSize() const = 0;
+    /// \brief Get the size of array needed for persisting to/from an array
+    PUBLICAPI virtual int getPersistSize() const = 0;
     virtual int getResultsSize() const = 0;
     virtual std::string getClassName() const = 0;
 

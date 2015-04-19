@@ -16,7 +16,7 @@ release version  `PUBLICAPI` is a null macro within the C++ code, does nothing.
 * Any C++ methods marked as `PUBLICAPI` should not be removed, nor change their names, or approximate
 function, within a major release version.  This is a null macro, within the C++ code, does nothing
 * You can check which classes and methods have been tagged with `PUBLICAPI` by browsing the code, or
-looking at the Doxygen-generated documentation at [4.x.x doxy docs](http://hughperkins.github.io/DeepCL/4.x.x/annotated.html)
+looking at the Doxygen-generated documentation at [4.x.x doxy docs](http://hughperkins.github.io/DeepCL/4.x.x/html/index.html)
   * their containing class should also not be removed or change name
 * Compiler standards should ideally be covered, to the extent that the ability to compile on linux
 using g++ with only `-std=c++0x`, and on Windows, using Visual Studio 2010 Express should not be removed without a major version change
