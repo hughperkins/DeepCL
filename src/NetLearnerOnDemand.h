@@ -24,9 +24,12 @@ class OnDemandBatcher;
 
 #include "DeepCLDllExport.h"
 
-/// handles learning the neural net, ie running multiple epochs,
+/// \brief Learns multiple epochs, for data that wont fit in memory
+///
+/// Handles learning the neural net, ie running multiple epochs,
 /// using two OnDemandBatchers, one for training, one for testing, to learn 
-/// the epochs
+/// the epochs.
+///
 /// Note that there's no particular reason why this class couldnt be 
 /// merged completely with the 'NetLeaner' class, simply passing 
 /// in either 'Batcher' objects, or 'OnDemandBatcher' objects
@@ -40,14 +43,6 @@ protected:
     OnDemandBatcher *learnBatcher;
     OnDemandBatcher *testBatcher;
 public:
-
-//    int Ntrain;
-//    int Ntest;
-//    std::string trainFilepath;
-//    std::string testFilepath;
-
-//    int batchSize;
-//    int fileReadBatches;
 
     float learningRate;
     float annealLearningRate;

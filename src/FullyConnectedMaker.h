@@ -12,6 +12,7 @@
 #include "ActivationFunction.h"
 #include "DeepCLDllExport.h"
 
+/// \brief Use to create a fully-connected layer
 PUBLICAPI
 class DeepCL_EXPORT FullyConnectedMaker : public LayerMaker2 {
 public:

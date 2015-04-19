@@ -11,6 +11,13 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+/// \brief use to create a RandomTranslations Layer
+///
+/// A RandomTranslations Layer translates the incoming data by a 
+/// random amount when training is set to true, in the NeuralNet,
+/// or by zero when training is set to false.
+///
+/// The size of the random translations is set by translateSize.
 PUBLICAPI
 class DeepCL_EXPORT RandomTranslationsMaker : public LayerMaker2 {
 public:

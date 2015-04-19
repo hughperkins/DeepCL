@@ -16,6 +16,8 @@ class NetAction;
 #define VIRTUAL virtual
 #define STATIC static
 
+/// \brief Runs an epoch for a single set of already-loaded data
+///
 /// This class is responsible for running all batches once (ie one 'epoch'), but
 /// for a single set of already-loaded data
 /// If you want to have a class that loads the data in chunks, then you'll need

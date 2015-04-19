@@ -9,6 +9,10 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+/// \brief Use to create a Max-Pooling layer
+///
+/// Stride is fixed to equal the pooling size, so these are 
+/// non-overlapping pools
 PUBLICAPI
 class DeepCL_EXPORT PoolingMaker : public LayerMaker2 {
 public:

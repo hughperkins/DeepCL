@@ -16,6 +16,12 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+/// \brief Use to load data from file, given the path to the images file
+///
+/// Can handle mnist, norb and kgsgov2 formats for now
+/// Can be extended to other formats, as long as there is some
+/// reasonably quick way to determine the format correctly
+/// eg, a header, or based on the file extension
 PUBLICAPI
 class DeepCL_EXPORT GenericLoader {
 public:

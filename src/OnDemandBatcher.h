@@ -18,9 +18,13 @@ class NetAction;
 #define VIRTUAL virtual
 #define STATIC static
 
+/// \brief Learns an entire epoch of training, for data that wont fit in memory
+///
 /// This handles an entire epoch of training, loading in data in chunks
-/// and then passing it to 'Batcher' class, to train/test each chunk
-/// If you want to run multiple epochs, you'll need a 'NetLearner' class
+/// and then passing it to a 'Batcher' class, to train/test each chunk
+///
+/// If you want to run multiple epochs, you can use a 'NetLearnerOnDemand'
+/// class
 PUBLICAPI
 class OnDemandBatcher {
 protected:

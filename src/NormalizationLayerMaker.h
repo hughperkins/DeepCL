@@ -11,6 +11,11 @@
 #include "LayerMaker.h"
 #include "DeepCLDllExport.h"
 
+/// \brief Use to add a NormalizationLayer to a NeuralNet
+///
+/// A NormalizationLayer will normally be inserted as the second
+/// layer in a network, after an InputLayer.  It can translate
+/// and scale the input values.
 PUBLICAPI
 class DeepCL_EXPORT NormalizationLayerMaker : public LayerMaker2 {
 public:

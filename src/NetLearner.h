@@ -22,9 +22,16 @@ class NeuralNet;
 
 #include "DeepCLDllExport.h"
 
-/// handles learning the neural net, ie running multiple epochs,
-/// using two Batchers, one for training, one for testing, to learn 
-/// the epochs
+/// \brief Runs multiple learning epochs using Batcher objects
+///
+/// Handles learning the neural net, ie running multiple epochs.
+/// Uses two Batchers, one for training, one for testing, to learn 
+/// the epochs.
+///
+/// This class expects the data to be already in memory.
+/// If the data is really big, wont fit in memory, you probably
+/// want to use something more like NetLearnerOnDemand, which
+/// can load in a chunk of data from datafiles at a time
 PUBLICAPI
 class DeepCL_EXPORT NetLearner : public NetLearnerBase {
 public:
