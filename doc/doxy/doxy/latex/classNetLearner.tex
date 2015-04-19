@@ -1,0 +1,203 @@
+\hypertarget{classNetLearner}{\section{Net\-Learner Class Reference}
+\label{classNetLearner}\index{Net\-Learner@{Net\-Learner}}
+}
+
+
+Inherits Net\-Learner\-Base.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+publicapi \hyperlink{classNetLearner_ae1298aec18f9b90d5631e162e5b1a7bc}{Net\-Learner} (Trainable $\ast$net, int Ntrain, float $\ast$train\-Data, int $\ast$train\-Labels, int Ntest, float $\ast$test\-Data, int $\ast$test\-Labels, int batch\-Size)
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L void \hyperlink{classNetLearner_aaa130215f22b3da1f9f99de404a96b9b}{reset} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L bool \hyperlink{classNetLearner_a42be6ba0168298a182a702a96d488535}{tick\-Batch} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L bool \hyperlink{classNetLearner_a854531128a06cb0c19426db8ced341ba}{get\-Epoch\-Done} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classNetLearner_a3d2a69f79e1587677ca9f348e51cffac}{get\-Next\-Epoch} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classNetLearner_a4e3da75a8e6063d22add3cbcbd04345e}{get\-Next\-Batch} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classNetLearner_a90889134f2ba0bbe863a99f59954f3db}{get\-N\-Train} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classNetLearner_a8b32e57aad477db1098f787d44c7568d}{get\-Batch\-Num\-Right} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L float \hyperlink{classNetLearner_a53fd8c5f257e0ff7d08a9b5a6426fdbf}{get\-Batch\-Loss} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L bool \hyperlink{classNetLearner_a18c3ffeb8f1a3f6dac8019a8343d2c5b}{tick\-Epoch} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L void \hyperlink{classNetLearner_acb58b6fb2d24de35bf0df9f0b1b37683}{run} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L bool \hyperlink{classNetLearner_a777ce89028748d1fc22a4f4f3c0bd4a4}{is\-Learning\-Done} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L void \hyperlink{classNetLearner_a42bc02ddc7da8ca3c19abde1d1055e4c}{set\-Learning\-Rate} (float learning\-Rate)
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L void \hyperlink{classNetLearner_a189930d926a590e56d6f0a48f8020e1d}{learn} (float learning\-Rate)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+handles learning the neural net, ie running multiple epochs, using two Batchers, one for training, one for testing, to learn the epochs \begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classNetLearner_ae1298aec18f9b90d5631e162e5b1a7bc}{\index{Net\-Learner@{Net\-Learner}!Net\-Learner@{Net\-Learner}}
+\index{Net\-Learner@{Net\-Learner}!NetLearner@{Net\-Learner}}
+\subsubsection[{Net\-Learner}]{\setlength{\rightskip}{0pt plus 5cm}publicapi Net\-Learner\-::\-Net\-Learner (
+\begin{DoxyParamCaption}
+\item[{Trainable $\ast$}]{net, }
+\item[{int}]{Ntrain, }
+\item[{float $\ast$}]{train\-Data, }
+\item[{int $\ast$}]{train\-Labels, }
+\item[{int}]{Ntest, }
+\item[{float $\ast$}]{test\-Data, }
+\item[{int $\ast$}]{test\-Labels, }
+\item[{int}]{batch\-Size}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_ae1298aec18f9b90d5631e162e5b1a7bc}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classNetLearner_aaa130215f22b3da1f9f99de404a96b9b}{\index{Net\-Learner@{Net\-Learner}!reset@{reset}}
+\index{reset@{reset}!NetLearner@{Net\-Learner}}
+\subsubsection[{reset}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L void Net\-Learner\-::reset (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_aaa130215f22b3da1f9f99de404a96b9b}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a42be6ba0168298a182a702a96d488535}{\index{Net\-Learner@{Net\-Learner}!tick\-Batch@{tick\-Batch}}
+\index{tick\-Batch@{tick\-Batch}!NetLearner@{Net\-Learner}}
+\subsubsection[{tick\-Batch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L bool Net\-Learner\-::tick\-Batch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a42be6ba0168298a182a702a96d488535}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a854531128a06cb0c19426db8ced341ba}{\index{Net\-Learner@{Net\-Learner}!get\-Epoch\-Done@{get\-Epoch\-Done}}
+\index{get\-Epoch\-Done@{get\-Epoch\-Done}!NetLearner@{Net\-Learner}}
+\subsubsection[{get\-Epoch\-Done}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L bool Net\-Learner\-::get\-Epoch\-Done (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a854531128a06cb0c19426db8ced341ba}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a3d2a69f79e1587677ca9f348e51cffac}{\index{Net\-Learner@{Net\-Learner}!get\-Next\-Epoch@{get\-Next\-Epoch}}
+\index{get\-Next\-Epoch@{get\-Next\-Epoch}!NetLearner@{Net\-Learner}}
+\subsubsection[{get\-Next\-Epoch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int Net\-Learner\-::get\-Next\-Epoch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a3d2a69f79e1587677ca9f348e51cffac}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a4e3da75a8e6063d22add3cbcbd04345e}{\index{Net\-Learner@{Net\-Learner}!get\-Next\-Batch@{get\-Next\-Batch}}
+\index{get\-Next\-Batch@{get\-Next\-Batch}!NetLearner@{Net\-Learner}}
+\subsubsection[{get\-Next\-Batch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int Net\-Learner\-::get\-Next\-Batch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a4e3da75a8e6063d22add3cbcbd04345e}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a90889134f2ba0bbe863a99f59954f3db}{\index{Net\-Learner@{Net\-Learner}!get\-N\-Train@{get\-N\-Train}}
+\index{get\-N\-Train@{get\-N\-Train}!NetLearner@{Net\-Learner}}
+\subsubsection[{get\-N\-Train}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int Net\-Learner\-::get\-N\-Train (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a90889134f2ba0bbe863a99f59954f3db}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a8b32e57aad477db1098f787d44c7568d}{\index{Net\-Learner@{Net\-Learner}!get\-Batch\-Num\-Right@{get\-Batch\-Num\-Right}}
+\index{get\-Batch\-Num\-Right@{get\-Batch\-Num\-Right}!NetLearner@{Net\-Learner}}
+\subsubsection[{get\-Batch\-Num\-Right}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int Net\-Learner\-::get\-Batch\-Num\-Right (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a8b32e57aad477db1098f787d44c7568d}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a53fd8c5f257e0ff7d08a9b5a6426fdbf}{\index{Net\-Learner@{Net\-Learner}!get\-Batch\-Loss@{get\-Batch\-Loss}}
+\index{get\-Batch\-Loss@{get\-Batch\-Loss}!NetLearner@{Net\-Learner}}
+\subsubsection[{get\-Batch\-Loss}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L float Net\-Learner\-::get\-Batch\-Loss (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a53fd8c5f257e0ff7d08a9b5a6426fdbf}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a18c3ffeb8f1a3f6dac8019a8343d2c5b}{\index{Net\-Learner@{Net\-Learner}!tick\-Epoch@{tick\-Epoch}}
+\index{tick\-Epoch@{tick\-Epoch}!NetLearner@{Net\-Learner}}
+\subsubsection[{tick\-Epoch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L bool Net\-Learner\-::tick\-Epoch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a18c3ffeb8f1a3f6dac8019a8343d2c5b}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_acb58b6fb2d24de35bf0df9f0b1b37683}{\index{Net\-Learner@{Net\-Learner}!run@{run}}
+\index{run@{run}!NetLearner@{Net\-Learner}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L void Net\-Learner\-::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_acb58b6fb2d24de35bf0df9f0b1b37683}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a777ce89028748d1fc22a4f4f3c0bd4a4}{\index{Net\-Learner@{Net\-Learner}!is\-Learning\-Done@{is\-Learning\-Done}}
+\index{is\-Learning\-Done@{is\-Learning\-Done}!NetLearner@{Net\-Learner}}
+\subsubsection[{is\-Learning\-Done}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L bool Net\-Learner\-::is\-Learning\-Done (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a777ce89028748d1fc22a4f4f3c0bd4a4}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a42bc02ddc7da8ca3c19abde1d1055e4c}{\index{Net\-Learner@{Net\-Learner}!set\-Learning\-Rate@{set\-Learning\-Rate}}
+\index{set\-Learning\-Rate@{set\-Learning\-Rate}!NetLearner@{Net\-Learner}}
+\subsubsection[{set\-Learning\-Rate}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L void Net\-Learner\-::set\-Learning\-Rate (
+\begin{DoxyParamCaption}
+\item[{float}]{learning\-Rate}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a42bc02ddc7da8ca3c19abde1d1055e4c}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classNetLearner_a189930d926a590e56d6f0a48f8020e1d}{\index{Net\-Learner@{Net\-Learner}!learn@{learn}}
+\index{learn@{learn}!NetLearner@{Net\-Learner}}
+\subsubsection[{learn}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L void Net\-Learner\-::learn (
+\begin{DoxyParamCaption}
+\item[{float}]{learning\-Rate}
+\end{DoxyParamCaption}
+)}}\label{classNetLearner_a189930d926a590e56d6f0a48f8020e1d}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+Net\-Learner.\-h\item 
+Net\-Learner.\-cpp\end{DoxyCompactItemize}

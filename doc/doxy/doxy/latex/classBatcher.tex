@@ -1,0 +1,140 @@
+\hypertarget{classBatcher}{\section{Batcher Class Reference}
+\label{classBatcher}\index{Batcher@{Batcher}}
+}
+
+
+Inherited by Learn\-Batcher, Net\-Action\-Batcher, and Propagate\-Batcher.
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+publicapi \hyperlink{classBatcher_a4a53928e1ea4f752953ea43ab7faa0e8}{Batcher} (Trainable $\ast$net, int batch\-Size, int N, float $\ast$data, int const $\ast$labels)
+\item 
+publicapi void \hyperlink{classBatcher_a0f3c13ade8b4840d87a43167a7341070}{reset} ()
+\item 
+publicapi int \hyperlink{classBatcher_ab26dca3a4d002664f0a13c68ddc65ced}{get\-Next\-Batch} ()
+\item 
+virtual publicapi float \hyperlink{classBatcher_afaafa92c67a361127079ba8b3003e0f2}{get\-Loss} ()
+\item 
+virtual publicapi int \hyperlink{classBatcher_a5426a711b8a6989f57fa1c6dad2e1138}{get\-Num\-Right} ()
+\item 
+virtual publicapi int \hyperlink{classBatcher_ae1bcb776d55a399fc91ef70b43b753d5}{get\-N} ()
+\item 
+virtual publicapi bool \hyperlink{classBatcher_a9f71c218e242b55bcd490379cc20e7ac}{get\-Epoch\-Done} ()
+\item 
+publicapi bool \hyperlink{classBatcher_afb1f812a7b9b3e45ae57d235c912d754}{tick} ()
+\item 
+publicapi Epoch\-Result \hyperlink{classBatcher_a51d5f36d326bdc32926abd8aa5b0d22e}{run} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class is responsible for running all batches once (ie one 'epoch'), but for a single set of already-\/loaded data If you want to have a class that loads the data in chunks, then you'll need \hyperlink{classOnDemandBatcher}{On\-Demand\-Batcher} Note however that, what \hyperlink{classOnDemandBatcher}{On\-Demand\-Batcher} does is, it loads in some data, and then it calls this \hyperlink{classBatcher}{Batcher} class. so they work together \begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classBatcher_a4a53928e1ea4f752953ea43ab7faa0e8}{\index{Batcher@{Batcher}!Batcher@{Batcher}}
+\index{Batcher@{Batcher}!Batcher@{Batcher}}
+\subsubsection[{Batcher}]{\setlength{\rightskip}{0pt plus 5cm}publicapi Batcher\-::\-Batcher (
+\begin{DoxyParamCaption}
+\item[{Trainable $\ast$}]{net, }
+\item[{int}]{batch\-Size, }
+\item[{int}]{N, }
+\item[{float $\ast$}]{data, }
+\item[{int const $\ast$}]{labels}
+\end{DoxyParamCaption}
+)}}\label{classBatcher_a4a53928e1ea4f752953ea43ab7faa0e8}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classBatcher_a0f3c13ade8b4840d87a43167a7341070}{\index{Batcher@{Batcher}!reset@{reset}}
+\index{reset@{reset}!Batcher@{Batcher}}
+\subsubsection[{reset}]{\setlength{\rightskip}{0pt plus 5cm}publicapi void Batcher\-::reset (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classBatcher_a0f3c13ade8b4840d87a43167a7341070}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_ab26dca3a4d002664f0a13c68ddc65ced}{\index{Batcher@{Batcher}!get\-Next\-Batch@{get\-Next\-Batch}}
+\index{get\-Next\-Batch@{get\-Next\-Batch}!Batcher@{Batcher}}
+\subsubsection[{get\-Next\-Batch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi int Batcher\-::get\-Next\-Batch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classBatcher_ab26dca3a4d002664f0a13c68ddc65ced}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_afaafa92c67a361127079ba8b3003e0f2}{\index{Batcher@{Batcher}!get\-Loss@{get\-Loss}}
+\index{get\-Loss@{get\-Loss}!Batcher@{Batcher}}
+\subsubsection[{get\-Loss}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L float Batcher\-::get\-Loss (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classBatcher_afaafa92c67a361127079ba8b3003e0f2}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_a5426a711b8a6989f57fa1c6dad2e1138}{\index{Batcher@{Batcher}!get\-Num\-Right@{get\-Num\-Right}}
+\index{get\-Num\-Right@{get\-Num\-Right}!Batcher@{Batcher}}
+\subsubsection[{get\-Num\-Right}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int Batcher\-::get\-Num\-Right (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classBatcher_a5426a711b8a6989f57fa1c6dad2e1138}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_ae1bcb776d55a399fc91ef70b43b753d5}{\index{Batcher@{Batcher}!get\-N@{get\-N}}
+\index{get\-N@{get\-N}!Batcher@{Batcher}}
+\subsubsection[{get\-N}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int Batcher\-::get\-N (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classBatcher_ae1bcb776d55a399fc91ef70b43b753d5}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_a9f71c218e242b55bcd490379cc20e7ac}{\index{Batcher@{Batcher}!get\-Epoch\-Done@{get\-Epoch\-Done}}
+\index{get\-Epoch\-Done@{get\-Epoch\-Done}!Batcher@{Batcher}}
+\subsubsection[{get\-Epoch\-Done}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L bool Batcher\-::get\-Epoch\-Done (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classBatcher_a9f71c218e242b55bcd490379cc20e7ac}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_afb1f812a7b9b3e45ae57d235c912d754}{\index{Batcher@{Batcher}!tick@{tick}}
+\index{tick@{tick}!Batcher@{Batcher}}
+\subsubsection[{tick}]{\setlength{\rightskip}{0pt plus 5cm}publicapi bool Batcher\-::tick (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classBatcher_afb1f812a7b9b3e45ae57d235c912d754}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classBatcher_a51d5f36d326bdc32926abd8aa5b0d22e}{\index{Batcher@{Batcher}!run@{run}}
+\index{run@{run}!Batcher@{Batcher}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}publicapi Epoch\-Result Batcher\-::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classBatcher_a51d5f36d326bdc32926abd8aa5b0d22e}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+Batcher.\-h\item 
+Batcher.\-cpp\end{DoxyCompactItemize}

@@ -1,0 +1,65 @@
+\hypertarget{classWeightsPersister}{\section{Weights\-Persister Class Reference}
+\label{classWeightsPersister}\index{Weights\-Persister@{Weights\-Persister}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+publicapi S\-T\-A\-T\-I\-C int \hyperlink{classWeightsPersister_a5ec7638ead9249b696f60e39e47accd9}{get\-Total\-Num\-Weights} (\hyperlink{classNeuralNet}{Neural\-Net} $\ast$net)
+\item 
+publicapi S\-T\-A\-T\-I\-C void \hyperlink{classWeightsPersister_a73c796f8e7e64c040aa5fe3c9e4f32ef}{copy\-Net\-Weights\-To\-Array} (\hyperlink{classNeuralNet}{Neural\-Net} $\ast$net, float $\ast$target)
+\item 
+publicapi S\-T\-A\-T\-I\-C void \hyperlink{classWeightsPersister_a454a65b2a8ad6c04f8b95533c3f9416c}{copy\-Array\-To\-Net\-Weights} (float const $\ast$source, \hyperlink{classNeuralNet}{Neural\-Net} $\ast$net)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+whilst this class is portable, the weights files created totally are not (ie\-: endianness) but okish for now... (since it's not like weights files tend to be shared around much, and if they are, then the quickly-\/written file created by this could be converted by another utility into a portable datafile target usage for this class\-:
+\begin{DoxyItemize}
+\item quickly snapshotting the weights after each epoch, therefore should be\-:
+\begin{DoxyItemize}
+\item fast, low I\-O \-:-\/) \begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\subsection{Member Function Documentation}
+\hypertarget{classWeightsPersister_a5ec7638ead9249b696f60e39e47accd9}{\index{Weights\-Persister@{Weights\-Persister}!get\-Total\-Num\-Weights@{get\-Total\-Num\-Weights}}
+\index{get\-Total\-Num\-Weights@{get\-Total\-Num\-Weights}!WeightsPersister@{Weights\-Persister}}
+\subsubsection[{get\-Total\-Num\-Weights}]{\setlength{\rightskip}{0pt plus 5cm}publicapi S\-T\-A\-T\-I\-C int Weights\-Persister\-::get\-Total\-Num\-Weights (
+\begin{DoxyParamCaption}
+\item[{{\bf Neural\-Net} $\ast$}]{net}
+\end{DoxyParamCaption}
+)}}\label{classWeightsPersister_a5ec7638ead9249b696f60e39e47accd9}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classWeightsPersister_a73c796f8e7e64c040aa5fe3c9e4f32ef}{\index{Weights\-Persister@{Weights\-Persister}!copy\-Net\-Weights\-To\-Array@{copy\-Net\-Weights\-To\-Array}}
+\index{copy\-Net\-Weights\-To\-Array@{copy\-Net\-Weights\-To\-Array}!WeightsPersister@{Weights\-Persister}}
+\subsubsection[{copy\-Net\-Weights\-To\-Array}]{\setlength{\rightskip}{0pt plus 5cm}publicapi S\-T\-A\-T\-I\-C void Weights\-Persister\-::copy\-Net\-Weights\-To\-Array (
+\begin{DoxyParamCaption}
+\item[{{\bf Neural\-Net} $\ast$}]{net, }
+\item[{float $\ast$}]{target}
+\end{DoxyParamCaption}
+)}}\label{classWeightsPersister_a73c796f8e7e64c040aa5fe3c9e4f32ef}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classWeightsPersister_a454a65b2a8ad6c04f8b95533c3f9416c}{\index{Weights\-Persister@{Weights\-Persister}!copy\-Array\-To\-Net\-Weights@{copy\-Array\-To\-Net\-Weights}}
+\index{copy\-Array\-To\-Net\-Weights@{copy\-Array\-To\-Net\-Weights}!WeightsPersister@{Weights\-Persister}}
+\subsubsection[{copy\-Array\-To\-Net\-Weights}]{\setlength{\rightskip}{0pt plus 5cm}publicapi S\-T\-A\-T\-I\-C void Weights\-Persister\-::copy\-Array\-To\-Net\-Weights (
+\begin{DoxyParamCaption}
+\item[{float const $\ast$}]{source, }
+\item[{{\bf Neural\-Net} $\ast$}]{net}
+\end{DoxyParamCaption}
+)}}\label{classWeightsPersister_a454a65b2a8ad6c04f8b95533c3f9416c}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+Weights\-Persister.\-h\item 
+Weights\-Persister.\-cpp\end{DoxyCompactItemize}

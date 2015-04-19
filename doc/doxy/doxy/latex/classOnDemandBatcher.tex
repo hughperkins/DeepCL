@@ -1,0 +1,149 @@
+\hypertarget{classOnDemandBatcher}{\section{On\-Demand\-Batcher Class Reference}
+\label{classOnDemandBatcher}\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+publicapi \hyperlink{classOnDemandBatcher_aafdf6b1cd51f52ba6f4664e6d7fafedc}{On\-Demand\-Batcher} (Trainable $\ast$net, Net\-Action $\ast$net\-Action, std\-::string filepath, int N, int file\-Read\-Batches, int batch\-Size)
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classOnDemandBatcher_a9f591582d681110003e46c9d9c3d9ad2}{get\-Next\-File\-Batch} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classOnDemandBatcher_a2e728b9916c4a32b1932b9026125a3c9}{get\-Next\-Batch} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L float \hyperlink{classOnDemandBatcher_ad14816d704e9e654bf1ccfc23dc5f161}{get\-Loss} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classOnDemandBatcher_ad053841c3f629bb7c489ce6d156cd42e}{get\-Num\-Right} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L bool \hyperlink{classOnDemandBatcher_a831040bac362a349c338f89537a4408f}{get\-Epoch\-Done} ()
+\item 
+publicapi V\-I\-R\-T\-U\-A\-L int \hyperlink{classOnDemandBatcher_a59b6fbce7ba9502046a8d25641c19c9b}{get\-N} ()
+\item 
+publicapi void \hyperlink{classOnDemandBatcher_a2ce361fe87c3be1c85904bd22a0aa39b}{reset} ()
+\item 
+publicapi bool \hyperlink{classOnDemandBatcher_afbfbd27f32c26b240f74a2aa8290c6fe}{tick} ()
+\item 
+publicapi Epoch\-Result \hyperlink{classOnDemandBatcher_ae03f6dff2a9313c318bb37bd1041edeb}{run} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This handles an entire epoch of training, loading in data in chunks and then passing it to '\hyperlink{classBatcher}{Batcher}' class, to train/test each chunk If you want to run multiple epochs, you'll need a '\hyperlink{classNetLearner}{Net\-Learner}' class \begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classOnDemandBatcher_aafdf6b1cd51f52ba6f4664e6d7fafedc}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!On\-Demand\-Batcher@{On\-Demand\-Batcher}}
+\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{On\-Demand\-Batcher}]{\setlength{\rightskip}{0pt plus 5cm}publicapi On\-Demand\-Batcher\-::\-On\-Demand\-Batcher (
+\begin{DoxyParamCaption}
+\item[{Trainable $\ast$}]{net, }
+\item[{Net\-Action $\ast$}]{net\-Action, }
+\item[{std\-::string}]{filepath, }
+\item[{int}]{N, }
+\item[{int}]{file\-Read\-Batches, }
+\item[{int}]{batch\-Size}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_aafdf6b1cd51f52ba6f4664e6d7fafedc}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classOnDemandBatcher_a9f591582d681110003e46c9d9c3d9ad2}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!get\-Next\-File\-Batch@{get\-Next\-File\-Batch}}
+\index{get\-Next\-File\-Batch@{get\-Next\-File\-Batch}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{get\-Next\-File\-Batch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int On\-Demand\-Batcher\-::get\-Next\-File\-Batch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_a9f591582d681110003e46c9d9c3d9ad2}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_a2e728b9916c4a32b1932b9026125a3c9}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!get\-Next\-Batch@{get\-Next\-Batch}}
+\index{get\-Next\-Batch@{get\-Next\-Batch}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{get\-Next\-Batch}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int On\-Demand\-Batcher\-::get\-Next\-Batch (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_a2e728b9916c4a32b1932b9026125a3c9}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_ad14816d704e9e654bf1ccfc23dc5f161}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!get\-Loss@{get\-Loss}}
+\index{get\-Loss@{get\-Loss}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{get\-Loss}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L float On\-Demand\-Batcher\-::get\-Loss (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_ad14816d704e9e654bf1ccfc23dc5f161}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_ad053841c3f629bb7c489ce6d156cd42e}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!get\-Num\-Right@{get\-Num\-Right}}
+\index{get\-Num\-Right@{get\-Num\-Right}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{get\-Num\-Right}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int On\-Demand\-Batcher\-::get\-Num\-Right (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_ad053841c3f629bb7c489ce6d156cd42e}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_a831040bac362a349c338f89537a4408f}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!get\-Epoch\-Done@{get\-Epoch\-Done}}
+\index{get\-Epoch\-Done@{get\-Epoch\-Done}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{get\-Epoch\-Done}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L bool On\-Demand\-Batcher\-::get\-Epoch\-Done (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_a831040bac362a349c338f89537a4408f}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_a59b6fbce7ba9502046a8d25641c19c9b}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!get\-N@{get\-N}}
+\index{get\-N@{get\-N}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{get\-N}]{\setlength{\rightskip}{0pt plus 5cm}publicapi V\-I\-R\-T\-U\-A\-L int On\-Demand\-Batcher\-::get\-N (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_a59b6fbce7ba9502046a8d25641c19c9b}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_a2ce361fe87c3be1c85904bd22a0aa39b}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!reset@{reset}}
+\index{reset@{reset}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{reset}]{\setlength{\rightskip}{0pt plus 5cm}publicapi void On\-Demand\-Batcher\-::reset (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_a2ce361fe87c3be1c85904bd22a0aa39b}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_afbfbd27f32c26b240f74a2aa8290c6fe}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!tick@{tick}}
+\index{tick@{tick}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{tick}]{\setlength{\rightskip}{0pt plus 5cm}publicapi bool On\-Demand\-Batcher\-::tick (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_afbfbd27f32c26b240f74a2aa8290c6fe}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+\hypertarget{classOnDemandBatcher_ae03f6dff2a9313c318bb37bd1041edeb}{\index{On\-Demand\-Batcher@{On\-Demand\-Batcher}!run@{run}}
+\index{run@{run}!OnDemandBatcher@{On\-Demand\-Batcher}}
+\subsubsection[{run}]{\setlength{\rightskip}{0pt plus 5cm}publicapi Epoch\-Result On\-Demand\-Batcher\-::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classOnDemandBatcher_ae03f6dff2a9313c318bb37bd1041edeb}
+\begin{DoxyParagraph}{Public A\-P\-I}
+
+\end{DoxyParagraph}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+On\-Demand\-Batcher.\-h\item 
+On\-Demand\-Batcher.\-cpp\end{DoxyCompactItemize}
