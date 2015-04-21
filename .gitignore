@@ -65,5 +65,6 @@ python/version.txt
 
 # lua
 lua/*-*.rock
+lua/*.rockspec
 
 

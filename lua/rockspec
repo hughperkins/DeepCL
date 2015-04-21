@@ -23,6 +23,10 @@ build = {
         lua = {
             ['luaunit'] = 'thirdparty/luaunit/luaunit.lua'
         },
+        bin = {
+            ['test_deepcl'] = 'test_deepcl.lua',
+            ['test_qlearning'] = 'test_qlearning.lua'
+        },
         lib = {
             ["."] = "build.luarocks/LuaDeepCL.dll",
             ["."] = "build.luarocks/LuaDeepCL.so"

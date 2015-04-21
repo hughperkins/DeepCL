@@ -6,8 +6,8 @@ Lua wrappers are available.  [luajit](http://luajit.org) is becoming big in mach
 
 ## Demo
 
-* For a demo of high-level functions, to create a network and train it, you can have a look at the method `test_basic` in [test_lua.lua](test_lua.lua)
-* For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_lua.lua](test_lua.lua).
+* For a demo of high-level functions, to create a network and train it, you can have a look at the method `test_basic` in [test_deepcl.lua](test_deepcl.lua)
+* For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_deepcl.lua](test_deepcl.lua).
 * For a demo of q-learning, you can look at [test_qlearning.lua](test_qlearning.lua)
 
 ## To build, linux
@@ -75,8 +75,19 @@ luajit test_lua.lua
 
 ## Unit-testing
 
-* The source-code includes the thirdparty lua unit-test tool luaunit.  [test_lua.lua](test_lua.lua)
+* The source-code includes the thirdparty lua unit-test tool luaunit.  [test_deepcl.lua](test_deepcl.lua)
 creates some first initial unit tests
+
+## To build a rock
+
+To build a source rock, use linux:
+* first set the version in version.txt to your desired version
+* then run:
+```
+./pack.sh
+```
+* whilst `pack.sh` only runs on linux, hopefully the resulting rock should be cross-platform.  Hopefully.  Let
+me know any issues please :-)
 
 ## Development
 
