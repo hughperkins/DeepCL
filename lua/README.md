@@ -10,6 +10,10 @@ Lua wrappers are available.  [luajit](http://luajit.org) is becoming big in mach
 * For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_deepcl.lua](test_deepcl.lua).
 * For a demo of q-learning, you can look at [test_qlearning.lua](test_qlearning.lua)
 
+## Installation
+
+* Please try installing from luarocks [luadeepcl](http://luarocks.org/modules/hughperkins/luadeepcl)
+
 ## To build, linux
 
 ### Pre-requisites
