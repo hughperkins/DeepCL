@@ -1,21 +1,24 @@
- package = "LuaDeepCL"
- version = "4.0.0rc3-1"
- source = {
-    url = "https://github.com/hughperkins/DeepCL.git"
- }
- description = {
+package = "LuaDeepCL"
+version = "4.0.0rc5-1"
+source = {
+    url = "file://dist/" .. package .. "-" .. version .. ".tar.gz"
+}
+description = {
     summary = "LuaDeepCL.",
     detailed = [[
        Convolutional network library using OpenCL
     ]],
     homepage = "https://github.com/hughperkins/DeepCL",
     license = "MPL"
- }
- dependencies = {
+}
+dependencies = {
     "lua >= 5.1",
- }
- build = {
+}
+build = {
     type = "cmake",
+    variables = {
+        USING_LUAROCKS = 1
+    },
     install = {
         lua = {
             ['luaunit'] = 'thirdparty/luaunit/luaunit.lua'
@@ -25,4 +28,5 @@
             ["."] = "build.luarocks/LuaDeepCL.so"
         }
     }
- }
+}
+

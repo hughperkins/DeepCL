@@ -13,6 +13,16 @@ if( ON_LINUX )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 
+# This is so we use the source tree at .., when we are building in the git clone etc
+# but in a rock, where we've set inpkg.flag file, and copied the source into pkgsrc
+# directory, we will use pkgsrc for our source code
+if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/inpkg.flag" AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pkgsrc" )
+set(SRCTREE ${CMAKE_CURRENT_SOURCE_DIR}/pkgsrc)
+else()
+set(SRCTREE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+endif()
+message("Using source tree at: ${SRCTREE}")
+
 find_package(SWIG QUIET)
 # INCLUDE(${SWIG_USE_FILE})
 
@@ -49,16 +59,16 @@ set(lua_OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
     OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c)
 
 foreach(source ${lua_DeepCL_sources})
-    set( lua_DeepCL_sources_prefixed ${lua_DeepCL_sources_prefixed} ${CMAKE_CURRENT_SOURCE_DIR}/../src/${source})
+    set( lua_DeepCL_sources_prefixed ${lua_DeepCL_sources_prefixed} ${SRCTREE}/src/${source})
 endforeach()
 
 foreach(source ${lua_OpenCLHelper_sources})
-    set( lua_OpenCLHelper_sources_prefixed ${lua_OpenCLHelper_sources_prefixed} ${CMAKE_CURRENT_SOURCE_DIR}/../${source})
+    set( lua_OpenCLHelper_sources_prefixed ${lua_OpenCLHelper_sources_prefixed} ${SRCTREE}/${source})
 endforeach()
 
 add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${lua_DeepCL_sources_prefixed} ${lua_OpenCLHelper_sources_prefixed} )
 target_include_directories( LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
-target_include_directories( LuaDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
+target_include_directories( LuaDeepCL PRIVATE ${SRCTREE}/src ${SRCTREE}/qlearning ${SRCTREE}/OpenCLHelper )
 SET_TARGET_PROPERTIES( LuaDeepCL PROPERTIES PREFIX "") 
 
 if(DEV_RUN_SWIG)
@@ -84,7 +94,9 @@ endif()
 
 #SET_TARGET_PROPERTIES(LuaDeepCL PROPERTIES PREFIX "") 
 
-if( FROM_LUAROCKS )
+# prevents errors when building from luarocks (though we need to set the USING_LUAROCKS
+# define)
+if( USING_LUAROCKS )
 ADD_CUSTOM_TARGET(install 
 )
 endif()
