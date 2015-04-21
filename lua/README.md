@@ -10,9 +10,19 @@ Lua wrappers are available.  [luajit](http://luajit.org) is becoming big in mach
 * For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_deepcl.lua](test_deepcl.lua).
 * For a demo of q-learning, you can look at [test_qlearning.lua](test_qlearning.lua)
 
-## Installation
+## Installation from luarocks
 
-* Please try installing from luarocks [luadeepcl](http://luarocks.org/modules/hughperkins/luadeepcl)
+* There is a source rock available on luarocks [luadeepcl](http://luarocks.org/modules/hughperkins/luadeepcl):
+
+```
+luarocks install --server=http://luarocks.org luadeepcl
+```
+* This builds from source, just as for the below, so this does have the same pre-requisites as building 
+directly from github source, ie:
+  * cmake
+  * lua development libraries (eg `sudo apt-get install liblua5.1-0-dev`)
+  * a C++ compiler, supporting c++0x
+* You'll also need a working OpenCL-enabled platform, eg OpenCL-enabled GPU, or OpenCL-enabled CPU
 
 ## To build, linux
 
