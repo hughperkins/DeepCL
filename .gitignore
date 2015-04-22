@@ -62,6 +62,7 @@ python/src/
 # python/qlearning/
 python/mysrc/
 python/version.txt
+python/results.txt
 
 # lua
 lua/*-*.rock
