@@ -13,7 +13,7 @@
       - shell: |
             env
             cd python
-            rm -Rf gh-pages * build dist DeepCL.egg-info mysrc *.pyc PyDeepCL.cpp PyDeepCL.pyd *.so
+            rm -Rf gh-pages build dist DeepCL.egg-info mysrc *.pyc PyDeepCL.cpp PyDeepCL.pyd *.so
             python setup.py build_ext -i
             PYTHONPATH=. python benchmarking/deepcl_benchmark2.py
             version=$(cat ../jenkins/version.txt)
