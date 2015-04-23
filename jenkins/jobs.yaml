@@ -2,21 +2,32 @@
     name: benchmarks
     project-type: freestyle
     node: gpulinux
-    logrotate:
     scm:
-      - git:
-        url: https://github.com/hughperkins/DeepCL.git
+    - git:
+        url: git@github.com:hughperkins/DeepCL.git
         branches:
             - benchmarking-jenkins
-        recursive-submodules: true
+        submodule:
+            recursive: true
     builders:
       - shell: |
             env
             cd python
+            rm -Rf gh-pages * build dist DeepCL.egg-info mysrc *.pyc PyDeepCL.cpp PyDeepCL.pyd *.so
             python setup.py build_ext -i
             PYTHONPATH=. python benchmarking/deepcl_benchmark2.py
-            cd ..
-            # cp python/results.txt ../DeepCL-ghpages/benchmarking/
+            version=$(cat ../jenkins/version.txt)
+            githash=$(git log -n 1 --format=%h)
+            filename=${version}-${githash}.txt
+            git clone git@github.com:hughperkins/DeepCL.git -b gh-pages gh-pages
+            cp results.txt gh-pages/benchmarking/${filename}
+            sed -i -e '/^{filename}$/d' gh-pages/benchmarking/files.txt
+            echo ${filename}>>gh-pages/benchmarking/files.txt
+            cd gh-pages
+            git add benchmarking/files.txt
+            git add benchmarking/${filename}
+            git commit -m "results ${version} ${githash}"
+            git push
     publisher:
       - archive:
         artifacts: 'python/results.txt'
