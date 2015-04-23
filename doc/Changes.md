@@ -2,45 +2,9 @@
 
 ## To do
 
-### Planned, short-term
-
-  * Currently, I'm interested in:
-    * the [Atari paper](http://arxiv.org/abs/1312.5602)
-    * LTSM, ftp://ftp.idsia.ch/pub/juergen/lstm.pdf , eg as used in the [Google caption](http://arxiv.org/pdf/1411.4555v1.pdf) paper, and as alluded to a lot in [Hinton's AMA](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/), eg [http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh](http://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyl2dh)
-    * So, anything which furthers being able to pursue either of these is likely to be sooner rather than later
-    * Specifically, these need things like:
-      * [Q-learning](http://www.dtic.mil/dtic/tr/fulltext/u2/a261434.pdf) (for Atari)
-      * probably more generalized network, maybe even more general than a DAG even, for LTSM
-  * I'm also running kgs-go dataset in the background, but at 2 days per epoch (32 million records, and 12 layers...), I'm mostly just sitting and waiting :-)
-  * improve the wrappers:
-    * get lua wrappers into luarocks repository
-    * get ctrl-c working with swig py wrapper
-    * add numpy to swig py wrapper
-    * accept torch arrays in lua wrappers
-  * migrate some of the #defines in the cl code to functions
-
-### Plausible, medium-term (pull requests welcome)
-
-  * [drop-out](http://arxiv.org/abs/1207.0580) ... pretty important :-)
-  * scaling? rotations? mirroring?
-  * testing result averaged over several propagations (used in conjunction with `rp`)
-  * sparse connectivity between feature maps in adjacent layers
-  * ~~skip~~ stride, (skip is described in [Ciresan et al, 2011](http://arxiv.org/pdf/1102.0183v1.pdf) , and stride is a similar, but plausibly more standard concept? )
-  * symmetric filters
-  * fuse convolutional and max-pooling layers, so can optimize more
-  * maybe L2 regularization?
-  * generalization to non-square images
-  * more general DAGs?
-
-### Maybe sometime, possibly
-
-  * mpi so can run over several gpus, spread across multiple hosts???
-    * implemented mpi in `testmnist-mpi`.  If works ok, will generalize to something more permanent => since it didnt seem obvious how to use it, ie you have to divide the learningrate by the number of nodes, I never use this at the moment
-
-### On hold
-
-  * migrate to use `async_work_group_copy`? => on hold, seems it's actually slower, in my experiments, at least on nvidia?
-  * [DropConnect](http://cs.nyu.edu/~wanli/dropc/dropc.pdf) => on hold, since, per [Sandle Dieleman's solution to the Galaxy Zoo challenge](http://benanne.github.io/2014/04/05/galaxy-zoo.html), seems like dropconnect is slower and doesnt convincingly add value, compared to dropout
+* To do basically moved to 'issues' now.  Please check in [issues](https://github.com/hughperkins/DeepCL/issues) for ideas for
+  * things you might consider working on yourself, or
+  * to add things you want others (eg me :-) ) to work on
 
 ## New, in next version, 4.x.x
 
@@ -97,8 +61,9 @@
   * write a LuaJIT wrapper since Yann LeCun mentioned LuaJIT in his [AMA](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/) , ie at [http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw](http://www.reddit.com/r/MachineLearning/comments/25lnbt/ama_yann_lecun/chiyqzw)
   * write the weights to file more often than once an epoch, so each time my machine goes down, after 1 day and 23 hours, I dont lose 2 days of learning :-P => added writeweightsinterval option
 
-## Recent changes
+## Recent changes, to 4.x.x branch
 
+* 21st April: Added lua wrappers to luarocks repository
 * 18th April: with `loadweights=1`, will load old weights file format too, not just refuse to load
 * 18th April: with `loadweights=1`, if the file doesnt match current options, you can now override if you want, at the risk of crashing, or loading inappropriate weights
 
