@@ -17,16 +17,18 @@ import PyDeepCL
 num_epochs = 10
 batch_size = 128  # always use this, seems pretty standard
 runs = [
-    ('soumith1', '3x128-96c11'),  # format: ('[label]','[inputplanes]x[inputsize]-[numfilters]c[filtersize]')
-    ('soumith2', '64x64-128c9'),
-    ('soumith3', '128x32-128c9'),
-    ('soumith4', '128x16-128c7'),
-    ('soumith5', '384x13-384c3'),
-    ('maddison-convolve', '128x19-128c3'),
-    ('maddison-fc', '128x19-361n'),
-    ('mnist-c1', '1x28-8c5'),
-    ('mnist-c2', '8x14-16c5'),
-    ('mnist-fc', '16x7-150n')
+    ('soumith1', '3i128-96c11'),  # format: ('[label]','[inputplanes]i[inputsize]-[numfilters]c[filtersize]')
+    ('soumith2', '64i64-128c9'),
+    ('soumith3', '128i32-128c9'),
+    ('soumith4', '128i16-128c7'),
+    ('soumith5', '384i13-384c3'),
+    ('maddison-convolve', '128i19-128c3'),
+    # ('maddison-fc', '128i19-361n'), # this crashes currently, not sure why, since it's just allocated 63MB
+    # memory for weights, so it's probably a bug in my code, rather than a 
+    # theoretical limitation of current implementation
+    ('mnist-c1', '1i28-8c5'),
+    ('mnist-c2', '8i14-16c5'),
+    ('mnist-fc', '16i7-150n')
 ]
 
 def writeResults( resultsLine ):
@@ -37,21 +39,22 @@ def writeResults( resultsLine ):
 def time_layer(num_epochs, label, batch_size, net_string):
     print('building network...')
     input_string, layer_string = net_string.split('-')
-    input_planes, input_size = map(lambda x: int(x), input_string.split('x'))
-    input_planes, input_size = map(lambda x: int(x), input_string.split('x'))
+    input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
     net = PyDeepCL.NeuralNet( input_planes, input_size )
     net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backprop gradients to
                           # this layer
+    print( net.asString() )
     if 'c' in layer_string:
         num_filters, filter_size = map(lambda x: int(x), layer_string.split('c'))
         net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(num_filters)
             .filterSize(filter_size).biased().linear() )
     elif 'n' in layer_string:
         num_neurons = int(layer_string.split('n')[0])
-        net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(num_neurons).imageSize(1) )
+        net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(num_neurons).imageSize(1).biased().linear() )
     else:
         raise Exception('layer_string {layer_string} not recognized'.format(
             layer_string=layer_string))
+    print( net.asString() )
     net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(1).imageSize(1) )
     net.addLayer( PyDeepCL.SoftMaxMaker() )
     print( net.asString() )
