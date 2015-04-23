@@ -1,0 +1,23 @@
+- job:
+    name: benchmarks
+    project-type: freestyle
+    node: gpulinux
+    logrotate:
+    scm:
+      - git:
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - benchmarking-jenkins
+        recursive-submodules: true
+    builders:
+      - shell: |
+            env
+            cd python
+            python setup.py build_ext -i
+            PYTHONPATH=. python benchmarking/deepcl_benchmark2.py
+            cd ..
+            # cp python/results.txt ../DeepCL-ghpages/benchmarking/
+    publisher:
+      - archive:
+        artifacts: 'python/results.txt'
+
