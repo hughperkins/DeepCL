@@ -23,7 +23,7 @@ runs = [
     ('soumith4', '128i16-128c7'),
     ('soumith5', '384i13-384c3'),
     ('maddison-convolve', '128i19-128c3'),
-    # ('maddison-fc', '128i19-361n'), # this crashes currently, not sure why, since it's just allocated 63MB
+    ('maddison-fc', '128i19-361n'), # this crashes currently, not sure why, since it's just allocated 63MB
     # memory for weights, so it's probably a bug in my code, rather than a 
     # theoretical limitation of current implementation
     ('mnist-c1', '1i28-8c5'),
