@@ -6,14 +6,19 @@
 # and some plausible mnist layers
 
 from __future__ import print_function
-
 import os
 import sys
 import time
 import array
 import random
+import json
 import PyDeepCL
 
+cmd_line = 'cd python; python setup.py build_ext -i; PYTHONPATH=. python'
+for arg in sys.argv:
+    cmd_line += ' ' + arg
+print('cmd_line: [' + cmd_line + ']')
+    # benchmarking/deepcl_benchmark2.py'
 num_epochs = 10
 batch_size = 128  # always use this, seems pretty standard
 runs = [
@@ -31,9 +36,20 @@ runs = [
     ('mnist-fc', '16i7-150n')
 ]
 
-def writeResults( resultsLine ):
+def write_results( label, net_string, layer, forward_backward, time_ms ):
+    global cmd_line
+    results_dict = {}
+    results_dict['label'] = label
+    results_dict['format'] = 'v0.3'
+    results_dict['direction'] = forward_backward
+    results_dict['net_string'] = net_string
+    results_dict['layer_string'] = layer.asString()
+    results_dict['time_ms'] = str(time_ms)
+    results_dict['cmd_line'] = cmd_line
+
     f = open('results.txt', 'a')
-    f.write( resultsLine + '\n' )
+    json.dump(results_dict, f)
+    f.write( '\n' )
     f.close()
 
 def time_layer(num_epochs, label, batch_size, net_string):
@@ -90,7 +106,9 @@ def time_layer(num_epochs, label, batch_size, net_string):
     now = time.time()
     print('forward layer total time', now - last )
     print('forward layer average time', ( now - last ) / float(num_epochs) )
-    writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', forward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
+    # forward_time_per_layer_ms = ( now - last ) / float(num_epochs) * 1000
+    # writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', forward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
+    write_results( label, net_string, layer, 'forward', ( now - last ) / float(num_epochs) * 1000 )
 
     print('warm up backwards again')
     layer.backProp(0.001)
@@ -104,7 +122,8 @@ def time_layer(num_epochs, label, batch_size, net_string):
     now = time.time()
     print('backwar layer total time', now - last )
     print('backwar layer average time', ( now - last ) / float(num_epochs) )
-    writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', backward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
+    # writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', backward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
+    write_results( label, net_string, layer, 'backward', ( now - last ) / float(num_epochs) * 1000 )
     last = now
 
 def time_run(fn):
