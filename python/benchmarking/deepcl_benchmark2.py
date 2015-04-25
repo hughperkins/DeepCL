@@ -12,6 +12,7 @@ import time
 import array
 import random
 import json
+import subprocess
 import PyDeepCL
 
 cmd_line = 'cd python; python setup.py build_ext -i; PYTHONPATH=. python'
@@ -265,17 +266,39 @@ def go(runs):
             raise Exception('unrecognized benchmark type [' + benchmark_type + '], can choose "layer" or "fullnet"')
 
 if __name__ == '__main__':
-    chosen_runs = runs
-    if len(sys.argv) > 1:
+    """
+    if just one run is chosen, we run that, and exit
+    otherwise, if no runs are chosen, or some runs are chosen,
+    then we will spawn one process per run name
+    """
+    if len(sys.argv) == 2:
+        # one run chosen, so run it, directly
         chosen_runs = []
         for chosen_label in sys.argv[1:]:
             for label, run_string, benchmark_type in runs:
                 if label == chosen_label:
                     chosen_runs.append((label, run_string, benchmark_type))
-        # allow specifying the runs on command line, 1-indexed (i.e., 1 2 5)
-#        runs = [runs[int(r) - 1] for r in sys.arsgv[1:]]
-        # allow specifying custom configurations on command line (e.g., i3x80x15,k32x3x7,b256)
-#        runs.extend([parse_custom_config(r) for r in sys.argv[1:] if r[0] == 'i'])
-
-    go(chosen_runs)
+        assert len(chosen_runs) == 1
+        go(chosen_runs)
+    else:
+        # get all selected tests
+        # then run each one in separate process
+        chosen_labels = sys.argv[1:]
+        if len(chosen_labels) == 0:
+            for run in runs:
+                (label, _, _) = run
+                chosen_labels.append(label)
+        # now run each one
+        for label in chosen_labels:
+            print('spawning for {label}'.format(
+                label=label))
+            print('sys.argv[0]', sys.argv[0])
+            p = subprocess.Popen(
+                ['python', sys.argv[0], label])
+            p.wait()
+#            while p.poll() is None:
+#                output = p.stdout.readline()
+#                print(output)
+            print('done for {label}'.format(label=label))
+        print('all done :-)')
 
