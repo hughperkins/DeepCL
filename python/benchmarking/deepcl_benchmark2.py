@@ -36,7 +36,7 @@ runs = [
     ('mnist-fc', '16i7-150n', 'layer'),
     ('mnist-full', '1i24-8c5{relu,padzeros}-mp2-16c5{relu,padzeros}-mp3-150n{tanh}-10n{linear}', 'fullnet'),
     ('mnist-full-factorized', '1i24-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n', 'fullnet'),
-    ('maddison-full', '8i19-12*128c3{relu,padzeros}-361n{linear}', 'fullnet')
+    ('maddison-full', '8i19-12*128c3{relu,padzeros}-361n{linear}', 'fullnet'),
     ('maddison-full-factorized', '8i19-12*(128c3z-relu)-361n', 'fullnet')
 ]
 
