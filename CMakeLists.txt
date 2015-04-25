@@ -255,12 +255,12 @@ endif()
 
 find_package(PythonLibs QUIET)
 if(PYTHONLIBS_FOUND)
-    OPTION(BUILD_PYTHON_WRAPPERS "Builds Python wrappers (swig-version)" ON)
+    OPTION(BUILD_PYSWIG_WRAPPERS "Builds Python swig wrappers (not the Cython ones)." ON)
 else()
-    OPTION(BUILD_PYTHON_WRAPPERS "Builds Python wrappers (swig-version)" OFF)
+    OPTION(BUILD_PYSWIG_WRAPPERS "Builds Python swig wrappers (not the Cython ones)." OFF)
 endif()
 
-if( BUILD_PYTHON_WRAPPERS)
+if( BUILD_PYSWIG_WRAPPERS)
 add_subdirectory(python_swig)
 endif()
 
