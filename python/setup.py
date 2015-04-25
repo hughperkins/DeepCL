@@ -151,7 +151,9 @@ deepcl_sourcestring = """LayerMaker.cpp NeuralNetMould.cpp
     PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
     PoolingBackpropGpuNaive.cpp ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp
     MnistLoader.cpp OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp
-    ActivationMaker.cpp""" 
+    ActivationMaker.cpp
+    ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
+    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp""" 
 deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []
 for source in deepcl_sources_all:
