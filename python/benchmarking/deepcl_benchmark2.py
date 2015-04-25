@@ -112,7 +112,8 @@ def time_layer(num_epochs, label, batch_size, net_string):
     print('forward layer average time', ( now - last ) / float(num_epochs) )
     # forward_time_per_layer_ms = ( now - last ) / float(num_epochs) * 1000
     # writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', forward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
-    write_results( label, net_string, layer, 'forward', ( now - last ) / float(num_epochs) * 1000 )
+    write_results( label=label, net_string=net_string, layer=layer, direction='forward',
+        benchmark_type='layer', time_ms=( now - last ) / float(num_epochs) * 1000 )
 
     print('warm up backwards again')
     layer.backProp(0.001)
