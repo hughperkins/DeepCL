@@ -43,7 +43,7 @@ def write_results( label, net_string, layer, benchmark_type, direction, time_ms 
     results_dict = {}
     results_dict['label'] = label
     results_dict['type'] = benchmark_type
-    results_dict['format'] = 'v0.3'
+    results_dict['format'] = 'v0.4'
     results_dict['direction'] = direction
     results_dict['net_string'] = net_string
     if layer is not None:
