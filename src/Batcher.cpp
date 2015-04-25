@@ -17,7 +17,10 @@ using namespace std;
 #undef STATIC
 #define VIRTUAL
 #define STATIC
+//#undef PUBLICAPI
+//#define PUBLICAPI
 
+/// \brief constructor: pass in data to process, along with labels, network, ...
 PUBLICAPI Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
         net(net),
         batchSize(batchSize),
@@ -40,13 +43,14 @@ VIRTUAL Batcher::~Batcher() {
 //    }
 //}
 
+/// \brief reset to the first batch, and set epochDone to false
 PUBLICAPI void Batcher::reset() {
     nextBatch = 0;
     numRight = 0;
     loss = 0;
     epochDone = false;
 }
-
+/// \brief what is the index of the next batch to process?
 PUBLICAPI int Batcher::getNextBatch() {
     if( epochDone ) {
         return 0;
@@ -54,15 +58,19 @@ PUBLICAPI int Batcher::getNextBatch() {
         return nextBatch;
     }
 }
+/// \brief for training/testing, what is error loss so far?
 PUBLICAPI VIRTUAL float Batcher::getLoss() {
     return loss;
 }
+/// \brief for training/testing, how many right so far?
 PUBLICAPI VIRTUAL int Batcher::getNumRight() {
     return numRight;
 }
+/// \brief how many examples in the entire set of currently loaded data?
 PUBLICAPI VIRTUAL int Batcher::getN() {
     return N;
 }
+/// \brief has this epoch finished?
 PUBLICAPI VIRTUAL bool Batcher::getEpochDone() {
     return epochDone;
 }
@@ -80,6 +88,12 @@ VIRTUAL void Batcher::setN( int N ) {
 //void Batcher::_tick( float const*batchData, int const*batchLabels ) {
 //}
 
+/// \brief processes one single batch of data
+///
+/// could be learning for one batch, or prediction/testing for one batch
+///
+/// if most recent epoch has finished, then resets, and starts a new
+/// set of learning
 PUBLICAPI bool Batcher::tick() {
 //    cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
 //    updateVars();
@@ -111,6 +125,10 @@ PUBLICAPI bool Batcher::tick() {
     return !epochDone;
 }
 
+/// \brief runs batch once, for currently loaded data
+///
+/// could be one batch of learning, or one batch of forward propagation
+/// (for test/prediction), for example
 PUBLICAPI EpochResult Batcher::run() {
     if( data == 0 ) {
         throw runtime_error("Batcher: no data set");

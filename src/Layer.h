@@ -58,11 +58,11 @@ public:
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
     PUBLICAPI VIRTUAL int getOutputImageSize() const;
-    PUBLICAPI VIRTUAL void propagate();
-    PUBLICAPI VIRTUAL bool needsBackProp();
+    VIRTUAL void propagate();
+    VIRTUAL bool needsBackProp();
     VIRTUAL void print();
-    PUBLICAPI VIRTUAL void initWeights( float const*weights );
-    PUBLICAPI VIRTUAL void initBiasWeights( float const *biasWeights );
+    VIRTUAL void initWeights( float const*weights );
+    VIRTUAL void initBiasWeights( float const *biasWeights );
     VIRTUAL void printWeightsAsCode() const;
     VIRTUAL void printBiasWeightsAsCode() const;
     VIRTUAL void printWeights();

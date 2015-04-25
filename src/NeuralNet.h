@@ -69,7 +69,7 @@ public:
     void printBiasWeightsAsCode();
     PUBLICAPI float calcLoss(float const *expectedValues );
     PUBLICAPI float calcLossFromLabels(int const *labels );
-    EpochMaker *epochMaker();
+    /** \brief **/EpochMaker *epochMaker();
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
     PUBLICAPI InputLayer *getFirstLayer();
     PUBLICAPI Layer *getLastLayer();
