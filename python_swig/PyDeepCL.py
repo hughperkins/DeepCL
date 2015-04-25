@@ -77,6 +77,8 @@ class GenericLoader(_object):
     __repr__ = _swig_repr
     __swig_getmethods__["getDimensions"] = lambda x: _PyDeepCL.GenericLoader_getDimensions
     if _newclass:getDimensions = staticmethod(_PyDeepCL.GenericLoader_getDimensions)
+    __swig_getmethods__["load2"] = lambda x: _PyDeepCL.GenericLoader_load2
+    if _newclass:load2 = staticmethod(_PyDeepCL.GenericLoader_load2)
     def __init__(self): 
         this = _PyDeepCL.new_GenericLoader()
         try: self.this.append(this)
@@ -89,6 +91,10 @@ GenericLoader_swigregister(GenericLoader)
 def GenericLoader_getDimensions(*args):
   return _PyDeepCL.GenericLoader_getDimensions(*args)
 GenericLoader_getDimensions = _PyDeepCL.GenericLoader_getDimensions
+
+def GenericLoader_load2(*args):
+  return _PyDeepCL.GenericLoader_load2(*args)
+GenericLoader_load2 = _PyDeepCL.GenericLoader_load2
 
 
 def GenericLoader_load(*args):

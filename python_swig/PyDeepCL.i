@@ -17,6 +17,14 @@
 %include "std_string.i"
 
 %{
+#define SWIG_FILE_WITH_INIT
+%}
+%include "thirdparty/numpy/numpy.i"
+%init %{
+import_array();
+%}
+
+%{
 #include "GenericLoader.h" // start with this first, since, if no data, kind of 
                            // hard to test things...
 #include "NeuralNet.h"
@@ -34,6 +42,11 @@
 class GenericLoader {
 public:
     static void getDimensions( std::string filepath, int *OUTPUT, int *OUTPUT, int *OUTPUT );
+    %extend {
+        static void load2( std::string imagesFilePath, float *ARGOUT_ARRAY1, int DIM1, int *labels, int startN, int numExamples ) {
+            GenericLoader::load( imagesFilePath, ARGOUT_ARRAY1, labels, startN, numExamples );
+        }
+    }
 };
 
 %inline %{

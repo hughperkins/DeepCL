@@ -35,7 +35,7 @@ numEpochs = 30
 
 images = PyDeepCL.floatArray(N * planes * size * size )
 labels = PyDeepCL.intArray(N)
-PyDeepCL.GenericLoader_load(mnistFilePath, images, labels, 0, N )
+images = PyDeepCL.GenericLoader_load(mnistFilePath, labels, 0, N )
 
 net.setBatchSize(batchSize)
 for epoch in range(numEpochs): 
