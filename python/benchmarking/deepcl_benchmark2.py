@@ -174,7 +174,10 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
     total_forward = 0
     total_backward = 0
     last = time.time()
-    for epoch in range(num_epochs):
+    num_epochs = 0
+    while total_forward < 1000 or total_backward < 0: # make sure collect suffiicnet timing
+#    for epoch in range(num_epochs):
+        print('epoch {epoch}'.format(epoch=num_epochs+1))
         print('run forward for real...')
         # last = time.time()
         net.propagate(images)
@@ -196,7 +199,9 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
         print('backward time: {backward_ms}ms'.format(
             backward_ms=backward_ms))
         last = now
+        num_epochs += 1
 
+    print('num_epochs: {num_epochs}'.format(num_epochs=num_epochs))
     average_forward = total_forward / num_epochs
     average_backward = total_backward / num_epochs
     print('average forward time: {forward_ms}ms'.format(
