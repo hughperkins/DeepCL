@@ -20,7 +20,6 @@ using namespace std;
 // or:
 // prefix-nn*inner-postfix
 STATIC std::string expandMultipliers( std::string netdef ) {
-//    return netdef; // placeholder for now :-P
     int starPos = netdef.find("*");
     if( starPos != (int)string::npos ) {
         int prefixEnd = netdef.rfind("-", starPos);
@@ -99,23 +98,31 @@ STATIC std::string expandMultipliers( std::string netdef ) {
 }
 
 STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, bool isLast ) {
+//    cout << "substring [" << substring << "]" << endl;
     vector<string>splitLayerDef = split( substring, "{" );
     string baseLayerDef = splitLayerDef[0];
 //         optionsDef = "";
     vector<string> splitOptionsDef;
+//    cout << "splitlayerdef.size() " << splitLayerDef.size() << endl;
     if( splitLayerDef.size() == 2 ) {
         string  optionsDef = split( splitLayerDef[1], "}" )[0];
+//        cout << "optionsDef [" << optionsDef << "]" << endl;
         splitOptionsDef = split( optionsDef, "," );
     }
     if( baseLayerDef.find("c") != string::npos ) {
         vector<string> splitConvDef = split( baseLayerDef, "c" );
         int numFilters = atoi( splitConvDef[0] );
-        int filterSize = atoi( splitConvDef[1] );
+        vector<string> splitConvDef1 = split( splitConvDef[1], "z" );
+        int filterSize = atoi( splitConvDef1[0] );
         int skip = 0;
-        ActivationFunction *fn = new ReluActivation();
+        ActivationFunction *fn = new LinearActivation();
         int padZeros = 0;
+        if( splitConvDef1.size() == 2 ) {
+            padZeros = 1;
+        }
         for( int i = 0; i < (int)splitOptionsDef.size(); i++ ) {
             string optionDef = splitOptionsDef[i];
+//            cout << "optionDef [" << optionDef << "]" << endl;
             vector<string> splitOptionDef = split( optionDef, "=");
             string optionName = splitOptionDef[0];
             if( splitOptionDef.size() == 2 ) {
@@ -213,16 +220,19 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
 
 PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
     string netDefLower = toLower( netdef );
+    cout << "netDefLower [" << netDefLower << "]" << endl;
     try {
         netDefLower = expandMultipliers( netDefLower );
     } catch( runtime_error &e ) {
         cout << e.what() << endl;
         return false;
     }
+//    cout << "netDefLower [" << netDefLower << "]" << endl;
     vector<string> splitNetDef = split( netDefLower, "-" );
     if( netdef != "" ) {
         for( int i = 0; i < (int)splitNetDef.size(); i++ ) {
             string thisLayerDef = splitNetDef[i];
+//            cout << "thisLayerDef [" << thisLayerDef << "]" << endl;
             if( !parseSubstring( net, thisLayerDef, i == (int)splitNetDef.size() - 1 ) ) {
                 return false;
             }
