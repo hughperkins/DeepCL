@@ -22,28 +22,32 @@ print('cmd_line: [' + cmd_line + ']')
 num_epochs = 10
 batch_size = 128  # always use this, seems pretty standard
 runs = [
-    ('soumith1', '3i128-96c11'),  # format: ('[label]','[inputplanes]i[inputsize]-[numfilters]c[filtersize]')
-    ('soumith2', '64i64-128c9'),
-    ('soumith3', '128i32-128c9'),
-    ('soumith4', '128i16-128c7'),
-    ('soumith5', '384i13-384c3'),
-    ('maddison-convolve', '128i19-128c3'),
-    ('maddison-fc', '128i19-361n'), # this crashes currently, not sure why, since it's just allocated 63MB
-    # memory for weights, so it's probably a bug in my code, rather than a 
-    # theoretical limitation of current implementation
-    ('mnist-c1', '1i28-8c5'),
-    ('mnist-c2', '8i14-16c5'),
-    ('mnist-fc', '16i7-150n')
+    # format for single layer: ('[label]','[inputplanes]i[inputsize]-[numfilters]c[filtersize]', 'layer')
+    # format for full net: ('[label]', '[netdef]', 'fullnet')
+    ('soumith1', '3i128-96c11', 'layer'),  
+    ('soumith2', '64i64-128c9', 'layer'),
+    ('soumith3', '128i32-128c9', 'layer'),
+    ('soumith4', '128i16-128c7', 'layer'),
+    ('soumith5', '384i13-384c3', 'layer'),
+    ('maddison-convolve', '128i19-128c3', 'layer'),
+    ('maddison-fc', '128i19-361n', 'layer'),
+    ('mnist-c1', '1i28-8c5', 'layer'),
+    ('mnist-c2', '8i14-16c5', 'layer'),
+    ('mnist-fc', '16i7-150n', 'layer'),
+    ('mnist-full', '1i24-8c5{relu,padzeros}-mp2-16c5{relu,padzeros}-mp3-150n{tanh}-10n{linear}', 'fullnet'),
+    ('maddison-full', '8i19-12*128c3{relu,padzeros}-361n{linear}', 'fullnet')
 ]
 
-def write_results( label, net_string, layer, forward_backward, time_ms ):
+def write_results( label, net_string, layer, benchmark_type, direction, time_ms ):
     global cmd_line
     results_dict = {}
     results_dict['label'] = label
+    results_dict['type'] = benchmark_type
     results_dict['format'] = 'v0.3'
-    results_dict['direction'] = forward_backward
+    results_dict['direction'] = direction
     results_dict['net_string'] = net_string
-    results_dict['layer_string'] = layer.asString()
+    if layer is not None:
+        results_dict['layer_string'] = layer.asString()
     results_dict['time_ms'] = str(time_ms)
     results_dict['cmd_line'] = cmd_line
 
@@ -123,8 +127,89 @@ def time_layer(num_epochs, label, batch_size, net_string):
     print('backwar layer total time', now - last )
     print('backwar layer average time', ( now - last ) / float(num_epochs) )
     # writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', backward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
-    write_results( label, net_string, layer, 'backward', ( now - last ) / float(num_epochs) * 1000 )
+    write_results( label=label, net_string=net_string, layer=layer, 
+        direction='backward', benchmark_type='layer', time_ms=( now - last ) / float(num_epochs) * 1000 )
     last = now
+
+def time_fullnet(num_epochs, label, batch_size, net_string):
+    print('building network...')
+    split_net_string = net_string.split('-')
+    input_string = split_net_string[0]
+    netdef = '-'.join(split_net_string[1:])
+    input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
+    net = PyDeepCL.NeuralNet( input_planes, input_size )
+    PyDeepCL.NetdefToNet.createNetFromNetdef(net, netdef)
+    print( net.asString() )
+
+    images = array.array( 'f', [0] * (batch_size*input_planes*input_size*input_size) )
+    for i in range( batch_size*input_planes*input_size*input_size ):
+        images[i] = random.random() - 0.5
+#    grad = array.array('f',[0] * batch_size * outputPlanes * (input_size - filterSize + 1) )
+#    for i in range( batch_size * outputPlanes * (input_size - filterSize + 1) ):
+#        grad[i] = random.random() - 0.5
+    labels = array.array('i',[0] * batch_size )
+    
+    print('warming up...')
+    #try:
+    net.setBatchSize(batch_size)
+
+    # warm up forward
+    for i in range(8):
+        last = time.time()
+        net.propagate( images )
+        now = time.time()
+        print('  warm up propagate all-layer time', (now - last)*1000.0, 'ms')
+        last = now
+
+    print('warming up backprop:')
+    last = time.time()
+    net.backPropFromLabels( 0.001, labels )
+    now = time.time()
+    print('   warm up backprop time', (now - last) * 1000, 'ms' )
+    last = now
+    net.backPropFromLabels( 0.001, labels )
+    now = time.time()
+    print('   warm up backprop time', (now - last) * 1000, 'ms' )
+
+    total_forward = 0
+    total_backward = 0
+    last = time.time()
+    for epoch in range(num_epochs):
+        print('run forward for real...')
+        # last = time.time()
+        net.propagate(images)
+        now = time.time()
+        diff = now - last
+        forward_ms = diff * 1000.0
+        total_forward += forward_ms
+        print('forward time: {forward_ms}ms'.format(
+            forward_ms=forward_ms))
+        last = now
+
+        print('backward for real:')
+        # last = time.time()
+        net.backPropFromLabels( 0.001, labels )
+        now = time.time()
+        diff = now - last
+        backward_ms = diff * 1000.0
+        total_backward += backward_ms
+        print('backward time: {backward_ms}ms'.format(
+            backward_ms=backward_ms))
+        last = now
+
+    average_forward = total_forward / num_epochs
+    average_backward = total_backward / num_epochs
+    print('average forward time: {forward_ms}ms'.format(
+        forward_ms=average_forward))
+    print('average backward time: {backward_ms}ms'.format(
+        backward_ms=average_backward))
+
+    write_results( label=label, net_string=net_string, layer=None,
+        benchmark_type='fullnet', direction='forward', 
+        time_ms=average_forward )
+    write_results( label=label, net_string=net_string, layer=None,
+        benchmark_type='fullnet', direction='backward', 
+        time_ms=average_backward )
 
 def time_run(fn):
     times = []
@@ -160,20 +245,25 @@ def time_run(fn):
 
 def go(runs):
     global batch_size
-    for (label, net_string) in runs:
+    for (label, net_string, benchmark_type) in runs:
         print( '' )
         print( 'CONFIG: ', label, net_string)
 
-        time_layer(num_epochs, label=label, batch_size=batch_size, net_string=net_string)
+        if benchmark_type == 'layer':
+            time_layer(num_epochs, label=label, batch_size=batch_size, net_string=net_string)
+        elif benchmark_type == 'fullnet':
+            time_fullnet(num_epochs, label=label, batch_size=batch_size, net_string=net_string)
+        else:
+            raise Exception('unrecognized benchmark type [' + benchmark_type + '], can choose "layer" or "fullnet"')
 
 if __name__ == '__main__':
     chosen_runs = runs
     if len(sys.argv) > 1:
         chosen_runs = []
         for chosen_label in sys.argv[1:]:
-            for label, run_string in runs:
+            for label, run_string, benchmark_type in runs:
                 if label == chosen_label:
-                    chosen_runs.append((label, run_string))
+                    chosen_runs.append((label, run_string, benchmark_type))
         # allow specifying the runs on command line, 1-indexed (i.e., 1 2 5)
 #        runs = [runs[int(r) - 1] for r in sys.arsgv[1:]]
         # allow specifying custom configurations on command line (e.g., i3x80x15,k32x3x7,b256)
