@@ -28,10 +28,10 @@ ActivationBackpropCpu::ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, i
 VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
-        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
-            << " error=" << errors[i];
+//        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
+//            << " error=" << errors[i];
         errorsForUpstream[i] = fn->calcDerivative( inputs[i] ) * errors[i];
-        cout << " errorsforupstream=" << errorsForUpstream[i] << endl;
+//        cout << " errorsforupstream=" << errorsForUpstream[i] << endl;
     }
 }
 VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *inputsWrapper,
@@ -39,6 +39,7 @@ VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *in
         CLWrapper *errorsForUpstreamWrapper ) {
     StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backpropErrors start" );
 
+    inputsWrapper->copyToHost();
     errorsWrapper->copyToHost();
 
     float *inputs = reinterpret_cast<float *>( inputsWrapper->getHostArray() );

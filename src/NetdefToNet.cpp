@@ -162,6 +162,10 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
         net->addLayer( PoolingMaker::instance()->poolingSize(poolingSize) );
     } else if( baseLayerDef.find("relu") != string::npos ) {
         net->addLayer( ActivationMaker::instance()->relu() );
+    } else if( baseLayerDef.find("tanh") != string::npos ) {
+        net->addLayer( ActivationMaker::instance()->tanh() );
+    } else if( baseLayerDef.find("sigmoid") != string::npos ) {
+        net->addLayer( ActivationMaker::instance()->sigmoid() );
     } else if( baseLayerDef.find("linear") != string::npos ) {
         net->addLayer( ActivationMaker::instance()->linear() ); // kind of pointless nop, but useful for testing
     } else if( baseLayerDef.find("rp") != string::npos ) {
@@ -173,7 +177,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
     } else if( baseLayerDef.find("n") != string::npos ) {
         vector<string> fullDef = split( baseLayerDef, "n" );
         int numPlanes = atoi( fullDef[0] );
-        ActivationFunction *fn = new TanhActivation();
+        ActivationFunction *fn = new LinearActivation();
         if( isLast ) {
             fn = new LinearActivation();
         }
