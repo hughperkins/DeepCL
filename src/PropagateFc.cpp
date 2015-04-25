@@ -302,6 +302,16 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
     "}\n" 
     "#endif\n" 
     "\n" 
+    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
+    "kernel void backpropNaive( const int N, global float *in, global float *out ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...\n" 
+    "}\n" 
+    "#endif\n" 
+    "\n" 
     "";
     kernel_activate = cl->buildKernelFromString( kernel_activateSource, "activate", options, "cl/activate.cl" );
     // generated using cog, from cl/per_element_add.cl:

@@ -10,6 +10,7 @@
 #include "ActivationLayer.h"
 #include "ActivationMaker.h"
 #include "ActivationPropagate.h"
+#include "ActivationBackprop.h"
 
 using namespace std;
 
@@ -42,11 +43,11 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
         throw runtime_error("Error: Activation layer " + toString( layerIndex ) + ": output image size is 0" );
     }
     activationPropagateImpl = ActivationPropagate::instance( cl, numPlanes, inputImageSize, fn );
-//    activationBackpropImpl = ActivationBackprop::instance( cl, numPlanes, inputImageSize, fn );
+    activationBackpropImpl = ActivationBackprop::instance( cl, numPlanes, inputImageSize, fn );
 }
 VIRTUAL ActivationLayer::~ActivationLayer() {
     delete activationPropagateImpl;
-//    delete activationBackpropImpl;
+    delete activationBackpropImpl;
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
     }
@@ -157,7 +158,7 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
 
-//    activationBackpropImpl->backpropErrors( batchSize, errorsWrapper, errorsForUpstreamWrapper );
+    activationBackpropImpl->backpropErrors( batchSize, errorsWrapper, errorsForUpstreamWrapper );
 
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;

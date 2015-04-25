@@ -101,6 +101,16 @@ ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int 
     "}\n" 
     "#endif\n" 
     "\n" 
+    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
+    "kernel void backpropNaive( const int N, global float *in, global float *out ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...\n" 
+    "}\n" 
+    "#endif\n" 
+    "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/activate.cl" );
     // [[[end]]]

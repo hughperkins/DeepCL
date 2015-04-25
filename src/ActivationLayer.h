@@ -31,7 +31,7 @@ public:
 
     OpenCLHelper *const cl; // NOT owned by us
     ActivationPropagate *activationPropagateImpl;
-//    ActivationBackprop *activationBackpropImpl;
+    ActivationBackprop *activationBackpropImpl;
 
     float *results;
     float *errorsForUpstream;

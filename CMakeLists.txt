@@ -61,6 +61,7 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
     ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
+    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp
  )
 foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
