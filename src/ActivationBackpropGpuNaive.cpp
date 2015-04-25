@@ -27,7 +27,8 @@ VIRTUAL ActivationBackpropGpuNaive::~ActivationBackpropGpuNaive() {
     delete kernel;
 //    delete kMemset;
 }
-VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *errorsWrapper, 
+VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *inputWrapper,
+         CLWrapper *errorsWrapper, 
         CLWrapper *errorsForUpstreamWrapper ) {
 
     StatefulTimer::instance()->timeCheck("ActivationBackpropGpuNaive::backpropErrors start" );
@@ -35,7 +36,10 @@ VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrappe
     int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->in( batchSize )->inout( errorsWrapper )->in( errorsForUpstreamWrapper );
+    kernel->in( batchSize * numPlanes * inputImageSize * inputImageSize )
+          ->in( inputWrapper )
+          ->in( errorsWrapper )
+          ->out( errorsForUpstreamWrapper );
     globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     workgroupSize = 64;
     numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
@@ -57,7 +61,7 @@ ActivationBackpropGpuNaive::ActivationBackpropGpuNaive( OpenCLHelper *cl, int nu
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/applyActivationDeriv.cl", "backpropErrors", 'options' )
     // ]]]
     // generated using cog, from cl/applyActivationDeriv.cl:
     const char * kernelSource =  
@@ -103,8 +107,23 @@ ActivationBackpropGpuNaive::ActivationBackpropGpuNaive( OpenCLHelper *cl, int nu
     "}\n" 
     "#endif\n" 
     "\n" 
+    "#ifdef ACTIVATION_DERIV\n" 
+    "void kernel backpropErrors(\n" 
+    "        const int N,\n" 
+    "        global const float *inputs,\n" 
+    "        global const float *errors,\n" 
+    "        global float *errorsForUpstream ) {\n" 
+    "    int globalId = get_global_id(0);\n" 
+    "    if( globalId < N ) {\n" 
+    "        errorsForUpstream[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * errors[globalId];\n" 
+    "            // probably not ideal to have the output and input separate?\n" 
+    "    }\n" 
+    "  //  target[globalId] *= source[globalId];\n" 
+    "}\n" 
+    "#endif\n" 
+    "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "applyActivationDeriv", options, "cl/applyActivationDeriv.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "backpropErrors", options, "cl/applyActivationDeriv.cl" );
     // [[[end]]]
 }
 

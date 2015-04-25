@@ -166,6 +166,21 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     "}\n" 
     "#endif\n" 
     "\n" 
+    "#ifdef ACTIVATION_DERIV\n" 
+    "void kernel backpropErrors(\n" 
+    "        const int N,\n" 
+    "        global const float *inputs,\n" 
+    "        global const float *errors,\n" 
+    "        global float *errorsForUpstream ) {\n" 
+    "    int globalId = get_global_id(0);\n" 
+    "    if( globalId < N ) {\n" 
+    "        errorsForUpstream[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * errors[globalId];\n" 
+    "            // probably not ideal to have the output and input separate?\n" 
+    "    }\n" 
+    "  //  target[globalId] *= source[globalId];\n" 
+    "}\n" 
+    "#endif\n" 
+    "\n" 
     "";
     applyActivationDeriv = cl->buildKernelFromString( applyActivationDerivSource, "applyActivationDeriv", options, "cl/applyActivationDeriv.cl" );
     // [[[end]]]

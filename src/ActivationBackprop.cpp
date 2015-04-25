@@ -27,7 +27,7 @@ STATIC ActivationBackprop *ActivationBackprop::instance( OpenCLHelper *cl, int n
     return new ActivationBackpropGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
 STATIC ActivationBackprop *ActivationBackprop::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn) {
-    return new ActivationBackpropCpu( cl, numPlanes, inputImageSize, fn );
+    return new ActivationBackpropGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
 STATIC ActivationBackprop *ActivationBackprop::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
     if( idx == 0 ) {
