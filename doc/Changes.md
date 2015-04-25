@@ -30,6 +30,7 @@
 
 ## Recent changes, to 4.x.x branch
 
+* 25th April: added independent activation layers, and changed default for convolutional and fc layers to linear
 * 25th April: cleaned up the benchmarks a lot, added them to jenkins, added a couple more, created an Angular/Bootstrap page to display them [DeepCL benchmarks](http://hughperkins.github.io/DeepCL/benchmarking/)
 * 21st April: Added lua wrappers to luarocks repository
 * 18th April: with `loadweights=1`, will load old weights file format too, not just refuse to load
