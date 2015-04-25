@@ -30,7 +30,7 @@ kernel void activate( const int N, global float *inout ) {
 #endif
 
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void propagateNaive( const int N, global float *in, global float *out ) {
+kernel void propagateNaive( const int N, global float *out, global const float *in ) {
     const int globalId = get_global_id(0);
     if( globalId >= N ) {
         return;
@@ -39,13 +39,4 @@ kernel void propagateNaive( const int N, global float *in, global float *out ) {
 }
 #endif
 
-#ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void backpropNaive( const int N, global float *in, global float *out ) {
-    const int globalId = get_global_id(0);
-    if( globalId >= N ) {
-        return;
-    }
-    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...
-}
-#endif
 

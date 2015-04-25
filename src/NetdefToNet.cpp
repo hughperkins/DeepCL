@@ -155,6 +155,8 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
         net->addLayer( PoolingMaker::instance()->poolingSize(poolingSize) );
     } else if( baseLayerDef.find("relu") != string::npos ) {
         net->addLayer( ActivationMaker::instance()->relu() );
+    } else if( baseLayerDef.find("linear") != string::npos ) {
+        net->addLayer( ActivationMaker::instance()->linear() ); // kind of pointless nop, but useful for testing
     } else if( baseLayerDef.find("rp") != string::npos ) {
         int patchSize = atoi( split( baseLayerDef, "rp" )[1] );
         net->addLayer( RandomPatchesMaker::instance()->patchSize( patchSize ) );

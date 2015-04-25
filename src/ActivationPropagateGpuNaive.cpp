@@ -31,7 +31,10 @@ VIRTUAL void ActivationPropagateGpuNaive::propagate( int batchSize, CLWrapper *i
 //    cout << StatefulTimer::instance()->prefix << "ActivationPropagateGpuNaive::propagate( CLWrapper * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::propagate start" );
 
-    kernel->input( batchSize )->input( inputWrapper )->output( outputWrapper );
+    kernel->input( batchSize * numPlanes * outputImageSize * outputImageSize );
+    kernel->output( outputWrapper )->input( inputWrapper );
+//    kernel->input( batchSize )->input( inputWrapper )->output( outputWrapper );
+
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
@@ -92,7 +95,7 @@ ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int 
     "#endif\n" 
     "\n" 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void propagateNaive( const int N, global float *in, global float *out ) {\n" 
+    "kernel void propagateNaive( const int N, global float *out, global const float *in ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
@@ -101,15 +104,6 @@ ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int 
     "}\n" 
     "#endif\n" 
     "\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void backpropNaive( const int N, global float *in, global float *out ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...\n" 
-    "}\n" 
-    "#endif\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/activate.cl" );
