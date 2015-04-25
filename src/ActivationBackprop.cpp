@@ -51,23 +51,27 @@ VIRTUAL int ActivationBackprop::getInputSize( int batchSize ) {
 VIRTUAL int ActivationBackprop::getResultsSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *errors, float *errorsForUpstream ) {
+VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream ) {
 //    cout << "ActivationBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper start" );
+
+    CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
     CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
 
+    inputsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
 
-    backpropErrors( batchSize, errorsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, inputsWrapper, errorsWrapper, errorsForUpstreamWrapper );
 
     errorsForUpstreamWrapper->copyToHost();
 
+    delete inputsWrapper;
     delete errorsWrapper;
     delete errorsForUpstreamWrapper;
     StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper end" );
 }
-VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
+VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
     throw runtime_error("ActivationBackprop::backpropErrors wrappers not implemented" );
 }
 

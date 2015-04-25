@@ -148,6 +148,14 @@ VIRTUAL void ActivationLayer::propagate() {
 VIRTUAL void ActivationLayer::backProp( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
+    CLWrapper *imagesWrapper = 0;
+    if( previousLayer->hasResultsWrapper() ) {
+        imagesWrapper = previousLayer->getResultsWrapper();
+    } else {
+        imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
+        imagesWrapper->copyToDevice();
+    }
+
     CLWrapper *errorsWrapper = 0;
     bool weOwnErrorsWrapper = false;
     if( nextLayer->providesErrorsForUpstreamWrapper() ) {
@@ -158,8 +166,11 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
 
-    activationBackpropImpl->backpropErrors( batchSize, errorsWrapper, errorsForUpstreamWrapper );
+    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, errorsForUpstreamWrapper );
 
+    if( !previousLayer->hasResultsWrapper() ) {
+        delete imagesWrapper;
+    }
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;
     }
