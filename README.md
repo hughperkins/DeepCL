@@ -55,10 +55,10 @@ Functionalities:
 Example usage:
 - intend to target 19 x 19 Go boards, eg something similar to [Clark and Storkey](http://arxiv.org/abs/1412.3409) or [Maddison, Huang, Sutskever and Silver](http://arxiv.org/abs/1412.6564)
   - obtained 38.1% test accuracy, on next move prediction task, using 33.6 million training examples from [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-  - commandline used `./deepclrun dataset=kgsgoall netdef=12*32c5{z}-500n-361n numepochs=3 learningrate=0.0001 loadondemand=1`
+  - commandline used `./deepclrun dataset=kgsgoall netdef=12*(32c5z-relu)-500n-tanh-361n numepochs=3 learningrate=0.0001 loadondemand=1`
   - 3 epochs, 2 days per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU (about half as powerful as a GTX780)
-  - (actually, full commandline is more like: `./deepclrun netdef=12*32c5{z}-500n-361n datadir=/mnt/data/kgsgo trainfile=kgsgo-trainall-v2.dat validatefile=kgsgo-test-v2.dat weightsfile=weights-12layerkgsgoall.dat loadweights=1 writeweightsinterval=5 learningrate=0.0001 loadondemand=1`)
-- obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n numepochs=20 multinet=6 learningrate=0.002`
+  - (actually, full commandline is more like: `./deepclrun netdef=12*(32c5z-relu)-500n-tanh-361n datadir=/mnt/data/kgsgo trainfile=kgsgo-trainall-v2.dat validatefile=kgsgo-test-v2.dat weightsfile=weights-12layerkgsgoall.dat loadweights=1 writeweightsinterval=5 learningrate=0.0001 loadondemand=1`)
+- obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n numepochs=20 multinet=6 learningrate=0.002`
   - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
 
 For Python wrappers, please see [python/README.md](python/README.md)

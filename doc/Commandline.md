@@ -20,21 +20,24 @@
 
 * Syntax is based on that specified in Ciresan et al's [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf), section 3, first paragraph:
   * network is defined by a string like: `100C5-MP2-100C5-MP2-100C4-MP2-300N-100N-6N`
-  * `100C5` means: a convolutional layer, with 100 filters, each 5x5
-  * `MP2` means a max-pooling layer, over non-overlapping regions of 2x2
-  * `300N` means a fully connected layer with 300 hidden units
+  * `100c5` means: a convolutional layer, with 100 filters, each 5x5
+  * `8c5z` means: a convolutional layer, with 8 filters, each 5x5, zero-padded
+  * `mp2` means a max-pooling layer, over non-overlapping regions of 2x2
+  * `300n` means a fully connected layer with 300 hidden units
+  * `relu` means a relu layer
+  * `tanh` means a tanh layer
 * Thus, you can do, for example:
 ```bash
-./deepclrun netdef=8c5-mp2-16c5-mp3-10n learningrate=0.002 dataset=mnist
+./deepclrun netdef=8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n learningrate=0.002 dataset=mnist
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./deepclrun netdef=8C5-MP4-24C6-MP3-80C6-5N learningrate=0.0001 dataset=norb
+./deepclrun netdef=8c5-relu-mp4-24c6-relu-mp3-80c6-relu-5n learningrate=0.0001 dataset=norb
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./deepclrun netdef=MP3-300C6-MP2-500C4-MP4-500N-5N learningrate=0.0001 dataset=norb
+./deepclrun netdef=MP3-300C6-RELU-MP2-500C4-RELU-MP4-500N-TANH-5N learningrate=0.0001 dataset=norb
 ```
 
 ## Additional net-def options
@@ -45,11 +48,11 @@
 ```
 * Options currently available:
   * For convolution layers:
-    * `sigmoid`
-    * `tanh`
+    * `sigmoid` (possibly deprecated by putting a separate sigmoid layer after the conv layer)
+    * `tanh` (possibly deprecated by putting a separate tanh layer after the conv layer)
     * `scaledtanh` (ie, 1.7159f * tanh( 0.66667f * x ) )
-    * `linear`
-    * `relu` (default)
+    * `linear` (default)
+    * `relu` (possibly deprecated by putting a separate relu layer after the conv layer)
     * `padzeros` (or simply `z`)
 * can be combined, comma-separated (no spaces), eg:
 ```bash
