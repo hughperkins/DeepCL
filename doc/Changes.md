@@ -11,18 +11,22 @@
 * lua wrappers created, using swig
 * new set of python wrappers, in `python_swig` directory, using swig instead of cython
   * plausibly will be published to pypi as 'PyDeepCLSwig', in parallel to the existing Cython version
+* added new ActivationLayer layer type, to implement relu, sigmoid etc in a separate layer from the convolutional,
+and fc layers
+* in commandline netdef, can put 'z' at the end of a convolutional layer to make it zero-padded, eg `32c5z`
 
 ## Changes, in next version, 4.x.x
 
 * lua module changes name from 'luaDeepCL' to 'LuaDeepCL'
 * lua build method changes from build.sh to cmake
+* default for convolutional and fc layers in commandline is now linear, instead of relu and tanh respectively
 
 ## Deprecated, in next version, 4.x.x
 
 * templates removed; everything is `float` now, no `unsigned char`, or `T`
   * basically, templates are not very
     supported by scripting languages, complicating writing wrappers
-* removing callbacks from BatchLearner, NetLearner, NetLearnerOnDemand, BatchLearnerOnDemand
+* removed callbacks from BatchLearner, NetLearner, NetLearnerOnDemand, BatchLearnerOnDemand
   * replaced by simply calling `tickEpoch` or `tickBatch`, and doing what you want after each call, ie no longer actually need the callbacks
   * again, more compatible with writing wrappers for scripting languages, since inter-language callbacks tend to be hard work to implement
 * idx-to-mat removed; since GenericLoader can directly handle reading mnist format now
