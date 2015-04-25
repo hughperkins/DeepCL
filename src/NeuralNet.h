@@ -23,6 +23,7 @@
 #include "FullyConnectedMaker.h"
 #include "PoolingMaker.h"
 #include "LayerMaker.h"
+#include "ActivationMaker.h"
 
 #include "DeepCLDllExport.h"
 

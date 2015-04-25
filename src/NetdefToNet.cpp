@@ -153,6 +153,8 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
         vector<string> splitPoolDef = split( baseLayerDef, "mp" );
         int poolingSize = atoi( splitPoolDef[1] );
         net->addLayer( PoolingMaker::instance()->poolingSize(poolingSize) );
+    } else if( baseLayerDef.find("relu") != string::npos ) {
+        net->addLayer( ActivationMaker::instance()->relu() );
     } else if( baseLayerDef.find("rp") != string::npos ) {
         int patchSize = atoi( split( baseLayerDef, "rp" )[1] );
         net->addLayer( RandomPatchesMaker::instance()->patchSize( patchSize ) );
