@@ -31,14 +31,14 @@ PUBLICAPI VIRTUAL void Layer::setTraining( bool training ) {
 PUBLICAPI VIRTUAL void Layer::setBatchSize( int batchSize ) {
     throw std::runtime_error("setBatchsize not implemetned for this layer type");
 }
-VIRTUAL bool Layer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool Layer::providesGradInputWrapper() const {
     return false;
 }
-VIRTUAL float *Layer::getErrorsForUpstream() {
-    throw std::runtime_error("getErrorsForUpstream not implemented for this layer type, layer " + toString(layerIndex) );
+VIRTUAL float *Layer::getGradInput() {
+    throw std::runtime_error("getGradInput not implemented for this layer type, layer " + toString(layerIndex) );
 }
-VIRTUAL CLWrapper *Layer::getErrorsForUpstreamWrapper() {
-    throw std::runtime_error("getErrorsForUpstreamWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+VIRTUAL CLWrapper *Layer::getGradInputWrapper() {
+    throw std::runtime_error("getGradInputWrapper not implemented for this layer type, layer " + toString(layerIndex) );
 }
 PUBLICAPI VIRTUAL bool Layer::getBiased() const {
      throw std::runtime_error("getBiased not implemented for this layer type, layer " + toString(layerIndex) );

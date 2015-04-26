@@ -144,10 +144,10 @@ VIRTUAL int DropoutLayer::getOutputPlanes() const {
 VIRTUAL int DropoutLayer::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool DropoutLayer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool DropoutLayer::providesGradInputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *DropoutLayer::getErrorsForUpstreamWrapper() {
+VIRTUAL CLWrapper *DropoutLayer::getGradInputWrapper() {
     return errorsForUpstreamWrapper;
 }
 VIRTUAL bool DropoutLayer::hasResultsWrapper() const {
@@ -156,7 +156,7 @@ VIRTUAL bool DropoutLayer::hasResultsWrapper() const {
 VIRTUAL CLWrapper *DropoutLayer::getResultsWrapper() {
     return resultsWrapper;
 }
-VIRTUAL float *DropoutLayer::getErrorsForUpstream() {
+VIRTUAL float *DropoutLayer::getGradInput() {
     return errorsForUpstream;
 }
 VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
@@ -221,10 +221,10 @@ VIRTUAL void DropoutLayer::backProp( float learningRate ) {
 
     CLWrapper *errorsWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    if( nextLayer->providesGradInputWrapper() ) {
+        errorsWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
+        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getGradInput() );
         errorsWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }

@@ -19,6 +19,8 @@
 
 #define VIRTUAL virtual
 
+class Trainer;
+
 PUBLICAPI
 /// A single layer within the neural net
 class Layer {
@@ -38,6 +40,15 @@ public:
     /// \brief Get the size of the activated output from this layer
     PUBLICAPI virtual int getResultsSize() const = 0;
     virtual std::string getClassName() const = 0;
+    virtual bool needsTrainer() const {
+        return false;
+    }
+    // This transfers ownership of the trainer to the layer,
+    // which is responsible for deleting it
+    // probably should pass in a Maker class instead
+    virtual void setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer ) {
+        throw std::runtime_error("setTrainer not implemented for " + getClassName() );
+    }
 
     // [[[cog
     // import cog_addheaders
@@ -48,9 +59,9 @@ public:
     VIRTUAL ~Layer();
     PUBLICAPI VIRTUAL void setTraining( bool training );
     PUBLICAPI VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL float *getGradInput();
+    VIRTUAL CLWrapper *getGradInputWrapper();
     PUBLICAPI VIRTUAL bool getBiased() const;
     PUBLICAPI VIRTUAL bool hasResultsWrapper() const;
     PUBLICAPI VIRTUAL CLWrapper *getResultsWrapper();

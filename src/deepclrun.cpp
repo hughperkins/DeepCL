@@ -22,6 +22,7 @@
 #include "MultiNet.h"
 #include "BatchProcess.h"
 #include "NetLearnerOnDemand.h"
+#include "SGD.h"
 
 using namespace std;
 
@@ -243,6 +244,24 @@ void go(Config config) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
     if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
+        return;
+    }
+    // apply the trainer
+    if( toLower( config.trainer ) == "sgd" ) {
+        for( int i = 0; i < net->getNumLayers(); i++ ) {
+            Layer *layer = net->getLayer(i);
+            if( layer->needsTrainer() ) {
+                SGD *weightsSgd = new SGD( net->getCl(), layer->getWeightsSize() );
+                weightsSgd->learningRate = config.learningRate;
+                weightsSgd->momentum = config.momentum;
+                SGD *biasWeightsSgd = new SGD( net->getCl(), layer->getBiasWeightsSize() );
+                biasWeightsSgd->learningRate = config.learningRate;
+                biasWeightsSgd->momentum = config.momentum;
+                layer->setTrainer( weightsSgd, biasWeightsSgd );
+            }
+        }
+    } else {
+        cout << "trainer " << config.trainer << " unknown." << endl;
         return;
     }
     net->setBatchSize( config.batchSize );

@@ -65,11 +65,11 @@ public:
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
-    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void generateMasks();
     VIRTUAL void propagate();

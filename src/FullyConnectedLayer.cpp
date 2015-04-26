@@ -68,14 +68,14 @@ VIRTUAL int FullyConnectedLayer::getResultsSize() const {
 VIRTUAL float *FullyConnectedLayer::getResults() {
     return convolutionalLayer->getResults();
 }
-VIRTUAL float *FullyConnectedLayer::getErrorsForUpstream() {
-    return convolutionalLayer->getErrorsForUpstream();
+VIRTUAL float *FullyConnectedLayer::getGradInput() {
+    return convolutionalLayer->getGradInput();
 }
-VIRTUAL bool FullyConnectedLayer::providesErrorsForUpstreamWrapper() const {
-    return convolutionalLayer->providesErrorsForUpstreamWrapper();
+VIRTUAL bool FullyConnectedLayer::providesGradInputWrapper() const {
+    return convolutionalLayer->providesGradInputWrapper();
 }
-VIRTUAL CLWrapper *FullyConnectedLayer::getErrorsForUpstreamWrapper() {
-    return convolutionalLayer->getErrorsForUpstreamWrapper();
+VIRTUAL CLWrapper *FullyConnectedLayer::getGradInputWrapper() {
+    return convolutionalLayer->getGradInputWrapper();
 }
 VIRTUAL bool FullyConnectedLayer::hasResultsWrapper() const {
     return convolutionalLayer->hasResultsWrapper();
@@ -94,6 +94,9 @@ VIRTUAL void FullyConnectedLayer::propagate() {
 }
 VIRTUAL void FullyConnectedLayer::backProp( float learningRate ) {
     convolutionalLayer->backProp( learningRate );
+}
+VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
+    return false; // not handle fc layer for now, conv only for now
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
     return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " " + fn->getDefineName() + " }";

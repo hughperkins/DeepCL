@@ -41,15 +41,16 @@ public:
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL int getResultsSize() const;
     VIRTUAL float *getResults();
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL float *getGradInput();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL bool needsBackProp();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );
+    VIRTUAL bool needsTrainer() const;
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

@@ -26,6 +26,8 @@ class ConvolutionalMaker;
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
+    Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
+    Trainer *biasWeightsTrainer; // OWNED by us, we should delete (if non-zero)
 
     Propagate *propagateimpl;
     BackpropWeights2 *backpropWeightsImpl;
@@ -44,15 +46,15 @@ public:
 
     CLWrapper *weightsWrapper;
     CLWrapper *resultsWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *gradInputWrapper;
 
     int batchSize;
     int allocatedSpaceNumExamples;
 
-    float *errorsForUpstream;
+    float *gradInput;
 
     bool resultsCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool gradInputCopiedToHost;
     bool weightsCopiedToHost;
 
     inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
@@ -98,9 +100,9 @@ public:
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL ActivationFunction const*getActivationFunction();
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL float *getGradInput();
+    VIRTUAL bool providesgradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL bool needsBackProp();
@@ -127,6 +129,8 @@ public:
     VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL void backProp( float learningRate );
     VIRTUAL std::string asString() const;
+    VIRTUAL bool needsTrainer() const;
+    VIRTUAL void setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer );
 
     // [[[end]]]
 };

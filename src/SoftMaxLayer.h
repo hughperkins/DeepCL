@@ -40,7 +40,7 @@ public:
     VIRTUAL ~SoftMaxLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getResults();
-    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL float *getGradInput();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL float calcLossFromLabels( int const *labels );
     VIRTUAL float calcLoss( float const *expectedValues );

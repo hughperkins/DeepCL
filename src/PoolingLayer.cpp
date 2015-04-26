@@ -135,10 +135,10 @@ VIRTUAL int PoolingLayer::getOutputPlanes() const {
 VIRTUAL int PoolingLayer::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool PoolingLayer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool PoolingLayer::providesGradInputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *PoolingLayer::getErrorsForUpstreamWrapper() {
+VIRTUAL CLWrapper *PoolingLayer::getGradInputWrapper() {
     return errorsForUpstreamWrapper;
 }
 VIRTUAL bool PoolingLayer::hasResultsWrapper() const {
@@ -147,7 +147,7 @@ VIRTUAL bool PoolingLayer::hasResultsWrapper() const {
 VIRTUAL CLWrapper *PoolingLayer::getResultsWrapper() {
     return resultsWrapper;
 }
-VIRTUAL float *PoolingLayer::getErrorsForUpstream() {
+VIRTUAL float *PoolingLayer::getGradInput() {
     return errorsForUpstream;
 }
 VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
@@ -184,10 +184,10 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 
     CLWrapper *errorsWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    if( nextLayer->providesGradInputWrapper() ) {
+        errorsWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
+        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getGradInput() );
         errorsWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }

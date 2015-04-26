@@ -50,7 +50,7 @@ public:
     VIRTUAL ~SGD();
     VIRTUAL void setMomentum( float momentum );
     VIRTUAL void updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsWrapper );
-    SGD( OpenCLHelper *cl, int numWeights, float learningRate );
+    SGD( OpenCLHelper *cl, int numWeights );
 
     // [[[end]]]
 };

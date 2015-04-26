@@ -24,7 +24,7 @@ VIRTUAL MultinomialCrossEntropy::~MultinomialCrossEntropy(){
         delete[] errors;
     }
 }
-VIRTUAL float*MultinomialCrossEntropy::getErrorsForUpstream() {
+VIRTUAL float*MultinomialCrossEntropy::getGradInput() {
     return errors;
 }
 VIRTUAL float MultinomialCrossEntropy::calcLoss( float const *expected ) {

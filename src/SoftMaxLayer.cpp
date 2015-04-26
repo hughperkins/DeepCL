@@ -42,7 +42,7 @@ VIRTUAL std::string SoftMaxLayer::getClassName() const {
 VIRTUAL float *SoftMaxLayer::getResults() {
     return results;
 }
-VIRTUAL float *SoftMaxLayer::getErrorsForUpstream() {
+VIRTUAL float *SoftMaxLayer::getGradInput() {
     return errorsForUpstream;
 }
 VIRTUAL void SoftMaxLayer::setBatchSize( int batchSize ) {

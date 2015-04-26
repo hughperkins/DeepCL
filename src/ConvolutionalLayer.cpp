@@ -11,6 +11,7 @@
 #include "WeightsHelper.h"
 #include "BackpropErrorsv2.h"
 #include "BackpropWeights2.h"
+#include "SGD.h"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 //        filterSizeSquared( filterSize * filterSize ),
 //        padZeros( maker->_padZeros ),
         cl( cl ),
+        weightsTrainer( 0 ),
+        biasWeightsTrainer( 0 ),
         backpropErrorsImpl(0),
         activationFunction( maker->_activationFunction ),
         results(0),
@@ -30,12 +33,12 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         biasWeights(0),
         weightsWrapper( 0 ),
         resultsWrapper( 0 ),
-        errorsForUpstreamWrapper( 0 ),
+        gradInputWrapper( 0 ),
         batchSize( 0 ),
         allocatedSpaceNumExamples( 0 ),
-        errorsForUpstream( 0 ),
+        gradInput( 0 ),
         resultsCopiedToHost( false ),
-        errorsForUpstreamCopiedToHost( false ),
+        gradInputCopiedToHost( false ),
         weightsCopiedToHost(false) {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
         .setInputImageSize( previousLayer->getOutputImageSize() )
@@ -46,6 +49,8 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
     if( dim.padZeros && dim.filterSize % 2 == 0 ) {
         throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
     }
+    weightsTrainer = new SGD( cl, getWeightsSize() ); // so it doesnt crash...
+    biasWeightsTrainer = new SGD( cl, getBiasWeightsSize() );
 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
@@ -82,15 +87,17 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( biasWeights != 0 ) {
         delete[] biasWeights;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     delete propagateimpl;
     delete backpropWeightsImpl;
     delete backpropErrorsImpl;
+    delete weightsTrainer;
+    delete biasWeightsTrainer;
 }
 VIRTUAL std::string ConvolutionalLayer::getClassName() const {
     return "ConvolutionalLayer";
@@ -98,19 +105,19 @@ VIRTUAL std::string ConvolutionalLayer::getClassName() const {
 VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
     return activationFunction;
 }
-VIRTUAL float *ConvolutionalLayer::getErrorsForUpstream() {
-    if( !errorsForUpstreamCopiedToHost ) {
-        std::cout << "copying errorsForUpstream to host, from GPU" << std::endl;
-        errorsForUpstreamWrapper->copyToHost();
-        errorsForUpstreamCopiedToHost = true;
+VIRTUAL float *ConvolutionalLayer::getGradInput() {
+    if( !gradInputCopiedToHost ) {
+        std::cout << "copying gradInput to host, from GPU" << std::endl;
+        gradInputWrapper->copyToHost();
+        gradInputCopiedToHost = true;
     }
-    return errorsForUpstream;
+    return gradInput;
 }
-VIRTUAL bool ConvolutionalLayer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool ConvolutionalLayer::providesgradInputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *ConvolutionalLayer::getErrorsForUpstreamWrapper() {
-    return errorsForUpstreamWrapper;
+VIRTUAL CLWrapper *ConvolutionalLayer::getGradInputWrapper() {
+    return gradInputWrapper;
 }
 VIRTUAL bool ConvolutionalLayer::hasResultsWrapper() const {
     return true;
@@ -245,15 +252,15 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
         delete resultsWrapper;
     }
     resultsWrapper = cl->wrap( getResultsSize(), results );
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
     if( layerIndex > 1 ) {
-        errorsForUpstream = new float[ previousLayer->getResultsSize() ];
-        errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
+        gradInput = new float[ previousLayer->getResultsSize() ];
+        gradInputWrapper = cl->wrap( previousLayer->getResultsSize(), gradInput );
     }
 }
 VIRTUAL void ConvolutionalLayer::propagate() {
@@ -374,19 +381,19 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
 
     CLWrapper *errorsWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    if( nextLayer->providesGradInputWrapper() ) {
+        errorsWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
+        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getGradInput() );
         errorsWrapper->copyToDevice();
 //        int resultsSize = getResultsSize();
 //        for( int i = 0; i < resultsSize; i++ ) {
-//            cout << "convolutional::backproperrors errorsfromupstream[" << i << "]=" << nextLayer->getErrorsForUpstream()[i] << endl;
+//            cout << "convolutional::backproperrors errorsfromupstream[" << i << "]=" << nextLayer->getGradInput()[i] << endl;
 //        }
         weOwnErrorsWrapper = true;
     }
     if( previousLayer->needsBackProp() ) {
-        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );
+        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, gradInputWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + ::toString( layerIndex ) );
     }
 
@@ -409,6 +416,17 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
 
 VIRTUAL std::string ConvolutionalLayer::asString() const {
     return "ConvolutionalLayer{ " + toString( dim ) + " " + activationFunction->getDefineName() + " }";
+}
+
+VIRTUAL bool ConvolutionalLayer::needsTrainer() const {
+    return true;
+}
+
+VIRTUAL void ConvolutionalLayer::setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer ) {
+    delete weightsTrainer;
+    delete biasWeightsTrainer;
+    this->weightsTrainer = weightsTrainer;
+    this->biasWeightsTrainer = biasWeightsTrainer;
 }
 
 ostream &operator<<( ostream &os, ConvolutionalLayer &layer ) {

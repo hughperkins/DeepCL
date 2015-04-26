@@ -81,7 +81,7 @@ VIRTUAL int RandomPatches::getOutputPlanes() const {
 VIRTUAL int RandomPatches::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool RandomPatches::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool RandomPatches::providesGradInputWrapper() const {
     return false;
 }
 VIRTUAL bool RandomPatches::hasResultsWrapper() const {

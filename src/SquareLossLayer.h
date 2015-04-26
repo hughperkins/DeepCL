@@ -31,7 +31,7 @@ public:
     SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker );
     VIRTUAL ~SquareLossLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float*getErrorsForUpstream();
+    VIRTUAL float*getGradInput();
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void calcErrors( float const*expectedResults );

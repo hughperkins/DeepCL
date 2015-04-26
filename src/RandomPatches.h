@@ -46,7 +46,7 @@ public:
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
+    VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL bool hasResultsWrapper() const;
     VIRTUAL void propagate();
     VIRTUAL std::string asString() const;

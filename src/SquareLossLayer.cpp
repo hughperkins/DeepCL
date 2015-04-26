@@ -28,7 +28,7 @@ VIRTUAL SquareLossLayer::~SquareLossLayer(){
 VIRTUAL std::string SquareLossLayer::getClassName() const {
     return "SquareLossLayer";
 }
-VIRTUAL float*SquareLossLayer::getErrorsForUpstream() {
+VIRTUAL float*SquareLossLayer::getGradInput() {
     return errors;
 }
 //VIRTUAL float*SquareLossLayer::getDerivLossBySumForUpstream() {

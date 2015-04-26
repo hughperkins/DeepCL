@@ -29,7 +29,7 @@ public:
     CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker );
     VIRTUAL ~CrossEntropyLoss();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float*getErrorsForUpstream();
+    VIRTUAL float*getGradInput();
     VIRTUAL int getPersistSize() const;
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );

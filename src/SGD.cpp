@@ -20,6 +20,7 @@ using namespace std;
 VIRTUAL SGD::~SGD() {
     delete lastUpdateWrapper;
     delete[] lastUpdate;
+    delete kernel;
 }
 
 VIRTUAL void SGD::setMomentum( float momentum ) {
@@ -54,10 +55,11 @@ VIRTUAL void SGD::updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsW
     StatefulTimer::instance()->timeCheck("SGD::updateWeights end" );
 }
 
-SGD::SGD( OpenCLHelper *cl, int numWeights, float learningRate ) :
+SGD::SGD( OpenCLHelper *cl, int numWeights ) :
         cl( cl ),
         kernel( 0 ),
         numWeights( numWeights ),
+        learningRate(1.0f),
         momentum( 0.0f )
     { // should we handle bias separately?  maybe... not?
       // or each layer could have one trainer for biases, and one for the

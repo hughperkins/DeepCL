@@ -81,7 +81,7 @@ VIRTUAL int RandomTranslations::getOutputPlanes() const {
 VIRTUAL int RandomTranslations::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool RandomTranslations::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool RandomTranslations::providesGradInputWrapper() const {
     return false;
 }
 VIRTUAL bool RandomTranslations::hasResultsWrapper() const {

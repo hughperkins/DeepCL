@@ -48,7 +48,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     options += " -D " + upstreamFn->getDefineName();
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/backproperrorsv2.cl", "calcErrorsForUpstream", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/backproperrorsv2.cl", "calcGradInput", 'options' )
     // # stringify.write_kernel2( "broadcastMultiply", "cl/backproperrorsv2.cl", "broadcast_multiply", 'options' )
     // stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
@@ -121,7 +121,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options, "cl/backproperrorsv2.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options, "cl/backproperrorsv2.cl" );
     // generated using cog, from cl/applyActivationDeriv.cl:
     const char * applyActivationDerivSource =  
     "// Copyright Hugh Perkins 201, 2015 hughperkins at gmail\n" 
@@ -184,7 +184,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     "";
     applyActivationDeriv = cl->buildKernelFromString( applyActivationDerivSource, "applyActivationDeriv", options, "cl/applyActivationDeriv.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "backproperrorsv2.cl", "calcErrorsForUpstream", options );
-//    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options );
+//    kernel = cl->buildKernel( "backproperrorsv2.cl", "calcGradInput", options );
+//    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );
 }
 

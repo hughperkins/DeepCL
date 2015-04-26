@@ -190,6 +190,6 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     kernel = cl->buildKernelFromString( kernelSource, "backprop_floats_withscratch_dobias", options, "cl/BackpropWeights2Scratch.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel( "backpropweights2.cl", "backprop_floats_withscratch_dobias", options );
-//    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options );
+//    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );
 }
 

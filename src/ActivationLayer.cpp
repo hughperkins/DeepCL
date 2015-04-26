@@ -113,10 +113,10 @@ VIRTUAL int ActivationLayer::getOutputImageSize() const {
 VIRTUAL int ActivationLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL bool ActivationLayer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool ActivationLayer::providesGradInputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *ActivationLayer::getErrorsForUpstreamWrapper() {
+VIRTUAL CLWrapper *ActivationLayer::getGradInputWrapper() {
     return errorsForUpstreamWrapper;
 }
 VIRTUAL bool ActivationLayer::hasResultsWrapper() const {
@@ -125,7 +125,7 @@ VIRTUAL bool ActivationLayer::hasResultsWrapper() const {
 VIRTUAL CLWrapper *ActivationLayer::getResultsWrapper() {
     return resultsWrapper;
 }
-VIRTUAL float *ActivationLayer::getErrorsForUpstream() {
+VIRTUAL float *ActivationLayer::getGradInput() {
     return errorsForUpstream;
 }
 VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
@@ -158,10 +158,10 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
 
     CLWrapper *errorsWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    if( nextLayer->providesGradInputWrapper() ) {
+        errorsWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
+        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getGradInput() );
         errorsWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }

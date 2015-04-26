@@ -27,7 +27,7 @@ VIRTUAL CrossEntropyLoss::~CrossEntropyLoss(){
 VIRTUAL std::string CrossEntropyLoss::getClassName() const {
     return "CrossEntropyLoss";
 }
-VIRTUAL float*CrossEntropyLoss::getErrorsForUpstream() {
+VIRTUAL float*CrossEntropyLoss::getGradInput() {
     return errors;
 }
 VIRTUAL int CrossEntropyLoss::getPersistSize() const {
