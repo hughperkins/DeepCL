@@ -26,7 +26,7 @@ public:
             _numFilters(0),
             _filterSize(0),
             _padZeros(false),
-        _activationFunction( new TanhActivation() ) {
+        _activationFunction( new LinearActivation() ) {
     }
     PUBLICAPI static ConvolutionalMaker *instance() {
         return new ConvolutionalMaker();

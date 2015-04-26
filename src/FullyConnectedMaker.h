@@ -23,7 +23,7 @@ public:
     PUBLICAPI FullyConnectedMaker() :
         _numPlanes(0),
         _imageSize(0),
-        _activationFunction( new TanhActivation() ) {
+        _activationFunction( new LinearActivation() ) {
     }
     PUBLICAPI FullyConnectedMaker *numPlanes(int numPlanes) {
         this->_numPlanes = numPlanes;
