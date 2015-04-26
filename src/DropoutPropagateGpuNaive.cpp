@@ -71,6 +71,7 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
     "// placeholder, for now\n" 
+    "#ifdef gInverseDropRatio\n" 
     "kernel void propagateNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
@@ -82,10 +83,22 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? gInverseDropRatio * input[globalId] : 0.0f;\n" 
     "}\n" 
+    "#endif\n" 
     "\n" 
     "// placeholder, for now\n" 
-    "kernel void backpropNaive() {\n" 
+    "#ifdef gDropRatio\n" 
+    "kernel void backpropNaive(\n" 
+    "        const int N,\n" 
+    "        global const unsigned char *mask,\n" 
+    "        global const float *errors,\n" 
+    "        global float *output) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    output[globalId] = mask[globalId] == 1 ? errors[globalId] : 0.0f;\n" 
     "}\n" 
+    "#endif\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/dropout.cl" );

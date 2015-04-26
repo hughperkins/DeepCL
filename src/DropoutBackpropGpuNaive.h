@@ -14,7 +14,7 @@
 class DropoutBackpropGpuNaive : public DropoutBackprop {
 public:
     CLKernel *kernel;
-    CLKernel *kMemset;
+//    CLKernel *kMemset;
 
     // [[[cog
     // import cog_addheaders

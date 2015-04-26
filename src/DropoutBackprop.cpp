@@ -27,7 +27,7 @@ STATIC DropoutBackprop *DropoutBackprop::instance( OpenCLHelper *cl, int numPlan
     return new DropoutBackpropGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
 }
 STATIC DropoutBackprop *DropoutBackprop::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio) {
-    return new DropoutBackpropCpu( cl, numPlanes, inputImageSize, dropRatio );
+    return new DropoutBackpropGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
 }
 STATIC DropoutBackprop *DropoutBackprop::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     if( idx == 0 ) {
@@ -64,6 +64,7 @@ VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float 
 
     maskWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
+    errorsForUpstreamWrapper->createOnDevice();
 
     backpropErrors( batchSize, maskWrapper, errorsWrapper, errorsForUpstreamWrapper );
 

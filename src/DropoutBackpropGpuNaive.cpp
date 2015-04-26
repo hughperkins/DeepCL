@@ -24,7 +24,7 @@ using namespace std;
 
 VIRTUAL DropoutBackpropGpuNaive::~DropoutBackpropGpuNaive() {
     delete kernel;
-    delete kMemset;
+//    delete kMemset;
 }
 VIRTUAL void DropoutBackpropGpuNaive::backpropErrors( 
             int batchSize, 
@@ -36,21 +36,22 @@ VIRTUAL void DropoutBackpropGpuNaive::backpropErrors(
     StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backpropErrors start" );
 
     // first, memset errors to 0 ...
-    kMemset ->out( errorsForUpstreamWrapper )
-            ->in( 0.0f )
-            ->in( batchSize * numPlanes * inputImageSize * inputImageSize );
-    int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+//    kMemset ->out( errorsForUpstreamWrapper )
+//            ->in( 0.0f )
+//            ->in( batchSize * numPlanes * inputImageSize * inputImageSize );
+//    int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+//    int workgroupSize = 64;
+//    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
+//    kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+//    cl->finish();
+
+    kernel  ->in( batchSize * numPlanes * outputImageSize * outputImageSize )
+            ->in( maskWrapper )
+            ->in( errorsWrapper )
+            ->out( errorsForUpstreamWrapper );
+    int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
-    cl->finish();
-
-    kernel  ->in( batchSize )
-            ->inout( errorsWrapper )
-            ->in( errorsForUpstreamWrapper );
-    globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
-    workgroupSize = 64;
-    numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
@@ -65,24 +66,25 @@ DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlane
     options += " -D gInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
     options += " -D gOutputImageSize=" + toString( outputImageSize );
     options += " -D gOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
-    float inverseDropRatio = 1.0f / dropRatio;
-    string inverseDropRatioString = toString( inverseDropRatio );
-    if( inverseDropRatioString.find( "." ) == string::npos ) {
-        inverseDropRatioString += ".0f";
+//    float inverseDropRatio = 1.0f / dropRatio;
+    string dropRatioString = toString( dropRatio );
+    if( dropRatioString.find( "." ) == string::npos ) {
+        dropRatioString += ".0f";
     } else {
-        inverseDropRatioString += "f";
+        dropRatioString += "f";
     }
-    cout << "inverseDropRatioString " << inverseDropRatioString << endl;
-    options += " -D gInverseDropRatio=" + inverseDropRatioString;
+//    cout << "inverseDropRatioString " << inverseDropRatioString << endl;
+    options += " -D gDropRatio=" + dropRatioString;
 
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/dropout.cl", "backpropNaive", 'options' )
-    // stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
+    // # stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
     "// placeholder, for now\n" 
+    "#ifdef gInverseDropRatio\n" 
     "kernel void propagateNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
@@ -94,30 +96,25 @@ DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlane
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? gInverseDropRatio * input[globalId] : 0.0f;\n" 
     "}\n" 
+    "#endif\n" 
     "\n" 
     "// placeholder, for now\n" 
-    "kernel void backpropNaive() {\n" 
+    "#ifdef gDropRatio\n" 
+    "kernel void backpropNaive(\n" 
+    "        const int N,\n" 
+    "        global const unsigned char *mask,\n" 
+    "        global const float *errors,\n" 
+    "        global float *output) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    output[globalId] = mask[globalId] == 1 ? errors[globalId] : 0.0f;\n" 
     "}\n" 
+    "#endif\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "backpropNaive", options, "cl/dropout.cl" );
-    // generated using cog, from cl/memset.cl:
-    const char * kMemsetSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void memset( global float *target, const float value, const int N ) {\n" 
-    "    #define globalId get_global_id(0)\n" 
-    "    if( globalId < N ) {\n" 
-    "        target[globalId] = value;\n" 
-    "    }\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kMemset = cl->buildKernelFromString( kMemsetSource, "memset", "", "cl/memset.cl" );
     // [[[end]]]
 }
 
