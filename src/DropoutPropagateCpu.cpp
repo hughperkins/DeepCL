@@ -23,15 +23,16 @@ using namespace std;
 DropoutPropagateCpu::DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
 }
-VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
 //    cout << "DropoutPropagateCpu::propagate( CLWrapper * )" << endl;
 
     inputWrapper->copyToHost();
 
+    unsigned char *masks = reinterpret_cast<unsigned char *>( masksWrapper->getHostArray() );
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
     float *output = new float[ getResultsSize( batchSize ) ];
 
-    propagate( batchSize, input, output );
+    propagate( batchSize, masks, input, output );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
     memcpy( outputHostArray, output, sizeof(float) * getResultsSize( batchSize ) );
@@ -40,7 +41,7 @@ VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
 
     delete[] output;
 }
-VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, float *input, float *output ) {
+VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, unsigned char *masks, float *input, float *output ) {
 //    float *output = new float[ getResultsSize( batchSize ) ];
 //    cout << "DropoutPropagateCpu::propagate( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate start" );

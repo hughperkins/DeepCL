@@ -32,12 +32,12 @@ public:
     DropoutPropagate *dropoutPropagateImpl;
     DropoutBackprop *dropoutBackpropImpl;
 
+    unsigned char *masks;
     float *results;
-//    int *selectors;
     float *errorsForUpstream;
 
+    CLWrapper *masksWrapper;
     CLWrapper *resultsWrapper;
-//    CLWrapper *selectorsWrapper;
     CLWrapper *errorsForUpstreamWrapper;
 
     bool resultsCopiedToHost;
@@ -69,6 +69,7 @@ public:
     VIRTUAL CLWrapper *getResultsWrapper();
     VIRTUAL float *getErrorsForUpstream();
     VIRTUAL ActivationFunction const *getActivationFunction();
+    VIRTUAL void generateMasks();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );
     VIRTUAL std::string asString() const;

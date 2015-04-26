@@ -20,8 +20,8 @@ public:
     // ]]]
     // generated, using cog:
     DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    VIRTUAL void propagate( int batchSize, float *input, float *output );
+    VIRTUAL void propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
+    VIRTUAL void propagate( int batchSize, unsigned char *masks, float *input, float *output );
 
     // [[[end]]]
 };

@@ -6,7 +6,7 @@
 
 #include "OpenCLHelper.h"
 
-#include "ActivationPropagate.h"
+#include "DropoutPropagate.h"
 #include "ActivationFunction.h"
 
 #include "gtest/gtest.h"
@@ -15,44 +15,74 @@
 
 using namespace std;
 
-namespace testactivationpropagate {
+namespace testdropoutpropagate {
 
-TEST( testactivationpropagate, basic ) {
+void intsToBits( int numBits, int *ints, unsigned char *bitfield ) {
+//    int numBytes = (N+8-1)/8;
+//    unsigned char *bitsField = new unsigned char[numBytes];
+    int idx = 0;
+    unsigned char thisByte = 0;
+    int bitsPacked = 0;
+    for( int i = 0; i < numBits; i++ ) {
+//        double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
+        unsigned char bit = ints[i];
+//        unsigned char bit = 0;
+        thisByte <<= 1;
+        thisByte |= bit;
+        bitsPacked++;
+        if( bitsPacked >= 8 ) {
+            bitfield[idx] = thisByte;
+            idx++;
+            bitsPacked = 0;
+        }
+    }
+}
+
+TEST( testdropoutpropagate, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
-    int imageSize = 4;
+    int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
-    float data[] = { 1, 2, 5, 3,
-                     3, 8, 4, 1,
-                     3, 33, 14,23,
-                     -1, -3.5f,37.4f,5
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    int maskInts[] = { 1, 0, 0,
+                       0,0,1,
+                        1,0,1
     };
-    int resultsSize = activationPropagate->getResultsSize( batchSize );
+    unsigned char ucMask[2];
+    intsToBits( 8, maskInts, ucMask );
+    float data[] = { 1, -2, 5,
+                     3, 8.2f, 4.1f,
+                     3, -33.1f, 14.2f,
+    };
+    int resultsSize = dropoutPropagate->getResultsSize( batchSize );
     EXPECT_EQ( resultsSize, imageSize * imageSize );
     float *output = new float[resultsSize];
 
-    activationPropagate->propagate( batchSize, data, output );
+    dropoutPropagate->propagate( batchSize, ucMask, data, output );
 
     EXPECT_EQ( 1, output[0] );
-    EXPECT_EQ( 2, output[1] );
-    EXPECT_EQ( 5, output[2] );
-    EXPECT_EQ( 0, output[12] );
-    EXPECT_EQ( 0, output[13] );
-    EXPECT_EQ( 37.4f, output[14] );
-    EXPECT_EQ( 5, output[15] );
+    EXPECT_EQ( 0, output[1] );
+    EXPECT_EQ( 0, output[2] );
 
-    delete activationPropagate;
+    EXPECT_EQ( 0, output[3] );
+    EXPECT_EQ( 0, output[4] );
+    EXPECT_EQ( 4.1f, output[5] );
+
+    EXPECT_EQ( 3, output[6] );
+    EXPECT_EQ( 0, output[7] );
+    EXPECT_EQ( 14.2f, output[8] );
+
+    delete dropoutPropagate;
     delete[] output;
     delete cl;
 }
 
-TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
+TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -65,10 +95,11 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationPropagate->getResultsSize( batchSize );
+    unsigned char mask[( dropoutPropagate->getResultsSize( batchSize ) + 8 - 1 ) / 8 ];
+    int outputSize = dropoutPropagate->getResultsSize( batchSize );
     float *output = new float[outputSize];
 
-    activationPropagate->propagate( batchSize, data, output );
+    dropoutPropagate->propagate( batchSize, mask, data, output );
 
     EXPECT_EQ( output[0], 1 );
     EXPECT_EQ( output[1], 2 );
@@ -78,32 +109,35 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
     EXPECT_EQ( output[14], 37.4f );
     EXPECT_EQ( output[15], 5 );
 
-    delete activationPropagate;
+    delete dropoutPropagate;
     delete[] output;
     delete cl;
 }
 
-TEST( testactivationpropagate, fromwrappers ) {
+TEST( testdropoutpropagate, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceSpecific( 1, cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = activationPropagate->getResultsSize( batchSize );
+    unsigned char mask[( dropoutPropagate->getResultsSize( batchSize ) + 8 - 1 ) / 8 ];
+    int outputSize = dropoutPropagate->getResultsSize( batchSize );
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
+    CLWrapper *maskWrapper = cl->wrap( ( dropoutPropagate->getResultsSize( batchSize ) + 8 - 1 ) / 8, mask );
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
+    maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
 
-    activationPropagate->propagate( batchSize, inputWrapper, outputWrapper );
+    dropoutPropagate->propagate( batchSize, maskWrapper, inputWrapper, outputWrapper );
 
     outputWrapper->copyToHost();
 
@@ -116,9 +150,10 @@ TEST( testactivationpropagate, fromwrappers ) {
     EXPECT_EQ( output[14], 37.4f );
     EXPECT_EQ( output[15], 5 );
 
+    delete maskWrapper;
     delete inputWrapper;
     delete outputWrapper;
-    delete activationPropagate;
+    delete dropoutPropagate;
     delete[] output;
     delete cl;
 }
@@ -131,9 +166,9 @@ public:
     }
 
     // [[[cog
-    // floats= []
-    // ints = ['batchSize', 'numPlanes', 'imageSize', 'activationSize', 'instance0', 'instance1' ]
-    // strings = ['activation']
+    // floats= ['dropRatio']
+    // ints = ['batchSize', 'numPlanes', 'imageSize', 'instance0', 'instance1' ]
+    // strings = []
     // import cog_fluent
     // cog_fluent.gov3( 'CompareSpecificArgs', ints = ints, floats = floats, strings=strings )
     // ]]]
@@ -141,18 +176,16 @@ public:
     int _batchSize;
     int _numPlanes;
     int _imageSize;
-    int _activationSize;
     int _instance0;
     int _instance1;
-    std::string _activation;
+    float _dropRatio;
     CompareSpecificArgs() {
         _batchSize = 0;
         _numPlanes = 0;
         _imageSize = 0;
-        _activationSize = 0;
         _instance0 = 0;
         _instance1 = 0;
-        _activation = "";
+        _dropRatio = 0;
     }
     CompareSpecificArgs batchSize( int _batchSize ) {
         this->_batchSize = _batchSize;
@@ -166,10 +199,6 @@ public:
         this->_imageSize = _imageSize;
         return *this;
     }
-    CompareSpecificArgs activationSize( int _activationSize ) {
-        this->_activationSize = _activationSize;
-        return *this;
-    }
     CompareSpecificArgs instance0( int _instance0 ) {
         this->_instance0 = _instance0;
         return *this;
@@ -178,8 +207,8 @@ public:
         this->_instance1 = _instance1;
         return *this;
     }
-    CompareSpecificArgs activation( std::string _activation ) {
-        this->_activation = _activation;
+    CompareSpecificArgs dropRatio( float _dropRatio ) {
+        this->_dropRatio = _dropRatio;
         return *this;
     }
     // [[[end]]]
@@ -195,15 +224,17 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    ActivationPropagate *activationPropagate0 = ActivationPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
-    ActivationPropagate *activationPropagate1 = ActivationPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
+    DropoutPropagate *dropoutPropagate0 = DropoutPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = activationPropagate0->getResultsSize( batchSize );
+    int outputSize = dropoutPropagate0->getResultsSize( batchSize );
 
+    unsigned char *mask = new unsigned char[ (inputSize + 8 - 1 )/ 8 ];
     float *input = new float[ inputSize ];
     float *output = new float[ outputSize ];
 
+    CLWrapper *maskWrapper = cl->wrap( (inputSize + 8 - 1 )/ 8, mask );
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
@@ -211,10 +242,11 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     memset( output, 99, sizeof(int) * outputSize );
 
+    maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    activationPropagate0->propagate( batchSize, inputWrapper, outputWrapper );
+    dropoutPropagate0->propagate( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
     float *output0 = new float[ outputSize ];
@@ -222,10 +254,11 @@ void compareSpecific( CompareSpecificArgs args ) {
     
     memset( output, 99, sizeof(int) * outputSize );
 
+    maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    activationPropagate1->propagate( batchSize, inputWrapper, outputWrapper );
+    dropoutPropagate1->propagate( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
     
     int numErrors = 0;
@@ -276,55 +309,57 @@ void compareSpecific( CompareSpecificArgs args ) {
         }
     }
 
+    delete maskWrapper;
     delete inputWrapper;
     delete outputWrapper;
-    delete activationPropagate0;
-    delete activationPropagate1;
+    delete dropoutPropagate0;
+    delete dropoutPropagate1;
     delete[] output0;
     delete[] output;
     delete[] input;
+    delete[] mask;
     delete cl;
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation2 ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout2 ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
+        .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3 ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout3 ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
+        .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation2_pz ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout2_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
+        .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_pz ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout3_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
+        .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_small ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout3_small ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(1).numPlanes(1).imageSize(2).activation("relu")
+        .batchSize(1).numPlanes(1).imageSize(2).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_small2 ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout3_small2 ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(2).numPlanes(1).imageSize(2).activation("relu")
+        .batchSize(2).numPlanes(1).imageSize(2).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_small2_tanh ) {
+TEST( testdropoutpropagate, comparespecific_0_1_dropout3_small2_tanh ) {
     compareSpecific( CompareSpecificArgs::instance()
-        .batchSize(2).numPlanes(1).imageSize(2).activation("tanh")
+        .batchSize(2).numPlanes(1).imageSize(2).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 

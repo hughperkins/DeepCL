@@ -30,8 +30,10 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
         outputImageSize( previousLayer->getOutputImageSize() ),
         random( RandomSingleton::instance() ),
         cl( cl ),
+        masks(0),
         results(0),
         errorsForUpstream(0),
+        masksWrapper(0),
         resultsWrapper(0),
         errorsForUpstreamWrapper(0),
         resultsCopiedToHost(false),
@@ -52,8 +54,14 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
 VIRTUAL DropoutLayer::~DropoutLayer() {
     delete dropoutPropagateImpl;
     delete dropoutBackpropImpl;
+    if( masksWrapper != 0 ) {
+        delete masksWrapper;
+    }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
+    }
+    if( masks != 0 ) {
+        delete[] masks;
     }
     if( results != 0 ) {
         delete[] results;
@@ -77,8 +85,14 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
+    if( masksWrapper != 0 ) {
+        delete masksWrapper;
+    }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
+    }
+    if( masks != 0 ) {
+        delete[] masks;
     }
     if( results != 0 ) {
         delete[] results;
@@ -91,6 +105,8 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
+    masks = new unsigned char[ ( getResultsSize() + 8 - 1 ) / 8 ];
+    masksWrapper = cl->wrap( ( getResultsSize() + 8 - 1 ) / 8, masks );
     results = new float[ getResultsSize() ];
     resultsWrapper = cl->wrap( getResultsSize(), results );
     errorsForUpstream = new float[ previousLayer->getResultsSize() ];
@@ -143,6 +159,30 @@ VIRTUAL float *DropoutLayer::getErrorsForUpstream() {
 VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
     return new LinearActivation();
 }
+VIRTUAL void DropoutLayer::generateMasks() {
+    int totalInputLinearSize = getResultsSize();
+//    int numBytes = (totalInputLinearSize+8-1)/8;
+//    unsigned char *bitsField = new unsigned char[numBytes];
+    int idx = 0;
+    unsigned char thisByte = 0;
+    int bitsPacked = 0;
+    for( int i = 0; i < totalInputLinearSize; i++ ) {
+        //double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
+        // 1 means we pass value through, 0 means we drop
+        // dropRatio is probability that mask value is 0 therefore
+        // so higher dropRatio => more likely to be 0
+        unsigned char bit = random->_uniform() <= dropRatio ? 0 : 1;
+//        unsigned char bit = 0;
+        thisByte <<= 1;
+        thisByte |= bit;
+        bitsPacked++;
+        if( bitsPacked >= 8 ) {
+            masks[idx] = thisByte;
+            idx++;
+            bitsPacked = 0;
+        }
+    }
+}
 VIRTUAL void DropoutLayer::propagate() {
     CLWrapper *upstreamResultsWrapper = 0;
     if( previousLayer->hasResultsWrapper() ) {
@@ -152,7 +192,10 @@ VIRTUAL void DropoutLayer::propagate() {
         upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
         upstreamResultsWrapper->copyToDevice();
     }
-    dropoutPropagateImpl->propagate( batchSize, upstreamResultsWrapper, resultsWrapper );
+    // create new masks...
+    generateMasks();
+    masksWrapper->copyToDevice();
+    dropoutPropagateImpl->propagate( batchSize, masksWrapper, upstreamResultsWrapper, resultsWrapper );
     if( !previousLayer->hasResultsWrapper() ) {
         delete upstreamResultsWrapper;
     }

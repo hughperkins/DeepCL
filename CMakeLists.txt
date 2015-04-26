@@ -162,7 +162,7 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationpropagate.cpp test/testactivationbackprop.cpp
- test/testRandomSingleton.cpp
+ test/testRandomSingleton.cpp test/testdropoutpropagate.cpp
  )
 #
 #

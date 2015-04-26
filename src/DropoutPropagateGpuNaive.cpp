@@ -26,11 +26,14 @@ using namespace std;
 VIRTUAL DropoutPropagateGpuNaive::~DropoutPropagateGpuNaive() {
     delete kernel;
 }
-VIRTUAL void DropoutPropagateGpuNaive::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void DropoutPropagateGpuNaive::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
 //    cout << StatefulTimer::instance()->prefix << "DropoutPropagateGpuNaive::propagate( CLWrapper * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::propagate start" );
 
-    kernel->input( batchSize )->input( inputWrapper )->output( outputWrapper );
+    kernel  ->input( batchSize )
+            ->input( masksWrapper )
+            ->input( inputWrapper )
+            ->output( outputWrapper );
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;

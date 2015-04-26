@@ -35,7 +35,7 @@ STATIC DropoutPropagate *DropoutPropagate::instance( OpenCLHelper *cl, int numPl
 //    return new DropoutPropagateCpu( cl, padZeros, numPlanes, inputImageSize, dropoutSize );
 }
 STATIC DropoutPropagate *DropoutPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+    return new DropoutPropagateCpu( cl, numPlanes, inputImageSize, dropRatio );
 }
 STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     if( idx == 0 ) {
@@ -47,20 +47,24 @@ STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelp
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("DropoutPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void DropoutPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
+VIRTUAL void DropoutPropagate::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData ) {
     throw runtime_error("propagate not implemented for this child type");
 }
-VIRTUAL void DropoutPropagate::propagate( int batchSize, float *input, float *output ) {
+VIRTUAL void DropoutPropagate::propagate( int batchSize, unsigned char *masks, float *input, float *output ) {
 //    cout << "DropoutPropagate::propagate( float * )" << endl;
-    CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
+    int inputLinearSize = getInputSize( batchSize );
+    CLWrapper *masksWrapper = cl->wrap( ( inputLinearSize + 8 - 1 ) / 8, masks );
+    CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
     CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
 
+    masksWrapper->copyToDevice();
     inputWrapper->copyToDevice();
-    propagate( batchSize, inputWrapper, outputWrapper );
+    propagate( batchSize, masksWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();    
 
     delete outputWrapper;
     delete inputWrapper;
+    delete masksWrapper;
 }
 VIRTUAL int DropoutPropagate::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
