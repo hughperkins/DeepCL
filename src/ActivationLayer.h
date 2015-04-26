@@ -34,13 +34,13 @@ public:
     ActivationBackprop *activationBackpropImpl;
 
     float *output;
-    float *errorsForUpstream;
+    float *gradInput;
 
     CLWrapper *outputWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *gradInputWrapper;
 
     bool outputCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;

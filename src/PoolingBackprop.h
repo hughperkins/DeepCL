@@ -51,8 +51,8 @@ public:
     PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
-    VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream );
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *errorsForUpstreamWrapper );
+    VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *gradInput );
+    VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

@@ -36,14 +36,14 @@ public:
 
     unsigned char *masks;
     float *output;
-    float *errorsForUpstream;
+    float *gradInput;
 
     CLWrapper *maskWrapper;
     CLWrapper *outputWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *gradInputWrapper;
 
     bool outputCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;

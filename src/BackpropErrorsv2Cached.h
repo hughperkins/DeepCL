@@ -19,7 +19,7 @@ public:
     VIRTUAL ~BackpropErrorsv2Cached();
     VIRTUAL void backpropErrors( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *errorsForUpstreamWrapper );
+    CLWrapper *gradInputWrapper );
     BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
 
     // [[[end]]]

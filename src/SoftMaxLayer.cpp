@@ -23,14 +23,14 @@ SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker ) :
         numPlanes( previousLayer->getOutputPlanes() ),
         imageSizeSquared( previousLayer->getOutputImageSize() * previousLayer->getOutputImageSize() ),
         output( 0 ),
-        errorsForUpstream( 0 ),
+        gradInput( 0 ),
         allocatedSize( 0 ),
         batchSize( 0 )
          {
 }
 VIRTUAL SoftMaxLayer::~SoftMaxLayer() {
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     if( output != 0 ) {
         delete[] output;
@@ -43,7 +43,7 @@ VIRTUAL float *SoftMaxLayer::getOutput() {
     return output;
 }
 VIRTUAL float *SoftMaxLayer::getGradInput() {
-    return errorsForUpstream;
+    return gradInput;
 }
 VIRTUAL void SoftMaxLayer::setBatchSize( int batchSize ) {
     this->batchSize = batchSize;
@@ -53,11 +53,11 @@ VIRTUAL void SoftMaxLayer::setBatchSize( int batchSize ) {
     if( output != 0 ) {
         delete[] output;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     output = new float[ getOutputSize() ];
-    errorsForUpstream = new float[ previousLayer-> getOutputSize() ];
+    gradInput = new float[ previousLayer-> getOutputSize() ];
     allocatedSize = batchSize;
 }
 
@@ -134,9 +134,9 @@ VIRTUAL void SoftMaxLayer::calcErrorsFromLabels( int const *labels ) {
                 int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
                 int label = labels[n * numPlanes + plane];
                 for( int i = 0; i < imageSizeSquared; i++ ) {
-                    errorsForUpstream[imageOffset + i] = output[imageOffset + i];
+                    gradInput[imageOffset + i] = output[imageOffset + i];
                 }
-                errorsForUpstream[imageOffset + label] -= 1;
+                gradInput[imageOffset + label] -= 1;
             }
         }
     } else {
@@ -148,14 +148,14 @@ VIRTUAL void SoftMaxLayer::calcErrorsFromLabels( int const *labels ) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                errorsForUpstream[imageOffset + plane] = output[imageOffset + plane];
+                gradInput[imageOffset + plane] = output[imageOffset + plane];
             }
             if( label >= numPlanes ) {
                 throw runtime_error("Label " + toString( label ) + " exceeds number of softmax planes " + toString( numPlanes ) );
             } else if( label < 0 ) {
                 throw runtime_error("Label " + toString( label ) + " negative" );
             }
-            errorsForUpstream[imageOffset + label] -= 1;
+            gradInput[imageOffset + label] -= 1;
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcErrorsfromlabels");
@@ -172,7 +172,7 @@ VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
                 int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
                 for( int i = 0; i < imageSizeSquared; i++ ) {
                     int resultIndex = imageOffset + i;
-                    errorsForUpstream[resultIndex] = output[resultIndex] - expectedValues[resultIndex];
+                    gradInput[resultIndex] = output[resultIndex] - expectedValues[resultIndex];
                 }
             }
         }
@@ -185,7 +185,7 @@ VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 int resultIndex = imageOffset + plane;
-                errorsForUpstream[resultIndex] = output[resultIndex] - expectedValues[resultIndex];
+                gradInput[resultIndex] = output[resultIndex] - expectedValues[resultIndex];
             }
         }
     }

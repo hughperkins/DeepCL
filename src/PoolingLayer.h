@@ -33,14 +33,14 @@ public:
 
     float *output;
     int *selectors;
-    float *errorsForUpstream;
+    float *gradInput;
 
     CLWrapper *outputWrapper;
     CLWrapper *selectorsWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *gradInputWrapper;
 
     bool outputCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;

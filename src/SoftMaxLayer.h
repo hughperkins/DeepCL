@@ -27,7 +27,7 @@ public:
     const int imageSizeSquared;
 
     float *output;
-    float *errorsForUpstream;
+    float *gradInput;
     int allocatedSize;
     int batchSize;
 

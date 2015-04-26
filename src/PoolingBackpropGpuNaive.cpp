@@ -27,19 +27,19 @@ VIRTUAL PoolingBackpropGpuNaive::~PoolingBackpropGpuNaive() {
     delete kMemset;
 }
 VIRTUAL void PoolingBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, 
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
 
     StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backpropErrors start" );
 
     // first, memset errors to 0 ...
-    kMemset->out( errorsForUpstreamWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputImageSize * inputImageSize );
+    kMemset->out( gradInputWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputImageSize * inputImageSize );
     int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    kernel->in( batchSize )->inout( errorsWrapper )->in( selectorsWrapper )->in( errorsForUpstreamWrapper );
+    kernel->in( batchSize )->inout( errorsWrapper )->in( selectorsWrapper )->in( gradInputWrapper );
     globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     workgroupSize = 64;
     numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;

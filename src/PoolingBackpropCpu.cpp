@@ -24,8 +24,8 @@ using namespace std;
 PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
-VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, int *selectors, float *errorsForUpstream ) {
-    memset( errorsForUpstream, 0, sizeof( float ) * getInputSize( batchSize ) );
+VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, int *selectors, float *gradInput ) {
+    memset( gradInput, 0, sizeof( float ) * getInputSize( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
@@ -38,14 +38,14 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, 
                     int drow = selector / poolingSize;
                     int dcol = selector % poolingSize;
                     int inputIndex = getInputIndex( n, plane, inputRow + drow, inputCol + dcol );
-                    errorsForUpstream[ inputIndex ] = error;
+                    gradInput[ inputIndex ] = error;
                 }
             }
         }
     }
 }
 VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, 
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors start" );
 
     errorsWrapper->copyToHost();
@@ -53,15 +53,15 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *error
 
     float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
     int *selectors = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
-    float *errorsForUpstream = new float[ getInputSize( batchSize ) ];
+    float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backpropErrors( batchSize, errors, selectors, errorsForUpstream );
+    backpropErrors( batchSize, errors, selectors, gradInput );
 
-    float *errorsForUpstreamHostArray = reinterpret_cast<float *>( errorsForUpstreamWrapper->getHostArray() );
-    memcpy( errorsForUpstreamHostArray, errorsForUpstream, sizeof(float) * getInputSize( batchSize ) );
-    errorsForUpstreamWrapper->copyToDevice();
+    float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
+    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
+    gradInputWrapper->copyToDevice();
 
-    delete[] errorsForUpstream;
+    delete[] gradInput;
     
     StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors end" );
 }

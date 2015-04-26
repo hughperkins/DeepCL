@@ -24,14 +24,14 @@ using namespace std;
 DropoutBackpropCpu::DropoutBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutBackprop( cl, numPlanes, inputImageSize, dropRatio ) {
 }
-VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, uchar *mask,  float *errors, float *errorsForUpstream ) {
+VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, uchar *mask,  float *errors, float *gradInput ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
-        errorsForUpstream[i] = mask[i] == 1 ? errors[i] : 0.0f;
+        gradInput[i] = mask[i] == 1 ? errors[i] : 0.0f;
     }
 }
 VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, 
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("DropoutBackpropCpu::backpropErrors start" );
 
     maskWrapper->copyToHost();
@@ -39,15 +39,15 @@ VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, CLWrapper *maskW
 
     uchar *mask = reinterpret_cast<uchar *>( maskWrapper->getHostArray() );
     float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
-    float *errorsForUpstream = new float[ getInputSize( batchSize ) ];
+    float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backpropErrors( batchSize, mask, errors, errorsForUpstream );
+    backpropErrors( batchSize, mask, errors, gradInput );
 
-    float *errorsForUpstreamHostArray = reinterpret_cast<float *>( errorsForUpstreamWrapper->getHostArray() );
-    memcpy( errorsForUpstreamHostArray, errorsForUpstream, sizeof(float) * getInputSize( batchSize ) );
-    errorsForUpstreamWrapper->copyToDevice();
+    float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
+    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
+    gradInputWrapper->copyToDevice();
 
-    delete[] errorsForUpstream;
+    delete[] gradInput;
     
     StatefulTimer::instance()->timeCheck("DropoutBackpropCpu::backpropErrors end" );
 }

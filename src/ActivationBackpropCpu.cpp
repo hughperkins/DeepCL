@@ -25,18 +25,18 @@ using namespace std;
 ActivationBackpropCpu::ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
         ActivationBackprop( cl, numPlanes, inputImageSize, fn ) {
 }
-VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream ) {
+VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
 //        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
 //            << " error=" << errors[i];
-        errorsForUpstream[i] = fn->calcDerivative( inputs[i] ) * errors[i];
-//        cout << " errorsforupstream=" << errorsForUpstream[i] << endl;
+        gradInput[i] = fn->calcDerivative( inputs[i] ) * errors[i];
+//        cout << " gradInput=" << gradInput[i] << endl;
     }
 }
 VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *inputsWrapper,
          CLWrapper *errorsWrapper, 
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backpropErrors start" );
 
     inputsWrapper->copyToHost();
@@ -44,15 +44,15 @@ VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *in
 
     float *inputs = reinterpret_cast<float *>( inputsWrapper->getHostArray() );
     float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
-    float *errorsForUpstream = new float[ getInputSize( batchSize ) ];
+    float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backpropErrors( batchSize, inputs, errors, errorsForUpstream );
+    backpropErrors( batchSize, inputs, errors, gradInput );
 
-    float *errorsForUpstreamHostArray = reinterpret_cast<float *>( errorsForUpstreamWrapper->getHostArray() );
-    memcpy( errorsForUpstreamHostArray, errorsForUpstream, sizeof(float) * getInputSize( batchSize ) );
-    errorsForUpstreamWrapper->copyToDevice();
+    float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
+    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
+    gradInputWrapper->copyToDevice();
 
-    delete[] errorsForUpstream;
+    delete[] gradInput;
     
     StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backpropErrors end" );
 }

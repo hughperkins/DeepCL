@@ -20,9 +20,9 @@ public:
     // ]]]
     // generated, using cog:
     DropoutBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    VIRTUAL void backpropErrors( int batchSize, uchar *mask,  float *errors, float *errorsForUpstream );
+    VIRTUAL void backpropErrors( int batchSize, uchar *mask,  float *errors, float *gradInput );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper,
-    CLWrapper *errorsForUpstreamWrapper );
+    CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

@@ -51,27 +51,27 @@ VIRTUAL int ActivationBackprop::getInputSize( int batchSize ) {
 VIRTUAL int ActivationBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream ) {
+VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput ) {
 //    cout << "ActivationBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper start" );
 
     CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
     CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 
     inputsWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
 
-    backpropErrors( batchSize, inputsWrapper, errorsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, inputsWrapper, errorsWrapper, gradInputWrapper );
 
-    errorsForUpstreamWrapper->copyToHost();
+    gradInputWrapper->copyToHost();
 
     delete inputsWrapper;
     delete errorsWrapper;
-    delete errorsForUpstreamWrapper;
+    delete gradInputWrapper;
     StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper end" );
 }
-VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
+VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *errorsWrapper, CLWrapper *gradInputWrapper ) {
     throw runtime_error("ActivationBackprop::backpropErrors wrappers not implemented" );
 }
 

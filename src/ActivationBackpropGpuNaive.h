@@ -23,7 +23,7 @@ public:
     VIRTUAL ~ActivationBackpropGpuNaive();
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputWrapper,
     CLWrapper *errorsWrapper,
-    CLWrapper *errorsForUpstreamWrapper );
+    CLWrapper *gradInputWrapper );
     ActivationBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
 
     // [[[end]]]

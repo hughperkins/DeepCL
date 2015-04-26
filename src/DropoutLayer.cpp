@@ -33,12 +33,12 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
         cl( cl ),
         masks(0),
         output(0),
-        errorsForUpstream(0),
+        gradInput(0),
         maskWrapper(0),
         outputWrapper(0),
-        errorsForUpstreamWrapper(0),
+        gradInputWrapper(0),
         outputCopiedToHost(false),
-        errorsForUpstreamCopiedToHost(false),
+        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
     if( inputImageSize == 0 ){
@@ -69,11 +69,11 @@ VIRTUAL DropoutLayer::~DropoutLayer() {
     if( output != 0 ) {
         delete[] output;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string DropoutLayer::getClassName() const {
@@ -100,11 +100,11 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
     if( output != 0 ) {
         delete[] output;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
@@ -112,9 +112,9 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
     maskWrapper = cl->wrap( getOutputSize(), masks );
     output = new float[ getOutputSize() ];
     outputWrapper = cl->wrap( getOutputSize(), output );
-    errorsForUpstream = new float[ previousLayer->getOutputSize() ];
-    errorsForUpstreamWrapper = cl->wrap( previousLayer->getOutputSize(), errorsForUpstream );
-    errorsForUpstreamWrapper->createOnDevice();
+    gradInput = new float[ previousLayer->getOutputSize() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    gradInputWrapper->createOnDevice();
 }
 VIRTUAL int DropoutLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
@@ -148,7 +148,7 @@ VIRTUAL bool DropoutLayer::providesGradInputWrapper() const {
     return true;
 }
 VIRTUAL CLWrapper *DropoutLayer::getGradInputWrapper() {
-    return errorsForUpstreamWrapper;
+    return gradInputWrapper;
 }
 VIRTUAL bool DropoutLayer::hasOutputWrapper() const {
     return true;
@@ -157,7 +157,7 @@ VIRTUAL CLWrapper *DropoutLayer::getOutputWrapper() {
     return outputWrapper;
 }
 VIRTUAL float *DropoutLayer::getGradInput() {
-    return errorsForUpstream;
+    return gradInput;
 }
 VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
     return new LinearActivation();
@@ -228,7 +228,7 @@ VIRTUAL void DropoutLayer::backProp( float learningRate ) {
         errorsWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
-    dropoutBackpropImpl->backpropErrors( batchSize, maskWrapper, errorsWrapper, errorsForUpstreamWrapper );
+    dropoutBackpropImpl->backpropErrors( batchSize, maskWrapper, errorsWrapper, gradInputWrapper );
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;
     }

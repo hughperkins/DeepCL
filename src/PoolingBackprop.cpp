@@ -56,27 +56,27 @@ VIRTUAL int PoolingBackprop::getInputSize( int batchSize ) {
 VIRTUAL int PoolingBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream ) {
+VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *gradInput ) {
 //    cout << "PoolingBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper start" );
     CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
     CLWrapper *selectorsWrapper = cl->wrap( getOutputSize(batchSize), selectors );
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 
     errorsWrapper->copyToDevice();
     selectorsWrapper->copyToDevice();
 
-    backpropErrors( batchSize, errorsWrapper, selectorsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, errorsWrapper, selectorsWrapper, gradInputWrapper );
 
     selectorsWrapper->copyToHost();
-    errorsForUpstreamWrapper->copyToHost();
+    gradInputWrapper->copyToHost();
 
     delete errorsWrapper;
     delete selectorsWrapper;
-    delete errorsForUpstreamWrapper;
+    delete gradInputWrapper;
     StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper end" );
 }
-VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
+VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper ) {
     throw runtime_error("PoolingBackprop::backpropErrors wrappers not implemented" );
 }
 

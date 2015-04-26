@@ -16,13 +16,13 @@ VIRTUAL BackpropErrorsv2Cached::~BackpropErrorsv2Cached() {
 }
 VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached start" );
 
 //        const int batchSize,
 //        global const float *errorsGlobal,
 //        global const float *filtersGlobal, 
-//        global float *errorsForUpstream,
+//        global float *gradInput,
 //        local float *_errorImage, 
 //        local float *_filterImage ) {
 
@@ -30,7 +30,7 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
        ->in( batchSize )
         ->in( errorsWrapper )
        ->in( weightsWrapper )
-        ->out( errorsForUpstreamWrapper )
+        ->out( gradInputWrapper )
         ->localFloats( square( dim.outputImageSize ) )
         ->localFloats( square( dim.filterSize ) );
 
@@ -44,24 +44,24 @@ VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize,
 //    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //    kernel->run_1d(globalSize, workgroupsize);
     
-//    float const*errorsForUpstream = (float *)errorsForUpstreamWrapper->getHostArray();
+//    float const*gradInput = (float *)gradInputWrapper->getHostArray();
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
-//    errorsForUpstreamWrapper->copyToHost();
+//    gradInputWrapper->copyToHost();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after first kernel" );
 //    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
-//        cout << "efu[" << i << "]=" << errorsForUpstream[i] << endl;
+//        cout << "efu[" << i << "]=" << gradInput[i] << endl;
 //    }
 
-//    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( errorsForUpstreamWrapper )->in( inputDataWrapper );
+//    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( gradInputWrapper )->in( inputDataWrapper );
 //    applyActivationDeriv->run_1d(globalSize, workgroupSize);
-    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->inout( errorsForUpstreamWrapper )->in( inputDataWrapper );
+    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->inout( gradInputWrapper )->in( inputDataWrapper );
     applyActivationDeriv->run_1d(globalSize, workgroupSize);
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after applyActivationDeriv" );
-//    errorsForUpstreamWrapper->copyToHost();
+//    gradInputWrapper->copyToHost();
 //    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
-//        cout << "efu2[" << i << "]=" << errorsForUpstream[i] << endl;
+//        cout << "efu2[" << i << "]=" << gradInput[i] << endl;
 //    }
     
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached end" );

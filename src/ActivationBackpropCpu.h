@@ -20,10 +20,10 @@ public:
     // ]]]
     // generated, using cog:
     ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    VIRTUAL void backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream );
+    VIRTUAL void backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputsWrapper,
     CLWrapper *errorsWrapper,
-    CLWrapper *errorsForUpstreamWrapper );
+    CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

@@ -17,14 +17,14 @@ VIRTUAL BackpropErrorsv2Naive::~BackpropErrorsv2Naive() {
 }
 VIRTUAL void BackpropErrorsv2Naive::backpropErrors( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive start" );
 
     kernel
        ->in( batchSize )
         ->in( errorsWrapper )
        ->in( weightsWrapper )
-        ->out( errorsForUpstreamWrapper );
+        ->out( gradInputWrapper );
 
     int globalSize = batchSize * dim.inputCubeSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
@@ -34,7 +34,7 @@ VIRTUAL void BackpropErrorsv2Naive::backpropErrors( int batchSize,
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after first kernel" );
 
-    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( errorsForUpstreamWrapper )->in( inputDataWrapper );
+    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( gradInputWrapper )->in( inputDataWrapper );
     applyActivationDeriv->run_1d(globalSize, workgroupsize);
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after applyActivationDeriv" );

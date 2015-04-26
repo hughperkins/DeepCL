@@ -74,16 +74,16 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     int outputDataSize = batchSize * dim.inputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
     int allocatedOutputSize = std::max(5000, outputDataSize );
-    float *errorsForUpstream = new float[allocatedOutputSize];
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap( allocatedOutputSize, errorsForUpstream );
+    float *gradInput = new float[allocatedOutputSize];
+    CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputSize, gradInput );
 
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copied to device");
-    backpropErrors( batchSize, inputDataWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, inputDataWrapper, errorsWrapper, weightsWrapper, gradInputWrapper );
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after call backprop");
-    errorsForUpstreamWrapper->copyToHost();
+    gradInputWrapper->copyToHost();
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copytohost");
 
-    delete errorsForUpstreamWrapper;
+    delete gradInputWrapper;
     delete errorsWrapper;
     delete weightsWrapper;
     delete inputDataWrapper;
@@ -91,6 +91,6 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
 //        delete biasWeightsWrapper;
 //    }
 
-    return errorsForUpstream;
+    return gradInput;
 }
 

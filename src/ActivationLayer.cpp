@@ -27,11 +27,11 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
         fn( maker->_activationFunction ),
         cl( cl ),
         output(0),
-        errorsForUpstream(0),
+        gradInput(0),
         outputWrapper(0),
-        errorsForUpstreamWrapper(0),
+        gradInputWrapper(0),
         outputCopiedToHost(false),
-        errorsForUpstreamCopiedToHost(false),
+        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
     if( inputImageSize == 0 ){
@@ -54,11 +54,11 @@ VIRTUAL ActivationLayer::~ActivationLayer() {
     if( output != 0 ) {
         delete[] output;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string ActivationLayer::getClassName() const {
@@ -76,19 +76,19 @@ VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
     if( output != 0 ) {
         delete[] output;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
     output = new float[ getOutputSize() ];
     outputWrapper = cl->wrap( getOutputSize(), output );
-    errorsForUpstream = new float[ previousLayer->getOutputSize() ];
-    errorsForUpstreamWrapper = cl->wrap( previousLayer->getOutputSize(), errorsForUpstream );
-    errorsForUpstreamWrapper->createOnDevice();
+    gradInput = new float[ previousLayer->getOutputSize() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    gradInputWrapper->createOnDevice();
 }
 VIRTUAL int ActivationLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
@@ -117,7 +117,7 @@ VIRTUAL bool ActivationLayer::providesGradInputWrapper() const {
     return true;
 }
 VIRTUAL CLWrapper *ActivationLayer::getGradInputWrapper() {
-    return errorsForUpstreamWrapper;
+    return gradInputWrapper;
 }
 VIRTUAL bool ActivationLayer::hasOutputWrapper() const {
     return true;
@@ -126,7 +126,7 @@ VIRTUAL CLWrapper *ActivationLayer::getOutputWrapper() {
     return outputWrapper;
 }
 VIRTUAL float *ActivationLayer::getGradInput() {
-    return errorsForUpstream;
+    return gradInput;
 }
 VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
     return fn;
@@ -166,7 +166,7 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
 
-    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, errorsForUpstreamWrapper );
+    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, gradInputWrapper );
 
     if( !previousLayer->hasOutputWrapper() ) {
         delete imagesWrapper;

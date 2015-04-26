@@ -55,27 +55,27 @@ VIRTUAL int DropoutBackprop::getInputSize( int batchSize ) {
 VIRTUAL int DropoutBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float *errors, float *errorsForUpstream ) {
+VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float *errors, float *gradInput ) {
 //    cout << "DropoutBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper start" );
     CLWrapper *maskWrapper = cl->wrap( getOutputSize(batchSize), mask );
     CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 
     maskWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
-    errorsForUpstreamWrapper->createOnDevice();
+    gradInputWrapper->createOnDevice();
 
-    backpropErrors( batchSize, maskWrapper, errorsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, maskWrapper, errorsWrapper, gradInputWrapper );
 
-    errorsForUpstreamWrapper->copyToHost();
+    gradInputWrapper->copyToHost();
 
     delete maskWrapper;
     delete errorsWrapper;
-    delete errorsForUpstreamWrapper;
+    delete gradInputWrapper;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper end" );
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
+VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, CLWrapper *gradInputWrapper ) {
     throw runtime_error("DropoutBackprop::backpropErrors wrappers not implemented" );
 }
 

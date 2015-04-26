@@ -31,12 +31,12 @@ PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker
         cl( cl ),
         output(0),
         selectors(0),
-        errorsForUpstream(0),
+        gradInput(0),
         outputWrapper(0),
         selectorsWrapper(0),
-        errorsForUpstreamWrapper(0),
+        gradInputWrapper(0),
         outputCopiedToHost(false),
-        errorsForUpstreamCopiedToHost(false),
+        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0){
     if( inputImageSize == 0 ){
@@ -65,11 +65,11 @@ VIRTUAL PoolingLayer::~PoolingLayer() {
     if( selectors != 0 ) {
         delete[] selectors;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string PoolingLayer::getClassName() const {
@@ -93,11 +93,11 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     if( selectors != 0 ) {
         delete[] selectors;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
@@ -105,9 +105,9 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     outputWrapper = cl->wrap( getOutputSize(), output );
     selectors = new int[ getOutputSize() ];
     selectorsWrapper = cl->wrap( getOutputSize(), selectors );
-    errorsForUpstream = new float[ previousLayer->getOutputSize() ];
-    errorsForUpstreamWrapper = cl->wrap( previousLayer->getOutputSize(), errorsForUpstream );
-    errorsForUpstreamWrapper->createOnDevice();
+    gradInput = new float[ previousLayer->getOutputSize() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    gradInputWrapper->createOnDevice();
 }
 VIRTUAL int PoolingLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
@@ -139,7 +139,7 @@ VIRTUAL bool PoolingLayer::providesGradInputWrapper() const {
     return true;
 }
 VIRTUAL CLWrapper *PoolingLayer::getGradInputWrapper() {
-    return errorsForUpstreamWrapper;
+    return gradInputWrapper;
 }
 VIRTUAL bool PoolingLayer::hasOutputWrapper() const {
     return true;
@@ -148,7 +148,7 @@ VIRTUAL CLWrapper *PoolingLayer::getOutputWrapper() {
     return outputWrapper;
 }
 VIRTUAL float *PoolingLayer::getGradInput() {
-    return errorsForUpstream;
+    return gradInput;
 }
 VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
     //return previousLayer->getActivationFunction(); // I guess???
@@ -215,15 +215,15 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 
 //    selectorsWrapper->copyToHost();
 
-    poolingBackpropImpl->backpropErrors( batchSize, errorsWrapper, selectorsWrapper, errorsForUpstreamWrapper );
+    poolingBackpropImpl->backpropErrors( batchSize, errorsWrapper, selectorsWrapper, gradInputWrapper );
 
-//    errorsForUpstreamWrapper->copyToHost();
-//    float *errorsForUpstream = reinterpret_cast< float * >( errorsForUpstreamWrapper->getHostArray() );
-//    cout << "errorsForUpstream:" << endl;
+//    gradInputWrapper->copyToHost();
+//    float *gradInput = reinterpret_cast< float * >( gradInputWrapper->getHostArray() );
+//    cout << "gradInput:" << endl;
 //    for( int i = 0; i < inputImageSize; i++ ) {
 //        for( int j = 0; j < inputImageSize; j++ ) {
-////            cout << " " << errorsForUpstream[i * inputImageSize + j];
-//            if( errorsForUpstream[i * inputImageSize + j] != 0 ) {
+////            cout << " " << gradInput[i * inputImageSize + j];
+//            if( gradInput[i * inputImageSize + j] != 0 ) {
 //                cout << " *";
 //            } else {
 //                cout << " .";

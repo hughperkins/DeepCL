@@ -26,7 +26,7 @@ VIRTUAL BackpropErrorsv2Cpu::~BackpropErrorsv2Cpu() {
 }
 VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputData,
     float *errors, float *weights ) {
-    float *errorsForUpstream = new float[ batchSize * dim.inputCubeSize ];
+    float *gradInput = new float[ batchSize * dim.inputCubeSize ];
 
 //        Timer timer;
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cpu start" );
@@ -83,7 +83,7 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
                         * dim.inputPlanes + upstreamPlane )
                         * dim.inputImageSize + upstreamRow )
                         * dim.inputImageSize + upstreamCol;
-                    errorsForUpstream[upstreamResultIndex] = sumWeightTimesOutError * activationDerivativeUpstream;
+                    gradInput[upstreamResultIndex] = sumWeightTimesOutError * activationDerivativeUpstream;
                 }
             }
         }
@@ -91,11 +91,11 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
 //        timer.timeCheck("calced errors for upstream");   
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cpu end" );
 
-    return errorsForUpstream;
+    return gradInput;
 }
 VIRTUAL void BackpropErrorsv2Cpu::backpropErrors( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
-        CLWrapper *errorsForUpstreamWrapper ) {
+        CLWrapper *gradInputWrapper ) {
 
     inputDataWrapper->copyToHost();
     errorsWrapper->copyToHost();
@@ -105,14 +105,14 @@ VIRTUAL void BackpropErrorsv2Cpu::backpropErrors( int batchSize,
 //        biasWeightsWrapper->copyToHost();
 //        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
 //    }
-    float *errorsForUpstream = backpropErrors( batchSize, (float *)inputDataWrapper->getHostArray(),
+    float *gradInput = backpropErrors( batchSize, (float *)inputDataWrapper->getHostArray(),
          (float *)errorsWrapper->getHostArray(), (float *)weightsWrapper->getHostArray() );
-    float *errorsForUpstreamHostArray = (float*)errorsForUpstreamWrapper->getHostArray();
-    const int errorsForUpstreamWrapperSize = errorsForUpstreamWrapper->size();
-    for( int i = 0; i < errorsForUpstreamWrapperSize; i++ ) {
-        errorsForUpstreamHostArray[i] = errorsForUpstream[i];
+    float *gradInputHostArray = (float*)gradInputWrapper->getHostArray();
+    const int gradInputWrapperSize = gradInputWrapper->size();
+    for( int i = 0; i < gradInputWrapperSize; i++ ) {
+        gradInputHostArray[i] = gradInput[i];
     }
-    errorsForUpstreamWrapper->copyToDevice();
-    delete[] errorsForUpstream;
+    gradInputWrapper->copyToDevice();
+    delete[] gradInput;
 }
 

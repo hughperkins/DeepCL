@@ -26,7 +26,7 @@ public:
     int batchSize,
     CLWrapper *maskWrapper,
     CLWrapper *errorsWrapper,
-    CLWrapper *errorsForUpstreamWrapper );
+    CLWrapper *gradInputWrapper );
     DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
 
     // [[[end]]]

@@ -24,7 +24,7 @@ public:
     float *errors, float *weights );
     VIRTUAL void backpropErrors( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *errorsForUpstreamWrapper );
+    CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

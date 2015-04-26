@@ -27,7 +27,7 @@ public:
     virtual ~BackpropErrorsv2() {}
     virtual void backpropErrors( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *errors, CLWrapper *weightsWrapper,
-        CLWrapper *errorsForUpstream ) = 0;
+        CLWrapper *gradInput ) = 0;
 
     // [[[cog
     // import cog_addheaders    
