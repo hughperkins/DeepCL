@@ -153,7 +153,12 @@ deepcl_sourcestring = """LayerMaker.cpp NeuralNetMould.cpp
     MnistLoader.cpp OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp
     ActivationMaker.cpp
     ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
-    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp""" 
+    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp
+    DropoutMaker.cpp DropoutLayer.cpp DropoutPropagate.cpp DropoutBackprop.cpp
+    DropoutPropagateCpu.cpp DropoutPropagateGpuNaive.cpp
+    DropoutBackpropCpu.cpp DropoutBackpropGpuNaive.cpp
+    CopyBuffer.cpp MultiplyBuffer.cpp
+""" 
 deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []
 for source in deepcl_sources_all:
