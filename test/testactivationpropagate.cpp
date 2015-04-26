@@ -28,9 +28,9 @@ TEST( testactivationpropagate, basic ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int resultsSize = activationPropagate->getResultsSize( batchSize );
-    EXPECT_EQ( resultsSize, imageSize * imageSize );
-    float *output = new float[resultsSize];
+    int outputSize = activationPropagate->getOutputSize( batchSize );
+    EXPECT_EQ( outputSize, imageSize * imageSize );
+    float *output = new float[outputSize];
 
     activationPropagate->propagate( batchSize, data, output );
 
@@ -65,7 +65,7 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationPropagate->getResultsSize( batchSize );
+    int outputSize = activationPropagate->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
     activationPropagate->propagate( batchSize, data, output );
@@ -94,7 +94,7 @@ TEST( testactivationpropagate, fromwrappers ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = activationPropagate->getResultsSize( batchSize );
+    int outputSize = activationPropagate->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
@@ -199,7 +199,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     ActivationPropagate *activationPropagate1 = ActivationPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = activationPropagate0->getResultsSize( batchSize );
+    int outputSize = activationPropagate0->getOutputSize( batchSize );
 
     float *input = new float[ inputSize ];
     float *output = new float[ outputSize ];

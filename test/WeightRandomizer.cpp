@@ -27,7 +27,7 @@ using namespace ClConvolve;
 STATIC void WeightRandomizer::randomize( int seed, float *values, int numValues, float minvalue, float maxvalue ) {
 	
     MT19937 random;
-    random.seed((unsigned long)seed); // so always gives same results
+    random.seed((unsigned long)seed); // so always gives same output
     randomize( random, values, numValues, minvalue, maxvalue );
 }
 STATIC void WeightRandomizer::randomize( MT19937 &random, float *values, int numValues, float minvalue, float maxvalue ) {
@@ -37,20 +37,20 @@ STATIC void WeightRandomizer::randomize( MT19937 &random, float *values, int num
 }
 STATIC MT19937 WeightRandomizer::randomize( float *values, int numValues, float minvalue, float maxvalue ) {
     MT19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     randomize( random, values, numValues, minvalue, maxvalue );
     return random;
 }
 STATIC void WeightRandomizer::randomizeInts( float *values, int numValues, int minvalue, int maxvalue ) {
     MT19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     for( int i = 0; i < numValues; i++ ) {
         values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
     }
 }
 STATIC void WeightRandomizer::randomizeInts( int *values, int numValues, int minvalue, int maxvalue  ) {
     MT19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     for( int i = 0; i < numValues; i++ ) {
         values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
     }
@@ -58,28 +58,28 @@ STATIC void WeightRandomizer::randomizeInts( int *values, int numValues, int min
 STATIC void WeightRandomizer::randomizeInts( unsigned char *values, int numValues, int minvalue, int maxvalue  ) {
     randomizeInts( 0, values, numValues, minvalue, maxvalue );
 //    MT19937 random;
-//    random.seed(0); // so always gives same results
+//    random.seed(0); // so always gives same output
 //    for( int i = 0; i < numValues; i++ ) {
 //        values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
 //    }
 }
 STATIC void WeightRandomizer::randomizeInts( int seed, unsigned char *values, int numValues, int minvalue, int maxvalue  ) {
     MT19937 random;
-    random.seed((unsigned long)seed); // so always gives same results
-//    random.seed(0); // so always gives same results
+    random.seed((unsigned long)seed); // so always gives same output
+//    random.seed(0); // so always gives same output
     for( int i = 0; i < numValues; i++ ) {
         values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
     }
 }
 STATIC MT19937 WeightRandomizer::randomize( ClConvolve::vfloat &values, float minvalue, float maxvalue ) {
     MT19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     randomize( random, values.begin(), values.end(), minvalue, maxvalue );
     return random;
 }
 template< typename It > STATIC MT19937 WeightRandomizer::randomize( It begin, It end, float minvalue, float maxvalue ) {
     MT19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     randomize( random, begin, end, minvalue, maxvalue );
     return random;
 }
@@ -90,7 +90,7 @@ template< typename It > STATIC void WeightRandomizer::randomize( MT19937 &random
 }
 template< typename It > STATIC MT19937 WeightRandomizer::randomizeInts( It begin, It end, int minValue, int maxValue  ) {
     MT19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     randomizeInts( random, begin, end, minValue, maxValue );
     return random;
 }

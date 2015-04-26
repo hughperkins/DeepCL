@@ -23,12 +23,12 @@ VIRTUAL Propagate2::~Propagate2() {
 // only works for small filters
 // condition: square( dim.filterSize ) * dim.inputPlanes * 4 < 5000 (about 5KB)
 VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper ) {
+    CLWrapper *outputWrapper ) {
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
-    kernel->output( resultsWrapper );
+    kernel->output( outputWrapper );
 //        cout << "square(outputImageSize) " << square( outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );

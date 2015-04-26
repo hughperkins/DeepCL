@@ -23,7 +23,7 @@ public:
     const int outputImageSize;
 
     float const*input; // we dont own this
-    float *results; // we own this :-)
+    float *output; // we own this :-)
 
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
@@ -32,7 +32,7 @@ public:
             * outputImageSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
@@ -43,7 +43,7 @@ public:
     InputLayer( InputLayerMaker *maker );
     VIRTUAL ~InputLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float *getResults();
+    VIRTUAL float *getOutput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getPersistSize() const;
@@ -57,7 +57,7 @@ public:
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL std::string toString();
     VIRTUAL std::string asString() const;
 

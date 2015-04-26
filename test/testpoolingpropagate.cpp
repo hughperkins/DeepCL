@@ -28,7 +28,7 @@ TEST( testpoolingpropagate, basic ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = poolingPropagate->getResultsSize( batchSize );
+    int outputSize = poolingPropagate->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
@@ -69,7 +69,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = poolingPropagate->getResultsSize( batchSize );
+    int outputSize = poolingPropagate->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
@@ -103,7 +103,7 @@ TEST( testpoolingpropagate, fromwrappers ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = poolingPropagate->getResultsSize( batchSize );
+    int outputSize = poolingPropagate->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
@@ -214,7 +214,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = poolingPropagate0->getResultsSize( batchSize );
+    int outputSize = poolingPropagate0->getOutputSize( batchSize );
 
     float *input = new float[ inputSize ];
     int *selectors = new int[ outputSize ];

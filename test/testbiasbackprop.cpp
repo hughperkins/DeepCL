@@ -17,22 +17,22 @@ TEST( DISABLED_testbiasbackprop, one ) {
     net->convolutionalMaker()->numFilters(10)->filterSize(20)->tanh()->biased()->insert();
     net->setBatchSize(128);
     ConvolutionalLayer *layer = dynamic_cast< ConvolutionalLayer *>( net->layers[2] );
-    const int resultsSize = layer->getResultsSize();
+    const int outputSize = layer->getOutputSize();
     const int biasWeightsSize = layer->getBiasWeightsSize();
 
     mt19937 random;
-    random.seed(0); // so always gives same results
-    float *errors = new float[ resultsSize ];
-    float *results = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    random.seed(0); // so always gives same output
+    float *errors = new float[ outputSize ];
+    float *output = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-        results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
     float *biasWeightChanges = new float[biasWeightsSize];
 
     Timer timer;
     for( int i = 0; i < 200; i++ ) {
-//        layer->doBiasBackpropCpu( 0.7f, results, errors, biasWeightChanges );
+//        layer->doBiasBackpropCpu( 0.7f, output, errors, biasWeightChanges );
     }
     timer.timeCheck("after calcing bias change");
 
@@ -45,7 +45,7 @@ TEST( DISABLED_testbiasbackprop, one ) {
     EXPECT_FLOAT_NEAR( 0.0429298, biasWeightChanges[3] );
 
     delete[] biasWeightChanges;
-    delete[] results;
+    delete[] output;
     delete[] errors;
     delete net;    
 }

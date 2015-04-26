@@ -20,7 +20,7 @@ public:
     // ]]]
     // generated, using cog:
     PropagateCpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper );
+    VIRTUAL void propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
     VIRTUAL float *propagate( int batchSize, float *inputData, float *weights, float *biasWeights );
 
     // [[[end]]]

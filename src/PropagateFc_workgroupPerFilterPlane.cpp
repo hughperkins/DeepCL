@@ -21,18 +21,18 @@ VIRTUAL PropagateFc_workgroupPerFilterPlane::~PropagateFc_workgroupPerFilterPlan
     delete kernel1;
     delete kernel2;
 }
-VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper ) {
+VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate begin");
-    const int results1Size = batchSize * dim.numFilters * dim.filterSize;
-    float *results1 = new float[ results1Size ];
-    CLWrapper *results1Wrapper = cl->wrap( results1Size, results1 );
-    results1Wrapper->createOnDevice();
+    const int output1Size = batchSize * dim.numFilters * dim.filterSize;
+    float *output1 = new float[ output1Size ];
+    CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
+    output1Wrapper->createOnDevice();
 
     kernel1->in(batchSize);
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
     if( dim.biased ) kernel1->input( biasWeightsWrapper );
-    kernel1->output( results1Wrapper );
+    kernel1->output( output1Wrapper );
     kernel1->localFloats( dim.inputImageSize );
     kernel1->localFloats( batchSize * dim.filterSize );
 
@@ -46,14 +46,14 @@ VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWr
     StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate after first kernel");
 
     // now reduce again...
-    kernel2->in(batchSize)->in( results1Wrapper )->out( resultsWrapper );
+    kernel2->in(batchSize)->in( output1Wrapper )->out( outputWrapper );
     int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel2->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
 
-    delete results1Wrapper;
-    delete[] results1;
+    delete output1Wrapper;
+    delete[] output1;
     StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate end");
 }
 PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :

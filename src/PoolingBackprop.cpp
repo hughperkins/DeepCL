@@ -53,14 +53,14 @@ PoolingBackprop::PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes
 VIRTUAL int PoolingBackprop::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int PoolingBackprop::getResultsSize(int batchSize) {
+VIRTUAL int PoolingBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream ) {
 //    cout << "PoolingBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper start" );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
-    CLWrapper *selectorsWrapper = cl->wrap( getResultsSize(batchSize), selectors );
+    CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
+    CLWrapper *selectorsWrapper = cl->wrap( getOutputSize(batchSize), selectors );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
 
     errorsWrapper->copyToDevice();

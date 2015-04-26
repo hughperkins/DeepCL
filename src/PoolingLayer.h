@@ -31,15 +31,15 @@ public:
     PoolingPropagate *poolingPropagateImpl;
     PoolingBackprop *poolingBackpropImpl;
 
-    float *results;
+    float *output;
     int *selectors;
     float *errorsForUpstream;
 
-    CLWrapper *resultsWrapper;
+    CLWrapper *outputWrapper;
     CLWrapper *selectorsWrapper;
     CLWrapper *errorsForUpstreamWrapper;
 
-    bool resultsCopiedToHost;
+    bool outputCopiedToHost;
     bool errorsForUpstreamCopiedToHost;
 
     int batchSize;
@@ -54,17 +54,17 @@ public:
     VIRTUAL ~PoolingLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getResultsSize();
-    VIRTUAL float *getResults();
+    VIRTUAL int getOutputSize();
+    VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void propagate();

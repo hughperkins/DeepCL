@@ -13,7 +13,7 @@ public:
     int index;
     float *data;
     int *labels;
-    float *expectedResults;
+    float *expectedOutput;
     int N;
     const int numInputPlanes;
     const int numOutputPlanes;
@@ -23,7 +23,7 @@ public:
 			index(0),
             data(new float[8]),
             labels(new int[4]),
-            expectedResults(new float[8]),
+            expectedOutput(new float[8]),
             numInputPlanes(2),
             numOutputPlanes(2),
             imageSize(1),
@@ -32,14 +32,14 @@ public:
     ~LogicalDataCreator() {
         delete[] data;
         delete[] labels;
-        delete[] expectedResults;
+        delete[] expectedOutput;
     }
     void set( bool one, bool two, bool result ) {
         data[ index * 2 ] = one ? 0.5 : -0.5;
         data[ index * 2 + 1 ] = two ? 0.5 : -0.5;
         labels[index] = result ? 1 : 0;
-        expectedResults[index*2] = result ? fn->getFalse() : fn->getTrue();
-        expectedResults[index*2+1] = result ? fn->getTrue() : fn->getFalse();
+        expectedOutput[index*2] = result ? fn->getFalse() : fn->getTrue();
+        expectedOutput[index*2+1] = result ? fn->getTrue() : fn->getFalse();
         index++;
         N++;
     }

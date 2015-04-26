@@ -204,7 +204,7 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationPropagate->getResultsSize( batchSize );
+    int outputSize = activationPropagate->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 

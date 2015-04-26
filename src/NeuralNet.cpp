@@ -102,7 +102,7 @@ void NeuralNet::printBiasWeightsAsCode() {
 /// \publicapi
 ///
 /// Calculate the loss, based on the passed in expectedValues array
-/// which should be the same size as the results of the final layer
+/// which should be the same size as the output of the final layer
 /// of the network
 PUBLICAPI float NeuralNet::calcLoss(float const *expectedValues ) {
     return dynamic_cast<LossLayer*>(layers[layers.size()-1])->calcLoss( expectedValues );
@@ -207,12 +207,12 @@ PUBLICAPI void NeuralNet::backPropFromLabels( float learningRate, int const *lab
         StatefulTimer::setPrefix("" );
     }
 }
-PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedResults) {
+PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedOutput) {
     LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
     if( lossLayer == 0 ) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
     }
-    lossLayer->calcErrors( expectedResults );
+    lossLayer->calcErrors( expectedOutput );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backProp( learningRate );
@@ -222,8 +222,8 @@ PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedRes
 PUBLICAPI int NeuralNet::getNumLayers() {
     return (int)layers.size();
 }
-PUBLICAPI float const *NeuralNet::getResults( int layer ) const {
-    return layers[layer]->getResults();
+PUBLICAPI float const *NeuralNet::getOutput( int layer ) const {
+    return layers[layer]->getOutput();
 }
 PUBLICAPI int NeuralNet::getInputCubeSize() const {
     return layers[ 0 ]->getOutputCubeSize();
@@ -231,11 +231,11 @@ PUBLICAPI int NeuralNet::getInputCubeSize() const {
 PUBLICAPI int NeuralNet::getOutputCubeSize() const {
     return layers[ layers.size() - 1 ]->getOutputCubeSize();
 }
-PUBLICAPI float const *NeuralNet::getResults() const {
-    return getResults( (int)layers.size() - 1 );
+PUBLICAPI float const *NeuralNet::getOutput() const {
+    return getOutput( (int)layers.size() - 1 );
 }
-PUBLICAPI VIRTUAL int NeuralNet::getResultsSize() const {
-    return getLastLayer()->getResultsSize();
+PUBLICAPI VIRTUAL int NeuralNet::getOutputSize() const {
+    return getLastLayer()->getOutputSize();
 }
 void NeuralNet::print() {
     cout << this->asString();

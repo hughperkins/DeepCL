@@ -199,7 +199,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = dropoutPropagate->getResultsSize( batchSize );
+    int outputSize = dropoutPropagate->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 

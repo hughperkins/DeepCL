@@ -26,11 +26,11 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
         outputImageSize( previousLayer->getOutputImageSize() ),
         fn( maker->_activationFunction ),
         cl( cl ),
-        results(0),
+        output(0),
         errorsForUpstream(0),
-        resultsWrapper(0),
+        outputWrapper(0),
         errorsForUpstreamWrapper(0),
-        resultsCopiedToHost(false),
+        outputCopiedToHost(false),
         errorsForUpstreamCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
@@ -48,11 +48,11 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
 VIRTUAL ActivationLayer::~ActivationLayer() {
     delete activationPropagateImpl;
     delete activationBackpropImpl;
-    if( resultsWrapper != 0 ) {
-        delete resultsWrapper;
+    if( outputWrapper != 0 ) {
+        delete outputWrapper;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
@@ -70,11 +70,11 @@ VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( resultsWrapper != 0 ) {
-        delete resultsWrapper;
+    if( outputWrapper != 0 ) {
+        delete outputWrapper;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     if( errorsForUpstreamWrapper != 0 ) {
         delete errorsForUpstreamWrapper;
@@ -84,26 +84,26 @@ VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[ getResultsSize() ];
-    resultsWrapper = cl->wrap( getResultsSize(), results );
-    errorsForUpstream = new float[ previousLayer->getResultsSize() ];
-    errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
+    output = new float[ getOutputSize() ];
+    outputWrapper = cl->wrap( getOutputSize(), output );
+    errorsForUpstream = new float[ previousLayer->getOutputSize() ];
+    errorsForUpstreamWrapper = cl->wrap( previousLayer->getOutputSize(), errorsForUpstream );
     errorsForUpstreamWrapper->createOnDevice();
 }
-VIRTUAL int ActivationLayer::getResultsSize() {
+VIRTUAL int ActivationLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL float *ActivationLayer::getResults() {
-    if( !resultsCopiedToHost ) {
-        resultsWrapper->copyToHost();
-        resultsCopiedToHost = true;
+VIRTUAL float *ActivationLayer::getOutput() {
+    if( !outputCopiedToHost ) {
+        outputWrapper->copyToHost();
+        outputCopiedToHost = true;
     }
-    return results;
+    return output;
 }
 VIRTUAL bool ActivationLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL int ActivationLayer::getResultsSize() const {
+VIRTUAL int ActivationLayer::getOutputSize() const {
 //    int outputImageSize = inputImageSize / poolingSize;
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
@@ -119,11 +119,11 @@ VIRTUAL bool ActivationLayer::providesGradInputWrapper() const {
 VIRTUAL CLWrapper *ActivationLayer::getGradInputWrapper() {
     return errorsForUpstreamWrapper;
 }
-VIRTUAL bool ActivationLayer::hasResultsWrapper() const {
+VIRTUAL bool ActivationLayer::hasOutputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *ActivationLayer::getResultsWrapper() {
-    return resultsWrapper;
+VIRTUAL CLWrapper *ActivationLayer::getOutputWrapper() {
+    return outputWrapper;
 }
 VIRTUAL float *ActivationLayer::getGradInput() {
     return errorsForUpstream;
@@ -132,27 +132,27 @@ VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
     return fn;
 }
 VIRTUAL void ActivationLayer::propagate() {
-    CLWrapper *upstreamResultsWrapper = 0;
-    if( previousLayer->hasResultsWrapper() ) {
-        upstreamResultsWrapper = previousLayer->getResultsWrapper();
+    CLWrapper *upstreamOutputWrapper = 0;
+    if( previousLayer->hasOutputWrapper() ) {
+        upstreamOutputWrapper = previousLayer->getOutputWrapper();
     } else {
-        float *upstreamResults = previousLayer->getResults();
-        upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
-        upstreamResultsWrapper->copyToDevice();
+        float *upstreamOutput = previousLayer->getOutput();
+        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
+        upstreamOutputWrapper->copyToDevice();
     }
-    activationPropagateImpl->propagate( batchSize, upstreamResultsWrapper, resultsWrapper );
-    if( !previousLayer->hasResultsWrapper() ) {
-        delete upstreamResultsWrapper;
+    activationPropagateImpl->propagate( batchSize, upstreamOutputWrapper, outputWrapper );
+    if( !previousLayer->hasOutputWrapper() ) {
+        delete upstreamOutputWrapper;
     }
 }
 VIRTUAL void ActivationLayer::backProp( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
     CLWrapper *imagesWrapper = 0;
-    if( previousLayer->hasResultsWrapper() ) {
-        imagesWrapper = previousLayer->getResultsWrapper();
+    if( previousLayer->hasOutputWrapper() ) {
+        imagesWrapper = previousLayer->getOutputWrapper();
     } else {
-        imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
+        imagesWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
         imagesWrapper->copyToDevice();
     }
 
@@ -161,14 +161,14 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
     if( nextLayer->providesGradInputWrapper() ) {
         errorsWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getGradInput() );
+        errorsWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
         errorsWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
 
     activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, errorsForUpstreamWrapper );
 
-    if( !previousLayer->hasResultsWrapper() ) {
+    if( !previousLayer->hasOutputWrapper() ) {
         delete imagesWrapper;
     }
     if( weOwnErrorsWrapper ) {

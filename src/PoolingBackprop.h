@@ -50,7 +50,7 @@ public:
     STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getResultsSize(int batchSize);
+    VIRTUAL int getOutputSize(int batchSize);
     VIRTUAL void backpropErrors( int batchSize, float *errors, int *selectors, float *errorsForUpstream );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, CLWrapper *errorsForUpstreamWrapper );
 

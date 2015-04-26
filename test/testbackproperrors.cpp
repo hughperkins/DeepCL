@@ -30,18 +30,18 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
-    int inputSize = net->getLayer(0)->getResultsSize();
-    int resultsSize = net->getLayer(2)->getResultsSize();
+    int inputSize = net->getLayer(0)->getOutputSize();
+    int outputSize = net->getLayer(2)->getOutputSize();
     int weightsSize1 = net->getLayer(1)->getWeightsSize();
     int weightsSize2 = net->getLayer(2)->getWeightsSize();
 
     float *inputData = new float[std::max<int>(10000, inputSize )];
-    float *expectedResults = new float[std::max<int>(10000, resultsSize )];
+    float *expectedOutput = new float[std::max<int>(10000, outputSize )];
     memset( inputData, 0, sizeof(float) * std::max<int>(10000, inputSize ) );
-    memset( expectedResults, 0, sizeof(float) * std::max<int>(10000, resultsSize ) );
+    memset( expectedOutput, 0, sizeof(float) * std::max<int>(10000, outputSize ) );
 //    int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, std::max<int>(10000, inputSize ), -2.0f, 2.0f );
-    WeightRandomizer::randomize( random, expectedResults, std::max<int>(10000, resultsSize ), -2.0f, 2.0f );
+    WeightRandomizer::randomize( random, expectedOutput, std::max<int>(10000, outputSize ), -2.0f, 2.0f );
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weights, weightsSize1, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weights, weightsSize2, -2.0f, 2.0f );
@@ -61,9 +61,9 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
 
         net->propagate( inputData );
     //    net->print();
-        float loss = net->calcLoss(expectedResults);
-        dynamic_cast<LossLayer*>(net->getLayer(3))->calcLoss(expectedResults);
-        net->backProp( learningRate, expectedResults );
+        float loss = net->calcLoss(expectedOutput);
+        dynamic_cast<LossLayer*>(net->getLayer(3))->calcLoss(expectedOutput);
+        net->backProp( learningRate, expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
@@ -72,7 +72,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weightsWrapper->copyToDevice();
         net->propagate( inputData );
 
-        float loss2 = net->calcLoss(expectedResults);
+        float loss2 = net->calcLoss(expectedOutput);
         float lossChange = loss - loss2;
         cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
 
@@ -106,7 +106,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
 
 //    delete[] weights1;
 //    delete[] errors;
-//    delete[] results;
+//    delete[] output;
     delete[] inputData;
 }
 
@@ -236,18 +236,18 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     errorsForUpstreamWrapper0->copyToHost();
     errorsForUpstreamWrapper1->copyToHost();
 
-    int resultsSize = errorsForUpstreamSize;
+    int outputSize = errorsForUpstreamSize;
     cout << dim << endl;
     bool same = true;
-    for( int i = 0; i < max( 20, resultsSize ); i++ ) {
-        if( i < resultsSize ) {
+    for( int i = 0; i < max( 20, outputSize ); i++ ) {
+        if( i < outputSize ) {
             if( abs( errorsForUpstream0[i] - errorsForUpstream1[i] ) < 0.000001 || abs( errorsForUpstream0[i] - errorsForUpstream1[i] ) <= 0.001 * max( abs( errorsForUpstream0[i] ), abs( errorsForUpstream1[i] ) ) ) {
                 if( i < 20 ) {
-                    cout << "results[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
+                    cout << "output[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
                     cout << " SAME";
                 }
             } else {
-                cout << "results[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
+                cout << "output[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
                 cout << " DIFF";
                 same = false;
             }
@@ -330,20 +330,20 @@ float *test( int imageSize ) {
 
     int weightsSize = dim.filtersSize;
     int biasWeightsSize = dim.numFilters;
-    int resultsSize = batchSize * dim.outputCubeSize;
+    int outputSize = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
     float *biasWeights = new float[max( 10000, biasWeightsSize)];
-    float *errors = new float[max(10000, resultsSize )];
-    float *results = new float[max(10000, resultsSize )];
+    float *errors = new float[max(10000, outputSize )];
+    float *output = new float[max(10000, outputSize )];
     WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
     WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
-    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
-    WeightRandomizer::randomize( results, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
+    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
     OpenCLHelper cl;
     BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
-    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, results, weights, biasWeights, errors );
+    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, output, weights, biasWeights, errors );
     StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
@@ -392,20 +392,20 @@ float *test( int imageSize ) {
 
 //    int weightsSize = dim.filtersSize;
 //    int biasWeightsSize = dim.numFilters;
-//    int resultsSize = batchSize * dim.outputCubeSize;
+//    int outputSize = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
 //    float *biasWeights = new float[max( 10000, biasWeightsSize)];
-//    float *errors = new float[max(10000, resultsSize )];
-//    float *results = new float[max(10000, resultsSize )];
+//    float *errors = new float[max(10000, outputSize )];
+//    float *output = new float[max(10000, outputSize )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
 //    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
-//    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
-//    WeightRandomizer::randomize( results, max(10000, resultsSize ), -1, 1 );
+//    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
+//    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
 //    OpenCLHelper cl;
 //    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, results, weights, biasWeights, errors );
+//    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, output, weights, biasWeights, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -427,20 +427,20 @@ float *test( int imageSize ) {
 
 //    int weightsSize = dim.filtersSize;
 //    int biasWeightsSize = dim.numFilters;
-//    int resultsSize = batchSize * dim.outputCubeSize;
+//    int outputSize = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
 //    float *biasWeights = new float[max( 10000, biasWeightsSize)];
-//    float *errors = new float[max(10000, resultsSize )];
-//    float *results = new float[max(10000, resultsSize )];
+//    float *errors = new float[max(10000, outputSize )];
+//    float *output = new float[max(10000, outputSize )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
 //    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
-//    WeightRandomizer::randomize( errors, max(10000, resultsSize ), -1, 1 );
-//    WeightRandomizer::randomize( results, max(10000, resultsSize ), -1, 1 );
+//    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
+//    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
 //    OpenCLHelper cl;
 //    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, results, weights, biasWeights, errors );
+//    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, output, weights, biasWeights, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -469,23 +469,23 @@ TEST( testbackproperrors, comparespecific ) {
 
     int weightsSize = dim.filtersSize;
     int biasWeightsSize = dim.numFilters;
-    int resultsSize = batchSize * dim.outputCubeSize;
+    int outputSize = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
     float *biasWeights = new float[max( 10000, biasWeightsSize)];
-    float *errors = new float[max(10000, resultsSize )];
-    float *results = new float[max(10000, resultsSize )];
+    float *errors = new float[max(10000, outputSize )];
+    float *output = new float[max(10000, outputSize )];
     memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
-    memset( errors, 0, sizeof(float) * max(10000, resultsSize ) );
-    memset( results, 0, sizeof(float) * max(10000, resultsSize ) );
+    memset( errors, 0, sizeof(float) * max(10000, outputSize ) );
+    memset( output, 0, sizeof(float) * max(10000, outputSize ) );
     mt19937 random = WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
     WeightRandomizer::randomize( random, biasWeights, max( 10000, biasWeightsSize), -1, 1 );
-    WeightRandomizer::randomize( random, errors, max(10000, resultsSize ), -1, 1 );
-    WeightRandomizer::randomize( random, results, max(10000, resultsSize ), -1, 1 );
+    WeightRandomizer::randomize( random, errors, max(10000, outputSize ), -1, 1 );
+    WeightRandomizer::randomize( random, output, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
 //    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
-//    WeightRandomizer::randomizeInts( errors, max(10000, resultsSize ), 0, 3 );
-//    WeightRandomizer::randomizeInts( results, max(10000, resultsSize ), 0, 3 );
+//    WeightRandomizer::randomizeInts( errors, max(10000, outputSize ), 0, 3 );
+//    WeightRandomizer::randomizeInts( output, max(10000, outputSize ), 0, 3 );
 
 //    weights[0] = 3;
 //    weights[1] = 5;
@@ -512,15 +512,15 @@ TEST( testbackproperrors, comparespecific ) {
 
     OpenCLHelper cl;
     BackpropErrorsv2 *backpropErrorsImpl1 = BackpropErrorsv2::instanceSpecific( 0, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, results, weights, biasWeights, errors );
+    float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, output, weights, biasWeights, errors );
     BackpropErrorsv2 *backpropErrorsImpl2 = BackpropErrorsv2::instanceSpecific( 1, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, results, weights, biasWeights, errors );
+    float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, output, weights, biasWeights, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
     cout << dim << endl;
     for( int i = 0; i < 25; i++ ) {
-        cout << "results[" << i << "]=" << errorsForUpstream1[i] << " " << errorsForUpstream2[i];
-        if( i < resultsSize ) {
+        cout << "output[" << i << "]=" << errorsForUpstream1[i] << " " << errorsForUpstream2[i];
+        if( i < outputSize ) {
             if( errorsForUpstream1[i] == errorsForUpstream2[i] ) {
                 cout << " SAME";
             } else {

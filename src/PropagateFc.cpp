@@ -23,26 +23,26 @@ VIRTUAL PropagateFc::~PropagateFc() {
     delete kernel_activate;
     delete kPerElementTiledAdd;
 }
-VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper ) {
+VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("PropagateFc::propagate begin");
 
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
 
-    const int results1Size = batchSize * dim.numFilters * dim.numInputPlanes * dim.filterSize;
-    float *results1 = new float[ results1Size ];
-    CLWrapper *results1Wrapper = cl->wrap( results1Size, results1 );
-    results1Wrapper->createOnDevice();
+    const int output1Size = batchSize * dim.numFilters * dim.numInputPlanes * dim.filterSize;
+    float *output1 = new float[ output1Size ];
+    CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
+    output1Wrapper->createOnDevice();
 
-    const int results2Size = batchSize * dim.numFilters * dim.numInputPlanes;
-    float *results2 = new float[ results2Size ];
-    CLWrapper *results2Wrapper = cl->wrap( results2Size, results2 );
-    results2Wrapper->createOnDevice();
+    const int output2Size = batchSize * dim.numFilters * dim.numInputPlanes;
+    float *output2 = new float[ output2Size ];
+    CLWrapper *output2Wrapper = cl->wrap( output2Size, output2 );
+    output2Wrapper->createOnDevice();
 
     kernel1->in(batchSize);
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
 //    if( dim.biased ) kernel1->input( biasWeightsWrapper );
-    kernel1->output( results1Wrapper );
+    kernel1->output( output1Wrapper );
     kernel1->localFloats( dim.inputImageSize );
     kernel1->localFloats( dim.numFilters * dim.filterSize );
 
@@ -57,7 +57,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     // now reduce over rows 
     kernel_reduce->in(batchSize * dim.numFilters * dim.numInputPlanes)
         ->in( dim.filterSize )
-        ->in( results1Wrapper )->out( results2Wrapper );
+        ->in( output1Wrapper )->out( output2Wrapper );
     int maxglobalId = batchSize * dim.numFilters * dim.numInputPlanes;
 //    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
@@ -68,7 +68,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
 
     // reduce over input planes 
     kernel_reduce->in(batchSize * dim.numFilters)->in( dim.numInputPlanes )
-        ->in( results2Wrapper )->out( resultsWrapper );
+        ->in( output2Wrapper )->out( outputWrapper );
     maxglobalId = batchSize * dim.numFilters;
     numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
@@ -79,7 +79,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
 
     // add bias...
     if( dim.biased ) {
-        kPerElementTiledAdd->in( batchSize * dim.numFilters )->in( dim.numFilters )->inout( resultsWrapper )->in( biasWeightsWrapper );
+        kPerElementTiledAdd->in( batchSize * dim.numFilters )->in( dim.numFilters )->inout( outputWrapper )->in( biasWeightsWrapper );
         maxglobalId = batchSize * dim.numFilters;
         numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         kPerElementTiledAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
@@ -88,18 +88,18 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     }
 
     kernel_activate->in( batchSize * dim.numFilters )
-        ->inout( resultsWrapper );
+        ->inout( outputWrapper );
     maxglobalId = batchSize * dim.numFilters;
     numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("PropagateFc::propagate after activate");
 
-    delete results2Wrapper;
-    delete[] results2;
+    delete output2Wrapper;
+    delete[] output2;
 
-    delete results1Wrapper;
-    delete[] results1;
+    delete output1Wrapper;
+    delete[] output1;
     StatefulTimer::timeCheck("PropagateFc::propagate end");
 }
 PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :

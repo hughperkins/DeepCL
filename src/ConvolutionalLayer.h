@@ -36,7 +36,7 @@ public:
     LayerDimensions dim;
     ActivationFunction const *const activationFunction;
 
-    float *results;
+    float *output;
     float *weights;
     float *biasWeights;
 
@@ -45,7 +45,7 @@ public:
 //    const bool padZeros;
 
     CLWrapper *weightsWrapper;
-    CLWrapper *resultsWrapper;
+    CLWrapper *outputWrapper;
     CLWrapper *gradInputWrapper;
 
     int batchSize;
@@ -53,7 +53,7 @@ public:
 
     float *gradInput;
 
-    bool resultsCopiedToHost;
+    bool outputCopiedToHost;
     bool gradInputCopiedToHost;
     bool weightsCopiedToHost;
 
@@ -74,13 +74,13 @@ public:
             * dim.outputImageSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
 //    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     // images are organized like [imageId][plane][imagerow][imagecol]
     // filters are organized like [filterid][plane][filterrow][filtercol]
-    // results are organized like [imageid][filterid][imagerow][imagecol]
+    // output are organized like [imageid][filterid][imagerow][imagecol]
 //    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
 //        return ( ( outPlane * upstreamNumPlanes 
 //             + inPlane ) * filterSize 
@@ -103,13 +103,13 @@ public:
     VIRTUAL float *getGradInput();
     VIRTUAL bool providesgradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL float *getBiasWeights();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
     void randomizeWeights();
@@ -118,7 +118,7 @@ public:
     VIRTUAL void printOutput() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
-    VIRTUAL float * getResults();
+    VIRTUAL float * getOutput();
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getPersistSize() const;

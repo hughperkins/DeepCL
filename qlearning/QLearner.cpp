@@ -61,16 +61,16 @@ void QLearner::learnFromPast() {
 
     // get next q values, based on forward prop 'afters'
     net->propagate( afters );
-    float const *allResults = net->getResults();
+    float const *allOutput = net->getOutput();
     float *bestQ = new float[ batchSize ];
     int *bestAction = new int[ batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
-        float const *results = allResults + n * numActions;
-        float thisBestQ = results[0];
+        float const *output = allOutput + n * numActions;
+        float thisBestQ = output[0];
         int thisBestAction = 0;
         for( int action = 1; action < numActions; action++ ) {
-            if( results[action] > thisBestQ ) {
-                thisBestQ = results[action];
+            if( output[action] > thisBestQ ) {
+                thisBestQ = output[action];
                 thisBestAction = action;
             }
         }
@@ -80,9 +80,9 @@ void QLearner::learnFromPast() {
     // forward prop 'befores', set up expected values, and backprop
     // new q values
     net->propagate( befores );
-    allResults = net->getResults();
+    allOutput = net->getOutput();
     float *expectedValues = new float[ numActions * batchSize ];
-    arrayCopy( expectedValues, allResults, batchSize * numActions );
+    arrayCopy( expectedValues, allOutput, batchSize * numActions );
     for( int n = 0; n < batchSize; n++ ) {
         Experience *experience = experiences[n]; 
         if( experience->isEndState ) {
@@ -132,10 +132,10 @@ int QLearner::step( float lastReward, bool wasReset, float *perception ) { // do
         net->propagate( perception );
         float highestQ = 0;
         int bestAction = 0;
-        float const*results = net->getResults();
+        float const*output = net->getOutput();
         for( int i = 0; i < numActions; i++ ) {
-            if( i == 0 || results[i] > highestQ ) {
-                highestQ = results[i];
+            if( i == 0 || output[i] > highestQ ) {
+                highestQ = output[i];
                 bestAction = i;
             }
         }

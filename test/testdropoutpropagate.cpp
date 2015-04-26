@@ -54,9 +54,9 @@ TEST( testdropoutpropagate, basic ) {
                      3, 8.2f, 4.1f,
                      3, -33.1f, 14.2f,
     };
-    int resultsSize = dropoutPropagate->getResultsSize( batchSize );
-    EXPECT_FLOAT_NEAR( resultsSize, imageSize * imageSize );
-    float *output = new float[resultsSize];
+    int outputSize = dropoutPropagate->getOutputSize( batchSize );
+    EXPECT_FLOAT_NEAR( outputSize, imageSize * imageSize );
+    float *output = new float[outputSize];
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
@@ -108,7 +108,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
         1,1,
         0,1
     };
-    int outputSize = dropoutPropagate->getResultsSize( batchSize );
+    int outputSize = dropoutPropagate->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
@@ -144,7 +144,7 @@ TEST( testdropoutpropagate, fromwrappers ) {
             1,0,1,0,
             0,0,1,1
     };
-    int outputSize = dropoutPropagate->getResultsSize( batchSize );
+    int outputSize = dropoutPropagate->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
@@ -246,7 +246,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = dropoutPropagate0->getResultsSize( batchSize );
+    int outputSize = dropoutPropagate0->getOutputSize( batchSize );
 
     unsigned char *mask = new unsigned char[ inputSize ];
     float *input = new float[ inputSize ];

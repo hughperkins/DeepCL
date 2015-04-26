@@ -90,7 +90,7 @@ public:
 //    string restartableFilename = "weights.dat";
     float learningRate = 0.0001f;
     int biased = 1;
-//    string resultsFilename = "results.txt";
+//    string outputFilename = "output.txt";
     Config() {
     }
 };
@@ -107,7 +107,7 @@ float printAccuracy( string name, NeuralNet *net, float ***images, int *labels, 
             net->setBatchSize( thisBatchSize );
         }
         net->propagate( &(images[batchStart][0][0]) );
-        float const*results = net->getResults();
+        float const*output = net->getOutput();
         int thisnumright = net->calcNumRight( &(labels[batchStart]) );
         testNumRight += thisnumright;
     }
@@ -258,7 +258,7 @@ void go(Config config) {
             net->setBatchSize( thisBatchSize );
         }
         net->propagate( &(imagesTest[batchStart][0][0]) );
-        float const*resultsTest = net->getResults();
+        float const*outputTest = net->getOutput();
         totalNumber += thisBatchSize;
         totalNumRight += net->calcNumRight( &(labelsTest[batchStart]) );
     }
@@ -300,7 +300,7 @@ int main( int argc, char *argv[] ) {
             cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
 //            cout << "    restartable=[weights are persistent?] (" << config.restartable << ")" << endl;
 //            cout << "    restartablefilename=[filename to store weights] (" << config.restartableFilename << ")" << endl;
-//            cout << "    resultsfilename=[filename to store results] (" << config.resultsFilename << ")" << endl;
+//            cout << "    outputfilename=[filename to store output] (" << config.outputFilename << ")" << endl;
         } 
     }
     for( int i = 1; i < argc; i++ ) {
@@ -331,7 +331,7 @@ int main( int argc, char *argv[] ) {
            if( key == "learningrate" ) config.learningRate = atof(value);
 //           if( key == "restartable" ) config.restartable = atoi(value);
 //           if( key == "restartablefilename" ) config.restartableFilename = value;
-//           if( key == "resultsfilename" ) config.resultsFilename = value;
+//           if( key == "outputfilename" ) config.outputFilename = value;
        }
     }
     go( config );

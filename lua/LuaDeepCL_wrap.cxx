@@ -2095,11 +2095,11 @@ void GenericLoader_load( std::string trainFilepath, float *images, int *labels, 
   //  delete[] ucarray;
 }
 
-SWIGINTERN void NeuralNet_getResults__SWIG_1(NeuralNet *self,float *resultsParam){
-            int resultsSize = self->getResultsSize();
-            float const*results = self->getResults();
-            for( int i = 0; i < resultsSize; i++ ) {
-                resultsParam[i] = results[i];
+SWIGINTERN void NeuralNet_getOutput__SWIG_1(NeuralNet *self,float *outputParam){
+            int outputSize = self->getOutputSize();
+            float const*output = self->getOutput();
+            for( int i = 0; i < outputSize; i++ ) {
+                outputParam[i] = output[i];
             }
         }
 
@@ -2150,7 +2150,7 @@ typedef float floatSlice;
 SWIGINTERN floatSlice *new_floatSlice__SWIG_0(float *base,int offset){
   return base + offset;
 }
-SWIGINTERN floatSlice *new_floatSlice__SWIG_1(float *base){ // will try using this for `float *getResults()`
+SWIGINTERN floatSlice *new_floatSlice__SWIG_1(float *base){ // will try using this for `float *getOutput()`
   return base;
 }
 SWIGINTERN void delete_floatSlice(floatSlice *self){
@@ -2164,7 +2164,7 @@ typedef int intSlice;
 SWIGINTERN intSlice *new_intSlice__SWIG_0(int *base,int offset){
   return base + offset;
 }
-SWIGINTERN intSlice *new_intSlice__SWIG_1(int *base){ // will try using this for `float *getResults()`
+SWIGINTERN intSlice *new_intSlice__SWIG_1(int *base){ // will try using this for `float *getOutput()`
   return base;
 }
 SWIGINTERN void delete_intSlice(intSlice *self){
@@ -2782,19 +2782,19 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_getResults__SWIG_0(lua_State* L) {
+static int _wrap_NeuralNet_getOutput__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float *result = 0 ;
   
-  SWIG_check_num_args("NeuralNet::getResults",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResults",1,"NeuralNet const *");
+  SWIG_check_num_args("NeuralNet::getOutput",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getOutput",1,"NeuralNet const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("NeuralNet_getResults",1,SWIGTYPE_p_NeuralNet);
+    SWIG_fail_ptr("NeuralNet_getOutput",1,SWIGTYPE_p_NeuralNet);
   }
   
-  result = (float *)((NeuralNet const *)arg1)->getResults();
+  result = (float *)((NeuralNet const *)arg1)->getOutput();
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
   return SWIG_arg;
   
@@ -2806,19 +2806,19 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_getResultsSize(lua_State* L) {
+static int _wrap_NeuralNet_getOutputSize(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   int result;
   
-  SWIG_check_num_args("NeuralNet::getResultsSize",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResultsSize",1,"NeuralNet const *");
+  SWIG_check_num_args("NeuralNet::getOutputSize",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getOutputSize",1,"NeuralNet const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("NeuralNet_getResultsSize",1,SWIGTYPE_p_NeuralNet);
+    SWIG_fail_ptr("NeuralNet_getOutputSize",1,SWIGTYPE_p_NeuralNet);
   }
   
-  result = (int)((NeuralNet const *)arg1)->getResultsSize();
+  result = (int)((NeuralNet const *)arg1)->getOutputSize();
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -2854,25 +2854,25 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_getResults__SWIG_1(lua_State* L) {
+static int _wrap_NeuralNet_getOutput__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float *arg2 = (float *) 0 ;
   
-  SWIG_check_num_args("NeuralNet::getResults",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getResults",1,"NeuralNet *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("NeuralNet::getResults",2,"float *");
+  SWIG_check_num_args("NeuralNet::getOutput",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::getOutput",1,"NeuralNet *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("NeuralNet::getOutput",2,"float *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("NeuralNet_getResults",1,SWIGTYPE_p_NeuralNet);
+    SWIG_fail_ptr("NeuralNet_getOutput",1,SWIGTYPE_p_NeuralNet);
   }
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("NeuralNet_getResults",2,SWIGTYPE_p_float);
+    SWIG_fail_ptr("NeuralNet_getOutput",2,SWIGTYPE_p_float);
   }
   
-  NeuralNet_getResults__SWIG_1(arg1,arg2);
+  NeuralNet_getOutput__SWIG_1(arg1,arg2);
   
   return SWIG_arg;
   
@@ -2884,7 +2884,7 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_getResults(lua_State* L) {
+static int _wrap_NeuralNet_getOutput(lua_State* L) {
   int argc;
   int argv[3]={
     1,2,3
@@ -2902,7 +2902,7 @@ static int _wrap_NeuralNet_getResults(lua_State* L) {
       }
     }
     if (_v) {
-      return _wrap_NeuralNet_getResults__SWIG_0(L);
+      return _wrap_NeuralNet_getOutput__SWIG_0(L);
     }
   }
   if (argc == 2) {
@@ -2925,15 +2925,15 @@ static int _wrap_NeuralNet_getResults(lua_State* L) {
         }
       }
       if (_v) {
-        return _wrap_NeuralNet_getResults__SWIG_1(L);
+        return _wrap_NeuralNet_getOutput__SWIG_1(L);
       }
     }
   }
   
-  SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'NeuralNet_getResults'\n"
+  SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'NeuralNet_getOutput'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    NeuralNet::getResults() const\n"
-    "    NeuralNet::getResults(float *)\n");
+    "    NeuralNet::getOutput() const\n"
+    "    NeuralNet::getOutput(float *)\n");
   lua_error(L);return 0;
 }
 
@@ -2949,9 +2949,9 @@ static swig_lua_method swig_NeuralNet_methods[] = {
     {"backPropFromLabels", _wrap_NeuralNet_backPropFromLabels}, 
     {"backProp", _wrap_NeuralNet_backProp}, 
     {"calcNumRight", _wrap_NeuralNet_calcNumRight}, 
-    {"getResultsSize", _wrap_NeuralNet_getResultsSize}, 
+    {"getOutputSize", _wrap_NeuralNet_getOutputSize}, 
     {"asString", _wrap_NeuralNet_asString}, 
-    {"getResults", _wrap_NeuralNet_getResults}, 
+    {"getOutput", _wrap_NeuralNet_getOutput}, 
     {0,0}
 };
 static swig_lua_attribute swig_NeuralNet_attributes[] = {

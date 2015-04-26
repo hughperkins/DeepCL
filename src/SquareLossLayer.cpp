@@ -36,7 +36,7 @@ VIRTUAL float*SquareLossLayer::getGradInput() {
 //}
 VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
     float loss = 0;
-    float *results = getResults();
+    float *output = getOutput();
 //    cout << "SquareLossLayer::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
@@ -51,7 +51,7 @@ VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
                          * imageSize + outCol;
  //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
                     float expectedOutput = expected[resultOffset];
-                    float actualOutput = results[resultOffset];
+                    float actualOutput = output[resultOffset];
                     float diff = actualOutput - expectedOutput;
                     float squarederror = diff * diff;
                     loss += squarederror;
@@ -73,16 +73,16 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     allocatedSize = batchSize;
-    errors = new float[ batchSize * previousLayer->getResultsSize() ];
+    errors = new float[ batchSize * previousLayer->getOutputSize() ];
 }
-VIRTUAL void SquareLossLayer::calcErrors( float const*expectedResults ) {
+VIRTUAL void SquareLossLayer::calcErrors( float const*expectedOutput ) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int resultsSize = previousLayer->getResultsSize();
-    float *results = previousLayer->getResults();
-    for( int i = 0; i < resultsSize; i++ ) {
-        float result = results[i];
+    int outputSize = previousLayer->getOutputSize();
+    float *output = previousLayer->getOutput();
+    for( int i = 0; i < outputSize; i++ ) {
+        float result = output[i];
         float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = result - expectedResults[i];
+        float partialLossByOut = result - expectedOutput[i];
         errors[i] = partialLossByOut * partialOutBySum;
     }
 }

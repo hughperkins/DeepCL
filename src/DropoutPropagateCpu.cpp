@@ -30,19 +30,19 @@ VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *masksWrap
 
     unsigned char *masks = reinterpret_cast<unsigned char *>( masksWrapper->getHostArray() );
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    float *output = new float[ getResultsSize( batchSize ) ];
+    float *output = new float[ getOutputSize( batchSize ) ];
 
     propagate( batchSize, masks, input, output );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getResultsSize( batchSize ) );
+    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
 
     outputWrapper->copyToDevice();
 
     delete[] output;
 }
 VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, unsigned char *masks, float *input, float *output ) {
-//    float *output = new float[ getResultsSize( batchSize ) ];
+//    float *output = new float[ getOutputSize( batchSize ) ];
 //    cout << "DropoutPropagateCpu::propagate( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;

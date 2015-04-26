@@ -73,9 +73,9 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
 
     int outputDataSize = batchSize * dim.inputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
-    int allocatedResultsSize = std::max(5000, outputDataSize );
-    float *errorsForUpstream = new float[allocatedResultsSize];
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap( allocatedResultsSize, errorsForUpstream );
+    int allocatedOutputSize = std::max(5000, outputDataSize );
+    float *errorsForUpstream = new float[allocatedOutputSize];
+    CLWrapper *errorsForUpstreamWrapper = cl->wrap( allocatedOutputSize, errorsForUpstream );
 
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copied to device");
     backpropErrors( batchSize, inputDataWrapper, errorsWrapper, weightsWrapper, errorsForUpstreamWrapper );

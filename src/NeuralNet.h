@@ -85,13 +85,13 @@ public:
     PUBLICAPI int calcNumRight( int const *labels );
     PUBLICAPI void propagate( float const*images);
     PUBLICAPI void backPropFromLabels( float learningRate, int const *labels);
-    PUBLICAPI void backProp( float learningRate, float const *expectedResults);
+    PUBLICAPI void backProp( float learningRate, float const *expectedOutput);
     PUBLICAPI int getNumLayers();
-    PUBLICAPI float const *getResults( int layer ) const;
+    PUBLICAPI float const *getOutput( int layer ) const;
     PUBLICAPI int getInputCubeSize() const;
     PUBLICAPI int getOutputCubeSize() const;
-    PUBLICAPI float const *getResults() const;
-    PUBLICAPI VIRTUAL int getResultsSize() const;
+    PUBLICAPI float const *getOutput() const;
+    PUBLICAPI VIRTUAL int getOutputSize() const;
     void print();
     void printWeights();
     void printOutput();

@@ -49,7 +49,7 @@ public:
     STATIC ActivationBackprop *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     ActivationBackprop( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getResultsSize(int batchSize);
+    VIRTUAL int getOutputSize(int batchSize);
     VIRTUAL void backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper );
 

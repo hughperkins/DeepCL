@@ -48,7 +48,7 @@ ActivationBackprop::ActivationBackprop( OpenCLHelper *cl, int numPlanes, int inp
 VIRTUAL int ActivationBackprop::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int ActivationBackprop::getResultsSize(int batchSize) {
+VIRTUAL int ActivationBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, float *errors, float *errorsForUpstream ) {
@@ -56,7 +56,7 @@ VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, f
     StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper start" );
 
     CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
+    CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
 
     inputsWrapper->copyToDevice();

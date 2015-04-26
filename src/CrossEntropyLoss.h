@@ -33,7 +33,7 @@ public:
     VIRTUAL int getPersistSize() const;
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcErrors( float const*expectedResults );
+    VIRTUAL void calcErrors( float const*expectedOutput );
 
     // [[[end]]]
 };

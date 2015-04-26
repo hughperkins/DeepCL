@@ -20,15 +20,15 @@ InputLayer::InputLayer( InputLayerMaker *maker ) :
     outputPlanes( maker->_numPlanes ),
     outputImageSize( maker->_imageSize ),
     input(0),
-    results(0) {
+    output(0) {
 }
 VIRTUAL InputLayer::~InputLayer() {
 }
 VIRTUAL std::string InputLayer::getClassName() const {
     return "InputLayer";
 }
-VIRTUAL float *InputLayer::getResults() {
-    return results;
+VIRTUAL float *InputLayer::getOutput() {
+    return output;
 }
 VIRTUAL ActivationFunction const *InputLayer::getActivationFunction() {
     return new LinearActivation();
@@ -40,7 +40,7 @@ VIRTUAL int InputLayer::getPersistSize() const {
     return 0;
 }
 VIRTUAL void InputLayer::printOutput() const {
-    if( results == 0 ) {
+    if( output == 0 ) {
          return;
     }
     for( int n = 0; n < std::min(5,batchSize); n++ ) {
@@ -51,7 +51,7 @@ VIRTUAL void InputLayer::printOutput() const {
                 std::cout << "      ";
                 for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
                     std::cout << getResult( n, plane, i, j ) << " ";
-//results[
+//output[
 //                            n * numPlanes * imageSize*imageSize +
 //                            plane*imageSize*imageSize +
 //                            i * imageSize +
@@ -85,17 +85,17 @@ VIRTUAL void InputLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[batchSize * getOutputCubeSize() ];
+    output = new float[batchSize * getOutputCubeSize() ];
 }
 VIRTUAL void InputLayer::propagate() {
-    int totalLinearLength = getResultsSize();
+    int totalLinearLength = getOutputSize();
     for( int i = 0; i < totalLinearLength; i++ ) {
-        results[i] = input[i];
+        output[i] = input[i];
     }
 }
 VIRTUAL void InputLayer::backPropErrors( float learningRate, float const *errors ) {
@@ -109,7 +109,7 @@ VIRTUAL int InputLayer::getOutputPlanes() const {
 VIRTUAL int InputLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int InputLayer::getResultsSize() const {
+VIRTUAL int InputLayer::getOutputSize() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string InputLayer::toString() {

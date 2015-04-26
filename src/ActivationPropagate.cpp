@@ -50,7 +50,7 @@ VIRTUAL void ActivationPropagate::propagate( int batchSize, CLWrapper *inputData
 VIRTUAL void ActivationPropagate::propagate( int batchSize, float *input, float *output ) {
 //    cout << "ActivationPropagate::propagate( float * )" << endl;
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
-    CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
+    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     inputWrapper->copyToDevice();
     propagate( batchSize, inputWrapper, outputWrapper );
@@ -62,7 +62,7 @@ VIRTUAL void ActivationPropagate::propagate( int batchSize, float *input, float 
 VIRTUAL int ActivationPropagate::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int ActivationPropagate::getResultsSize(int batchSize) {
+VIRTUAL int ActivationPropagate::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

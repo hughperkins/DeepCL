@@ -25,7 +25,7 @@ using namespace std;
 
 #include "test/gtest_supp.h"
 
-void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *results ) {
+void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *output ) {
     int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = prop->cl->wrap( inputDataSize, inputData );
     dataWrapper->copyToDevice();
@@ -40,17 +40,17 @@ void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, flo
         biasWeightsWrapper->copyToDevice();
     }
 
-    CLWrapper *resultsWrapper = prop->cl->wrap( batchSize * dim.outputCubeSize, results );
-    memset( results, 99, sizeof(float) * batchSize * dim.outputCubeSize );
-    resultsWrapper->copyToDevice(); // so we can wipe it...
+    CLWrapper *outputWrapper = prop->cl->wrap( batchSize * dim.outputCubeSize, output );
+    memset( output, 99, sizeof(float) * batchSize * dim.outputCubeSize );
+    outputWrapper->copyToDevice(); // so we can wipe it...
 
     StatefulTimer::timeCheck("testpropagate: after data wrapper processing");
     prop->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
-            resultsWrapper );
+            outputWrapper );
 //    StatefulTimer::timeCheck("Propagate::propagate after call propagate");
-    resultsWrapper->copyToHost();
+    outputWrapper->copyToHost();
 //    StatefulTimer::timeCheck("Propagate::propagate after copytohost");
-    delete resultsWrapper;
+    delete outputWrapper;
 
     delete dataWrapper;
     delete weightsWrapper;
@@ -77,25 +77,25 @@ TEST( testpropagate, imagesize2_nopadzeros ) {
                          0.7f, -1.1f,
  };
     int resultSize = 4;
-    float expectedResults[] = {
+    float expectedOutput[] = {
         -0.5f * 0.5f + 0.5f * 0.5f,
         0.7f * 0.5f -1.1f * 0.5f,
         (-0.5f) * (-19) + 0.5f * 2.3f,
         0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f 
     };
-    cout << "expected number of results: " << resultSize << endl;
+    cout << "expected number of output: " << resultSize << endl;
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 1, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ), new LinearActivation() );
-        float *results = propagate->propagate( batchSize, data, filter1, 0 );  
+        float *output = propagate->propagate( batchSize, data, filter1, 0 );  
         for( int result = 0; result < resultSize; result++ ) {
-            ASSERT_EQ( expectedResults[result], results[result] );
+            ASSERT_EQ( expectedOutput[result], output[result] );
         }
         delete propagate;
-        delete[] results;
+        delete[] output;
     }
 
     delete cl;
@@ -125,9 +125,9 @@ TEST( testpropagate, DISABLED_imagesize2_nopadzeros_skip1 ) {
  };
     int outputImageSize = ( imageSize - filterWidth ) / ( skip + 1 ) + 1;
     cout << "outputimagesize: " << outputImageSize << endl;
-    int resultsSize = outputImageSize * numOutPlanes * batchSize;
-    cout << "resultssize: " << resultsSize << endl;
-    float expectedResults[] = {
+    int outputSize = outputImageSize * numOutPlanes * batchSize;
+    cout << "outputsize: " << outputSize << endl;
+    float expectedOutput[] = {
         -2,  0,
         0, 0,
 
@@ -142,20 +142,20 @@ TEST( testpropagate, DISABLED_imagesize2_nopadzeros_skip1 ) {
 
 
     };
-    cout << "expected number of results: " << resultsSize << endl;
+    cout << "expected number of output: " << outputSize << endl;
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ).setSkip(1), new LinearActivation() );
-        float *results = propagate->propagate( batchSize, data, filter1, 0 );  
-        for( int result = 0; result < resultsSize; result++ ) {
+        float *output = propagate->propagate( batchSize, data, filter1, 0 );  
+        for( int result = 0; result < outputSize; result++ ) {
             cout << "checking result " << result << endl;
-            EXPECT_EQ( expectedResults[result], results[result] );
+            EXPECT_EQ( expectedOutput[result], output[result] );
         }
         delete propagate;
-        delete[] results;
+        delete[] output;
     }
     delete cl;
 }
@@ -183,44 +183,44 @@ TEST( testpropagate, imagesize2_padzeros ) {
 
  };
     int resultSize = (imageSize + 1) * (imageSize + 1) * batchSize * numOutPlanes;
-    float *expectedResults = new float[resultSize];
+    float *expectedOutput = new float[resultSize];
     for( int i = 0; i < resultSize; i++ ) {
-        expectedResults[i] = -9999; // means havent provided an expectedresult.
+        expectedOutput[i] = -9999; // means havent provided an expectedresult.
     }
 
-    expectedResults[0] = 0; expectedResults[1] = 0; expectedResults[2] = 0;
+    expectedOutput[0] = 0; expectedOutput[1] = 0; expectedOutput[2] = 0;
 
-    expectedResults[3] = 0.5f*0.4f;
-    expectedResults[4] = 0.5f*(-0.5f)+0.4f*(0.3f);
-    expectedResults[5] = 0.3f * (-0.5f); 
+    expectedOutput[3] = 0.5f*0.4f;
+    expectedOutput[4] = 0.5f*(-0.5f)+0.4f*(0.3f);
+    expectedOutput[5] = 0.3f * (-0.5f); 
 
-    expectedResults[6] = 0; expectedResults[7] = 0; expectedResults[8] = 0;
+    expectedOutput[6] = 0; expectedOutput[7] = 0; expectedOutput[8] = 0;
 
-    expectedResults[9] = 0; expectedResults[10] = 0; expectedResults[11] = 0;
-    expectedResults[12] =(-1.1f)*0.5;
-    expectedResults[13] = 0.7f * 0.5f + (-1.1f) * 0.3f;
-    expectedResults[14] = 0.7f * 0.3f;
+    expectedOutput[9] = 0; expectedOutput[10] = 0; expectedOutput[11] = 0;
+    expectedOutput[12] =(-1.1f)*0.5;
+    expectedOutput[13] = 0.7f * 0.5f + (-1.1f) * 0.3f;
+    expectedOutput[14] = 0.7f * 0.3f;
 
     // plane 2, filter 2 ...
-    expectedResults[27] = (-1.1f*13);
-    expectedResults[28] = 0.7f * 13 + (-1.1f)*17;
-    expectedResults[29] = 0.7f*17;
-    expectedResults[35] = 0.2f* 2.3f;
+    expectedOutput[27] = (-1.1f*13);
+    expectedOutput[28] = 0.7f * 13 + (-1.1f)*17;
+    expectedOutput[29] = 0.7f*17;
+    expectedOutput[35] = 0.2f* 2.3f;
 
-//    expectedResults[] = 0;
-//    expectedResults[5] = 0;
-//    expectedResults[6] = 0.3f * 0.5f;
-//    expectedResults[7] = 0.2f * 0.5f;
+//    expectedOutput[] = 0;
+//    expectedOutput[5] = 0;
+//    expectedOutput[6] = 0.3f * 0.5f;
+//    expectedOutput[7] = 0.2f * 0.5f;
 
-//    expectedResults[8] = 13 * 0.5f;
-//    expectedResults[9] = 17 * (-0.5f);
-//    expectedResults[10] = (-19) * 0;
-//    expectedResults[11] = 2.3f * 0;
+//    expectedOutput[8] = 13 * 0.5f;
+//    expectedOutput[9] = 17 * (-0.5f);
+//    expectedOutput[10] = (-19) * 0;
+//    expectedOutput[11] = 2.3f * 0;
 // 
-//    expectedResults[12] = 13 * (-1.1f);
-//    expectedResults[13] = 17 * 0.7f;
-//    expectedResults[14] = (-19) * 0.3f;
-//    expectedResults[15] = 2.3f * 0.2f;
+//    expectedOutput[12] = 13 * (-1.1f);
+//    expectedOutput[13] = 17 * 0.7f;
+//    expectedOutput[14] = (-19) * 0.3f;
+//    expectedOutput[15] = 2.3f * 0.2f;
 
 //        -0.5f * 0.5f + 0.5f * 0.5f,
 //        0.7f * 0.5f -1.1f * 0.5f,
@@ -232,21 +232,21 @@ TEST( testpropagate, imagesize2_padzeros ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
-    float *results = propagate->propagate( batchSize, data, filter1, 0 );        
+    float *output = propagate->propagate( batchSize, data, filter1, 0 );        
 
-//    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, results[0] );
-//    ASSERT_EQ( 0.7f * 0.5f -1.1f * 0.5f, results[1] );
-//    ASSERT_EQ( (-0.5f) * (-19) + 0.5f * 2.3f, results[2] );
-//    ASSERT_EQ( 0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f , results[3] );
+//    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, output[0] );
+//    ASSERT_EQ( 0.7f * 0.5f -1.1f * 0.5f, output[1] );
+//    ASSERT_EQ( (-0.5f) * (-19) + 0.5f * 2.3f, output[2] );
+//    ASSERT_EQ( 0.2f*13 + 0.3f* 17 + 0.7f *(-19) -1.1f * 2.3f , output[3] );
 
     for( int result = 0; result < resultSize; result++ ) {
-        if( expectedResults[result] != -9999 ) {
-            cout << " checking result[" << result << "]=" << results[result] << " expecting: " << expectedResults[result] << endl;
-            ASSERT_FLOAT_EQ( expectedResults[result], results[result] );
+        if( expectedOutput[result] != -9999 ) {
+            cout << " checking result[" << result << "]=" << output[result] << " expecting: " << expectedOutput[result] << endl;
+            ASSERT_FLOAT_EQ( expectedOutput[result], output[result] );
         }
     }
     delete propagate;
-    delete[] results;
+    delete[] output;
     delete cl;
 }
 
@@ -293,22 +293,22 @@ TEST( testpropagate, imagesize3 ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ), new LinearActivation() );
-    float *results = propagate->propagate( 
+    float *output = propagate->propagate( 
         batchSize, data, filter1, 0 );        
 
-    assertEquals( 0, results[0] );
-    assertEquals( 1.25f, results[1] );
-    assertEquals( -0.5f, results[2] );
-    assertEquals( 0.75f, results[3] );
-    assertEquals( -0.25f, results[4] );
-    assertEquals( 1, results[5] );
-    assertEquals( -0.5f, results[6] );
-    assertEquals( 7, results[7] );
-    assertEquals( 0.5f, results[8] );
-    assertEquals( 0.5f, results[9] );
+    assertEquals( 0, output[0] );
+    assertEquals( 1.25f, output[1] );
+    assertEquals( -0.5f, output[2] );
+    assertEquals( 0.75f, output[3] );
+    assertEquals( -0.25f, output[4] );
+    assertEquals( 1, output[5] );
+    assertEquals( -0.5f, output[6] );
+    assertEquals( 7, output[7] );
+    assertEquals( 0.5f, output[8] );
+    assertEquals( 0.5f, output[9] );
         cout << "test1 ok" << endl;
     delete propagate;
-    delete[] results;
+    delete[] output;
     delete cl;
 }
 
@@ -346,13 +346,13 @@ TEST( testpropagate, test2 ) {
  };
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    float *results = new float[512];
+//    float *output = new float[512];
 
     float *biases = 0;
 
 //    CLWrapper *dataWrapper = cl->wrap( batchSize * 9, data );
 //    CLWrapper *weightsWrapper = cl->wrap( numOutPlanes * 9, filter1 );
-//    CLWrapper *resultsWrapper = cl->wrap( 512, results );
+//    CLWrapper *outputWrapper = cl->wrap( 512, output );
 //    dataWrapper->copyToDevice();
 //    weightsWrapper->copyToDevice();
 
@@ -362,36 +362,36 @@ TEST( testpropagate, test2 ) {
 //    for( int it = 0; it < 100; it ++ ) {
 
     Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
-    float *results = propagate->propagate( batchSize, data, filter1, biases );
+    float *output = propagate->propagate( batchSize, data, filter1, biases );
 
 //        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( imageSize )->in( filterWidth )
 //           ->in( padZeros );
 //        convolve->input( dataWrapper );
 //        convolve->input( weightsWrapper);
-//        convolve->output( resultsWrapper );
+//        convolve->output( outputWrapper );
 //        int globalSize = batchSize * numOutPlanes * imageSize * imageSize;
 //        int workgroupsize = cl->getMaxWorkgroupSize();
 //        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 ////        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
 //        convolve->run_1d( globalSize, workgroupsize );
 
-//        resultsWrapper->copyToHost();
+//        outputWrapper->copyToHost();
 
 //        for( int i = 0; i < 20; i++ ) {
-//            cout << "results[" << i << "]=" << results[i] << endl;
+//            cout << "output[" << i << "]=" << output[i] << endl;
 //        }
-        EXPECT_FLOAT_NEAR( -0.202616f, results[0] );
-        EXPECT_FLOAT_NEAR( 0.143989f, results[1] );
-        EXPECT_FLOAT_NEAR( 0.202616f, results[2] );
-        EXPECT_FLOAT_NEAR( -0.143989f, results[3] );
+        EXPECT_FLOAT_NEAR( -0.202616f, output[0] );
+        EXPECT_FLOAT_NEAR( 0.143989f, output[1] );
+        EXPECT_FLOAT_NEAR( 0.202616f, output[2] );
+        EXPECT_FLOAT_NEAR( -0.143989f, output[3] );
 //    }
 //    cout << "test2 ok" << endl;
     delete propagate;
 //    delete convolve;
-//    delete resultsWrapper;
+//    delete outputWrapper;
 //    delete weightsWrapper;
 //    delete dataWrapper;
-    delete[] results;
+    delete[] output;
     delete cl;
 }
 
@@ -414,10 +414,10 @@ TEST( testpropagate, test3 ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ), new LinearActivation() );
-    float *results = propagate->propagate( 
+    float *output = propagate->propagate( 
         batchSize, data, filter, 0 );        
 
-    float expectedResults[] = {0.2f*0.1f+0.3f*0.2f,
+    float expectedOutput[] = {0.2f*0.1f+0.3f*0.2f,
                                0.5f*0.1f+0.7f*0.2f,
 
                                0.2f*0.3f+0.3f*0.4f,
@@ -431,8 +431,8 @@ TEST( testpropagate, test3 ) {
   };
    for( int i = 0; i < 8; i++ ) {
 //      cout << " checking result " << i << endl;
-//        cout << "results[" << i << "]=" << results[i] << endl;
-      assertEquals( expectedResults[i], results[i], 0.0001f);
+//        cout << "output[" << i << "]=" << output[i] << endl;
+      assertEquals( expectedOutput[i], output[i], 0.0001f);
    }
     delete propagate;
     delete cl;
@@ -473,25 +473,25 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
         if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
 
-    int resultsSize = N * dim.outputCubeSize;
-    float *results1 = new float[ resultsSize ];
-    float *results2 = new float[ resultsSize ];
+    int outputSize = N * dim.outputCubeSize;
+    float *output1 = new float[ outputSize ];
+    float *output2 = new float[ outputSize ];
     
     int numBatches = ( N + batchSize - 1 ) / batchSize;
     Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
     Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim, fn );
 
-//    float *resultstemps[2];
+//    float *outputtemps[2];
     for( int instance = 0; instance < 2; instance++ ) {
         Propagate *thisPropagate = 0;
-        float *thisResults = 0;
+        float *thisOutput = 0;
         if( instance == 0 ) { 
             thisPropagate = p1;
-            thisResults = results1;
+            thisOutput = output1;
         }
         if( instance == 1 ) {
             thisPropagate = p2;
-            thisResults = results2;
+            thisOutput = output2;
         }
         for( int batch = 0; batch < numBatches; batch++ ) {
             int thisBatchSize = batchSize;
@@ -499,15 +499,15 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
                 thisBatchSize = N - batch * batchSize;
             }
             cout << "batch " << batch << " batchsize " << thisBatchSize << endl;
-            float *resultstemp = new float[thisBatchSize * dim.outputCubeSize * sizeof(float)];
-//            memset( resultstemp, 123, thisBatchSize * dim.outputCubeSize * sizeof(float) ); // so kernel
+            float *outputtemp = new float[thisBatchSize * dim.outputCubeSize * sizeof(float)];
+//            memset( outputtemp, 123, thisBatchSize * dim.outputCubeSize * sizeof(float) ); // so kernel
                 // cant just reuse the work of previous propagate :-)
-//            resultstemps[instance] = 
+//            outputtemps[instance] = 
 //            StatefulTimer::timeCheck("after memset");
-            propagateWithWipe( thisPropagate, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, resultstemp );
-//            thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, resultstemp );
-            memcpy( thisResults + batch * batchSize * dim.outputCubeSize, resultstemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
-            delete[] resultstemp;
+            propagateWithWipe( thisPropagate, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
+//            thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
+            memcpy( thisOutput + batch * batchSize * dim.outputCubeSize, outputtemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
+            delete[] outputtemp;
         }
         StatefulTimer::dump(true);
     }
@@ -515,15 +515,15 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     cout << dim << endl;
     bool same = true;
     int numDiff = 0;
-    for( int i = 0; i < max( 20, resultsSize ); i++ ) {
-        if( i < resultsSize ) {
-            if( abs( results1[i] - results2[i] ) < 0.000001f || abs( results1[i] - results2[i] ) <= 0.001f * max( abs( results1[i] ), abs( results2[i] ) ) ) {
+    for( int i = 0; i < max( 20, outputSize ); i++ ) {
+        if( i < outputSize ) {
+            if( abs( output1[i] - output2[i] ) < 0.000001f || abs( output1[i] - output2[i] ) <= 0.001f * max( abs( output1[i] ), abs( output2[i] ) ) ) {
                 if( i < 20 ) {
-                    if( debug ) cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
+                    if( debug ) cout << "output[" << i << "]=" << output1[i] << " " << output2[i];
                     if( debug ) cout << " SAME";
                 }
             } else {
-                cout << "results[" << i << "]=" << results1[i] << " " << results2[i];
+                cout << "output[" << i << "]=" << output1[i] << " " << output2[i];
                 cout << " DIFF";
                 same = false;
                 numDiff++;
@@ -534,13 +534,13 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
              }
         }
         if( i < 20 ) {
-            if( debug ) cout << "  || " << results2[100+i] ;
-            if( debug ) cout << "  || " << results2[200+i] ;
-            if( debug ) cout << "  || " << results2[300+i] ;
-            if( debug ) cout << "  || " << results2[400+i] ;
-            if( debug ) cout << "  || " << results2[500+i] ;
-            if( debug ) cout << "  || " << results2[600+i] ;
-            if( debug ) cout << "  || " << results2[700+i] << endl;
+            if( debug ) cout << "  || " << output2[100+i] ;
+            if( debug ) cout << "  || " << output2[200+i] ;
+            if( debug ) cout << "  || " << output2[300+i] ;
+            if( debug ) cout << "  || " << output2[400+i] ;
+            if( debug ) cout << "  || " << output2[500+i] ;
+            if( debug ) cout << "  || " << output2[600+i] ;
+            if( debug ) cout << "  || " << output2[700+i] << endl;
         }
         if( numDiff > 30 ) {
             cout << "..." << endl;
@@ -548,8 +548,8 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
         }
     }
     EXPECT_EQ( true, same );
-    delete[] results1;
-    delete[] results2;
+    delete[] output1;
+    delete[] output2;
     delete p1;
     delete p2;
     delete cl;
@@ -734,19 +734,19 @@ TEST( testpropagate, softmax ) {
     input[2] = 3;
     input[3] = 2;
     net->propagate( input );
-    float const*results = net->getResults();
+    float const*output = net->getOutput();
     float sum = 0;
     for( int i = 0; i < net->getLayer(0)->getOutputPlanes(); i++ ) {
-        cout << "results[" << i << "]=" << results[i] << endl;
-        sum += results[i];
-        EXPECT_LE( 0, results[i] );
-        EXPECT_GE( 1, results[i] );
+        cout << "output[" << i << "]=" << output[i] << endl;
+        sum += output[i];
+        EXPECT_LE( 0, output[i] );
+        EXPECT_GE( 1, output[i] );
     }
     EXPECT_FLOAT_NEAR( 1.0f, sum );
-    EXPECT_FLOAT_NEAR( (float)( exp(0.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[0] );
-    EXPECT_FLOAT_NEAR( (float)( exp(1.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[1] );
-    EXPECT_FLOAT_NEAR( (float)( exp(3.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[2] );
-    EXPECT_FLOAT_NEAR( (float)( exp(2.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[3] );
+    EXPECT_FLOAT_NEAR( (float)( exp(0.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[0] );
+    EXPECT_FLOAT_NEAR( (float)( exp(1.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[1] );
+    EXPECT_FLOAT_NEAR( (float)( exp(3.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[2] );
+    EXPECT_FLOAT_NEAR( (float)( exp(2.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[3] );
 
     float *expected = new float[net->getLayer(0)->getOutputPlanes()];
     memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
@@ -754,28 +754,28 @@ TEST( testpropagate, softmax ) {
     float loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[2]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[2]), loss );
 
     memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[0] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[0]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[0]), loss );
 
     memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[1] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[1]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[1]), loss );
 
     memset( expected, 0, sizeof(float) * net->getLayer(0)->getOutputPlanes() );
     expected[3] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[3]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[3]), loss );
 
     delete[] input;
     delete[] expected;
@@ -793,19 +793,19 @@ TEST( testpropagate, softmax_byplane ) {
     input[2] = 3;
     input[3] = 2;
     net->propagate( input );
-    float const*results = net->getResults();
+    float const*output = net->getOutput();
     float sum = 0;
     for( int i = 0; i < imageSizeSquared; i++ ) {
-        cout << "results[" << i << "]=" << results[i] << endl;
-        sum += results[i];
-        EXPECT_LE( 0, results[i] );
-        EXPECT_GE( 1, results[i] );
+        cout << "output[" << i << "]=" << output[i] << endl;
+        sum += output[i];
+        EXPECT_LE( 0, output[i] );
+        EXPECT_GE( 1, output[i] );
     }
     EXPECT_FLOAT_NEAR( 1.0f, sum );
-    EXPECT_FLOAT_NEAR( (float)( exp(0.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[0] );
-    EXPECT_FLOAT_NEAR( (float)( exp(1.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[1] );
-    EXPECT_FLOAT_NEAR( (float)( exp(3.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[2] );
-    EXPECT_FLOAT_NEAR( (float)( exp(2.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), results[3] );
+    EXPECT_FLOAT_NEAR( (float)( exp(0.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[0] );
+    EXPECT_FLOAT_NEAR( (float)( exp(1.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[1] );
+    EXPECT_FLOAT_NEAR( (float)( exp(3.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[2] );
+    EXPECT_FLOAT_NEAR( (float)( exp(2.0f)/(exp(0.0f)+exp(1.0f)+exp(3.0f)+exp(2.0f)) ), output[3] );
 
     float *expected = new float[imageSizeSquared];
     memset( expected, 0, sizeof(float) * imageSizeSquared );
@@ -813,28 +813,28 @@ TEST( testpropagate, softmax_byplane ) {
     float loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[2]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[2]), loss );
 
     memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[0] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[0]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[0]), loss );
 
     memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[1] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[1]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[1]), loss );
 
     memset( expected, 0, sizeof(float) * imageSizeSquared );
     expected[3] = 1;
     loss = net->calcLoss( expected );
     cout << "loss " << loss << endl;
     EXPECT_LT( 0, loss );
-    EXPECT_FLOAT_NEAR( - log(results[3]), loss );
+    EXPECT_FLOAT_NEAR( - log(output[3]), loss );
 
     delete[] input;
     delete[] expected;
@@ -866,8 +866,8 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
     Propagate *p1 = Propagate::instanceSpecific( instance, cl, dim, fn );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;
-        float *results1 = p1->propagate( thisBatchSize, inputs, filters, biasFilters );
-        delete[] results1;
+        float *output1 = p1->propagate( thisBatchSize, inputs, filters, biasFilters );
+        delete[] output1;
     }
     StatefulTimer::dump(true);
 

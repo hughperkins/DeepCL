@@ -58,7 +58,7 @@ VIRTUAL PropagateAuto::~PropagateAuto() {
     }
 }
 VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
-        CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper ) {
+        CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
 //    Propagate *instance = 0;
 //    cout << "PropagateAuto::propagate" << endl;
     while( chosenIndex == -1 && nextIndex < num ) {
@@ -77,7 +77,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
             if( valid[thisIndex] ) {
                 Timer timer;
                 try {
-                    candidate->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, resultsWrapper );
+                    candidate->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
                     milliseconds[thisIndex] = timer.lap();
 //                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
@@ -118,6 +118,6 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
         }
     }
 //    cout << "PropagateAuto::propagate using instance index: " << chosenIndex << endl;
-    instances[chosenIndex]->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, resultsWrapper );
+    instances[chosenIndex]->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
 }
 

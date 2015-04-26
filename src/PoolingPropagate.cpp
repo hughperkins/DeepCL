@@ -54,8 +54,8 @@ VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, C
 VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *selectors, float *output ) {
 //    cout << "PoolingPropagate::propagate( float * )" << endl;
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
-    CLWrapper *selectorsWrapper = cl->wrap( getResultsSize( batchSize ), selectors );
-    CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
+    CLWrapper *selectorsWrapper = cl->wrap( getOutputSize( batchSize ), selectors );
+    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     inputWrapper->copyToDevice();
     propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
@@ -69,7 +69,7 @@ VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *sele
 VIRTUAL int PoolingPropagate::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int PoolingPropagate::getResultsSize(int batchSize) {
+VIRTUAL int PoolingPropagate::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

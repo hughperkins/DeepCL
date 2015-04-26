@@ -24,7 +24,7 @@ public:
 
     int batchSize;
     int allocatedSize;
-    float *results;
+    float *output;
 
     inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
@@ -33,7 +33,7 @@ public:
             * outputImageSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
@@ -44,7 +44,7 @@ public:
     NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker );
     VIRTUAL ~NormalizationLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float *getResults();
+    VIRTUAL float *getOutput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool needsBackProp();
@@ -57,7 +57,7 @@ public:
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL std::string toString();
     VIRTUAL std::string asString() const;
 

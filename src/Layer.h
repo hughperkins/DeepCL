@@ -33,12 +33,12 @@ public:
     LayerMaker2 *maker;
 
     // \brief Get the activated output from this layer, after forward propagation
-    PUBLICAPI virtual float * getResults() = 0;
+    PUBLICAPI virtual float * getOutput() = 0;
 //    virtual Layer *clone() = 0;
     /// \brief Get the size of array needed for persisting to/from an array
     PUBLICAPI virtual int getPersistSize() const = 0;
     /// \brief Get the size of the activated output from this layer
-    PUBLICAPI virtual int getResultsSize() const = 0;
+    PUBLICAPI virtual int getOutputSize() const = 0;
     virtual std::string getClassName() const = 0;
     virtual bool needsTrainer() const {
         return false;
@@ -63,8 +63,8 @@ public:
     VIRTUAL float *getGradInput();
     VIRTUAL CLWrapper *getGradInputWrapper();
     PUBLICAPI VIRTUAL bool getBiased() const;
-    PUBLICAPI VIRTUAL bool hasResultsWrapper() const;
-    PUBLICAPI VIRTUAL CLWrapper *getResultsWrapper();
+    PUBLICAPI VIRTUAL bool hasOutputWrapper() const;
+    PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
     PUBLICAPI VIRTUAL ActivationFunction const*getActivationFunction();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;

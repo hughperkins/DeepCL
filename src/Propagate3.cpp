@@ -23,7 +23,7 @@ VIRTUAL Propagate3::~Propagate3() {
     delete activate;
 }
 VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper ) {
+    CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Propagate3::propagate begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
@@ -32,7 +32,7 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
 //    if( dim.biased ) kernel->input( biasWeightsWrapper );
-    kernel->output( resultsWrapper );
+    kernel->output( outputWrapper );
 //    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
@@ -46,10 +46,10 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     StatefulTimer::timeCheck("Propagate3::propagate after kernel1");
 
 //    {
-//        resultsWrapper->copyToHost();
-//        float const *results = reinterpret_cast< float const *>( resultsWrapper->getHostArray() );
-//        for( int i = 0; i < min( 64, resultsWrapper->size() ); i++ ) {
-//            cout << "results[" << i << "]=" << results[i] << endl;
+//        outputWrapper->copyToHost();
+//        float const *output = reinterpret_cast< float const *>( outputWrapper->getHostArray() );
+//        for( int i = 0; i < min( 64, outputWrapper->size() ); i++ ) {
+//            cout << "output[" << i << "]=" << output[i] << endl;
 //        }
 //    }
 
@@ -57,7 +57,7 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
             ->in( dim.numFilters )
             ->in( dim.outputImageSize * dim.outputImageSize )
-            ->inout( resultsWrapper )->in( biasWeightsWrapper );
+            ->inout( outputWrapper )->in( biasWeightsWrapper );
         maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
@@ -66,7 +66,7 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     }
 
     activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-        ->inout( resultsWrapper );
+        ->inout( outputWrapper );
     maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );

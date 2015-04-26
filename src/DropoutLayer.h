@@ -35,14 +35,14 @@ public:
     MultiplyBuffer *multiplyBuffer; // for skipping dropout...
 
     unsigned char *masks;
-    float *results;
+    float *output;
     float *errorsForUpstream;
 
     CLWrapper *maskWrapper;
-    CLWrapper *resultsWrapper;
+    CLWrapper *outputWrapper;
     CLWrapper *errorsForUpstreamWrapper;
 
-    bool resultsCopiedToHost;
+    bool outputCopiedToHost;
     bool errorsForUpstreamCopiedToHost;
 
     int batchSize;
@@ -58,17 +58,17 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL void fortesting_setRandomSingleton( RandomSingleton *random );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getResultsSize();
-    VIRTUAL float *getResults();
+    VIRTUAL int getOutputSize();
+    VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void generateMasks();

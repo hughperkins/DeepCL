@@ -19,7 +19,7 @@ VIRTUAL Propagate1::~Propagate1() {
     delete kernel;
 }
 VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper ) {
+    CLWrapper *outputWrapper ) {
     kernel->in(batchSize)
         ->in( dim.inputPlanes )->in( dim.numFilters )
         ->in( dim.inputImageSize )->in( dim.filterSize )
@@ -27,7 +27,7 @@ VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
-    kernel->output( resultsWrapper );
+    kernel->output( outputWrapper );
 
     int globalSize = batchSize * dim.outputCubeSize;
     int workgroupsize = std::min( globalSize, cl->getMaxWorkgroupSize() );

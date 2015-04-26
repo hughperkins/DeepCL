@@ -33,7 +33,7 @@ public:
     virtual ~Propagate() {}
     virtual void propagate( int batchSize, 
         CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-        CLWrapper *resultsWrapper ) = 0;
+        CLWrapper *outputWrapper ) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -48,7 +48,7 @@ public:
     STATIC Propagate *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
     STATIC Propagate *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
     VIRTUAL float * propagate( int batchSize, float *inputData, float *filters, float *biases );
-    VIRTUAL void propagate( int batchSize, float *inputData, float *filters, float *biases, float *results );
+    VIRTUAL void propagate( int batchSize, float *inputData, float *filters, float *biases, float *output );
 
     // [[[end]]]
 

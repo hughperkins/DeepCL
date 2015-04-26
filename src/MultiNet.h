@@ -24,7 +24,7 @@ class NeuralNet;
 // This handles grouping several NeuralNets into one single MultiNet
 class DeepCL_EXPORT MultiNet : public Trainable {
     std::vector<Trainable * > trainables;
-    float *results;
+    float *output;
     int batchSize;
     int allocatedSize;
     InputLayer *proxyInputLayer; // used to feed in output from children, to give to lossLayer
@@ -40,7 +40,7 @@ public:
     VIRTUAL ~MultiNet();
     VIRTUAL int getInputCubeSize() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
@@ -52,8 +52,8 @@ public:
     void propagateToOurselves();
     VIRTUAL void propagate( float const*images);
     VIRTUAL void backPropFromLabels( float learningRate, int const *labels);
-    VIRTUAL void backProp( float learningRate, float const *expectedResults);
-    VIRTUAL float const *getResults() const;
+    VIRTUAL void backProp( float learningRate, float const *expectedOutput);
+    VIRTUAL float const *getOutput() const;
 
     // [[[end]]]
 };

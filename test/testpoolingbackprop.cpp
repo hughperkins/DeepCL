@@ -201,7 +201,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = poolingPropagate->getResultsSize( batchSize );
+    int outputSize = poolingPropagate->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 

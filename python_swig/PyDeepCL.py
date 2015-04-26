@@ -123,9 +123,9 @@ class NeuralNet(_object):
     def backPropFromLabels(self, *args): return _PyDeepCL.NeuralNet_backPropFromLabels(self, *args)
     def backProp(self, *args): return _PyDeepCL.NeuralNet_backProp(self, *args)
     def calcNumRight(self, *args): return _PyDeepCL.NeuralNet_calcNumRight(self, *args)
-    def getResultsSize(self): return _PyDeepCL.NeuralNet_getResultsSize(self)
+    def getOutputSize(self): return _PyDeepCL.NeuralNet_getOutputSize(self)
     def asString(self): return _PyDeepCL.NeuralNet_asString(self)
-    def getResults(self, *args): return _PyDeepCL.NeuralNet_getResults(self, *args)
+    def getOutput(self, *args): return _PyDeepCL.NeuralNet_getOutput(self, *args)
     __swig_destroy__ = _PyDeepCL.delete_NeuralNet
     __del__ = lambda self : None;
 NeuralNet_swigregister = _PyDeepCL.NeuralNet_swigregister

@@ -15,7 +15,7 @@ public:
     // generated, using cog:
     VIRTUAL ~Propagate3_unfactorized();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper );
+    CLWrapper *outputWrapper );
     Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
 
     // [[[end]]]

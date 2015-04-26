@@ -43,7 +43,7 @@ public:
     int propagateForTrain( int batchSize, int N, float *data, int const*labels );
     EpochResult backprop( float learningRate, int batchSize, int N, float *data, int const*labels );
     EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, float *trainData, int const*trainLabels );
-    float runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedResults );
+    float runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedOutput );
 
     // [[[end]]]
 };

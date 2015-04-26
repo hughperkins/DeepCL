@@ -24,7 +24,7 @@ VIRTUAL PropagateByInputPlane::~PropagateByInputPlane() {
     delete activate;
 }
 VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper ) {
+    CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
@@ -37,15 +37,15 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     }
 
     // [n][filterId][outRow][outCol][inputPlane]
-    int results1Size = batchSize * dim.numFilters * dim.outputImageSizeSquared * dim.numInputPlanes;
-//    cout << "results1size: " << results1Size << endl;
-    float *results1 = new float[results1Size];
-    CLWrapper *results1Wrapper = cl->wrap( results1Size, results1 );
+    int output1Size = batchSize * dim.numFilters * dim.outputImageSizeSquared * dim.numInputPlanes;
+//    cout << "output1size: " << output1Size << endl;
+    float *output1 = new float[output1Size];
+    CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
 
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    kernel->output( results1Wrapper );
+    kernel->output( output1Wrapper );
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.numFilters );
 
@@ -61,13 +61,13 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate after kernel1");
 
 //    {
-//        results1Wrapper->copyToHost();
-//        for( int i = 0; i < results1Size + 10; i++ ) {
-//            cout << "results1[" << i << "]=" << results1[i] << " " << ( i < results1Size ) << endl;
+//        output1Wrapper->copyToHost();
+//        for( int i = 0; i < output1Size + 10; i++ ) {
+//            cout << "output1[" << i << "]=" << output1[i] << " " << ( i < output1Size ) << endl;
 //        }
 //    }
 
-    reduceSegments->in( batchSize * dim.numFilters * dim.outputImageSizeSquared )->in( dim.numInputPlanes )->in( results1Wrapper )->out( resultsWrapper );
+    reduceSegments->in( batchSize * dim.numFilters * dim.outputImageSizeSquared )->in( dim.numInputPlanes )->in( output1Wrapper )->out( outputWrapper );
     maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     reduceSegments->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
@@ -78,7 +78,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
             ->in( dim.numFilters )
             ->in( dim.outputImageSize * dim.outputImageSize )
-            ->inout( resultsWrapper )->in( biasWeightsWrapper );
+            ->inout( outputWrapper )->in( biasWeightsWrapper );
         maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
@@ -87,15 +87,15 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     }
 
     activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-        ->inout( resultsWrapper );
+        ->inout( outputWrapper );
     maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate after activate");
 
-    delete results1Wrapper;
-    delete[] results1;
+    delete output1Wrapper;
+    delete[] output1;
 
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate after call propagate");
 }

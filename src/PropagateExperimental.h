@@ -13,7 +13,7 @@ public:
     // generated, using cog:
     VIRTUAL ~PropagateExperimental();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper );
+    CLWrapper *outputWrapper );
     PropagateExperimental( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
 
     // [[[end]]]

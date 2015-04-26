@@ -21,18 +21,18 @@ NormalizationLayer::NormalizationLayer( Layer *previousLayer, NormalizationLayer
     outputImageSize( previousLayer->getOutputImageSize() ),
     batchSize(0),
     allocatedSize(0),
-    results(0) {
+    output(0) {
 }
 VIRTUAL NormalizationLayer::~NormalizationLayer() {
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
 }
 VIRTUAL std::string NormalizationLayer::getClassName() const {
     return "NormalizationLayer";
 }
-VIRTUAL float *NormalizationLayer::getResults() {
-    return results;
+VIRTUAL float *NormalizationLayer::getOutput() {
+    return output;
 }
 VIRTUAL ActivationFunction const *NormalizationLayer::getActivationFunction() {
     return new LinearActivation();
@@ -44,7 +44,7 @@ VIRTUAL bool NormalizationLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
 VIRTUAL void NormalizationLayer::printOutput() const {
-    if( results == 0 ) {
+    if( output == 0 ) {
          return;
     }
     for( int n = 0; n < std::min(5,batchSize); n++ ) {
@@ -55,7 +55,7 @@ VIRTUAL void NormalizationLayer::printOutput() const {
                 std::cout << "      ";
                 for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
                     std::cout << getResult( n, plane, i, j ) << " ";
-//results[
+//output[
 //                            n * numPlanes * imageSize*imageSize +
 //                            plane*imageSize*imageSize +
 //                            i * imageSize +
@@ -81,18 +81,18 @@ VIRTUAL void NormalizationLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = allocatedSize;
-    results = new float[ getResultsSize() ];
+    output = new float[ getOutputSize() ];
 }
 VIRTUAL void NormalizationLayer::propagate() {
-    int totalLinearLength = getResultsSize();
-    float *upstreamResults = previousLayer->getResults();
+    int totalLinearLength = getOutputSize();
+    float *upstreamOutput = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {
-        results[i] = ( upstreamResults[i] + translate ) * scale;
+        output[i] = ( upstreamOutput[i] + translate ) * scale;
     }
 }
 VIRTUAL void NormalizationLayer::backPropErrors( float learningRate, float const *errors ) {
@@ -107,7 +107,7 @@ VIRTUAL int NormalizationLayer::getOutputPlanes() const {
 VIRTUAL int NormalizationLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int NormalizationLayer::getResultsSize() const {
+VIRTUAL int NormalizationLayer::getOutputSize() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string NormalizationLayer::toString() {

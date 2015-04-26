@@ -25,7 +25,7 @@ public:
 
     const int outputImageSize;
 
-    float *results;
+    float *output;
 
     int batchSize;
     int allocatedSize;
@@ -39,15 +39,15 @@ public:
     VIRTUAL ~RandomTranslations();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getResultsSize();
-    VIRTUAL float *getResults();
+    VIRTUAL int getOutputSize();
+    VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool providesGradInputWrapper() const;
-    VIRTUAL bool hasResultsWrapper() const;
+    VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL void propagate();
     VIRTUAL std::string asString() const;
 

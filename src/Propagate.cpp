@@ -114,14 +114,14 @@ STATIC Propagate *Propagate::instanceSpecific( std::string name, OpenCLHelper *c
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for name " + name );
     }
 }
-// you own the returned results array, and are responsible for deleting it
+// you own the returned output array, and are responsible for deleting it
 VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {
-    float *results = new float[batchSize * dim.outputCubeSize];
-    propagate( batchSize, inputData, filters, biases, results );
-    return results;
+    float *output = new float[batchSize * dim.outputCubeSize];
+    propagate( batchSize, inputData, filters, biases, output );
+    return output;
 }
-// must allocate results yourself before the call
-VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases, float *results ) {
+// must allocate output yourself before the call
+VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases, float *output ) {
     StatefulTimer::timeCheck("Propagate::propagate begin");
     int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = cl->wrap( inputDataSize, inputData );
@@ -140,22 +140,22 @@ VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filte
 
 //    int outputDataSize = batchSize * dim.outputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
-//    int allocatedResultsSize = std::max(5000, outputDataSize );
-//    int allocatedResultsSize = outputDataSize;
-//    float *results = new float[allocatedResultsSize];
-    CLWrapper *resultsWrapper = cl->wrap( batchSize * dim.outputCubeSize, results );
+//    int allocatedOutputSize = std::max(5000, outputDataSize );
+//    int allocatedOutputSize = outputDataSize;
+//    float *output = new float[allocatedOutputSize];
+    CLWrapper *outputWrapper = cl->wrap( batchSize * dim.outputCubeSize, output );
     cl->finish();
 
     StatefulTimer::timeCheck("Propagate::propagate after copied to device");
     propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
-            resultsWrapper );
+            outputWrapper );
     StatefulTimer::timeCheck("Propagate::propagate after call propagate");
-    resultsWrapper->copyToHost();
+    outputWrapper->copyToHost();
     StatefulTimer::timeCheck("Propagate::propagate after copytohost");
 //    for( int i = 0; i < 20; i++ ) {
-//        cout << "results[" << i << "]=" << results[i] << endl;
+//        cout << "output[" << i << "]=" << output[i] << endl;
 //    }
-    delete resultsWrapper;
+    delete outputWrapper;
 
     delete dataWrapper;
     delete weightsWrapper;
@@ -163,6 +163,6 @@ VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filte
         delete biasWeightsWrapper;
     }
 
-//    return results;
+//    return output;
 }
 

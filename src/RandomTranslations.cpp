@@ -25,7 +25,7 @@ RandomTranslations::RandomTranslations( Layer *previousLayer, RandomTranslations
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputImageSize( previousLayer->getOutputImageSize() ),
         outputImageSize( previousLayer->getOutputImageSize() ),
-        results(0),
+        output(0),
         batchSize(0),
         allocatedSize(0) {
     if( inputImageSize == 0 ) {
@@ -41,8 +41,8 @@ RandomTranslations::RandomTranslations( Layer *previousLayer, RandomTranslations
     }
 }
 VIRTUAL RandomTranslations::~RandomTranslations() {
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
 }
 VIRTUAL std::string RandomTranslations::getClassName() const {
@@ -53,23 +53,23 @@ VIRTUAL void RandomTranslations::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[ getResultsSize() ];
+    output = new float[ getOutputSize() ];
 }
-VIRTUAL int RandomTranslations::getResultsSize() {
+VIRTUAL int RandomTranslations::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL float *RandomTranslations::getResults() {
-    return results;
+VIRTUAL float *RandomTranslations::getOutput() {
+    return output;
 }
 VIRTUAL bool RandomTranslations::needsBackProp() {
     return false;
 }
-VIRTUAL int RandomTranslations::getResultsSize() const {
+VIRTUAL int RandomTranslations::getOutputSize() const {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL int RandomTranslations::getOutputImageSize() const {
@@ -84,19 +84,19 @@ VIRTUAL int RandomTranslations::getPersistSize() const {
 VIRTUAL bool RandomTranslations::providesGradInputWrapper() const {
     return false;
 }
-VIRTUAL bool RandomTranslations::hasResultsWrapper() const {
+VIRTUAL bool RandomTranslations::hasOutputWrapper() const {
     return false;
 }
 VIRTUAL void RandomTranslations::propagate() {
-    float *upstreamResults = previousLayer->getResults();
+    float *upstreamOutput = previousLayer->getOutput();
     if( !training ) {
-        memcpy( results, upstreamResults, sizeof(float) * getResultsSize() );
+        memcpy( output, upstreamOutput, sizeof(float) * getOutputSize() );
         return;
     }
     for( int n = 0; n < batchSize; n++ ) {
         const int translateRows = RandomSingleton::instance()->uniformInt( - translateSize, translateSize );
         const int translateCols = RandomSingleton::instance()->uniformInt( - translateSize, translateSize );
-        Translator::translate( n, numPlanes, inputImageSize, translateRows, translateCols, upstreamResults, results );
+        Translator::translate( n, numPlanes, inputImageSize, translateRows, translateCols, upstreamOutput, output );
     }
 }
 VIRTUAL std::string RandomTranslations::asString() const {

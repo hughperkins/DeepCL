@@ -1,4 +1,4 @@
-// this will check the backprop process, and regression test it against original results, with
+// this will check the backprop process, and regression test it against original output, with
 // original slow procedure
 
 #include <iostream>
@@ -28,7 +28,7 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
 //    net->convolutionalMaker()->numFilters(10)->filterSize(24)->tanh()->biased(config.biased)->insert();
 /*TEST( testbackprop, main ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(28)->instance();
     net->convolutionalMaker()->numFilters(14)->filterSize(5)->tanh()->biased()->insert();
     net->convolutionalMaker()->numFilters(10)->filterSize(24)->tanh()->biased()->insert();
@@ -36,35 +36,35 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    CLWrapper *errorsWrapper = net->cl->wrap( outputSize, errors );
     errorsWrapper->copyToDevice();
-    layer1->resultsWrapper->copyToDevice();
-    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
+    layer1->outputWrapper->copyToDevice();
+    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getOutputSize(), net->layers[0]->getOutput() );
     imagesWrapper->copyToDevice();
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         memset( layer1->weights, 0, sizeof(float) * weightsSize );
         layer1->weightsWrapper->copyToDevice();
 
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errorsWrapper, layer1->weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->outputWrapper, errorsWrapper, layer1->weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, layer1->weights );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -83,7 +83,7 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
     delete imagesWrapper;
 //    delete[]weightChanges;
 //    delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
  */   
 // this will test layer 1 backprop in a network like:
@@ -92,7 +92,7 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased(config.biased)->insert();
 /*TEST( testbackprop, image19 ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(32)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
@@ -100,12 +100,12 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -113,26 +113,26 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
     memset( weights, 0, sizeof(float) * weightsSize );
     weightsWrapper->copyToDevice();
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    CLWrapper *errorsWrapper = net->cl->wrap( outputSize, errors );
     errorsWrapper->copyToDevice();
-    layer1->resultsWrapper->copyToDevice();
-    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
+    layer1->outputWrapper->copyToDevice();
+    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getOutputSize(), net->layers[0]->getOutput() );
     imagesWrapper->copyToDevice();
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 3; i++ ) {
         memset( weights, 0, sizeof(float) * weightsSize );
         weightsWrapper->copyToDevice();
 
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errorsWrapper, weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->outputWrapper, errorsWrapper, weightsWrapper );
 //        layer1->backPropWeightsCpu( 0.1f, errors, weightChanges );
 //        cout << "after backprop" << endl;
         StatefulTimer::timeCheck("after backprop");
@@ -152,13 +152,13 @@ void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
     delete[] errors;
 //    delete[]weightChanges;
 //    delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 */
 /*
 TEST( testbackprop, image19_1plane_1filter ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
@@ -166,12 +166,12 @@ TEST( testbackprop, image19_1plane_1filter ) {
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -179,21 +179,21 @@ TEST( testbackprop, image19_1plane_1filter ) {
     CLWrapper *weightsWrapper = net->cl->wrap( weightsSize, weights );
     weightsWrapper->copyToDevice();
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    CLWrapper *errorsWrapper = net->cl->wrap( resultsSize, errors );
+    CLWrapper *errorsWrapper = net->cl->wrap( outputSize, errors );
     errorsWrapper->copyToDevice();
-    layer1->resultsWrapper->copyToDevice();
-    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getResultsSize(), net->layers[0]->getResults() );
+    layer1->outputWrapper->copyToDevice();
+    CLWrapper *imagesWrapper = net->cl->wrap( net->layers[0]->getOutputSize(), net->layers[0]->getOutput() );
     imagesWrapper->copyToDevice();
 
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
-        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->resultsWrapper, errorsWrapper, weightsWrapper );
+        layer1->backPropWeightsGpuWithScratch( 0.1f, imagesWrapper, layer1->outputWrapper, errorsWrapper, weightsWrapper );
         StatefulTimer::timeCheck("after backprop");
 
         weightsWrapper->copyToHost();
@@ -216,13 +216,13 @@ TEST( testbackprop, image19_1plane_1filter ) {
     delete errorsWrapper;
 //    delete[]weightChanges;
 //    delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 */
 /*
 TEST( testbackprop, image19_1plane_1filter_batchsize128 ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
@@ -230,21 +230,21 @@ TEST( testbackprop, image19_1plane_1filter_batchsize128 ) {
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
     for( int i = 0 ; i < 1; i++ ) {
@@ -267,12 +267,12 @@ TEST( testbackprop, image19_1plane_1filter_batchsize128 ) {
     delete[] errors;
     delete[]weightChanges;
 //    delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image19_1plane_2filter_batchsize128 ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(2)->filterSize(5)->tanh()->biased()->insert();
 //    net->convolutionalMaker()->numFilters(10)->filterSize(15)->tanh()->biased()->insert();
@@ -280,21 +280,21 @@ TEST( testbackprop, image19_1plane_2filter_batchsize128 ) {
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
     for( int i = 0 ; i < 1; i++ ) {
@@ -318,24 +318,24 @@ TEST( testbackprop, image19_1plane_2filter_batchsize128 ) {
     delete[] errors;
     delete[]weightChanges;
 //    delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5 ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(5)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(3)->relu()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -346,14 +346,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5 ) {
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -377,24 +377,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5 ) {
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(5)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(3)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -405,14 +405,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5_tanh ) {
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -436,24 +436,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize5_tanh ) {
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize7_filtersize5 ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(7)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->relu()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -464,14 +464,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize7_filtersize5 ) {
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -495,24 +495,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize7_filtersize5 ) {
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize11_filtersize5_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(11)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -523,14 +523,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize11_filtersize5_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -554,24 +554,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize11_filtersize5_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize15_filtersize5_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(15)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -582,14 +582,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize15_filtersize5_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -614,24 +614,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize15_filtersize5_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize16_filtersize5_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(16)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -642,14 +642,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize16_filtersize5_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -672,24 +672,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize16_filtersize5_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize5_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -700,14 +700,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize5_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -733,24 +733,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize5_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize3_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(3)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -761,14 +761,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize3_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -794,24 +794,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize3_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(1)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -822,14 +822,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -851,24 +851,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(1)->linear()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -879,14 +879,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -908,24 +908,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear_diffvalues ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(17)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(1)->linear()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
 
@@ -937,21 +937,21 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
     float guessValue = 0;
     float guessValue2 = 0;
-    for( int i = 0; i < resultsSize; i++ ) {
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-        layer1->results[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
-        guessValue += errors[i] * upstreamResults[i];
+        layer1->output[i] = random() / (float)mt19937::max() * 2.0f - 1.0f;
+        guessValue += errors[i] * upstreamOutput[i];
         if( i < 256 ) {
-            guessValue2 += errors[i] * upstreamResults[i];
+            guessValue2 += errors[i] * upstreamOutput[i];
         }
     }
     cout << " guessvalue: " << guessValue * ( - 0.00588235 ) << " guessvalue2: " << guessValue2 * ( - 0.00588235 ) << endl;
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -973,24 +973,24 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize17_filtersize1_linear
     delete[] errors;
     delete[]weightChanges;
 //    delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 TEST( testbackprop, image5_1plane_1filter_upstreamimagesize19_filtersize5_tanh ) {
     mt19937 random;
-    random.seed(0); // so always gives same results
+    random.seed(0); // so always gives same output
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(19)->instance();
     net->convolutionalMaker()->numFilters(1)->filterSize(5)->tanh()->biased()->insert();
     net->setBatchSize(1);
     StatefulTimer::timeCheck("start");
     ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer *>( net->layers[1] ); 
 
-    int upstreamResultsSize = net->layers[0]->getResultsSize();
-    float *upstreamResults = new float[upstreamResultsSize];
-    for( int i = 0; i < upstreamResultsSize; i++ ) {
-        upstreamResults[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+    int upstreamOutputSize = net->layers[0]->getOutputSize();
+    float *upstreamOutput = new float[upstreamOutputSize];
+    for( int i = 0; i < upstreamOutputSize; i++ ) {
+        upstreamOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamResults);
+    dynamic_cast<InputLayer*>(net->layers[0])->in(upstreamOutput);
 
     int weightsSize = layer1->getWeightsSize();
     float *weights = new float[weightsSize];
@@ -1001,14 +1001,14 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize19_filtersize5_tanh )
 
     float *weightChanges = new float[weightsSize];
 
-    int resultsSize = layer1->getResultsSize();
-    float *errors = new float[resultsSize];
-    for( int i = 0; i < resultsSize; i++ ) {
+    int outputSize = layer1->getOutputSize();
+    float *errors = new float[outputSize];
+    for( int i = 0; i < outputSize; i++ ) {
         errors[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
-        layer1->results[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        layer1->output[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
-//    cout << " upstreamresultssize " << upstreamResultsSize << " resultsSize " << resultsSize <<
+//    cout << " upstreamoutputsize " << upstreamOutputSize << " outputSize " << outputSize <<
 //         " weightsSize " << weightsSize << endl;
     for( int i = 0 ; i < 1; i++ ) {
         StatefulTimer::timeCheck("before backprop");
@@ -1030,7 +1030,7 @@ TEST( testbackprop, image5_1plane_1filter_upstreamimagesize19_filtersize5_tanh )
     delete[] errors;
     delete[]weightChanges;
     delete[]weights;
-    delete[] upstreamResults;
+    delete[] upstreamOutput;
 }
 
 */

@@ -31,7 +31,7 @@ public:
     VIRTUAL float*getGradInput();
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcErrors( float const*expectedResults );
+    VIRTUAL void calcErrors( float const*expectedOutput );
 
     // [[[end]]]
 };

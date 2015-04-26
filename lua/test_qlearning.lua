@@ -127,10 +127,10 @@ function ScenarioImage.showQ(self, net)
             net:setBatchSize(1)
             net:propagate( netinput )
             netinput[ size * size + y * size + x ] = 0
-            local results = deepcl.floatArray(self.numActions)
-            net:getResults(results)
+            local output = deepcl.floatArray(self.numActions)
+            net:getOutput(output)
             for action = 0, 3 do
-                local thisQ = results[action]
+                local thisQ = output[action]
                 if action == 0 or thisQ > highestQ then
                     highestQ = thisQ
                     bestAction = action

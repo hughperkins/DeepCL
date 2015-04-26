@@ -75,20 +75,20 @@ public:
     void setBatchSize( int batchSize );
     void propagate( float const*images);
     void backPropFromLabels( float learningRate, int const *labels);
-    void backProp( float learningRate, float const *expectedResults);
+    void backProp( float learningRate, float const *expectedOutput);
     int calcNumRight( int const *labels );
-/*    int getResultsSize();*/
-/*    float *getResults();*/
-    float const *getResults() const;
-    virtual int getResultsSize() const;
-    //floatSlice getResults();
+/*    int getOutputSize();*/
+/*    float *getOutput();*/
+    float const *getOutput() const;
+    virtual int getOutputSize() const;
+    //floatSlice getOutput();
     std::string asString();
     %extend {
-        void getResults( float *resultsParam ) {
-            int resultsSize = $self->getResultsSize();
-            float const*results = $self->getResults();
-            for( int i = 0; i < resultsSize; i++ ) {
-                resultsParam[i] = results[i];
+        void getOutput( float *outputParam ) {
+            int outputSize = $self->getOutputSize();
+            float const*output = $self->getOutput();
+            for( int i = 0; i < outputSize; i++ ) {
+                outputParam[i] = output[i];
             }
         }
     }
@@ -306,7 +306,7 @@ typedef struct {
 NAME(TYPE *base, int offset) {
   return base + offset;
 }
-NAME(TYPE *base) { // will try using this for `float *getResults()`
+NAME(TYPE *base) { // will try using this for `float *getOutput()`
   return base;
 }
 ~NAME() {

@@ -50,7 +50,7 @@ public:
     VIRTUAL void propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void propagate( int batchSize, unsigned char *masks, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getResultsSize(int batchSize);
+    VIRTUAL int getOutputSize(int batchSize);
 
     // [[[end]]]
 };

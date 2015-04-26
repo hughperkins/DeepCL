@@ -64,7 +64,7 @@ EpochResult BatchLearner::runEpochFromLabels( float learningRate, int batchSize,
     return epochResult;
 }
 
-float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedResults ) {
+float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedOutput ) {
     net->setTraining( true );
     float loss = 0;
     net->setBatchSize( batchSize );
@@ -76,8 +76,8 @@ float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int
         if( batch == numBatches - 1 ) {
             net->setBatchSize( N - batchStart );
         }
-        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedResults[batchStart * outputCubeSize]) );
-        loss += net->calcLoss( &( expectedResults[batchStart * outputCubeSize]) );
+        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedOutput[batchStart * outputCubeSize]) );
+        loss += net->calcLoss( &( expectedOutput[batchStart * outputCubeSize]) );
     }
     return loss;
 }
@@ -95,9 +95,9 @@ float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int
 //        if( batch == numBatches - 1 ) {
 //            net->setBatchSize( N - batchStart );
 //        }
-//        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedResults[batchStart * outputCubeSize]) );
-//        loss += net->calcLoss( &( expectedResults[batchStart * outputCubeSize]) );
-//        numRight += AccuracyHelper::calcNumRight( thisBatchSize, net->getLayerLayer()->getOutputPlanes(), &( labels[ batchStart] ), net->getResults() );
+//        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedOutput[batchStart * outputCubeSize]) );
+//        loss += net->calcLoss( &( expectedOutput[batchStart * outputCubeSize]) );
+//        numRight += AccuracyHelper::calcNumRight( thisBatchSize, net->getLayerLayer()->getOutputPlanes(), &( labels[ batchStart] ), net->getOutput() );
 //    }
 //    EpochResult epochResult( loss, numRight );
 //    return epochResult;

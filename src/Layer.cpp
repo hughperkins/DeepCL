@@ -43,17 +43,17 @@ VIRTUAL CLWrapper *Layer::getGradInputWrapper() {
 PUBLICAPI VIRTUAL bool Layer::getBiased() const {
      throw std::runtime_error("getBiased not implemented for this layer type, layer " + toString(layerIndex) );
 }
-PUBLICAPI VIRTUAL bool Layer::hasResultsWrapper() const {
+PUBLICAPI VIRTUAL bool Layer::hasOutputWrapper() const {
     return false;
 }
-PUBLICAPI VIRTUAL CLWrapper *Layer::getResultsWrapper() {
-    throw std::runtime_error("getResultsWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
+PUBLICAPI VIRTUAL CLWrapper *Layer::getOutputWrapper() {
+    throw std::runtime_error("getOutputWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
 PUBLICAPI VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
     throw std::runtime_error("getActivationFunction not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-//VIRTUAL int Layer::getResultsSize() const {
-//    throw std::runtime_error("getResultsSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+//VIRTUAL int Layer::getOutputSize() const {
+//    throw std::runtime_error("getOutputSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 // //     return numPlanes * imageSize * imageSize * batchSize;
 //}
 PUBLICAPI VIRTUAL int Layer::getOutputCubeSize() const {
@@ -74,11 +74,11 @@ VIRTUAL bool Layer::needsBackProp() {
 }
 VIRTUAL void Layer::print() {
 //    printWeights();
-//    if( results != 0 ) {
+//    if( output != 0 ) {
     printOutput();
     printWeights();
 //    } else {
-//        std::cout << "No results yet " << std::endl;
+//        std::cout << "No output yet " << std::endl;
 //    }
 }
 VIRTUAL void Layer::initWeights( float const*weights ) {

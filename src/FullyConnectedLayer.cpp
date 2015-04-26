@@ -62,11 +62,11 @@ VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
 VIRTUAL int FullyConnectedLayer::getBiasWeightsSize() const {
     return convolutionalLayer->getBiasWeightsSize();
 }
-VIRTUAL int FullyConnectedLayer::getResultsSize() const {
-    return convolutionalLayer->getResultsSize();
+VIRTUAL int FullyConnectedLayer::getOutputSize() const {
+    return convolutionalLayer->getOutputSize();
 }
-VIRTUAL float *FullyConnectedLayer::getResults() {
-    return convolutionalLayer->getResults();
+VIRTUAL float *FullyConnectedLayer::getOutput() {
+    return convolutionalLayer->getOutput();
 }
 VIRTUAL float *FullyConnectedLayer::getGradInput() {
     return convolutionalLayer->getGradInput();
@@ -77,11 +77,11 @@ VIRTUAL bool FullyConnectedLayer::providesGradInputWrapper() const {
 VIRTUAL CLWrapper *FullyConnectedLayer::getGradInputWrapper() {
     return convolutionalLayer->getGradInputWrapper();
 }
-VIRTUAL bool FullyConnectedLayer::hasResultsWrapper() const {
-    return convolutionalLayer->hasResultsWrapper();
+VIRTUAL bool FullyConnectedLayer::hasOutputWrapper() const {
+    return convolutionalLayer->hasOutputWrapper();
 }
-VIRTUAL CLWrapper *FullyConnectedLayer::getResultsWrapper() {
-    return convolutionalLayer->getResultsWrapper();
+VIRTUAL CLWrapper *FullyConnectedLayer::getOutputWrapper() {
+    return convolutionalLayer->getOutputWrapper();
 }
 VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
     return fn;

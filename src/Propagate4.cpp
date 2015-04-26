@@ -19,7 +19,7 @@ VIRTUAL Propagate4::~Propagate4() {
     delete kernel;
 }
 VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper ) {
+    CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Propagate4::propagate start");
 
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
@@ -31,7 +31,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
-    kernel->output( resultsWrapper );
+    kernel->output( outputWrapper );
 //    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) );

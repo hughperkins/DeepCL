@@ -38,7 +38,7 @@ VIRTUAL int CrossEntropyLoss::getPersistSize() const {
 //}
 VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
     float loss = 0;
-    float *results = getResults();
+    float *output = getOutput();
 //    cout << "CrossEntropyLoss::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
@@ -53,7 +53,7 @@ VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
                          * imageSize + outCol;
  //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
                     float expectedOutput = expected[resultOffset];
-                    float actualOutput = results[resultOffset];
+                    float actualOutput = output[resultOffset];
                     float negthisloss = expectedOutput * log( actualOutput ) 
                         + ( 1 - expectedOutput ) * log( 1 - actualOutput );
                     loss -= negthisloss;
@@ -73,19 +73,19 @@ VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
     if( errors != 0 ) {
         delete[] errors;
     }
-    errors = new float[ batchSize * previousLayer->getResultsSize() ];
+    errors = new float[ batchSize * previousLayer->getOutputSize() ];
     this->batchSize = batchSize;
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
-VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedResults ) {
+VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedOutput ) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int resultsSize = previousLayer->getResultsSize();
-    float *results = previousLayer->getResults();
-    for( int i = 0; i < resultsSize; i++ ) {
-        float result = results[i];
+    int outputSize = previousLayer->getOutputSize();
+    float *output = previousLayer->getOutput();
+    for( int i = 0; i < outputSize; i++ ) {
+        float result = output[i];
         float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = ( result - expectedResults[i] ) / result / ( 1.0f - result );
+        float partialLossByOut = ( result - expectedOutput[i] ) / result / ( 1.0f - result );
         errors[i] = partialLossByOut * partialOutBySum;
     }
 }

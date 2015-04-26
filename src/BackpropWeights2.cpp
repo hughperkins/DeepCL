@@ -75,8 +75,8 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
 
 //    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
 
-    int resultsSize = batchSize * dim.outputCubeSize;
-    CLWrapper *derivLossBySumWrapper = cl->wrap( resultsSize, derivLossBySum );
+    int outputSize = batchSize * dim.outputCubeSize;
+    CLWrapper *derivLossBySumWrapper = cl->wrap( outputSize, derivLossBySum );
     derivLossBySumWrapper->copyToDevice();
 
     int inputSize = batchSize * dim.inputCubeSize;
@@ -88,7 +88,7 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
     weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-//    cout << "backpropweights2::backpropweights resultsSize=" << resultsSize << " inputSize=" << inputSize << 
+//    cout << "backpropweights2::backpropweights outputSize=" << outputSize << " inputSize=" << inputSize << 
 //        " weightSize=" << weightsSize << endl;
 
     CLWrapper *biasWeightsWrapper = 0;

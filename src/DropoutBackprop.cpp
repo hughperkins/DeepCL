@@ -52,14 +52,14 @@ DropoutBackprop::DropoutBackprop( OpenCLHelper *cl, int numPlanes, int inputImag
 VIRTUAL int DropoutBackprop::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int DropoutBackprop::getResultsSize(int batchSize) {
+VIRTUAL int DropoutBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float *errors, float *errorsForUpstream ) {
 //    cout << "DropoutBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper start" );
-    CLWrapper *maskWrapper = cl->wrap( getResultsSize(batchSize), mask );
-    CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
+    CLWrapper *maskWrapper = cl->wrap( getOutputSize(batchSize), mask );
+    CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
 
     maskWrapper->copyToDevice();

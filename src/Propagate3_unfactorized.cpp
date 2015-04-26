@@ -23,7 +23,7 @@ VIRTUAL Propagate3_unfactorized::~Propagate3_unfactorized() {
 //    delete activate;
 }
 VIRTUAL void Propagate3_unfactorized::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
-    CLWrapper *resultsWrapper ) {
+    CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Propagate3_unfactorized::propagate begin");
 //    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
 //    int maxglobalId = 0;
@@ -32,7 +32,7 @@ VIRTUAL void Propagate3_unfactorized::propagate( int batchSize, CLWrapper *dataW
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     if( dim.biased ) kernel->input( biasWeightsWrapper );
-    kernel->output( resultsWrapper );
+    kernel->output( outputWrapper );
 //    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );

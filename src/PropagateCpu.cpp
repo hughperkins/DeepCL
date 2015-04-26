@@ -19,7 +19,7 @@ PropagateCpu::PropagateCpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFun
         Propagate( cl, dim, fn )
     {
 }
-VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper ) {
+VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
     inputDataWrapper->copyToHost();
     weightsWrapper->copyToHost();
 //    weightsWrapper->copyToHost();
@@ -29,19 +29,19 @@ VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper
         biasWeightsWrapper->copyToHost();
         biasWeights =  (float *)biasWeightsWrapper->getHostArray();
     }
-    float *results = propagate( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
-    int resultsSize = batchSize * dim.outputCubeSize;
-//        memcpy( (float *)resultsWrapper->getHostArray(), results, sizeof(float) * resultsSize );
-    float *hostArray = (float *)resultsWrapper->getHostArray();
-    for( int i = 0; i < resultsSize; i++ ) {
-        hostArray[i] = results[i];
+    float *output = propagate( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
+    int outputSize = batchSize * dim.outputCubeSize;
+//        memcpy( (float *)outputWrapper->getHostArray(), output, sizeof(float) * outputSize );
+    float *hostArray = (float *)outputWrapper->getHostArray();
+    for( int i = 0; i < outputSize; i++ ) {
+        hostArray[i] = output[i];
     }
-    resultsWrapper->copyToDevice();
-    delete[] results;
+    outputWrapper->copyToDevice();
+    delete[] output;
 }
 VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *weights, float *biasWeights ) {
 //    cout << "PropagateCpu::propagate outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
-    float *results = new float[ dim.outputCubeSize * batchSize ];
+    float *output = new float[ dim.outputCubeSize * batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
         for( int filter = 0; filter < dim.numFilters; filter++ ) {
             for( int outRow = 0; outRow < dim.outputImageSize; outRow += 1 + dim.skip ) {
@@ -86,18 +86,18 @@ VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *
                         sum += biasWeights[filter];
                     }
                     sum = fn->calc( sum );
-                    int resultsIndex = ( ( n 
+                    int outputIndex = ( ( n 
                         * dim.numFilters + filter ) 
                         * dim.outputImageSize + outRow )
                         * dim.outputImageSize + outCol;
-                    results[resultsIndex] = sum;
-//                    cout << "resultsIndex=" << resultsIndex << " sum=" << sum << " results[resultsIndex]=" <<
-//                        results[resultsIndex] << endl;
+                    output[outputIndex] = sum;
+//                    cout << "outputIndex=" << outputIndex << " sum=" << sum << " output[outputIndex]=" <<
+//                        output[outputIndex] << endl;
                 }
             }
         }
     }
-    return results;
+    return output;
 }
 
 

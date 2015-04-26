@@ -39,13 +39,13 @@ public:
     VIRTUAL void unpersistFromArray(float const*array);
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL int getResultsSize() const;
-    VIRTUAL float *getResults();
+    VIRTUAL int getOutputSize() const;
+    VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL bool needsBackProp();
     VIRTUAL void propagate();

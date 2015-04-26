@@ -29,16 +29,16 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
     inputWrapper->copyToHost();
 
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    int *selectors = new int[ getResultsSize( batchSize ) ];
-    float *output = new float[ getResultsSize( batchSize ) ];
+    int *selectors = new int[ getOutputSize( batchSize ) ];
+    float *output = new float[ getOutputSize( batchSize ) ];
 
     propagate( batchSize, input, selectors, output );
 
     int *selectorsHostArray = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
-    memcpy( selectorsHostArray, selectors, sizeof(int) * getResultsSize( batchSize ) );
+    memcpy( selectorsHostArray, selectors, sizeof(int) * getOutputSize( batchSize ) );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getResultsSize( batchSize ) );
+    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
 
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
@@ -47,7 +47,7 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
     delete[] output;
 }
 VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *selectors, float *output ) {
-//    float *output = new float[ getResultsSize( batchSize ) ];
+//    float *output = new float[ getOutputSize( batchSize ) ];
 //    cout << "PoolingPropagateCpu::propagate( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate start" );
     for( int n = 0; n < batchSize; n++ ) {

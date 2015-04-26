@@ -21,11 +21,11 @@ VIRTUAL void LossLayer::propagate() {
 VIRTUAL bool LossLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL float *LossLayer::getResults() {
-    return previousLayer->getResults();
+VIRTUAL float *LossLayer::getOutput() {
+    return previousLayer->getOutput();
 }
-VIRTUAL int LossLayer::getResultsSize() const {
-    return previousLayer->getResultsSize();
+VIRTUAL int LossLayer::getOutputSize() const {
+    return previousLayer->getOutputSize();
 }
 VIRTUAL int LossLayer::getOutputCubeSize() const {
     return previousLayer->getOutputCubeSize();

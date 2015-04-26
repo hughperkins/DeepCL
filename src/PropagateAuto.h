@@ -46,7 +46,7 @@ public:
     PropagateAuto( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
     VIRTUAL ~PropagateAuto();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *biasWeightsWrapper, CLWrapper *resultsWrapper );
+    CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
 
     // [[[end]]]
 

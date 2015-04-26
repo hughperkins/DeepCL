@@ -11,7 +11,7 @@
 class LossLayer : public Layer {
 public:
     virtual float calcLoss( float const*expectedValue ) = 0;
-    virtual void calcErrors( float const*expectedResults ) = 0;
+    virtual void calcErrors( float const*expectedOutput ) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -21,8 +21,8 @@ public:
     LossLayer( Layer *previousLayer, LossLayerMaker *maker );
     VIRTUAL void propagate();
     VIRTUAL bool needsBackProp();
-    VIRTUAL float *getResults();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL float *getOutput();
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;

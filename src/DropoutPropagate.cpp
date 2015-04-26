@@ -55,7 +55,7 @@ VIRTUAL void DropoutPropagate::propagate( int batchSize, unsigned char *masks, f
     int inputLinearSize = getInputSize( batchSize );
     CLWrapper *masksWrapper = cl->wrap( inputLinearSize, masks );
     CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
-    CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
+    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     masksWrapper->copyToDevice();
     inputWrapper->copyToDevice();
@@ -69,7 +69,7 @@ VIRTUAL void DropoutPropagate::propagate( int batchSize, unsigned char *masks, f
 VIRTUAL int DropoutPropagate::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int DropoutPropagate::getResultsSize(int batchSize) {
+VIRTUAL int DropoutPropagate::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 
