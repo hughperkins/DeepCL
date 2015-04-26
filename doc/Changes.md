@@ -11,6 +11,10 @@
 * lua wrappers created, using swig
 * new set of python wrappers, in `python_swig` directory, using swig instead of cython
   * plausibly will be published to pypi as 'PyDeepCLSwig', in parallel to the existing Cython version
+  * compared to the cython wrappers, these are easier to maintain, and to build
+  * but we need to solve two issues:
+    * get ctrl-c working
+    * make sure can pass numpy types in
 * added new ActivationLayer layer type, to implement relu, sigmoid etc in a separate layer from the convolutional,
 and fc layers
 * in commandline netdef, can put 'z' at the end of a convolutional layer to make it zero-padded, eg `32c5z`
@@ -31,6 +35,8 @@ and fc layers
   * again, more compatible with writing wrappers for scripting languages, since inter-language callbacks tend to be hard work to implement
 * idx-to-mat removed; since GenericLoader can directly handle reading mnist format now
 * clconvolve1 executable removed (replaced by deeplclrun)
+* activation layers within convolutional and fc layers will either be removed, or marked as
+deprecated
 
 ## Recent changes, to 4.x.x branch
 
