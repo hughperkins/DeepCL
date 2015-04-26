@@ -22,7 +22,7 @@ public:
     ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     VIRTUAL void backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput );
     VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputsWrapper,
-    CLWrapper *errorsWrapper,
+    CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
 
     // [[[end]]]

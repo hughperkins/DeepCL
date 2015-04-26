@@ -51,7 +51,7 @@ public:
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
     VIRTUAL void backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput );
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *errorsWrapper, CLWrapper *gradInputWrapper );
+    VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

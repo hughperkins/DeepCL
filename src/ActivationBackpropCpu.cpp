@@ -35,15 +35,15 @@ VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, float *inputs
     }
 }
 VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *inputsWrapper,
-         CLWrapper *errorsWrapper, 
+         CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backpropErrors start" );
 
     inputsWrapper->copyToHost();
-    errorsWrapper->copyToHost();
+    gradOutputWrapper->copyToHost();
 
     float *inputs = reinterpret_cast<float *>( inputsWrapper->getHostArray() );
-    float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
+    float *errors = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
     backpropErrors( batchSize, inputs, errors, gradInput );

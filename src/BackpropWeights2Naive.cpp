@@ -20,7 +20,7 @@ VIRTUAL BackpropWeights2Naive::~BackpropWeights2Naive() {
 //    cout << "~backpropweights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2Naive start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
@@ -28,7 +28,7 @@ VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learni
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
-       ->in( errorsWrapper )
+       ->in( gradOutputWrapper )
         ->in( imagesWrapper )
        ->inout( weightsWrapper );
     if( dim.biased ) {

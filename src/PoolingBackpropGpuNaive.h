@@ -22,7 +22,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~PoolingBackpropGpuNaive();
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper,
+    VIRTUAL void backpropErrors( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *gradInputWrapper );
     PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
 

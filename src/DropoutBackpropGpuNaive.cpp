@@ -29,7 +29,7 @@ VIRTUAL DropoutBackpropGpuNaive::~DropoutBackpropGpuNaive() {
 VIRTUAL void DropoutBackpropGpuNaive::backpropErrors( 
             int batchSize, 
             CLWrapper *maskWrapper, 
-            CLWrapper *errorsWrapper, 
+            CLWrapper *gradOutputWrapper, 
             CLWrapper *gradInputWrapper ) 
         {
 
@@ -47,7 +47,7 @@ VIRTUAL void DropoutBackpropGpuNaive::backpropErrors(
 
     kernel  ->in( batchSize * numPlanes * outputImageSize * outputImageSize )
             ->in( maskWrapper )
-            ->in( errorsWrapper )
+            ->in( gradOutputWrapper )
             ->out( gradInputWrapper );
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupSize = 64;

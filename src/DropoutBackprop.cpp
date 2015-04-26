@@ -59,23 +59,23 @@ VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float 
 //    cout << "DropoutBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper start" );
     CLWrapper *maskWrapper = cl->wrap( getOutputSize(batchSize), mask );
-    CLWrapper *errorsWrapper = cl->wrap( getOutputSize(batchSize), errors );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
     CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 
     maskWrapper->copyToDevice();
-    errorsWrapper->copyToDevice();
+    gradOutputWrapper->copyToDevice();
     gradInputWrapper->createOnDevice();
 
-    backpropErrors( batchSize, maskWrapper, errorsWrapper, gradInputWrapper );
+    backpropErrors( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
 
     gradInputWrapper->copyToHost();
 
     delete maskWrapper;
-    delete errorsWrapper;
+    delete gradOutputWrapper;
     delete gradInputWrapper;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper end" );
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, CLWrapper *gradInputWrapper ) {
+VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper ) {
     throw runtime_error("DropoutBackprop::backpropErrors wrappers not implemented" );
 }
 

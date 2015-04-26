@@ -182,13 +182,13 @@ VIRTUAL void PoolingLayer::propagate() {
 VIRTUAL void PoolingLayer::backProp( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
-    CLWrapper *errorsWrapper = 0;
+    CLWrapper *gradOutputWrapper = 0;
     bool weOwnErrorsWrapper = false;
     if( nextLayer->providesGradInputWrapper() ) {
-        errorsWrapper = nextLayer->getGradInputWrapper();
+        gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
-        errorsWrapper->copyToDevice();
+        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
 
@@ -215,7 +215,7 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 
 //    selectorsWrapper->copyToHost();
 
-    poolingBackpropImpl->backpropErrors( batchSize, errorsWrapper, selectorsWrapper, gradInputWrapper );
+    poolingBackpropImpl->backpropErrors( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
 
 //    gradInputWrapper->copyToHost();
 //    float *gradInput = reinterpret_cast< float * >( gradInputWrapper->getHostArray() );
@@ -233,7 +233,7 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 //    }
 
     if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+        delete gradOutputWrapper;
     }
 }
 VIRTUAL std::string PoolingLayer::asString() const {

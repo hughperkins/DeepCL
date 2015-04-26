@@ -30,15 +30,15 @@ VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, uchar *mask,  fl
         gradInput[i] = mask[i] == 1 ? errors[i] : 0.0f;
     }
 }
-VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, 
+VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("DropoutBackpropCpu::backpropErrors start" );
 
     maskWrapper->copyToHost();
-    errorsWrapper->copyToHost();
+    gradOutputWrapper->copyToHost();
 
     uchar *mask = reinterpret_cast<uchar *>( maskWrapper->getHostArray() );
-    float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
+    float *errors = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
     backpropErrors( batchSize, mask, errors, gradInput );

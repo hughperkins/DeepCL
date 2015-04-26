@@ -25,7 +25,7 @@ public:
     VIRTUAL void backpropErrors(
     int batchSize,
     CLWrapper *maskWrapper,
-    CLWrapper *errorsWrapper,
+    CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
     DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
 

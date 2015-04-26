@@ -16,13 +16,13 @@ VIRTUAL BackpropErrorsv2Naive::~BackpropErrorsv2Naive() {
     delete applyActivationDeriv;
 }
 VIRTUAL void BackpropErrorsv2Naive::backpropErrors( int batchSize, 
-        CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
+        CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive start" );
 
     kernel
        ->in( batchSize )
-        ->in( errorsWrapper )
+        ->in( gradOutputWrapper )
        ->in( weightsWrapper )
         ->out( gradInputWrapper );
 

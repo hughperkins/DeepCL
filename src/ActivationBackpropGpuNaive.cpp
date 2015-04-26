@@ -28,7 +28,7 @@ VIRTUAL ActivationBackpropGpuNaive::~ActivationBackpropGpuNaive() {
 //    delete kMemset;
 }
 VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *inputWrapper,
-         CLWrapper *errorsWrapper, 
+         CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
 
     StatefulTimer::instance()->timeCheck("ActivationBackpropGpuNaive::backpropErrors start" );
@@ -38,7 +38,7 @@ VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrappe
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->in( batchSize * numPlanes * inputImageSize * inputImageSize )
           ->in( inputWrapper )
-          ->in( errorsWrapper )
+          ->in( gradOutputWrapper )
           ->out( gradInputWrapper );
     globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     workgroupSize = 64;

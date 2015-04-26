@@ -19,7 +19,7 @@ public:
     // generated, using cog:
     VIRTUAL ~BackpropErrorsv2Naive();
     VIRTUAL void backpropErrors( int batchSize,
-    CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
+    CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );
     BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
 

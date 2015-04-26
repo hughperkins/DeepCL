@@ -25,7 +25,7 @@ VIRTUAL BackpropWeights2ByRow::~BackpropWeights2ByRow() {
     delete reduce;
     delete perElementAdd;
 }
-VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2ByRow start" );
 
     cout << "input buffer:" << endl;
@@ -33,7 +33,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     cout << endl;
 
     cout << "errors buffer:" << endl;
-    PrintBuffer::printFloats( cl, errorsWrapper, batchSize * dim.outputImageSize, dim.outputImageSize );
+    PrintBuffer::printFloats( cl, gradOutputWrapper, batchSize * dim.outputImageSize, dim.outputImageSize );
     cout << endl;
 
     int globalSize = workgroupSize * numWorkgroups;
@@ -79,7 +79,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
-       ->in( errorsWrapper )
+       ->in( gradOutputWrapper )
         ->in( imagesWrapper )
        ->out( weights1Wrapper );
     if( dim.biased ) {

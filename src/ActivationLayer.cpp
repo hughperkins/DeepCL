@@ -156,23 +156,23 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
         imagesWrapper->copyToDevice();
     }
 
-    CLWrapper *errorsWrapper = 0;
+    CLWrapper *gradOutputWrapper = 0;
     bool weOwnErrorsWrapper = false;
     if( nextLayer->providesGradInputWrapper() ) {
-        errorsWrapper = nextLayer->getGradInputWrapper();
+        gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
-        errorsWrapper->copyToDevice();
+        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
 
-    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, gradInputWrapper );
+    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, gradOutputWrapper, gradInputWrapper );
 
     if( !previousLayer->hasOutputWrapper() ) {
         delete imagesWrapper;
     }
     if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+        delete gradOutputWrapper;
     }
 }
 VIRTUAL std::string ActivationLayer::asString() const {

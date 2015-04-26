@@ -94,11 +94,11 @@ VIRTUAL float *BackpropErrorsv2Cpu::backpropErrors( int batchSize, float *inputD
     return gradInput;
 }
 VIRTUAL void BackpropErrorsv2Cpu::backpropErrors( int batchSize, 
-        CLWrapper *inputDataWrapper, CLWrapper *errorsWrapper, CLWrapper *weightsWrapper,
+        CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
 
     inputDataWrapper->copyToHost();
-    errorsWrapper->copyToHost();
+    gradOutputWrapper->copyToHost();
     weightsWrapper->copyToHost();
 //    float *biasWeights = 0;
 //    if( dim.biased ) {
@@ -106,7 +106,7 @@ VIRTUAL void BackpropErrorsv2Cpu::backpropErrors( int batchSize,
 //        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
 //    }
     float *gradInput = backpropErrors( batchSize, (float *)inputDataWrapper->getHostArray(),
-         (float *)errorsWrapper->getHostArray(), (float *)weightsWrapper->getHostArray() );
+         (float *)gradOutputWrapper->getHostArray(), (float *)weightsWrapper->getHostArray() );
     float *gradInputHostArray = (float*)gradInputWrapper->getHostArray();
     const int gradInputWrapperSize = gradInputWrapper->size();
     for( int i = 0; i < gradInputWrapperSize; i++ ) {

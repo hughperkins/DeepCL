@@ -44,14 +44,14 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, 
         }
     }
 }
-VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *selectorsWrapper, 
+VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors start" );
 
-    errorsWrapper->copyToHost();
+    gradOutputWrapper->copyToHost();
     selectorsWrapper->copyToHost();
 
-    float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
+    float *errors = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     int *selectors = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 

@@ -219,18 +219,18 @@ VIRTUAL void DropoutLayer::propagate() {
 VIRTUAL void DropoutLayer::backProp( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
-    CLWrapper *errorsWrapper = 0;
+    CLWrapper *gradOutputWrapper = 0;
     bool weOwnErrorsWrapper = false;
     if( nextLayer->providesGradInputWrapper() ) {
-        errorsWrapper = nextLayer->getGradInputWrapper();
+        gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
-        errorsWrapper->copyToDevice();
+        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
-    dropoutBackpropImpl->backpropErrors( batchSize, maskWrapper, errorsWrapper, gradInputWrapper );
+    dropoutBackpropImpl->backpropErrors( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
     if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+        delete gradOutputWrapper;
     }
 }
 VIRTUAL std::string DropoutLayer::asString() const {

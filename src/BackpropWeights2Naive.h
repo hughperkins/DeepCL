@@ -21,7 +21,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~BackpropWeights2Naive();
-    VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
+    VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
     BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]

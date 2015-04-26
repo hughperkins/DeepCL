@@ -57,8 +57,8 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
     inputDataWrapper->copyToDevice();
 
-    CLWrapper *errorsWrapper = cl->wrap( batchSize * dim.outputCubeSize, errors );
-    errorsWrapper->copyToDevice();
+    CLWrapper *gradOutputWrapper = cl->wrap( batchSize * dim.outputCubeSize, errors );
+    gradOutputWrapper->copyToDevice();
 
     int weightsSize = dim.filtersSize;
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
@@ -78,13 +78,13 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputSize, gradInput );
 
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copied to device");
-    backpropErrors( batchSize, inputDataWrapper, errorsWrapper, weightsWrapper, gradInputWrapper );
+    backpropErrors( batchSize, inputDataWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after call backprop");
     gradInputWrapper->copyToHost();
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copytohost");
 
     delete gradInputWrapper;
-    delete errorsWrapper;
+    delete gradOutputWrapper;
     delete weightsWrapper;
     delete inputDataWrapper;
 //    if( dim.biased ) {
