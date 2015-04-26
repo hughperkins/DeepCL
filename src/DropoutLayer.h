@@ -36,7 +36,7 @@ public:
     float *results;
     float *errorsForUpstream;
 
-    CLWrapper *masksWrapper;
+    CLWrapper *maskWrapper;
     CLWrapper *resultsWrapper;
     CLWrapper *errorsForUpstreamWrapper;
 

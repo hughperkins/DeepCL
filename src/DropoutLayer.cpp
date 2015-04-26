@@ -33,7 +33,7 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
         masks(0),
         results(0),
         errorsForUpstream(0),
-        masksWrapper(0),
+        maskWrapper(0),
         resultsWrapper(0),
         errorsForUpstreamWrapper(0),
         resultsCopiedToHost(false),
@@ -54,8 +54,8 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
 VIRTUAL DropoutLayer::~DropoutLayer() {
     delete dropoutPropagateImpl;
     delete dropoutBackpropImpl;
-    if( masksWrapper != 0 ) {
-        delete masksWrapper;
+    if( maskWrapper != 0 ) {
+        delete maskWrapper;
     }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
@@ -85,8 +85,8 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( masksWrapper != 0 ) {
-        delete masksWrapper;
+    if( maskWrapper != 0 ) {
+        delete maskWrapper;
     }
     if( resultsWrapper != 0 ) {
         delete resultsWrapper;
@@ -106,7 +106,7 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
     masks = new unsigned char[ getResultsSize() ];
-    masksWrapper = cl->wrap( getResultsSize(), masks );
+    maskWrapper = cl->wrap( getResultsSize(), masks );
     results = new float[ getResultsSize() ];
     resultsWrapper = cl->wrap( getResultsSize(), results );
     errorsForUpstream = new float[ previousLayer->getResultsSize() ];
@@ -199,9 +199,10 @@ VIRTUAL void DropoutLayer::propagate() {
         upstreamResultsWrapper->copyToDevice();
     }
     // create new masks...
+    // TODO: handle training or not (dont drop during testing)
     generateMasks();
-    masksWrapper->copyToDevice();
-    dropoutPropagateImpl->propagate( batchSize, masksWrapper, upstreamResultsWrapper, resultsWrapper );
+    maskWrapper->copyToDevice();
+    dropoutPropagateImpl->propagate( batchSize, maskWrapper, upstreamResultsWrapper, resultsWrapper );
     if( !previousLayer->hasResultsWrapper() ) {
         delete upstreamResultsWrapper;
     }
@@ -218,7 +219,7 @@ VIRTUAL void DropoutLayer::backProp( float learningRate ) {
         errorsWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
-    dropoutBackpropImpl->backpropErrors( batchSize, errorsWrapper, errorsForUpstreamWrapper );
+    dropoutBackpropImpl->backpropErrors( batchSize, maskWrapper, errorsWrapper, errorsForUpstreamWrapper );
     if( weOwnErrorsWrapper ) {
         delete errorsWrapper;
     }

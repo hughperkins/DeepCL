@@ -24,32 +24,24 @@ using namespace std;
 DropoutBackpropCpu::DropoutBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutBackprop( cl, numPlanes, inputImageSize, dropRatio ) {
 }
-VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize,  float *errors, float *errorsForUpstream ) {
-    memset( errorsForUpstream, 0, sizeof( float ) * getInputSize( batchSize ) );
-//    for( int n = 0; n < batchSize; n++ ) {
-//        for( int plane = 0; plane < numPlanes; plane++ ) {
-//            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
-//                int inputRow = outputRow * dropoutSize;
-//                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
-//                    int inputCol = outputCol * dropoutSize;
-//                    int resultIndex = getResultIndex( n, plane, outputRow, outputCol );
-//                    float error = errors[resultIndex];
-//                    errorsForUpstream[ inputIndex ] = error;
-//                }
-//            }
-//        }
-//    }
+VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, uchar *mask,  float *errors, float *errorsForUpstream ) {
+    int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+    for( int i = 0; i < totalLinearSize; i++ ) {
+        errorsForUpstream[i] = mask[i] == 1 ? errors[i] : 0.0f;
+    }
 }
-VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, CLWrapper *errorsWrapper, 
+VIRTUAL void DropoutBackpropCpu::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, 
         CLWrapper *errorsForUpstreamWrapper ) {
     StatefulTimer::instance()->timeCheck("DropoutBackpropCpu::backpropErrors start" );
 
+    maskWrapper->copyToHost();
     errorsWrapper->copyToHost();
 
+    uchar *mask = reinterpret_cast<uchar *>( maskWrapper->getHostArray() );
     float *errors = reinterpret_cast<float *>( errorsWrapper->getHostArray() );
     float *errorsForUpstream = new float[ getInputSize( batchSize ) ];
 
-    backpropErrors( batchSize, errors, errorsForUpstream );
+    backpropErrors( batchSize, mask, errors, errorsForUpstream );
 
     float *errorsForUpstreamHostArray = reinterpret_cast<float *>( errorsForUpstreamWrapper->getHostArray() );
     memcpy( errorsForUpstreamHostArray, errorsForUpstream, sizeof(float) * getInputSize( batchSize ) );

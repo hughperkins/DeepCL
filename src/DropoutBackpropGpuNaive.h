@@ -22,7 +22,10 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~DropoutBackpropGpuNaive();
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *errorsWrapper,
+    VIRTUAL void backpropErrors(
+    int batchSize,
+    CLWrapper *maskWrapper,
+    CLWrapper *errorsWrapper,
     CLWrapper *errorsForUpstreamWrapper );
     DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
 

@@ -55,23 +55,26 @@ VIRTUAL int DropoutBackprop::getInputSize( int batchSize ) {
 VIRTUAL int DropoutBackprop::getResultsSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, float *errors, float *errorsForUpstream ) {
+VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float *errors, float *errorsForUpstream ) {
 //    cout << "DropoutBackprop::backpropErrors( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper start" );
+    CLWrapper *maskWrapper = cl->wrap( getResultsSize(batchSize), mask );
     CLWrapper *errorsWrapper = cl->wrap( getResultsSize(batchSize), errors );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( getInputSize(batchSize), errorsForUpstream );
 
+    maskWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
 
-    backpropErrors( batchSize, errorsWrapper, errorsForUpstreamWrapper );
+    backpropErrors( batchSize, maskWrapper, errorsWrapper, errorsForUpstreamWrapper );
 
     errorsForUpstreamWrapper->copyToHost();
 
+    delete maskWrapper;
     delete errorsWrapper;
     delete errorsForUpstreamWrapper;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper end" );
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
+VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *errorsWrapper, CLWrapper *errorsForUpstreamWrapper ) {
     throw runtime_error("DropoutBackprop::backpropErrors wrappers not implemented" );
 }
 

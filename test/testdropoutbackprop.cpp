@@ -23,10 +23,10 @@ TEST( testdropoutbackprop, basic ) {
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     DropoutBackprop *dropoutBackprop = DropoutBackprop::instanceForTest( cl, numPlanes, imageSize, 0.6f );
-    float inputs[] = {
-        1, -0.1f, 0.1f,
-        0.5f, -1000, 1000,
-        2.5f, 2.0f, -1.0f
+    uchar mask[] = {
+        1,1,0,
+        0,1,1,
+        1,0,1
     };
     float errors[] = {
         3, 5,-2.7f,
@@ -34,31 +34,24 @@ TEST( testdropoutbackprop, basic ) {
         0, -1.1f, 3.5f
     };
     int inputTotalSize = dropoutBackprop->getInputSize( batchSize );
-    EXPECT_EQ( batchSize * imageSize * imageSize, inputTotalSize );
+    EXPECT_FLOAT_NEAR( batchSize * imageSize * imageSize, inputTotalSize );
     float *errorsForUpstream = new float[ inputTotalSize ];
 
-    dropoutBackprop->backpropErrors( batchSize, inputs, errors, errorsForUpstream );
+    dropoutBackprop->backpropErrors( batchSize, mask, errors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ dropoutPropagate->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutPropagate->getInputSize( batchSize ) ];
-//    float expectedErrorsForUpstream[] = {
-//        3,0,-2.7f,
-//        2,0,2.1f,
-//        0,-1.1f,0,
-//    };
-    EXPECT_EQ( 3, errorsForUpstream[0] );
-    EXPECT_EQ( 0, errorsForUpstream[1] );
-    EXPECT_EQ( -2.7f, errorsForUpstream[2] );
+    EXPECT_FLOAT_NEAR( 3, errorsForUpstream[0] );
+    EXPECT_FLOAT_NEAR( 5, errorsForUpstream[1] );
+    EXPECT_FLOAT_NEAR( 0, errorsForUpstream[2] );
 
-    EXPECT_EQ( 2, errorsForUpstream[3] );
-    EXPECT_EQ( 0, errorsForUpstream[4] );
-    EXPECT_EQ( 2.1f, errorsForUpstream[5] );
+    EXPECT_FLOAT_NEAR( 0, errorsForUpstream[3] );
+    EXPECT_FLOAT_NEAR( -9, errorsForUpstream[4] );
+    EXPECT_FLOAT_NEAR( 2.1f, errorsForUpstream[5] );
 
-    EXPECT_EQ( 0, errorsForUpstream[6] );
-    EXPECT_EQ( -1.1f, errorsForUpstream[7] );
-    EXPECT_EQ( 0, errorsForUpstream[8] );
+    EXPECT_FLOAT_NEAR( 0, errorsForUpstream[6] );
+    EXPECT_FLOAT_NEAR( 0, errorsForUpstream[7] );
+    EXPECT_FLOAT_NEAR( 3.5f, errorsForUpstream[8] );
 //    for( int i = 0; i < 16; i++ ) {
-//        EXPECT_EQ( expectedErrorsForUpstream[i], errorsForUpstream[i] );
+//        EXPECT_FLOAT_NEAR( expectedErrorsForUpstream[i], errorsForUpstream[i] );
 //    }
 
     delete dropoutBackprop;
@@ -72,11 +65,11 @@ TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     DropoutBackprop *dropoutBackprop = DropoutBackprop::instanceForTest( cl, numPlanes, imageSize, 0.6f );
-    float inputs[] = {
-        2,
-        -1,
-        -2,
-        2
+    uchar mask[] = {
+        1,
+        1,
+        0,
+        1
     };
     float errors[] = {
         3, 
@@ -86,13 +79,13 @@ TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
     };
     float *errorsForUpstream = new float[ dropoutBackprop->getInputSize( batchSize ) ];
 
-    dropoutBackprop->backpropErrors( batchSize, inputs, errors, errorsForUpstream );
+    dropoutBackprop->backpropErrors( batchSize, mask, errors, errorsForUpstream );
 
 //    float *expectedErrorsForUpstream = new float[ dropoutPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutPropagate->getInputSize( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         3,
-        0,
+        5,
         0,
         9
     };
@@ -105,9 +98,9 @@ TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
     delete cl;
 }
 
-TEST( SLOW_testdropoutbackprop, compare_args ) {
+TEST( testdropoutbackprop, compare_args ) {
     int inputImageSize = 9;
-    std::string dropout = "relu";
+    float dropRatio = 0.6f;
     int instance0 = 0;
     int instance1 = 1;
     int numPlanes = 4;
@@ -115,7 +108,7 @@ TEST( SLOW_testdropoutbackprop, compare_args ) {
     int its = 3;
     TestArgsParser::arg( "its", &its );
     TestArgsParser::arg( "batchSize", &batchSize );
-    TestArgsParser::arg( "dropout", &dropout );
+    TestArgsParser::arg( "dropratio", &dropRatio );
 //    TestArgsParser::arg( "dropoutsize", &dropoutSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
     TestArgsParser::arg( "inputimagesize", &inputImageSize );
@@ -124,8 +117,8 @@ TEST( SLOW_testdropoutbackprop, compare_args ) {
     TestArgsParser::go();
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutBackprop *p0 = DropoutBackprop::instanceSpecific( instance0, cl, numPlanes, inputImageSize, DropoutFunction::fromName( dropout ) );
-    DropoutBackprop *p1 = DropoutBackprop::instanceSpecific( instance1, cl, numPlanes, inputImageSize, DropoutFunction::fromName( dropout ) );
+    DropoutBackprop *p0 = DropoutBackprop::instanceSpecific( instance0, cl, numPlanes, inputImageSize, dropRatio );
+    DropoutBackprop *p1 = DropoutBackprop::instanceSpecific( instance1, cl, numPlanes, inputImageSize, dropRatio );
     int outputImageSize = p1->outputImageSize;
     int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
     float *errors = new float[ errorsSize ];
@@ -133,9 +126,10 @@ TEST( SLOW_testdropoutbackprop, compare_args ) {
     float *errorsForUpstream0 = new float[ inputSize ];
     float *errorsForUpstream1 = new float[ inputSize ];
     
-    DropoutPropagate *forwardprop = DropoutPropagate::instanceSpecific( 0, cl, numPlanes, inputImageSize, DropoutFunction::fromName( dropout ) );
-    float *output = new float[errorsSize];
+    DropoutPropagate *forwardprop = DropoutPropagate::instanceSpecific( 0, cl, numPlanes, inputImageSize, dropRatio );
     float *input = new float[inputSize];
+    float *output = new float[errorsSize];
+    uchar *mask = new uchar[inputSize];
     float *errorsForUpstream[2];
     errorsForUpstream[0] = errorsForUpstream0;
     errorsForUpstream[1] = errorsForUpstream1;
@@ -147,11 +141,12 @@ TEST( SLOW_testdropoutbackprop, compare_args ) {
         // easiest way to select valid selectors might be to just forwardpropagate first?
 
         WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
-        forwardprop->propagate( batchSize, input, output );
+        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );
+        WeightRandomizer::randomizeInts( it, mask, inputSize, 0, 2 );    
+        forwardprop->propagate( batchSize, mask, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
-            props[instance]->backpropErrors( batchSize, input, errors, errorsForUpstream[instance] );
+            props[instance]->backpropErrors( batchSize, mask, errors, errorsForUpstream[instance] );
         }
         bool ok = true;
         int numErrors = 0;
@@ -166,7 +161,7 @@ TEST( SLOW_testdropoutbackprop, compare_args ) {
                 }
             }
         }
-        EXPECT_EQ( true, ok );
+        EXPECT_FLOAT_NEAR( true, ok );
         if( !ok ) {
             cout << " breaking after " << it << " its, because of FAIL errors" << endl;
             break; // no point in continuing...
@@ -210,15 +205,15 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
 
     dropoutPropagate->propagate( batchSize, data, selectors, output );
 
-    EXPECT_EQ( selectors[0], 2 );
-    EXPECT_EQ( selectors[1], 1 );
-    EXPECT_EQ( selectors[2], 1 );
-    EXPECT_EQ( selectors[3], 2 );
+    EXPECT_FLOAT_NEAR( selectors[0], 2 );
+    EXPECT_FLOAT_NEAR( selectors[1], 1 );
+    EXPECT_FLOAT_NEAR( selectors[2], 1 );
+    EXPECT_FLOAT_NEAR( selectors[3], 2 );
 
-    EXPECT_EQ( output[0], 5 );
-    EXPECT_EQ( output[1], 8 );
-    EXPECT_EQ( output[2], 33 );
-    EXPECT_EQ( output[3], 37.4f );
+    EXPECT_FLOAT_NEAR( output[0], 5 );
+    EXPECT_FLOAT_NEAR( output[1], 8 );
+    EXPECT_FLOAT_NEAR( output[2], 33 );
+    EXPECT_FLOAT_NEAR( output[3], 37.4f );
 
     delete dropoutPropagate;
     delete[] selectors;

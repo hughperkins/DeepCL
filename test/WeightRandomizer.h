@@ -29,6 +29,7 @@ public:
     STATIC void randomizeInts( float *values, int numValues, int minvalue, int maxvalue );
     STATIC void randomizeInts( int *values, int numValues, int minvalue, int maxvalue  );
     STATIC void randomizeInts( unsigned char *values, int numValues, int minvalue, int maxvalue  );
+    STATIC void randomizeInts( int seed, unsigned char *values, int numValues, int minvalue, int maxvalue  );
     STATIC MT19937 randomize( ClConvolve::vfloat &values, float minvalue, float maxvalue );
     template< typename It > STATIC MT19937 randomize( It begin, It end, float minvalue, float maxvalue );
     template< typename It > STATIC void randomize( MT19937 &random, It begin, It end, float minvalue, float maxvalue );

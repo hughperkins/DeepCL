@@ -26,20 +26,28 @@ VIRTUAL DropoutBackpropGpuNaive::~DropoutBackpropGpuNaive() {
     delete kernel;
     delete kMemset;
 }
-VIRTUAL void DropoutBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *errorsWrapper, 
-        CLWrapper *errorsForUpstreamWrapper ) {
+VIRTUAL void DropoutBackpropGpuNaive::backpropErrors( 
+            int batchSize, 
+            CLWrapper *maskWrapper, 
+            CLWrapper *errorsWrapper, 
+            CLWrapper *errorsForUpstreamWrapper ) 
+        {
 
     StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backpropErrors start" );
 
     // first, memset errors to 0 ...
-    kMemset->out( errorsForUpstreamWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputImageSize * inputImageSize );
+    kMemset ->out( errorsForUpstreamWrapper )
+            ->in( 0.0f )
+            ->in( batchSize * numPlanes * inputImageSize * inputImageSize );
     int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    kernel->in( batchSize )->inout( errorsWrapper )->in( errorsForUpstreamWrapper );
+    kernel  ->in( batchSize )
+            ->inout( errorsWrapper )
+            ->in( errorsForUpstreamWrapper );
     globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     workgroupSize = 64;
     numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
