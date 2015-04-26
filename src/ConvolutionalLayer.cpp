@@ -379,25 +379,25 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
         imagesWrapper->copyToDevice();
     }
 
-    CLWrapper *errorsWrapper = 0;
-    bool weOwnErrorsWrapper = false;
+    CLWrapper *gradOutputWrapper = 0;
+    bool weOwnGradOutputWrapper = false;
     if( nextLayer->providesGradInputWrapper() ) {
-        errorsWrapper = nextLayer->getGradInputWrapper();
+        gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
-        errorsWrapper->copyToDevice();
+        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper->copyToDevice();
 //        int outputSize = getOutputSize();
 //        for( int i = 0; i < outputSize; i++ ) {
 //            cout << "convolutional::backproperrors errorsfromupstream[" << i << "]=" << nextLayer->getGradInput()[i] << endl;
 //        }
-        weOwnErrorsWrapper = true;
+        weOwnGradOutputWrapper = true;
     }
     if( previousLayer->needsBackProp() ) {
-        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, weightsWrapper, gradInputWrapper );
+        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + ::toString( layerIndex ) );
     }
 
-    backpropWeightsImpl->backpropWeights( batchSize, learningRate, errorsWrapper, imagesWrapper,  weightsWrapper, biasWeightsWrapper );
+    backpropWeightsImpl->backpropWeights( batchSize, learningRate, gradOutputWrapper, imagesWrapper,  weightsWrapper, biasWeightsWrapper );
     weightsCopiedToHost = false;
     StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + ::toString( layerIndex ) );
 
@@ -408,8 +408,8 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
     if( !previousLayer->hasOutputWrapper() ) {
         delete imagesWrapper;
     }
-    if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+    if( weOwnGradOutputWrapper ) {
+        delete gradOutputWrapper;
     }
     StatefulTimer::instance()->timeCheck("backproperrors(): updated weights, layer " + ::toString( layerIndex ) );
 }
