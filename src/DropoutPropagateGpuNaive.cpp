@@ -30,7 +30,7 @@ VIRTUAL void DropoutPropagateGpuNaive::propagate( int batchSize, CLWrapper *mask
 //    cout << StatefulTimer::instance()->prefix << "DropoutPropagateGpuNaive::propagate( CLWrapper * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::propagate start" );
 
-    kernel  ->input( batchSize )
+    kernel  ->input( batchSize * numPlanes * outputImageSize * outputImageSize )
             ->input( masksWrapper )
             ->input( inputWrapper )
             ->output( outputWrapper );
@@ -63,7 +63,16 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
     "// placeholder, for now\n" 
-    "kernel void propagateNaive() {\n" 
+    "kernel void propagateNaive(\n" 
+    "        const int N,\n" 
+    "        global const unsigned char *mask,\n" 
+    "        global const float *input,\n" 
+    "        global float *output ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
     "}\n" 
     "\n" 
     "// placeholder, for now\n" 

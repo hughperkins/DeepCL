@@ -35,7 +35,7 @@ STATIC DropoutPropagate *DropoutPropagate::instance( OpenCLHelper *cl, int numPl
 //    return new DropoutPropagateCpu( cl, padZeros, numPlanes, inputImageSize, dropoutSize );
 }
 STATIC DropoutPropagate *DropoutPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutPropagateCpu( cl, numPlanes, inputImageSize, dropRatio );
+    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
 }
 STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     if( idx == 0 ) {
