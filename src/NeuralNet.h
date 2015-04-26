@@ -24,6 +24,7 @@
 #include "PoolingMaker.h"
 #include "LayerMaker.h"
 #include "ActivationMaker.h"
+#include "DropoutMaker.h"
 
 #include "DeepCLDllExport.h"
 

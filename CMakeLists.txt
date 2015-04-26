@@ -62,6 +62,9 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
     ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
     ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp
+    DropoutMaker.cpp DropoutLayer.cpp DropoutPropagate.cpp DropoutBackprop.cpp
+    DropoutPropagateCpu.cpp DropoutPropagateGpuNaive.cpp
+    DropoutBackpropCpu.cpp DropoutBackpropGpuNaive.cpp
  )
 foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})

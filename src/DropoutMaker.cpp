@@ -4,12 +4,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "PoolingLayer.h"
-#include "PoolingMaker.h"
+#include "DropoutLayer.h"
+#include "DropoutMaker.h"
 
 using namespace std;
 
-Layer *PoolingMaker::createLayer( Layer *previousLayer ) {
-    return new PoolingLayer( cl, previousLayer, this );
+Layer *DropoutMaker::createLayer( Layer *previousLayer ) {
+    return new DropoutLayer( cl, previousLayer, this );
 }
 
