@@ -113,9 +113,9 @@ class ScenarioImage(PyDeepCL.Scenario):
                 netinput[ size * size + y * size + x ] = 1
                 net.propagate( netinput )
                 netinput[ size * size + y * size + x ] = 0
-                results = net.getResults()
+                output = net.getOutput()
                 for action in range(4):
-                    thisQ = results[action]
+                    thisQ = output[action]
                     if action == 0 or thisQ > highestQ:
                         highestQ = thisQ
                         bestAction = action

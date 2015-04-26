@@ -8,13 +8,13 @@ cdef extern from "NeuralNet.h":
         void setBatchSize( int batchSize ) except +
         void propagate( const float *images) except +
         void backPropFromLabels( float learningRate, const int *labels) except +
-        void backProp( float learningRate, const float *expectedResults) except +
+        void backProp( float learningRate, const float *expectedOutput) except +
         int calcNumRight( const int *labels ) except +
         void addLayer( LayerMaker2 *maker ) except +
         Layer *getLayer( int index )
         int getNumLayers()
-        const float *getResults()
-        int getResultsSize()
+        const float *getOutput()
+        int getOutputSize()
         void setTraining( bool training )
 
 

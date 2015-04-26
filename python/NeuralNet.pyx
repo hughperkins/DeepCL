@@ -27,8 +27,8 @@ cdef class NeuralNet:
         self.thisptr.propagate( &imagesArray_view[0] )
     def backPropFromLabels( self, float learningRate, int[:] labels):
         return self.thisptr.backPropFromLabels( learningRate, &labels[0] ) 
-    def backProp( self, float learningRate, float[:] expectedResults):
-        return self.thisptr.backProp( learningRate, &expectedResults[0] )
+    def backProp( self, float learningRate, float[:] expectedOutput):
+        return self.thisptr.backProp( learningRate, &expectedOutput[0] )
     def calcNumRight( self, int[:] labels ):
         return self.thisptr.calcNumRight( &labels[0] )
     def addLayer( self, LayerMaker2 layerMaker ):
@@ -43,13 +43,13 @@ cdef class NeuralNet:
         return layer
     def getNumLayers( self ):
         return self.thisptr.getNumLayers()
-    def getResults(self):
-        cdef const float *results = self.thisptr.getResults()
-        cdef int resultsSize = self.thisptr.getResultsSize()
-        cdef c_array.array resultsArray = array('f', [0] * resultsSize )
-        for i in range(resultsSize):
-            resultsArray[i] = results[i]
-        return resultsArray
+    def getOutput(self):
+        cdef const float *output = self.thisptr.getOutput()
+        cdef int outputSize = self.thisptr.getOutputSize()
+        cdef c_array.array outputArray = array('f', [0] * outputSize )
+        for i in range(outputSize):
+            outputArray[i] = output[i]
+        return outputArray
     def setTraining(self, training): # 1 is, we are training net, 0 is we are not
                             # used for example by randomtranslations layer (for now,
                             # used only by randomtranslations layer)
