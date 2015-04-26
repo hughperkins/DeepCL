@@ -34,7 +34,7 @@ public:
         #ifdef NOCHRONO
         {
             time_t thistime;
-            time(&thistime);
+            ::time(&thistime);
             time = (int)thistime;
         }
         #else
