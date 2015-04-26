@@ -41,7 +41,7 @@ void kernel applyActivationDeriv(
 #endif
 
 #ifdef ACTIVATION_DERIV
-void kernel backpropErrors( 
+void kernel backward( 
         const int N,
         global const float *inputs,
         global const float *errors, 

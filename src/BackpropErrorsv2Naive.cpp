@@ -167,7 +167,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     "#endif\n" 
     "\n" 
     "#ifdef ACTIVATION_DERIV\n" 
-    "void kernel backpropErrors(\n" 
+    "void kernel backward(\n" 
     "        const int N,\n" 
     "        global const float *inputs,\n" 
     "        global const float *errors,\n" 
