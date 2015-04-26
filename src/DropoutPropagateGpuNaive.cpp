@@ -54,15 +54,15 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     options += " -DgInputImageSize=" + toString( inputImageSize );
     options += " -DgInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
     options += " -DgNumPlanes=" + toString( numPlanes );
-    float inverseDropRatio = 1.0f / dropRatio;
-    string inverseDropRatioString = toString( inverseDropRatio );
-    if( inverseDropRatioString.find( "." ) == string::npos ) {
-        inverseDropRatioString += ".0f";
-    } else {
-        inverseDropRatioString += "f";
-    }
-//    cout << "inverseDropRatioString " << inverseDropRatioString << endl;
-    options += " -D gInverseDropRatio=" + inverseDropRatioString;
+//    float inverseDropRatio = 1.0f / dropRatio;
+//    string inverseDropRatioString = toString( inverseDropRatio );
+//    if( inverseDropRatioString.find( "." ) == string::npos ) {
+//        inverseDropRatioString += ".0f";
+//    } else {
+//        inverseDropRatioString += "f";
+//    }
+////    cout << "inverseDropRatioString " << inverseDropRatioString << endl;
+//    options += " -D gInverseDropRatio=" + inverseDropRatioString;
 
     // [[[cog
     // import stringify
@@ -70,8 +70,12 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
-    "// placeholder, for now\n" 
-    "#ifdef gInverseDropRatio\n" 
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
     "kernel void propagateNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
@@ -81,12 +85,9 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    output[globalId] = mask[globalId] == 1 ? gInverseDropRatio * input[globalId] : 0.0f;\n" 
+    "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
     "}\n" 
-    "#endif\n" 
     "\n" 
-    "// placeholder, for now\n" 
-    "#ifdef gDropRatio\n" 
     "kernel void backpropNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
@@ -98,7 +99,6 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? errors[globalId] : 0.0f;\n" 
     "}\n" 
-    "#endif\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/dropout.cl" );

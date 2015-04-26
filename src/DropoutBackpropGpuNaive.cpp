@@ -83,8 +83,12 @@ DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlane
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
-    "// placeholder, for now\n" 
-    "#ifdef gInverseDropRatio\n" 
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
     "kernel void propagateNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
@@ -94,12 +98,9 @@ DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlane
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    output[globalId] = mask[globalId] == 1 ? gInverseDropRatio * input[globalId] : 0.0f;\n" 
+    "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
     "}\n" 
-    "#endif\n" 
     "\n" 
-    "// placeholder, for now\n" 
-    "#ifdef gDropRatio\n" 
     "kernel void backpropNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
@@ -111,7 +112,6 @@ DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlane
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? errors[globalId] : 0.0f;\n" 
     "}\n" 
-    "#endif\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "backpropNaive", options, "cl/dropout.cl" );

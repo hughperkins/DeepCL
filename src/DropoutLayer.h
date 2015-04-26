@@ -17,7 +17,7 @@ class DropoutPropagate;
 class DropoutBackprop;
 class RandomSingleton;
 class DropoutMaker;
-class CopyBuffer;
+class MultiplyBuffer;
 
 class DropoutLayer : public Layer {
 public:
@@ -32,7 +32,7 @@ public:
     OpenCLHelper *const cl; // NOT owned by us
     DropoutPropagate *dropoutPropagateImpl;
     DropoutBackprop *dropoutBackpropImpl;
-    CopyBuffer *copyBuffer; // for skipping dropout...
+    MultiplyBuffer *multiplyBuffer; // for skipping dropout...
 
     unsigned char *masks;
     float *results;

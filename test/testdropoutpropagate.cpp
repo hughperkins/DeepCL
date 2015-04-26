@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
+// Copyright Hugh Perkins 2015 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -60,17 +60,17 @@ TEST( testdropoutpropagate, basic ) {
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
-    EXPECT_FLOAT_NEAR( 1 * 5.0f/3, output[0] );
+    EXPECT_FLOAT_NEAR( 1, output[0] );
     EXPECT_FLOAT_NEAR( 0, output[1] );
     EXPECT_FLOAT_NEAR( 0, output[2] );
 
     EXPECT_FLOAT_NEAR( 0, output[3] );
     EXPECT_FLOAT_NEAR( 0, output[4] );
-    EXPECT_FLOAT_NEAR( 4.1f * 5.0f/3, output[5] );
+    EXPECT_FLOAT_NEAR( 4.1f, output[5] );
 
-    EXPECT_FLOAT_NEAR( 3 * 5.0f/3, output[6] );
+    EXPECT_FLOAT_NEAR( 3, output[6] );
     EXPECT_FLOAT_NEAR( 0, output[7] );
-    EXPECT_FLOAT_NEAR( 14.2f * 5.0f/3, output[8] );
+    EXPECT_FLOAT_NEAR( 14.2f, output[8] );
 
     delete dropoutPropagate;
     delete[] output;
@@ -114,13 +114,13 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
     EXPECT_FLOAT_NEAR( output[0], 0 );
-    EXPECT_FLOAT_NEAR( output[1], 2 * 5.0f/3 );
-    EXPECT_FLOAT_NEAR( output[2], 5 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[1], 2 );
+    EXPECT_FLOAT_NEAR( output[2], 5 );
 
-    EXPECT_FLOAT_NEAR( output[12], -1 * 5.0f/3 );
-    EXPECT_FLOAT_NEAR( output[13], -3.5f * 5.0f/3 );
-    EXPECT_FLOAT_NEAR( output[14], 0 * 5.0f/3 );
-    EXPECT_FLOAT_NEAR( output[15], 5 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[12], -1 );
+    EXPECT_FLOAT_NEAR( output[13], -3.5f );
+    EXPECT_FLOAT_NEAR( output[14], 0 );
+    EXPECT_FLOAT_NEAR( output[15], 5 );
 
     delete dropoutPropagate;
     delete[] output;
@@ -159,14 +159,14 @@ TEST( testdropoutpropagate, fromwrappers ) {
 
     outputWrapper->copyToHost();
 
-    EXPECT_FLOAT_NEAR( output[0], 1 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[0], 1 );
     EXPECT_FLOAT_NEAR( output[1], 0 );
     EXPECT_FLOAT_NEAR( output[2], 0 );
-    EXPECT_FLOAT_NEAR( output[3], 3 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[3], 3 );
     EXPECT_FLOAT_NEAR( output[12], 0 );
     EXPECT_FLOAT_NEAR( output[13], 0 );
-    EXPECT_FLOAT_NEAR( output[14], 37.4f * 5.0f/3 );
-    EXPECT_FLOAT_NEAR( output[15], 5 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[14], 37.4f );
+    EXPECT_FLOAT_NEAR( output[15], 5 );
 
     delete maskWrapper;
     delete inputWrapper;

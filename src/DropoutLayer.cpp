@@ -12,7 +12,7 @@
 #include "DropoutPropagate.h"
 #include "DropoutBackprop.h"
 #include "RandomSingleton.h"
-#include "CopyBuffer.h"
+#include "MultiplyBuffer.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -51,10 +51,10 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
     }
     dropoutPropagateImpl = DropoutPropagate::instance( cl, numPlanes, inputImageSize, dropRatio );
     dropoutBackpropImpl = DropoutBackprop::instance( cl, numPlanes, inputImageSize, dropRatio );
-    copyBuffer = new CopyBuffer( cl );
+    multiplyBuffer = new MultiplyBuffer( cl, dropRatio );
 }
 VIRTUAL DropoutLayer::~DropoutLayer() {
-    delete copyBuffer;
+    delete multiplyBuffer;
     delete dropoutPropagateImpl;
     delete dropoutBackpropImpl;
     if( maskWrapper != 0 ) {
@@ -210,7 +210,7 @@ VIRTUAL void DropoutLayer::propagate() {
         dropoutPropagateImpl->propagate( batchSize, maskWrapper, upstreamResultsWrapper, resultsWrapper );
     } else {
         // if not training, then simply skip the dropout bit, copy the buffers directly
-        copyBuffer->copy( getResultsSize(), upstreamResultsWrapper, resultsWrapper );
+        multiplyBuffer->multiply( getResultsSize(), upstreamResultsWrapper, resultsWrapper );
     }
     if( !previousLayer->hasResultsWrapper() ) {
         delete upstreamResultsWrapper;

@@ -8,7 +8,8 @@
 
 #include "OpenCLHelper.h"
 #include "StatefulTimer.h"
-#include "CopyBuffer.h"
+#include "MultiplyBuffer.h"
+#include "stringhelper.h"
 
 using namespace std;
 
@@ -17,8 +18,8 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
-        StatefulTimer::instance()->timeCheck("CopyBuffer::copy start" );
+VIRTUAL void MultiplyBuffer::multiply( int N, CLWrapper *in, CLWrapper *out ) {
+        StatefulTimer::instance()->timeCheck("MultiplyBuffer::multiply start" );
 
     kernel  ->in( N )
             ->in( in )
@@ -30,21 +31,33 @@ VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("CopyBuffer::copy end" );
+    StatefulTimer::instance()->timeCheck("MultiplyBuffer::multiply end" );
 }
 
-VIRTUAL CopyBuffer::~CopyBuffer() {
+VIRTUAL MultiplyBuffer::~MultiplyBuffer() {
     delete kernel;
 }
 
-CopyBuffer::CopyBuffer( OpenCLHelper *cl ) :
+VIRTUAL std::string MultiplyBuffer::floatToFloatString( float value ) {
+    string floatString = toString( value );
+    if( floatString.find( "." ) == string::npos ) {
+        floatString += ".0";
+    }
+    floatString += "f";
+    return floatString;
+}
+
+MultiplyBuffer::MultiplyBuffer( OpenCLHelper *cl, float multiplier ) :
         cl( cl ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
+//    options += " -DgN=" + toString( N );
+    options += " -DgMultiplier=" + floatToFloatString( multiplier );
+
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/copy.cl", "multiplyConstant", 'options' )
     // ]]]
     // generated using cog, from cl/copy.cl:
     const char * kernelSource =  
@@ -81,7 +94,7 @@ CopyBuffer::CopyBuffer( OpenCLHelper *cl ) :
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "multiplyConstant", options, "cl/copy.cl" );
     // [[[end]]]
 }
 
