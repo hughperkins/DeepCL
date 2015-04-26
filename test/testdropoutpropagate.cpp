@@ -257,10 +257,10 @@ void compareSpecific( CompareSpecificArgs args ) {
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
     WeightRandomizer::randomizeInts( mask, inputSize, 0, 2 );
-    for( int i = 0; i < inputSize; i++ ) {
-        cout << (int)mask[i] << " ";
-    }
-    cout << endl;
+//    for( int i = 0; i < inputSize; i++ ) {
+//        cout << (int)mask[i] << " ";
+//    }
+//    cout << endl;
     WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
 
     memset( output, 99, sizeof(int) * outputSize );

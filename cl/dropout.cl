@@ -8,7 +8,7 @@ kernel void propagateNaive(
     if( globalId >= N ) {
         return;
     }
-    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;
+    output[globalId] = mask[globalId] == 1 ? gInverseDropRatio * input[globalId] : 0.0f;
 }
 
 // placeholder, for now

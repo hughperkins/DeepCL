@@ -53,8 +53,16 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
     options += " -DgInputImageSize=" + toString( inputImageSize );
     options += " -DgInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
-//    options += " -DgDropRatio=" + toString( dropRatio );
     options += " -DgNumPlanes=" + toString( numPlanes );
+    float inverseDropRatio = 1.0f / dropRatio;
+    string inverseDropRatioString = toString( inverseDropRatio );
+    if( inverseDropRatioString.find( "." ) == string::npos ) {
+        inverseDropRatioString += ".0f";
+    } else {
+        inverseDropRatioString += "f";
+    }
+//    cout << "inverseDropRatioString " << inverseDropRatioString << endl;
+    options += " -D gInverseDropRatio=" + inverseDropRatioString;
 
     // [[[cog
     // import stringify
@@ -72,7 +80,7 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
+    "    output[globalId] = mask[globalId] == 1 ? gInverseDropRatio * input[globalId] : 0.0f;\n" 
     "}\n" 
     "\n" 
     "// placeholder, for now\n" 
