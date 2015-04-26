@@ -14,8 +14,8 @@ void copyLocal( local float *target, global float const *source, int N ) {
     }
 }
 
-// as calcErrorsForUpstream, but with local cache
-// convolve weights with errors to produce errorsForUpstream
+// as calcGradInput, but with local cache
+// convolve weights with errors to produce gradInput
 // workgroupid: [n][inputPlane]
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
@@ -23,7 +23,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // - _errorImage. size = outputImageSizeSquared
 // - _filterImage. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
-// inputs: errors :convolve: filters => errorsForUpstream
+// inputs: errors :convolve: filters => gradInput
 //
 // global:
 // errors: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4
@@ -32,11 +32,11 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
 // weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
 // errorsforupstream: [n][upstreamPlane][upstreamRow][upstreamCol]
-void kernel calcErrorsForUpstreamCached( 
+void kernel calcGradInputCached( 
         const int batchSize,
         global const float *errorsGlobal,
         global const float *filtersGlobal, 
-        global float *errorsForUpstream,
+        global float *gradInput,
         local float *_errorImage, 
         local float *_filterImage ) {
 
@@ -72,7 +72,7 @@ void kernel calcErrorsForUpstreamCached(
     }
     const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
     if( localId < gInputImageSizeSquared ) {
-        errorsForUpstream[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
+        gradInput[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
     }
 }
 

@@ -101,7 +101,7 @@ SGD::SGD( OpenCLHelper *cl, int numWeights ) :
     "        learningRate * currentGradients[globalId] +\n" 
     "        momentum * lastUpdate[globalId];\n" 
     "    // now update the weight\n" 
-    "    weights[globalid] += lastUpdate[globalId];\n" 
+    "    weights[globalId] += lastUpdate[globalId];\n" 
     "    // thats it... :-)\n" 
     "}\n" 
     "\n" 

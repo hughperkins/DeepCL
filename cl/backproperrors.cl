@@ -23,11 +23,11 @@
 // grouped into 4608 workgroups
 // maybe we want fewer than this?
 // note: currently doesnt use bias as input.  thats probably an error?
-void kernel calcErrorsForUpstream( 
+void kernel calcGradInput( 
         const int upstreamNumPlanes, const int upstreamImageSize, const int filterSize, 
         const int outNumPlanes, const int outImageSize,
         const int padZeros,
-        global const float *weights, global const float *errors, global float *errorsForUpstream ) {
+        global const float *weights, global const float *errors, global float *gradInput ) {
     int globalId = get_global_id(0);
     const int halfFilterSize = filterSize >> 1;
     const int margin = padZeros ? halfFilterSize : 0;
@@ -69,11 +69,11 @@ void kernel calcErrorsForUpstream(
             }
         }
     }
-    errorsForUpstream[globalId] = sumWeightTimesOutError;
+    gradInput[globalId] = sumWeightTimesOutError;
 }
 
-// as calcErrorsForUpstream, but with local cache
-// convolve weights with errors to produce errorsForUpstream
+// as calcGradInput, but with local cache
+// convolve weights with errors to produce gradInput
 // workgroupid: [n][inputPlane]
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
@@ -81,17 +81,17 @@ void kernel calcErrorsForUpstream(
 // - _errorImage. size = outputImageSizeSquared
 // - _filterImage. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
-// inputs: errors :convolve: filters => errorsForUpstream
+// inputs: errors :convolve: filters => gradInput
 //
 // per workgroup:
 // errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
 // weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
 #ifdef gOutputImageSize // for previous tests that dont define it
-void kernel calcErrorsForUpstreamCached( 
+void kernel calcGradInputCached( 
         const int batchSize,
         global const float *errorsGlobal,
         global const float *filtersGlobal, 
-        global float *errorsForUpstream,
+        global float *gradInput,
         local float *_errorImage, 
         local float *_filterImage ) {
 
@@ -132,7 +132,7 @@ void kernel calcErrorsForUpstreamCached(
         barrier(CLK_LOCAL_MEM_FENCE);
 //        if( globalId == 0 ) {
 //            for( int i = 0; i < gFilterSizeSquared; i++ ) {
-//                errorsForUpstream[ (outPlane+1)*100 + i ] = _filterImage[i];
+//                gradInput[ (outPlane+1)*100 + i ] = _filterImage[i];
 //            }
 //        }
         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
@@ -150,7 +150,7 @@ void kernel calcErrorsForUpstreamCached(
     }
     const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
     if( localId < gInputImageSizeSquared ) {
-        errorsForUpstream[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
+        gradInput[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
     }
 }
 #endif
@@ -163,10 +163,10 @@ void kernel calcErrorsForUpstreamCached(
 // we iterate over [n]
 #ifdef gOutputImageSize // for previous tests that dont define it
 /*
-void kernel calcErrorsForUpstream2( 
+void kernel calcGradInput2( 
         const int batchSize,
         global const float *weightsGlobal, global const float *errorsGlobal, 
-        global float *errorsForUpstreamGlobal,
+        global float *gradInputGlobal,
         local float *_weightImage, local float *_errorImage ) {
     const int globalId = get_global_id(0);
     const int workgroupId = get_group_id(0);
@@ -207,7 +207,7 @@ void kernel calcErrorsForUpstream2(
                 }
             }
         }
-        errorsForUpstream[globalId] = sumWeightTimesOutError;
+        gradInput[globalId] = sumWeightTimesOutError;
     }
 }
 */
@@ -219,8 +219,8 @@ void kernel calcErrorsForUpstream2(
 // for propagation we had:
 //   images are organized like [imageId][plane][row][col]
 //   filters are organized like [filterid][inplane][filterrow][filtercol]
-//   results are organized like [imageid][filterid][row][col]
-//   global id is organized like results, ie: [imageid][filterid][row][col]
+//   output are organized like [imageid][filterid][row][col]
+//   global id is organized like output, ie: [imageid][filterid][row][col]
 //   - no local memory used currently
 //   - each thread:
 //     - loads a whole image
@@ -230,7 +230,7 @@ void kernel calcErrorsForUpstream2(
 //   errorcubes are organized like [imageid][outPlane][outRow][outCol]
 //   filters are organized like [filterid][inplane][filterrow][filtercol]
 //        (so we will swap filterid and inplane around when referencing filters, kindof)
-//  globalid will be organized like upstreamresults, ie [imageid][upstreamplane][upstreamrow][upstreamcol]
+//  globalid will be organized like upstreamoutput, ie [imageid][upstreamplane][upstreamrow][upstreamcol]
 #ifdef gOutputImageSize // for previous tests that dont define it
 void kernel convolve_errorcubes_float( 
        const int batchSize,
@@ -279,7 +279,7 @@ void kernel convolve_errorcubes_float(
         }
         inputPlane++;
     }
-    results[globalId] = sum;*/
+    output[globalId] = sum;*/
 }
 #endif
 

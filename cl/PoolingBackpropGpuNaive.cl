@@ -7,12 +7,12 @@
 // inplane and outplane are always identical, 1:1 mapping, so can just write `plane`
 // errors: [n][plane][outrow][outcol]
 // selectors: [n][plane][outrow][outcol]
-// errorsForUpstream: [n][plane][inrow][incol]
+// gradInput: [n][plane][inrow][incol]
 // wont use workgroups (since 'naive')
 // one thread per: [n][plane][outrow][outcol]
 // globalId: [n][plane][outrow][outcol]
 kernel void backprop_errors( const int batchSize, 
-    global const float *errors, global const int *selectors, global float *errorsForUpstream ) {
+    global const float *errors, global const int *selectors, global float *gradInput ) {
 
     #define globalId get_global_id(0)
     #define nPlaneCombo ( globalId / gOutputImageSizeSquared ) 
@@ -42,7 +42,7 @@ kernel void backprop_errors( const int batchSize,
         * gInputImageSize + inputRow )
         * gInputImageSize + inputCol;
 //    if( n < batchSize ) {
-        errorsForUpstream[ inputIndex ] = error;
+        gradInput[ inputIndex ] = error;
 //    }
 }
 

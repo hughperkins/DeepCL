@@ -22,10 +22,10 @@
 
 
 // each thread handles one filter, ie globalId as [n][inputplane][filterId]
-// results1: [n][inputplane][filter][filterrow]
-// results2: [n][inputplane][filter]
+// output1: [n][inputplane][filter][filterrow]
+// output2: [n][inputplane][filter]
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void reduce_rows( const int batchSize, global float const *results1, global float*results2 ) {
+kernel void reduce_rows( const int batchSize, global float const *output1, global float*output2 ) {
     const int globalId = get_global_id(0);
     const int n = globalId / gNumInputPlanes / gNumFilters;
     if( n >= batchSize ) {
@@ -33,19 +33,19 @@ kernel void reduce_rows( const int batchSize, global float const *results1, glob
     }
     const int filterId = globalId % gNumFilters;
     float sum = 0;
-    global const float *results1Col = results1 + globalId * gFilterSize;
+    global const float *output1Col = output1 + globalId * gFilterSize;
     for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
-        sum += results1Col[filterRow];
+        sum += output1Col[filterRow];
     }
-    results2[globalId] = sum;
+    output2[globalId] = sum;
 }
 #endif
 
 // each thread handles one filter, ie globalId as [n][filterId]
-// results2: [n][inputplane][filter]
-// results: [n][filter]
+// output2: [n][inputplane][filter]
+// output: [n][filter]
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void reduce_inputplanes( const int batchSize, global float const *results2, global float*results ) {
+kernel void reduce_inputplanes( const int batchSize, global float const *output2, global float*output ) {
     const int globalId = get_global_id(0);
     const int n = globalId / gNumFilters;
     if( n >= batchSize ) {
@@ -53,12 +53,12 @@ kernel void reduce_inputplanes( const int batchSize, global float const *results
     }
     const int filterId = globalId % gNumFilters;
     float sum = 0;
-    global const float *results2Col = results2 + globalId * gNumInputPlanes;
+    global const float *output2Col = output2 + globalId * gNumInputPlanes;
     for( int inputPlane = 0; inputPlane < gNumInputPlanes; inputPlane++ ) {
-        sum += results2Col[inputPlane];
+        sum += output2Col[inputPlane];
     }
     // activate...
-    results[globalId] = ACTIVATION_FUNCTION(sum);
+    output[globalId] = ACTIVATION_FUNCTION(sum);
 }
 #endif
 
@@ -80,7 +80,7 @@ void kernel propagate_filter_matches_inimage( const int batchSize,
         #ifdef BIASED
             global const float*biases, 
         #endif
-    global float *results,
+    global float *output,
     local float *_upstreamImage, local float *_filterImage ) {
     const int globalId = get_global_id(0);
 
@@ -126,11 +126,11 @@ void kernel propagate_filter_matches_inimage( const int batchSize,
     #ifdef BIASED
         sum += biases[outPlane];
     #endif
-    // results are organized like [imageid][filterid][row][col]
+    // output are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared + localId;
     if( localId < gOutImageSizeSquared ) {
-        results[resultIndex ] = ACTIVATION_FUNCTION(sum);
-//        results[resultIndex ] = 123;
+        output[resultIndex ] = ACTIVATION_FUNCTION(sum);
+//        output[resultIndex ] = 123;
     }
 }
 #endif

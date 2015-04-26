@@ -83,8 +83,8 @@ void kernel backprop_floats_withscratch_dobias(
             }
         }
         int resultImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
-        int numLoopsForResults = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        for( int i = 0; i < numLoopsForResults; i++ ) {
+        int numLoopsForOutput = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForOutput; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutputImageSizeSquared ) {
                 _errorImage[thisOffset ] = errors[resultImageGlobalOffset + thisOffset];

@@ -41,7 +41,7 @@
 kernel void kernel1( const int batchSize, 
     global float const * images,
     global float const * filters,
-    global float *results1,
+    global float *output1,
     local float *_imagePlane,
     local float *_filterPlane
 ) {

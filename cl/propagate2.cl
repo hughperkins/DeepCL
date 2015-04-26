@@ -29,7 +29,7 @@
 // one filter plane takes up 5 * 5 * 4 = 100 bytes
 // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
-// results are organized like [imageid][filterid][row][col]
+// output are organized like [imageid][filterid][row][col]
 // assumes filter is small, so filtersize * filterSize * inputPlanes * 4 < about 3KB
 //                            eg 5 * 5 * 32 * 4 = 3.2KB => ok :-)
 //                           but 28 * 28 * 32 * 4 = 100KB => less good :-P
@@ -38,7 +38,7 @@ void kernel propagate_2_by_outplane( const int batchSize,
         #ifdef BIASED
             global const float*biases, 
         #endif
-    global float *results,
+    global float *output,
     local float *_upstreamImage, local float *_filterCube ) {
     const int globalId = get_global_id(0);
 
@@ -111,10 +111,10 @@ void kernel propagate_2_by_outplane( const int batchSize,
         #ifdef BIASED
             sum += biases[outPlane];
         #endif
-        // results are organized like [imageid][filterid][row][col]
+        // output are organized like [imageid][filterid][row][col]
         int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
         if( localId < gOutputImageSizeSquared ) {
-            results[resultIndex ] = ACTIVATION_FUNCTION(sum);
+            output[resultIndex ] = ACTIVATION_FUNCTION(sum);
         }
     }
 }

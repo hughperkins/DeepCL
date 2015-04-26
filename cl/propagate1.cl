@@ -69,8 +69,8 @@
 
 // images are organized like [imageId][plane][row][col]
 // filters are organized like [filterid][inplane][filterrow][filtercol]
-// results are organized like [imageid][filterid][row][col]
-// global id is organized like results, ie: [imageid][outplane][outrow][outcol]
+// output are organized like [imageid][filterid][row][col]
+// global id is organized like output, ie: [imageid][outplane][outrow][outcol]
 // - no local memory used currently
 // - each thread:
 //     - loads a whole upstream cube
@@ -84,7 +84,7 @@ void kernel convolve_imagecubes_float2( const int numExamples,
 #ifdef BIASED
 global const float*biases, 
 #endif
-    global float *results ) {
+    global float *output ) {
     int globalId = get_global_id(0);
 
     const int evenPadding = filterSize % 2 == 0 ? 1 : 0;
@@ -140,7 +140,7 @@ global const float*biases,
     #ifdef BIASED
         sum += biases[filterId];
     #endif
-        results[globalId] = ACTIVATION_FUNCTION(sum);
+        output[globalId] = ACTIVATION_FUNCTION(sum);
     }
 }
 #endif

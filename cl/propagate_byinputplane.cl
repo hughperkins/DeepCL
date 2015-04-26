@@ -14,11 +14,11 @@
 // workgroupid: [inputPlaneId]
 // localid: [filterId][outRow] (if this is more than workgroupsize, we should reuse some threads...)
 // iterate over: [n][outCol]
-// results: [n][filterId][outRow][outCol][inputPlane]
-// need to later reduce results over: [inputPlane]
+// output: [n][filterId][outRow][outCol][inputPlane]
+// need to later reduce output over: [inputPlane]
 void kernel propagate_byinputplane( const int batchSize,
       global const float *images, global const float *filters, 
-    global float *results,
+    global float *output,
     local float *_inputPlane, local float *_filterPlanes ) {
 //    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
 
@@ -61,7 +61,7 @@ void kernel propagate_byinputplane( const int batchSize,
                 }
             }
             barrier(CLK_LOCAL_MEM_FENCE);
-            // calc results for each [outrow][outcol]
+            // calc output for each [outrow][outcol]
             bool filterPlaneOk = filterId < gNumFilters;
             for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
                 float sum = 0;
@@ -91,11 +91,11 @@ void kernel propagate_byinputplane( const int batchSize,
                         * gOutputImageSize + outRow )
                         * gOutputImageSize + outCol )
                         * gNumInputPlanes + inputPlaneId;
-                    results[resultIndex] = sum;
-                    //if( globalId == 2 ) results[0] = resultIndex;
-//                    results[resultIndex] = outRow;
+                    output[resultIndex] = sum;
+                    //if( globalId == 2 ) output[0] = resultIndex;
+//                    output[resultIndex] = outRow;
                 }
-//                results[localId] = _localFilterPlane[localId];
+//                output[localId] = _localFilterPlane[localId];
             }
         }
     }

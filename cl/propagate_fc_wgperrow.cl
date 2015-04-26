@@ -35,7 +35,7 @@ void copyLocal( local float *restrict target, global float const *restrict sourc
 //  workgroup is assigned to: same row, from each input plane
 // local memory: one row from each output, = 128 * 19 * 4 = 9.8KB
 //             1 * input row = "0.076KB"
-// results1 structured as: [n][inputplane][filter][row], need to reduce again after
+// output1 structured as: [n][inputplane][filter][row], need to reduce again after
 // this kernel assumes:
 //   padzeros == 0 (mandatory)
 //   filtersize == inputimagesize (mandatory)
@@ -48,7 +48,7 @@ void copyLocal( local float *restrict target, global float const *restrict sourc
 #if (gFilterSize == gInputImageSize) && (gPadZeros == 0)
 void kernel propagate_fc_workgroup_perrow( const int batchSize,
     global const float *images, global const float *filters, 
-    global float *results1,
+    global float *output1,
     local float *_imageRow, local float *_filterRows ) {
     const int globalId = get_global_id(0);
 
@@ -91,9 +91,9 @@ void kernel propagate_fc_workgroup_perrow( const int batchSize,
             sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];
         }
         // note: dont activate yet, since need to reduce again
-        // results structured as: [n][filter][inputplane][filterrow], need to reduce again after
+        // output structured as: [n][filter][inputplane][filterrow], need to reduce again after
         if( localId < gNumFilters ) {
-            results1[ n * gNumInputPlanes * gNumFilters * gFilterSize
+            output1[ n * gNumInputPlanes * gNumFilters * gFilterSize
                 + inputPlaneId * gFilterSize
                 + filterId * gNumInputPlanes * gFilterSize + filterRowId ] = sum;
         }

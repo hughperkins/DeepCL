@@ -52,8 +52,8 @@ void kernel backprop_weights(
             }
         }
         int resultImageGlobalOffset = ( n * gNumFilters + outputPlane ) * gOutputImageSizeSquared;
-        int numLoopsForResults = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        for( int i = 0; i < numLoopsForResults; i++ ) {
+        int numLoopsForOutput = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForOutput; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutputImageSizeSquared ) {
                 _errorImage[thisOffset ] = errors[resultImageGlobalOffset + thisOffset];

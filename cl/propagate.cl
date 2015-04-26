@@ -84,7 +84,7 @@ void kernel convolve_floats( global const int *p_imageSize, global const int *p_
 
 void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global const int *p_numFilters, 
       global const int *p_imageSize, global const int *p_filterSize,
-      global const int *images, global const int *filters, global int *results ) {
+      global const int *images, global const int *filters, global int *output ) {
     int globalId = get_global_id(0);
 
     int numInputPlanes = p_numInputPlanes[0];
@@ -130,7 +130,7 @@ void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global 
         }
         plane++;
     }
-    results[globalId] = sum;
+    output[globalId] = sum;
 }
 
 // receive images as a stack of images
@@ -155,11 +155,11 @@ void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global 
 
 // images are organized like [imageId][plane][row][col]
 // filters are organized like [filterid][plane][filterrow][filtercol]
-// results are organized like [imageid][filterid][row][col]
+// output are organized like [imageid][filterid][row][col]
 void kernel convolve_imagecubes_float( 
       const int numInputPlanes, const int numFilters, 
       const int imageSize, const int filterSize,
-      global const float *images, global const float *filters, global float *results ) {
+      global const float *images, global const float *filters, global float *output ) {
     int globalId = get_global_id(0);
 
     int imageSizeSquared = imageSize * imageSize;
@@ -203,13 +203,13 @@ void kernel convolve_imagecubes_float(
         inputPlane++;
     }
 
-    results[globalId] = sum;
+    output[globalId] = sum;
 }
 
 void kernel convolve_imagecubes_float_nopadzeros( 
       const int numInputPlanes, const int numFilters, 
       const int inputImageSize, const int filterSize,
-      global const float *images, global const float *filters, global float *results ) {
+      global const float *images, global const float *filters, global float *output ) {
     int globalId = get_global_id(0);
 
     int inputImageSizeSquared = inputImageSize * inputImageSize;
@@ -252,6 +252,6 @@ void kernel convolve_imagecubes_float_nopadzeros(
         }
         inputPlane++;
     }
-    results[globalId] = sum;
+    output[globalId] = sum;
 }
 
