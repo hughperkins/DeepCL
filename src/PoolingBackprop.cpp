@@ -56,9 +56,9 @@ VIRTUAL int PoolingBackprop::getInputSize( int batchSize ) {
 VIRTUAL int PoolingBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int *selectors, float *gradInput ) {
-//    cout << "PoolingBackprop::backpropErrors( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper start" );
+VIRTUAL void PoolingBackprop::backward( int batchSize, float *errors, int *selectors, float *gradInput ) {
+//    cout << "PoolingBackprop::backward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("PoolingBackprop::backward float->wrapper start" );
     CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
     CLWrapper *selectorsWrapper = cl->wrap( getOutputSize(batchSize), selectors );
     CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
@@ -66,7 +66,7 @@ VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int 
     gradOutputWrapper->copyToDevice();
     selectorsWrapper->copyToDevice();
 
-    backpropErrors( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
+    backward( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
 
     selectorsWrapper->copyToHost();
     gradInputWrapper->copyToHost();
@@ -74,9 +74,9 @@ VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, float *errors, int 
     delete gradOutputWrapper;
     delete selectorsWrapper;
     delete gradInputWrapper;
-    StatefulTimer::instance()->timeCheck("PoolingBackprop::backpropErrors float->wrapper end" );
+    StatefulTimer::instance()->timeCheck("PoolingBackprop::backward float->wrapper end" );
 }
-VIRTUAL void PoolingBackprop::backpropErrors( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper ) {
-    throw runtime_error("PoolingBackprop::backpropErrors wrappers not implemented" );
+VIRTUAL void PoolingBackprop::backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper ) {
+    throw runtime_error("PoolingBackprop::backward wrappers not implemented" );
 }
 

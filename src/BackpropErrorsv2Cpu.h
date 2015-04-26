@@ -20,9 +20,9 @@ public:
     // generated, using cog:
     BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
     VIRTUAL ~BackpropErrorsv2Cpu();
-    VIRTUAL float *backpropErrors( int batchSize, float *inputData,
+    VIRTUAL float *backward( int batchSize, float *inputData,
     float *errors, float *weights );
-    VIRTUAL void backpropErrors( int batchSize,
+    VIRTUAL void backward( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );
 

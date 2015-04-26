@@ -51,7 +51,7 @@ BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimen
         dim( layerDimensions ),
         upstreamFn( upstreamFn ) {
 }
-VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputData, float *errors, float *filters ) {
+VIRTUAL float * BackpropErrorsv2::backward( int batchSize, float *inputData, float *errors, float *filters ) {
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop begin");
 
     CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
@@ -78,7 +78,7 @@ VIRTUAL float * BackpropErrorsv2::backpropErrors( int batchSize, float *inputDat
     CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputSize, gradInput );
 
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copied to device");
-    backpropErrors( batchSize, inputDataWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
+    backward( batchSize, inputDataWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after call backprop");
     gradInputWrapper->copyToHost();
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copytohost");

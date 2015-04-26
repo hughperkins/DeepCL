@@ -93,7 +93,7 @@ VIRTUAL void ForceBackpropLayer::propagate() {
         output[i] = upstreamOutput[i];
     }
 }
-VIRTUAL void ForceBackpropLayer::backPropErrors( float learningRate, float const *errors ) {
+VIRTUAL void ForceBackpropLayer::backward( float learningRate, float const *errors ) {
   // do nothing...
 }
 VIRTUAL int ForceBackpropLayer::getOutputImageSize() const {

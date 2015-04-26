@@ -27,11 +27,11 @@ VIRTUAL ActivationBackpropGpuNaive::~ActivationBackpropGpuNaive() {
     delete kernel;
 //    delete kMemset;
 }
-VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrapper *inputWrapper,
+VIRTUAL void ActivationBackpropGpuNaive::backward( int batchSize, CLWrapper *inputWrapper,
          CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
 
-    StatefulTimer::instance()->timeCheck("ActivationBackpropGpuNaive::backpropErrors start" );
+    StatefulTimer::instance()->timeCheck("ActivationBackpropGpuNaive::backward start" );
 
     int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     int workgroupSize = 64;
@@ -46,7 +46,7 @@ VIRTUAL void ActivationBackpropGpuNaive::backpropErrors( int batchSize, CLWrappe
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("ActivationBackpropGpuNaive::backpropErrors end" );
+    StatefulTimer::instance()->timeCheck("ActivationBackpropGpuNaive::backward end" );
 }
 ActivationBackpropGpuNaive::ActivationBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         ActivationBackprop( cl, numPlanes, inputImageSize, fn ) {
@@ -61,7 +61,7 @@ ActivationBackpropGpuNaive::ActivationBackpropGpuNaive( OpenCLHelper *cl, int nu
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/applyActivationDeriv.cl", "backpropErrors", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/applyActivationDeriv.cl", "backward", 'options' )
     // ]]]
     // generated using cog, from cl/applyActivationDeriv.cl:
     const char * kernelSource =  
@@ -123,7 +123,7 @@ ActivationBackpropGpuNaive::ActivationBackpropGpuNaive( OpenCLHelper *cl, int nu
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "backpropErrors", options, "cl/applyActivationDeriv.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "backward", options, "cl/applyActivationDeriv.cl" );
     // [[[end]]]
 }
 

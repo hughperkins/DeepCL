@@ -24,7 +24,7 @@ using namespace std;
 PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
-VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, int *selectors, float *gradInput ) {
+VIRTUAL void PoolingBackpropCpu::backward( int batchSize,  float *errors, int *selectors, float *gradInput ) {
     memset( gradInput, 0, sizeof( float ) * getInputSize( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
@@ -44,9 +44,9 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize,  float *errors, 
         }
     }
 }
-VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
+VIRTUAL void PoolingBackpropCpu::backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
         CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors start" );
+    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backward start" );
 
     gradOutputWrapper->copyToHost();
     selectorsWrapper->copyToHost();
@@ -55,7 +55,7 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *gradO
     int *selectors = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backpropErrors( batchSize, errors, selectors, gradInput );
+    backward( batchSize, errors, selectors, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
     memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
@@ -63,6 +63,6 @@ VIRTUAL void PoolingBackpropCpu::backpropErrors( int batchSize, CLWrapper *gradO
 
     delete[] gradInput;
     
-    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backpropErrors end" );
+    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backward end" );
 }
 

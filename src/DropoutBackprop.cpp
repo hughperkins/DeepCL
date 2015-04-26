@@ -55,9 +55,9 @@ VIRTUAL int DropoutBackprop::getInputSize( int batchSize ) {
 VIRTUAL int DropoutBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float *errors, float *gradInput ) {
-//    cout << "DropoutBackprop::backpropErrors( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper start" );
+VIRTUAL void DropoutBackprop::backward( int batchSize, uchar *mask, float *errors, float *gradInput ) {
+//    cout << "DropoutBackprop::backward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("DropoutBackprop::backward float->wrapper start" );
     CLWrapper *maskWrapper = cl->wrap( getOutputSize(batchSize), mask );
     CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
     CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
@@ -66,16 +66,16 @@ VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, uchar *mask, float 
     gradOutputWrapper->copyToDevice();
     gradInputWrapper->createOnDevice();
 
-    backpropErrors( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
+    backward( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
 
     gradInputWrapper->copyToHost();
 
     delete maskWrapper;
     delete gradOutputWrapper;
     delete gradInputWrapper;
-    StatefulTimer::instance()->timeCheck("DropoutBackprop::backpropErrors float->wrapper end" );
+    StatefulTimer::instance()->timeCheck("DropoutBackprop::backward float->wrapper end" );
 }
-VIRTUAL void DropoutBackprop::backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper ) {
-    throw runtime_error("DropoutBackprop::backpropErrors wrappers not implemented" );
+VIRTUAL void DropoutBackprop::backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper ) {
+    throw runtime_error("DropoutBackprop::backward wrappers not implemented" );
 }
 

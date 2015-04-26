@@ -33,7 +33,7 @@ TEST( testpoolingbackprop, basic ) {
     };
     float *errorsForUpstream = new float[ poolingBackprop->getInputSize( batchSize ) ];
 
-    poolingBackprop->backpropErrors( batchSize, errors, selectors, errorsForUpstream );
+    poolingBackprop->backward( batchSize, errors, selectors, errorsForUpstream );
 
 //    float *expectedErrorsForUpstream = new float[ poolingPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingPropagate->getInputSize( batchSize ) ];
@@ -73,7 +73,7 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
     };
     float *errorsForUpstream = new float[ poolingBackprop->getInputSize( batchSize ) ];
 
-    poolingBackprop->backpropErrors( batchSize, errors, selectors, errorsForUpstream );
+    poolingBackprop->backward( batchSize, errors, selectors, errorsForUpstream );
 
 //    float *expectedErrorsForUpstream = new float[ poolingPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingPropagate->getInputSize( batchSize ) ];
@@ -147,7 +147,7 @@ TEST( SLOW_testpoolingbackprop, compare_args ) {
         forwardprop->propagate( batchSize, input, selectors, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
-            props[instance]->backpropErrors( batchSize, errors, selectors, errorsForUpstream[instance] );
+            props[instance]->backward( batchSize, errors, selectors, errorsForUpstream[instance] );
         }
         bool ok = true;
         int numErrors = 0;

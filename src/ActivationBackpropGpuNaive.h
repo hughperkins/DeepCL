@@ -21,7 +21,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ActivationBackpropGpuNaive();
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *inputWrapper,
+    VIRTUAL void backward( int batchSize, CLWrapper *inputWrapper,
     CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
     ActivationBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );

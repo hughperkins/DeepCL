@@ -166,7 +166,7 @@ VIRTUAL void ActivationLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
 
-    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, gradOutputWrapper, gradInputWrapper );
+    activationBackpropImpl->backward( batchSize, imagesWrapper, gradOutputWrapper, gradInputWrapper );
 
     if( !previousLayer->hasOutputWrapper() ) {
         delete imagesWrapper;

@@ -15,7 +15,7 @@ VIRTUAL BackpropErrorsv2Naive::~BackpropErrorsv2Naive() {
 //    delete broadcastMultiply;
     delete applyActivationDeriv;
 }
-VIRTUAL void BackpropErrorsv2Naive::backpropErrors( int batchSize, 
+VIRTUAL void BackpropErrorsv2Naive::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive start" );

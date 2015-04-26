@@ -51,9 +51,9 @@ VIRTUAL int ActivationBackprop::getInputSize( int batchSize ) {
 VIRTUAL int ActivationBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput ) {
-//    cout << "ActivationBackprop::backpropErrors( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper start" );
+VIRTUAL void ActivationBackprop::backward( int batchSize, float *inputs, float *errors, float *gradInput ) {
+//    cout << "ActivationBackprop::backward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("ActivationBackprop::backward float->wrapper start" );
 
     CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
     CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
@@ -62,16 +62,16 @@ VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, float *inputs, f
     inputsWrapper->copyToDevice();
     gradOutputWrapper->copyToDevice();
 
-    backpropErrors( batchSize, inputsWrapper, gradOutputWrapper, gradInputWrapper );
+    backward( batchSize, inputsWrapper, gradOutputWrapper, gradInputWrapper );
 
     gradInputWrapper->copyToHost();
 
     delete inputsWrapper;
     delete gradOutputWrapper;
     delete gradInputWrapper;
-    StatefulTimer::instance()->timeCheck("ActivationBackprop::backpropErrors float->wrapper end" );
+    StatefulTimer::instance()->timeCheck("ActivationBackprop::backward float->wrapper end" );
 }
-VIRTUAL void ActivationBackprop::backpropErrors( int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper ) {
-    throw runtime_error("ActivationBackprop::backpropErrors wrappers not implemented" );
+VIRTUAL void ActivationBackprop::backward( int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper ) {
+    throw runtime_error("ActivationBackprop::backward wrappers not implemented" );
 }
 

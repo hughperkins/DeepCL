@@ -50,7 +50,7 @@ public:
     VIRTUAL int getPersistSize() const;
     VIRTUAL int calcNumRight( int const*labels );
     VIRTUAL void propagate();
-    VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

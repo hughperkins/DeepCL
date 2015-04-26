@@ -25,7 +25,7 @@ using namespace std;
 ActivationBackpropCpu::ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
         ActivationBackprop( cl, numPlanes, inputImageSize, fn ) {
 }
-VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, float *inputs, float *errors, float *gradInput ) {
+VIRTUAL void ActivationBackpropCpu::backward( int batchSize, float *inputs, float *errors, float *gradInput ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
 //        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
@@ -34,10 +34,10 @@ VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, float *inputs
 //        cout << " gradInput=" << gradInput[i] << endl;
     }
 }
-VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *inputsWrapper,
+VIRTUAL void ActivationBackpropCpu::backward( int batchSize, CLWrapper *inputsWrapper,
          CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backpropErrors start" );
+    StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backward start" );
 
     inputsWrapper->copyToHost();
     gradOutputWrapper->copyToHost();
@@ -46,7 +46,7 @@ VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *in
     float *errors = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backpropErrors( batchSize, inputs, errors, gradInput );
+    backward( batchSize, inputs, errors, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
     memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
@@ -54,6 +54,6 @@ VIRTUAL void ActivationBackpropCpu::backpropErrors( int batchSize, CLWrapper *in
 
     delete[] gradInput;
     
-    StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backpropErrors end" );
+    StatefulTimer::instance()->timeCheck("ActivationBackpropCpu::backward end" );
 }
 

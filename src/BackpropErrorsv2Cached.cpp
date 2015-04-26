@@ -14,7 +14,7 @@ VIRTUAL BackpropErrorsv2Cached::~BackpropErrorsv2Cached() {
     delete kernel;
     delete applyActivationDeriv;
 }
-VIRTUAL void BackpropErrorsv2Cached::backpropErrors( int batchSize, 
+VIRTUAL void BackpropErrorsv2Cached::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached start" );

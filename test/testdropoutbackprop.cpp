@@ -37,7 +37,7 @@ TEST( testdropoutbackprop, basic ) {
     EXPECT_FLOAT_NEAR( batchSize * imageSize * imageSize, inputTotalSize );
     float *errorsForUpstream = new float[ inputTotalSize ];
 
-    dropoutBackprop->backpropErrors( batchSize, mask, errors, errorsForUpstream );
+    dropoutBackprop->backward( batchSize, mask, errors, errorsForUpstream );
 
     EXPECT_FLOAT_NEAR( 3, errorsForUpstream[0] );
     EXPECT_FLOAT_NEAR( 5, errorsForUpstream[1] );
@@ -79,7 +79,7 @@ TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
     };
     float *errorsForUpstream = new float[ dropoutBackprop->getInputSize( batchSize ) ];
 
-    dropoutBackprop->backpropErrors( batchSize, mask, errors, errorsForUpstream );
+    dropoutBackprop->backward( batchSize, mask, errors, errorsForUpstream );
 
 //    float *expectedErrorsForUpstream = new float[ dropoutPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutPropagate->getInputSize( batchSize ) ];
@@ -146,7 +146,7 @@ TEST( testdropoutbackprop, compare_args ) {
         forwardprop->propagate( batchSize, mask, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
-            props[instance]->backpropErrors( batchSize, mask, errors, errorsForUpstream[instance] );
+            props[instance]->backward( batchSize, mask, errors, errorsForUpstream[instance] );
         }
         bool ok = true;
         int numErrors = 0;

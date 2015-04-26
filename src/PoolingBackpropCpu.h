@@ -20,8 +20,8 @@ public:
     // ]]]
     // generated, using cog:
     PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    VIRTUAL void backpropErrors( int batchSize,  float *errors, int *selectors, float *gradInput );
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
+    VIRTUAL void backward( int batchSize,  float *errors, int *selectors, float *gradInput );
+    VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *gradInputWrapper );
 
     // [[[end]]]

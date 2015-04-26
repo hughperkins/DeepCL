@@ -26,7 +26,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         cl( cl ),
         weightsTrainer( 0 ),
         biasWeightsTrainer( 0 ),
-        backpropErrorsImpl(0),
+        backwardImpl(0),
         activationFunction( maker->_activationFunction ),
         output(0),
         weights(0),
@@ -57,7 +57,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
     propagateimpl = Propagate::instance( cl, dim, activationFunction );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
-        backpropErrorsImpl = BackpropErrorsv2::instance( cl, dim, previousLayer->getActivationFunction() );
+        backwardImpl = BackpropErrorsv2::instance( cl, dim, previousLayer->getActivationFunction() );
     }
 
     if( dim.filterSize > dim.inputImageSize ) {
@@ -95,7 +95,7 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     }
     delete propagateimpl;
     delete backpropWeightsImpl;
-    delete backpropErrorsImpl;
+    delete backwardImpl;
     delete weightsTrainer;
     delete biasWeightsTrainer;
 }
@@ -393,7 +393,7 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
         weOwnGradOutputWrapper = true;
     }
     if( previousLayer->needsBackProp() ) {
-        backpropErrorsImpl->backpropErrors( batchSize, imagesWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
+        backwardImpl->backward( batchSize, imagesWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + ::toString( layerIndex ) );
     }
 

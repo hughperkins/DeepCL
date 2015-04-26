@@ -26,14 +26,14 @@ VIRTUAL DropoutBackpropGpuNaive::~DropoutBackpropGpuNaive() {
     delete kernel;
 //    delete kMemset;
 }
-VIRTUAL void DropoutBackpropGpuNaive::backpropErrors( 
+VIRTUAL void DropoutBackpropGpuNaive::backward( 
             int batchSize, 
             CLWrapper *maskWrapper, 
             CLWrapper *gradOutputWrapper, 
             CLWrapper *gradInputWrapper ) 
         {
 
-    StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backpropErrors start" );
+    StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backward start" );
 
     // first, memset errors to 0 ...
 //    kMemset ->out( gradInputWrapper )
@@ -55,7 +55,7 @@ VIRTUAL void DropoutBackpropGpuNaive::backpropErrors(
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backpropErrors end" );
+    StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backward end" );
 }
 DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutBackprop( cl, numPlanes, inputImageSize, dropRatio ) {

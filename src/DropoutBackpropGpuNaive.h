@@ -22,7 +22,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~DropoutBackpropGpuNaive();
-    VIRTUAL void backpropErrors(
+    VIRTUAL void backward(
     int batchSize,
     CLWrapper *maskWrapper,
     CLWrapper *gradOutputWrapper,

@@ -300,7 +300,7 @@ VIRTUAL void SoftMaxLayer::propagate() {
 // (cos this layer kind of combines loss layer and a 'normal' propagation layer )
 // certainly, we dont have any weights to update, and we already handled error
 // propagation in 'calcErrors' method above
-VIRTUAL void SoftMaxLayer::backPropErrors( float learningRate ) {
+VIRTUAL void SoftMaxLayer::backward( float learningRate ) {
 //    cout << "softmaxlayer::backproperrors" << endl;
     // nop, do nothing :-)
 }

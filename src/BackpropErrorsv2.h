@@ -25,7 +25,7 @@ public:
     ActivationFunction const *upstreamFn;
 
     virtual ~BackpropErrorsv2() {}
-    virtual void backpropErrors( int batchSize, 
+    virtual void backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *errors, CLWrapper *weightsWrapper,
         CLWrapper *gradInput ) = 0;
 
@@ -38,7 +38,7 @@ public:
     STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
     STATIC BackpropErrorsv2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
     BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
-    VIRTUAL float * backpropErrors( int batchSize, float *inputData, float *errors, float *filters );
+    VIRTUAL float * backward( int batchSize, float *inputData, float *errors, float *filters );
 
     // [[[end]]]
 };

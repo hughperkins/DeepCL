@@ -59,7 +59,7 @@ public:
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void propagate();
-    VIRTUAL void backPropErrors( float learningRate, float const *errors );
+    VIRTUAL void backward( float learningRate, float const *errors );
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;

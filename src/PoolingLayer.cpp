@@ -215,7 +215,7 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 
 //    selectorsWrapper->copyToHost();
 
-    poolingBackpropImpl->backpropErrors( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
+    poolingBackpropImpl->backward( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
 
 //    gradInputWrapper->copyToHost();
 //    float *gradInput = reinterpret_cast< float * >( gradInputWrapper->getHostArray() );

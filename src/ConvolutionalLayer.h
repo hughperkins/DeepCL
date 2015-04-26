@@ -31,7 +31,7 @@ public:
 
     Propagate *propagateimpl;
     BackpropWeights2 *backpropWeightsImpl;
-    BackpropErrorsv2 *backpropErrorsImpl;
+    BackpropErrorsv2 *backwardImpl;
 
     LayerDimensions dim;
     ActivationFunction const *const activationFunction;

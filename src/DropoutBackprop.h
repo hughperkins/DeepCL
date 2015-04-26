@@ -49,8 +49,8 @@ public:
     DropoutBackprop( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
-    VIRTUAL void backpropErrors( int batchSize, uchar *mask, float *errors, float *gradInput );
-    VIRTUAL void backpropErrors( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper );
+    VIRTUAL void backward( int batchSize, uchar *mask, float *errors, float *gradInput );
+    VIRTUAL void backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

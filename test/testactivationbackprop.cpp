@@ -37,7 +37,7 @@ TEST( testactivationbackprop, basic ) {
     EXPECT_EQ( batchSize * imageSize * imageSize, inputTotalSize );
     float *errorsForUpstream = new float[ inputTotalSize ];
 
-    activationBackprop->backpropErrors( batchSize, inputs, errors, errorsForUpstream );
+    activationBackprop->backward( batchSize, inputs, errors, errorsForUpstream );
 
 //    float *expectedErrorsForUpstream = new float[ activationPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
@@ -86,7 +86,7 @@ TEST( testactivationbackprop, basic_2plane_batchsize2 ) {
     };
     float *errorsForUpstream = new float[ activationBackprop->getInputSize( batchSize ) ];
 
-    activationBackprop->backpropErrors( batchSize, inputs, errors, errorsForUpstream );
+    activationBackprop->backward( batchSize, inputs, errors, errorsForUpstream );
 
 //    float *expectedErrorsForUpstream = new float[ activationPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
@@ -151,7 +151,7 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
         forwardprop->propagate( batchSize, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
-            props[instance]->backpropErrors( batchSize, input, errors, errorsForUpstream[instance] );
+            props[instance]->backward( batchSize, input, errors, errorsForUpstream[instance] );
         }
         bool ok = true;
         int numErrors = 0;

@@ -98,7 +98,7 @@ VIRTUAL void InputLayer::propagate() {
         output[i] = input[i];
     }
 }
-VIRTUAL void InputLayer::backPropErrors( float learningRate, float const *errors ) {
+VIRTUAL void InputLayer::backward( float learningRate, float const *errors ) {
 }
 VIRTUAL int InputLayer::getOutputImageSize() const {
     return outputImageSize;

@@ -159,9 +159,9 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFu
     errorsForUpstreamWrapper->createOnDevice();
 
     StatefulTimer::timeCheck("after init");
-    BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim, fn );
+    BackpropErrorsv2 *backwardImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim, fn );
     for( int it = 0; it < 40; it++ ) {
-        backpropErrorsImpl->backpropErrors( batchSize, 
+        backwardImpl->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
             errorsForUpstreamWrapper );
     }
@@ -178,7 +178,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFu
     delete[] input;
     delete[] errorsForUpstream;
 
-    delete backpropErrorsImpl;
+    delete backwardImpl;
     delete cl;
 }
 
@@ -226,10 +226,10 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     BackpropErrorsv2 *bp0 = BackpropErrorsv2::instanceSpecific( instance0, cl, dim, fn );
     BackpropErrorsv2 *bp1 = BackpropErrorsv2::instanceSpecific( instance1, cl, dim, fn );
     
-    bp0->backpropErrors( batchSize, 
+    bp0->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
             errorsForUpstreamWrapper0 );
-    bp1->backpropErrors( batchSize, 
+    bp1->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
             errorsForUpstreamWrapper1 );
 
@@ -341,15 +341,15 @@ float *test( int imageSize ) {
     WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
     OpenCLHelper cl;
-    BackpropErrorsv2 *backpropErrorsImpl = BackpropErrorsv2::instanceForTest( &cl, dim, new ReluActivation() );
+    BackpropErrorsv2 *backwardImpl = BackpropErrorsv2::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
-    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
     StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples( "errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream );
 
-    delete backpropErrorsImpl;
+    delete backwardImpl;
 
     delete[] errors;
     delete[] weights;
@@ -403,9 +403,9 @@ float *test( int imageSize ) {
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
 //    OpenCLHelper cl;
-//    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
+//    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, output, weights, biasWeights, errors );
+//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -417,7 +417,7 @@ float *test( int imageSize ) {
 //    EXPECT_FLOAT_NEAR( 7.25249, errorsForUpstream[576704] );
 //    EXPECT_FLOAT_NEAR( 7.88787, errorsForUpstream[570179] );
 
-//    delete backpropErrorsImpl;
+//    delete backwardImpl;
 
 //    delete[] errorsForUpstream;
 //    delete[] errors;
@@ -438,9 +438,9 @@ float *test( int imageSize ) {
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
 //    OpenCLHelper cl;
-//    BackpropErrors *backpropErrorsImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
+//    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backpropErrorsImpl->backpropErrors( batchSize, output, weights, biasWeights, errors );
+//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -452,7 +452,7 @@ float *test( int imageSize ) {
 //    EXPECT_FLOAT_NEAR( -1.22025, errorsForUpstream[429248] );
 //    EXPECT_FLOAT_NEAR( -8.89935, errorsForUpstream[1200963] );
 
-//    delete backpropErrorsImpl;
+//    delete backwardImpl;
 
 //    delete[] errorsForUpstream;
 //    delete[] errors;
@@ -511,10 +511,10 @@ TEST( testbackproperrors, comparespecific ) {
 //    errors[5] = 6;
 
     OpenCLHelper cl;
-    BackpropErrorsv2 *backpropErrorsImpl1 = BackpropErrorsv2::instanceSpecific( 0, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream1 = backpropErrorsImpl1->backpropErrors( batchSize, output, weights, biasWeights, errors );
-    BackpropErrorsv2 *backpropErrorsImpl2 = BackpropErrorsv2::instanceSpecific( 1, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream2 = backpropErrorsImpl2->backpropErrors( batchSize, output, weights, biasWeights, errors );
+    BackpropErrorsv2 *backwardImpl1 = BackpropErrorsv2::instanceSpecific( 0, &cl, dim, new ReluActivation() );
+    float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, biasWeights, errors );
+    BackpropErrorsv2 *backwardImpl2 = BackpropErrorsv2::instanceSpecific( 1, &cl, dim, new ReluActivation() );
+    float *errorsForUpstream2 = backwardImpl2->backward( batchSize, output, weights, biasWeights, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
     cout << dim << endl;
@@ -552,8 +552,8 @@ TEST( testbackproperrors, comparespecific ) {
     }
     EXPECT_EQ( true, same );
 
-    delete backpropErrorsImpl1;
-    delete backpropErrorsImpl2;
+    delete backwardImpl1;
+    delete backwardImpl2;
 
     delete[] errorsForUpstream1;
     delete[] errorsForUpstream2;

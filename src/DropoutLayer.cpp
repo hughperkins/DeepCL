@@ -228,7 +228,7 @@ VIRTUAL void DropoutLayer::backProp( float learningRate ) {
         gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
-    dropoutBackpropImpl->backpropErrors( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
+    dropoutBackpropImpl->backward( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
     if( weOwnErrorsWrapper ) {
         delete gradOutputWrapper;
     }
