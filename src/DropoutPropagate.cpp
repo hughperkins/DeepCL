@@ -53,7 +53,7 @@ VIRTUAL void DropoutPropagate::propagate( int batchSize, CLWrapper *masksWrapper
 VIRTUAL void DropoutPropagate::propagate( int batchSize, unsigned char *masks, float *input, float *output ) {
 //    cout << "DropoutPropagate::propagate( float * )" << endl;
     int inputLinearSize = getInputSize( batchSize );
-    CLWrapper *masksWrapper = cl->wrap( ( inputLinearSize + 8 - 1 ) / 8, masks );
+    CLWrapper *masksWrapper = cl->wrap( inputLinearSize, masks );
     CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
     CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
 

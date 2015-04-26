@@ -105,8 +105,8 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    masks = new unsigned char[ ( getResultsSize() + 8 - 1 ) / 8 ];
-    masksWrapper = cl->wrap( ( getResultsSize() + 8 - 1 ) / 8, masks );
+    masks = new unsigned char[ getResultsSize() ];
+    masksWrapper = cl->wrap( getResultsSize(), masks );
     results = new float[ getResultsSize() ];
     resultsWrapper = cl->wrap( getResultsSize(), results );
     errorsForUpstream = new float[ previousLayer->getResultsSize() ];
@@ -159,28 +159,34 @@ VIRTUAL float *DropoutLayer::getErrorsForUpstream() {
 VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
     return new LinearActivation();
 }
+//VIRTUAL void DropoutLayer::generateMasks() {
+//    int totalInputLinearSize = getResultsSize();
+////    int numBytes = (totalInputLinearSize+8-1)/8;
+////    unsigned char *bitsField = new unsigned char[numBytes];
+//    int idx = 0;
+//    unsigned char thisByte = 0;
+//    int bitsPacked = 0;
+//    for( int i = 0; i < totalInputLinearSize; i++ ) {
+//        //double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
+//        // 1 means we pass value through, 0 means we drop
+//        // dropRatio is probability that mask value is 0 therefore
+//        // so higher dropRatio => more likely to be 0
+//        unsigned char bit = random->_uniform() <= dropRatio ? 0 : 1;
+////        unsigned char bit = 0;
+//        thisByte <<= 1;
+//        thisByte |= bit;
+//        bitsPacked++;
+//        if( bitsPacked >= 8 ) {
+//            masks[idx] = thisByte;
+//            idx++;
+//            bitsPacked = 0;
+//        }
+//    }
+//}
 VIRTUAL void DropoutLayer::generateMasks() {
     int totalInputLinearSize = getResultsSize();
-//    int numBytes = (totalInputLinearSize+8-1)/8;
-//    unsigned char *bitsField = new unsigned char[numBytes];
-    int idx = 0;
-    unsigned char thisByte = 0;
-    int bitsPacked = 0;
     for( int i = 0; i < totalInputLinearSize; i++ ) {
-        //double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
-        // 1 means we pass value through, 0 means we drop
-        // dropRatio is probability that mask value is 0 therefore
-        // so higher dropRatio => more likely to be 0
-        unsigned char bit = random->_uniform() <= dropRatio ? 0 : 1;
-//        unsigned char bit = 0;
-        thisByte <<= 1;
-        thisByte |= bit;
-        bitsPacked++;
-        if( bitsPacked >= 8 ) {
-            masks[idx] = thisByte;
-            idx++;
-            bitsPacked = 0;
-        }
+        masks[i] = random->_uniform() <= dropRatio ? 0 : 1;
     }
 }
 VIRTUAL void DropoutLayer::propagate() {

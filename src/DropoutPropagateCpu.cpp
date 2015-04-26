@@ -45,19 +45,10 @@ VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, unsigned char *masks
 //    float *output = new float[ getResultsSize( batchSize ) ];
 //    cout << "DropoutPropagateCpu::propagate( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate start" );
-//    for( int n = 0; n < batchSize; n++ ) {
-//        for( int plane = 0; plane < numPlanes; plane++ ) {
-//            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
-//                int inputRow = outputRow * dropoutSize;
-//                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
-//                    int inputCol = outputCol * dropoutSize;
-//                    int selector = 0;
-//                    int resultIndex = getResultIndex( n, plane, outputRow, outputCol );
-//                    output[ resultIndex ] = maxValue;
-//                }
-//            }
-//        }
-//    }
+    int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+    for( int i = 0; i < totalLinearSize; i++ ) {
+        output[i] = masks[i] == 1 ? input[i] : 0;
+    }
     StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate end" );
 //    return output;
 }

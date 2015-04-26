@@ -17,26 +17,26 @@ using namespace std;
 
 namespace testdropoutpropagate {
 
-void intsToBits( int numBits, int *ints, unsigned char *bitfield ) {
-//    int numBytes = (N+8-1)/8;
-//    unsigned char *bitsField = new unsigned char[numBytes];
-    int idx = 0;
-    unsigned char thisByte = 0;
-    int bitsPacked = 0;
-    for( int i = 0; i < numBits; i++ ) {
-//        double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
-        unsigned char bit = ints[i];
-//        unsigned char bit = 0;
-        thisByte <<= 1;
-        thisByte |= bit;
-        bitsPacked++;
-        if( bitsPacked >= 8 ) {
-            bitfield[idx] = thisByte;
-            idx++;
-            bitsPacked = 0;
-        }
-    }
-}
+//void intsToBits( int numBits, int *ints, unsigned char *bitfield ) {
+////    int numBytes = (N+8-1)/8;
+////    unsigned char *bitsField = new unsigned char[numBytes];
+//    int idx = 0;
+//    unsigned char thisByte = 0;
+//    int bitsPacked = 0;
+//    for( int i = 0; i < numBits; i++ ) {
+////        double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
+//        unsigned char bit = ints[i];
+////        unsigned char bit = 0;
+//        thisByte <<= 1;
+//        thisByte |= bit;
+//        bitsPacked++;
+//        if( bitsPacked >= 8 ) {
+//            bitfield[idx] = thisByte;
+//            idx++;
+//            bitsPacked = 0;
+//        }
+//    }
+//}
 
 TEST( testdropoutpropagate, basic ) {
     int batchSize = 1;
@@ -44,12 +44,12 @@ TEST( testdropoutpropagate, basic ) {
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
-    int maskInts[] = { 1, 0, 0,
-                       0,0,1,
-                        1,0,1
+    unsigned char mask[] = { 1, 0, 0,
+                             0,0,1,
+                             1,0,1
     };
-    unsigned char ucMask[2];
-    intsToBits( 8, maskInts, ucMask );
+//    unsigned char ucMask[2];
+//    intsToBits( 8, maskInts, ucMask );
     float data[] = { 1, -2, 5,
                      3, 8.2f, 4.1f,
                      3, -33.1f, 14.2f,
@@ -58,7 +58,7 @@ TEST( testdropoutpropagate, basic ) {
     EXPECT_EQ( resultsSize, imageSize * imageSize );
     float *output = new float[resultsSize];
 
-    dropoutPropagate->propagate( batchSize, ucMask, data, output );
+    dropoutPropagate->propagate( batchSize, mask, data, output );
 
     EXPECT_EQ( 1, output[0] );
     EXPECT_EQ( 0, output[1] );
