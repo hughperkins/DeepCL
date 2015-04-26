@@ -28,8 +28,8 @@ and fc layers
 * lua build method changes from build.sh to cmake
 * default for convolutional and fc layers in commandline is now linear, instead of relu and tanh respectively
   * true for netdef syntax
-  * will be true also for c++ Maker classes
-  * and by extension also for Python, Lua
+  * true also for c++ Maker classes
+  * will be true also for Python, Lua (not sure if it is true at the moment or not, would need to test)
 
 ## Deprecated, in next version, 4.x.x
 
