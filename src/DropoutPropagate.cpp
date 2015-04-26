@@ -20,29 +20,28 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutPropagate::DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutPropagate::DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),
-        dropRatio( dropRatio ),
         outputImageSize( inputImageSize ) {
 //    if( inputImageSize % dropoutSize != 0 ) {
 //        throw runtime_error("inputImageSize should be an exact multiple of dropoutsize: " + toString( inputImageSize ) + " " + toString(dropoutSize ) );
 //    }
 }
-STATIC DropoutPropagate *DropoutPropagate::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+STATIC DropoutPropagate *DropoutPropagate::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize ) {
+    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize );
 //    return new DropoutPropagateCpu( cl, padZeros, numPlanes, inputImageSize, dropoutSize );
 }
-STATIC DropoutPropagate *DropoutPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+STATIC DropoutPropagate *DropoutPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize ) {
+    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize );
 }
-STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize ) {
     if( idx == 0 ) {
-        return new DropoutPropagateCpu( cl, numPlanes, inputImageSize, dropRatio );
+        return new DropoutPropagateCpu( cl, numPlanes, inputImageSize );
     }
     if( idx == 1 ) {
-        return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+        return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize );
     }
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("DropoutPropagate::instanceSpecific idx not known: " + toString( idx ) );

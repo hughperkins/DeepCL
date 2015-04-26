@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize );
     VIRTUAL void propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
     VIRTUAL void propagate( int batchSize, unsigned char *masks, float *input, float *output );
 

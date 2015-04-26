@@ -20,7 +20,6 @@ public:
 
     const int numPlanes;
     const int inputImageSize;
-    const float dropRatio;
 
     const int outputImageSize;
 
@@ -43,10 +42,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize );
+    STATIC DropoutPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize );
+    STATIC DropoutPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize );
+    STATIC DropoutPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize );
     VIRTUAL void propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void propagate( int batchSize, unsigned char *masks, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );

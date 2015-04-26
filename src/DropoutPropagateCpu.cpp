@@ -20,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutPropagateCpu::DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutPropagateCpu::DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize ) :
+        DropoutPropagate( cl, numPlanes, inputImageSize ) {
 }
 VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
 //    cout << "DropoutPropagateCpu::propagate( CLWrapper * )" << endl;

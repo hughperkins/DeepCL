@@ -43,7 +43,7 @@ TEST( testdropoutpropagate, basic ) {
     int numPlanes = 1;
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
                              1,0,1
@@ -82,7 +82,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -132,7 +132,7 @@ TEST( testdropoutpropagate, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -242,8 +242,8 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    DropoutPropagate *dropoutPropagate0 = DropoutPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
-    DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutPropagate *dropoutPropagate0 = DropoutPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize );
+    DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = dropoutPropagate0->getResultsSize( batchSize );
