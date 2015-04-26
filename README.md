@@ -38,6 +38,7 @@ Functionalities:
 * multinet, ie Multi-column deep convolutional network, [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 * simple command-line network specification, as per notation in [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf)
 * pad-zeros possible for convolutional layer
+* dropout (New!)
 * various activation functions available:
   * tanh
   * scaled tanh (1.7519 * tanh(2/3x) )

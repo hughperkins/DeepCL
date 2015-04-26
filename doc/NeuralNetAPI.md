@@ -64,6 +64,20 @@ net->addLayer( NormalizationMaker::instance()->translate( - mean )->scale( 1.0f 
 // other layers here...
 ```
 
+## Dropout layer
+
+To add a drop out layer:
+```c++
+net->addLayer( DropoutMaker::instance()->dropRatio(0.5f) );
+```
+
+This should probably go in between a fully-connected layer, and its associated activation layer, like:
+```c++
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->imageSize(1)->linear()->biased() );
+net->addLayer( DropoutMaker::instance()->dropRatio(0.5f) );
+net->addLayer( ActivationMaker::instance()->tanh() );
+```
+
 ## Random patch layer
 
 * You can add a random patch layer, to cut a patch from each image, in a random location, and train against that

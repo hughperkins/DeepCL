@@ -18,12 +18,18 @@
 * added new ActivationLayer layer type, to implement relu, sigmoid etc in a separate layer from the convolutional,
 and fc layers
 * in commandline netdef, can put 'z' at the end of a convolutional layer to make it zero-padded, eg `32c5z`
+* added dropout:
+  * in commandline netdef, add `-drop`, eg like: `8c5z-drop-relu`
+  * in C++, use a DropoutMaker, like `net->addLayer( DropoutMaker::instance()->dropRatio(0.5f) );`
 
 ## Changes, in next version, 4.x.x
 
 * lua module changes name from 'luaDeepCL' to 'LuaDeepCL'
 * lua build method changes from build.sh to cmake
 * default for convolutional and fc layers in commandline is now linear, instead of relu and tanh respectively
+  * true for netdef syntax
+  * will be true also for c++ Maker classes
+  * and by extension also for Python, Lua
 
 ## Deprecated, in next version, 4.x.x
 
@@ -40,6 +46,7 @@ deprecated
 
 ## Recent changes, to 4.x.x branch
 
+* 26th April: added dropout :-)
 * 25th April: added independent activation layers, and changed default for convolutional and fc layers to linear
 * 25th April: cleaned up the benchmarks a lot, added them to jenkins, added a couple more, created an Angular/Bootstrap page to display them [DeepCL benchmarks](http://hughperkins.github.io/DeepCL/benchmarking/)
 * 21st April: Added lua wrappers to luarocks repository
