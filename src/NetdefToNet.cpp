@@ -115,7 +115,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
         vector<string> splitConvDef1 = split( splitConvDef[1], "z" );
         int filterSize = atoi( splitConvDef1[0] );
         int skip = 0;
-        ActivationFunction *fn = new LinearActivation();
+        ActivationFunction *fn = 0;
         int padZeros = 0;
         if( splitConvDef1.size() == 2 ) {
             padZeros = 1;
@@ -155,7 +155,10 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
                 return false;
             }
         }
-        net->addLayer( ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->fn( fn )->padZeros( padZeros )->biased() );
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->padZeros( padZeros )->biased() );
+        if( fn != 0 ) {
+            net->addLayer( ActivationMaker::instance()->fn( fn ) );
+        }
     } else if( baseLayerDef.find("mp") != string::npos ) {
         vector<string> splitPoolDef = split( baseLayerDef, "mp" );
         int poolingSize = atoi( splitPoolDef[1] );
@@ -179,10 +182,10 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
     } else if( baseLayerDef.find("n") != string::npos ) {
         vector<string> fullDef = split( baseLayerDef, "n" );
         int numPlanes = atoi( fullDef[0] );
-        ActivationFunction *fn = new LinearActivation();
-        if( isLast ) {
-            fn = new LinearActivation();
-        }
+        ActivationFunction *fn = 0;
+//        if( isLast ) {
+//            fn = new LinearActivation();
+//        }
 //        int padZeros = 0;
         int biased = 1;
         for( int i = 0; i < (int)splitOptionsDef.size(); i++ ) {
@@ -216,7 +219,10 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
             cout << "Last fullyconnectedlayer must be linear (because softmax is the 'activationlayer' for this layer)" << endl;
             return false;
         }
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->fn(fn)->biased(biased) );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->biased(biased) );
+        if( fn != 0 ) {
+            net->addLayer( ActivationMaker::instance()->fn( fn ) );
+        }
     } else {
         cout << "network definition " << baseLayerDef << " not recognised" << endl;
         return false;

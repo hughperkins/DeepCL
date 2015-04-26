@@ -203,16 +203,18 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 void test( ActivationFunction *fn, TestArgs args ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
-        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->fn(fn)->biased() );
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased() );
+        net->addLayer( ActivationMaker::instance()->fn(fn) );
         if( args.poolingSize > 0 ) {
             net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
         }
     }
     if( args.softMax ) {
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->imageSize(1)->linear()->biased() );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->imageSize(1)->biased() );
         net->addLayer( SoftMaxMaker::instance() );
     } else {
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->imageSize(1)->tanh()->biased() );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numFilters)->imageSize(1)->biased() );
+        net->addLayer( ActivationMaker::instance()->tanh() );
         net->addLayer( SquareLossMaker::instance() );;
     }
     net->print();
@@ -289,12 +291,13 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
 void testLabelled( TestArgs args ) {
     NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
-        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->relu()->biased()->padZeros() );
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased()->padZeros() );
+        net->addLayer( ActivationMaker::instance()->relu() );
         if( args.poolingSize > 0 ) {
             net->addLayer( PoolingMaker::instance()->poolingSize( args.poolingSize ) );
         }
     }
-    net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numCats)->imageSize(1)->linear()->biased() );
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(args.numCats)->imageSize(1)->biased() );
     net->addLayer( SoftMaxMaker::instance() );
     net->print();
     net->setBatchSize(args.batchSize);

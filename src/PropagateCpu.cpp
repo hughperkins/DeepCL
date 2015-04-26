@@ -15,8 +15,8 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-PropagateCpu::PropagateCpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+PropagateCpu::PropagateCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
     {
 }
 VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
@@ -85,7 +85,7 @@ VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *
                     if( dim.biased ) {
                         sum += biasWeights[filter];
                     }
-                    sum = fn->calc( sum );
+//                    sum = fn->calc( sum );
                     int outputIndex = ( ( n 
                         * dim.numFilters + filter ) 
                         * dim.outputImageSize + outRow )

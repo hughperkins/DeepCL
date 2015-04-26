@@ -65,7 +65,6 @@ public:
     PUBLICAPI VIRTUAL bool getBiased() const;
     PUBLICAPI VIRTUAL bool hasOutputWrapper() const;
     PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
-    PUBLICAPI VIRTUAL ActivationFunction const*getActivationFunction();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
     PUBLICAPI VIRTUAL int getOutputImageSize() const;

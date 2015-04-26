@@ -16,7 +16,7 @@ public:
     VIRTUAL ~Propagate3();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
-    Propagate3( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
+    Propagate3( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

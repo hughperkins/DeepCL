@@ -17,19 +17,19 @@ using namespace std;
 
 SquareLossLayer::SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker ) :
         LossLayer( previousLayer, maker ),
-        errors( 0 ),
+        gradInput( 0 ),
         allocatedSize( 0 ) {
 }
 VIRTUAL SquareLossLayer::~SquareLossLayer(){
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string SquareLossLayer::getClassName() const {
     return "SquareLossLayer";
 }
 VIRTUAL float*SquareLossLayer::getGradInput() {
-    return errors;
+    return gradInput;
 }
 //VIRTUAL float*SquareLossLayer::getDerivLossBySumForUpstream() {
 //    return gradOutput;
@@ -68,22 +68,21 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     allocatedSize = batchSize;
-    errors = new float[ batchSize * previousLayer->getOutputSize() ];
+    gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
 }
 VIRTUAL void SquareLossLayer::calcErrors( float const*expectedOutput ) {
-    ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int outputSize = previousLayer->getOutputSize();
-    float *output = previousLayer->getOutput();
-    for( int i = 0; i < outputSize; i++ ) {
-        float result = output[i];
-        float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = result - expectedOutput[i];
-        errors[i] = partialLossByOut * partialOutBySum;
+//    ActivationFunction const*fn = previousLayer->getActivationFunction();
+    int inputSize = previousLayer->getOutputSize();
+    float *input = previousLayer->getOutput();
+    for( int i = 0; i < inputSize; i++ ) {
+        // TODO: check this :-)
+//        float diff = input[i] - expectedOutput[i];
+        gradInput[i] = input[i] - expectedOutput[i];
     }
 }
 VIRTUAL int SquareLossLayer::getPersistSize() const {

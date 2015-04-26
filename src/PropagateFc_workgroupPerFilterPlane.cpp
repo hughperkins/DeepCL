@@ -56,11 +56,11 @@ VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWr
     delete[] output1;
     StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate end");
 }
-PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
 
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
 
     // [[[cog

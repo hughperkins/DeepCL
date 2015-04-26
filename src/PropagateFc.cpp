@@ -102,8 +102,8 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     delete[] output1;
     StatefulTimer::timeCheck("PropagateFc::propagate end");
 }
-PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
 
     if( dim.inputImageSize != dim.filterSize ) {
@@ -113,7 +113,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunct
         throw runtime_error("For PropagateFc, padzeros must be disabled");
     }
 
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
 
     // [[[cog

@@ -42,10 +42,10 @@ VIRTUAL void PropagateExperimental::propagate( int batchSize, CLWrapper *dataWra
 
     StatefulTimer::timeCheck("PropagateExperimental::propagate after call propagate");
 }
-PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify

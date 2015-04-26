@@ -16,7 +16,7 @@ public:
     VIRTUAL ~Propagate3_unfactorized();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
-    Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
+    Propagate3_unfactorized( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

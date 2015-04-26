@@ -41,11 +41,11 @@ VIRTUAL void BackpropErrorsv2Naive::backward( int batchSize,
     
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive end" );
 }
-BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn ) :
-        BackpropErrorsv2( cl, dim, upstreamFn )
+BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropErrorsv2( cl, dim )
             {
     std::string options = dim.buildOptionsString();
-    options += " -D " + upstreamFn->getDefineName();
+    options += ""; // " -D " + upstreamFn->getDefineName();
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/backproperrorsv2.cl", "calcGradInput", 'options' )

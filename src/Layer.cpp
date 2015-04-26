@@ -49,9 +49,9 @@ PUBLICAPI VIRTUAL bool Layer::hasOutputWrapper() const {
 PUBLICAPI VIRTUAL CLWrapper *Layer::getOutputWrapper() {
     throw std::runtime_error("getOutputWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-PUBLICAPI VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
-    throw std::runtime_error("getActivationFunction not implemetned for this layer type, layer " + toString(layerIndex) );
-}
+//PUBLICAPI VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
+//    throw std::runtime_error("getActivationFunction not implemetned for this layer type, layer " + toString(layerIndex) );
+//}
 //VIRTUAL int Layer::getOutputSize() const {
 //    throw std::runtime_error("getOutputSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 // //     return numPlanes * imageSize * imageSize * batchSize;

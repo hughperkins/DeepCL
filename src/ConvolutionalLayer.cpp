@@ -27,7 +27,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         weightsTrainer( 0 ),
         biasWeightsTrainer( 0 ),
         backwardImpl(0),
-        activationFunction( maker->_activationFunction ),
+//        activationFunction( maker->_activationFunction ),
         output(0),
         weights(0),
         biasWeights(0),
@@ -54,10 +54,10 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
-    propagateimpl = Propagate::instance( cl, dim, activationFunction );
+    propagateimpl = Propagate::instance( cl, dim );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
-        backwardImpl = BackpropErrorsv2::instance( cl, dim, previousLayer->getActivationFunction() );
+        backwardImpl = BackpropErrorsv2::instance( cl, dim );
     }
 
     if( dim.filterSize > dim.inputImageSize ) {
@@ -102,9 +102,9 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
 VIRTUAL std::string ConvolutionalLayer::getClassName() const {
     return "ConvolutionalLayer";
 }
-VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
-    return activationFunction;
-}
+//VIRTUAL ActivationFunction const*ConvolutionalLayer::getActivationFunction() {
+//    return activationFunction;
+//}
 VIRTUAL float *ConvolutionalLayer::getGradInput() {
     if( !gradInputCopiedToHost ) {
         std::cout << "copying gradInput to host, from GPU" << std::endl;
@@ -415,7 +415,7 @@ VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
 }
 
 VIRTUAL std::string ConvolutionalLayer::asString() const {
-    return "ConvolutionalLayer{ " + toString( dim ) + " " + activationFunction->getDefineName() + " }";
+    return "ConvolutionalLayer{ " + toString( dim ) + " }";
 }
 
 VIRTUAL bool ConvolutionalLayer::needsTrainer() const {

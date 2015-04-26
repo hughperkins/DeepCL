@@ -29,36 +29,35 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn ) :
+Propagate::Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
-        dim( layerDimensions ),
-        fn( fn ) {
+        dim( layerDimensions ) {
 }
-STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn ) {
-    return new PropagateAuto( cl, dim, fn );
-//    return new PropagateByInputPlane( cl, dim, fn );
+STATIC Propagate *Propagate::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+    return new PropagateAuto( cl, dim );
+//    return new PropagateByInputPlane( cl, dim );
 
 //    if( dim.filterSize == dim.inputImageSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {
-//        return new PropagateFc( cl, dim, fn );
+//        return new PropagateFc( cl, dim );
 //    } else {
 //    }
 //    if( dim.filterSize == dim.inputImageSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {
-//        return new PropagateFc( cl, dim, fn );
+//        return new PropagateFc( cl, dim );
 //    } else if( square( dim.outputImageSize ) < 32 || square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
-//        return new Propagate1( cl, dim, fn );
+//        return new Propagate1( cl, dim );
 //    } else {
-//        return new Propagate3( cl, dim, fn );
+//        return new Propagate3( cl, dim );
 //    }
 }
-STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
-    return new Propagate1( cl, layerDimensions, fn );
+STATIC Propagate *Propagate::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+    return new Propagate1( cl, layerDimensions );
 }
 STATIC int Propagate::getNumImplementations() {
     return 8;
 }
-STATIC bool Propagate::plausiblyOptimal( int index, int batchSize, LayerDimensions dim, ActivationFunction const*fn ) {
+STATIC bool Propagate::plausiblyOptimal( int index, int batchSize, LayerDimensions dim ) {
     if( index == 0 ) { 
         return false;
     }
@@ -67,49 +66,49 @@ STATIC bool Propagate::plausiblyOptimal( int index, int batchSize, LayerDimensio
     }
     return true;
 }
-STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+STATIC Propagate *Propagate::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
-        return new PropagateCpu( cl, layerDimensions, fn );
+        return new PropagateCpu( cl, layerDimensions );
     } else if( idx == -1 ) {
-        return instance( cl, layerDimensions, fn );
+        return instance( cl, layerDimensions );
     } else if( idx == -2 ) {
         cout << "Propagate::instanceSpeicfic, choosing: PropagateAuto" << endl;
-        return new PropagateAuto( cl, layerDimensions, fn );
+        return new PropagateAuto( cl, layerDimensions );
     } else if( idx == 1 ) {
-        return new Propagate1( cl, layerDimensions, fn );
+        return new Propagate1( cl, layerDimensions );
     } else if( idx == 2 ) {
-        return new Propagate2( cl, layerDimensions, fn );
+        return new Propagate2( cl, layerDimensions );
     } else if( idx == 3 ) {
-        return new Propagate3( cl, layerDimensions, fn );
+        return new Propagate3( cl, layerDimensions );
     } else if( idx == 4 ) {
-        return new Propagate4( cl, layerDimensions, fn );
+        return new Propagate4( cl, layerDimensions );
     } else if( idx == 5 ) {
-        return new PropagateFc( cl, layerDimensions, fn );
+        return new PropagateFc( cl, layerDimensions );
     } else if( idx == 6 ) {
-        return new PropagateByInputPlane( cl, layerDimensions, fn );
+        return new PropagateByInputPlane( cl, layerDimensions );
     } else if( idx == 7 ) {
-        return new Propagate3_unfactorized( cl, layerDimensions, fn );
+        return new Propagate3_unfactorized( cl, layerDimensions );
     } else if( idx == 99 ) {
-        return new PropagateExperimental( cl, layerDimensions, fn );
+        return new PropagateExperimental( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for index " + toString(idx) );
     }
 }
-STATIC Propagate *Propagate::instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn ) {
+STATIC Propagate *Propagate::instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( name == "cpu" ) {
-        return new PropagateCpu( cl, layerDimensions, fn );
+        return new PropagateCpu( cl, layerDimensions );
     } else if( name == "prop1" ) {
-        return new Propagate1( cl, layerDimensions, fn );
+        return new Propagate1( cl, layerDimensions );
     } else if( name == "prop3" ) {
-        return new Propagate3( cl, layerDimensions, fn );
+        return new Propagate3( cl, layerDimensions );
     } else if( name == "prop4" ) {
-        return new Propagate4( cl, layerDimensions, fn );
+        return new Propagate4( cl, layerDimensions );
     } else if( name == "fc" ) {
-        return new PropagateFc( cl, layerDimensions, fn );
+        return new PropagateFc( cl, layerDimensions );
     } else if( name == "byinplane" ) {
-        return new PropagateByInputPlane( cl, layerDimensions, fn );
+        return new PropagateByInputPlane( cl, layerDimensions );
     } else if( name == "exp" ) {
-        return new PropagateExperimental( cl, layerDimensions, fn );
+        return new PropagateExperimental( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Propagate::instanceSpecific: no instance defined for name " + name );
     }

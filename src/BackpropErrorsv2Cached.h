@@ -20,7 +20,7 @@ public:
     VIRTUAL void backward( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );
-    BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
+    BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

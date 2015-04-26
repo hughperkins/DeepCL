@@ -25,8 +25,10 @@ using namespace std;
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
     NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->imageSize(imageSize)->instance();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->fn(fn)->padZeros(padZeros) );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
+    net->addLayer( ActivationMaker::instance()->fn(fn) );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
+    net->addLayer( ActivationMaker::instance()->fn(fn) );
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
@@ -133,7 +135,7 @@ TEST( testbackproperrors, checknumerically_imagesize5_filter3_relu ) {
     testNumerically( learningRate, batchSize, imageSize, filterSize, numPlanes, fn, padZeros );
 }
 
-void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
+void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
@@ -159,7 +161,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim, ActivationFu
     errorsForUpstreamWrapper->createOnDevice();
 
     StatefulTimer::timeCheck("after init");
-    BackpropErrorsv2 *backwardImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim, fn );
+    BackpropErrorsv2 *backwardImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < 40; it++ ) {
         backwardImpl->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
@@ -188,12 +190,12 @@ TEST( SLOW_testbackproperrors, perf_kgsgo_32c5 ) {
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
-    ActivationFunction *fn = new ReluActivation();
+//    ActivationFunction *fn = new ReluActivation();
 
-    measurePerf( 2, batchSize, dim, fn );
+    measurePerf( 2, batchSize, dim );
 }
 
-void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
+void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
@@ -223,8 +225,8 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     errorsForUpstreamWrapper0->createOnDevice();
     errorsForUpstreamWrapper1->createOnDevice();
 
-    BackpropErrorsv2 *bp0 = BackpropErrorsv2::instanceSpecific( instance0, cl, dim, fn );
-    BackpropErrorsv2 *bp1 = BackpropErrorsv2::instanceSpecific( instance1, cl, dim, fn );
+    BackpropErrorsv2 *bp0 = BackpropErrorsv2::instanceSpecific( instance0, cl, dim );
+    BackpropErrorsv2 *bp1 = BackpropErrorsv2::instanceSpecific( instance1, cl, dim );
     
     bp0->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
@@ -290,9 +292,9 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
-    ActivationFunction *fn = new ReluActivation();
+//    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific( 1, 2, batchSize, dim, fn );
+    compareSpecific( 1, 2, batchSize, dim );
 
 }
 
@@ -302,9 +304,9 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
     dim.setInputPlanes( 2 ).setInputImageSize(3).setNumFilters( 2 ).setFilterSize( 3 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
-    ActivationFunction *fn = new ReluActivation();
+//    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific( 1, 2, batchSize, dim, fn );
+    compareSpecific( 1, 2, batchSize, dim );
 
 }
 
@@ -315,9 +317,9 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini2 ) {
     dim.setInputPlanes( 1 ).setInputImageSize(imageSize).setNumFilters( 1 ).setFilterSize( imageSize )
         .setPadZeros( true ).setBiased( true );
     cout << dim.buildOptionsString() << endl;
-    ActivationFunction *fn = new ReluActivation();
+//    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific( 1, 2, batchSize, dim, fn );
+    compareSpecific( 1, 2, batchSize, dim );
 
 }
 

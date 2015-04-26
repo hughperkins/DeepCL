@@ -26,7 +26,7 @@ public:
     // generated, using cog:
     VIRTUAL ~PropagateFc();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
-    PropagateFc( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
+    PropagateFc( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

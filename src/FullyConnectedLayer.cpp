@@ -18,13 +18,12 @@ FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer
         Layer( previousLayer, maker ),
         numPlanes( maker->_numPlanes ),
         imageSize( maker->_imageSize ),
-        fn( maker->_activationFunction ),
+//        fn( maker->_activationFunction ),
         batchSize(0) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * imageSize * imageSize )
                       ->filterSize( previousLayer->getOutputImageSize() )
-                        ->biased( maker->_biased )
-                        ->fn( maker->_activationFunction );
+                        ->biased( maker->_biased );
     convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
 //    delete convolutionalMaker;
 }
@@ -83,9 +82,9 @@ VIRTUAL bool FullyConnectedLayer::hasOutputWrapper() const {
 VIRTUAL CLWrapper *FullyConnectedLayer::getOutputWrapper() {
     return convolutionalLayer->getOutputWrapper();
 }
-VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
-    return fn;
-}
+//VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
+//    return fn;
+//}
 VIRTUAL bool FullyConnectedLayer::needsBackProp() {
     return true;;
 }
@@ -99,6 +98,6 @@ VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
     return false; // not handle fc layer for now, conv only for now
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
-    return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " " + fn->getDefineName() + " }";
+    return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " }";
 }
 

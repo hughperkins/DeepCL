@@ -41,8 +41,8 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     cl->finish();
     StatefulTimer::timeCheck("Propagate4::propagate after call propagate");
 }
-Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
     workgroupSize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -52,7 +52,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim, ActivationFunctio
         pixelsPerThread <<= 1;
     }
 
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     options += " -D gWorkgroupSize=" + toString( workgroupSize );
     options += " -D gPixelsPerThread=" + toString( pixelsPerThread );
     options += dim.buildOptionsString();

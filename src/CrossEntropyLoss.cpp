@@ -16,19 +16,19 @@ using namespace std;
 
 CrossEntropyLoss::CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker ) :
         LossLayer( previousLayer, maker ),
-        errors( 0 ),
+        gradInput( 0 ),
         allocatedSize( 0 ) {
 }
 VIRTUAL CrossEntropyLoss::~CrossEntropyLoss(){
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string CrossEntropyLoss::getClassName() const {
     return "CrossEntropyLoss";
 }
 VIRTUAL float*CrossEntropyLoss::getGradInput() {
-    return errors;
+    return gradInput;
 }
 VIRTUAL int CrossEntropyLoss::getPersistSize() const {
     return 0;
@@ -70,23 +70,21 @@ VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
-    errors = new float[ batchSize * previousLayer->getOutputSize() ];
+    gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
     this->batchSize = batchSize;
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
 VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedOutput ) {
-    ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int outputSize = previousLayer->getOutputSize();
-    float *output = previousLayer->getOutput();
-    for( int i = 0; i < outputSize; i++ ) {
-        float result = output[i];
-        float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = ( result - expectedOutput[i] ) / result / ( 1.0f - result );
-        errors[i] = partialLossByOut * partialOutBySum;
+//    ActivationFunction const*fn = previousLayer->getActivationFunction();
+    int inputSize = previousLayer->getOutputSize();
+    float *input = previousLayer->getOutput();
+    for( int i = 0; i < inputSize; i++ ) {
+        // TODO: check this :-)
+        gradInput[i] = ( input[i] - expectedOutput[i] ) / input[i] / ( 1.0f - input[i] );
     }
 }
 

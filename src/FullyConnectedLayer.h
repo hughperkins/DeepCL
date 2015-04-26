@@ -18,7 +18,7 @@ class FullyConnectedLayer : public Layer {
 public:
     const int numPlanes;
     const int imageSize;
-    ActivationFunction const*fn;
+//    ActivationFunction const*fn;
 
     ConvolutionalLayer *convolutionalLayer;
     int batchSize;
@@ -46,7 +46,6 @@ public:
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
-    VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL bool needsBackProp();
     VIRTUAL void propagate();
     VIRTUAL void backProp( float learningRate );

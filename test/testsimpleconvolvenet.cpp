@@ -33,7 +33,8 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     expectedOutput[3] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0)->tanh() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
+    net->addLayer( ActivationMaker::instance()->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {0.382147f, -1.77522f};
     net->initWeights(1, weights1);
@@ -78,7 +79,8 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     expectedOutput[3] = 0.5f;
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased()->tanh() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
+    net->addLayer( ActivationMaker::instance()->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {0.382147f, -1.77522f};
     float biasweights1[] = {-1.00181f, 0.891056f};
@@ -144,6 +146,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {-0.171115f, 0.28369f, 0.201354f, -0.496124f, 0.391512f, 0.120458f, 0.396952f, -0.1356f, -0.319595f, 0.251043f, 0.318859f, 0.220892f, -0.480651f, -0.51708f, 0.2173f, 0.365935f, 0.304687f, -0.712624f};
     float biasWeights1[] = {0.375101f, 0.00130748f};
@@ -189,7 +192,8 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased()->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {-0.380177f, -1.5738f};
     float biasWeights1[] = {0.5f, 0.0606055f};
@@ -257,7 +261,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased()->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     float const*output = 0;
     double _weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
@@ -331,7 +336,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     NeuralNet *net = NeuralNet::maker()->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased()->linear() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
     net->addLayer( SquareLossMaker::instance() );;
     float const*output = 0;
     float weights1[] = {0.715867f, -0.428623f, -0.281465f, -0.736675f, -0.224507f, 0.335028f, -0.384762f, -0.213304f, 0.679177f, -0.170055f, 0.335075f, -0.572057f, -0.175718f, -0.410962f, -0.175277f, 0.536131f, -0.0568329f, -0.00297278f};
@@ -384,7 +389,9 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
@@ -432,8 +439,10 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
-    net->addLayer( SquareLossMaker::instance() );;
+    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
 float weights1[] = {1.12739f, 1.21476f};
 float weights2[] = {-0.352846f, 0.534554f, -1.13343f, -0.191175f};
 float biasWeights1[] = {0.971267f, 1.42629f};
@@ -518,7 +527,9 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(4)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
 //    net->print();
     for( int epoch = 0; epoch < 1000; epoch++ ) {
@@ -610,7 +621,9 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(4)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
 //    net->print();
 double _weights1[] = {-0.69664, 0.58017, 0.140447, -0.205859, 0.0198638, 0.0110593, -0.388923, -0.844424, -0.472903, 0.453888, -0.616155, -0.454998};
@@ -723,7 +736,9 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
 //    net->print();
 double _weights1[] = {-0.171255, 0.374466, -0.224289, -0.196481, 0.162787, 0.418841, 0.230909, 0.23731, -0.244594, -0.469993, 0.221895, -0.0145731, 0.163359, 0.276707, -0.533498, -0.376532, 0.275129, -0.298299, -0.162541, -0.497442, 0.0331104, 
@@ -909,7 +924,9 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
 //    net->print();
     for( int epoch = 0; epoch < 3000; epoch++ ) {

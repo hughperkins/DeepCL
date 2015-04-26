@@ -17,7 +17,7 @@ public:
     VIRTUAL ~PropagateByInputPlane();
     VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
-    PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn );
+    PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

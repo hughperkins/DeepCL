@@ -16,7 +16,7 @@
 class CrossEntropyLoss : public LossLayer {
 public:
 
-    float *errors;
+    float *gradInput;
     int allocatedSize;
     int batchSize;
 //    ActivationFunction const*const activationFunction;

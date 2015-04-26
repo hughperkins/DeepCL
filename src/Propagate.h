@@ -28,7 +28,7 @@ class DeepCL_EXPORT Propagate {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
-    ActivationFunction const*fn;
+//    ActivationFunction const*fn;
 
     virtual ~Propagate() {}
     virtual void propagate( int batchSize, 
@@ -40,13 +40,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const*fn );
-    STATIC Propagate *instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *fn );
-    STATIC Propagate *instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
+    Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Propagate *instance(OpenCLHelper *cl, LayerDimensions dim );
+    STATIC Propagate *instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
     STATIC int getNumImplementations();
-    STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim, ActivationFunction const*fn );
-    STATIC Propagate *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
-    STATIC Propagate *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *fn );
+    STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim );
+    STATIC Propagate *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Propagate *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions );
     VIRTUAL float * propagate( int batchSize, float *inputData, float *filters, float *biases );
     VIRTUAL void propagate( int batchSize, float *inputData, float *filters, float *biases, float *output );
 

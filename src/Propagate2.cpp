@@ -40,14 +40,14 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     cl->finish();
     StatefulTimer::timeCheck("Propagate2::propagate after call propagate");
 }
-Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("cannot use propagate2, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify

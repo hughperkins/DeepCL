@@ -240,8 +240,10 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     };
 
     NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
+    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     cout << "hand-setting weights..." << endl;
     net->initWeights( 1, layer1weights, layer1bias );

@@ -66,11 +66,11 @@ VIRTUAL void BackpropErrorsv2Cached::backward( int batchSize,
     
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached end" );
 }
-BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn ) :
-        BackpropErrorsv2( cl, dim, upstreamFn )
+BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropErrorsv2( cl, dim )
             {
     std::string options = dim.buildOptionsString();
-    options += " -D " + upstreamFn->getDefineName();
+    options += ""; // " -D " + upstreamFn->getDefineName();
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/backproperrorsv2cached.cl", "calcGradInputCached", 'options' )

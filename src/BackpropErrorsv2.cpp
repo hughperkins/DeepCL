@@ -23,33 +23,32 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-STATIC BackpropErrorsv2 *BackpropErrorsv2::instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn ) {
+STATIC BackpropErrorsv2 *BackpropErrorsv2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
     if( ( dim.inputImageSize - dim.filterSize > 6 ) && square( dim.inputImageSize ) <= cl->getMaxWorkgroupSize() ) {
-//        return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
-        return new BackpropErrorsv2Cached( cl, dim, upstreamFn );
+//        return new BackpropErrorsv2Naive( cl, dim );
+        return new BackpropErrorsv2Cached( cl, dim );
     } else {
-        return new BackpropErrorsv2Naive( cl, dim, upstreamFn );
+        return new BackpropErrorsv2Naive( cl, dim );
     }
 }
-STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn ) {
-    return new BackpropErrorsv2Naive( cl, layerDimensions, upstreamFn );
+STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+    return new BackpropErrorsv2Naive( cl, layerDimensions );
 }
-STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn ) {
+STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
-        return new BackpropErrorsv2Cpu( cl, layerDimensions, upstreamFn );
+        return new BackpropErrorsv2Cpu( cl, layerDimensions );
     }
     if( idx == 1 ) {
-        return new BackpropErrorsv2Naive( cl, layerDimensions, upstreamFn );
+        return new BackpropErrorsv2Naive( cl, layerDimensions );
     }
     if( idx == 2 ) {
-        return new BackpropErrorsv2Cached( cl, layerDimensions, upstreamFn );
+        return new BackpropErrorsv2Cached( cl, layerDimensions );
     }
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
-BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn ) :
+BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
-        dim( layerDimensions ),
-        upstreamFn( upstreamFn ) {
+        dim( layerDimensions ) {
 }
 VIRTUAL float * BackpropErrorsv2::backward( int batchSize, float *inputData, float *errors, float *filters ) {
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop begin");

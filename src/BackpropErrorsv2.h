@@ -22,7 +22,7 @@ class DeepCL_EXPORT BackpropErrorsv2 {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
-    ActivationFunction const *upstreamFn;
+//    ActivationFunction const *upstreamFn;
 
     virtual ~BackpropErrorsv2() {}
     virtual void backward( int batchSize, 
@@ -34,10 +34,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC BackpropErrorsv2 *instance(OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn );
-    STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
-    STATIC BackpropErrorsv2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
-    BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions, ActivationFunction const *upstreamFn );
+    STATIC BackpropErrorsv2 *instance(OpenCLHelper *cl, LayerDimensions dim );
+    STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC BackpropErrorsv2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions );
     VIRTUAL float * backward( int batchSize, float *inputData, float *errors, float *filters );
 
     // [[[end]]]

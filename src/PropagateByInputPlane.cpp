@@ -99,11 +99,11 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
 
     StatefulTimer::timeCheck("PropagateByInputPlane::propagate after call propagate");
 }
-PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
 
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
 
     // [[[cog

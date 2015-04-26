@@ -38,11 +38,11 @@ VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     cl->finish();
     StatefulTimer::timeCheck("Propagate1::propagate after call propagate");
 }
-Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
-        Propagate( cl, dim, fn )
+Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim ) :
+        Propagate( cl, dim )
             {
 
-    std::string options = "-D " + fn->getDefineName();
+    std::string options = ""; // "-D " + fn->getDefineName();
     if( dim.biased ) {
          options += " -D BIASED";
     }

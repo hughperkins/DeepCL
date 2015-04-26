@@ -18,8 +18,8 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropErrorsv2Cpu::BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const *upstreamFn ) :
-        BackpropErrorsv2( cl, dim, upstreamFn )
+BackpropErrorsv2Cpu::BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropErrorsv2( cl, dim )
             {
 }
 VIRTUAL BackpropErrorsv2Cpu::~BackpropErrorsv2Cpu() {
@@ -56,7 +56,8 @@ VIRTUAL float *BackpropErrorsv2Cpu::backward( int batchSize, float *inputData,
                         * dim.inputImageSize + upstreamRow )
                         * dim.inputImageSize + upstreamCol;
                     float inputValue = inputData[inputDataIndex];
-                    float activationDerivativeUpstream = upstreamFn->calcDerivative(inputValue);
+                    //  TODO: check this :-)
+//                    float activationDerivativeUpstream = upstreamFn->calcDerivative(inputValue);
                     // aggregate over [outPlane][outRow][outCol]
                     int minFilterCol = std::max( 0, upstreamCol + margin - (dim.outputImageSize -1) );
                     int maxFilterCol = std::min( dim.filterSize - 1, upstreamCol + margin );
@@ -83,7 +84,7 @@ VIRTUAL float *BackpropErrorsv2Cpu::backward( int batchSize, float *inputData,
                         * dim.inputPlanes + upstreamPlane )
                         * dim.inputImageSize + upstreamRow )
                         * dim.inputImageSize + upstreamCol;
-                    gradInput[upstreamResultIndex] = sumWeightTimesOutError * activationDerivativeUpstream;
+                    gradInput[upstreamResultIndex] = sumWeightTimesOutError; // * activationDerivativeUpstream;
                 }
             }
         }

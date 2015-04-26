@@ -34,7 +34,7 @@ public:
     BackpropErrorsv2 *backwardImpl;
 
     LayerDimensions dim;
-    ActivationFunction const *const activationFunction;
+//    ActivationFunction const *const activationFunction;
 
     float *output;
     float *weights;
@@ -99,7 +99,6 @@ public:
     ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker *maker );
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL float *getGradInput();
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();

@@ -89,7 +89,7 @@ TEST( testpropagate, imagesize2_nopadzeros ) {
     for( int i = 1; i <= 4; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 1, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
-            padZeros == 1, false ), new LinearActivation() );
+            padZeros == 1, false ) );
         float *output = propagate->propagate( batchSize, data, filter1, 0 );  
         for( int result = 0; result < resultSize; result++ ) {
             ASSERT_EQ( expectedOutput[result], output[result] );
@@ -148,7 +148,7 @@ TEST( testpropagate, DISABLED_imagesize2_nopadzeros_skip1 ) {
     for( int i = 1; i <= 1; i++ ) {
         Propagate *propagate = Propagate::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
-            padZeros == 1, false ).setSkip(1), new LinearActivation() );
+            padZeros == 1, false ).setSkip(1) );
         float *output = propagate->propagate( batchSize, data, filter1, 0 );  
         for( int result = 0; result < outputSize; result++ ) {
             cout << "checking result " << result << endl;
@@ -231,7 +231,7 @@ TEST( testpropagate, imagesize2_padzeros ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
-        padZeros == 1, false ), new LinearActivation() );
+        padZeros == 1, false ) );
     float *output = propagate->propagate( batchSize, data, filter1, 0 );        
 
 //    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, output[0] );
@@ -292,7 +292,7 @@ TEST( testpropagate, imagesize3 ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
-        padZeros == 1, false ), new LinearActivation() );
+        padZeros == 1, false ) );
     float *output = propagate->propagate( 
         batchSize, data, filter1, 0 );        
 
@@ -361,7 +361,7 @@ TEST( testpropagate, test2 ) {
 
 //    for( int it = 0; it < 100; it ++ ) {
 
-    Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim, new TanhActivation() );
+    Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim );
     float *output = propagate->propagate( batchSize, data, filter1, biases );
 
 //        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( imageSize )->in( filterWidth )
@@ -413,7 +413,7 @@ TEST( testpropagate, test3 ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
-        padZeros == 1, false ), new LinearActivation() );
+        padZeros == 1, false ) );
     float *output = propagate->propagate( 
         batchSize, data, filter, 0 );        
 
@@ -478,8 +478,8 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     float *output2 = new float[ outputSize ];
     
     int numBatches = ( N + batchSize - 1 ) / batchSize;
-    Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim, fn );
-    Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim, fn );
+    Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim );
+    Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim );
 
 //    float *outputtemps[2];
     for( int instance = 0; instance < 2; instance++ ) {
@@ -659,7 +659,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 //    LayerDimensions dim;
 //    dim.setInputPlanes( 2 ).setInputImageSize(5).setNumFilters( 1 ).setFilterSize( 5 )
 //        .setPadZeros( true ).setBiased( false );    
-//    compareSpecific( 1, dim, new LinearActivation(), 1, 3 );
+//    compareSpecific( 1, dim, 1, 3 );
 //}
 
 //TEST( SLOW_testpropagate, comparespecific_fc500unbiased ) {
@@ -667,7 +667,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 //    const int imageSize = 19;
 //    dim.setInputPlanes( 32 ).setInputImageSize(imageSize).setNumFilters( 500 ).setFilterSize( imageSize )
 //        .setPadZeros( false ).setBiased( false );    
-//    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
+//    compareSpecific( 4, dim, 1, 5 );
 //}
 
 //TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
@@ -675,7 +675,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 //    const int imageSize = 19;
 //    dim.setInputPlanes( 32 ).setInputImageSize(imageSize).setNumFilters( 500 ).setFilterSize( imageSize )
 //        .setPadZeros( false ).setBiased( true );    
-//    compareSpecific( 4, dim, new LinearActivation(), 1, 5 );
+//    compareSpecific( 4, dim, 1, 5 );
 //}
 
 //TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
@@ -863,7 +863,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instanceSpecific( instance, cl, dim, fn );
+    Propagate *p1 = Propagate::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;
         float *output1 = p1->propagate( thisBatchSize, inputs, filters, biasFilters );

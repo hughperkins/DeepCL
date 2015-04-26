@@ -29,11 +29,11 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-PropagateAuto::PropagateAuto( OpenCLHelper *cl, LayerDimensions dim, ActivationFunction const*fn ) :
+PropagateAuto::PropagateAuto( OpenCLHelper *cl, LayerDimensions dim ) :
 //        dim( layerDimensions ),
 //        cl( cl ),
 //        fn( fn ),
-        Propagate( cl, dim, fn ),
+        Propagate( cl, dim ),
         milliseconds( 0 ),
         valid( 0 ),
         chosenIndex( -1 ),
@@ -64,10 +64,10 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
     while( chosenIndex == -1 && nextIndex < num ) {
         int thisIndex = nextIndex;
         nextIndex++;
-        if( Propagate::plausiblyOptimal( thisIndex, batchSize, dim, fn ) ) {
+        if( Propagate::plausiblyOptimal( thisIndex, batchSize, dim ) ) {
             Propagate *candidate = 0;
             try {
-                candidate = Propagate::instanceSpecific( thisIndex, cl, dim, fn );
+                candidate = Propagate::instanceSpecific( thisIndex, cl, dim );
                 instances[thisIndex] = candidate;
                 valid[thisIndex] = true;
             } catch( runtime_error &e ) {
