@@ -151,7 +151,7 @@ VIRTUAL float *PoolingLayer::getErrorsForUpstream() {
     return errorsForUpstream;
 }
 VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
-//    return previousLayer->getActivationFunction(); // I guess???
+    //return previousLayer->getActivationFunction(); // I guess???
     return new LinearActivation();
 }
 VIRTUAL void PoolingLayer::propagate() {
