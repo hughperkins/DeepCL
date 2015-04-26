@@ -55,6 +55,13 @@ STATIC void WeightRandomizer::randomizeInts( int *values, int numValues, int min
         values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
     }
 }
+STATIC void WeightRandomizer::randomizeInts( unsigned char *values, int numValues, int minvalue, int maxvalue  ) {
+    MT19937 random;
+    random.seed(0); // so always gives same results
+    for( int i = 0; i < numValues; i++ ) {
+        values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
+    }
+}
 STATIC MT19937 WeightRandomizer::randomize( ClConvolve::vfloat &values, float minvalue, float maxvalue ) {
     MT19937 random;
     random.seed(0); // so always gives same results

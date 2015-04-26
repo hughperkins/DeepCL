@@ -95,18 +95,31 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    unsigned char mask[( dropoutPropagate->getResultsSize( batchSize ) + 8 - 1 ) / 8 ];
+    unsigned char mask[] = {
+        0,1,
+        1,0,
+
+        1,1,
+        0,0,
+
+        0,0,
+        0,1,
+
+        1,1,
+        0,1
+    };
     int outputSize = dropoutPropagate->getResultsSize( batchSize );
     float *output = new float[outputSize];
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
-    EXPECT_EQ( output[0], 1 );
+    EXPECT_EQ( output[0], 0 );
     EXPECT_EQ( output[1], 2 );
     EXPECT_EQ( output[2], 5 );
-    EXPECT_EQ( output[12], 0 );
-    EXPECT_EQ( output[13], 0 );
-    EXPECT_EQ( output[14], 37.4f );
+
+    EXPECT_EQ( output[12], -1 );
+    EXPECT_EQ( output[13], -3.5f );
+    EXPECT_EQ( output[14], 0 );
     EXPECT_EQ( output[15], 5 );
 
     delete dropoutPropagate;
@@ -119,18 +132,23 @@ TEST( testdropoutpropagate, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceSpecific( 1, cl, numPlanes, imageSize, 0.6f );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    unsigned char mask[( dropoutPropagate->getResultsSize( batchSize ) + 8 - 1 ) / 8 ];
+    unsigned char mask[] = {
+            1,0,0,1,
+            0,1,1,0,
+            1,0,1,0,
+            0,0,1,1
+    };
     int outputSize = dropoutPropagate->getResultsSize( batchSize );
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *maskWrapper = cl->wrap( ( dropoutPropagate->getResultsSize( batchSize ) + 8 - 1 ) / 8, mask );
+    CLWrapper *maskWrapper = cl->wrap( inputSize, mask );
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
@@ -230,14 +248,15 @@ void compareSpecific( CompareSpecificArgs args ) {
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = dropoutPropagate0->getResultsSize( batchSize );
 
-    unsigned char *mask = new unsigned char[ (inputSize + 8 - 1 )/ 8 ];
+    unsigned char *mask = new unsigned char[ inputSize ];
     float *input = new float[ inputSize ];
     float *output = new float[ outputSize ];
 
-    CLWrapper *maskWrapper = cl->wrap( (inputSize + 8 - 1 )/ 8, mask );
+    CLWrapper *maskWrapper = cl->wrap( inputSize, mask );
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
+    WeightRandomizer::randomizeInts( mask, inputSize, 0, 1 );
     WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
 
     memset( output, 99, sizeof(int) * outputSize );
