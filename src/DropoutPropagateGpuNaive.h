@@ -24,7 +24,7 @@ public:
     // generated, using cog:
     VIRTUAL ~DropoutPropagateGpuNaive();
     VIRTUAL void propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize );
+    DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
 
     // [[[end]]]
 };

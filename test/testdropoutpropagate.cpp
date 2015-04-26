@@ -43,7 +43,7 @@ TEST( testdropoutpropagate, basic ) {
     int numPlanes = 1;
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
                              1,0,1
@@ -60,17 +60,17 @@ TEST( testdropoutpropagate, basic ) {
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
-    EXPECT_EQ( 1, output[0] );
+    EXPECT_EQ( 1 * 5/3, output[0] );
     EXPECT_EQ( 0, output[1] );
     EXPECT_EQ( 0, output[2] );
 
     EXPECT_EQ( 0, output[3] );
     EXPECT_EQ( 0, output[4] );
-    EXPECT_EQ( 4.1f, output[5] );
+    EXPECT_EQ( 4.1f * 5/3, output[5] );
 
-    EXPECT_EQ( 3, output[6] );
+    EXPECT_EQ( 3 * 5/3, output[6] );
     EXPECT_EQ( 0, output[7] );
-    EXPECT_EQ( 14.2f, output[8] );
+    EXPECT_EQ( 14.2f * 5/3, output[8] );
 
     delete dropoutPropagate;
     delete[] output;
@@ -82,7 +82,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -114,13 +114,13 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
     EXPECT_EQ( output[0], 0 );
-    EXPECT_EQ( output[1], 2 );
-    EXPECT_EQ( output[2], 5 );
+    EXPECT_EQ( output[1], 2 * 5/3 );
+    EXPECT_EQ( output[2], 5 * 5/3 );
 
-    EXPECT_EQ( output[12], -1 );
-    EXPECT_EQ( output[13], -3.5f );
-    EXPECT_EQ( output[14], 0 );
-    EXPECT_EQ( output[15], 5 );
+    EXPECT_EQ( output[12], -1 * 5/3 );
+    EXPECT_EQ( output[13], -3.5f * 5/3 );
+    EXPECT_EQ( output[14], 0 * 5/3 );
+    EXPECT_EQ( output[15], 5 * 5/3 );
 
     delete dropoutPropagate;
     delete[] output;
@@ -132,7 +132,7 @@ TEST( testdropoutpropagate, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize );
+    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -159,14 +159,14 @@ TEST( testdropoutpropagate, fromwrappers ) {
 
     outputWrapper->copyToHost();
 
-    EXPECT_EQ( output[0], 1 );
+    EXPECT_EQ( output[0], 1 * 5/3 );
     EXPECT_EQ( output[1], 0 );
     EXPECT_EQ( output[2], 0 );
-    EXPECT_EQ( output[3], 3 );
+    EXPECT_EQ( output[3], 3 * 5/3 );
     EXPECT_EQ( output[12], 0 );
     EXPECT_EQ( output[13], 0 );
-    EXPECT_EQ( output[14], 37.4f );
-    EXPECT_EQ( output[15], 5 );
+    EXPECT_EQ( output[14], 37.4f * 5/3 );
+    EXPECT_EQ( output[15], 5 * 5/3 );
 
     delete maskWrapper;
     delete inputWrapper;
@@ -242,8 +242,8 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    DropoutPropagate *dropoutPropagate0 = DropoutPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize );
-    DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize );
+    DropoutPropagate *dropoutPropagate0 = DropoutPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = dropoutPropagate0->getResultsSize( batchSize );

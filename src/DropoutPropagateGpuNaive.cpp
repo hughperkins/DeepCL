@@ -46,8 +46,8 @@ VIRTUAL void DropoutPropagateGpuNaive::propagate( int batchSize, CLWrapper *mask
 
     StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::propagate end" );
 }
-DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize ) :
-        DropoutPropagate( cl, numPlanes, inputImageSize ) {
+DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+        DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );
     options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );

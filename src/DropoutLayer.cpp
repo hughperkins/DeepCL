@@ -48,8 +48,8 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
 //        maker->net->print();
         throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    dropoutPropagateImpl = DropoutPropagate::instance( cl, numPlanes, inputImageSize );
-    dropoutBackpropImpl = DropoutBackprop::instance( cl, numPlanes, inputImageSize, 0.0f );
+    dropoutPropagateImpl = DropoutPropagate::instance( cl, numPlanes, inputImageSize, dropRatio );
+    dropoutBackpropImpl = DropoutBackprop::instance( cl, numPlanes, inputImageSize, dropRatio );
 }
 VIRTUAL DropoutLayer::~DropoutLayer() {
     delete dropoutPropagateImpl;
