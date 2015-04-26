@@ -55,22 +55,22 @@ TEST( testdropoutpropagate, basic ) {
                      3, -33.1f, 14.2f,
     };
     int resultsSize = dropoutPropagate->getResultsSize( batchSize );
-    EXPECT_EQ( resultsSize, imageSize * imageSize );
+    EXPECT_FLOAT_NEAR( resultsSize, imageSize * imageSize );
     float *output = new float[resultsSize];
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
-    EXPECT_EQ( 1 * 5/3, output[0] );
-    EXPECT_EQ( 0, output[1] );
-    EXPECT_EQ( 0, output[2] );
+    EXPECT_FLOAT_NEAR( 1 * 5.0f/3, output[0] );
+    EXPECT_FLOAT_NEAR( 0, output[1] );
+    EXPECT_FLOAT_NEAR( 0, output[2] );
 
-    EXPECT_EQ( 0, output[3] );
-    EXPECT_EQ( 0, output[4] );
-    EXPECT_EQ( 4.1f * 5/3, output[5] );
+    EXPECT_FLOAT_NEAR( 0, output[3] );
+    EXPECT_FLOAT_NEAR( 0, output[4] );
+    EXPECT_FLOAT_NEAR( 4.1f * 5.0f/3, output[5] );
 
-    EXPECT_EQ( 3 * 5/3, output[6] );
-    EXPECT_EQ( 0, output[7] );
-    EXPECT_EQ( 14.2f * 5/3, output[8] );
+    EXPECT_FLOAT_NEAR( 3 * 5.0f/3, output[6] );
+    EXPECT_FLOAT_NEAR( 0, output[7] );
+    EXPECT_FLOAT_NEAR( 14.2f * 5.0f/3, output[8] );
 
     delete dropoutPropagate;
     delete[] output;
@@ -113,14 +113,14 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
 
     dropoutPropagate->propagate( batchSize, mask, data, output );
 
-    EXPECT_EQ( output[0], 0 );
-    EXPECT_EQ( output[1], 2 * 5/3 );
-    EXPECT_EQ( output[2], 5 * 5/3 );
+    EXPECT_FLOAT_NEAR( output[0], 0 );
+    EXPECT_FLOAT_NEAR( output[1], 2 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[2], 5 * 5.0f/3 );
 
-    EXPECT_EQ( output[12], -1 * 5/3 );
-    EXPECT_EQ( output[13], -3.5f * 5/3 );
-    EXPECT_EQ( output[14], 0 * 5/3 );
-    EXPECT_EQ( output[15], 5 * 5/3 );
+    EXPECT_FLOAT_NEAR( output[12], -1 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[13], -3.5f * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[14], 0 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[15], 5 * 5.0f/3 );
 
     delete dropoutPropagate;
     delete[] output;
@@ -159,14 +159,14 @@ TEST( testdropoutpropagate, fromwrappers ) {
 
     outputWrapper->copyToHost();
 
-    EXPECT_EQ( output[0], 1 * 5/3 );
-    EXPECT_EQ( output[1], 0 );
-    EXPECT_EQ( output[2], 0 );
-    EXPECT_EQ( output[3], 3 * 5/3 );
-    EXPECT_EQ( output[12], 0 );
-    EXPECT_EQ( output[13], 0 );
-    EXPECT_EQ( output[14], 37.4f * 5/3 );
-    EXPECT_EQ( output[15], 5 * 5/3 );
+    EXPECT_FLOAT_NEAR( output[0], 1 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[1], 0 );
+    EXPECT_FLOAT_NEAR( output[2], 0 );
+    EXPECT_FLOAT_NEAR( output[3], 3 * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[12], 0 );
+    EXPECT_FLOAT_NEAR( output[13], 0 );
+    EXPECT_FLOAT_NEAR( output[14], 37.4f * 5.0f/3 );
+    EXPECT_FLOAT_NEAR( output[15], 5 * 5.0f/3 );
 
     delete maskWrapper;
     delete inputWrapper;
@@ -256,7 +256,11 @@ void compareSpecific( CompareSpecificArgs args ) {
     CLWrapper *inputWrapper = cl->wrap( inputSize, input );
     CLWrapper *outputWrapper = cl->wrap( outputSize, output );
 
-    WeightRandomizer::randomizeInts( mask, inputSize, 0, 1 );
+    WeightRandomizer::randomizeInts( mask, inputSize, 0, 2 );
+    for( int i = 0; i < inputSize; i++ ) {
+        cout << (int)mask[i] << " ";
+    }
+    cout << endl;
     WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
 
     memset( output, 99, sizeof(int) * outputSize );
@@ -312,7 +316,7 @@ void compareSpecific( CompareSpecificArgs args ) {
             break;
         }
     }
-    EXPECT_EQ( 0, numErrors );
+    EXPECT_FLOAT_NEAR( 0, numErrors );
     if( numErrors > 0 ) {
         int num2dPlanes = inputSize / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {

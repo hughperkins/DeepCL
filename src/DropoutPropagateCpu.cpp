@@ -46,8 +46,9 @@ VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, unsigned char *masks
 //    cout << "DropoutPropagateCpu::propagate( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+    float inverseDropRatio = 1.0f / dropRatio; // since multiply faster than divide, just divide once
     for( int i = 0; i < totalLinearSize; i++ ) {
-        output[i] = masks[i] == 1 ? input[i] : 0;
+        output[i] = masks[i] == 1 ? input[i] * inverseDropRatio : 0;
     }
     StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate end" );
 //    return output;
