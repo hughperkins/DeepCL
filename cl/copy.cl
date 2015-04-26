@@ -20,10 +20,11 @@ kernel void copy(
 
 #ifdef gMultiplier
 kernel void multiplyConstant(
+        const int N,
         global const float *in,
         global float *out ) {
     const int globalId = get_global_id(0);
-    if( globalId >= gN ) {
+    if( globalId >= N ) {
         return;
     }
     out[globalId] = gMultiplier * in[globalId];
