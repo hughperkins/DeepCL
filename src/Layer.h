@@ -11,7 +11,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "MyRandom.h"
+#include "RandomSingleton.h"
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
 #include "stringhelper.h"

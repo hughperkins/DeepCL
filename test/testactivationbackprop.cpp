@@ -41,11 +41,11 @@ TEST( testactivationbackprop, basic ) {
 
 //    float *expectedErrorsForUpstream = new float[ activationPropagate->getInputSize( batchSize ) ];
 //    memset( expectedErrorsForUpstream, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
-    float expectedErrorsForUpstream[] = {
-        3,0,-2.7f,
-        2,0,2.1f,
-        0,-1.1f,0,
-    };
+//    float expectedErrorsForUpstream[] = {
+//        3,0,-2.7f,
+//        2,0,2.1f,
+//        0,-1.1f,0,
+//    };
     EXPECT_EQ( 3, errorsForUpstream[0] );
     EXPECT_EQ( 0, errorsForUpstream[1] );
     EXPECT_EQ( -2.7f, errorsForUpstream[2] );

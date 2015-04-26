@@ -9,7 +9,7 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "RandomPatches.h"
-#include "MyRandom.h"
+#include "RandomSingleton.h"
 #include "PatchExtractor.h"
 
 using namespace std;
@@ -94,8 +94,8 @@ VIRTUAL void RandomPatches::propagate() {
         int patchRow = patchMargin / 2;
         int patchCol = patchMargin / 2;
         if( training ) {
-            patchRow = MyRandom::instance()->uniformInt( 0, patchMargin );
-            patchCol = MyRandom::instance()->uniformInt( 0, patchMargin );
+            patchRow = RandomSingleton::instance()->uniformInt( 0, patchMargin );
+            patchCol = RandomSingleton::instance()->uniformInt( 0, patchMargin );
         }
         PatchExtractor::extractPatch( n, numPlanes, inputImageSize, patchSize, patchRow, patchCol, upstreamResults, results );
     }

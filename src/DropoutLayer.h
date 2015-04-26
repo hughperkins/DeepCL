@@ -15,7 +15,7 @@ class CLKernel;
 class CLWrapper;
 class DropoutPropagate;
 class DropoutBackprop;
-
+class RandomSingleton;
 class DropoutMaker;
 
 class DropoutLayer : public Layer {
@@ -25,6 +25,8 @@ public:
     const float dropRatio;
 
     const int outputImageSize;
+
+    RandomSingleton *random;
 
     OpenCLHelper *const cl; // NOT owned by us
     DropoutPropagate *dropoutPropagateImpl;
@@ -52,6 +54,7 @@ public:
     DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker *maker );
     VIRTUAL ~DropoutLayer();
     VIRTUAL std::string getClassName() const;
+    VIRTUAL void fortesting_setRandomSingleton( RandomSingleton *random );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getResultsSize();
     VIRTUAL float *getResults();

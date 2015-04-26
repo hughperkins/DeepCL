@@ -11,6 +11,7 @@
 #include "DropoutLayer.h"
 #include "DropoutPropagate.h"
 #include "DropoutBackprop.h"
+#include "RandomSingleton.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -27,6 +28,7 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
         inputImageSize( previousLayer->getOutputImageSize() ),
         dropRatio( maker->_dropRatio ),
         outputImageSize( previousLayer->getOutputImageSize() ),
+        random( RandomSingleton::instance() ),
         cl( cl ),
         results(0),
         errorsForUpstream(0),
@@ -35,7 +37,7 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
         resultsCopiedToHost(false),
         errorsForUpstreamCopiedToHost(false),
         batchSize(0),
-        allocatedSize(0){
+        allocatedSize(0) {
     if( inputImageSize == 0 ){
 //        maker->net->print();
         throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": input image size is 0" );
@@ -65,6 +67,9 @@ VIRTUAL DropoutLayer::~DropoutLayer() {
 }
 VIRTUAL std::string DropoutLayer::getClassName() const {
     return "DropoutLayer";
+}
+VIRTUAL void DropoutLayer::fortesting_setRandomSingleton( RandomSingleton *random ) {
+    this->random = random;
 }
 VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
 //    cout << "DropoutLayer::setBatchSize" << endl;

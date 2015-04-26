@@ -38,7 +38,7 @@ using namespace std;
         ('numTest', 'int', 'num test examples]',-1, True),
         ('batchSize', 'int', 'batch size',128, True),
         ('numEpochs', 'int', 'number epochs',12, True),
-        ('netDef', 'string', 'network definition',"RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N", True),
+        ('netDef', 'string', 'network definition',"rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n", True),
         ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
         ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, True),
         ('loadWeights', 'int', 'load weights from file at startup?', 0, True),
@@ -111,7 +111,7 @@ public:
         numTest = -1;
         batchSize = 128;
         numEpochs = 12;
-        netDef = "RT2-8C5{z}-MP2-16C5{z}-MP3-150N-10N";
+        netDef = "rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n";
         learningRate = 0.002f;
         annealLearningRate = 1.0f;
         loadWeights = 0;

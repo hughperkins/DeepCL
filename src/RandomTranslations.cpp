@@ -9,7 +9,7 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "RandomTranslations.h"
-#include "MyRandom.h"
+#include "RandomSingleton.h"
 #include "Translator.h"
 
 using namespace std;
@@ -94,8 +94,8 @@ VIRTUAL void RandomTranslations::propagate() {
         return;
     }
     for( int n = 0; n < batchSize; n++ ) {
-        const int translateRows = MyRandom::instance()->uniformInt( - translateSize, translateSize );
-        const int translateCols = MyRandom::instance()->uniformInt( - translateSize, translateSize );
+        const int translateRows = RandomSingleton::instance()->uniformInt( - translateSize, translateSize );
+        const int translateCols = RandomSingleton::instance()->uniformInt( - translateSize, translateSize );
         Translator::translate( n, numPlanes, inputImageSize, translateRows, translateCols, upstreamResults, results );
     }
 }
