@@ -17,8 +17,9 @@ kernel void updateWeights(
         return;
     }
     // first update the update
-    lastUpdate[globalId] = learningRate * currentGradients[globalId]
-        + momentum + lastUpdate[globalId];
+    lastUpdate[globalId] = 
+        learningRate * currentGradients[globalId] +
+        momentum * lastUpdate[globalId];
     // now update the weight
     weights[globalid] += lastUpdate[globalId];
     // thats it... :-)

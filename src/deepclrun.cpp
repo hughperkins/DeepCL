@@ -39,8 +39,6 @@ using namespace std;
         ('batchSize', 'int', 'batch size',128, True),
         ('numEpochs', 'int', 'number epochs',12, True),
         ('netDef', 'string', 'network definition',"rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n", True),
-        ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
-        ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, True),
         ('loadWeights', 'int', 'load weights from file at startup?', 0, True),
         ('weightsFile', 'string', 'file to write weights to','weights.dat', True),
         ('writeWeightsInterval', 'float', 'write weights every this many minutes', 0, True),
@@ -50,7 +48,11 @@ using namespace std;
         ('multiNet', 'int', 'number of Mcdnn columns to train', 1, True),
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50, True),
-        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True)
+        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
+        ('trainer', 'string', 'which trainer, currently must be sgd, no other options', 'sgd', False ),
+        ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
+        ('momentum', 'float', 'momentum', 0.0, False),
+        ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, False)
     ]
 *///]]]
 // [[[end]]]
@@ -72,8 +74,6 @@ public:
     int batchSize;
     int numEpochs;
     string netDef;
-    float learningRate;
-    float annealLearningRate;
     int loadWeights;
     string weightsFile;
     float writeWeightsInterval;
@@ -84,6 +84,10 @@ public:
     int loadOnDemand;
     int fileReadBatches;
     int normalizationExamples;
+    string trainer;
+    float learningRate;
+    float momentum;
+    float annealLearningRate;
     // [[[end]]]
 
     Config() {
@@ -112,8 +116,6 @@ public:
         batchSize = 128;
         numEpochs = 12;
         netDef = "rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n";
-        learningRate = 0.002f;
-        annealLearningRate = 1.0f;
         loadWeights = 0;
         weightsFile = "weights.dat";
         writeWeightsInterval = 0.0f;
@@ -124,6 +126,10 @@ public:
         loadOnDemand = 0;
         fileReadBatches = 50;
         normalizationExamples = 10000;
+        trainer = "sgd";
+        learningRate = 0.002f;
+        momentum = 0.0f;
+        annealLearningRate = 1.0f;
         // [[[end]]]
     }
     string getTrainingString() {
@@ -372,8 +378,6 @@ void printUsage( char *argv[], Config config ) {
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    numepochs=[number epochs] (" << config.numEpochs << ")" << endl;
     cout << "    netdef=[network definition] (" << config.netDef << ")" << endl;
-    cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
-    cout << "    anneallearningrate=[multiply learning rate by this, each epoch] (" << config.annealLearningRate << ")" << endl;
     cout << "    loadweights=[load weights from file at startup?] (" << config.loadWeights << ")" << endl;
     cout << "    weightsfile=[file to write weights to] (" << config.weightsFile << ")" << endl;
     cout << "    writeweightsinterval=[write weights every this many minutes] (" << config.writeWeightsInterval << ")" << endl;
@@ -384,6 +388,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
+    cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     // [[[end]]]
 }
 
@@ -433,10 +438,6 @@ int main( int argc, char *argv[] ) {
                 config.numEpochs = atoi(value);
             } else if( key == "netdef" ) {
                 config.netDef = (value);
-            } else if( key == "learningrate" ) {
-                config.learningRate = atof(value);
-            } else if( key == "anneallearningrate" ) {
-                config.annealLearningRate = atof(value);
             } else if( key == "loadweights" ) {
                 config.loadWeights = atoi(value);
             } else if( key == "weightsfile" ) {
@@ -457,6 +458,14 @@ int main( int argc, char *argv[] ) {
                 config.fileReadBatches = atoi(value);
             } else if( key == "normalizationexamples" ) {
                 config.normalizationExamples = atoi(value);
+            } else if( key == "trainer" ) {
+                config.trainer = (value);
+            } else if( key == "learningrate" ) {
+                config.learningRate = atof(value);
+            } else if( key == "momentum" ) {
+                config.momentum = atof(value);
+            } else if( key == "anneallearningrate" ) {
+                config.annealLearningRate = atof(value);
             // [[[end]]]
             } else {
                 cout << endl;
