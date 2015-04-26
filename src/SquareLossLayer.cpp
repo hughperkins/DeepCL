@@ -32,7 +32,7 @@ VIRTUAL float*SquareLossLayer::getGradInput() {
     return errors;
 }
 //VIRTUAL float*SquareLossLayer::getDerivLossBySumForUpstream() {
-//    return derivLossBySum;
+//    return gradOutput;
 //}
 VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
     float loss = 0;

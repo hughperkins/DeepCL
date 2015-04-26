@@ -24,7 +24,7 @@ public:
     bool debug; // = false;
 
     virtual ~BackpropWeights2() {}
-    virtual void backpropWeights( int batchSize, float learningRate, CLWrapper *derivLossBySumWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;
+    virtual void backpropWeights( int batchSize, float learningRate, CLWrapper *gradOutputWrapper, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) = 0;
 
     // [[[cog
     // import cog_addheaders
