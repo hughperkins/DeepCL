@@ -101,7 +101,7 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL ActivationFunction const*getActivationFunction();
     VIRTUAL float *getGradInput();
-    VIRTUAL bool providesgradInputWrapper() const;
+    VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();

@@ -113,7 +113,7 @@ VIRTUAL float *ConvolutionalLayer::getGradInput() {
     }
     return gradInput;
 }
-VIRTUAL bool ConvolutionalLayer::providesgradInputWrapper() const {
+VIRTUAL bool ConvolutionalLayer::providesGradInputWrapper() const {
     return true;
 }
 VIRTUAL CLWrapper *ConvolutionalLayer::getGradInputWrapper() {
