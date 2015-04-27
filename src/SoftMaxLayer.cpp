@@ -203,7 +203,7 @@ VIRTUAL int SoftMaxLayer::getPersistSize() const {
 }
 VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
-//    float *outputFromUpstream = previousLayer->getOutput(); // just retrieve as host-side array for now
+//    float *input = previousLayer->getOutput(); // just retrieve as host-side array for now
     int numRight = 0;
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
@@ -253,21 +253,21 @@ VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
 VIRTUAL void SoftMaxLayer::propagate() {
 //    cout << "softmaxlayer::propagate" << endl;
     StatefulTimer::timeCheck("start SoftMaxLayer propagate");
-    float *outputFromUpstream = previousLayer->getOutput(); // just retrieve as host-side array for now
+    float *input = previousLayer->getOutput(); // just retrieve as host-side array for now
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
-                float maxValue = outputFromUpstream[imageOffset + 0];
+                float maxValue = input[imageOffset + 0];
                 for( int i = 1; i < imageSizeSquared; i++ ) {
-                    maxValue = std::max( maxValue, outputFromUpstream[imageOffset + i] );
+                    maxValue = std::max( maxValue, input[imageOffset + i] );
                 }
                 float denominator = 0;
                 for( int i = 0; i < imageSizeSquared; i++ ) {
-                    denominator += exp( outputFromUpstream[imageOffset + i] - maxValue );
+                    denominator += exp( input[imageOffset + i] - maxValue );
                 }
                 for( int i = 0; i < imageSizeSquared; i++ ) {
-                    output[imageOffset + i] = exp( outputFromUpstream[imageOffset + i] - maxValue ) / denominator;
+                    output[imageOffset + i] = exp( input[imageOffset + i] - maxValue ) / denominator;
                 }
             }
         }
@@ -279,18 +279,18 @@ VIRTUAL void SoftMaxLayer::propagate() {
         for( int n = 0; n < batchSize; n++ ) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             // first get the max
-            float maxValue = outputFromUpstream[imageOffset + 0]; // since we assume imagesize 1, this is correct
+            float maxValue = input[imageOffset + 0]; // since we assume imagesize 1, this is correct
             for( int plane = 1; plane < numPlanes; plane++ ) {
-                maxValue = std::max( maxValue, outputFromUpstream[imageOffset + plane] );
+                maxValue = std::max( maxValue, input[imageOffset + plane] );
             }
             // calculate sum, under this max
             float denominator = 0;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                denominator += exp( outputFromUpstream[imageOffset + plane] - maxValue );
+                denominator += exp( input[imageOffset + plane] - maxValue );
             }
             // now calc the softmaxes:
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                output[imageOffset + plane] = exp( outputFromUpstream[imageOffset + plane] - maxValue ) / denominator;
+                output[imageOffset + plane] = exp( input[imageOffset + plane] - maxValue ) / denominator;
             }
         }
     }
