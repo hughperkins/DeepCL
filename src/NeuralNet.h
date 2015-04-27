@@ -53,6 +53,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    NeuralNet( int gpu );
     NeuralNet();
     NeuralNet( int numPlanes, int imageSize );
     ~NeuralNet();

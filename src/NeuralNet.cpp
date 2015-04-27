@@ -34,6 +34,12 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
+NeuralNet::NeuralNet( int gpu ) :
+    isTraining( true ) {
+
+    cl = OpenCLHelper::createForIndexedGpu( gpu );
+}
+
 NeuralNet::NeuralNet() :
     isTraining( true ) {
 //    cout << "NeuralNet()" << endl;
