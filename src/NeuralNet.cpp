@@ -38,6 +38,11 @@ PUBLICAPI NeuralNet::NeuralNet() :
     isTraining( true ) {
     cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 }
+NeuralNet::NeuralNet( int gpu ) :
+    isTraining( true ) {
+
+    cl = OpenCLHelper::createForIndexedGpu( gpu );
+}
 /// Constructor
 PUBLICAPI NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
 //    cout << "NeuralNet( " << numPlanes << ", " << imageSize << " )" << endl;

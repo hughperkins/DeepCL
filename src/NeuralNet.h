@@ -58,6 +58,7 @@ public:
     // ]]]
     // generated, using cog:
     PUBLICAPI NeuralNet();
+    NeuralNet( int gpu );
     PUBLICAPI NeuralNet( int numPlanes, int imageSize );
     ~NeuralNet();
     NeuralNet *clone();

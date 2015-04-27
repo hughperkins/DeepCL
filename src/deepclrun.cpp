@@ -30,6 +30,7 @@ using namespace std;
     # format:
     # ( name, type, description, default, ispublicapi )
     options = [
+        ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1, True),
         ('dataDir', 'string', 'directory to search for train and validate files', '../data/mnist', True),
         ('trainFile', 'string', 'path to training data file',"train-images-idx3-ubyte", True),
         ('dataset', 'string', 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]','', True),
@@ -63,6 +64,7 @@ public:
             cog.outl( type + ' ' + name + ';')
     */// ]]]
     // generated using cog:
+    int gpuIndex;
     string dataDir;
     string trainFile;
     string dataset;
@@ -103,6 +105,7 @@ public:
                 cog.outl( name + ' = ' + defaultString + ';')
         */// ]]]
         // generated using cog:
+        gpuIndex = -1;
         dataDir = "../data/mnist";
         trainFile = "train-images-idx3-ubyte";
         dataset = "";
@@ -125,6 +128,7 @@ public:
         fileReadBatches = 50;
         normalizationExamples = 10000;
         // [[[end]]]
+
     }
     string getTrainingString() {
         string configString = "";
@@ -232,7 +236,12 @@ void go(Config config) {
 
 //    const int numToTrain = Ntrain;
 //    const int batchSize = config.batchSize;
-    NeuralNet *net = new NeuralNet();
+    NeuralNet *net;
+    if( config.gpuIndex >= 0 ) {
+        net = new NeuralNet(config.gpuIndex);
+    } else {
+        net = new NeuralNet();
+    }
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
@@ -363,6 +372,7 @@ void printUsage( char *argv[], Config config ) {
                 cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
     *///]]]
     // generated using cog:
+    cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
     cout << "    datadir=[directory to search for train and validate files] (" << config.dataDir << ")" << endl;
     cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
     cout << "    dataset=[choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]] (" << config.dataset << ")" << endl;
@@ -415,6 +425,8 @@ int main( int argc, char *argv[] ) {
             */// ]]]
             // generated using cog:
             if( false ) {
+            } else if( key == "gpuindex" ) {
+                config.gpuIndex = atoi(value);
             } else if( key == "datadir" ) {
                 config.dataDir = (value);
             } else if( key == "trainfile" ) {

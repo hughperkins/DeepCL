@@ -1,5 +1,9 @@
 # What's done / what's planned
 
+## Changes in next 4.x.x
+
+* There are some changes and deprecations in the future 4.x.x   Please go to [Changes in 4.x.x](https://github.com/hughperkins/DeepCL/blob/4.x.x-snapshot/doc/Changes.md) to check these, and raise an issues for any changes or deprecations you're not 100% comfortable with.
+
 ## To do
 
 * To do basically moved to 'issues' now.  Please check in [issues](https://github.com/hughperkins/DeepCL/issues) for ideas for
