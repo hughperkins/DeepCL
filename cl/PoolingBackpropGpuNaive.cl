@@ -11,7 +11,7 @@
 // wont use workgroups (since 'naive')
 // one thread per: [n][plane][outrow][outcol]
 // globalId: [n][plane][outrow][outcol]
-kernel void backprop_gradOutput( const int batchSize, 
+kernel void backward( const int batchSize, 
     global const float *gradOutput, global const int *selectors, global float *gradInput ) {
 
     #define globalId get_global_id(0)

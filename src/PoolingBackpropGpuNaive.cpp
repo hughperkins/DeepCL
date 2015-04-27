@@ -62,7 +62,7 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/PoolingBackpropGpuNaive.cl", "backprop_errors", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/PoolingBackpropGpuNaive.cl", "backward", 'options' )
     // stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
     // ]]]
     // generated using cog, from cl/PoolingBackpropGpuNaive.cl:
@@ -80,7 +80,7 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "// wont use workgroups (since 'naive')\n" 
     "// one thread per: [n][plane][outrow][outcol]\n" 
     "// globalId: [n][plane][outrow][outcol]\n" 
-    "kernel void backprop_gradOutput( const int batchSize,\n" 
+    "kernel void backward( const int batchSize,\n" 
     "    global const float *gradOutput, global const int *selectors, global float *gradInput ) {\n" 
     "\n" 
     "    #define globalId get_global_id(0)\n" 
@@ -116,7 +116,7 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "backprop_errors", options, "cl/PoolingBackpropGpuNaive.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "backward", options, "cl/PoolingBackpropGpuNaive.cl" );
     // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
