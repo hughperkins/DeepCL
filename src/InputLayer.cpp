@@ -30,9 +30,6 @@ VIRTUAL std::string InputLayer::getClassName() const {
 VIRTUAL float *InputLayer::getOutput() {
     return output;
 }
-VIRTUAL ActivationFunction const *InputLayer::getActivationFunction() {
-    return new LinearActivation();
-}
 VIRTUAL bool InputLayer::needsBackProp() {
     return false;
 }
@@ -50,7 +47,7 @@ VIRTUAL void InputLayer::printOutput() const {
             for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
                 std::cout << "      ";
                 for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
-                    std::cout << getResult( n, plane, i, j ) << " ";
+                    std::cout << getOutput( n, plane, i, j ) << " ";
 //output[
 //                            n * numPlanes * imageSize*imageSize +
 //                            plane*imageSize*imageSize +

@@ -215,7 +215,7 @@ TEST( testbackward, softmaxloss ) {
 
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
-    normalizeAsProbabilityDistribution( input, inputTotalSize );
+//    normalizeAsProbabilityDistribution( input, inputTotalSize );
     normalizeAsProbabilityDistribution( expectedOutput, outputTotalSize );
         
     // now, forward prop
@@ -262,6 +262,107 @@ TEST( testbackward, softmaxloss ) {
     delete net;
 }
 
+void checkLayer( NeuralNet *net, int targetLayerIndex ) {
+    // here's the plan:
+    // generate some input, randomly
+    // generate some expected output, randomly
+    // forward forward
+    // calculate loss
+    // calculate gradInput
+    // change some of the inputs, forward prop, recalculate loss, check corresponds
+    // to the gradient
+    cout << net->asString() << endl;
+
+    int batchSize = dynamic_cast< InputLayer *>(net->getLayer(0))->batchSize;
+
+    int inputCubeSize = net->getInputCubeSize();
+    int outputCubeSize = net->getOutputCubeSize();
+
+    int inputTotalSize = inputCubeSize * batchSize;
+    int outputTotalSize = outputCubeSize * batchSize;
+
+    cout << "inputtotalsize=" << inputTotalSize << " outputTotalSize=" << outputTotalSize << endl;
+
+    float *input = new float[inputTotalSize];
+    float *expectedOutput = new float[outputTotalSize];
+
+    WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
+
+    // we should make the input and output a probability distribution I think
+    // so: add up the input, and divide each by that.  do same for expectedoutput (?)
+//    normalizeAsProbabilityDistribution( input, inputTotalSize );
+    normalizeAsProbabilityDistribution( expectedOutput, outputTotalSize );
+        
+    // now, forward prop
+//    net->input( input );
+    net->forward( input );
+    net->print();
+//    net->printOutput();
+
+    // calculate loss
+    float lossBefore = net->calcLoss( expectedOutput );
+
+    // calculate gradInput
+    net->backward( 1.0f, expectedOutput);
+
+    // modify input slightly
+    mt19937 random;
+    const int numSamples = 10;
+    for( int i = 0; i < numSamples; i++ ) {
+        int inputIndex;
+        WeightRandomizer::randomizeInts( i, &inputIndex, 1, 0, inputTotalSize );
+//        cout << "i=" << i << " index " << inputIndex << endl;
+        float oldValue = input[inputIndex];
+        // grad for this index is....
+        float grad = net->getLayer(2)->getGradInput()[inputIndex];
+//        cout << "grad=" << grad << endl;
+        // tweak slightly
+        float newValue = oldValue * 1.001f;
+        float inputDelta = newValue - oldValue;
+        float predictedLossChange = inputDelta * grad;
+        input[inputIndex] = newValue;
+//        cout << "oldvalue=" << oldValue << " newvalue=" << newValue << endl;
+        // forwardProp
+        net->forward( input );
+        input[inputIndex] = oldValue;
+//        net->printOutput();
+        float lossAfter = net->calcLoss( expectedOutput );
+        float lossChange = lossAfter - lossBefore;
+        cout << "idx=" << inputIndex << " predicted losschange=" << predictedLossChange << " actual=" << lossChange << endl;
+    }
+
+    delete[] expectedOutput;
+    delete[] input;
+}
+
+TEST( testbackward, softmax2 ) {
+    NeuralNet *net = new NeuralNet( 5, 1 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( SoftMaxMaker::instance() );
+    cout << net->asString() << endl;
+
+    int batchSize = 32;
+    net->setBatchSize(batchSize);
+
+    checkLayer( net, 2 );
+    delete net;
+}
+
+TEST( testbackward, conv8c5 ) {
+    NeuralNet *net = new NeuralNet( 1, 3 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased(0)->padZeros(0) );
+    net->addLayer( SoftMaxMaker::instance() );
+    cout << net->asString() << endl;
+
+    int batchSize = 1;
+    net->setBatchSize(batchSize);
+
+    checkLayer( net, 2 );
+    delete net;
+}
+
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
@@ -270,11 +371,11 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     net->addLayer( ActivationMaker::instance()->fn(fn) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
     net->addLayer( ActivationMaker::instance()->fn(fn) );
-    net->addLayer( SquareLossMaker::instance() );;
+    net->addLayer( SquareLossMaker::instance() );
     net->setBatchSize( batchSize );
 
     int inputSize = net->getLayer(0)->getOutputSize();
-    int outputSize = net->getLayer(3)->getOutputSize();
+    int outputSize = net->getLastLayer()->getOutputSize();
     int weightsSize1 = net->getLayer(1)->getWeightsSize();
     int weightsSize2 = net->getLayer(3)->getWeightsSize();
 
