@@ -106,9 +106,94 @@ TEST( testbackward, crossentropyloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 1, 2 );
+    NeuralNet *net = new NeuralNet( 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
+    cout << net->asString() << endl;
+
+    int batchSize = 4;
+    net->setBatchSize(batchSize);
+
+    int inputCubeSize = net->getInputCubeSize();
+    int outputCubeSize = net->getOutputCubeSize();
+
+    int inputTotalSize = inputCubeSize * batchSize;
+    int outputTotalSize = outputCubeSize * batchSize;
+
+    cout << "inputtotalsize=" << inputTotalSize << " outputTotalSize=" << outputTotalSize << endl;
+
+    float *input = new float[inputTotalSize];
+    float *expectedOutput = new float[outputTotalSize];
+
+    WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
+    
+    // now, forward prop
+//    net->input( input );
+    net->forward( input );
+    net->print();
+//    net->printOutput();
+
+    // calculate loss
+    float lossBefore = net->calcLoss( expectedOutput );
+
+    // calculate gradInput
+    net->backward( 1.0f, expectedOutput);
+
+    // modify input slightly
+    mt19937 random;
+    const int numSamples = 10;
+    for( int i = 0; i < numSamples; i++ ) {
+        int inputIndex;
+        WeightRandomizer::randomizeInts( i, &inputIndex, 1, 0, inputTotalSize );
+//        cout << "i=" << i << " index " << inputIndex << endl;
+        float oldValue = input[inputIndex];
+        // grad for this index is....
+        float grad = net->getLayer(2)->getGradInput()[inputIndex];
+//        cout << "grad=" << grad << endl;
+        // tweak slightly
+        float newValue = oldValue * 1.001f;
+        float inputDelta = newValue - oldValue;
+        float predictedLossChange = inputDelta * grad;
+        input[inputIndex] = newValue;
+//        cout << "oldvalue=" << oldValue << " newvalue=" << newValue << endl;
+        // forwardProp
+        net->forward( input );
+        input[inputIndex] = oldValue;
+//        net->printOutput();
+        float lossAfter = net->calcLoss( expectedOutput );
+        float lossChange = lossAfter - lossBefore;
+        cout << "idx=" << inputIndex << " predicted losschange=" << predictedLossChange << " actual=" << lossChange << endl;
+    }
+
+    delete[] expectedOutput;
+    delete[] input;
+
+    delete net;
+}
+
+void normalizeAsProbabilityDistribution( float *values, int N ) {
+    float total = 0;
+    for( int i = 0; i < N; i++ ) {
+        total += values[i];
+    }
+    for( int i = 0; i < N; i++ ) {
+        values[i] /= total;
+    }
+}
+
+TEST( testbackward, softmaxloss ) {
+    // here's the plan:
+    // generate some input, randomly
+    // generate some expected output, randomly
+    // forward forward
+    // calculate loss
+    // calculate gradInput
+    // change some of the inputs, forward prop, recalculate loss, check corresponds
+    // to the gradient
+    NeuralNet *net = new NeuralNet( 5, 1 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
 
     int batchSize = 1;
@@ -127,7 +212,12 @@ TEST( testbackward, crossentropyloss ) {
 
     WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
-    
+
+    // we should make the input and output a probability distribution I think
+    // so: add up the input, and divide each by that.  do same for expectedoutput (?)
+    normalizeAsProbabilityDistribution( input, inputTotalSize );
+    normalizeAsProbabilityDistribution( expectedOutput, outputTotalSize );
+        
     // now, forward prop
 //    net->input( input );
     net->forward( input );
