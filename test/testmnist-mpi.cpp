@@ -200,7 +200,7 @@ void go(Config config) {
             StatefulTimer::timeCheck("copyNetWeightsToArray END");
             #endif
             net->forward( &(imagesFloat[nodeBatchStart][0][0]) );
-            net->backPropFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
+            net->backwardFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
             trainTotalNumber += thisNodeBatchSize;
             trainNumRight += net->calcNumRight( &(labels[nodeBatchStart]) );
             loss += net->calcLossFromLabels( &(labels[nodeBatchStart]) );

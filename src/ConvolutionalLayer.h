@@ -126,7 +126,7 @@ public:
     VIRTUAL void initBiasWeights( float const*biasWeights );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL void backProp( float learningRate );
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainer() const;
     VIRTUAL void setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer );

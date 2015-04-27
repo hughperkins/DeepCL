@@ -92,7 +92,7 @@ void QLearner::learnFromPast() {
         }
     }
     // backprop...
-    net->backProp( learningRate / batchSize, expectedValues );
+    net->backward( learningRate / batchSize, expectedValues );
     net->setBatchSize(1);
 
     delete[] expectedValues;

@@ -56,7 +56,7 @@ TEST( testbackward, squareLoss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backProp( 1.0f, expectedOutput);
+    net->backward( 1.0f, expectedOutput);
 
     delete[] input;
 
@@ -107,7 +107,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     //    net->print();
         float loss = net->calcLoss(expectedOutput);
         dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
-        net->backProp( learningRate, expectedOutput );
+        net->backward( learningRate, expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {

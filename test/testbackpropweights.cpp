@@ -70,7 +70,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 
 //    cout << "backprop now" <<endl;
     net->print();
-    net->backProp( learningRate, expectedOutput );
+    net->backward( learningRate, expectedOutput );
 //    net->getLayer(1)->print();
     net->forward( inputData );
     net->print();

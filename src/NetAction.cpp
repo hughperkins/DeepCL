@@ -26,7 +26,7 @@ void NetPropagateAction::run( Trainable *net, float const*const batchData, int c
 
 void NetBackpropAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
-    net->backPropFromLabels( learningRate, batchLabels );
+    net->backwardFromLabels( learningRate, batchLabels );
 }
 
 

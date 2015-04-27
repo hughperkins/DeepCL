@@ -197,22 +197,22 @@ PUBLICAPI void NeuralNet::forward( float const*images) {
         StatefulTimer::setPrefix("" );
     }
 }
-PUBLICAPI void NeuralNet::backPropFromLabels( float learningRate, int const *labels) {
+PUBLICAPI void NeuralNet::backwardFromLabels( float learningRate, int const *labels) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
     if( acceptsLabels == 0 ) {
-        throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backPropFromLabels");
+        throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backwardFromLabels");
     }
     acceptsLabels->calcGradInputFromLabels( labels );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         Layer *layer = layers[layerIdx];
         if( layer->needsBackProp() ) {
-            layer->backProp( learningRate );
+            layer->backward( learningRate );
         }
         StatefulTimer::setPrefix("" );
     }
 }
-PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedOutput) {
+PUBLICAPI void NeuralNet::backward( float learningRate, float const *expectedOutput) {
     LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
     if( lossLayer == 0 ) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
@@ -220,7 +220,7 @@ PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedOut
     lossLayer->calcGradInput( expectedOutput );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
-        layers[layerIdx]->backProp( learningRate );
+        layers[layerIdx]->backward( learningRate );
         StatefulTimer::setPrefix("" );
     }
 }

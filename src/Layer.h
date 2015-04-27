@@ -77,7 +77,7 @@ public:
     VIRTUAL void printBiasWeightsAsCode() const;
     VIRTUAL void printWeights();
     VIRTUAL void printOutput() const;
-    PUBLICAPI VIRTUAL void backProp( float learningRate );
+    PUBLICAPI VIRTUAL void backward( float learningRate );
     PUBLICAPI VIRTUAL int getWeightsSize() const;
     PUBLICAPI VIRTUAL int getBiasWeightsSize() const;
     PUBLICAPI VIRTUAL void persistToArray(float *array);

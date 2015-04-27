@@ -179,7 +179,7 @@ VIRTUAL void PoolingLayer::forward() {
 //    cout << "PoolingLayer::forward() selectorsWrapper after forward: " << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 }
-VIRTUAL void PoolingLayer::backProp( float learningRate ) {
+VIRTUAL void PoolingLayer::backward( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
     CLWrapper *gradOutputWrapper = 0;
@@ -192,11 +192,11 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
         weOwnErrorsWrapper = true;
     }
 
-//    cout << "PoolingLayer::backProp selectorsWrapper:" << endl;
+//    cout << "PoolingLayer::backward selectorsWrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
 //    int *selectors = reinterpret_cast< int * >( selectorsWrapper->getHostArray() );
-//    cout << "PoolingLayer::backProp selectors before copy to host:" << endl;
+//    cout << "PoolingLayer::backward selectors before copy to host:" << endl;
 //    for( int i = 0; i < outputImageSize; i++ ) {
 //        for( int j = 0; j < outputImageSize; j++ ) {
 //            cout << " " << selectors[i * outputImageSize + j];
@@ -204,7 +204,7 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 //        cout << endl;
 //    }
 //    selectorsWrapper->copyToHost();
-//    cout << "PoolingLayer::backProp selectors after copy to host:" << endl;
+//    cout << "PoolingLayer::backward selectors after copy to host:" << endl;
 //    for( int i = 0; i < outputImageSize; i++ ) {
 //        for( int j = 0; j < outputImageSize; j++ ) {
 //            cout << " " << selectors[i * outputImageSize + j];

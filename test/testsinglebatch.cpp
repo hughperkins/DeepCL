@@ -145,7 +145,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
         net->forward( inputData );
-        net->backProp( learningRate, expectedOutput );
+        net->backward( learningRate, expectedOutput );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
@@ -342,7 +342,7 @@ void testLabelled( TestArgs args ) {
     for( int i = 0; i < args.numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
         net->forward( inputData );
-        net->backPropFromLabels( args.learningRate, labels );
+        net->backwardFromLabels( args.learningRate, labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         for( int layer = 1; layer < (int)net->getNumLayers(); layer++ ) {
             checkErrorsForLayer( layer, lastloss, net, lastWeights, currentWeights, args.learningRate, inputData, labels );
@@ -513,7 +513,7 @@ cout << endl;
 ConvolutionalLayer *layer2 = dynamic_cast<ConvolutionalLayer*>( net->layers[2] );
 int layer2OutputSize = layer2->getOutputSize();
 layer3->nextLayer = expectedValuesLayer;
-layer3->backProp( learningRate );
+layer3->backward( learningRate );
 float *layer2errors = layer3->getDerivLossBySumForUpstream();
 Sampler::printSamples( "layer2errors", layer2OutputSize, layer2errors );
 
@@ -532,7 +532,7 @@ cout << endl;
 ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer*>( net->layers[1] );
 int layer1OutputSize = layer1->getOutputSize();
 layer2->nextLayer = layer3;
-layer2->backProp( learningRate );
+layer2->backward( learningRate );
 float *layer1errors = layer2->getDerivLossBySumForUpstream();
 Sampler::printSamples( "layer1errors", layer1OutputSize, layer1errors );
 
@@ -543,10 +543,10 @@ EXPECT_FLOAT_NEAR( 0.0170709, layer1errors[2270837] );
 cout << endl;
 
 layer1->nextLayer = layer2;
-layer1->backProp( learningRate );
+layer1->backward( learningRate );
 
 //net->layers.push_back( expectedValuesLayer );
-    net->backProp( learningRate, expectedOutput );
+    net->backward( learningRate, expectedOutput );
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
         weights = layer->weights;
@@ -605,7 +605,7 @@ EXPECT_FLOAT_NEAR( -0.775789, net->getOutput()[373] );
 
 //net->layers[1]->getOutput();
 
-net->backProp( learningRate, expectedOutput );
+net->backward( learningRate, expectedOutput );
 
     for (int layerIndex = 3; layerIndex >= 1; layerIndex-- ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );

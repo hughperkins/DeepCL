@@ -361,7 +361,7 @@ VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
 // biasweights: [outPlane]
 //       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
 
-VIRTUAL void ConvolutionalLayer::backProp( float learningRate ) {
+VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
 //        Timer timer;
     StatefulTimer::instance()->timeCheck("backprop(): start, layer " + toString( layerIndex ) );
 

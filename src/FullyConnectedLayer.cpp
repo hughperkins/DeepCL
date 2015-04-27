@@ -91,8 +91,8 @@ VIRTUAL bool FullyConnectedLayer::needsBackProp() {
 VIRTUAL void FullyConnectedLayer::forward() {
     convolutionalLayer->forward();
 }
-VIRTUAL void FullyConnectedLayer::backProp( float learningRate ) {
-    convolutionalLayer->backProp( learningRate );
+VIRTUAL void FullyConnectedLayer::backward( float learningRate ) {
+    convolutionalLayer->backward( learningRate );
 }
 VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
     return false; // not handle fc layer for now, conv only for now

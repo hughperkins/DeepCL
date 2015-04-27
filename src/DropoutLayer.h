@@ -73,7 +73,7 @@ public:
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void generateMasks();
     VIRTUAL void forward();
-    VIRTUAL void backProp( float learningRate );
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

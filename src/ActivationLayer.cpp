@@ -148,7 +148,7 @@ VIRTUAL void ActivationLayer::forward() {
         delete inputWrapper;
     }
 }
-VIRTUAL void ActivationLayer::backProp( float learningRate ) {
+VIRTUAL void ActivationLayer::backward( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
     CLWrapper *imagesWrapper = 0;

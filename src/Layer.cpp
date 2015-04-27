@@ -125,8 +125,8 @@ VIRTUAL void Layer::printWeights() {
 VIRTUAL void Layer::printOutput() const {
     std::cout << "printOutpu() not implemented for this layer type" << std:: endl; 
 }
-PUBLICAPI VIRTUAL void Layer::backProp( float learningRate ) {
-    throw std::runtime_error("backProp not implemented for this layertype, layerindex " + toString(layerIndex ) );
+PUBLICAPI VIRTUAL void Layer::backward( float learningRate ) {
+    throw std::runtime_error("backward not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
 PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
     throw std::runtime_error("getWeightsSize not implemented for this layertype");

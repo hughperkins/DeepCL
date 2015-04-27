@@ -19,11 +19,11 @@ using namespace std;
 void Trainable::learnBatch( float learningRate, float const*images, float const *expectedOutput ) {
     setTraining( true );
     forward( images);
-    backProp( learningRate, expectedOutput );
+    backward( learningRate, expectedOutput );
 }
 void Trainable::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
     setTraining( true );
     forward( images);
-    backPropFromLabels( learningRate, labels );
+    backwardFromLabels( learningRate, labels );
 }
 
