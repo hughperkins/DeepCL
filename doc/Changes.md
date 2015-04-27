@@ -30,6 +30,12 @@ and fc layers
   * true for netdef syntax
   * true also for c++ Maker classes
   * will be true also for Python, Lua (not sure if it is true at the moment or not, would need to test)
+* internal C++ name changes, in line with torch nomenclature, which seems simple, concise, easy to understand:
+  * errors -> gradOutput
+  * errorsForUpstream -> gradInput
+  * resultsFromUpstream -> input
+  * results -> output
+  * dLossDOutput -> gradOutput
 
 ## Deprecated, in next version, 4.x.x
 
@@ -41,8 +47,7 @@ and fc layers
   * again, more compatible with writing wrappers for scripting languages, since inter-language callbacks tend to be hard work to implement
 * idx-to-mat removed; since GenericLoader can directly handle reading mnist format now
 * clconvolve1 executable removed (replaced by deeplclrun)
-* activation layers within convolutional and fc layers will either be removed, or marked as
-deprecated
+* activation layers within convolutional and fc layers removed
 
 ## Recent changes, to 4.x.x branch
 
