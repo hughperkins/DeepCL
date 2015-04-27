@@ -314,13 +314,6 @@ TEST( testpropagate, imagesize3 ) {
 
 TEST( testpropagate, test2 ) {
     int batchSize = 2;
-
-//    int numOutPlanes = 2;
-//    int numInPlanes = 1;
-//    int imageSize = 3;
-//    int filterWidth = 3;
-//    int padZeros = 0;
-   
     LayerDimensions dim;
     dim.setNumFilters(2).setNumInputPlanes(1).setInputImageSize(3).setFilterSize(3)
         .setPadZeros(false).setBiased(false);
@@ -332,9 +325,7 @@ TEST( testpropagate, test2 ) {
                         0, 0, 0,
                        0.5f, -0.5f, 0,
                        0, 0, 0
-
 };
-
     float filter1[] = { 0, 0, 0,
                           0.300809f, -0.11011f, 0,
                          0, 0, 0,
@@ -342,55 +333,21 @@ TEST( testpropagate, test2 ) {
                         0, 0, 0,
                           0.0570846f, 0.347077f, 0,
                          0,0,0
-
  };
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-//    float *output = new float[512];
 
     float *biases = 0;
-
-//    CLWrapper *dataWrapper = cl->wrap( batchSize * 9, data );
-//    CLWrapper *weightsWrapper = cl->wrap( numOutPlanes * 9, filter1 );
-//    CLWrapper *outputWrapper = cl->wrap( 512, output );
-//    dataWrapper->copyToDevice();
-//    weightsWrapper->copyToDevice();
-
-//    CLKernel *convolve = cl->buildKernel( "../cl/propagate1.cl", "convolve_imagecubes_float2", "-D TANH" );
-//    CLKernel *tanh = cl->buildKernel( "ClConvolve.cl", "byelement_tanh" );
-
-//    for( int it = 0; it < 100; it ++ ) {
 
     Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim );
     float *output = propagate->propagate( batchSize, data, filter1, biases );
 
-//        convolve->in(batchSize)->in( numInPlanes )->in( numOutPlanes )->in( imageSize )->in( filterWidth )
-//           ->in( padZeros );
-//        convolve->input( dataWrapper );
-//        convolve->input( weightsWrapper);
-//        convolve->output( outputWrapper );
-//        int globalSize = batchSize * numOutPlanes * imageSize * imageSize;
-//        int workgroupsize = cl->getMaxWorkgroupSize();
-//        globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-////        cout << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-//        convolve->run_1d( globalSize, workgroupsize );
+    EXPECT_FLOAT_NEAR( -0.5f * 0.300809f -0.5f * 0.11011f, output[0] );
+    EXPECT_FLOAT_NEAR( -0.5f * 0.0570846f +0.5f * 0.347077f, output[1] );
+    EXPECT_FLOAT_NEAR( 0.5f * 0.300809f +0.5f * 0.11011f, output[2] );
+    EXPECT_FLOAT_NEAR( 0.5f * 0.0570846f -0.5f * 0.347077f, output[3] );
 
-//        outputWrapper->copyToHost();
-
-//        for( int i = 0; i < 20; i++ ) {
-//            cout << "output[" << i << "]=" << output[i] << endl;
-//        }
-        EXPECT_FLOAT_NEAR( -0.202616f, output[0] );
-        EXPECT_FLOAT_NEAR( 0.143989f, output[1] );
-        EXPECT_FLOAT_NEAR( 0.202616f, output[2] );
-        EXPECT_FLOAT_NEAR( -0.143989f, output[3] );
-//    }
-//    cout << "test2 ok" << endl;
     delete propagate;
-//    delete convolve;
-//    delete outputWrapper;
-//    delete weightsWrapper;
-//    delete dataWrapper;
     delete[] output;
     delete cl;
 }
