@@ -17,8 +17,8 @@ Global Contents
 - [Testing](doc/Testing.md)
 - [Architecture](doc/Architecture.md)
 - [Changes](doc/Changes.md)
-- [Doc for forthcoming 4.x.x](https://github.com/hughperkins/DeepCL/blob/4.x.x-snapshot/README.md)
-- [Changes in next 4.x.x](https://github.com/hughperkins/DeepCL/blob/4.x.x-snapshot/doc/Changes.md)
+- [Doc for forthcoming 4.x.x](https://github.com/hughperkins/DeepCL/blob/4.x.x/README.md)
+- [Changes in next 4.x.x](https://github.com/hughperkins/DeepCL/blob/4.x.x/doc/Changes.md)
 
 DeepCL
 ==========
