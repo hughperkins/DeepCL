@@ -38,7 +38,7 @@ VIRTUAL int CrossEntropyLoss::getPersistSize() const {
 //}
 VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
     float loss = 0;
-    float *output = getOutput();
+    float *input = previousLayer->getOutput();
 //    cout << "CrossEntropyLoss::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
@@ -47,15 +47,17 @@ VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outRow = 0; outRow < imageSize; outRow++ ) {
                 for( int outCol = 0; outCol < imageSize; outCol++ ) {
-                    int resultOffset = ( ( imageId
+                    int inputOffset = ( ( imageId
                          * numPlanes + plane )
                          * imageSize + outRow )
                          * imageSize + outCol;
- //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
-                    float expectedOutput = expected[resultOffset];
-                    float actualOutput = output[resultOffset];
-                    float negthisloss = expectedOutput * log( actualOutput ) 
-                        + ( 1 - expectedOutput ) * log( 1 - actualOutput );
+                    float expectedOutput = expected[inputOffset];
+                    float inputValue = input[inputOffset];
+                    cout << " expected=" << expectedOutput << " input=" << inputValue 
+                        << " log(input)=" << log(inputValue) << " log(1-input)" << log(1-inputValue) 
+                        << endl;
+                    float negthisloss = expectedOutput * log( inputValue ) 
+                        + ( 1 - expectedOutput ) * log( 1 - inputValue );
                     loss -= negthisloss;
                 }
             }

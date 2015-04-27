@@ -33,25 +33,17 @@ VIRTUAL float*SquareLossLayer::getGradInput() {
 }
 VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
     float loss = 0;
+//    float *output = getOutput();
     float *input = previousLayer->getOutput();
 //    cout << "SquareLossLayer::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
     int imageSize = previousLayer->getOutputImageSize();
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outRow = 0; outRow < imageSize; outRow++ ) {
-                for( int outCol = 0; outCol < imageSize; outCol++ ) {
-                    int outputOffset = ( ( n
-                         * numPlanes + plane )
-                         * imageSize + outRow )
-                         * imageSize + outCol;
-                    float diff = input[outputOffset] - expected[outputOffset];
-                    float squarederror = diff * diff;
-                    loss += squarederror;
-                }
-            }
-        }            
+    int totalLinearSize = batchSize * numPlanes * imageSize * imageSize;
+    for( int i = 0; i < totalLinearSize; i++ ) {
+        float diff = input[i] - expected[i];
+        float diffSquared = diff * diff;
+        loss += diffSquared;
     }
     loss *= 0.5f;
 //    cout << "loss " << loss << endl;
