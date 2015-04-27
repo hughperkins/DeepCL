@@ -24,7 +24,7 @@
 // weightChanges1: [outputPlane][inputPlane][filterRow][filterCol][outputRow]
 // biasWeights1: [outputPlane][outputRow]
 kernel void backprop_weights( const float learningRateMultiplier, const int batchSize,
-    global float const *errors, global float const *input, global float *restrict weights1,
+    global float const *gradOutput, global float const *input, global float *restrict weights1,
     #ifdef BIASED
          global float *restrict biasWeights1,
     #endif
@@ -48,15 +48,15 @@ kernel void backprop_weights( const float learningRateMultiplier, const int batc
     #endif
     for( int n = 0; n < batchSize; n++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        // copy down the errors row...
+        // copy down the gradOutput row...
         {
-            global float const*errorsRow = errors + 
+            global float const*gradOutputRow = gradOutput + 
                 ( ( n
                     * gNumOutputPlanes + outputPlane )
                     * gOutputImageSize + outputRow )
                     * gOutputImageSize;
             if( localId < gOutputImageSize ) { // assume we have enough threads for now... should fix later
-                _errorRow[ localId ] = errorsRow[ localId ];
+                _errorRow[ localId ] = gradOutputRow[ localId ];
             }
         }
         // copy down the input row

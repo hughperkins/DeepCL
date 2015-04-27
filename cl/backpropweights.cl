@@ -29,7 +29,7 @@
 // then we are aggregating over [outRow][outCol][n]
 //      eg 19 * 19 * 128 = 46208
 // derivtype: 0=relu 1=tanh
-// outimages(eg 128x32x28x28), errors (eg 128x28x28), upstreamimages (eg 128x32x28x28) => weightchanges (eg 32x32x28x28)
+// outimages(eg 128x32x28x28), gradOutput (eg 128x28x28), upstreamimages (eg 128x32x28x28) => weightchanges (eg 32x32x28x28)
 // if break for per-example, per-filter:
 // outimage(eg 28x28), error (28x28), upstreamimage(32x28x28) => weightchanges(32x5x5)
 //             784 3k         784 3k                 25088 100k                800 3k
@@ -47,7 +47,7 @@
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, const int upstreamNumPlanes, const int numPlanes, 
          const int upstreamImageSize, const int filterSize, const int outImageSize, const int padZeros, 
-         global const float *errors, global const float *output, global const float *images, 
+         global const float *gradOutput, global const float *output, global const float *images, 
         global float *weights
         #ifdef BIASED
             , global float *biasWeights
@@ -88,7 +88,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
                               + outPlane ) * outImageSize
                               + outRow ) * outImageSize
                               + outCol;
-                    float error = errors[resultIndex];
+                    float error = gradOutput[resultIndex];
                     float actualOutput = output[resultIndex];
                     float activationDerivative = ACTIVATION_DERIV( actualOutput);
                     int upstreamDataIndex = ( ( n * upstreamNumPlanes 
@@ -122,7 +122,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
 #ifdef gOutImageSize // for previous tests that dont define it
 /*void kernel backprop_floats_2( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
-     global const float *upstreamImagesGlobal, global const float *outputGlobal, global const float *errorsGlobal,
+     global const float *upstreamImagesGlobal, global const float *outputGlobal, global const float *gradOutputGlobal,
      global float *weightChangesGlobal,
     local float *_upstreamImage, local float *_resultImage, local float *_errorImage, 
     local float *_weightChanges, local float *_weightReduceArea ) {
@@ -158,7 +158,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
     int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
     if( localId < gOutImageSizeSquared ) {
         _resultImage[localId ] = outputGlobal[resultImageGlobalOffset + localId];
-        _errorImage[localId ] = errorsGlobal[resultImageGlobalOffset + localId];
+        _errorImage[localId ] = gradOutputGlobal[resultImageGlobalOffset + localId];
         _weightReduceArea[localId] = 0;
     }
     barrier(CLK_LOCAL_MEM_FENCE);
@@ -219,7 +219,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
 // eg: - one per n => 128 groups, each one loads:
 //                               one cube of input images (46k :-O )
 //                               one cube of output images (each output cube is 46k too...)
-//                               same errors (46k...)
+//                               same gradOutput (46k...)
 //                               (need to reduce over n)
 //     - one per filter => 32 groups, each one loads:
 //                               each cube of input images (eg, sequentially) (each cube is 46k...)
@@ -266,7 +266,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
 /*
 void kernel backprop_floats_3( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
-     global const float *upstreamImagesGlobal, global const float *outputGlobal, global const float *errorsGlobal,
+     global const float *upstreamImagesGlobal, global const float *outputGlobal, global const float *gradOutputGlobal,
      global float *weightChangesGlobal,
     local float *_upstreamImage, local float *_resultImage, local float *_errorImage, 
     local float *_weightChanges, local float *_weightReduceArea ) {
@@ -306,7 +306,7 @@ void kernel backprop_floats_3(
         const int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
         if( localId < gOutImageSizeSquared ) {
             _resultImage[localId ] = outputGlobal[resultImageGlobalOffset + localId];
-            _errorImage[localId ] = errorsGlobal[resultImageGlobalOffset + localId];
+            _errorImage[localId ] = gradOutputGlobal[resultImageGlobalOffset + localId];
             _weightReduceArea[localId] = 0; // note: can probably remove this
         }
         barrier(CLK_LOCAL_MEM_FENCE);  // loaded one upstreamimage, one error plane, one output plane :-)
@@ -366,7 +366,7 @@ void kernel backprop_floats_3(
 /*
 void kernel backprop_floats_4( 
     const float learningRateMultiplier, const int batchSize, const int workgroupsizenextpower2,
-     global const float *upstreamImagesGlobal, global const float *outputGlobal, global const float *errorsGlobal,
+     global const float *upstreamImagesGlobal, global const float *outputGlobal, global const float *gradOutputGlobal,
      global float *weightChangesGlobal,
     local float *_upstreamImage, local float *_resultImage, local float *_errorImage, 
     local float *_weightChanges, local float *_weightReduceArea ) {
@@ -397,7 +397,7 @@ void kernel backprop_floats_4(
         const int resultImageGlobalOffset = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared;
         if( localId < gOutImageSizeSquared ) {
             _resultImage[localId ] = outputGlobal[resultImageGlobalOffset + localId];
-            _errorImage[localId ] = errorsGlobal[resultImageGlobalOffset + localId];
+            _errorImage[localId ] = gradOutputGlobal[resultImageGlobalOffset + localId];
 //            _weightReduceArea[localId] = 0; // note: can probably remove this
         }
         for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {
@@ -470,7 +470,7 @@ void kernel backprop_floats_4(
 #ifdef gOutImageSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *output, global const float *errors, global float *weightChanges,
+         global const float *images, global const float *output, global const float *gradOutput, global float *weightChanges,
         local float *_imageImage, local float *_resultImage, local float *_errorImage
  ) {
     const int globalId = get_global_id(0);
@@ -503,7 +503,7 @@ void kernel backprop_floats_withscratch(
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutImageSizeSquared ) {
                 _resultImage[thisOffset ] = ( ACTIVATION_DERIV( output[resultImageGlobalOffset + thisOffset] ) )
-                    * errors[resultImageGlobalOffset + thisOffset];
+                    * gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -535,7 +535,7 @@ void kernel backprop_floats_withscratch(
 #ifdef gOutputImageSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *output, global const float *errors, 
+         global const float *images, global const float *output, global const float *gradOutput, 
         global float *weights,
         #ifdef BIASED
              global float *biasWeights,
@@ -576,7 +576,7 @@ void kernel backprop_floats_withscratch_dobias(
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutputImageSizeSquared ) {
                 _resultImage[thisOffset ] = ( ACTIVATION_DERIV( output[resultImageGlobalOffset + thisOffset] ) )
-                    * errors[resultImageGlobalOffset + thisOffset];
+                    * gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -628,7 +628,7 @@ void kernel backprop_floats_withscratch_dobias(
                           + outPlane ) * gOutImageSize
                           + outRow ) * gOutImageSize
                           + outCol;
-                float thisimagethiswchange = errors[resultIndex] * ACTIVATION_DERIV( output[resultIndex] );
+                float thisimagethiswchange = gradOutput[resultIndex] * ACTIVATION_DERIV( output[resultIndex] );
                 thiswchange += thisimagethiswchange;
             }
         }
@@ -646,7 +646,7 @@ void kernel backprop_floats_withscratch_dobias(
 #ifdef gOutImageSize // for previous tests that dont define it
 void kernel backprop_floats_withscratch_batched( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *images, global const float *output, global const float *errors, global float *weightChanges,
+         global const float *images, global const float *output, global const float *gradOutput, global float *weightChanges,
         local float *_imageImage, local float *_resultImage, local float *_errorImage
  ) {
     const int globalId = get_global_id(0);
@@ -679,7 +679,7 @@ void kernel backprop_floats_withscratch_batched(
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutImageSizeSquared ) {
                 _resultImage[thisOffset ] = ( ACTIVATION_DERIV( output[resultImageGlobalOffset + thisOffset] ) )
-                    * errors[resultImageGlobalOffset + thisOffset];
+                    * gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -712,7 +712,7 @@ void kernel backprop_floats_withscratch_batched(
 // so, one workgroup, internally structured as [outplane] (unless there are >512 outplanes....)
 #ifdef gOutImageSize // for previous tests that dont define it
 kernel void doBiasBackprop( const float learningMultiplier, const int batchSize,
-    global float const *output, global float const *errors, global float *biasWeightChanges ) {
+    global float const *output, global float const *gradOutput, global float *biasWeightChanges ) {
     const int globalId = get_local_id(0);
     
     const int outPlane = globalId;
@@ -728,7 +728,7 @@ kernel void doBiasBackprop( const float learningMultiplier, const int batchSize,
                           + outPlane ) * gOutImageSize
                           + outRow ) * gOutImageSize
                           + outCol;
-                float thisimagethiswchange = errors[resultIndex] * ACTIVATION_DERIV( output[resultIndex] );
+                float thisimagethiswchange = gradOutput[resultIndex] * ACTIVATION_DERIV( output[resultIndex] );
                 thiswchange += thisimagethiswchange;
             }
         }

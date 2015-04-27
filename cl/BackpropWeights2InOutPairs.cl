@@ -37,7 +37,7 @@
 //        imageimage: inputImageSize * inputImageSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *errors, global const float *images, 
+         global const float *gradOutput, global const float *images, 
         global float *weights,
         #ifdef BIASED
              global float *biasWeights,
@@ -87,7 +87,7 @@ void kernel backprop_floats_withscratch_dobias(
         for( int i = 0; i < numLoopsForOutput; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutputImageSizeSquared ) {
-                _errorImage[thisOffset ] = errors[resultImageGlobalOffset + thisOffset];
+                _errorImage[thisOffset ] = gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);

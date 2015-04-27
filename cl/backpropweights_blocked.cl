@@ -34,7 +34,7 @@
 //        imageimage: inputImageSize * inputImageSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *errors, global const float *images, 
+         global const float *gradOutput, global const float *images, 
         global float *weights,
         #ifdef BIASED
              global float *biasWeights,
@@ -64,7 +64,7 @@ void kernel backprop_floats_withscratch_dobias(
         barrier(CLK_LOCAL_MEM_FENCE);
         copyLocal( _imageImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, 
             gInputImageSizeSquared );
-        copyLocal( _errorImage, errors + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared,
+        copyLocal( _errorImage, gradOutput + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared,
             gOutputImageSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         if( localId < gFilterSizeSquared ) {

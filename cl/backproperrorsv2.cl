@@ -9,11 +9,11 @@
 
 // globalid as: [n][upstreamPlane][upstreamrow][upstreamcol]
 // inputdata: [n][upstreamPlane][upstreamrow][upstreamcol] 128 * 32 * 19 * 19 * 4 = 6MB
-// errors: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4 = 6MB
+// gradOutput: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4 = 6MB
 // weights: [filterId][inputPlane][filterRow][filterCol] 32 * 32 * 5 * 5 * 4 = 409KB
 void kernel calcGradInput( 
         const int batchSize,
-        global const float *errors, global float *weights, global float *gradInput ) {
+        global const float *gradOutput, global float *weights, global float *gradInput ) {
     int globalId = get_global_id(0);
 
     const int upstreamImage2dId = globalId / gInputImageSizeSquared;
@@ -48,7 +48,7 @@ void kernel calcGradInput(
                           + outPlane ) * gOutputImageSize
                           + outRow ) * gOutputImageSize
                           + outCol;
-                float thisError = errors[resultIndex];
+                float thisError = gradOutput[resultIndex];
                 int thisWeightIndex = ( ( outPlane * gInputPlanes
                                     + upstreamPlane ) * gFilterSize
                                     + filterRow ) * gFilterSize

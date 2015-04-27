@@ -15,7 +15,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
 }
 
 // as calcGradInput, but with local cache
-// convolve weights with errors to produce gradInput
+// convolve weights with gradOutput to produce gradInput
 // workgroupid: [n][inputPlane]
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
@@ -23,18 +23,18 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // - _errorImage. size = outputImageSizeSquared
 // - _filterImage. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
-// inputs: errors :convolve: filters => gradInput
+// inputs: gradOutput :convolve: filters => gradInput
 //
 // global:
-// errors: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4
+// gradOutput: [n][outPlane][outRow][outCol] 128 * 32 * 19 * 19 * 4
 // weights: [filterId][upstreamplane][filterRow][filterCol] 32 * 32 * 5 * 5 * 4
 // per workgroup:
-// errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
+// gradOutput: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
 // weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
-// errorsforupstream: [n][upstreamPlane][upstreamRow][upstreamCol]
+// gradOutputforupstream: [n][upstreamPlane][upstreamRow][upstreamCol]
 void kernel calcGradInputCached( 
         const int batchSize,
-        global const float *errorsGlobal,
+        global const float *gradOutputGlobal,
         global const float *filtersGlobal, 
         global float *gradInput,
         local float *_errorImage, 
@@ -55,7 +55,7 @@ void kernel calcGradInputCached(
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
         copyLocal( _filterImage, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
-        copyLocal( _errorImage, errorsGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );
+        copyLocal( _errorImage, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;

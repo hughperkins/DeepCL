@@ -5,14 +5,14 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // inplane and outplane are always identical, 1:1 mapping, so can just write `plane`
-// errors: [n][plane][outrow][outcol]
+// gradOutput: [n][plane][outrow][outcol]
 // selectors: [n][plane][outrow][outcol]
 // gradInput: [n][plane][inrow][incol]
 // wont use workgroups (since 'naive')
 // one thread per: [n][plane][outrow][outcol]
 // globalId: [n][plane][outrow][outcol]
-kernel void backprop_errors( const int batchSize, 
-    global const float *errors, global const int *selectors, global float *gradInput ) {
+kernel void backprop_gradOutput( const int batchSize, 
+    global const float *gradOutput, global const int *selectors, global float *gradInput ) {
 
     #define globalId get_global_id(0)
     #define nPlaneCombo ( globalId / gOutputImageSizeSquared ) 
@@ -31,7 +31,7 @@ kernel void backprop_errors( const int batchSize,
         * gNumPlanes + plane )
         * gOutputImageSize + outputRow )
         * gOutputImageSize + outputCol;
-    #define error ( errors[resultIndex] )
+    #define error ( gradOutput[resultIndex] )
     int selector = ( selectors[resultIndex] );
     #define drow ( selector / gPoolingSize )
     #define dcol ( selector % gPoolingSize )

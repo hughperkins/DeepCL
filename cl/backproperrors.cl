@@ -11,13 +11,13 @@
 #define getResultImageOffset( n, filter ) ( ( n * gNumFilters + filter ) * gOutputImageSizeSquared )
 
 // handle lower layer...
-// errors for upstream look like [n][inPlane][inRow][inCol]
+// gradOutput for upstream look like [n][inPlane][inRow][inCol]
 // need to aggregate over: [outPlane][outRow][outCol] (?)
-// need to backprop errors along each possible weight
+// need to backprop gradOutput along each possible weight
 // each upstream feeds to:
 //    - each of our filters (so numPlanes filters)
 //    - each of our outpoint points (so imageSize * imageSize)
-// errors are provider per [n][inPlane][inRow][inCol]
+// gradOutput are provider per [n][inPlane][inRow][inCol]
 // globalid is structured as: [n][upstreamPlane][upstreamRow][upstreamCol]
 // there will be approx 128 * 32 * 28 * 28 = 3 million threads :-P
 // grouped into 4608 workgroups
@@ -27,7 +27,7 @@ void kernel calcGradInput(
         const int upstreamNumPlanes, const int upstreamImageSize, const int filterSize, 
         const int outNumPlanes, const int outImageSize,
         const int padZeros,
-        global const float *weights, global const float *errors, global float *gradInput ) {
+        global const float *weights, global const float *gradOutput, global float *gradInput ) {
     int globalId = get_global_id(0);
     const int halfFilterSize = filterSize >> 1;
     const int margin = padZeros ? halfFilterSize : 0;
@@ -58,7 +58,7 @@ void kernel calcGradInput(
                           + outPlane ) * outImageSize
                           + outRow ) * outImageSize
                           + outCol;
-                float thisError = errors[resultIndex];
+                float thisError = gradOutput[resultIndex];
                 int thisWeightIndex = ( ( outPlane * upstreamNumPlanes
                                     + upstreamPlane ) * filterSize
                                     + filterRow ) * filterSize
@@ -73,7 +73,7 @@ void kernel calcGradInput(
 }
 
 // as calcGradInput, but with local cache
-// convolve weights with errors to produce gradInput
+// convolve weights with gradOutput to produce gradInput
 // workgroupid: [n][inputPlane]
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
@@ -81,15 +81,15 @@ void kernel calcGradInput(
 // - _errorImage. size = outputImageSizeSquared
 // - _filterImage. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
-// inputs: errors :convolve: filters => gradInput
+// inputs: gradOutput :convolve: filters => gradInput
 //
 // per workgroup:
-// errors: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
+// gradOutput: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
 // weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
 #ifdef gOutputImageSize // for previous tests that dont define it
 void kernel calcGradInputCached( 
         const int batchSize,
-        global const float *errorsGlobal,
+        global const float *gradOutputGlobal,
         global const float *filtersGlobal, 
         global float *gradInput,
         local float *_errorImage, 
@@ -126,7 +126,7 @@ void kernel calcGradInputCached(
                 _filterImage[ thisOffset ] = filtersGlobal[ filterImageGlobalOffset + thisOffset ];
             }
             if( thisOffset < gOutputImageSizeSquared ) {
-                _errorImage[ thisOffset ] = errorsGlobal[ errorImageGlobalOffset + thisOffset ];
+                _errorImage[ thisOffset ] = gradOutputGlobal[ errorImageGlobalOffset + thisOffset ];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
@@ -165,7 +165,7 @@ void kernel calcGradInputCached(
 /*
 void kernel calcGradInput2( 
         const int batchSize,
-        global const float *weightsGlobal, global const float *errorsGlobal, 
+        global const float *weightsGlobal, global const float *gradOutputGlobal, 
         global float *gradInputGlobal,
         local float *_weightImage, local float *_errorImage ) {
     const int globalId = get_global_id(0);
@@ -196,7 +196,7 @@ void kernel calcGradInput2(
                               + outPlane ) * outImageSize
                               + outRow ) * outImageSize
                               + outCol;
-                    float thisError = errors[resultIndex];
+                    float thisError = gradOutput[resultIndex];
                     int thisWeightIndex = ( ( outPlane * upstreamNumPlanes
                                         + upstreamPlane ) * filterSize
                                         + filterRow ) * filterSize
@@ -215,7 +215,7 @@ void kernel calcGradInput2(
 
 // so, we're just going to convolve the errorcubes with our filter cubes...
 // like propagate, but easier, since no activation function, and no biases
-// errorcubes (*) filters => errors
+// errorcubes (*) filters => gradOutput
 // for propagation we had:
 //   images are organized like [imageId][plane][row][col]
 //   filters are organized like [filterid][inplane][filterrow][filtercol]

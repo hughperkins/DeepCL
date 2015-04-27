@@ -44,11 +44,11 @@ void kernel applyActivationDeriv(
 void kernel backward( 
         const int N,
         global const float *inputs,
-        global const float *errors, 
+        global const float *gradOutput, 
         global float *gradInput ) {
     int globalId = get_global_id(0);
     if( globalId < N ) {
-        gradInput[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * errors[globalId];
+        gradInput[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * gradOutput[globalId];
             // probably not ideal to have the output and input separate?
     }
   //  target[globalId] *= source[globalId];
