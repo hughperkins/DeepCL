@@ -250,7 +250,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     net->initWeights( 2, layer2weights, layer2bias );
 //    net->printWeights();
 //    net->setBatchSize(4);
-//    net->propagate( data );
+//    net->forward( data );
 //    net->print();
     for( int epoch = 0; epoch < 200; epoch++ ) {
         net->epochMaker()->learningRate(0.1f)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)

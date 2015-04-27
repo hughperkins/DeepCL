@@ -144,11 +144,11 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
     props[1] = p1;
     for( int it = 0; it < its; it++ ) {
         // selectors might go over the edge if we just choose random ints
-        // easiest way to select valid selectors might be to just forwardpropagate first?
+        // easiest way to select valid selectors might be to just forwardforward first?
 
         WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
         WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
-        forwardprop->propagate( batchSize, input, output );
+        forwardprop->forward( batchSize, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
             props[instance]->backward( batchSize, input, errors, errorsForUpstream[instance] );
@@ -185,7 +185,7 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
 }
 
 /*
-TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
+TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -208,7 +208,7 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    activationPropagate->propagate( batchSize, data, selectors, output );
+    activationPropagate->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 2 );
     EXPECT_EQ( selectors[1], 1 );

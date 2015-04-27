@@ -49,8 +49,8 @@ public:
     STATIC ActivationPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     STATIC ActivationPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     STATIC ActivationPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
-    VIRTUAL void propagate( int batchSize, float *input, float *output );
+    VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
+    VIRTUAL void forward( int batchSize, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
 

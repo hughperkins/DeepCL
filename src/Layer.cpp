@@ -66,8 +66,8 @@ PUBLICAPI VIRTUAL int Layer::getOutputPlanes() const {
 PUBLICAPI VIRTUAL int Layer::getOutputImageSize() const {
     throw std::runtime_error("getOutputImageSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
 }
-VIRTUAL void Layer::propagate() {
-    throw std::runtime_error("propagate not implemented for this layer type");
+VIRTUAL void Layer::forward() {
+    throw std::runtime_error("forward not implemented for this layer type");
 }
 VIRTUAL bool Layer::needsBackProp() {
     throw std::runtime_error("needsBackProp not implemented for this layer type");

@@ -249,10 +249,10 @@ VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
     return numRight;
 }
-// for propagate, we just need to apply the softmax activation. "just" :-P
-VIRTUAL void SoftMaxLayer::propagate() {
-//    cout << "softmaxlayer::propagate" << endl;
-    StatefulTimer::timeCheck("start SoftMaxLayer propagate");
+// for forward, we just need to apply the softmax activation. "just" :-P
+VIRTUAL void SoftMaxLayer::forward() {
+//    cout << "softmaxlayer::forward" << endl;
+    StatefulTimer::timeCheck("start SoftMaxLayer forward");
     float *input = previousLayer->getOutput(); // just retrieve as host-side array for now
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
@@ -294,7 +294,7 @@ VIRTUAL void SoftMaxLayer::propagate() {
             }
         }
     }
-    StatefulTimer::timeCheck("end SoftMaxLayer propagate");
+    StatefulTimer::timeCheck("end SoftMaxLayer forward");
 }
 // this seems to be handled by calcGradInput? So, just to a nop?
 // (cos this layer kind of combines loss layer and a 'normal' propagation layer )

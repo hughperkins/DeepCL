@@ -60,7 +60,7 @@ void QLearner::learnFromPast() {
     }
 
     // get next q values, based on forward prop 'afters'
-    net->propagate( afters );
+    net->forward( afters );
     float const *allOutput = net->getOutput();
     float *bestQ = new float[ batchSize ];
     int *bestAction = new int[ batchSize ];
@@ -79,7 +79,7 @@ void QLearner::learnFromPast() {
     }
     // forward prop 'befores', set up expected values, and backprop
     // new q values
-    net->propagate( befores );
+    net->forward( befores );
     allOutput = net->getOutput();
     float *expectedValues = new float[ numActions * batchSize ];
     arrayCopy( expectedValues, allOutput, batchSize * numActions );
@@ -129,7 +129,7 @@ int QLearner::step( float lastReward, bool wasReset, float *perception ) { // do
 //            cout << "action, rand: " << action << endl;
     } else {
         net->setBatchSize(1);
-        net->propagate( perception );
+        net->forward( perception );
         float highestQ = 0;
         int bestAction = 0;
         float const*output = net->getOutput();

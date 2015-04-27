@@ -48,7 +48,7 @@ public:
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL bool hasOutputWrapper() const;
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

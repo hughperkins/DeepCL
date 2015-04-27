@@ -87,7 +87,7 @@ VIRTUAL bool RandomTranslations::providesGradInputWrapper() const {
 VIRTUAL bool RandomTranslations::hasOutputWrapper() const {
     return false;
 }
-VIRTUAL void RandomTranslations::propagate() {
+VIRTUAL void RandomTranslations::forward() {
     float *upstreamOutput = previousLayer->getOutput();
     if( !training ) {
         memcpy( output, upstreamOutput, sizeof(float) * getOutputSize() );

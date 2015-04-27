@@ -26,9 +26,9 @@ using namespace std;
 VIRTUAL DropoutPropagateGpuNaive::~DropoutPropagateGpuNaive() {
     delete kernel;
 }
-VIRTUAL void DropoutPropagateGpuNaive::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "DropoutPropagateGpuNaive::propagate( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::propagate start" );
+VIRTUAL void DropoutPropagateGpuNaive::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "DropoutPropagateGpuNaive::forward( CLWrapper * )" << endl;
+    StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::forward start" );
 
     kernel  ->input( batchSize * numPlanes * outputImageSize * outputImageSize )
             ->input( masksWrapper )
@@ -37,14 +37,14 @@ VIRTUAL void DropoutPropagateGpuNaive::propagate( int batchSize, CLWrapper *mask
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "DropoutPropagateGpuNaive::propagate batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
+//    cout << "DropoutPropagateGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
-//    cout << "DropoutPropagateGpuNaive::propagate selectorswrapper:" << endl;
+//    cout << "DropoutPropagateGpuNaive::forward selectorswrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
-    StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::propagate end" );
+    StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::forward end" );
 }
 DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
@@ -66,7 +66,7 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/dropout.cl", "propagateNaive", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/dropout.cl", "forwardNaive", 'options' )
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
@@ -76,7 +76,7 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "kernel void propagateNaive(\n" 
+    "kernel void forwardNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
     "        global const float *input,\n" 
@@ -101,8 +101,8 @@ DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPla
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/dropout.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/dropout.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "dropout.cl", "propagateNaive", options );
+//    kernel = cl->buildKernel( "dropout.cl", "forwardNaive", options );
 }
 

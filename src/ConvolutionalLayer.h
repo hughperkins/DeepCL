@@ -29,7 +29,7 @@ public:
     Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
     Trainer *biasWeightsTrainer; // OWNED by us, we should delete (if non-zero)
 
-    Propagate *propagateimpl;
+    Propagate *forwardimpl;
     BackpropWeights2 *backpropWeightsImpl;
     BackpropErrorsv2 *backwardImpl;
 
@@ -116,7 +116,7 @@ public:
     VIRTUAL void printWeights();
     VIRTUAL void printOutput() const;
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL float * getOutput();
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;

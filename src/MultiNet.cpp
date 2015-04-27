@@ -143,8 +143,8 @@ VIRTUAL int MultiNet::calcNumRight( int const *labels ) {
     }
     return softMaxLayer->calcNumRight( labels );
 }
-void MultiNet::propagateToOurselves() {
-    // now propagate to ourselves :-)
+void MultiNet::forwardToOurselves() {
+    // now forward to ourselves :-)
     // I suppose this could be done in GPU, but what if we want to split across mpi?
     const int outputSize = trainables[0]->getOutputSize();
     memset( output, 0, sizeof( float ) * outputSize );
@@ -161,11 +161,11 @@ void MultiNet::propagateToOurselves() {
     memcpy( dynamic_cast< SoftMaxLayer * >( lossLayer )->output, output, sizeof(float) * lossLayer->getOutputSize() );
 //    proxyInputLayer->in( output );
 }
-VIRTUAL void MultiNet::propagate( float const*images) {
+VIRTUAL void MultiNet::forward( float const*images) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->propagate( images );
+        (*it)->forward( images );
     }
-    propagateToOurselves();
+    forwardToOurselves();
 }
 VIRTUAL void MultiNet::backPropFromLabels( float learningRate, int const *labels) {
     // dont think we need to backprop onto ourselves?  Just direclty onto children, right?

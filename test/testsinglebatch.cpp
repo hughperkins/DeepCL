@@ -144,7 +144,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     bool allOk = true;
     for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
-        net->propagate( inputData );
+        net->forward( inputData );
         net->backProp( learningRate, expectedOutput );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
@@ -281,7 +281,7 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
         thisWSquaredDiffSum += thisDiff * thisDiff;
     }
     float lossChangeFromW = thisWSquaredDiffSum / learningRate;
-    net->propagate( inputData );
+    net->forward( inputData );
     float newLoss = net->calcLossFromLabels( labels );
     cout << "layer " << layerId << endl;
     cout << "    " << "from w: " << lossChangeFromW << endl;
@@ -337,18 +337,18 @@ void testLabelled( TestArgs args ) {
     float *currentWeights = new float[weightsTotalSize];
     WeightsPersister::copyNetWeightsToArray( net, lastWeights );
 //    cout << "learningRate: " << args.learningRate << endl;
-    net->propagate( inputData );
+    net->forward( inputData );
     float lastloss = 0;
     for( int i = 0; i < args.numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
-        net->propagate( inputData );
+        net->forward( inputData );
         net->backPropFromLabels( args.learningRate, labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         for( int layer = 1; layer < (int)net->getNumLayers(); layer++ ) {
             checkErrorsForLayer( layer, lastloss, net, lastWeights, currentWeights, args.learningRate, inputData, labels );
         }
         WeightsPersister::copyArrayToNetWeights( currentWeights, net );
-        net->propagate( inputData );
+        net->forward( inputData );
         float thisloss = net->calcLossFromLabels( labels );
         cout << "full thisloss: " << thisloss << endl;
 
@@ -463,7 +463,7 @@ TEST( testsinglebatch, detailedregression ) {
 //        layer->biasWeightsWrapper->copyToDevice();
     }
 
-    net->propagate( inputData );
+    net->forward( inputData );
     for (int layerIndex = 1; layerIndex <= 3; layerIndex++ ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
         float const*output = layer->getOutput();
@@ -595,7 +595,7 @@ EXPECT_FLOAT_NEAR( 0.14498, net->getOutput()[373] );
 
 
 
-net->propagate( inputData );
+net->forward( inputData );
 output = (float*)(net->getOutput());
 Sampler::printSamples( "net->getOutput()", outputSize, (float*)output, 3 );
 

@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// from propagate3.cl
+// from forward3.cl
 
 // concept: each workgroup handles convolving one input example with one filtercube
 // and writing out one single output plane
@@ -17,7 +17,7 @@
 // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
 // output are organized like [imageid][filterid][row][col]
-void kernel propagate( const int batchSize,
+void kernel forward( const int batchSize,
       global const float *images, global const float *filters, 
     global float *output,
     local float *_upstreamImage, local float *_filterCube ) {

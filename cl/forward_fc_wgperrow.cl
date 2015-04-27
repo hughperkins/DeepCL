@@ -46,7 +46,7 @@ void copyLocal( local float *restrict target, global float const *restrict sourc
 //   lots of inplanes, eg 32-128
 //   inputimagesize around 19, not too small
 #if (gFilterSize == gInputImageSize) && (gPadZeros == 0)
-void kernel propagate_fc_workgroup_perrow( const int batchSize,
+void kernel forward_fc_workgroup_perrow( const int batchSize,
     global const float *images, global const float *filters, 
     global float *output1,
     local float *_imageRow, local float *_filterRows ) {

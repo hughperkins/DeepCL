@@ -7,7 +7,7 @@
 // every plane is independent
 // every example is independent
 // so, globalid can be: [n][plane][outputRow][outputCol]
-kernel void propagateNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {
+kernel void forwardNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {
     const int globalId = get_global_id(0);
 
     const int intraImageOffset = globalId % gOutputImageSizeSquared;

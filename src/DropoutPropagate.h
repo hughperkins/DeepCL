@@ -47,8 +47,8 @@ public:
     STATIC DropoutPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
     STATIC DropoutPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
     STATIC DropoutPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    VIRTUAL void propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData );
-    VIRTUAL void propagate( int batchSize, unsigned char *masks, float *input, float *output );
+    VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData );
+    VIRTUAL void forward( int batchSize, unsigned char *masks, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
 

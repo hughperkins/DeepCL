@@ -40,7 +40,7 @@ int BatchLearner::test( int batchSize, int N, float *testData, int const*testLab
     return numRight;
 }
 
-int BatchLearner::propagateForTrain( int batchSize, int N, float *data, int const*labels ) {
+int BatchLearner::forwardForTrain( int batchSize, int N, float *data, int const*labels ) {
     net->setTraining( true );
     NetPropagateAction *action = new NetPropagateAction();
     int numRight = runBatchedNetAction( batchSize, N, data, labels, action ).numRight;

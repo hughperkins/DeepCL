@@ -18,9 +18,9 @@ using namespace std;
 VIRTUAL PropagateExperimental::~PropagateExperimental() {
     delete kernel;
 }
-VIRTUAL void PropagateExperimental::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void PropagateExperimental::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateExperimental::propagate start");
+    StatefulTimer::timeCheck("PropagateExperimental::forward start");
 //    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
 //    int maxglobalId = 0;
 
@@ -36,11 +36,11 @@ VIRTUAL void PropagateExperimental::propagate( int batchSize, CLWrapper *dataWra
     int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
 
-    StatefulTimer::timeCheck("PropagateExperimental::propagate after call propagate");
+    StatefulTimer::timeCheck("PropagateExperimental::forward after call forward");
 }
 PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
@@ -51,7 +51,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     // import stringify
     // import cog_getfilename
     // classname = cog_getfilename.get_class_name()
-    // stringify.write_kernel2( "kernel", "cl/" + classname + ".cl", "propagate", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/" + classname + ".cl", "forward", 'options' )
     // ]]]
     // generated using cog, from cl/PropagateExperimental.cl:
     const char * kernelSource =  
@@ -61,7 +61,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "// from propagate3.cl\n" 
+    "// from forward3.cl\n" 
     "\n" 
     "// concept: each workgroup handles convolving one input example with one filtercube\n" 
     "// and writing out one single output plane\n" 
@@ -74,7 +74,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     "// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)\n" 
     "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
     "// output are organized like [imageid][filterid][row][col]\n" 
-    "void kernel propagate( const int batchSize,\n" 
+    "void kernel forward( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "    global float *output,\n" 
     "    local float *_upstreamImage, local float *_filterCube ) {\n" 
@@ -147,7 +147,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagate", options, "cl/PropagateExperimental.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forward", options, "cl/PropagateExperimental.cl" );
     // [[[end]]]
 }
 

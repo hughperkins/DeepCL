@@ -15,7 +15,7 @@
 
 using namespace std;
 
-namespace testdropoutpropagate {
+namespace testdropoutforward {
 
 //void intsToBits( int numBits, int *ints, unsigned char *bitfield ) {
 ////    int numBytes = (N+8-1)/8;
@@ -38,7 +38,7 @@ namespace testdropoutpropagate {
 //    }
 //}
 
-TEST( testdropoutpropagate, basic ) {
+TEST( testdropoutforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
@@ -58,7 +58,7 @@ TEST( testdropoutpropagate, basic ) {
     EXPECT_FLOAT_NEAR( outputSize, imageSize * imageSize );
     float *output = new float[outputSize];
 
-    dropoutPropagate->propagate( batchSize, mask, data, output );
+    dropoutPropagate->forward( batchSize, mask, data, output );
 
     EXPECT_FLOAT_NEAR( 1, output[0] );
     EXPECT_FLOAT_NEAR( 0, output[1] );
@@ -77,7 +77,7 @@ TEST( testdropoutpropagate, basic ) {
     delete cl;
 }
 
-TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
+TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -111,7 +111,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     int outputSize = dropoutPropagate->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
-    dropoutPropagate->propagate( batchSize, mask, data, output );
+    dropoutPropagate->forward( batchSize, mask, data, output );
 
     EXPECT_FLOAT_NEAR( output[0], 0 );
     EXPECT_FLOAT_NEAR( output[1], 2 );
@@ -127,7 +127,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     delete cl;
 }
 
-TEST( testdropoutpropagate, fromwrappers ) {
+TEST( testdropoutforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
@@ -155,7 +155,7 @@ TEST( testdropoutpropagate, fromwrappers ) {
     maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
 
-    dropoutPropagate->propagate( batchSize, maskWrapper, inputWrapper, outputWrapper );
+    dropoutPropagate->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
 
     outputWrapper->copyToHost();
 
@@ -269,7 +269,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    dropoutPropagate0->propagate( batchSize, maskWrapper, inputWrapper, outputWrapper );
+    dropoutPropagate0->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
     float *output0 = new float[ outputSize ];
@@ -281,7 +281,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    dropoutPropagate1->propagate( batchSize, maskWrapper, inputWrapper, outputWrapper );
+    dropoutPropagate1->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
     
     int numErrors = 0;
@@ -344,43 +344,43 @@ void compareSpecific( CompareSpecificArgs args ) {
     delete cl;
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout2 ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout3 ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout3 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout2_pz ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout2_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout3_pz ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout3_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout3_small ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout3_small ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(1).numPlanes(1).imageSize(2).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout3_small2 ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout3_small2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(2).numPlanes(1).imageSize(2).dropRatio(0.6f)
         .instance0(0).instance1(1) );
 }
 
-TEST( testdropoutpropagate, comparespecific_0_1_dropout3_small2_tanh ) {
+TEST( testdropoutforward, comparespecific_0_1_dropout3_small2_tanh ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(2).numPlanes(1).imageSize(2).dropRatio(0.6f)
         .instance0(0).instance1(1) );

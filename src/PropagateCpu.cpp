@@ -19,7 +19,7 @@ PropagateCpu::PropagateCpu( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
     {
 }
-VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void PropagateCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
     inputDataWrapper->copyToHost();
     weightsWrapper->copyToHost();
 //    weightsWrapper->copyToHost();
@@ -29,7 +29,7 @@ VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper
         biasWeightsWrapper->copyToHost();
         biasWeights =  (float *)biasWeightsWrapper->getHostArray();
     }
-    float *output = propagate( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
+    float *output = forward( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
     int outputSize = batchSize * dim.outputCubeSize;
 //        memcpy( (float *)outputWrapper->getHostArray(), output, sizeof(float) * outputSize );
     float *hostArray = (float *)outputWrapper->getHostArray();
@@ -39,8 +39,8 @@ VIRTUAL void PropagateCpu::propagate( int batchSize, CLWrapper *inputDataWrapper
     outputWrapper->copyToDevice();
     delete[] output;
 }
-VIRTUAL float *PropagateCpu::propagate( int batchSize, float *inputData, float *weights, float *biasWeights ) {
-//    cout << "PropagateCpu::propagate outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
+VIRTUAL float *PropagateCpu::forward( int batchSize, float *inputData, float *weights, float *biasWeights ) {
+//    cout << "PropagateCpu::forward outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
     float *output = new float[ dim.outputCubeSize * batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
         for( int filter = 0; filter < dim.numFilters; filter++ ) {

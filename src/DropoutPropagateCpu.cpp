@@ -23,8 +23,8 @@ using namespace std;
 DropoutPropagateCpu::DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
 }
-VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << "DropoutPropagateCpu::propagate( CLWrapper * )" << endl;
+VIRTUAL void DropoutPropagateCpu::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << "DropoutPropagateCpu::forward( CLWrapper * )" << endl;
 
     inputWrapper->copyToHost();
 
@@ -32,7 +32,7 @@ VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *masksWrap
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
     float *output = new float[ getOutputSize( batchSize ) ];
 
-    propagate( batchSize, masks, input, output );
+    forward( batchSize, masks, input, output );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
     memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
@@ -41,16 +41,16 @@ VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, CLWrapper *masksWrap
 
     delete[] output;
 }
-VIRTUAL void DropoutPropagateCpu::propagate( int batchSize, unsigned char *masks, float *input, float *output ) {
+VIRTUAL void DropoutPropagateCpu::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
 //    float *output = new float[ getOutputSize( batchSize ) ];
-//    cout << "DropoutPropagateCpu::propagate( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate start" );
+//    cout << "DropoutPropagateCpu::forward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::forward start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
 //    float inverseDropRatio = 1.0f / dropRatio; // since multiply faster than divide, just divide once
     for( int i = 0; i < totalLinearSize; i++ ) {
         output[i] = masks[i] == 1 ? input[i] : 0;
     }
-    StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::propagate end" );
+    StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::forward end" );
 //    return output;
 }
 

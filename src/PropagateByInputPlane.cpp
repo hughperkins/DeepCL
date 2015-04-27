@@ -23,9 +23,9 @@ VIRTUAL PropagateByInputPlane::~PropagateByInputPlane() {
     delete repeatedAdd;
 //    delete activate;
 }
-VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void PropagateByInputPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateByInputPlane::propagate begin");
+    StatefulTimer::timeCheck("PropagateByInputPlane::forward begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
 
@@ -55,10 +55,10 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     }
     int numWorkgroups = dim.numInputPlanes;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagatebyinputplane numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " numinputplanes=" << dim.numInputPlanes << endl;
+//    cout << "forwardbyinputplane numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " numinputplanes=" << dim.numInputPlanes << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateByInputPlane::propagate after kernel1");
+    StatefulTimer::timeCheck("PropagateByInputPlane::forward after kernel1");
 
 //    {
 //        output1Wrapper->copyToHost();
@@ -72,7 +72,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     reduceSegments->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateByInputPlane::propagate after reduce over inputplanes");
+    StatefulTimer::timeCheck("PropagateByInputPlane::forward after reduce over inputplanes");
 
     if( dim.biased ) {
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
@@ -83,7 +83,7 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
-        StatefulTimer::timeCheck("PropagateByInputPlane::propagate after repeatedAdd");
+        StatefulTimer::timeCheck("PropagateByInputPlane::forward after repeatedAdd");
     }
 
 //    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
@@ -92,12 +92,12 @@ VIRTUAL void PropagateByInputPlane::propagate( int batchSize, CLWrapper *dataWra
 //    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
 //    cl->finish();
-//    StatefulTimer::timeCheck("PropagateByInputPlane::propagate after activate");
+//    StatefulTimer::timeCheck("PropagateByInputPlane::forward after activate");
 
     delete output1Wrapper;
     delete[] output1;
 
-    StatefulTimer::timeCheck("PropagateByInputPlane::propagate after call propagate");
+    StatefulTimer::timeCheck("PropagateByInputPlane::forward after call forward");
 }
 PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
@@ -108,12 +108,12 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/propagate_byinputplane.cl", "propagate_byinputplane", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/forward_byinputplane.cl", "forward_byinputplane", 'options' )
     // stringify.write_kernel2( "reduceSegments", "cl/reduce_segments.cl", "reduce_segments", 'options' )
     // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // # stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate_byinputplane.cl:
+    // generated using cog, from cl/forward_byinputplane.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -133,7 +133,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "// iterate over: [n][outCol]\n" 
     "// output: [n][filterId][outRow][outCol][inputPlane]\n" 
     "// need to later reduce output over: [inputPlane]\n" 
-    "void kernel propagate_byinputplane( const int batchSize,\n" 
+    "void kernel forward_byinputplane( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "    global float *output,\n" 
     "    local float *_inputPlane, local float *_filterPlanes ) {\n" 
@@ -219,7 +219,7 @@ PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagate_byinputplane", options, "cl/propagate_byinputplane.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forward_byinputplane", options, "cl/forward_byinputplane.cl" );
     // generated using cog, from cl/reduce_segments.cl:
     const char * reduceSegmentsSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 

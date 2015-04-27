@@ -72,7 +72,7 @@ public:
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void generateMasks();
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL void backProp( float learningRate );
     VIRTUAL std::string asString() const;
 

@@ -20,8 +20,8 @@ public:
     // ]]]
     // generated, using cog:
     ActivationPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    VIRTUAL void propagate( int batchSize, float *input, float *output );
+    VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
+    VIRTUAL void forward( int batchSize, float *input, float *output );
 
     // [[[end]]]
 };

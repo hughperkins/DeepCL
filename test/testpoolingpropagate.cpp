@@ -14,9 +14,9 @@
 
 using namespace std;
 
-namespace testpoolingpropagate {
+namespace testpoolingforward {
 
-TEST( testpoolingpropagate, basic ) {
+TEST( testpoolingforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
@@ -32,7 +32,7 @@ TEST( testpoolingpropagate, basic ) {
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    poolingPropagate->propagate( batchSize, data, selectors, output );
+    poolingPropagate->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 3 );
     EXPECT_EQ( selectors[1], 0 );
@@ -50,7 +50,7 @@ TEST( testpoolingpropagate, basic ) {
     delete cl;
 }
 
-TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
+TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -73,7 +73,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    poolingPropagate->propagate( batchSize, data, selectors, output );
+    poolingPropagate->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 2 );
     EXPECT_EQ( selectors[1], 1 );
@@ -91,7 +91,7 @@ TEST( testpoolingpropagate, basic_2plane_batchsize2 ) {
     delete cl;
 }
 
-TEST( testpoolingpropagate, fromwrappers ) {
+TEST( testpoolingforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
@@ -114,7 +114,7 @@ TEST( testpoolingpropagate, fromwrappers ) {
 
     inputWrapper->copyToDevice();
 
-    poolingPropagate->propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    poolingPropagate->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
 
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
@@ -233,7 +233,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    poolingPropagate0->propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    poolingPropagate0->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
 
@@ -249,7 +249,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    poolingPropagate1->propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    poolingPropagate1->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
     
@@ -297,37 +297,37 @@ void compareSpecific( CompareSpecificArgs args ) {
     delete cl;
 }
 
-TEST( testpoolingpropagate, comparespecific_0_1_pooling2 ) {
+TEST( testpoolingforward, comparespecific_0_1_pooling2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).poolingSize(2)
         .instance0(0).instance1(1) );
 }
 
-TEST( testpoolingpropagate, comparespecific_0_1_pooling3 ) {
+TEST( testpoolingforward, comparespecific_0_1_pooling3 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).poolingSize(3)
         .instance0(0).instance1(1) );
 }
 
-TEST( testpoolingpropagate, comparespecific_0_1_pooling2_pz ) {
+TEST( testpoolingforward, comparespecific_0_1_pooling2_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).poolingSize(2)
         .instance0(0).instance1(1).padZeros(1) );
 }
 
-TEST( testpoolingpropagate, comparespecific_0_1_pooling3_pz ) {
+TEST( testpoolingforward, comparespecific_0_1_pooling3_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );
 }
 
-TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small ) {
+TEST( testpoolingforward, comparespecific_0_1_pooling3_small ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(1).numPlanes(1).imageSize(2).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );
 }
 
-TEST( testpoolingpropagate, comparespecific_0_1_pooling3_small2 ) {
+TEST( testpoolingforward, comparespecific_0_1_pooling3_small2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(2).numPlanes(1).imageSize(2).poolingSize(3)
         .instance0(0).instance1(1).padZeros(1) );

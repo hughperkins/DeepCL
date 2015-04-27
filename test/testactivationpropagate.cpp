@@ -15,9 +15,9 @@
 
 using namespace std;
 
-namespace testactivationpropagate {
+namespace testactivationforward {
 
-TEST( testactivationpropagate, basic ) {
+TEST( testactivationforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
@@ -32,7 +32,7 @@ TEST( testactivationpropagate, basic ) {
     EXPECT_EQ( outputSize, imageSize * imageSize );
     float *output = new float[outputSize];
 
-    activationPropagate->propagate( batchSize, data, output );
+    activationPropagate->forward( batchSize, data, output );
 
     EXPECT_EQ( 1, output[0] );
     EXPECT_EQ( 2, output[1] );
@@ -47,7 +47,7 @@ TEST( testactivationpropagate, basic ) {
     delete cl;
 }
 
-TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
+TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -68,7 +68,7 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
     int outputSize = activationPropagate->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
-    activationPropagate->propagate( batchSize, data, output );
+    activationPropagate->forward( batchSize, data, output );
 
     EXPECT_EQ( output[0], 1 );
     EXPECT_EQ( output[1], 2 );
@@ -83,7 +83,7 @@ TEST( testactivationpropagate, basic_2plane_batchsize2 ) {
     delete cl;
 }
 
-TEST( testactivationpropagate, fromwrappers ) {
+TEST( testactivationforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
@@ -103,7 +103,7 @@ TEST( testactivationpropagate, fromwrappers ) {
 
     inputWrapper->copyToDevice();
 
-    activationPropagate->propagate( batchSize, inputWrapper, outputWrapper );
+    activationPropagate->forward( batchSize, inputWrapper, outputWrapper );
 
     outputWrapper->copyToHost();
 
@@ -214,7 +214,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    activationPropagate0->propagate( batchSize, inputWrapper, outputWrapper );
+    activationPropagate0->forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
     float *output0 = new float[ outputSize ];
@@ -225,7 +225,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    activationPropagate1->propagate( batchSize, inputWrapper, outputWrapper );
+    activationPropagate1->forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
     
     int numErrors = 0;
@@ -286,43 +286,43 @@ void compareSpecific( CompareSpecificArgs args ) {
     delete cl;
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation2 ) {
+TEST( testactivationforward, comparespecific_0_1_activation2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3 ) {
+TEST( testactivationforward, comparespecific_0_1_activation3 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation2_pz ) {
+TEST( testactivationforward, comparespecific_0_1_activation2_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_pz ) {
+TEST( testactivationforward, comparespecific_0_1_activation3_pz ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(10).numPlanes(5).imageSize(10).activation("relu")
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_small ) {
+TEST( testactivationforward, comparespecific_0_1_activation3_small ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(1).numPlanes(1).imageSize(2).activation("relu")
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_small2 ) {
+TEST( testactivationforward, comparespecific_0_1_activation3_small2 ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(2).numPlanes(1).imageSize(2).activation("relu")
         .instance0(0).instance1(1) );
 }
 
-TEST( testactivationpropagate, comparespecific_0_1_activation3_small2_tanh ) {
+TEST( testactivationforward, comparespecific_0_1_activation3_small2_tanh ) {
     compareSpecific( CompareSpecificArgs::instance()
         .batchSize(2).numPlanes(1).imageSize(2).activation("tanh")
         .instance0(0).instance1(1) );

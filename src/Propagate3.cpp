@@ -22,9 +22,9 @@ VIRTUAL Propagate3::~Propagate3() {
     delete repeatedAdd;
 //    delete activate;
 }
-VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Propagate3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("Propagate3::propagate begin");
+    StatefulTimer::timeCheck("Propagate3::forward begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
 
@@ -40,10 +40,10 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate3::propagate after kernel1");
+    StatefulTimer::timeCheck("Propagate3::forward after kernel1");
 
 //    {
 //        outputWrapper->copyToHost();
@@ -62,7 +62,7 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
-        StatefulTimer::timeCheck("Propagate3::propagate after repeatedAdd");
+        StatefulTimer::timeCheck("Propagate3::forward after repeatedAdd");
     }
 
 //    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
@@ -71,16 +71,16 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 //    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
 //    cl->finish();
-//    StatefulTimer::timeCheck("Propagate3::propagate after activate");
+//    StatefulTimer::timeCheck("Propagate3::forward after activate");
 
-    StatefulTimer::timeCheck("Propagate3::propagate after call propagate");
+    StatefulTimer::timeCheck("Propagate3::forward after call forward");
 }
 Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
             {
 
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
-        throw runtime_error("cannot use propagate3, since outputimagesize * outputimagesize > maxworkgroupsize");
+        throw runtime_error("cannot use forward3, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
     std::string options = ""; // "-D " + fn->getDefineName();
@@ -88,11 +88,11 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/propagate3.cl", "propagate_3_by_n_outplane", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/forward3.cl", "forward_3_by_n_outplane", 'options' )
     // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // # stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate3.cl:
+    // generated using cog, from cl/forward3.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -111,7 +111,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
     "// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)\n" 
     "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
     "// output are organized like [imageid][filterid][row][col]\n" 
-    "void kernel propagate_3_by_n_outplane( const int batchSize,\n" 
+    "void kernel forward_3_by_n_outplane( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "    global float *output,\n" 
     "    local float *_upstreamImage, local float *_filterCube ) {\n" 
@@ -183,7 +183,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagate_3_by_n_outplane", options, "cl/propagate3.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forward_3_by_n_outplane", options, "cl/forward3.cl" );
     // generated using cog, from cl/per_element_add.cl:
     const char * repeatedAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 

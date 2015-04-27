@@ -134,7 +134,7 @@ VIRTUAL float *ActivationLayer::getGradInput() {
 VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
     return fn;
 }
-VIRTUAL void ActivationLayer::propagate() {
+VIRTUAL void ActivationLayer::forward() {
     CLWrapper *inputWrapper = 0;
     if( previousLayer->hasOutputWrapper() ) {
         inputWrapper = previousLayer->getOutputWrapper();
@@ -143,7 +143,7 @@ VIRTUAL void ActivationLayer::propagate() {
         inputWrapper = cl->wrap( previousLayer->getOutputSize(), input );
         inputWrapper->copyToDevice();
     }
-    activationPropagateImpl->propagate( batchSize, inputWrapper, outputWrapper );
+    activationPropagateImpl->forward( batchSize, inputWrapper, outputWrapper );
     if( !previousLayer->hasOutputWrapper() ) {
         delete inputWrapper;
     }

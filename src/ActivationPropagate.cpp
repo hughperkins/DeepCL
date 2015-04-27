@@ -44,16 +44,16 @@ STATIC ActivationPropagate *ActivationPropagate::instanceSpecific( int idx, Open
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("ActivationPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void ActivationPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
-    throw runtime_error("propagate not implemented for this child type");
+VIRTUAL void ActivationPropagate::forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
+    throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void ActivationPropagate::propagate( int batchSize, float *input, float *output ) {
-//    cout << "ActivationPropagate::propagate( float * )" << endl;
+VIRTUAL void ActivationPropagate::forward( int batchSize, float *input, float *output ) {
+//    cout << "ActivationPropagate::forward( float * )" << endl;
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
     CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     inputWrapper->copyToDevice();
-    propagate( batchSize, inputWrapper, outputWrapper );
+    forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();    
 
     delete outputWrapper;

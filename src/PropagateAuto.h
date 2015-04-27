@@ -45,7 +45,7 @@ public:
     // generated, using cog:
     PropagateAuto( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~PropagateAuto();
-    VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
+    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
     CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
 
     // [[[end]]]

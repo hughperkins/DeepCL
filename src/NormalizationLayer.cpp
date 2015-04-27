@@ -88,7 +88,7 @@ VIRTUAL void NormalizationLayer::setBatchSize( int batchSize ) {
     this->allocatedSize = allocatedSize;
     output = new float[ getOutputSize() ];
 }
-VIRTUAL void NormalizationLayer::propagate() {
+VIRTUAL void NormalizationLayer::forward() {
     int totalLinearLength = getOutputSize();
     float *upstreamOutput = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {

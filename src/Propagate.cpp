@@ -111,14 +111,14 @@ STATIC Propagate *Propagate::instanceSpecific( std::string name, OpenCLHelper *c
     }
 }
 // you own the returned output array, and are responsible for deleting it
-VIRTUAL float * Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases ) {
+VIRTUAL float * Propagate::forward( int batchSize, float *inputData, float *filters, float *biases ) {
     float *output = new float[batchSize * dim.outputCubeSize];
-    propagate( batchSize, inputData, filters, biases, output );
+    forward( batchSize, inputData, filters, biases, output );
     return output;
 }
 // must allocate output yourself before the call
-VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filters, float *biases, float *output ) {
-    StatefulTimer::timeCheck("Propagate::propagate begin");
+VIRTUAL void Propagate::forward( int batchSize, float *inputData, float *filters, float *biases, float *output ) {
+    StatefulTimer::timeCheck("Propagate::forward begin");
     int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = cl->wrap( inputDataSize, inputData );
     dataWrapper->copyToDevice();
@@ -142,12 +142,12 @@ VIRTUAL void Propagate::propagate( int batchSize, float *inputData, float *filte
     CLWrapper *outputWrapper = cl->wrap( batchSize * dim.outputCubeSize, output );
     cl->finish();
 
-    StatefulTimer::timeCheck("Propagate::propagate after copied to device");
-    propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
+    StatefulTimer::timeCheck("Propagate::forward after copied to device");
+    forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
             outputWrapper );
-    StatefulTimer::timeCheck("Propagate::propagate after call propagate");
+    StatefulTimer::timeCheck("Propagate::forward after call forward");
     outputWrapper->copyToHost();
-    StatefulTimer::timeCheck("Propagate::propagate after copytohost");
+    StatefulTimer::timeCheck("Propagate::forward after copytohost");
 //    for( int i = 0; i < 20; i++ ) {
 //        cout << "output[" << i << "]=" << output[i] << endl;
 //    }

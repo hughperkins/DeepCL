@@ -16,7 +16,7 @@
 // iterate over: [n][outCol]
 // output: [n][filterId][outRow][outCol][inputPlane]
 // need to later reduce output over: [inputPlane]
-void kernel propagate_byinputplane( const int batchSize,
+void kernel forward_byinputplane( const int batchSize,
       global const float *images, global const float *filters, 
     global float *output,
     local float *_inputPlane, local float *_filterPlanes ) {

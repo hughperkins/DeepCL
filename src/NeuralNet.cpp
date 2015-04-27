@@ -188,12 +188,12 @@ PUBLICAPI int NeuralNet::calcNumRight( int const *labels ) {
     }
     return acceptsLabels->calcNumRight( labels );
 }
-PUBLICAPI void NeuralNet::propagate( float const*images) {
+PUBLICAPI void NeuralNet::forward( float const*images) {
     // forward...
     dynamic_cast<InputLayer *>(layers[0])->in( images );
     for( int layerId = 0; layerId < (int)layers.size(); layerId++ ) {
         StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
-        layers[layerId]->propagate();
+        layers[layerId]->forward();
         StatefulTimer::setPrefix("" );
     }
 }

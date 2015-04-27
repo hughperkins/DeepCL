@@ -106,7 +106,7 @@ float printAccuracy( string name, NeuralNet *net, float ***images, int *labels, 
             thisBatchSize = N - batchStart;
             net->setBatchSize( thisBatchSize );
         }
-        net->propagate( &(images[batchStart][0][0]) );
+        net->forward( &(images[batchStart][0][0]) );
         float const*output = net->getOutput();
         int thisnumright = net->calcNumRight( &(labels[batchStart]) );
         testNumRight += thisnumright;
@@ -199,7 +199,7 @@ void go(Config config) {
             WeightsPersister::copyNetWeightsToArray( net, weightsCopy );
             StatefulTimer::timeCheck("copyNetWeightsToArray END");
             #endif
-            net->propagate( &(imagesFloat[nodeBatchStart][0][0]) );
+            net->forward( &(imagesFloat[nodeBatchStart][0][0]) );
             net->backPropFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
             trainTotalNumber += thisNodeBatchSize;
             trainNumRight += net->calcNumRight( &(labels[nodeBatchStart]) );
@@ -257,7 +257,7 @@ void go(Config config) {
             thisBatchSize = config.numTest - batchStart;
             net->setBatchSize( thisBatchSize );
         }
-        net->propagate( &(imagesTest[batchStart][0][0]) );
+        net->forward( &(imagesTest[batchStart][0][0]) );
         float const*outputTest = net->getOutput();
         totalNumber += thisBatchSize;
         totalNumRight += net->calcNumRight( &(labelsTest[batchStart]) );

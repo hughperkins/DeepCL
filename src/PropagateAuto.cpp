@@ -57,10 +57,10 @@ VIRTUAL PropagateAuto::~PropagateAuto() {
         }
     }
 }
-VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
+VIRTUAL void PropagateAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
         CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
 //    Propagate *instance = 0;
-//    cout << "PropagateAuto::propagate" << endl;
+//    cout << "PropagateAuto::forward" << endl;
     while( chosenIndex == -1 && nextIndex < num ) {
         int thisIndex = nextIndex;
         nextIndex++;
@@ -77,7 +77,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
             if( valid[thisIndex] ) {
                 Timer timer;
                 try {
-                    candidate->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
+                    candidate->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
                     milliseconds[thisIndex] = timer.lap();
 //                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
@@ -91,7 +91,7 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
         }
     }
     if( chosenIndex == -1 ) {
-        cout << StatefulTimer::instance()->prefix + "PropagateAuto::propagate choosing best instance:" << endl;
+        cout << StatefulTimer::instance()->prefix + "PropagateAuto::forward choosing best instance:" << endl;
         int bestIndex = -1;
         int bestTime = 0;
         for( int i = 0; i < num; i++ ) {
@@ -114,10 +114,10 @@ VIRTUAL void PropagateAuto::propagate( int batchSize, CLWrapper *dataWrapper, CL
             cout << "   selected: instance " << bestIndex << endl;
             this->chosenIndex = bestIndex;
         } else {
-            throw runtime_error(StatefulTimer::instance()->prefix + "No valid propagate implementations found" );
+            throw runtime_error(StatefulTimer::instance()->prefix + "No valid forward implementations found" );
         }
     }
-//    cout << "PropagateAuto::propagate using instance index: " << chosenIndex << endl;
-    instances[chosenIndex]->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
+//    cout << "PropagateAuto::forward using instance index: " << chosenIndex << endl;
+    instances[chosenIndex]->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
 }
 

@@ -47,11 +47,11 @@ STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelp
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("DropoutPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void DropoutPropagate::propagate( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData ) {
-    throw runtime_error("propagate not implemented for this child type");
+VIRTUAL void DropoutPropagate::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData ) {
+    throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void DropoutPropagate::propagate( int batchSize, unsigned char *masks, float *input, float *output ) {
-//    cout << "DropoutPropagate::propagate( float * )" << endl;
+VIRTUAL void DropoutPropagate::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
+//    cout << "DropoutPropagate::forward( float * )" << endl;
     int inputLinearSize = getInputSize( batchSize );
     CLWrapper *masksWrapper = cl->wrap( inputLinearSize, masks );
     CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
@@ -59,7 +59,7 @@ VIRTUAL void DropoutPropagate::propagate( int batchSize, unsigned char *masks, f
 
     masksWrapper->copyToDevice();
     inputWrapper->copyToDevice();
-    propagate( batchSize, masksWrapper, inputWrapper, outputWrapper );
+    forward( batchSize, masksWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();    
 
     delete outputWrapper;

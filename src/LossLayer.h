@@ -19,7 +19,7 @@ public:
     // ]]]
     // generated, using cog:
     LossLayer( Layer *previousLayer, LossLayerMaker *maker );
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL float *getOutput();
     VIRTUAL int getOutputSize() const;

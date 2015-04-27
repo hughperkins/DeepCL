@@ -27,9 +27,9 @@ using namespace std;
 VIRTUAL ActivationPropagateGpuNaive::~ActivationPropagateGpuNaive() {
     delete kernel;
 }
-VIRTUAL void ActivationPropagateGpuNaive::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "ActivationPropagateGpuNaive::propagate( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::propagate start" );
+VIRTUAL void ActivationPropagateGpuNaive::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "ActivationPropagateGpuNaive::forward( CLWrapper * )" << endl;
+    StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::forward start" );
 
     kernel->input( batchSize * numPlanes * outputImageSize * outputImageSize );
     kernel->output( outputWrapper )->input( inputWrapper );
@@ -38,14 +38,14 @@ VIRTUAL void ActivationPropagateGpuNaive::propagate( int batchSize, CLWrapper *i
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "ActivationPropagateGpuNaive::propagate batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
+//    cout << "ActivationPropagateGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
-//    cout << "ActivationPropagateGpuNaive::propagate selectorswrapper:" << endl;
+//    cout << "ActivationPropagateGpuNaive::forward selectorswrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
-    StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::propagate end" );
+    StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::forward end" );
 }
 ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         ActivationPropagate( cl, numPlanes, inputImageSize, fn ) {
@@ -59,7 +59,7 @@ ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int 
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/activate.cl", "propagateNaive", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/activate.cl", "forwardNaive", 'options' )
     // ]]]
     // generated using cog, from cl/activate.cl:
     const char * kernelSource =  
@@ -95,7 +95,7 @@ ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int 
     "#endif\n" 
     "\n" 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void propagateNaive( const int N, global float *out, global const float *in ) {\n" 
+    "kernel void forwardNaive( const int N, global float *out, global const float *in ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
@@ -106,7 +106,7 @@ ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int 
     "\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/activate.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/activate.cl" );
     // [[[end]]]
 }
 

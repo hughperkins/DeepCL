@@ -214,7 +214,7 @@ void kernel calcGradInput2(
 #endif
 
 // so, we're just going to convolve the errorcubes with our filter cubes...
-// like propagate, but easier, since no activation function, and no biases
+// like forward, but easier, since no activation function, and no biases
 // errorcubes (*) filters => gradOutput
 // for propagation we had:
 //   images are organized like [imageId][plane][row][col]

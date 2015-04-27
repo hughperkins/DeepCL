@@ -23,8 +23,8 @@ using namespace std;
 PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingPropagate( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
-VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
-//    cout << "PoolingPropagateCpu::propagate( CLWrapper * )" << endl;
+VIRTUAL void PoolingPropagateCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+//    cout << "PoolingPropagateCpu::forward( CLWrapper * )" << endl;
 
     inputWrapper->copyToHost();
 
@@ -32,7 +32,7 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
     int *selectors = new int[ getOutputSize( batchSize ) ];
     float *output = new float[ getOutputSize( batchSize ) ];
 
-    propagate( batchSize, input, selectors, output );
+    forward( batchSize, input, selectors, output );
 
     int *selectorsHostArray = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
     memcpy( selectorsHostArray, selectors, sizeof(int) * getOutputSize( batchSize ) );
@@ -46,10 +46,10 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, CLWrapper *inputWrap
     delete[] selectors;
     delete[] output;
 }
-VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *selectors, float *output ) {
+VIRTUAL void PoolingPropagateCpu::forward( int batchSize, float *input, int *selectors, float *output ) {
 //    float *output = new float[ getOutputSize( batchSize ) ];
-//    cout << "PoolingPropagateCpu::propagate( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate start" );
+//    cout << "PoolingPropagateCpu::forward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::forward start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
@@ -76,7 +76,7 @@ VIRTUAL void PoolingPropagateCpu::propagate( int batchSize, float *input, int *s
             }
         }
     }
-    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::propagate end" );
+    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::forward end" );
 //    return output;
 }
 

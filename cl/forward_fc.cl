@@ -75,7 +75,7 @@ kernel void reduce_inputplanes( const int batchSize, global float const *output2
 //   lots of inplanes, eg 32
 //   inputimagesize around 19, not too small
 #if gFilterSize == gInputImageSize && gPadZeros == 0
-void kernel propagate_filter_matches_inimage( const int batchSize,
+void kernel forward_filter_matches_inimage( const int batchSize,
       global const float *images, global const float *filters, 
         #ifdef BIASED
             global const float*biases, 

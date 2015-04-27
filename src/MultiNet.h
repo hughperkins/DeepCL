@@ -49,8 +49,8 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void setTraining( bool training );
     VIRTUAL int calcNumRight( int const *labels );
-    void propagateToOurselves();
-    VIRTUAL void propagate( float const*images);
+    void forwardToOurselves();
+    VIRTUAL void forward( float const*images);
     VIRTUAL void backPropFromLabels( float learningRate, int const *labels);
     VIRTUAL void backProp( float learningRate, float const *expectedOutput);
     VIRTUAL float const *getOutput() const;

@@ -84,7 +84,7 @@ public:
     PUBLICAPI void setBatchSize( int batchSize );
     PUBLICAPI void setTraining( bool training );
     PUBLICAPI int calcNumRight( int const *labels );
-    PUBLICAPI void propagate( float const*images);
+    PUBLICAPI void forward( float const*images);
     PUBLICAPI void backPropFromLabels( float learningRate, int const *labels);
     PUBLICAPI void backProp( float learningRate, float const *expectedOutput);
     PUBLICAPI int getNumLayers();

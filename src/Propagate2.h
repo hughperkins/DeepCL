@@ -12,7 +12,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~Propagate2();
-    VIRTUAL void propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
     Propagate2( OpenCLHelper *cl, LayerDimensions dim );
 

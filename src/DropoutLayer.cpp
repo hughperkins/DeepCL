@@ -192,7 +192,7 @@ VIRTUAL void DropoutLayer::generateMasks() {
         masks[i] = random->_uniform() <= dropRatio ? 0 : 1;
     }
 }
-VIRTUAL void DropoutLayer::propagate() {
+VIRTUAL void DropoutLayer::forward() {
     CLWrapper *upstreamOutputWrapper = 0;
     if( previousLayer->hasOutputWrapper() ) {
         upstreamOutputWrapper = previousLayer->getOutputWrapper();
@@ -207,7 +207,7 @@ VIRTUAL void DropoutLayer::propagate() {
         // create new masks...
         generateMasks();
         maskWrapper->copyToDevice();
-        dropoutPropagateImpl->propagate( batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper );
+        dropoutPropagateImpl->forward( batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper );
     } else {
         // if not training, then simply skip the dropout bit, copy the buffers directly
         multiplyBuffer->multiply( getOutputSize(), upstreamOutputWrapper, outputWrapper );

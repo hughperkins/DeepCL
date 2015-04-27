@@ -15,7 +15,7 @@
 // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
 // output are organized like [imageid][filterid][row][col]
-void kernel propagate_3_by_n_outplane( const int batchSize,
+void kernel forward_3_by_n_outplane( const int batchSize,
       global const float *images, global const float *filters, 
     global float *output,
     local float *_upstreamImage, local float *_filterCube ) {

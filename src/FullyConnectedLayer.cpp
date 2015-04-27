@@ -88,8 +88,8 @@ VIRTUAL CLWrapper *FullyConnectedLayer::getOutputWrapper() {
 VIRTUAL bool FullyConnectedLayer::needsBackProp() {
     return true;;
 }
-VIRTUAL void FullyConnectedLayer::propagate() {
-    convolutionalLayer->propagate();
+VIRTUAL void FullyConnectedLayer::forward() {
+    convolutionalLayer->forward();
 }
 VIRTUAL void FullyConnectedLayer::backProp( float learningRate ) {
     convolutionalLayer->backProp( learningRate );

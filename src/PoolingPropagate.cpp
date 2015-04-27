@@ -48,17 +48,17 @@ STATIC PoolingPropagate *PoolingPropagate::instanceSpecific( int idx, OpenCLHelp
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("PoolingPropagate::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void PoolingPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData ) {
-    throw runtime_error("propagate not implemented for this child type");
+VIRTUAL void PoolingPropagate::forward( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData ) {
+    throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void PoolingPropagate::propagate( int batchSize, float *input, int *selectors, float *output ) {
-//    cout << "PoolingPropagate::propagate( float * )" << endl;
+VIRTUAL void PoolingPropagate::forward( int batchSize, float *input, int *selectors, float *output ) {
+//    cout << "PoolingPropagate::forward( float * )" << endl;
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
     CLWrapper *selectorsWrapper = cl->wrap( getOutputSize( batchSize ), selectors );
     CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     inputWrapper->copyToDevice();
-    propagate( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
     selectorsWrapper->copyToHost();    
     outputWrapper->copyToHost();    
 

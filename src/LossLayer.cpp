@@ -16,7 +16,7 @@ using namespace std;
 LossLayer::LossLayer( Layer *previousLayer, LossLayerMaker *maker ) :
         Layer( previousLayer, maker ) {
 }
-VIRTUAL void LossLayer::propagate() {
+VIRTUAL void LossLayer::forward() {
 }
 VIRTUAL bool LossLayer::needsBackProp() {
     return previousLayer->needsBackProp();

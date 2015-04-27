@@ -86,7 +86,7 @@ VIRTUAL void ForceBackpropLayer::setBatchSize( int batchSize ) {
     this->allocatedSize = allocatedSize;
     output = new float[ getOutputSize() ];
 }
-VIRTUAL void ForceBackpropLayer::propagate() {
+VIRTUAL void ForceBackpropLayer::forward() {
     int totalLinearLength = getOutputSize();
     float *upstreamOutput = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {

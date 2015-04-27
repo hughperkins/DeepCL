@@ -23,15 +23,15 @@ using namespace std;
 ActivationPropagateCpu::ActivationPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         ActivationPropagate( cl, numPlanes, inputImageSize, fn ) {
 }
-VIRTUAL void ActivationPropagateCpu::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << "ActivationPropagateCpu::propagate( CLWrapper * )" << endl;
+VIRTUAL void ActivationPropagateCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << "ActivationPropagateCpu::forward( CLWrapper * )" << endl;
 
     inputWrapper->copyToHost();
 
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
     float *output = new float[ getOutputSize( batchSize ) ];
 
-    propagate( batchSize, input, output );
+    forward( batchSize, input, output );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
     memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
@@ -40,15 +40,15 @@ VIRTUAL void ActivationPropagateCpu::propagate( int batchSize, CLWrapper *inputW
 
     delete[] output;
 }
-VIRTUAL void ActivationPropagateCpu::propagate( int batchSize, float *input, float *output ) {
+VIRTUAL void ActivationPropagateCpu::forward( int batchSize, float *input, float *output ) {
 //    float *output = new float[ getOutputSize( batchSize ) ];
-//    cout << "ActivationPropagateCpu::propagate( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("ActivationPropagateCpu::propagate start" );
+//    cout << "ActivationPropagateCpu::forward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("ActivationPropagateCpu::forward start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
         output[i] = fn->calc( input[i] );
     }
-    StatefulTimer::instance()->timeCheck("ActivationPropagateCpu::propagate end" );
+    StatefulTimer::instance()->timeCheck("ActivationPropagateCpu::forward end" );
 //    return output;
 }
 

@@ -25,7 +25,7 @@ using namespace std;
 
 #include "test/gtest_supp.h"
 
-void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *output ) {
+void forwardWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *output ) {
     int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = prop->cl->wrap( inputDataSize, inputData );
     dataWrapper->copyToDevice();
@@ -44,12 +44,12 @@ void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, flo
     memset( output, 99, sizeof(float) * batchSize * dim.outputCubeSize );
     outputWrapper->copyToDevice(); // so we can wipe it...
 
-    StatefulTimer::timeCheck("testpropagate: after data wrapper processing");
-    prop->propagate( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
+    StatefulTimer::timeCheck("testforward: after data wrapper processing");
+    prop->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
             outputWrapper );
-//    StatefulTimer::timeCheck("Propagate::propagate after call propagate");
+//    StatefulTimer::timeCheck("Propagate::forward after call forward");
     outputWrapper->copyToHost();
-//    StatefulTimer::timeCheck("Propagate::propagate after copytohost");
+//    StatefulTimer::timeCheck("Propagate::forward after copytohost");
     delete outputWrapper;
 
     delete dataWrapper;
@@ -59,7 +59,7 @@ void propagateWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, flo
     }
 }
 
-TEST( testpropagate, imagesize2_nopadzeros ) {
+TEST( testforward, imagesize2_nopadzeros ) {
     int batchSize = 2;
     int numInPlanes = 1; int imageSize = 2;
     int numOutPlanes = 2; int filterWidth = 2;
@@ -87,21 +87,21 @@ TEST( testpropagate, imagesize2_nopadzeros ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
-        Propagate *propagate = Propagate::instanceSpecific( 99, cl,
+        Propagate *forward = Propagate::instanceSpecific( 99, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ) );
-        float *output = propagate->propagate( batchSize, data, filter1, 0 );  
+        float *output = forward->forward( batchSize, data, filter1, 0 );  
         for( int result = 0; result < resultSize; result++ ) {
             ASSERT_EQ( expectedOutput[result], output[result] );
         }
-        delete propagate;
+        delete forward;
         delete[] output;
     }
 
     delete cl;
 }
 
-TEST( testpropagate, DISABLED_imagesize2_nopadzeros_skip1 ) {
+TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
     int batchSize = 2;
     int numInPlanes = 1; int imageSize = 4;
     int numOutPlanes = 2; int filterWidth = 2;
@@ -146,21 +146,21 @@ TEST( testpropagate, DISABLED_imagesize2_nopadzeros_skip1 ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
-        Propagate *propagate = Propagate::instanceSpecific( 0, cl,
+        Propagate *forward = Propagate::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ).setSkip(1) );
-        float *output = propagate->propagate( batchSize, data, filter1, 0 );  
+        float *output = forward->forward( batchSize, data, filter1, 0 );  
         for( int result = 0; result < outputSize; result++ ) {
             cout << "checking result " << result << endl;
             EXPECT_EQ( expectedOutput[result], output[result] );
         }
-        delete propagate;
+        delete forward;
         delete[] output;
     }
     delete cl;
 }
 
-TEST( testpropagate, imagesize2_padzeros ) {
+TEST( testforward, imagesize2_padzeros ) {
     int batchSize = 2;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -230,9 +230,9 @@ TEST( testpropagate, imagesize2_padzeros ) {
 
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
+    Propagate *forward = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
-    float *output = propagate->propagate( batchSize, data, filter1, 0 );        
+    float *output = forward->forward( batchSize, data, filter1, 0 );        
 
 //    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, output[0] );
 //    ASSERT_EQ( 0.7f * 0.5f -1.1f * 0.5f, output[1] );
@@ -245,12 +245,12 @@ TEST( testpropagate, imagesize2_padzeros ) {
             ASSERT_FLOAT_EQ( expectedOutput[result], output[result] );
         }
     }
-    delete propagate;
+    delete forward;
     delete[] output;
     delete cl;
 }
 
-TEST( testpropagate, imagesize3 ) {
+TEST( testforward, imagesize3 ) {
     int batchSize = 5;
     int numOutPlanes = 2;
     int numInPlanes = 1;
@@ -291,9 +291,9 @@ TEST( testpropagate, imagesize3 ) {
 
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
+    Propagate *forward = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
-    float *output = propagate->propagate( 
+    float *output = forward->forward( 
         batchSize, data, filter1, 0 );        
 
     assertEquals( 0, output[0] );
@@ -307,12 +307,12 @@ TEST( testpropagate, imagesize3 ) {
     assertEquals( 0.5f, output[8] );
     assertEquals( 0.5f, output[9] );
         cout << "test1 ok" << endl;
-    delete propagate;
+    delete forward;
     delete[] output;
     delete cl;
 }
 
-TEST( testpropagate, test2 ) {
+TEST( testforward, test2 ) {
     int batchSize = 2;
     LayerDimensions dim;
     dim.setNumFilters(2).setNumInputPlanes(1).setInputImageSize(3).setFilterSize(3)
@@ -339,20 +339,20 @@ TEST( testpropagate, test2 ) {
 
     float *biases = 0;
 
-    Propagate *propagate = Propagate::instanceSpecific( 1, cl, dim );
-    float *output = propagate->propagate( batchSize, data, filter1, biases );
+    Propagate *forward = Propagate::instanceSpecific( 1, cl, dim );
+    float *output = forward->forward( batchSize, data, filter1, biases );
 
     EXPECT_FLOAT_NEAR( -0.5f * 0.300809f -0.5f * 0.11011f, output[0] );
     EXPECT_FLOAT_NEAR( -0.5f * 0.0570846f +0.5f * 0.347077f, output[1] );
     EXPECT_FLOAT_NEAR( 0.5f * 0.300809f +0.5f * 0.11011f, output[2] );
     EXPECT_FLOAT_NEAR( 0.5f * 0.0570846f -0.5f * 0.347077f, output[3] );
 
-    delete propagate;
+    delete forward;
     delete[] output;
     delete cl;
 }
 
-TEST( testpropagate, test3 ) {
+TEST( testforward, test3 ) {
     int batchSize = 4;
     int numInPlanes = 2;
     int numOutPlanes = 2;
@@ -369,9 +369,9 @@ TEST( testpropagate, test3 ) {
 
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *propagate = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
+    Propagate *forward = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ) );
-    float *output = propagate->propagate( 
+    float *output = forward->forward( 
         batchSize, data, filter, 0 );        
 
     float expectedOutput[] = {0.2f*0.1f+0.3f*0.2f,
@@ -391,7 +391,7 @@ TEST( testpropagate, test3 ) {
 //        cout << "output[" << i << "]=" << output[i] << endl;
       assertEquals( expectedOutput[i], output[i], 0.0001f);
    }
-    delete propagate;
+    delete forward;
     delete cl;
 }
 
@@ -458,11 +458,11 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
             cout << "batch " << batch << " batchsize " << thisBatchSize << endl;
             float *outputtemp = new float[thisBatchSize * dim.outputCubeSize * sizeof(float)];
 //            memset( outputtemp, 123, thisBatchSize * dim.outputCubeSize * sizeof(float) ); // so kernel
-                // cant just reuse the work of previous propagate :-)
+                // cant just reuse the work of previous forward :-)
 //            outputtemps[instance] = 
 //            StatefulTimer::timeCheck("after memset");
-            propagateWithWipe( thisPropagate, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
-//            thisPropagate->propagate( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
+            forwardWithWipe( thisPropagate, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
+//            thisPropagate->forward( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
             memcpy( thisOutput + batch * batchSize * dim.outputCubeSize, outputtemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
             delete[] outputtemp;
         }
@@ -515,10 +515,10 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     delete[] biasFilters;
 }
 
-// first, compare the slow, but probably correct, cpu version, with propagate1
-// propagate1 is slow-ish, but faster than cpu, and simple, so more likely to be correct
-// then compare propagate1 with each other type
-TEST( testpropagate, compare_0_1_biased_nopad ) {
+// first, compare the slow, but probably correct, cpu version, with forward1
+// forward1 is slow-ish, but faster than cpu, and simple, so more likely to be correct
+// then compare forward1 with each other type
+TEST( testforward, compare_0_1_biased_nopad ) {
     LayerDimensions dim;
     int batchSize = 4;
 //    int instance0 = 1;
@@ -532,7 +532,7 @@ TEST( testpropagate, compare_0_1_biased_nopad ) {
     compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
 }
 
-TEST( testpropagate, compare_0_1_biased_pad ) {
+TEST( testforward, compare_0_1_biased_pad ) {
     LayerDimensions dim;
     int batchSize = 4;
 //    int instance0 = 1;
@@ -546,7 +546,7 @@ TEST( testpropagate, compare_0_1_biased_pad ) {
     compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
 }
 
-TEST( testpropagate, compare_1_n_biased_nopad ) {
+TEST( testforward, compare_1_n_biased_nopad ) {
     LayerDimensions dim;
     int batchSize = 4;
 //    int instance0 = 1;
@@ -559,14 +559,14 @@ TEST( testpropagate, compare_1_n_biased_nopad ) {
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
     for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
-            continue; // propagatefc, cant use for inputimagesize != filtersize
+            continue; // forwardfc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
         compareSpecific( false, N, batchSize, dim, fn, 1, instance );
     }
 }
 
-TEST( testpropagate, compare_1_n_biased_pad ) {
+TEST( testforward, compare_1_n_biased_pad ) {
     LayerDimensions dim;
     int batchSize = 4;
 //    int instance0 = 1;
@@ -579,14 +579,14 @@ TEST( testpropagate, compare_1_n_biased_pad ) {
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
     for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
-            continue; // propagatefc, cant use for inputimagesize != filtersize
+            continue; // forwardfc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
         compareSpecific( false, N, batchSize, dim, fn, 1, instance );
     }
 }
 
-TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, since fc wont work with pad
+TEST( testforward, compare_1_5_biased_nopad ) { // only need to do nopad, since fc wont work with pad
     LayerDimensions dim;
     int batchSize = 4;
 //    int instance0 = 1;
@@ -600,7 +600,7 @@ TEST( testpropagate, compare_1_5_biased_nopad ) { // only need to do nopad, sinc
     compareSpecific( false, N, batchSize, dim, fn, 1, 5 );
 }
 
-TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since fc wont work with pad
+TEST( testforward, compare_1_4_fcscenario ) { // only need to do nopad, since fc wont work with pad
     LayerDimensions dim;
     int batchSize = 4;
     int N = 4;
@@ -612,14 +612,14 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
     compareSpecific( false, N, batchSize, dim, fn, 1, 4 );
 }
 
-//TEST( SLOW_testpropagate, comparespecific ) {
+//TEST( SLOW_testforward, comparespecific ) {
 //    LayerDimensions dim;
 //    dim.setInputPlanes( 2 ).setInputImageSize(5).setNumFilters( 1 ).setFilterSize( 5 )
 //        .setPadZeros( true ).setBiased( false );    
 //    compareSpecific( 1, dim, 1, 3 );
 //}
 
-//TEST( SLOW_testpropagate, comparespecific_fc500unbiased ) {
+//TEST( SLOW_testforward, comparespecific_fc500unbiased ) {
 //    LayerDimensions dim;
 //    const int imageSize = 19;
 //    dim.setInputPlanes( 32 ).setInputImageSize(imageSize).setNumFilters( 500 ).setFilterSize( imageSize )
@@ -627,7 +627,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 //    compareSpecific( 4, dim, 1, 5 );
 //}
 
-//TEST( SLOW_testpropagate, comparespecific_fc500biased ) {
+//TEST( SLOW_testforward, comparespecific_fc500biased ) {
 //    LayerDimensions dim;
 //    const int imageSize = 19;
 //    dim.setInputPlanes( 32 ).setInputImageSize(imageSize).setNumFilters( 500 ).setFilterSize( imageSize )
@@ -635,7 +635,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 //    compareSpecific( 4, dim, 1, 5 );
 //}
 
-//TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7 ) {
+//TEST( SLOW_testforward, comparespecific_kgsgo_64c7 ) {
 //    LayerDimensions dim;
 //    const int imageSize = 19;
 //    dim.setInputPlanes( 64 ).setInputImageSize(imageSize).setNumFilters( 64 ).setFilterSize( 7 )
@@ -643,7 +643,7 @@ TEST( testpropagate, compare_1_4_fcscenario ) { // only need to do nopad, since 
 //    compareSpecific( 128, dim, new ReluActivation(), 1, 6 );
 //}
 
-TEST( SLOW_testpropagate, compare_args ) {
+TEST( SLOW_testforward, compare_args ) {
     LayerDimensions dim;
     int batchSize = 128;
 //    int imageSize = 19;
@@ -673,7 +673,7 @@ TEST( SLOW_testpropagate, compare_args ) {
     compareSpecific( debug, N, batchSize, dim, fn, instance0, instance1 );
 }
 
-//TEST( SLOW_testpropagate, comparespecific_kgsgo_64c7mini ) {
+//TEST( SLOW_testforward, comparespecific_kgsgo_64c7mini ) {
 //    LayerDimensions dim;
 //    const int imageSize = 9;
 //    dim.setInputPlanes( 4 ).setInputImageSize(imageSize).setNumFilters( 4 ).setFilterSize( 5 )
@@ -681,7 +681,7 @@ TEST( SLOW_testpropagate, compare_args ) {
 //    compareSpecific( 4, dim, new ReluActivation(), 1, 6 );
 //}
 
-TEST( testpropagate, softmax ) {
+TEST( testforward, softmax ) {
     NeuralNet *net = NeuralNet::maker()->imageSize(1)->planes(4)->instance();
     net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
@@ -690,7 +690,7 @@ TEST( testpropagate, softmax ) {
     input[1] = 1;
     input[2] = 3;
     input[3] = 2;
-    net->propagate( input );
+    net->forward( input );
     float const*output = net->getOutput();
     float sum = 0;
     for( int i = 0; i < net->getLayer(0)->getOutputPlanes(); i++ ) {
@@ -739,7 +739,7 @@ TEST( testpropagate, softmax ) {
     delete net;
 }
 
-TEST( testpropagate, softmax_byplane ) {
+TEST( testforward, softmax_byplane ) {
     NeuralNet *net = NeuralNet::maker()->imageSize(2)->planes(1)->instance();
     net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
@@ -749,7 +749,7 @@ TEST( testpropagate, softmax_byplane ) {
     input[1] = 1;
     input[2] = 3;
     input[3] = 2;
-    net->propagate( input );
+    net->forward( input );
     float const*output = net->getOutput();
     float sum = 0;
     for( int i = 0; i < imageSizeSquared; i++ ) {
@@ -823,7 +823,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
     Propagate *p1 = Propagate::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;
-        float *output1 = p1->propagate( thisBatchSize, inputs, filters, biasFilters );
+        float *output1 = p1->forward( thisBatchSize, inputs, filters, biasFilters );
         delete[] output1;
     }
     StatefulTimer::dump(true);
@@ -835,7 +835,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
     delete[] biasFilters;
 }
 
-TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
+TEST( SLOW_testforward, perf_kgsgo_fc500 ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 500 ).setFilterSize( 19 )
@@ -843,7 +843,7 @@ TEST( SLOW_testpropagate, perf_kgsgo_fc500 ) {
     testPerf( -1, 128, batchSize, dim, new TanhActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_mnist_firstconvlayer ) {
+TEST( SLOW_testforward, perf_mnist_firstconvlayer ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 1 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
@@ -851,7 +851,7 @@ TEST( SLOW_testpropagate, perf_mnist_firstconvlayer ) {
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_mnist_intlayers_128ex ) {
+TEST( SLOW_testforward, perf_mnist_intlayers_128ex ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
@@ -859,7 +859,7 @@ TEST( SLOW_testpropagate, perf_mnist_intlayers_128ex ) {
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_mnist_intlayers_1024ex ) {
+TEST( SLOW_testforward, perf_mnist_intlayers_1024ex ) {
     int batchSize = 1024;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
@@ -867,7 +867,7 @@ TEST( SLOW_testpropagate, perf_mnist_intlayers_1024ex ) {
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_mnist_finallayer ) {
+TEST( SLOW_testforward, perf_mnist_finallayer ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 10 ).setFilterSize( 28 )
@@ -875,7 +875,7 @@ TEST( SLOW_testpropagate, perf_mnist_finallayer ) {
     testPerf( -1, 128, batchSize, dim, new ReluActivation() );
 }
 
-TEST( SLOW_testpropagate, perf_kgsgo_64c7_args ) {
+TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
     int instance = 3;
     int batchSize = 128;
     int N = 1000;

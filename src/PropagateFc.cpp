@@ -23,8 +23,8 @@ VIRTUAL PropagateFc::~PropagateFc() {
 //    delete kernel_activate;
     delete kPerElementTiledAdd;
 }
-VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateFc::propagate begin");
+VIRTUAL void PropagateFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+    StatefulTimer::timeCheck("PropagateFc::forward begin");
 
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
 
@@ -52,7 +52,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     int globalSize = workgroupSize * numWorkgroups;
     kernel1->run_1d( globalSize, workgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateFc::propagate after first kernel");
+    StatefulTimer::timeCheck("PropagateFc::forward after first kernel");
 
     // now reduce over rows 
     kernel_reduce->in(batchSize * dim.numFilters * dim.numInputPlanes)
@@ -64,7 +64,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
     numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
     kernel_reduce->run_1d( numWorkgroups * 64, 64 );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateFc::propagate after reduce1");
+    StatefulTimer::timeCheck("PropagateFc::forward after reduce1");
 
     // reduce over input planes 
     kernel_reduce->in(batchSize * dim.numFilters)->in( dim.numInputPlanes )
@@ -75,7 +75,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
 //    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
 //    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateFc::propagate after reduce2");
+    StatefulTimer::timeCheck("PropagateFc::forward after reduce2");
 
     // add bias...
     if( dim.biased ) {
@@ -84,7 +84,7 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
         numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         kPerElementTiledAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
-        StatefulTimer::timeCheck("PropagateFc::propagate after add bias");        
+        StatefulTimer::timeCheck("PropagateFc::forward after add bias");        
     }
 
 //    kernel_activate->in( batchSize * dim.numFilters )
@@ -93,14 +93,14 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
 //    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
 //    cl->finish();
-//    StatefulTimer::timeCheck("PropagateFc::propagate after activate");
+//    StatefulTimer::timeCheck("PropagateFc::forward after activate");
 
     delete output2Wrapper;
     delete[] output2;
 
     delete output1Wrapper;
     delete[] output1;
-    StatefulTimer::timeCheck("PropagateFc::propagate end");
+    StatefulTimer::timeCheck("PropagateFc::forward end");
 }
 PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
@@ -118,13 +118,13 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel1", "cl/propagate_fc_wgperrow.cl", "propagate_fc_workgroup_perrow", 'options' )
+    // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
     // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
     // # stringify.write_kernel2( "kernel_activate", "cl/activate.cl", "activate", 'options' )
     // # stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
     // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate_fc_wgperrow.cl:
+    // generated using cog, from cl/forward_fc_wgperrow.cl:
     const char * kernel1Source =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -174,7 +174,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
     "//   lots of inplanes, eg 32-128\n" 
     "//   inputimagesize around 19, not too small\n" 
     "#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)\n" 
-    "void kernel propagate_fc_workgroup_perrow( const int batchSize,\n" 
+    "void kernel forward_fc_workgroup_perrow( const int batchSize,\n" 
     "    global const float *images, global const float *filters,\n" 
     "    global float *output1,\n" 
     "    local float *_imageRow, local float *_filterRows ) {\n" 
@@ -230,7 +230,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
     "#endif\n" 
     "\n" 
     "";
-    kernel1 = cl->buildKernelFromString( kernel1Source, "propagate_fc_workgroup_perrow", options, "cl/propagate_fc_wgperrow.cl" );
+    kernel1 = cl->buildKernelFromString( kernel1Source, "forward_fc_workgroup_perrow", options, "cl/forward_fc_wgperrow.cl" );
     // generated using cog, from cl/reduce_segments.cl:
     const char * kernel_reduceSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 

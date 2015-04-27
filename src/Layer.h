@@ -68,7 +68,7 @@ public:
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
     PUBLICAPI VIRTUAL int getOutputImageSize() const;
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();
     VIRTUAL void initWeights( float const*weights );

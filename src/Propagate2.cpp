@@ -22,7 +22,7 @@ VIRTUAL Propagate2::~Propagate2() {
 }
 // only works for small filters
 // condition: square( dim.filterSize ) * dim.inputPlanes * 4 < 5000 (about 5KB)
-VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Propagate2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
     kernel->in(batchSize);
     kernel->input( dataWrapper );
@@ -35,25 +35,25 @@ VIRTUAL void Propagate2::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "propagate2 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "forward2 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate2::propagate after call propagate");
+    StatefulTimer::timeCheck("Propagate2::forward after call forward");
 }
 Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
             {
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
-        throw runtime_error("cannot use propagate2, since outputimagesize * outputimagesize > maxworkgroupsize");
+        throw runtime_error("cannot use forward2, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
     std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/propagate2.cl", "propagate_2_by_outplane", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/forward2.cl", "forward_2_by_outplane", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate2.cl:
+    // generated using cog, from cl/forward2.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -76,7 +76,7 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim ) :
     "// assumes filter is small, so filtersize * filterSize * inputPlanes * 4 < about 3KB\n" 
     "//                            eg 5 * 5 * 32 * 4 = 3.2KB => ok :-)\n" 
     "//                           but 28 * 28 * 32 * 4 = 100KB => less good :-P\n" 
-    "void kernel propagate_2_by_outplane( const int batchSize,\n" 
+    "void kernel forward_2_by_outplane( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "        #ifdef BIASED\n" 
     "            global const float*biases,\n" 
@@ -164,8 +164,8 @@ Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim ) :
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagate_2_by_outplane", options, "cl/propagate2.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forward_2_by_outplane", options, "cl/forward2.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "propagate2.cl", "propagate_2_by_outplane", options );
+//    kernel = cl->buildKernel( "forward2.cl", "forward_2_by_outplane", options );
 }
 

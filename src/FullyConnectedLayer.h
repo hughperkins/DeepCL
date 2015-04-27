@@ -47,7 +47,7 @@ public:
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL void backProp( float learningRate );
     VIRTUAL bool needsTrainer() const;
     VIRTUAL std::string asString() const;

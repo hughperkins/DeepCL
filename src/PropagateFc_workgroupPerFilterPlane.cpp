@@ -21,8 +21,8 @@ VIRTUAL PropagateFc_workgroupPerFilterPlane::~PropagateFc_workgroupPerFilterPlan
     delete kernel1;
     delete kernel2;
 }
-VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate begin");
+VIRTUAL void PropagateFc_workgroupPerFilterPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::forward begin");
     const int output1Size = batchSize * dim.numFilters * dim.filterSize;
     float *output1 = new float[ output1Size ];
     CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
@@ -40,10 +40,10 @@ VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWr
     int numWorkgroups = dim.filterSize;
 
     int globalSize = workgroupSize * numWorkgroups;
-/////    cout << "propagate3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+/////    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel1->run_1d( globalSize, workgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate after first kernel");
+    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::forward after first kernel");
 
     // now reduce again...
     kernel2->in(batchSize)->in( output1Wrapper )->out( outputWrapper );
@@ -54,7 +54,7 @@ VIRTUAL void PropagateFc_workgroupPerFilterPlane::propagate( int batchSize, CLWr
 
     delete output1Wrapper;
     delete[] output1;
-    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::propagate end");
+    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::forward end");
 }
 PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
@@ -65,10 +65,10 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel1", "cl/propagate_fc_wgperrow.cl", "propagate_fc_workgroup_perrow", 'options' )
-    // stringify.write_kernel2( "kernel2", "cl/propagate_fc.cl", "reduce_rows", 'options' )
+    // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
+    // stringify.write_kernel2( "kernel2", "cl/forward_fc.cl", "reduce_rows", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate_fc_wgperrow.cl:
+    // generated using cog, from cl/forward_fc_wgperrow.cl:
     const char * kernel1Source =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -118,7 +118,7 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     "//   lots of inplanes, eg 32-128\n" 
     "//   inputimagesize around 19, not too small\n" 
     "#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)\n" 
-    "void kernel propagate_fc_workgroup_perrow( const int batchSize,\n" 
+    "void kernel forward_fc_workgroup_perrow( const int batchSize,\n" 
     "    global const float *images, global const float *filters,\n" 
     "    global float *output1,\n" 
     "    local float *_imageRow, local float *_filterRows ) {\n" 
@@ -174,8 +174,8 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     "#endif\n" 
     "\n" 
     "";
-    kernel1 = cl->buildKernelFromString( kernel1Source, "propagate_fc_workgroup_perrow", options, "cl/propagate_fc_wgperrow.cl" );
-    // generated using cog, from cl/propagate_fc.cl:
+    kernel1 = cl->buildKernelFromString( kernel1Source, "forward_fc_workgroup_perrow", options, "cl/forward_fc_wgperrow.cl" );
+    // generated using cog, from cl/forward_fc.cl:
     const char * kernel2Source =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -254,7 +254,7 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     "//   lots of inplanes, eg 32\n" 
     "//   inputimagesize around 19, not too small\n" 
     "#if gFilterSize == gInputImageSize && gPadZeros == 0\n" 
-    "void kernel propagate_filter_matches_inimage( const int batchSize,\n" 
+    "void kernel forward_filter_matches_inimage( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "        #ifdef BIASED\n" 
     "            global const float*biases,\n" 
@@ -318,7 +318,7 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     "\n" 
     "\n" 
     "";
-    kernel2 = cl->buildKernelFromString( kernel2Source, "reduce_rows", options, "cl/propagate_fc.cl" );
+    kernel2 = cl->buildKernelFromString( kernel2Source, "reduce_rows", options, "cl/forward_fc.cl" );
     // [[[end]]]
 }
 

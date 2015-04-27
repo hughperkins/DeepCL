@@ -23,7 +23,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~PoolingPropagateGpuNaive();
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
+    VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
     PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
 
     // [[[end]]]

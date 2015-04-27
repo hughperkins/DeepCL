@@ -18,12 +18,12 @@ using namespace std;
 
 void Trainable::learnBatch( float learningRate, float const*images, float const *expectedOutput ) {
     setTraining( true );
-    propagate( images);
+    forward( images);
     backProp( learningRate, expectedOutput );
 }
 void Trainable::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
     setTraining( true );
-    propagate( images);
+    forward( images);
     backPropFromLabels( learningRate, labels );
 }
 

@@ -89,7 +89,7 @@ DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlane
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "kernel void propagateNaive(\n" 
+    "kernel void forwardNaive(\n" 
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
     "        global const float *input,\n" 

@@ -26,22 +26,22 @@ using namespace std;
 VIRTUAL PoolingPropagateGpuNaive::~PoolingPropagateGpuNaive() {
     delete kernel;
 }
-VIRTUAL void PoolingPropagateGpuNaive::propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "PoolingPropagateGpuNaive::propagate( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::propagate start" );
+VIRTUAL void PoolingPropagateGpuNaive::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "PoolingPropagateGpuNaive::forward( CLWrapper * )" << endl;
+    StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::forward start" );
 
     kernel->input( batchSize )->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "PoolingPropagateGpuNaive::propagate batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
+//    cout << "PoolingPropagateGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
-//    cout << "PoolingPropagateGpuNaive::propagate selectorswrapper:" << endl;
+//    cout << "PoolingPropagateGpuNaive::forward selectorswrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
-    StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::propagate end" );
+    StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::forward end" );
 }
 PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingPropagate( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
@@ -55,7 +55,7 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/pooling.cl", "propagateNaive", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/pooling.cl", "forwardNaive", 'options' )
     // ]]]
     // generated using cog, from cl/pooling.cl:
     const char * kernelSource =  
@@ -68,7 +68,7 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
     "// every plane is independent\n" 
     "// every example is independent\n" 
     "// so, globalid can be: [n][plane][outputRow][outputCol]\n" 
-    "kernel void propagateNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {\n" 
+    "kernel void forwardNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "    const int intraImageOffset = globalId % gOutputImageSizeSquared;\n" 
@@ -107,8 +107,8 @@ PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZe
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagateNaive", options, "cl/pooling.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/pooling.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "pooling.cl", "propagateNaive", options );
+//    kernel = cl->buildKernel( "pooling.cl", "forwardNaive", options );
 }
 

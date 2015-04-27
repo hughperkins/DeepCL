@@ -19,7 +19,7 @@
 // assumes filter is small, so filtersize * filterSize * inputPlanes * 4 < about 3KB
 //                            eg 5 * 5 * 32 * 4 = 3.2KB => ok :-)
 //                           but 28 * 28 * 32 * 4 = 100KB => less good :-P
-void kernel propagate_2_by_outplane( const int batchSize,
+void kernel forward_2_by_outplane( const int batchSize,
       global const float *images, global const float *filters, 
         #ifdef BIASED
             global const float*biases, 

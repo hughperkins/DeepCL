@@ -21,7 +21,7 @@ void NetLearnLabeledAction::run( Trainable *net, float const*const batchData, in
 
 void NetPropagateAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetPropagateBatch" << endl;
-    net->propagate( batchData );
+    net->forward( batchData );
 }
 
 void NetBackpropAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {

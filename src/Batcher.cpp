@@ -187,7 +187,7 @@ PropagateBatcher::PropagateBatcher(Trainable *net, int batchSize, int N, float *
 
 
 void PropagateBatcher::internalTick( float const*batchData, int const*batchLabels) {
-    this->net->propagate( batchData );
+    this->net->forward( batchData );
 }
 
 

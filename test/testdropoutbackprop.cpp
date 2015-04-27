@@ -138,12 +138,12 @@ TEST( testdropoutbackprop, compare_args ) {
     props[1] = p1;
     for( int it = 0; it < its; it++ ) {
         // selectors might go over the edge if we just choose random ints
-        // easiest way to select valid selectors might be to just forwardpropagate first?
+        // easiest way to select valid selectors might be to just forwardforward first?
 
         WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
         WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );
         WeightRandomizer::randomizeInts( it, mask, inputSize, 0, 2 );    
-        forwardprop->propagate( batchSize, mask, input, output );
+        forwardprop->forward( batchSize, mask, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
             props[instance]->backward( batchSize, mask, errors, errorsForUpstream[instance] );
@@ -180,7 +180,7 @@ TEST( testdropoutbackprop, compare_args ) {
 }
 
 /*
-TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
+TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -203,7 +203,7 @@ TEST( testdropoutpropagate, basic_2plane_batchsize2 ) {
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    dropoutPropagate->propagate( batchSize, data, selectors, output );
+    dropoutPropagate->forward( batchSize, data, selectors, output );
 
     EXPECT_FLOAT_NEAR( selectors[0], 2 );
     EXPECT_FLOAT_NEAR( selectors[1], 1 );

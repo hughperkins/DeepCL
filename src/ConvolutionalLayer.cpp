@@ -54,7 +54,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
-    propagateimpl = Propagate::instance( cl, dim );
+    forwardimpl = Propagate::instance( cl, dim );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
         backwardImpl = BackpropErrorsv2::instance( cl, dim );
@@ -93,7 +93,7 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     if( gradInput != 0 ) {
         delete[] gradInput;
     }
-    delete propagateimpl;
+    delete forwardimpl;
     delete backpropWeightsImpl;
     delete backwardImpl;
     delete weightsTrainer;
@@ -263,17 +263,17 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
         gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
     }
 }
-VIRTUAL void ConvolutionalLayer::propagate() {
+VIRTUAL void ConvolutionalLayer::forward() {
     if( batchSize == 0 ) {
-        throw runtime_error("Need to call setBatchSize(size) before calling propagate etc");
+        throw runtime_error("Need to call setBatchSize(size) before calling forward etc");
     }
 //    if( imageSizeSquared <= cl->getMaxWorkgroupSize() ) {
-////        propagate2();
+////        forward2();
 //    } else {
-//  //      propagate1();
+//  //      forward1();
 //    }
-//    propagate1();
-    StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", START");
+//    forward1();
+    StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", START");
 
     CLWrapper *upstreamWrapper = 0;
     if( previousLayer->hasOutputWrapper() ) {
@@ -289,9 +289,9 @@ VIRTUAL void ConvolutionalLayer::propagate() {
         biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
         biasWeightsWrapper->copyToDevice();
     }
-    StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ", copied to device");
-    propagateimpl->propagate( batchSize, upstreamWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
-    StatefulTimer::instance()->timeCheck("    propagate layer " + toString( layerIndex ) + ",  after clFinish");
+    StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", copied to device");
+    forwardimpl->forward( batchSize, upstreamWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
+    StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ",  after clFinish");
 
     if( !previousLayer->hasOutputWrapper() ) {
         delete upstreamWrapper;

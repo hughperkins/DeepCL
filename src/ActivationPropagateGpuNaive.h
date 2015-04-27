@@ -23,7 +23,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ActivationPropagateGpuNaive();
-    VIRTUAL void propagate( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
+    VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
     ActivationPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
 
     // [[[end]]]

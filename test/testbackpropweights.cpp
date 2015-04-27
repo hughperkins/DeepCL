@@ -61,8 +61,8 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     }
 
 //    net->print();
-//    cout << "propagate" <<endl;
-    net->propagate( inputData );
+//    cout << "forward" <<endl;
+    net->forward( inputData );
 //    net->print();
     float loss = net->calcLoss(expectedOutput);
 //    float losslayer1 = dynamic_cast<LossLayer*>(net->getLayer(1))->calcLoss(expectedOutput);
@@ -72,7 +72,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     net->print();
     net->backProp( learningRate, expectedOutput );
 //    net->getLayer(1)->print();
-    net->propagate( inputData );
+    net->forward( inputData );
     net->print();
 //    net->getLayer(1)->print();
     float loss2 = net->calcLoss(expectedOutput);

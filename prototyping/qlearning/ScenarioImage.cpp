@@ -47,7 +47,7 @@ void ScenarioImage::printQRepresentation() {
             float highestQ = 0;
             int bestAction = 0;
             input[ size * size + y * size + x ] = 1;
-            net->propagate( input );
+            net->forward( input );
             input[ size * size + y * size + x ] = 0;
             float const*output = net->getOutput();
             for( int action = 0; action < 4; action++ ) {

@@ -30,7 +30,7 @@ public:
     LayerDimensions dim;
 
     virtual ~Propagate() {}
-    virtual void propagate( int batchSize, 
+    virtual void forward( int batchSize, 
         CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
         CLWrapper *outputWrapper ) = 0;
 
@@ -46,8 +46,8 @@ public:
     STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim );
     STATIC Propagate *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
     STATIC Propagate *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    VIRTUAL float * propagate( int batchSize, float *inputData, float *filters, float *biases );
-    VIRTUAL void propagate( int batchSize, float *inputData, float *filters, float *biases, float *output );
+    VIRTUAL float * forward( int batchSize, float *inputData, float *filters, float *biases );
+    VIRTUAL void forward( int batchSize, float *inputData, float *filters, float *biases, float *output );
 
     // [[[end]]]
 

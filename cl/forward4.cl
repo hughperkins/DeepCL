@@ -26,7 +26,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
 // output are organized like [n][filterid][outrow][outcol]
-void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
+void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
       global const float *images, global const float *filters, 
         #ifdef BIASED
             global const float*biases, 

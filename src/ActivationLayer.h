@@ -67,7 +67,7 @@ public:
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL void backProp( float learningRate );
     VIRTUAL std::string asString() const;
     VIRTUAL int getPersistSize() const;

@@ -92,7 +92,7 @@ VIRTUAL void InputLayer::setBatchSize( int batchSize ) {
     this->allocatedSize = batchSize;
     output = new float[batchSize * getOutputCubeSize() ];
 }
-VIRTUAL void InputLayer::propagate() {
+VIRTUAL void InputLayer::forward() {
     int totalLinearLength = getOutputSize();
     for( int i = 0; i < totalLinearLength; i++ ) {
         output[i] = input[i];

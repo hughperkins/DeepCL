@@ -18,7 +18,7 @@ using namespace std;
 VIRTUAL Propagate1::~Propagate1() {
     delete kernel;
 }
-VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Propagate1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
     kernel->in(batchSize)
         ->in( dim.inputPlanes )->in( dim.numFilters )
@@ -32,11 +32,11 @@ VIRTUAL void Propagate1::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
     int globalSize = batchSize * dim.outputCubeSize;
     int workgroupsize = std::min( globalSize, cl->getMaxWorkgroupSize() );
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "propagate1 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
+//    cout << "forward1 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
 
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate1::propagate after call propagate");
+    StatefulTimer::timeCheck("Propagate1::forward after call forward");
 }
 Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
@@ -48,9 +48,9 @@ Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim ) :
     }
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/propagate1.cl", "convolve_imagecubes_float2", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/forward1.cl", "convolve_imagecubes_float2", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate1.cl:
+    // generated using cog, from cl/forward1.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -185,9 +185,9 @@ Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, "cl/propagate1.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, "cl/forward1.cl" );
     // [[[end]]]
-    //kernel = cl->buildKernel( "propagate1.cl", "convolve_imagecubes_float2", options );
+    //kernel = cl->buildKernel( "forward1.cl", "convolve_imagecubes_float2", options );
     //kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, kernelFilename );
 }
 

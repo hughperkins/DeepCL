@@ -154,7 +154,7 @@ VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
     //return previousLayer->getActivationFunction(); // I guess???
     return new LinearActivation();
 }
-VIRTUAL void PoolingLayer::propagate() {
+VIRTUAL void PoolingLayer::forward() {
     CLWrapper *upstreamOutputWrapper = 0;
     if( previousLayer->hasOutputWrapper() ) {
         upstreamOutputWrapper = previousLayer->getOutputWrapper();
@@ -163,12 +163,12 @@ VIRTUAL void PoolingLayer::propagate() {
         upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
         upstreamOutputWrapper->copyToDevice();
     }
-    poolingPropagateImpl->propagate( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
+    poolingPropagateImpl->forward( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
     if( !previousLayer->hasOutputWrapper() ) {
         delete upstreamOutputWrapper;
     }
 
-//    cout << "PoolingLayer::propagate() selectors after propagate: " << endl;
+//    cout << "PoolingLayer::forward() selectors after forward: " << endl;
 //    for( int i = 0; i < outputImageSize; i++ ) {
 //        for( int j = 0; j < outputImageSize; j++ ) {
 //            cout << selectors[ i * outputImageSize + j ] << " ";
@@ -176,7 +176,7 @@ VIRTUAL void PoolingLayer::propagate() {
 //        cout << endl;
 //    }
 
-//    cout << "PoolingLayer::propagate() selectorsWrapper after propagate: " << endl;
+//    cout << "PoolingLayer::forward() selectorsWrapper after forward: " << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 }
 VIRTUAL void PoolingLayer::backProp( float learningRate ) {

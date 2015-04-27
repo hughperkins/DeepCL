@@ -24,7 +24,7 @@ public:
     virtual void setBatchSize( int batchSize ) = 0;
     virtual void setTraining( bool training ) = 0;
     virtual int calcNumRight( int const *labels ) = 0;
-    virtual void propagate( float const*images) = 0;
+    virtual void forward( float const*images) = 0;
     virtual void backPropFromLabels( float learningRate, int const *labels) = 0;
     virtual void backProp( float learningRate, float const *expectedOutput) = 0;
     virtual float const *getOutput() const = 0;

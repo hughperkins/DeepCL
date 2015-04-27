@@ -18,13 +18,13 @@ using namespace std;
 VIRTUAL Propagate4::~Propagate4() {
     delete kernel;
 }
-VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Propagate4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("Propagate4::propagate start");
+    StatefulTimer::timeCheck("Propagate4::forward start");
 
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
     int globalSize = workgroupSize * numWorkgroups;
-//    cout << "propagate4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
+//    cout << "forward4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
 
     kernel->in(batchSize);
 //    kernel->in( pixelsPerThread );
@@ -39,7 +39,7 @@ VIRTUAL void Propagate4::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
 
     kernel->run_1d( globalSize, workgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate4::propagate after call propagate");
+    StatefulTimer::timeCheck("Propagate4::forward after call forward");
 }
 Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim ) :
         Propagate( cl, dim )
@@ -58,9 +58,9 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim ) :
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/propagate4.cl", "propagate_4_by_n_outplane_smallercache", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/forward4.cl", "forward_4_by_n_outplane_smallercache", 'options' )
     // ]]]
-    // generated using cog, from cl/propagate4.cl:
+    // generated using cog, from cl/forward4.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -90,7 +90,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim ) :
     "// one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)\n" 
     "// all filter cubes = 3.2KB * 32 = 102KB (too big)\n" 
     "// output are organized like [n][filterid][outrow][outcol]\n" 
-    "void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,\n" 
+    "void kernel forward_4_by_n_outplane_smallercache( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "        #ifdef BIASED\n" 
     "            global const float*biases,\n" 
@@ -157,7 +157,7 @@ Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim ) :
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "propagate_4_by_n_outplane_smallercache", options, "cl/propagate4.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forward_4_by_n_outplane_smallercache", options, "cl/forward4.cl" );
     // [[[end]]]
 }
 

@@ -87,7 +87,7 @@ VIRTUAL bool RandomPatches::providesGradInputWrapper() const {
 VIRTUAL bool RandomPatches::hasOutputWrapper() const {
     return false;
 }
-VIRTUAL void RandomPatches::propagate() {
+VIRTUAL void RandomPatches::forward() {
     float *upstreamOutput = previousLayer->getOutput();
     for( int n = 0; n < batchSize; n++ ) {
         int patchMargin = inputImageSize - outputImageSize;

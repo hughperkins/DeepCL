@@ -21,17 +21,42 @@
 
 using namespace std;
 
-TEST( testbackward, relu ) {
-    NeuralNet *net = new NeuralNet( 1, 5 );
-    net->addLayer( ActivationMaker::instance()->relu() );
+TEST( testbackward, squareLoss ) {
+    // here's the plan:
+    // generate some input, randomly
+    // generate some expected output, randomly
+    // forward forward
+    // calculate loss
+    // calculate gradInput
+    // change some of the inputs, forward prop, recalculate loss, check corresponds
+    // to the gradient
+    NeuralNet *net = new NeuralNet( 3, 5 );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
 
     int batchSize = 32;
 
     int inputCubeSize = net->getInputCubeSize();
+    int outputCubeSize = net->getOutputCubeSize();
+
     int inputTotalSize = inputCubeSize * batchSize;
+    int outputTotalSize = outputCubeSize * batchSize;
+
     float *input = new float[inputTotalSize];
+    float *expectedOutput = new float[outputTotalSize];
+
+    WeightRandomizer::randomize( 0, input, inputTotalSize, -2.0f, 2.0f );
+    WeightRandomizer::randomize( 0, expectedOutput, outputTotalSize, -2.0f, 2.0f );
+    
+    // now, forward prop
+//    net->input( input );
+    net->forward( input );
+
+    // calculate loss
+    float lossBefore = net->calcLoss( expectedOutput );
+
+    // calculate gradInput
+    net->backProp( 1.0f, expectedOutput);
 
     delete[] input;
 
@@ -78,7 +103,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
             weightsBefore2[i] = currentWeights[i];
         }
 
-        net->propagate( inputData );
+        net->forward( inputData );
     //    net->print();
         float loss = net->calcLoss(expectedOutput);
         dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
@@ -89,7 +114,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
 //            dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weights[i] = weightsBefore2[i];
         }
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weightsWrapper->copyToDevice();
-        net->propagate( inputData );
+        net->forward( inputData );
 
         float loss2 = net->calcLoss(expectedOutput);
         float lossChange = loss - loss2;
