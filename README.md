@@ -17,7 +17,7 @@ Global Contents
 - [Testing](doc/Testing.md)
 - [Architecture](doc/Architecture.md)
 - [Changes](doc/Changes.md)
-- [Doc for current stable 3.x.x](https://github.com/hughperkins/DeepCL/blob/master/README.md)
+- [Doc for current stable 3.x.x](https://github.com/hughperkins/DeepCL/blob/3.x.x/README.md)
 
 DeepCL
 ==========
