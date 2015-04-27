@@ -25,12 +25,12 @@ using namespace std;
 ActivationBackpropCpu::ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
         ActivationBackprop( cl, numPlanes, inputImageSize, fn ) {
 }
-VIRTUAL void ActivationBackpropCpu::backward( int batchSize, float *inputs, float *errors, float *gradInput ) {
+VIRTUAL void ActivationBackpropCpu::backward( int batchSize, float *inputs, float *gradOutput, float *gradInput ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
 //        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
 //            << " error=" << errors[i];
-        gradInput[i] = fn->calcDerivative( inputs[i] ) * errors[i];
+        gradInput[i] = fn->calcDerivative( inputs[i] ) * gradOutput[i];
 //        cout << " gradInput=" << gradInput[i] << endl;
     }
 }
@@ -43,10 +43,10 @@ VIRTUAL void ActivationBackpropCpu::backward( int batchSize, CLWrapper *inputsWr
     gradOutputWrapper->copyToHost();
 
     float *inputs = reinterpret_cast<float *>( inputsWrapper->getHostArray() );
-    float *errors = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
+    float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backward( batchSize, inputs, errors, gradInput );
+    backward( batchSize, inputs, gradOutput, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
     memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );

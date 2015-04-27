@@ -50,13 +50,13 @@ BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimen
         cl( cl ),
         dim( layerDimensions ) {
 }
-VIRTUAL float * BackpropErrorsv2::backward( int batchSize, float *inputData, float *errors, float *filters ) {
+VIRTUAL float * BackpropErrorsv2::backward( int batchSize, float *inputData, float *gradOutput, float *filters ) {
     StatefulTimer::timeCheck("BackpropErrorsv2::backprop begin");
 
     CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
     inputDataWrapper->copyToDevice();
 
-    CLWrapper *gradOutputWrapper = cl->wrap( batchSize * dim.outputCubeSize, errors );
+    CLWrapper *gradOutputWrapper = cl->wrap( batchSize * dim.outputCubeSize, gradOutput );
     gradOutputWrapper->copyToDevice();
 
     int weightsSize = dim.filtersSize;

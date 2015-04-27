@@ -55,11 +55,11 @@ VIRTUAL int DropoutBackprop::getInputSize( int batchSize ) {
 VIRTUAL int DropoutBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void DropoutBackprop::backward( int batchSize, uchar *mask, float *errors, float *gradInput ) {
+VIRTUAL void DropoutBackprop::backward( int batchSize, uchar *mask, float *gradOutput, float *gradInput ) {
 //    cout << "DropoutBackprop::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutBackprop::backward float->wrapper start" );
     CLWrapper *maskWrapper = cl->wrap( getOutputSize(batchSize), mask );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
     CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 
     maskWrapper->copyToDevice();

@@ -51,7 +51,7 @@ public:
     PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
-    VIRTUAL void backward( int batchSize, float *errors, int *selectors, float *gradInput );
+    VIRTUAL void backward( int batchSize, float *gradOutput, int *selectors, float *gradInput );
     VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper );
 
     // [[[end]]]

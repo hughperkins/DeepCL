@@ -51,12 +51,12 @@ VIRTUAL int ActivationBackprop::getInputSize( int batchSize ) {
 VIRTUAL int ActivationBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void ActivationBackprop::backward( int batchSize, float *inputs, float *errors, float *gradInput ) {
+VIRTUAL void ActivationBackprop::backward( int batchSize, float *inputs, float *gradOutput, float *gradInput ) {
 //    cout << "ActivationBackprop::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationBackprop::backward float->wrapper start" );
 
     CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
     CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 
     inputsWrapper->copyToDevice();

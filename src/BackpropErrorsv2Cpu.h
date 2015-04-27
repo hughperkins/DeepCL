@@ -21,7 +21,7 @@ public:
     BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropErrorsv2Cpu();
     VIRTUAL float *backward( int batchSize, float *inputData,
-    float *errors, float *weights );
+    float *gradOutput, float *weights );
     VIRTUAL void backward( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );

@@ -56,10 +56,10 @@ VIRTUAL int PoolingBackprop::getInputSize( int batchSize ) {
 VIRTUAL int PoolingBackprop::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL void PoolingBackprop::backward( int batchSize, float *errors, int *selectors, float *gradInput ) {
+VIRTUAL void PoolingBackprop::backward( int batchSize, float *gradOutput, int *selectors, float *gradInput ) {
 //    cout << "PoolingBackprop::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingBackprop::backward float->wrapper start" );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), errors );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
     CLWrapper *selectorsWrapper = cl->wrap( getOutputSize(batchSize), selectors );
     CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
 

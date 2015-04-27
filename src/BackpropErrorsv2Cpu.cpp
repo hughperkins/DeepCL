@@ -25,7 +25,7 @@ BackpropErrorsv2Cpu::BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim 
 VIRTUAL BackpropErrorsv2Cpu::~BackpropErrorsv2Cpu() {
 }
 VIRTUAL float *BackpropErrorsv2Cpu::backward( int batchSize, float *inputData,
-    float *errors, float *weights ) {
+    float *gradOutput, float *weights ) {
     float *gradInput = new float[ batchSize * dim.inputCubeSize ];
 
 //        Timer timer;
@@ -70,21 +70,21 @@ VIRTUAL float *BackpropErrorsv2Cpu::backward( int batchSize, float *inputData,
                                     * dim.numFilters + outPlane )
                                     * dim.outputImageSize + outRow )
                                     * dim.outputImageSize + outCol;
-                                float thisError = errors[resultIndex];
+                                float thisGradOutput = gradOutput[resultIndex];
                                 int thisWeightIndex = ( ( outPlane 
                                     * dim.inputPlanes + upstreamPlane )
                                     * dim.filterSize + filterRow )
                                     * dim.filterSize + filterCol;
                                 float thisWeight = weights[thisWeightIndex];
-                                sumWeightTimesOutError += thisWeight * thisError;
+                                sumWeightTimesOutError += thisWeight * thisGradOutput;
                             }
                         }
                     }
-                    int upstreamResultIndex = ( ( n
+                    int inputResultIndex = ( ( n
                         * dim.inputPlanes + upstreamPlane )
                         * dim.inputImageSize + upstreamRow )
                         * dim.inputImageSize + upstreamCol;
-                    gradInput[upstreamResultIndex] = sumWeightTimesOutError; // * activationDerivativeUpstream;
+                    gradInput[inputResultIndex] = sumWeightTimesOutError; // * activationDerivativeUpstream;
                 }
             }
         }

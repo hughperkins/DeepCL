@@ -16,7 +16,7 @@
 class MultinomialCrossEntropy : public LossLayer {
 public:
 
-    float *errors;
+    float *gradOutput;
     int allocatedSize;
     int batchSize;
 //    ActivationFunction const*const activationFunction;

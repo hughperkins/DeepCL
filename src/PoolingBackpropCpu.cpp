@@ -24,7 +24,7 @@ using namespace std;
 PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
-VIRTUAL void PoolingBackpropCpu::backward( int batchSize,  float *errors, int *selectors, float *gradInput ) {
+VIRTUAL void PoolingBackpropCpu::backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput ) {
     memset( gradInput, 0, sizeof( float ) * getInputSize( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
@@ -32,13 +32,12 @@ VIRTUAL void PoolingBackpropCpu::backward( int batchSize,  float *errors, int *s
                 int inputRow = outputRow * poolingSize;
                 for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
-                    int resultIndex = getResultIndex( n, plane, outputRow, outputCol );
-                    float error = errors[resultIndex];
-                    int selector = selectors[resultIndex];
+                    int outputIndex = getResultIndex( n, plane, outputRow, outputCol );
+                    int selector = selectors[outputIndex];
                     int drow = selector / poolingSize;
                     int dcol = selector % poolingSize;
                     int inputIndex = getInputIndex( n, plane, inputRow + drow, inputCol + dcol );
-                    gradInput[ inputIndex ] = error;
+                    gradInput[ inputIndex ] = gradOutput[outputIndex];
                 }
             }
         }
@@ -51,11 +50,11 @@ VIRTUAL void PoolingBackpropCpu::backward( int batchSize, CLWrapper *gradOutputW
     gradOutputWrapper->copyToHost();
     selectorsWrapper->copyToHost();
 
-    float *errors = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
+    float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     int *selectors = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backward( batchSize, errors, selectors, gradInput );
+    backward( batchSize, gradOutput, selectors, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
     memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );

@@ -95,7 +95,7 @@ VIRTUAL void NormalizationLayer::propagate() {
         output[i] = ( upstreamOutput[i] + translate ) * scale;
     }
 }
-VIRTUAL void NormalizationLayer::backward( float learningRate, float const *errors ) {
+VIRTUAL void NormalizationLayer::backward( float learningRate, float const *gradOutput ) {
   // do nothing...
 }
 VIRTUAL int NormalizationLayer::getOutputImageSize() const {

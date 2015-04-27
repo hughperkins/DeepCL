@@ -20,7 +20,7 @@ VIRTUAL void BackpropErrorsv2Cached::backward( int batchSize,
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached start" );
 
 //        const int batchSize,
-//        global const float *errorsGlobal,
+//        global const float *gradOutputGlobal,
 //        global const float *filtersGlobal, 
 //        global float *gradInput,
 //        local float *_errorImage, 

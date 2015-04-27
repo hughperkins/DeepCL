@@ -26,7 +26,7 @@ public:
 
     virtual ~BackpropErrorsv2() {}
     virtual void backward( int batchSize, 
-        CLWrapper *inputDataWrapper, CLWrapper *errors, CLWrapper *weightsWrapper,
+        CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
         CLWrapper *gradInput ) = 0;
 
     // [[[cog
@@ -38,7 +38,7 @@ public:
     STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
     STATIC BackpropErrorsv2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
     BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    VIRTUAL float * backward( int batchSize, float *inputData, float *errors, float *filters );
+    VIRTUAL float * backward( int batchSize, float *inputData, float *gradOutput, float *filters );
 
     // [[[end]]]
 };
