@@ -33,49 +33,18 @@ VIRTUAL float*CrossEntropyLoss::getGradInput() {
 VIRTUAL int CrossEntropyLoss::getPersistSize() const {
     return 0;
 }
-//VIRTUAL float*CrossEntropyLoss::getDerivLossBySumForUpstream() {
-//    return errors;
-//}
 VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
     float loss = 0;
     int inputSize = previousLayer->getOutputSize();
     float *input = previousLayer->getOutput();
 //    cout << "CrossEntropyLoss::calcLoss" << endl;
-    // this is matrix subtraction, then element-wise square, then aggregation
     for( int i = 0; i < inputSize; i++ ) {
         float expectedOutput = expected[i];
         float inputValue = input[i];
-//        cout << " expected=" << expectedOutput << " input=" << inputValue 
-//            << " log(input)=" << log(inputValue) << " log(1-input)" << log(1-inputValue) 
-//            << endl;
         float negthisloss = expectedOutput * log( inputValue ) 
             + ( 1 - expectedOutput ) * log( 1 - inputValue );
         loss -= negthisloss;
     }
-//    int numPlanes = previousLayer->getOutputPlanes();
-//    int imageSize = previousLayer->getOutputImageSize();
-//    for( int imageId = 0; imageId < batchSize; imageId++ ) {
-//        for( int plane = 0; plane < numPlanes; plane++ ) {
-//            for( int outRow = 0; outRow < imageSize; outRow++ ) {
-//                for( int outCol = 0; outCol < imageSize; outCol++ ) {
-//                    int inputOffset = ( ( imageId
-//                         * numPlanes + plane )
-//                         * imageSize + outRow )
-//                         * imageSize + outCol;
-//                    float expectedOutput = expected[inputOffset];
-//                    float inputValue = input[inputOffset];
-//                    cout << " expected=" << expectedOutput << " input=" << inputValue 
-//                        << " log(input)=" << log(inputValue) << " log(1-input)" << log(1-inputValue) 
-//                        << endl;
-//                    float negthisloss = expectedOutput * log( inputValue ) 
-//                        + ( 1 - expectedOutput ) * log( 1 - inputValue );
-//                    loss -= negthisloss;
-//                }
-//            }
-//        }            
-//    }
-//    loss *= 0.5f;
-//    cout << "loss " << loss << endl;
     return loss;
  }
 VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
