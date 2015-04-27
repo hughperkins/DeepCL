@@ -13,7 +13,7 @@ using namespace std;
 VIRTUAL BackpropErrorsv2Naive::~BackpropErrorsv2Naive() {
     delete kernel;
 //    delete broadcastMultiply;
-    delete applyActivationDeriv;
+//    delete applyActivationDeriv;
 }
 VIRTUAL void BackpropErrorsv2Naive::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
@@ -34,10 +34,10 @@ VIRTUAL void BackpropErrorsv2Naive::backward( int batchSize,
     cl->finish();
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after first kernel" );
 
-    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( gradInputWrapper )->in( inputDataWrapper );
-    applyActivationDeriv->run_1d(globalSize, workgroupsize);
-    cl->finish();
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after applyActivationDeriv" );
+//    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( gradInputWrapper )->in( inputDataWrapper );
+//    applyActivationDeriv->run_1d(globalSize, workgroupsize);
+//    cl->finish();
+//    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after applyActivationDeriv" );
     
     StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive end" );
 }
@@ -50,7 +50,7 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/backproperrorsv2.cl", "calcGradInput", 'options' )
     // # stringify.write_kernel2( "broadcastMultiply", "cl/backproperrorsv2.cl", "broadcast_multiply", 'options' )
-    // stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
+    // # stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
     // ]]]
     // generated using cog, from cl/backproperrorsv2.cl:
@@ -122,67 +122,6 @@ BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options, "cl/backproperrorsv2.cl" );
-    // generated using cog, from cl/applyActivationDeriv.cl:
-    const char * applyActivationDerivSource =  
-    "// Copyright Hugh Perkins 201, 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// expected defines:\n" 
-    "// one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH ]\n" 
-    "\n" 
-    "#ifdef TANH\n" 
-    "    #define ACTIVATION_DERIV(output) (1 - output * output)\n" 
-    "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_DERIV(output) ( 0.66667f * ( 1.7159f - 1 / 1.7159f * output * output ) )\n" 
-    "#elif defined SIGMOID\n" 
-    "    #define ACTIVATION_DERIV(output) (output * ( 1 - output ) )\n" 
-    "#elif defined RELU\n" 
-    "    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)\n" 
-    "#elif defined LINEAR\n" 
-    "    #define ACTIVATION_DERIV(output) (1.0f)\n" 
-    "#endif\n" 
-    "\n" 
-    "//#ifdef ACTIVATION_DERIV\n" 
-    "//void kernel applyActivationDeriv(\n" 
-    "//        const int N,\n" 
-    "//        global float *inout ) {\n" 
-    "//    int globalId = get_global_id(0);\n" 
-    "//    inout[globalId] = ACTIVATION_DERIV( inout[globalId] );\n" 
-    "//}\n" 
-    "//#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_DERIV\n" 
-    "void kernel applyActivationDeriv(\n" 
-    "        const int N,\n" 
-    "        global float *target, global const float *source ) {\n" 
-    "    int globalId = get_global_id(0);\n" 
-    "    if( globalId < N ) {\n" 
-    "        target[globalId] *= ACTIVATION_DERIV( source[globalId] );\n" 
-    "    }\n" 
-    "  //  target[globalId] *= source[globalId];\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_DERIV\n" 
-    "void kernel backward(\n" 
-    "        const int N,\n" 
-    "        global const float *inputs,\n" 
-    "        global const float *errors,\n" 
-    "        global float *gradInput ) {\n" 
-    "    int globalId = get_global_id(0);\n" 
-    "    if( globalId < N ) {\n" 
-    "        gradInput[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * errors[globalId];\n" 
-    "            // probably not ideal to have the output and input separate?\n" 
-    "    }\n" 
-    "  //  target[globalId] *= source[globalId];\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "";
-    applyActivationDeriv = cl->buildKernelFromString( applyActivationDerivSource, "applyActivationDeriv", options, "cl/applyActivationDeriv.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel( "backproperrorsv2.cl", "calcGradInput", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );

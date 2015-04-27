@@ -9,7 +9,7 @@
 class BackpropErrorsv2Cached : public BackpropErrorsv2 {
 public:
     CLKernel *kernel;
-    CLKernel *applyActivationDeriv;
+//    CLKernel *applyActivationDeriv;
 
     // [[[cog
     // import cog_addheaders

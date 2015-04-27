@@ -10,7 +10,7 @@ class BackpropErrorsv2Naive : public BackpropErrorsv2 {
 public:
     CLKernel *kernel;
 //    CLKernel *broadcastMultiply;
-    CLKernel *applyActivationDeriv;
+//    CLKernel *applyActivationDeriv;
 
     // [[[cog
     // import cog_addheaders

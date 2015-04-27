@@ -107,6 +107,9 @@ VIRTUAL int ActivationLayer::getOutputSize() const {
 //    int outputImageSize = inputImageSize / poolingSize;
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
+VIRTUAL int ActivationLayer::getOutputCubeSize() const {
+    return numPlanes * outputImageSize * outputImageSize;
+}
 VIRTUAL int ActivationLayer::getOutputImageSize() const {
     return outputImageSize;
 }

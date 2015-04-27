@@ -448,7 +448,7 @@ float weights2[] = {-0.352846f, 0.534554f, -1.13343f, -0.191175f};
 float biasWeights1[] = {0.971267f, 1.42629f};
 float biasWeights2[] = {-0.071288f, 0.443919f};
     net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(2, weights2, biasWeights2 );
+    net->initWeights(3, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.4f)
@@ -642,7 +642,7 @@ float *weights2 = &vweights2[0];
 float biasWeights1[] = {0.0998941f, -0.365008f, 0.188937f};
 float biasWeights2[] = {0.232961f, 0.141537f, 0.159074f};
     net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(2, weights2, biasWeights2 );
+    net->initWeights(3, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 500; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.04f)
@@ -755,7 +755,7 @@ float *weights2 = &__weights2[0];
 float biasWeights1[] = {0.224118f, -0.246188f, -0.22282f};
 float biasWeights2[] = {-0.0863176f, -0.227985f, -0.147554f};
     net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(2, weights2, biasWeights2 );
+    net->initWeights(3, weights2, biasWeights2 );
     for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.04f)

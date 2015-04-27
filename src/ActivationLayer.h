@@ -58,6 +58,7 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL bool providesGradInputWrapper() const;

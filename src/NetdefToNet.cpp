@@ -215,7 +215,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
                 return false;
             }
         }
-        if( isLast && fn->getDefineName() != "LINEAR" ) {
+        if( isLast && fn != 0 ) {
             cout << "Last fullyconnectedlayer must be linear (because softmax is the 'activationlayer' for this layer)" << endl;
             return false;
         }
