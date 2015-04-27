@@ -600,7 +600,7 @@ TEST( testpropagate, compare_1_n_biased_nopad ) {
         .setFilterSize( 5 )
         .setPadZeros( false ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    for( int instance = 2; instance <= 7; instance++ ) {
+    for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
             continue; // propagatefc, cant use for inputimagesize != filtersize
         }
@@ -620,7 +620,7 @@ TEST( testpropagate, compare_1_n_biased_pad ) {
         .setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
     ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    for( int instance = 2; instance <= 7; instance++ ) {
+    for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
             continue; // propagatefc, cant use for inputimagesize != filtersize
         }
