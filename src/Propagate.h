@@ -28,7 +28,6 @@ class DeepCL_EXPORT Propagate {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
-//    ActivationFunction const*fn;
 
     virtual ~Propagate() {}
     virtual void propagate( int batchSize, 

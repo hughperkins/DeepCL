@@ -135,17 +135,17 @@ VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
     return fn;
 }
 VIRTUAL void ActivationLayer::propagate() {
-    CLWrapper *upstreamOutputWrapper = 0;
+    CLWrapper *inputWrapper = 0;
     if( previousLayer->hasOutputWrapper() ) {
-        upstreamOutputWrapper = previousLayer->getOutputWrapper();
+        inputWrapper = previousLayer->getOutputWrapper();
     } else {
-        float *upstreamOutput = previousLayer->getOutput();
-        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
-        upstreamOutputWrapper->copyToDevice();
+        float *input = previousLayer->getOutput();
+        inputWrapper = cl->wrap( previousLayer->getOutputSize(), input );
+        inputWrapper->copyToDevice();
     }
-    activationPropagateImpl->propagate( batchSize, upstreamOutputWrapper, outputWrapper );
+    activationPropagateImpl->propagate( batchSize, inputWrapper, outputWrapper );
     if( !previousLayer->hasOutputWrapper() ) {
-        delete upstreamOutputWrapper;
+        delete inputWrapper;
     }
 }
 VIRTUAL void ActivationLayer::backProp( float learningRate ) {
