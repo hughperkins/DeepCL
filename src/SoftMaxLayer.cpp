@@ -90,11 +90,9 @@ VIRTUAL float SoftMaxLayer::calcLossFromLabels( int const *labels ) {
 }
 // need to calculate multinomial logistic /cross-entropy loss
 VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
-//    cout << "softmaxlayer::calcloss" << endl;
     StatefulTimer::timeCheck("start SoftMaxLayer calcLoss");
     float loss = 0;
     if( perPlane ) {
-        cout << "perPlane" << endl;
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 int imageOffset = ( n * numPlanes + plane ) * imageSizeSquared;
@@ -107,19 +105,14 @@ VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
             }
         }
     } else {
-        cout << "perColumn" << endl;
         // force imagesize of 1 for now
         if( imageSize != 1 ) {
             throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
         }
         for( int n = 0; n < batchSize; n++ ) {
             int imageOffset = n * numPlanes * imageSizeSquared;
-            cout << "n=" << n << "/" << batchSize << " imageOffset=" << imageOffset << endl;
             for( int plane = 0; plane < numPlanes; plane++ ) {
                 float thisloss = - expectedValues[imageOffset + plane] * log( output[imageOffset + plane] );
-//                cout << "n " << n << " plane " << plane << " expected " << expectedValues[imageOffset + plane] << " result " << output[imageOffset + plane] << " thisloss " << thisloss << endl;
-                cout << "plane=" << plane << "/" << numPlanes << " thisloss=" << thisloss << endl;
-
                 loss += thisloss;
             }
         }

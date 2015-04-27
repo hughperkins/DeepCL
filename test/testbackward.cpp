@@ -172,13 +172,18 @@ TEST( testbackward, crossentropyloss ) {
     delete net;
 }
 
-void normalizeAsProbabilityDistribution( float *values, int N ) {
-    float total = 0;
-    for( int i = 0; i < N; i++ ) {
-        total += values[i];
-    }
-    for( int i = 0; i < N; i++ ) {
-        values[i] /= total;
+void normalizeAsProbabilityDistribution( int numPlanes, float *values, int N ) {
+    int batchSize = N / numPlanes;
+//    int cubeSize = numPlanes;
+    for( int n = 0; n < batchSize; n++ ) {
+        float *thisCube = values + n * numPlanes;
+        float total = 0;
+        for( int i = 0; i < numPlanes; i++ ) {
+            total += thisCube[i];
+        }
+        for( int i = 0; i < numPlanes; i++ ) {
+            thisCube[i] /= total;
+        }
     }
 }
 
@@ -217,26 +222,26 @@ TEST( testbackward, softmaxloss ) {
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
 //    normalizeAsProbabilityDistribution( input, inputTotalSize );
-    normalizeAsProbabilityDistribution( expectedOutput, outputTotalSize );
-    // TODO remove this scaffold code
+    normalizeAsProbabilityDistribution( outputPlanes, expectedOutput, outputTotalSize );
+
     // set all to zero, and one to 1, ie like labelled data
-    for( int i = 0; i < outputTotalSize; i++ ) {
-        expectedOutput[i] = 0;
-    }
-    for( int n = 0; n < batchSize; n++ ) {
-        int chosenLabel = 0;
-        WeightRandomizer::randomizeInts( n, &chosenLabel, 1, 0, net->getOutputPlanes() );
-        expectedOutput[ n * outputPlanes + chosenLabel ] = 1;
-    }
-    for( int i = 0; i < outputTotalSize; i++ ) {
-        cout << "expected[" << i << "]=" << expectedOutput[i] << endl;
-    }
-        
+//    for( int i = 0; i < outputTotalSize; i++ ) {
+//        expectedOutput[i] = 0;
+//    }
+//    for( int n = 0; n < batchSize; n++ ) {
+//        int chosenLabel = 0;
+//        WeightRandomizer::randomizeInts( n, &chosenLabel, 1, 0, net->getOutputPlanes() );
+//        expectedOutput[ n * outputPlanes + chosenLabel ] = 1;
+//    }
+//    for( int i = 0; i < outputTotalSize; i++ ) {
+//        cout << "expected[" << i << "]=" << expectedOutput[i] << endl;
+//    }
+//        
     // now, forward prop
 //    net->input( input );
     net->forward( input );
     net->print();
-    net->printOutput();
+//    net->printOutput();
 
     // calculate loss
     float lossBefore = net->calcLoss( expectedOutput );
@@ -289,6 +294,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 
     int batchSize = dynamic_cast< InputLayer *>(net->getLayer(0))->batchSize;
     cout << "batchSize: " << batchSize << endl;
+    const int outputPlanes = net->getOutputPlanes();
 
     int inputCubeSize = net->getInputCubeSize();
     int outputCubeSize = net->getOutputCubeSize();
@@ -307,7 +313,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
 //    normalizeAsProbabilityDistribution( input, inputTotalSize );
-    normalizeAsProbabilityDistribution( expectedOutput, outputTotalSize );
+    normalizeAsProbabilityDistribution( outputPlanes, expectedOutput, outputTotalSize );
         
     // now, forward prop
 //    net->input( input );
@@ -358,7 +364,7 @@ TEST( testbackward, squareloss2 ) {
     cout << net->asString() << endl;
 
 //    int batchSize = ;
-    net->setBatchSize(2);
+    net->setBatchSize(32);
 
     checkLayer( net, 2 );
     delete net;
