@@ -21,6 +21,23 @@
 
 using namespace std;
 
+TEST( testbackward, relu ) {
+    NeuralNet *net = new NeuralNet( 1, 5 );
+    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
+    cout << net->asString() << endl;
+
+    int batchSize = 32;
+
+    int inputCubeSize = net->getInputCubeSize();
+    int inputTotalSize = inputCubeSize * batchSize;
+    float *input = new float[inputTotalSize];
+
+    delete[] input;
+
+    delete net;
+}
+
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
@@ -33,9 +50,9 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     net->setBatchSize( batchSize );
 
     int inputSize = net->getLayer(0)->getOutputSize();
-    int outputSize = net->getLayer(2)->getOutputSize();
+    int outputSize = net->getLayer(3)->getOutputSize();
     int weightsSize1 = net->getLayer(1)->getWeightsSize();
-    int weightsSize2 = net->getLayer(2)->getWeightsSize();
+    int weightsSize2 = net->getLayer(3)->getWeightsSize();
 
     float *inputData = new float[std::max<int>(10000, inputSize )];
     float *expectedOutput = new float[std::max<int>(10000, outputSize )];
@@ -46,8 +63,8 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     WeightRandomizer::randomize( random, expectedOutput, std::max<int>(10000, outputSize ), -2.0f, 2.0f );
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weights, weightsSize1, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
-    WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weights, weightsSize2, -2.0f, 2.0f );
-    dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weightsWrapper->copyToDevice();
+    WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weights, weightsSize2, -2.0f, 2.0f );
+    dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weightsWrapper->copyToDevice();
 
     for( int it = 0; it < its; it++ ) {
         float *weightsBefore1 = new float[weightsSize1];
@@ -56,7 +73,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
             weightsBefore1[i] = currentWeights[i];
         }
         float *weightsBefore2 = new float[weightsSize2];
-        currentWeights = net->getLayer(2)->getWeights();
+        currentWeights = net->getLayer(3)->getWeights();
         for( int i = 0; i < weightsSize2; i++ ) {
             weightsBefore2[i] = currentWeights[i];
         }
@@ -64,14 +81,14 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
         net->propagate( inputData );
     //    net->print();
         float loss = net->calcLoss(expectedOutput);
-        dynamic_cast<LossLayer*>(net->getLayer(3))->calcLoss(expectedOutput);
+        dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
         net->backProp( learningRate, expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
 //            dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weights[i] = weightsBefore2[i];
         }
-        dynamic_cast<ConvolutionalLayer*>(net->getLayer(2))->weightsWrapper->copyToDevice();
+        dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weightsWrapper->copyToDevice();
         net->propagate( inputData );
 
         float loss2 = net->calcLoss(expectedOutput);
@@ -86,7 +103,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
             sumWeightDiff += diff;
             sumWeightDiffSquared += diff * diff;
         }
-        newWeights = net->getLayer(2)->getWeights();
+        newWeights = net->getLayer(3)->getWeights();
         for( int i = 0; i < weightsSize2; i++ ) {
             float diff = newWeights[i] - weightsBefore2[i];
             sumWeightDiff += diff;
@@ -112,7 +129,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     delete[] inputData;
 }
 
-TEST( testbackproperrors, checknumerically ) {
+TEST( testbackward, checknumerically ) {
     float learningRate = 0.1f;
     const int batchSize = 1;
     const int imageSize = 1;
@@ -123,7 +140,7 @@ TEST( testbackproperrors, checknumerically ) {
     testNumerically( learningRate, batchSize, imageSize, filterSize, numPlanes, new TanhActivation(), padZeros, 5 );
 }
 
-TEST( testbackproperrors, checknumerically_imagesize5_filter3_relu ) {
+TEST( testbackward, checknumerically_imagesize5_filter3_relu ) {
     float learningRate = 0.0001f;
     const int batchSize = 1;
     const int imageSize = 5;
@@ -184,7 +201,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
     delete cl;
 }
 
-TEST( SLOW_testbackproperrors, perf_kgsgo_32c5 ) {
+TEST( SLOW_testbackward, perf_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
@@ -286,7 +303,7 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     delete[] weights;
 }
 
-TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
+TEST( SLOW_testbackward, compare_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
@@ -298,7 +315,7 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5 ) {
 
 }
 
-TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
+TEST( SLOW_testbackward, compare_kgsgo_32c5mini ) {
     int batchSize = 4;
     LayerDimensions dim;
     dim.setInputPlanes( 2 ).setInputImageSize(3).setNumFilters( 2 ).setFilterSize( 3 )
@@ -310,7 +327,7 @@ TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini ) {
 
 }
 
-TEST( SLOW_testbackproperrors, compare_kgsgo_32c5mini2 ) {
+TEST( SLOW_testbackward, compare_kgsgo_32c5mini2 ) {
     int batchSize = 1;
     int imageSize = 2;
     LayerDimensions dim;
@@ -365,7 +382,7 @@ float *test( int imageSize ) {
 //    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 //    net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->relu()->biased()->insert();
 //    net->addLayer( ConvolutionalMaker::instance()->numFilters(10)->filterSize(20)->tanh()->biased(config.biased)->insert();
-//TEST( testbackproperrors, DISABLED_image28 ) {
+//TEST( testbackward, DISABLED_image28 ) {
 //    float *errorsForUpstream = test(28);
 //    EXPECT_FLOAT_NEAR( -1.66007, errorsForUpstream[68268] );
 //    EXPECT_FLOAT_NEAR( 0.823709, errorsForUpstream[2927151] );
@@ -375,7 +392,7 @@ float *test( int imageSize ) {
 //    delete[] errorsForUpstream;
 //}
 
-//TEST( testbackproperrors, DISABLED_image19 ) { // make it work for a image19 first :-)
+//TEST( testbackward, DISABLED_image19 ) { // make it work for a image19 first :-)
 //    float *errorsForUpstream = test(19);
 //    EXPECT_FLOAT_NEAR( -24.5602, errorsForUpstream[158380] );
 //    EXPECT_FLOAT_NEAR( 7.39012, errorsForUpstream[2607] );
@@ -463,7 +480,7 @@ float *test( int imageSize ) {
 //}
 
 /*
-TEST( testbackproperrors, comparespecific ) {
+TEST( testbackward, comparespecific ) {
     const int batchSize = 5;
     LayerDimensions dim;
     dim.setInputPlanes( 1 ).setInputImageSize( 5 ).setNumFilters( 1 ).setFilterSize( 3 )

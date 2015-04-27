@@ -75,7 +75,7 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
     allocatedSize = batchSize;
     gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
 }
-VIRTUAL void SquareLossLayer::calcErrors( float const*expectedOutput ) {
+VIRTUAL void SquareLossLayer::calcGradInput( float const*expectedOutput ) {
 //    ActivationFunction const*fn = previousLayer->getActivationFunction();
     int inputSize = previousLayer->getOutputSize();
     float *input = previousLayer->getOutput();

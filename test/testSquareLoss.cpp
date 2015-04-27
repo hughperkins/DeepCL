@@ -1,0 +1,4 @@
+TEST( testSquareLoss, basic ) {
+    
+}
+

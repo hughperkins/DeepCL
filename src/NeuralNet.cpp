@@ -197,7 +197,7 @@ PUBLICAPI void NeuralNet::backPropFromLabels( float learningRate, int const *lab
     if( acceptsLabels == 0 ) {
         throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backPropFromLabels");
     }
-    acceptsLabels->calcErrorsFromLabels( labels );
+    acceptsLabels->calcGradInputFromLabels( labels );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         Layer *layer = layers[layerIdx];
@@ -212,7 +212,7 @@ PUBLICAPI void NeuralNet::backProp( float learningRate, float const *expectedOut
     if( lossLayer == 0 ) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
     }
-    lossLayer->calcErrors( expectedOutput );
+    lossLayer->calcGradInput( expectedOutput );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         layers[layerIdx]->backProp( learningRate );

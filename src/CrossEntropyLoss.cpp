@@ -78,7 +78,7 @@ VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
-VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedOutput ) {
+VIRTUAL void CrossEntropyLoss::calcGradInput( float const*expectedOutput ) {
 //    ActivationFunction const*fn = previousLayer->getActivationFunction();
     int inputSize = previousLayer->getOutputSize();
     float *input = previousLayer->getOutput();

@@ -44,8 +44,8 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL float calcLossFromLabels( int const *labels );
     VIRTUAL float calcLoss( float const *expectedValues );
-    VIRTUAL void calcErrorsFromLabels( int const *labels );
-    VIRTUAL void calcErrors( float const *expectedValues );
+    VIRTUAL void calcGradInputFromLabels( int const *labels );
+    VIRTUAL void calcGradInput( float const *expectedValues );
     VIRTUAL int getNumLabelsPerExample();
     VIRTUAL int getPersistSize() const;
     VIRTUAL int calcNumRight( int const*labels );

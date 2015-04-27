@@ -125,9 +125,9 @@ VIRTUAL float SoftMaxLayer::calcLoss( float const *expectedValues ) {
 // calculate partial deriv loss wrt our inputs, in other words, product of
 // (multinomial cross-entropy) loss derivative wrt our output, and
 // derivative of softmax wrt our inputs
-VIRTUAL void SoftMaxLayer::calcErrorsFromLabels( int const *labels ) {
+VIRTUAL void SoftMaxLayer::calcGradInputFromLabels( int const *labels ) {
 //    cout << "softmaxlayer::calcerrors" << endl;
-    StatefulTimer::timeCheck("start SoftMaxLayer calcErrorsfromlabels");
+    StatefulTimer::timeCheck("start SoftMaxLayer calcGradInputfromlabels");
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
@@ -158,14 +158,14 @@ VIRTUAL void SoftMaxLayer::calcErrorsFromLabels( int const *labels ) {
             gradInput[imageOffset + label] -= 1;
         }
     }
-    StatefulTimer::timeCheck("end SoftMaxLayer calcErrorsfromlabels");
+    StatefulTimer::timeCheck("end SoftMaxLayer calcGradInputfromlabels");
 }
 // calculate partial deriv loss wrt our inputs, in other words, product of
 // (multinomial cross-entropy) loss derivative wrt our output, and
 // derivative of softmax wrt our inputs
-VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
+VIRTUAL void SoftMaxLayer::calcGradInput( float const *expectedValues ) {
 //    cout << "softmaxlayer::calcerrors" << endl;
-    StatefulTimer::timeCheck("start SoftMaxLayer calcErrors");
+    StatefulTimer::timeCheck("start SoftMaxLayer calcGradInput");
     if( perPlane ) {
         for( int n = 0; n < batchSize; n++ ) {
             for( int plane = 0; plane < numPlanes; plane++ ) {
@@ -189,7 +189,7 @@ VIRTUAL void SoftMaxLayer::calcErrors( float const *expectedValues ) {
             }
         }
     }
-    StatefulTimer::timeCheck("end SoftMaxLayer calcErrors");
+    StatefulTimer::timeCheck("end SoftMaxLayer calcGradInput");
 }
 VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
     if( perPlane ) {
@@ -296,10 +296,10 @@ VIRTUAL void SoftMaxLayer::propagate() {
     }
     StatefulTimer::timeCheck("end SoftMaxLayer propagate");
 }
-// this seems to be handled by calcErrors? So, just to a nop?
+// this seems to be handled by calcGradInput? So, just to a nop?
 // (cos this layer kind of combines loss layer and a 'normal' propagation layer )
 // certainly, we dont have any weights to update, and we already handled error
-// propagation in 'calcErrors' method above
+// propagation in 'calcGradInput' method above
 VIRTUAL void SoftMaxLayer::backward( float learningRate ) {
 //    cout << "softmaxlayer::backproperrors" << endl;
     // nop, do nothing :-)

@@ -68,7 +68,7 @@ VIRTUAL void MultinomialCrossEntropy::setBatchSize( int batchSize ) {
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
-VIRTUAL void MultinomialCrossEntropy::calcErrors( float const*expectedOutput ) {
+VIRTUAL void MultinomialCrossEntropy::calcGradInput( float const*expectedOutput ) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();
     int outputSize = previousLayer->getOutputSize();
     float *output = previousLayer->getOutput();
