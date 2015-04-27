@@ -196,8 +196,9 @@ TEST( testbackward, softmaxloss ) {
     net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
 
-    int batchSize = 1;
+    const int batchSize = 2;
     net->setBatchSize(batchSize);
+    const int outputPlanes = net->getOutputPlanes();
 
     int inputCubeSize = net->getInputCubeSize();
     int outputCubeSize = net->getOutputCubeSize();
@@ -217,12 +218,25 @@ TEST( testbackward, softmaxloss ) {
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
 //    normalizeAsProbabilityDistribution( input, inputTotalSize );
     normalizeAsProbabilityDistribution( expectedOutput, outputTotalSize );
+    // TODO remove this scaffold code
+    // set all to zero, and one to 1, ie like labelled data
+    for( int i = 0; i < outputTotalSize; i++ ) {
+        expectedOutput[i] = 0;
+    }
+    for( int n = 0; n < batchSize; n++ ) {
+        int chosenLabel = 0;
+        WeightRandomizer::randomizeInts( n, &chosenLabel, 1, 0, net->getOutputPlanes() );
+        expectedOutput[ n * outputPlanes + chosenLabel ] = 1;
+    }
+    for( int i = 0; i < outputTotalSize; i++ ) {
+        cout << "expected[" << i << "]=" << expectedOutput[i] << endl;
+    }
         
     // now, forward prop
 //    net->input( input );
     net->forward( input );
     net->print();
-//    net->printOutput();
+    net->printOutput();
 
     // calculate loss
     float lossBefore = net->calcLoss( expectedOutput );
@@ -274,6 +288,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     cout << net->asString() << endl;
 
     int batchSize = dynamic_cast< InputLayer *>(net->getLayer(0))->batchSize;
+    cout << "batchSize: " << batchSize << endl;
 
     int inputCubeSize = net->getInputCubeSize();
     int outputCubeSize = net->getOutputCubeSize();
@@ -336,14 +351,40 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     delete[] input;
 }
 
+TEST( testbackward, squareloss2 ) {
+    NeuralNet *net = new NeuralNet( 5, 1 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( SquareLossMaker::instance() );
+    cout << net->asString() << endl;
+
+//    int batchSize = ;
+    net->setBatchSize(2);
+
+    checkLayer( net, 2 );
+    delete net;
+}
+
+TEST( testbackward, crossentropy2 ) {
+    NeuralNet *net = new NeuralNet( 5, 1 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( CrossEntropyLossMaker::instance() );
+    cout << net->asString() << endl;
+
+//    int batchSize = ;
+    net->setBatchSize(2);
+
+    checkLayer( net, 2 );
+    delete net;
+}
+
 TEST( testbackward, softmax2 ) {
     NeuralNet *net = new NeuralNet( 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
 
-    int batchSize = 32;
-    net->setBatchSize(batchSize);
+//    int batchSize = ;
+    net->setBatchSize(2);
 
     checkLayer( net, 2 );
     delete net;
