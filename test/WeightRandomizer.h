@@ -28,6 +28,7 @@ public:
     STATIC MT19937 randomize( float *values, int numValues, float minvalue, float maxvalue );
     STATIC void randomizeInts( float *values, int numValues, int minvalue, int maxvalue );
     STATIC void randomizeInts( int *values, int numValues, int minvalue, int maxvalue  );
+    STATIC void randomizeInts( int seed, int *values, int numValues, int minvalue, int maxvalue  );
     STATIC void randomizeInts( unsigned char *values, int numValues, int minvalue, int maxvalue  );
     STATIC void randomizeInts( int seed, unsigned char *values, int numValues, int minvalue, int maxvalue  );
     STATIC MT19937 randomize( ClConvolve::vfloat &values, float minvalue, float maxvalue );

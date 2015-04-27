@@ -32,14 +32,14 @@ public:
     int allocatedSize;
     float *output;
 
-    inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
+    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * outputPlanes + outPlane )
             * outputImageSize + outRow )
             * outputImageSize + outCol;
     }
-    inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
@@ -50,13 +50,12 @@ public:
     ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayerMaker *maker );
     VIRTUAL ~ForceBackpropLayer();
     VIRTUAL std::string getClassName() const;
+    VIRTUAL void backward( float learningRate );
     VIRTUAL float *getOutput();
-    VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
-    VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void forward();
     VIRTUAL void backward( float learningRate, float const *gradOutput );
