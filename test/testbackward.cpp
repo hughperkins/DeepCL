@@ -106,12 +106,12 @@ TEST( testbackward, crossentropyloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 3, 5 );
+    NeuralNet *net = new NeuralNet( 1, 2 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
     cout << net->asString() << endl;
 
-    int batchSize = 32;
+    int batchSize = 1;
     net->setBatchSize(batchSize);
 
     int inputCubeSize = net->getInputCubeSize();
@@ -125,8 +125,8 @@ TEST( testbackward, crossentropyloss ) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
 
-    WeightRandomizer::randomize( 0, input, inputTotalSize, -2.0f, 2.0f );
-    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, -2.0f, 2.0f );
+    WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
     
     // now, forward prop
 //    net->input( input );
@@ -152,7 +152,7 @@ TEST( testbackward, crossentropyloss ) {
         float grad = net->getLayer(2)->getGradInput()[inputIndex];
 //        cout << "grad=" << grad << endl;
         // tweak slightly
-        float newValue = oldValue * 1.01f;
+        float newValue = oldValue * 1.001f;
         float inputDelta = newValue - oldValue;
         float predictedLossChange = inputDelta * grad;
         input[inputIndex] = newValue;

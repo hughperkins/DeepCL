@@ -32,7 +32,7 @@ STATIC void WeightRandomizer::randomize( int seed, float *values, int numValues,
 }
 STATIC void WeightRandomizer::randomize( MT19937 &random, float *values, int numValues, float minvalue, float maxvalue ) {
     for( int i = 0; i < numValues; i++ ) {
-        values[i] = random() / (float)random.max() * (maxvalue-minvalue) - maxvalue;
+        values[i] = random() / (float)random.max() * (maxvalue-minvalue) + minvalue;
     }
 }
 STATIC MT19937 WeightRandomizer::randomize( float *values, int numValues, float minvalue, float maxvalue ) {
@@ -93,7 +93,7 @@ template< typename It > STATIC MT19937 WeightRandomizer::randomize( It begin, It
 }
 template< typename It > STATIC void WeightRandomizer::randomize( MT19937 &random, It begin, It end, float minvalue, float maxvalue ) {
     for( It it = begin; it != end; it++ ) {
-        *it= random() / (float)random.max() * (maxvalue-minvalue) - maxvalue;
+        *it= random() / (float)random.max() * (maxvalue-minvalue) + minvalue;
     }
 }
 template< typename It > STATIC MT19937 WeightRandomizer::randomizeInts( It begin, It end, int minValue, int maxValue  ) {
