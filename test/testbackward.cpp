@@ -67,7 +67,7 @@ TEST( testbackward, squareloss ) {
 
     // modify input slightly
     mt19937 random;
-    const int numSamples = 5;
+    const int numSamples = 10;
     for( int i = 0; i < numSamples; i++ ) {
         int inputIndex;
         WeightRandomizer::randomizeInts( i, &inputIndex, 1, 0, inputTotalSize );
@@ -77,7 +77,7 @@ TEST( testbackward, squareloss ) {
         float grad = net->getLayer(2)->getGradInput()[inputIndex];
 //        cout << "grad=" << grad << endl;
         // tweak slightly
-        float newValue = oldValue * 1.001f;
+        float newValue = oldValue * 1.01f;
         float inputDelta = newValue - oldValue;
         float predictedLossChange = inputDelta * grad;
         input[inputIndex] = newValue;

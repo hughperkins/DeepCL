@@ -21,7 +21,6 @@ public:
     float *gradInput;
     int allocatedSize;
     int batchSize;
-//    ActivationFunction const*const activationFunction;
 
     // [[[cog
     // import cog_addheaders

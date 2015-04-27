@@ -31,28 +31,22 @@ VIRTUAL std::string SquareLossLayer::getClassName() const {
 VIRTUAL float*SquareLossLayer::getGradInput() {
     return gradInput;
 }
-//VIRTUAL float*SquareLossLayer::getDerivLossBySumForUpstream() {
-//    return gradOutput;
-//}
 VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
     float loss = 0;
-    float *output = getOutput();
+    float *input = previousLayer->getOutput();
 //    cout << "SquareLossLayer::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
     int imageSize = previousLayer->getOutputImageSize();
-    for( int imageId = 0; imageId < batchSize; imageId++ ) {
+    for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outRow = 0; outRow < imageSize; outRow++ ) {
                 for( int outCol = 0; outCol < imageSize; outCol++ ) {
-                    int resultOffset = ( ( imageId
+                    int outputOffset = ( ( n
                          * numPlanes + plane )
                          * imageSize + outRow )
                          * imageSize + outCol;
- //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
-                    float expectedOutput = expected[resultOffset];
-                    float actualOutput = output[resultOffset];
-                    float diff = actualOutput - expectedOutput;
+                    float diff = input[outputOffset] - expected[outputOffset];
                     float squarederror = diff * diff;
                     loss += squarederror;
                 }
@@ -76,12 +70,9 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
     gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
 }
 VIRTUAL void SquareLossLayer::calcGradInput( float const*expectedOutput ) {
-//    ActivationFunction const*fn = previousLayer->getActivationFunction();
     int inputSize = previousLayer->getOutputSize();
     float *input = previousLayer->getOutput();
     for( int i = 0; i < inputSize; i++ ) {
-        // TODO: check this :-)
-//        float diff = input[i] - expectedOutput[i];
         gradInput[i] = input[i] - expectedOutput[i];
     }
 }
