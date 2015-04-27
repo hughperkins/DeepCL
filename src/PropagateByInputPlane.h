@@ -7,7 +7,7 @@ public:
     CLKernel *kernel;
     CLKernel *reduceSegments;
     CLKernel *repeatedAdd;
-    CLKernel *activate;
+//    CLKernel *activate;
 
     // [[[cog
     // import cog_addheaders

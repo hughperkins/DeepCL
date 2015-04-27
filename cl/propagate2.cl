@@ -5,23 +5,9 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR ]
 // BIASED (or not)
 
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
-#elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
-#elif SIGMOID
-    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0.0f )
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) (output)
-#endif
-
 #ifdef gOutputImageSize // for previous tests that dont define it
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [outplane]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [imageid][upstreamplane][filterrow][filtercol]
@@ -114,10 +100,9 @@ void kernel propagate_2_by_outplane( const int batchSize,
         // output are organized like [imageid][filterid][row][col]
         int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
         if( localId < gOutputImageSizeSquared ) {
-            output[resultIndex ] = ACTIVATION_FUNCTION(sum);
+            output[resultIndex ] = sum;
         }
     }
 }
-#endif
 #endif
 

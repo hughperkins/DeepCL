@@ -20,7 +20,7 @@ using namespace std;
 VIRTUAL Propagate3::~Propagate3() {
     delete kernel;
     delete repeatedAdd;
-    delete activate;
+//    delete activate;
 }
 VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
@@ -65,13 +65,13 @@ VIRTUAL void Propagate3::propagate( int batchSize, CLWrapper *dataWrapper, CLWra
         StatefulTimer::timeCheck("Propagate3::propagate after repeatedAdd");
     }
 
-    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-        ->inout( outputWrapper );
-    maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
-    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-    cl->finish();
-    StatefulTimer::timeCheck("Propagate3::propagate after activate");
+//    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
+//        ->inout( outputWrapper );
+//    maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
+//    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+//    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+//    cl->finish();
+//    StatefulTimer::timeCheck("Propagate3::propagate after activate");
 
     StatefulTimer::timeCheck("Propagate3::propagate after call propagate");
 }
@@ -90,7 +90,7 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/propagate3.cl", "propagate_3_by_n_outplane", 'options' )
     // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
-    // stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
+    // # stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
     // ]]]
     // generated using cog, from cl/propagate3.cl:
     const char * kernelSource =  
@@ -220,52 +220,6 @@ Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
     "\n" 
     "";
     repeatedAdd = cl->buildKernelFromString( repeatedAddSource, "repeated_add", options, "cl/per_element_add.cl" );
-    // generated using cog, from cl/activate.cl:
-    const char * activateSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// expected defines:\n" 
-    "// one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH ]\n" 
-    "\n" 
-    "#ifdef TANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) (tanh(output))\n" 
-    "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))\n" 
-    "#elif SIGMOID\n" 
-    "    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
-    "#elif defined RELU\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
-    "#elif defined LINEAR\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output)\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void activate( const int N, global float *inout ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void propagateNaive( const int N, global float *out, global const float *in ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "\n" 
-    "";
-    activate = cl->buildKernelFromString( activateSource, "activate", options, "cl/activate.cl" );
     // [[[end]]]
 }
 

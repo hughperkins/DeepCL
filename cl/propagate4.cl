@@ -5,20 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR ]
 // BIASED (or not)
-
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
-#elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
-#elif SIGMOID
-    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) (output)
-#endif
 
 void copyLocal( local float *target, global float const *source, int N ) {
     int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
@@ -31,7 +18,6 @@ void copyLocal( local float *target, global float const *source, int N ) {
 }
 
 #ifdef gOutputImageSize // for previous tests that dont define it
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroup id organized like: [n][filterid]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [upstreamplane][filterrow][filtercol]
@@ -99,11 +85,10 @@ void kernel propagate_4_by_n_outplane_smallercache( const int batchSize,
     // output are organized like [imageid][filterid][row][col]
     #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + effectiveLocalId )
     if( localId < gOutputImageSizeSquared ) {
-        output[resultIndex ] = ACTIVATION_FUNCTION(sum);
+        output[resultIndex ] = sum;
     }
     // output[resultIndex ] = 123;
     //if( globalId == 0 ) output[0] += 0.000001f + _perPixelSums[0];
 }
-#endif
 #endif
 

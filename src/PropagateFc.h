@@ -15,7 +15,7 @@ class PropagateFc : public Propagate {
 public:
     CLKernel *kernel1;
     CLKernel *kernel_reduce;
-    CLKernel *kernel_activate;
+//    CLKernel *kernel_activate;
 //    CLKernel *kPerElementAdd;
     CLKernel *kPerElementTiledAdd;
 

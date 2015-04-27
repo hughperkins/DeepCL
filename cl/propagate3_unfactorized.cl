@@ -7,20 +7,7 @@
 // unfactorized version of propagate3, so can compare performance
 
 // expects:
-// TANH | SCALEDTANH | SIGMOID | RELU | LINEAR
 // BIASED (or not)
-
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
-#elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
-#elif SIGMOID
-    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) (output)
-#endif
 
 // concept: each workgroup handles convolving one input example with one filtercube
 // and writing out one single output plane
@@ -33,7 +20,6 @@
 // one filter cube (corresponding to one outplane) = 5*5 * 32 * 4 = 3.2KB (ok)
 // all filter cubes = 3.2KB * 32 = 102KB (too big)
 // output are organized like [imageid][filterid][row][col]
-#ifdef ACTIVATION_FUNCTION
 void kernel propagate( const int batchSize,
       global const float *images, global const float *filters, 
     #ifdef BIASED
@@ -110,8 +96,7 @@ void kernel propagate( const int batchSize,
     // output are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
     if( localId < gOutputImageSizeSquared ) {
-        output[resultIndex ] = ACTIVATION_FUNCTION( sum );
+        output[resultIndex ] = sum;
     }
 }
-#endif
 

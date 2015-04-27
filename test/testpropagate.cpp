@@ -87,7 +87,7 @@ TEST( testpropagate, imagesize2_nopadzeros ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
-        Propagate *propagate = Propagate::instanceSpecific( 1, cl,
+        Propagate *propagate = Propagate::instanceSpecific( 99, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ) );
         float *output = propagate->propagate( batchSize, data, filter1, 0 );  

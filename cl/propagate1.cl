@@ -5,20 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR ]
 // BIASED (or not)
-
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
-#elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
-#elif SIGMOID
-    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) (output)
-#endif
 
 // notes on non-odd filtersizes:
 // for odd, imagesize and filtersize 3, padZeros = 0:
@@ -76,7 +63,6 @@
 //     - loads a whole upstream cube
 //     - loads a whole filter cube
 //     - writes one output...
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 void kernel convolve_imagecubes_float2( const int numExamples,
       const int numInputPlanes, const int numFilters, 
       const int inputImageSize, const int filterSize, const int padZeros,
@@ -140,8 +126,7 @@ global const float*biases,
     #ifdef BIASED
         sum += biases[filterId];
     #endif
-        output[globalId] = ACTIVATION_FUNCTION(sum);
+        output[globalId] = sum;
     }
 }
-#endif
 

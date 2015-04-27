@@ -20,7 +20,7 @@ using namespace std;
 VIRTUAL PropagateFc::~PropagateFc() {
     delete kernel1;
     delete kernel_reduce;
-    delete kernel_activate;
+//    delete kernel_activate;
     delete kPerElementTiledAdd;
 }
 VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
@@ -87,13 +87,13 @@ VIRTUAL void PropagateFc::propagate( int batchSize, CLWrapper *dataWrapper, CLWr
         StatefulTimer::timeCheck("PropagateFc::propagate after add bias");        
     }
 
-    kernel_activate->in( batchSize * dim.numFilters )
-        ->inout( outputWrapper );
-    maxglobalId = batchSize * dim.numFilters;
-    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-    kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-    cl->finish();
-    StatefulTimer::timeCheck("PropagateFc::propagate after activate");
+//    kernel_activate->in( batchSize * dim.numFilters )
+//        ->inout( outputWrapper );
+//    maxglobalId = batchSize * dim.numFilters;
+//    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+//    kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+//    cl->finish();
+//    StatefulTimer::timeCheck("PropagateFc::propagate after activate");
 
     delete output2Wrapper;
     delete[] output2;
@@ -120,7 +120,7 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
     // import stringify
     // stringify.write_kernel2( "kernel1", "cl/propagate_fc_wgperrow.cl", "propagate_fc_workgroup_perrow", 'options' )
     // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
-    // stringify.write_kernel2( "kernel_activate", "cl/activate.cl", "activate", 'options' )
+    // # stringify.write_kernel2( "kernel_activate", "cl/activate.cl", "activate", 'options' )
     // # stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
     // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
@@ -259,52 +259,6 @@ PropagateFc::PropagateFc( OpenCLHelper *cl, LayerDimensions dim ) :
     "\n" 
     "";
     kernel_reduce = cl->buildKernelFromString( kernel_reduceSource, "reduce_segments", options, "cl/reduce_segments.cl" );
-    // generated using cog, from cl/activate.cl:
-    const char * kernel_activateSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// expected defines:\n" 
-    "// one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH ]\n" 
-    "\n" 
-    "#ifdef TANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) (tanh(output))\n" 
-    "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))\n" 
-    "#elif SIGMOID\n" 
-    "    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
-    "#elif defined RELU\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
-    "#elif defined LINEAR\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output)\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void activate( const int N, global float *inout ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void propagateNaive( const int N, global float *out, global const float *in ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "\n" 
-    "";
-    kernel_activate = cl->buildKernelFromString( kernel_activateSource, "activate", options, "cl/activate.cl" );
     // generated using cog, from cl/per_element_add.cl:
     const char * kPerElementTiledAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
