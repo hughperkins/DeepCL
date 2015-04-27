@@ -85,6 +85,7 @@ public:
     int fileReadBatches;
     int normalizationExamples;
     // [[[end]]]
+    int gpuIndex;
 
     Config() {
         /* [[[cog
@@ -125,6 +126,8 @@ public:
         fileReadBatches = 50;
         normalizationExamples = 10000;
         // [[[end]]]
+        gpuIndex = -1;
+
     }
     string getTrainingString() {
         string configString = "";
@@ -227,7 +230,12 @@ void go(Config config) {
 
 //    const int numToTrain = Ntrain;
 //    const int batchSize = config.batchSize;
-    NeuralNet *net = new NeuralNet();
+    NeuralNet *net;
+    if( config.gpuIndex >= 0 ) {
+        net = new NeuralNet(config.gpuIndex);
+    } else {
+        net = new NeuralNet();
+    }
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
@@ -368,6 +376,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     // [[[end]]]
+    cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
 }
 
 int main( int argc, char *argv[] ) {
@@ -441,6 +450,8 @@ int main( int argc, char *argv[] ) {
             } else if( key == "normalizationexamples" ) {
                 config.normalizationExamples = atoi(value);
             // [[[end]]]
+            } else if( key == "gpuindex" ) {
+                config.gpuIndex = atoi(value);
             } else {
                 cout << endl;
                 cout << "Error: key '" << key << "' not recognised" << endl;
