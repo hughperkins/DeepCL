@@ -50,7 +50,8 @@ using namespace std;
         ('multiNet', 'int', 'number of Mcdnn columns to train', 1),
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0),
         ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50),
-        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000)
+        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000),
+        ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1)
     ]
 *///]]]
 // [[[end]]]
@@ -84,8 +85,8 @@ public:
     int loadOnDemand;
     int fileReadBatches;
     int normalizationExamples;
-    // [[[end]]]
     int gpuIndex;
+    // [[[end]]]
 
     Config() {
         /* [[[cog
@@ -125,8 +126,8 @@ public:
         loadOnDemand = 0;
         fileReadBatches = 50;
         normalizationExamples = 10000;
-        // [[[end]]]
         gpuIndex = -1;
+        // [[[end]]]
 
     }
     string getTrainingString() {
@@ -375,8 +376,8 @@ void printUsage( char *argv[], Config config ) {
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
-    // [[[end]]]
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
+    // [[[end]]]
 }
 
 int main( int argc, char *argv[] ) {
@@ -449,9 +450,9 @@ int main( int argc, char *argv[] ) {
                 config.fileReadBatches = atoi(value);
             } else if( key == "normalizationexamples" ) {
                 config.normalizationExamples = atoi(value);
-            // [[[end]]]
             } else if( key == "gpuindex" ) {
                 config.gpuIndex = atoi(value);
+            // [[[end]]]
             } else {
                 cout << endl;
                 cout << "Error: key '" << key << "' not recognised" << endl;
