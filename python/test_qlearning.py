@@ -111,7 +111,7 @@ class ScenarioImage(PyDeepCL.Scenario):
                 highestQ = 0
                 bestAction = 0
                 netinput[ size * size + y * size + x ] = 1
-                net.propagate( netinput )
+                net.forward( netinput )
                 netinput[ size * size + y * size + x ] = 0
                 output = net.getOutput()
                 for action in range(4):

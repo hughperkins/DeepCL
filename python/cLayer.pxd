@@ -1,7 +1,7 @@
 cdef extern from "Layer.h":
     cdef cppclass Layer:
-        void propagate()
-        void backProp( float learningRate )
+        void forward()
+        void backward( float learningRate )
         bool needsBackProp()
         bool getBiased()
         int getOutputCubeSize()

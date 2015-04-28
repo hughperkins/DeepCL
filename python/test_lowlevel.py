@@ -41,8 +41,8 @@ net.setBatchSize(batchSize)
 for epoch in range(numEpochs): 
     numRight = 0
     for batch in range( N // batchSize ):
-        net.propagate( images[batch * batchSize * planes * size * size:] )
-        net.backPropFromLabels( 0.002, labels[batch * batchSize:] )
+        net.forward( images[batch * batchSize * planes * size * size:] )
+        net.backwardFromLabels( 0.002, labels[batch * batchSize:] )
         numRight += net.calcNumRight( labels[batch * batchSize:] )
         # print( 'numright ' + str( net.calcNumRight( labels ) ) )
 #    print( 'loss ' + str( loss ) )

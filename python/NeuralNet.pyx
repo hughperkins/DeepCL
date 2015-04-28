@@ -19,16 +19,16 @@ cdef class NeuralNet:
 
     def setBatchSize( self, int batchSize ):
         self.thisptr.setBatchSize( batchSize ) 
-    def propagate( self, const float[:] images):
-        self.thisptr.propagate( &images[0] )
-    def propagateList( self, imagesList):
+    def forward( self, const float[:] images):
+        self.thisptr.forward( &images[0] )
+    def forwardList( self, imagesList):
         cdef c_array.array imagesArray = array('f', imagesList )
         cdef float[:] imagesArray_view = imagesArray
-        self.thisptr.propagate( &imagesArray_view[0] )
-    def backPropFromLabels( self, float learningRate, int[:] labels):
-        return self.thisptr.backPropFromLabels( learningRate, &labels[0] ) 
-    def backProp( self, float learningRate, float[:] expectedOutput):
-        return self.thisptr.backProp( learningRate, &expectedOutput[0] )
+        self.thisptr.forward( &imagesArray_view[0] )
+    def backwardFromLabels( self, float learningRate, int[:] labels):
+        return self.thisptr.backwardFromLabels( learningRate, &labels[0] ) 
+    def backward( self, float learningRate, float[:] expectedOutput):
+        return self.thisptr.backward( learningRate, &expectedOutput[0] )
     def calcNumRight( self, int[:] labels ):
         return self.thisptr.calcNumRight( &labels[0] )
     def addLayer( self, LayerMaker2 layerMaker ):

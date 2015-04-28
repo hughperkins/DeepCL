@@ -37,18 +37,6 @@ cdef class FullyConnectedMaker(LayerMaker2):
     def biased(self, int _biased):
         self.thisptr.biased( _biased )
         return self
-    def linear(self):
-        self.thisptr.linear()
-        return self
-    def tanh(self):
-        self.thisptr.tanh()
-        return self
-    def sigmoid(self):
-        self.thisptr.sigmoid()
-        return self
-    def relu(self):
-        self.thisptr.relu()
-        return self
     @staticmethod
     def instance():
         return FullyConnectedMaker()
@@ -77,18 +65,6 @@ cdef class ConvolutionalMaker(LayerMaker2):
         return self
     def biased(self, bint _biased):
         self.thisptr.biased( _biased )
-        return self
-    def linear(self):
-        self.thisptr.linear()
-        return self
-    def tanh(self):
-        self.thisptr.tanh()
-        return self
-    def sigmoid(self):
-        self.thisptr.sigmoid()
-        return self
-    def relu(self):
-        self.thisptr.relu()
         return self
     @staticmethod
     def instance():

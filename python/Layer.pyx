@@ -5,10 +5,10 @@ cdef class Layer:
         pass
     cdef set_thisptr( self, cDeepCL.Layer *thisptr):
         self.thisptr = thisptr
-    def propagate(self):
-        self.thisptr.propagate()
-    def backProp(self, float learningRate):
-        self.thisptr.backProp( learningRate )
+    def forward(self):
+        self.thisptr.forward()
+    def backward( self, float learningRate):
+        self.thisptr.backward( learningRate )
     def needsBackProp( self ):
         return self.thisptr.needsBackProp()
 #    def getBiased( self ):

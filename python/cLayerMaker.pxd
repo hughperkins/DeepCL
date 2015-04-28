@@ -23,10 +23,6 @@ cdef extern from "FullyConnectedMaker.h":
         FullyConnectedMaker *imageSize( int imageSize ) except +
         FullyConnectedMaker *biased() except +
         FullyConnectedMaker *biased(bint _biased) except +
-        FullyConnectedMaker *linear() except +
-        FullyConnectedMaker *tanh() except +
-        FullyConnectedMaker *sigmoid() except +
-        FullyConnectedMaker *relu() except +
         @staticmethod
         FullyConnectedMaker *instance() except +
 
@@ -38,10 +34,6 @@ cdef extern from "ConvolutionalMaker.h":
         ConvolutionalMaker *padZeros(bint _padZeros) except +
         ConvolutionalMaker *biased() except +
         ConvolutionalMaker *biased(bint _biased) except +
-        ConvolutionalMaker *linear() except +
-        ConvolutionalMaker *tanh() except +
-        ConvolutionalMaker *sigmoid() except +
-        ConvolutionalMaker *relu() except +
         @staticmethod
         ConvolutionalMaker *instance() except +
 
