@@ -13,9 +13,8 @@ Global Contents
 - [Q-learning](doc/QLearning.md)
 - [To build](doc/Build.md)
 - [Stable API](doc/PublicApis.md)
+- [Development](doc/Development.md)
 - [Benchmarking](doc/Benchmarking.md)
-- [Testing](doc/Testing.md)
-- [Architecture](doc/Architecture.md)
 - [Changes](doc/Changes.md)
 - [Doc for old 3.x.x](https://github.com/hughperkins/DeepCL/blob/3.x.x/README.md)
 
