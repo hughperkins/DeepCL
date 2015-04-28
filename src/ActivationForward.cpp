@@ -28,11 +28,11 @@ ActivationForward::ActivationForward( OpenCLHelper *cl, int numPlanes, int input
         fn(fn) {
 }
 STATIC ActivationForward *ActivationForward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
-    return new ActivationForwardCpu( cl, numPlanes, inputImageSize, fn );
+    return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 //    return new ActivationForwardCpu( cl, numPlanes, inputImageSize );
 }
 STATIC ActivationForward *ActivationForward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
-    return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
+    return new ActivationForwardCpu( cl, numPlanes, inputImageSize, fn );
 }
 STATIC ActivationForward *ActivationForward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
     if( idx == 0 ) {

@@ -17,95 +17,95 @@
 
 using namespace std;
 
-TEST( testactivationbackprop, basic ) {
+TEST( testactivationbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
-    float inputs[] = {
-        1, -0.1f, 0.1f,
-        0.5f, -1000, 1000,
-        2.5f, 2.0f, -1.0f
+    float outputs[] = {
+        1, 0, 0.1f,
+        0.5f, 0, 1000,
+        2.5f, 2.0f, 0
     };
-    float errors[] = {
+    float gradOutput[] = {
         3, 5,-2.7f,
         2, -9, 2.1f,
         0, -1.1f, 3.5f
     };
     int inputTotalSize = activationBackprop->getInputSize( batchSize );
     EXPECT_EQ( batchSize * imageSize * imageSize, inputTotalSize );
-    float *errorsForUpstream = new float[ inputTotalSize ];
+    float *gradInput = new float[ inputTotalSize ];
 
-    activationBackprop->backward( batchSize, inputs, errors, errorsForUpstream );
+    activationBackprop->backward( batchSize, outputs, gradOutput, gradInput );
 
-//    float *expectedErrorsForUpstream = new float[ activationPropagate->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
-//    float expectedErrorsForUpstream[] = {
+//    float *expectedGradInput = new float[ activationPropagate->getInputSize( batchSize ) ];
+//    memset( expectedGradInput, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
+//    float expectedGradInput[] = {
 //        3,0,-2.7f,
 //        2,0,2.1f,
 //        0,-1.1f,0,
 //    };
-    EXPECT_EQ( 3, errorsForUpstream[0] );
-    EXPECT_EQ( 0, errorsForUpstream[1] );
-    EXPECT_EQ( -2.7f, errorsForUpstream[2] );
+    EXPECT_EQ( 3, gradInput[0] );
+    EXPECT_EQ( 0, gradInput[1] );
+    EXPECT_EQ( -2.7f, gradInput[2] );
 
-    EXPECT_EQ( 2, errorsForUpstream[3] );
-    EXPECT_EQ( 0, errorsForUpstream[4] );
-    EXPECT_EQ( 2.1f, errorsForUpstream[5] );
+    EXPECT_EQ( 2, gradInput[3] );
+    EXPECT_EQ( 0, gradInput[4] );
+    EXPECT_EQ( 2.1f, gradInput[5] );
 
-    EXPECT_EQ( 0, errorsForUpstream[6] );
-    EXPECT_EQ( -1.1f, errorsForUpstream[7] );
-    EXPECT_EQ( 0, errorsForUpstream[8] );
+    EXPECT_EQ( 0, gradInput[6] );
+    EXPECT_EQ( -1.1f, gradInput[7] );
+    EXPECT_EQ( 0, gradInput[8] );
 //    for( int i = 0; i < 16; i++ ) {
-//        EXPECT_EQ( expectedErrorsForUpstream[i], errorsForUpstream[i] );
+//        EXPECT_EQ( expectedGradInput[i], gradInput[i] );
 //    }
 
     delete activationBackprop;
-    delete[] errorsForUpstream;
+    delete[] gradInput;
     delete cl;
 }
 
-TEST( testactivationbackprop, basic_2plane_batchsize2 ) {
+TEST( testactivationbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
-    int imageSize = 2;
+    int imageSize = 1;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
-    float inputs[] = {
+    float outputs[] = {
         2,
-        -1,
-        -2,
+        0,
+        0,
         2
     };
-    float errors[] = {
+    float gradOutput[] = {
         3, 
         5,
         2, 
         9
     };
-    float *errorsForUpstream = new float[ activationBackprop->getInputSize( batchSize ) ];
+    float *gradInput = new float[ activationBackprop->getInputSize( batchSize ) ];
 
-    activationBackprop->backward( batchSize, inputs, errors, errorsForUpstream );
+    activationBackprop->backward( batchSize, outputs, gradOutput, gradInput );
 
-//    float *expectedErrorsForUpstream = new float[ activationPropagate->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
-    float expectedErrorsForUpstream[] = {
+//    float *expectedGradInput = new float[ activationPropagate->getInputSize( batchSize ) ];
+//    memset( expectedGradInput, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
+    float expectedGradInput[] = {
         3,
         0,
         0,
         9
     };
     for( int i = 0; i < 4; i++ ) {
-        ASSERT_EQ( expectedErrorsForUpstream[i], errorsForUpstream[i] );
+        ASSERT_EQ( expectedGradInput[i], gradInput[i] );
     }
 
     delete activationBackprop;
-    delete[] errorsForUpstream;
+    delete[] gradInput;
     delete cl;
 }
 
-TEST( SLOW_testactivationbackprop, compare_args ) {
+TEST( SLOW_testactivationbackward, compare_args ) {
     int inputImageSize = 9;
     std::string activation = "relu";
     int instance0 = 0;
@@ -127,18 +127,18 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
     ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     int outputImageSize = p1->outputImageSize;
-    int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
-    float *errors = new float[ errorsSize ];
+    int gradOutputSize = batchSize * outputImageSize * outputImageSize * numPlanes;
+    float *gradOutput = new float[ gradOutputSize ];
     int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
-    float *errorsForUpstream0 = new float[ inputSize ];
-    float *errorsForUpstream1 = new float[ inputSize ];
+    float *gradInput0 = new float[ inputSize ];
+    float *gradInput1 = new float[ inputSize ];
     
     ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    float *output = new float[errorsSize];
+    float *output = new float[gradOutputSize];
     float *input = new float[inputSize];
-    float *errorsForUpstream[2];
-    errorsForUpstream[0] = errorsForUpstream0;
-    errorsForUpstream[1] = errorsForUpstream1;
+    float *gradInput[2];
+    gradInput[0] = gradInput0;
+    gradInput[1] = gradInput1;
     ActivationBackward *props[2];
     props[0] = p0;
     props[1] = p1;
@@ -146,18 +146,18 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
         // selectors might go over the edge if we just choose random ints
         // easiest way to select valid selectors might be to just forwardforward first?
 
-        WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
+        WeightRandomizer::randomize( it, gradOutput, gradOutputSize, -0.1f, 0.1f );
         WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
         forwardprop->forward( batchSize, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
-            props[instance]->backward( batchSize, input, errors, errorsForUpstream[instance] );
+            props[instance]->backward( batchSize, output, gradOutput, gradInput[instance] );
         }
         bool ok = true;
         int numErrors = 0;
         for( int i = 0; i < inputSize; i++ ) {
-            if( errorsForUpstream0[i] != errorsForUpstream1[i] ) {
-                cout << "diff: i=" << i << " " << errorsForUpstream0[i] << " != " << errorsForUpstream1[i] << endl;
+            if( gradInput0[i] != gradInput1[i] ) {
+                cout << "diff: i=" << i << " " << gradInput0[i] << " != " << gradInput1[i] << endl;
                 ok = false;
                 numErrors++;
                 if( numErrors > 20 ) {
@@ -168,7 +168,7 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
         }
         EXPECT_EQ( true, ok );
         if( !ok ) {
-            cout << " breaking after " << it << " its, because of FAIL errors" << endl;
+            cout << " breaking after " << it << " its, because of FAIL gradOutput" << endl;
             break; // no point in continuing...
         }
     }
@@ -176,9 +176,9 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
     delete forwardprop;
     delete[] input;
     delete[] output;
-    delete[] errors;
-    delete[] errorsForUpstream0;
-    delete[] errorsForUpstream1;
+    delete[] gradOutput;
+    delete[] gradInput0;
+    delete[] gradInput1;
     delete p0;
     delete p1;
     delete cl;

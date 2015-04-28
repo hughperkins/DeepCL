@@ -25,10 +25,10 @@ using namespace std;
 
 STATIC ActivationBackward *ActivationBackward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
     // TODO: reset to GpuNaive
-    return new ActivationBackwardCpu( cl, numPlanes, inputImageSize, fn );
+    return new ActivationBackwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
 STATIC ActivationBackward *ActivationBackward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn) {
-    return new ActivationBackwardGpuNaive( cl, numPlanes, inputImageSize, fn );
+    return new ActivationBackwardCpu( cl, numPlanes, inputImageSize, fn );
 }
 STATIC ActivationBackward *ActivationBackward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
     if( idx == 0 ) {

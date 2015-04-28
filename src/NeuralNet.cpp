@@ -110,10 +110,10 @@ void NeuralNet::printBiasWeightsAsCode() {
 /// which should be the same size as the output of the final layer
 /// of the network
 PUBLICAPI float NeuralNet::calcLoss(float const *expectedValues ) {
-    return dynamic_cast<LossLayer*>(layers[layers.size()-1])->calcLoss( expectedValues );
+    return dynamic_cast<LossLayer*>(getLastLayer())->calcLoss( expectedValues );
 }
 PUBLICAPI float NeuralNet::calcLossFromLabels(int const *labels ) {
-    return dynamic_cast<IAcceptsLabels*>(layers[layers.size()-1])->calcLossFromLabels( labels );
+    return dynamic_cast<IAcceptsLabels*>(getLastLayer())->calcLossFromLabels( labels );
 }
 EpochMaker *NeuralNet::epochMaker() {
      return new EpochMaker(this);
@@ -275,10 +275,4 @@ PUBLICAPI std::string NeuralNet::asString() {
     }    
     return result;
 }
-
-//template DeepCL_EXPORT InputLayerMaker<unsigned char> *NeuralNet::inputMaker<unsigned char>();
-//template DeepCL_EXPORT InputLayerMaker<float> *NeuralNet::inputMaker<float>();
-
-//template DeepCL_EXPORT void NeuralNet::append( InputLayerMaker<unsigned char> inputLayerMaker );
-//template DeepCL_EXPORT void NeuralNet::append( InputLayerMaker<float> inputLayerMaker );
 

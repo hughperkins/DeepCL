@@ -188,6 +188,7 @@ VIRTUAL void ActivationLayer::forward() {
         inputWrapper->copyToDevice();
     }
     activationPropagateImpl->forward( batchSize, inputWrapper, outputWrapper );
+    outputCopiedToHost = false;
     if( !previousLayer->hasOutputWrapper() ) {
         delete inputWrapper;
     }
@@ -214,6 +215,7 @@ VIRTUAL void ActivationLayer::backward( float learningRate ) {
     }
 
     activationBackpropImpl->backward( batchSize, outputWrapper, gradOutputWrapper, gradInputWrapper );
+    gradInputCopiedToHost = false;
 
 //    if( !previousLayer->hasOutputWrapper() ) {
 //        delete imagesWrapper;
