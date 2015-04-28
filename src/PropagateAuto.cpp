@@ -78,7 +78,7 @@ VIRTUAL void PropagateAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWr
                 Timer timer;
                 try {
                     candidate->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
-                    milliseconds[thisIndex] = timer.lap();
+                    milliseconds[thisIndex] = (int)timer.lap();
 //                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch( runtime_error &e ) {

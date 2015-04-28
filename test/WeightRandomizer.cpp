@@ -58,7 +58,7 @@ STATIC void WeightRandomizer::randomizeInts( int *values, int numValues, int min
 }
 STATIC void WeightRandomizer::randomizeInts( int seed, int *values, int numValues, int minvalue, int maxvalue  ) {
     MT19937 random;
-    random.seed(seed); // so always gives same output
+    random.seed((unsigned long)seed); // so always gives same output
     for( int i = 0; i < numValues; i++ ) {
         values[i] = ( random() % (maxvalue-minvalue) ) + minvalue;
     }
