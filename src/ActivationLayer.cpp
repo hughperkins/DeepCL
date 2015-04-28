@@ -135,7 +135,7 @@ VIRTUAL float *ActivationLayer::getOutput() {
         outputWrapper->copyToHost();
         outputCopiedToHost = true;
     }
-    cout << "getOutput output[0] " << output[0] << " output[1] " << output[1] << endl;
+//    cout << "getOutput output[0] " << output[0] << " output[1] " << output[1] << endl;
     return output;
 }
 VIRTUAL bool ActivationLayer::needsBackProp() {

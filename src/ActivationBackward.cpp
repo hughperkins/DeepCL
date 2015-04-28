@@ -24,7 +24,6 @@ using namespace std;
 #define STATIC
 
 STATIC ActivationBackward *ActivationBackward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
-    // TODO: reset to GpuNaive
     return new ActivationBackwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
 STATIC ActivationBackward *ActivationBackward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn) {
