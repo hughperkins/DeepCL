@@ -124,6 +124,15 @@ public:
     InputLayerMaker *numPlanes( int _numPlanes );
     InputLayerMaker *imageSize( int _imageSize );
 };
+
+class ActivationMaker : public LayerMaker2 {
+public:
+    ActivationMaker();
+    ActivationMaker *relu();
+    ActivationMaker *linear(); // nop basically
+    ActivationMaker *tanh();
+    ActivationMaker *sigmoid();
+};
 /*%template(InputLayerMaker) InputLayerMaker<float>;*/
 
 class ConvolutionalMaker : public LayerMaker2 {

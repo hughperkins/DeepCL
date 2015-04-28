@@ -1862,29 +1862,30 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_ConvolutionalMaker swig_types[0]
-#define SWIGTYPE_p_CrossEntropyLossMaker swig_types[1]
-#define SWIGTYPE_p_FullyConnectedMaker swig_types[2]
-#define SWIGTYPE_p_GenericLoader swig_types[3]
-#define SWIGTYPE_p_InputLayerMaker swig_types[4]
-#define SWIGTYPE_p_LayerMaker2 swig_types[5]
-#define SWIGTYPE_p_NetLearner swig_types[6]
-#define SWIGTYPE_p_NetdefToNet swig_types[7]
-#define SWIGTYPE_p_NeuralNet swig_types[8]
-#define SWIGTYPE_p_NormalizationLayerMaker swig_types[9]
-#define SWIGTYPE_p_PoolingMaker swig_types[10]
-#define SWIGTYPE_p_QLearner2 swig_types[11]
-#define SWIGTYPE_p_SoftMaxMaker swig_types[12]
-#define SWIGTYPE_p_SquareLossMaker swig_types[13]
-#define SWIGTYPE_p_float swig_types[14]
-#define SWIGTYPE_p_floatArray swig_types[15]
-#define SWIGTYPE_p_floatSlice swig_types[16]
-#define SWIGTYPE_p_int swig_types[17]
-#define SWIGTYPE_p_intArray swig_types[18]
-#define SWIGTYPE_p_intSlice swig_types[19]
-#define SWIGTYPE_p_std__string swig_types[20]
-static swig_type_info *swig_types[22];
-static swig_module_info swig_module = {swig_types, 21, 0, 0, 0, 0};
+#define SWIGTYPE_p_ActivationMaker swig_types[0]
+#define SWIGTYPE_p_ConvolutionalMaker swig_types[1]
+#define SWIGTYPE_p_CrossEntropyLossMaker swig_types[2]
+#define SWIGTYPE_p_FullyConnectedMaker swig_types[3]
+#define SWIGTYPE_p_GenericLoader swig_types[4]
+#define SWIGTYPE_p_InputLayerMaker swig_types[5]
+#define SWIGTYPE_p_LayerMaker2 swig_types[6]
+#define SWIGTYPE_p_NetLearner swig_types[7]
+#define SWIGTYPE_p_NetdefToNet swig_types[8]
+#define SWIGTYPE_p_NeuralNet swig_types[9]
+#define SWIGTYPE_p_NormalizationLayerMaker swig_types[10]
+#define SWIGTYPE_p_PoolingMaker swig_types[11]
+#define SWIGTYPE_p_QLearner2 swig_types[12]
+#define SWIGTYPE_p_SoftMaxMaker swig_types[13]
+#define SWIGTYPE_p_SquareLossMaker swig_types[14]
+#define SWIGTYPE_p_float swig_types[15]
+#define SWIGTYPE_p_floatArray swig_types[16]
+#define SWIGTYPE_p_floatSlice swig_types[17]
+#define SWIGTYPE_p_int swig_types[18]
+#define SWIGTYPE_p_intArray swig_types[19]
+#define SWIGTYPE_p_intSlice swig_types[20]
+#define SWIGTYPE_p_std__string swig_types[21]
+static swig_type_info *swig_types[23];
+static swig_module_info swig_module = {swig_types, 22, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3367,6 +3368,146 @@ static swig_lua_const_info swig_InputLayerMaker_cls_constants[] = {
 static swig_lua_class *swig_InputLayerMaker_bases[] = {0};
 static const char *swig_InputLayerMaker_base_names[] = {0};
 static swig_lua_class _wrap_class_InputLayerMaker = { "InputLayerMaker", &SWIGTYPE_p_InputLayerMaker,_wrap_new_InputLayerMaker, swig_delete_InputLayerMaker, swig_InputLayerMaker_methods, swig_InputLayerMaker_attributes, { "InputLayerMaker", swig_InputLayerMaker_cls_methods, swig_InputLayerMaker_cls_attributes, swig_InputLayerMaker_cls_constants }, swig_InputLayerMaker_bases, swig_InputLayerMaker_base_names };
+
+static int _wrap_new_ActivationMaker(lua_State* L) {
+  int SWIG_arg = 0;
+  ActivationMaker *result = 0 ;
+  
+  SWIG_check_num_args("ActivationMaker::ActivationMaker",0,0)
+  result = (ActivationMaker *)new ActivationMaker();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ActivationMaker,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ActivationMaker_relu(lua_State* L) {
+  int SWIG_arg = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  ActivationMaker *result = 0 ;
+  
+  SWIG_check_num_args("ActivationMaker::relu",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ActivationMaker::relu",1,"ActivationMaker *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ActivationMaker,0))){
+    SWIG_fail_ptr("ActivationMaker_relu",1,SWIGTYPE_p_ActivationMaker);
+  }
+  
+  result = (ActivationMaker *)(arg1)->relu();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ActivationMaker,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ActivationMaker_linear(lua_State* L) {
+  int SWIG_arg = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  ActivationMaker *result = 0 ;
+  
+  SWIG_check_num_args("ActivationMaker::linear",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ActivationMaker::linear",1,"ActivationMaker *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ActivationMaker,0))){
+    SWIG_fail_ptr("ActivationMaker_linear",1,SWIGTYPE_p_ActivationMaker);
+  }
+  
+  result = (ActivationMaker *)(arg1)->linear();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ActivationMaker,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ActivationMaker_tanh(lua_State* L) {
+  int SWIG_arg = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  ActivationMaker *result = 0 ;
+  
+  SWIG_check_num_args("ActivationMaker::tanh",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ActivationMaker::tanh",1,"ActivationMaker *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ActivationMaker,0))){
+    SWIG_fail_ptr("ActivationMaker_tanh",1,SWIGTYPE_p_ActivationMaker);
+  }
+  
+  result = (ActivationMaker *)(arg1)->tanh();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ActivationMaker,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_ActivationMaker_sigmoid(lua_State* L) {
+  int SWIG_arg = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  ActivationMaker *result = 0 ;
+  
+  SWIG_check_num_args("ActivationMaker::sigmoid",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ActivationMaker::sigmoid",1,"ActivationMaker *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ActivationMaker,0))){
+    SWIG_fail_ptr("ActivationMaker_sigmoid",1,SWIGTYPE_p_ActivationMaker);
+  }
+  
+  result = (ActivationMaker *)(arg1)->sigmoid();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ActivationMaker,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_ActivationMaker(void *obj) {
+ActivationMaker *arg1 = (ActivationMaker *) obj;
+delete arg1;
+}
+static swig_lua_method swig_ActivationMaker_methods[] = {
+    {"relu", _wrap_ActivationMaker_relu}, 
+    {"linear", _wrap_ActivationMaker_linear}, 
+    {"tanh", _wrap_ActivationMaker_tanh}, 
+    {"sigmoid", _wrap_ActivationMaker_sigmoid}, 
+    {0,0}
+};
+static swig_lua_attribute swig_ActivationMaker_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_attribute swig_ActivationMaker_cls_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_method swig_ActivationMaker_cls_methods[] = {
+    {0,0}
+};
+static swig_lua_const_info swig_ActivationMaker_cls_constants[] = {
+    {0,0,0,0,0,0}
+};
+static swig_lua_class *swig_ActivationMaker_bases[] = {0};
+static const char *swig_ActivationMaker_base_names[] = {0};
+static swig_lua_class _wrap_class_ActivationMaker = { "ActivationMaker", &SWIGTYPE_p_ActivationMaker,_wrap_new_ActivationMaker, swig_delete_ActivationMaker, swig_ActivationMaker_methods, swig_ActivationMaker_attributes, { "ActivationMaker", swig_ActivationMaker_cls_methods, swig_ActivationMaker_cls_attributes, swig_ActivationMaker_cls_constants }, swig_ActivationMaker_bases, swig_ActivationMaker_base_names };
 
 static int _wrap_new_ConvolutionalMaker(lua_State* L) {
   int SWIG_arg = 0;
@@ -4939,6 +5080,9 @@ static void *_p_intSliceTo_p_int(void *x, int *SWIGUNUSEDPARM(newmemory)) {
 static void *_p_SoftMaxMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((SoftMaxMaker *) x));
 }
+static void *_p_ActivationMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((LayerMaker2 *)  ((ActivationMaker *) x));
+}
 static void *_p_NormalizationLayerMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((NormalizationLayerMaker *) x));
 }
@@ -4960,6 +5104,7 @@ static void *_p_SquareLossMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(new
 static void *_p_CrossEntropyLossMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((CrossEntropyLossMaker *) x));
 }
+static swig_type_info _swigt__p_ActivationMaker = {"_p_ActivationMaker", "ActivationMaker *", 0, 0, (void*)&_wrap_class_ActivationMaker, 0};
 static swig_type_info _swigt__p_ConvolutionalMaker = {"_p_ConvolutionalMaker", "ConvolutionalMaker *", 0, 0, (void*)&_wrap_class_ConvolutionalMaker, 0};
 static swig_type_info _swigt__p_CrossEntropyLossMaker = {"_p_CrossEntropyLossMaker", "CrossEntropyLossMaker *", 0, 0, (void*)&_wrap_class_CrossEntropyLossMaker, 0};
 static swig_type_info _swigt__p_FullyConnectedMaker = {"_p_FullyConnectedMaker", "FullyConnectedMaker *", 0, 0, (void*)&_wrap_class_FullyConnectedMaker, 0};
@@ -4983,6 +5128,7 @@ static swig_type_info _swigt__p_intSlice = {"_p_intSlice", "intSlice *", 0, 0, (
 static swig_type_info _swigt__p_std__string = {"_p_std__string", "std::string *", 0, 0, (void*)&_wrap_class_std_string, 0};
 
 static swig_type_info *swig_type_initial[] = {
+  &_swigt__p_ActivationMaker,
   &_swigt__p_ConvolutionalMaker,
   &_swigt__p_CrossEntropyLossMaker,
   &_swigt__p_FullyConnectedMaker,
@@ -5006,12 +5152,13 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_std__string,
 };
 
+static swig_cast_info _swigc__p_ActivationMaker[] = {  {&_swigt__p_ActivationMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ConvolutionalMaker[] = {  {&_swigt__p_ConvolutionalMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CrossEntropyLossMaker[] = {  {&_swigt__p_CrossEntropyLossMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_FullyConnectedMaker[] = {  {&_swigt__p_FullyConnectedMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GenericLoader[] = {  {&_swigt__p_GenericLoader, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_InputLayerMaker[] = {  {&_swigt__p_InputLayerMaker, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_LayerMaker2[] = {  {&_swigt__p_SoftMaxMaker, _p_SoftMaxMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_LayerMaker2, 0, 0, 0},  {&_swigt__p_NormalizationLayerMaker, _p_NormalizationLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_InputLayerMaker, _p_InputLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_FullyConnectedMaker, _p_FullyConnectedMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_PoolingMaker, _p_PoolingMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ConvolutionalMaker, _p_ConvolutionalMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SquareLossMaker, _p_SquareLossMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_CrossEntropyLossMaker, _p_CrossEntropyLossMakerTo_p_LayerMaker2, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LayerMaker2[] = {  {&_swigt__p_SoftMaxMaker, _p_SoftMaxMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ActivationMaker, _p_ActivationMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_LayerMaker2, 0, 0, 0},  {&_swigt__p_NormalizationLayerMaker, _p_NormalizationLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_InputLayerMaker, _p_InputLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_FullyConnectedMaker, _p_FullyConnectedMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_PoolingMaker, _p_PoolingMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ConvolutionalMaker, _p_ConvolutionalMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SquareLossMaker, _p_SquareLossMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_CrossEntropyLossMaker, _p_CrossEntropyLossMakerTo_p_LayerMaker2, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NetLearner[] = {  {&_swigt__p_NetLearner, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NetdefToNet[] = {  {&_swigt__p_NetdefToNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NeuralNet[] = {  {&_swigt__p_NeuralNet, 0, 0, 0},{0, 0, 0, 0}};
@@ -5029,6 +5176,7 @@ static swig_cast_info _swigc__p_intSlice[] = {  {&_swigt__p_intSlice, 0, 0, 0},{
 static swig_cast_info _swigc__p_std__string[] = {  {&_swigt__p_std__string, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
+  _swigc__p_ActivationMaker,
   _swigc__p_ConvolutionalMaker,
   _swigc__p_CrossEntropyLossMaker,
   _swigc__p_FullyConnectedMaker,
