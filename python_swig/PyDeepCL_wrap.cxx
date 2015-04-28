@@ -2934,29 +2934,30 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_ConvolutionalMaker swig_types[0]
-#define SWIGTYPE_p_CrossEntropyLossMaker swig_types[1]
-#define SWIGTYPE_p_FullyConnectedMaker swig_types[2]
-#define SWIGTYPE_p_GenericLoader swig_types[3]
-#define SWIGTYPE_p_InputLayerMaker swig_types[4]
-#define SWIGTYPE_p_LayerMaker2 swig_types[5]
-#define SWIGTYPE_p_NetLearner swig_types[6]
-#define SWIGTYPE_p_NetdefToNet swig_types[7]
-#define SWIGTYPE_p_NeuralNet swig_types[8]
-#define SWIGTYPE_p_NormalizationLayerMaker swig_types[9]
-#define SWIGTYPE_p_PoolingMaker swig_types[10]
-#define SWIGTYPE_p_QLearner2 swig_types[11]
-#define SWIGTYPE_p_SoftMaxMaker swig_types[12]
-#define SWIGTYPE_p_SquareLossMaker swig_types[13]
-#define SWIGTYPE_p_char swig_types[14]
-#define SWIGTYPE_p_float swig_types[15]
-#define SWIGTYPE_p_floatArray swig_types[16]
-#define SWIGTYPE_p_floatSlice swig_types[17]
-#define SWIGTYPE_p_int swig_types[18]
-#define SWIGTYPE_p_intArray swig_types[19]
-#define SWIGTYPE_p_intSlice swig_types[20]
-static swig_type_info *swig_types[22];
-static swig_module_info swig_module = {swig_types, 21, 0, 0, 0, 0};
+#define SWIGTYPE_p_ActivationMaker swig_types[0]
+#define SWIGTYPE_p_ConvolutionalMaker swig_types[1]
+#define SWIGTYPE_p_CrossEntropyLossMaker swig_types[2]
+#define SWIGTYPE_p_FullyConnectedMaker swig_types[3]
+#define SWIGTYPE_p_GenericLoader swig_types[4]
+#define SWIGTYPE_p_InputLayerMaker swig_types[5]
+#define SWIGTYPE_p_LayerMaker2 swig_types[6]
+#define SWIGTYPE_p_NetLearner swig_types[7]
+#define SWIGTYPE_p_NetdefToNet swig_types[8]
+#define SWIGTYPE_p_NeuralNet swig_types[9]
+#define SWIGTYPE_p_NormalizationLayerMaker swig_types[10]
+#define SWIGTYPE_p_PoolingMaker swig_types[11]
+#define SWIGTYPE_p_QLearner2 swig_types[12]
+#define SWIGTYPE_p_SoftMaxMaker swig_types[13]
+#define SWIGTYPE_p_SquareLossMaker swig_types[14]
+#define SWIGTYPE_p_char swig_types[15]
+#define SWIGTYPE_p_float swig_types[16]
+#define SWIGTYPE_p_floatArray swig_types[17]
+#define SWIGTYPE_p_floatSlice swig_types[18]
+#define SWIGTYPE_p_int swig_types[19]
+#define SWIGTYPE_p_intArray swig_types[20]
+#define SWIGTYPE_p_intSlice swig_types[21]
+static swig_type_info *swig_types[23];
+static swig_module_info swig_module = {swig_types, 22, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -4927,6 +4928,181 @@ SWIGINTERN PyObject *InputLayerMaker_swigregister(PyObject *SWIGUNUSEDPARM(self)
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_new_ActivationMaker(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_ActivationMaker")) SWIG_fail;
+  result = (ActivationMaker *)new ActivationMaker();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, SWIG_POINTER_NEW |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ActivationMaker_relu(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ActivationMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ActivationMaker_relu",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ActivationMaker_relu" "', argument " "1"" of type '" "ActivationMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< ActivationMaker * >(argp1);
+  result = (ActivationMaker *)(arg1)->relu();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ActivationMaker_tanh(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ActivationMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ActivationMaker_tanh",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ActivationMaker_tanh" "', argument " "1"" of type '" "ActivationMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< ActivationMaker * >(argp1);
+  result = (ActivationMaker *)(arg1)->tanh();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ActivationMaker_linear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ActivationMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ActivationMaker_linear",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ActivationMaker_linear" "', argument " "1"" of type '" "ActivationMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< ActivationMaker * >(argp1);
+  result = (ActivationMaker *)(arg1)->linear();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ActivationMaker_sigmoid(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ActivationMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ActivationMaker_sigmoid",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ActivationMaker_sigmoid" "', argument " "1"" of type '" "ActivationMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< ActivationMaker * >(argp1);
+  result = (ActivationMaker *)(arg1)->sigmoid();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_ActivationMaker_clone(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  ActivationMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:ActivationMaker_clone",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ActivationMaker_clone" "', argument " "1"" of type '" "ActivationMaker const *""'"); 
+  }
+  arg1 = reinterpret_cast< ActivationMaker * >(argp1);
+  result = (ActivationMaker *)((ActivationMaker const *)arg1)->clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_ActivationMaker(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  ActivationMaker *arg1 = (ActivationMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_ActivationMaker",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ActivationMaker, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ActivationMaker" "', argument " "1"" of type '" "ActivationMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< ActivationMaker * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *ActivationMaker_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_ActivationMaker, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_new_ConvolutionalMaker(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ConvolutionalMaker *result = 0 ;
@@ -6812,6 +6988,14 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"InputLayerMaker_show", _wrap_InputLayerMaker_show, METH_VARARGS, NULL},
 	 { (char *)"delete_InputLayerMaker", _wrap_delete_InputLayerMaker, METH_VARARGS, NULL},
 	 { (char *)"InputLayerMaker_swigregister", InputLayerMaker_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_ActivationMaker", _wrap_new_ActivationMaker, METH_VARARGS, NULL},
+	 { (char *)"ActivationMaker_relu", _wrap_ActivationMaker_relu, METH_VARARGS, NULL},
+	 { (char *)"ActivationMaker_tanh", _wrap_ActivationMaker_tanh, METH_VARARGS, NULL},
+	 { (char *)"ActivationMaker_linear", _wrap_ActivationMaker_linear, METH_VARARGS, NULL},
+	 { (char *)"ActivationMaker_sigmoid", _wrap_ActivationMaker_sigmoid, METH_VARARGS, NULL},
+	 { (char *)"ActivationMaker_clone", _wrap_ActivationMaker_clone, METH_VARARGS, NULL},
+	 { (char *)"delete_ActivationMaker", _wrap_delete_ActivationMaker, METH_VARARGS, NULL},
+	 { (char *)"ActivationMaker_swigregister", ActivationMaker_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_ConvolutionalMaker", _wrap_new_ConvolutionalMaker, METH_VARARGS, NULL},
 	 { (char *)"ConvolutionalMaker_numFilters", _wrap_ConvolutionalMaker_numFilters, METH_VARARGS, NULL},
 	 { (char *)"ConvolutionalMaker_filterSize", _wrap_ConvolutionalMaker_filterSize, METH_VARARGS, NULL},
@@ -6897,6 +7081,9 @@ static void *_p_intSliceTo_p_int(void *x, int *SWIGUNUSEDPARM(newmemory)) {
 static void *_p_SoftMaxMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((SoftMaxMaker *) x));
 }
+static void *_p_ActivationMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((LayerMaker2 *)  ((ActivationMaker *) x));
+}
 static void *_p_NormalizationLayerMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((NormalizationLayerMaker *) x));
 }
@@ -6918,6 +7105,7 @@ static void *_p_SquareLossMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(new
 static void *_p_CrossEntropyLossMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((CrossEntropyLossMaker *) x));
 }
+static swig_type_info _swigt__p_ActivationMaker = {"_p_ActivationMaker", "ActivationMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ConvolutionalMaker = {"_p_ConvolutionalMaker", "ConvolutionalMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CrossEntropyLossMaker = {"_p_CrossEntropyLossMaker", "CrossEntropyLossMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_FullyConnectedMaker = {"_p_FullyConnectedMaker", "FullyConnectedMaker *", 0, 0, (void*)0, 0};
@@ -6941,6 +7129,7 @@ static swig_type_info _swigt__p_intArray = {"_p_intArray", "intArray *", 0, 0, (
 static swig_type_info _swigt__p_intSlice = {"_p_intSlice", "intSlice *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
+  &_swigt__p_ActivationMaker,
   &_swigt__p_ConvolutionalMaker,
   &_swigt__p_CrossEntropyLossMaker,
   &_swigt__p_FullyConnectedMaker,
@@ -6964,12 +7153,13 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_intSlice,
 };
 
+static swig_cast_info _swigc__p_ActivationMaker[] = {  {&_swigt__p_ActivationMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ConvolutionalMaker[] = {  {&_swigt__p_ConvolutionalMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CrossEntropyLossMaker[] = {  {&_swigt__p_CrossEntropyLossMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_FullyConnectedMaker[] = {  {&_swigt__p_FullyConnectedMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GenericLoader[] = {  {&_swigt__p_GenericLoader, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_InputLayerMaker[] = {  {&_swigt__p_InputLayerMaker, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_LayerMaker2[] = {  {&_swigt__p_SoftMaxMaker, _p_SoftMaxMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_LayerMaker2, 0, 0, 0},  {&_swigt__p_NormalizationLayerMaker, _p_NormalizationLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_InputLayerMaker, _p_InputLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_FullyConnectedMaker, _p_FullyConnectedMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_PoolingMaker, _p_PoolingMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ConvolutionalMaker, _p_ConvolutionalMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SquareLossMaker, _p_SquareLossMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_CrossEntropyLossMaker, _p_CrossEntropyLossMakerTo_p_LayerMaker2, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LayerMaker2[] = {  {&_swigt__p_SoftMaxMaker, _p_SoftMaxMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ActivationMaker, _p_ActivationMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_LayerMaker2, 0, 0, 0},  {&_swigt__p_NormalizationLayerMaker, _p_NormalizationLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_InputLayerMaker, _p_InputLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_FullyConnectedMaker, _p_FullyConnectedMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_PoolingMaker, _p_PoolingMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ConvolutionalMaker, _p_ConvolutionalMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SquareLossMaker, _p_SquareLossMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_CrossEntropyLossMaker, _p_CrossEntropyLossMakerTo_p_LayerMaker2, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NetLearner[] = {  {&_swigt__p_NetLearner, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NetdefToNet[] = {  {&_swigt__p_NetdefToNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NeuralNet[] = {  {&_swigt__p_NeuralNet, 0, 0, 0},{0, 0, 0, 0}};
@@ -6987,6 +7177,7 @@ static swig_cast_info _swigc__p_intArray[] = {  {&_swigt__p_intArray, 0, 0, 0},{
 static swig_cast_info _swigc__p_intSlice[] = {  {&_swigt__p_intSlice, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
+  _swigc__p_ActivationMaker,
   _swigc__p_ConvolutionalMaker,
   _swigc__p_CrossEntropyLossMaker,
   _swigc__p_FullyConnectedMaker,

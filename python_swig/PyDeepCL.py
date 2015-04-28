@@ -215,6 +215,28 @@ class InputLayerMaker(LayerMaker2):
 InputLayerMaker_swigregister = _PyDeepCL.InputLayerMaker_swigregister
 InputLayerMaker_swigregister(InputLayerMaker)
 
+class ActivationMaker(LayerMaker2):
+    __swig_setmethods__ = {}
+    for _s in [LayerMaker2]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, ActivationMaker, name, value)
+    __swig_getmethods__ = {}
+    for _s in [LayerMaker2]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, ActivationMaker, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _PyDeepCL.new_ActivationMaker()
+        try: self.this.append(this)
+        except: self.this = this
+    def relu(self): return _PyDeepCL.ActivationMaker_relu(self)
+    def tanh(self): return _PyDeepCL.ActivationMaker_tanh(self)
+    def linear(self): return _PyDeepCL.ActivationMaker_linear(self)
+    def sigmoid(self): return _PyDeepCL.ActivationMaker_sigmoid(self)
+    def clone(self): return _PyDeepCL.ActivationMaker_clone(self)
+    __swig_destroy__ = _PyDeepCL.delete_ActivationMaker
+    __del__ = lambda self : None;
+ActivationMaker_swigregister = _PyDeepCL.ActivationMaker_swigregister
+ActivationMaker_swigregister(ActivationMaker)
+
 class ConvolutionalMaker(LayerMaker2):
     __swig_setmethods__ = {}
     for _s in [LayerMaker2]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))

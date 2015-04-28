@@ -136,6 +136,10 @@ resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PoolingMaker,
     result = result-> clone();
 resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SoftMaxMaker, 0 |  0 );
 %}
+%typemap(ret) ActivationMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMaker, 0 |  0 );
+%}
 %typemap(ret) SquareLossMaker* %{ 
     result = result-> clone();
 resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SquareLossMaker, 0 |  0 );
@@ -194,7 +198,17 @@ public:
         }
     }
 };
-/*%template(InputLayerMaker) InputLayerMaker<float>;*/
+
+
+class ActivationMaker : public LayerMaker2 {
+public:
+    ActivationMaker();
+    ActivationMaker *relu();
+    ActivationMaker *tanh();
+    ActivationMaker *linear();
+    ActivationMaker *sigmoid();
+    virtual ActivationMaker *clone() const;
+};
 
 class ConvolutionalMaker : public LayerMaker2 {
 public:
