@@ -9,7 +9,7 @@
 #include "stringhelper.h"
 #include "Propagate.h"
 #include "WeightsHelper.h"
-#include "BackpropErrorsv2.h"
+#include "Backward.h"
 #include "BackpropWeights2.h"
 #include "SGD.h"
 
@@ -57,7 +57,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
     forwardimpl = Propagate::instance( cl, dim );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
-        backwardImpl = BackpropErrorsv2::instance( cl, dim );
+        backwardImpl = Backward::instance( cl, dim );
     }
 
     if( dim.filterSize > dim.inputImageSize ) {

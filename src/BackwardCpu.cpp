@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "BackpropErrorsv2Cpu.h"
+#include "BackwardCpu.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
@@ -18,18 +18,18 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropErrorsv2Cpu::BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropErrorsv2( cl, dim )
+BackwardCpu::BackwardCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+        Backward( cl, dim )
             {
 }
-VIRTUAL BackpropErrorsv2Cpu::~BackpropErrorsv2Cpu() {
+VIRTUAL BackwardCpu::~BackwardCpu() {
 }
-VIRTUAL float *BackpropErrorsv2Cpu::backward( int batchSize, float *inputData,
+VIRTUAL float *BackwardCpu::backward( int batchSize, float *inputData,
     float *gradOutput, float *weights ) {
     float *gradInput = new float[ batchSize * dim.inputCubeSize ];
 
 //        Timer timer;
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cpu start" );
+    StatefulTimer::instance()->timeCheck("BackwardCpu start" );
     const int halfFilterSize = dim.filterSize >> 1;
     const int margin = dim.padZeros ? halfFilterSize : 0;
     // handle lower layer...
@@ -90,11 +90,11 @@ VIRTUAL float *BackpropErrorsv2Cpu::backward( int batchSize, float *inputData,
         }
     }
 //        timer.timeCheck("calced errors for upstream");   
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cpu end" );
+    StatefulTimer::instance()->timeCheck("BackwardCpu end" );
 
     return gradInput;
 }
-VIRTUAL void BackpropErrorsv2Cpu::backward( int batchSize, 
+VIRTUAL void BackwardCpu::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
 

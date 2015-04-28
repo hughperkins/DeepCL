@@ -9,11 +9,11 @@
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
-#include "BackpropErrorsv2Cpu.h"
-#include "BackpropErrorsv2Naive.h"
-#include "BackpropErrorsv2Cached.h"
+#include "BackwardCpu.h"
+#include "BackwardGpuNaive.h"
+#include "BackwardGpuCached.h"
 
-#include "BackpropErrorsv2.h"
+#include "Backward.h"
 
 using namespace std;
 
@@ -23,35 +23,35 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-STATIC BackpropErrorsv2 *BackpropErrorsv2::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+STATIC Backward *Backward::instance(OpenCLHelper *cl, LayerDimensions dim ) {
     if( ( dim.inputImageSize - dim.filterSize > 6 ) && square( dim.inputImageSize ) <= cl->getMaxWorkgroupSize() ) {
-//        return new BackpropErrorsv2Naive( cl, dim );
-        return new BackpropErrorsv2Cached( cl, dim );
+//        return new BackwardGpuNaive( cl, dim );
+        return new BackwardGpuCached( cl, dim );
     } else {
-        return new BackpropErrorsv2Naive( cl, dim );
+        return new BackwardGpuNaive( cl, dim );
     }
 }
-STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
-    return new BackpropErrorsv2Naive( cl, layerDimensions );
+STATIC Backward *Backward::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+    return new BackwardGpuNaive( cl, layerDimensions );
 }
-STATIC BackpropErrorsv2 *BackpropErrorsv2::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC Backward *Backward::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
-        return new BackpropErrorsv2Cpu( cl, layerDimensions );
+        return new BackwardCpu( cl, layerDimensions );
     }
     if( idx == 1 ) {
-        return new BackpropErrorsv2Naive( cl, layerDimensions );
+        return new BackwardGpuNaive( cl, layerDimensions );
     }
     if( idx == 2 ) {
-        return new BackpropErrorsv2Cached( cl, layerDimensions );
+        return new BackwardGpuCached( cl, layerDimensions );
     }
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
-BackpropErrorsv2::BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
+Backward::Backward( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
         dim( layerDimensions ) {
 }
-VIRTUAL float * BackpropErrorsv2::backward( int batchSize, float *inputData, float *gradOutput, float *filters ) {
-    StatefulTimer::timeCheck("BackpropErrorsv2::backprop begin");
+VIRTUAL float * Backward::backward( int batchSize, float *inputData, float *gradOutput, float *filters ) {
+    StatefulTimer::timeCheck("Backward::backprop begin");
 
     CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
     inputDataWrapper->copyToDevice();
@@ -76,11 +76,11 @@ VIRTUAL float * BackpropErrorsv2::backward( int batchSize, float *inputData, flo
     float *gradInput = new float[allocatedOutputSize];
     CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputSize, gradInput );
 
-    StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copied to device");
+    StatefulTimer::timeCheck("Backward::backprop after copied to device");
     backward( batchSize, inputDataWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
-    StatefulTimer::timeCheck("BackpropErrorsv2::backprop after call backprop");
+    StatefulTimer::timeCheck("Backward::backprop after call backprop");
     gradInputWrapper->copyToHost();
-    StatefulTimer::timeCheck("BackpropErrorsv2::backprop after copytohost");
+    StatefulTimer::timeCheck("Backward::backprop after copytohost");
 
     delete gradInputWrapper;
     delete gradOutputWrapper;

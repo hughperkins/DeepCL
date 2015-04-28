@@ -6,20 +6,20 @@
 
 #pragma once
 
-#include "BackpropErrorsv2.h"
+#include "Backward.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class BackpropErrorsv2Cpu : public BackpropErrorsv2 {
+class BackwardCpu : public Backward {
 public:
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropErrorsv2Cpu( OpenCLHelper *cl, LayerDimensions dim );
-    VIRTUAL ~BackpropErrorsv2Cpu();
+    BackwardCpu( OpenCLHelper *cl, LayerDimensions dim );
+    VIRTUAL ~BackwardCpu();
     VIRTUAL float *backward( int batchSize, float *inputData,
     float *gradOutput, float *weights );
     VIRTUAL void backward( int batchSize,

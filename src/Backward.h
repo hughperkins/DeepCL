@@ -18,13 +18,13 @@
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT BackpropErrorsv2 {
+class DeepCL_EXPORT Backward {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
 //    ActivationFunction const *upstreamFn;
 
-    virtual ~BackpropErrorsv2() {}
+    virtual ~Backward() {}
     virtual void backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
         CLWrapper *gradInput ) = 0;
@@ -34,10 +34,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC BackpropErrorsv2 *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC BackpropErrorsv2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC BackpropErrorsv2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    BackpropErrorsv2( OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Backward *instance(OpenCLHelper *cl, LayerDimensions dim );
+    STATIC Backward *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Backward *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    Backward( OpenCLHelper *cl, LayerDimensions layerDimensions );
     VIRTUAL float * backward( int batchSize, float *inputData, float *gradOutput, float *filters );
 
     // [[[end]]]

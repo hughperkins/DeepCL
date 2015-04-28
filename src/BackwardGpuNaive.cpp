@@ -1,6 +1,6 @@
 #include "StatefulTimer.h"
 
-#include "BackpropErrorsv2Naive.h"
+#include "BackwardGpuNaive.h"
 
 using namespace std;
 
@@ -10,15 +10,15 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-VIRTUAL BackpropErrorsv2Naive::~BackpropErrorsv2Naive() {
+VIRTUAL BackwardGpuNaive::~BackwardGpuNaive() {
     delete kernel;
 //    delete broadcastMultiply;
 //    delete applyActivationDeriv;
 }
-VIRTUAL void BackpropErrorsv2Naive::backward( int batchSize, 
+VIRTUAL void BackwardGpuNaive::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive start" );
+    StatefulTimer::instance()->timeCheck("BackwardGpuNaive start" );
 
     kernel
        ->in( batchSize )
@@ -32,17 +32,17 @@ VIRTUAL void BackpropErrorsv2Naive::backward( int batchSize,
     kernel->run_1d(globalSize, workgroupsize);
 
     cl->finish();
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after first kernel" );
+    StatefulTimer::instance()->timeCheck("BackwardGpuNaive after first kernel" );
 
 //    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->in( gradInputWrapper )->in( inputDataWrapper );
 //    applyActivationDeriv->run_1d(globalSize, workgroupsize);
 //    cl->finish();
-//    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive after applyActivationDeriv" );
+//    StatefulTimer::instance()->timeCheck("BackwardGpuNaive after applyActivationDeriv" );
     
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Naive end" );
+    StatefulTimer::instance()->timeCheck("BackwardGpuNaive end" );
 }
-BackpropErrorsv2Naive::BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropErrorsv2( cl, dim )
+BackwardGpuNaive::BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim ) :
+        Backward( cl, dim )
             {
     std::string options = dim.buildOptionsString();
     options += ""; // " -D " + upstreamFn->getDefineName();

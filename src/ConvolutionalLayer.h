@@ -19,7 +19,7 @@
 #define VIRTUAL virtual
 
 class Propagate;
-class BackpropErrorsv2;
+class Backward;
 class BackpropWeights2;
 class ConvolutionalMaker;
 
@@ -31,7 +31,7 @@ public:
 
     Propagate *forwardimpl;
     BackpropWeights2 *backpropWeightsImpl;
-    BackpropErrorsv2 *backwardImpl;
+    Backward *backwardImpl;
 
     LayerDimensions dim;
 //    ActivationFunction const *const activationFunction;

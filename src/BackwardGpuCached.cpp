@@ -1,6 +1,6 @@
 #include "StatefulTimer.h"
 
-#include "BackpropErrorsv2Cached.h"
+#include "BackwardGpuCached.h"
 
 using namespace std;
 
@@ -10,14 +10,14 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-VIRTUAL BackpropErrorsv2Cached::~BackpropErrorsv2Cached() {
+VIRTUAL BackwardGpuCached::~BackwardGpuCached() {
     delete kernel;
 //    delete applyActivationDeriv;
 }
-VIRTUAL void BackpropErrorsv2Cached::backward( int batchSize, 
+VIRTUAL void BackwardGpuCached::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
         CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached start" );
+    StatefulTimer::instance()->timeCheck("BackwardGpuCached start" );
 
 //        const int batchSize,
 //        global const float *gradOutputGlobal,
@@ -48,7 +48,7 @@ VIRTUAL void BackpropErrorsv2Cached::backward( int batchSize,
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
 //    gradInputWrapper->copyToHost();
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after first kernel" );
+    StatefulTimer::instance()->timeCheck("BackwardGpuCached after first kernel" );
 //    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
 //        cout << "efu[" << i << "]=" << gradInput[i] << endl;
 //    }
@@ -58,16 +58,16 @@ VIRTUAL void BackpropErrorsv2Cached::backward( int batchSize,
 //    applyActivationDeriv->in( batchSize * dim.inputCubeSize )->inout( gradInputWrapper )->in( inputDataWrapper );
 //    applyActivationDeriv->run_1d(globalSize, workgroupSize);
 //    cl->finish();
-//    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached after applyActivationDeriv" );
+//    StatefulTimer::instance()->timeCheck("BackwardGpuCached after applyActivationDeriv" );
 //    gradInputWrapper->copyToHost();
 //    for( int i = 0; i < min( 40, batchSize * dim.inputCubeSize ); i++ ) {
 //        cout << "efu2[" << i << "]=" << gradInput[i] << endl;
 //    }
     
-    StatefulTimer::instance()->timeCheck("BackpropErrorsv2Cached end" );
+    StatefulTimer::instance()->timeCheck("BackwardGpuCached end" );
 }
-BackpropErrorsv2Cached::BackpropErrorsv2Cached( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropErrorsv2( cl, dim )
+BackwardGpuCached::BackwardGpuCached( OpenCLHelper *cl, LayerDimensions dim ) :
+        Backward( cl, dim )
             {
     std::string options = dim.buildOptionsString();
     options += ""; // " -D " + upstreamFn->getDefineName();

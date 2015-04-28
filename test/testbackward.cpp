@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "NeuralNet.h"
-#include "BackpropErrorsv2.h"
+#include "Backward.h"
 #include "ActivationFunction.h"
 #include "LossLayer.h"
 #include "ForceBackpropLayerMaker.h"
@@ -400,7 +400,8 @@ TEST( testbackward, conv8c5 ) {
     NeuralNet *net = new NeuralNet( 1, 3 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased(0)->padZeros(0) );
-    net->addLayer( SoftMaxMaker::instance() );
+    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
+                          // so that dont have to make filtersize == input image size?
     cout << net->asString() << endl;
 
     int batchSize = 1;
@@ -550,7 +551,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
     errorsForUpstreamWrapper->createOnDevice();
 
     StatefulTimer::timeCheck("after init");
-    BackpropErrorsv2 *backwardImpl = BackpropErrorsv2::instanceSpecific( instance, cl, dim );
+    Backward *backwardImpl = Backward::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < 40; it++ ) {
         backwardImpl->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
@@ -614,8 +615,8 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     errorsForUpstreamWrapper0->createOnDevice();
     errorsForUpstreamWrapper1->createOnDevice();
 
-    BackpropErrorsv2 *bp0 = BackpropErrorsv2::instanceSpecific( instance0, cl, dim );
-    BackpropErrorsv2 *bp1 = BackpropErrorsv2::instanceSpecific( instance1, cl, dim );
+    Backward *bp0 = Backward::instanceSpecific( instance0, cl, dim );
+    Backward *bp1 = Backward::instanceSpecific( instance1, cl, dim );
     
     bp0->backward( batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
@@ -732,7 +733,7 @@ float *test( int imageSize ) {
     WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
     OpenCLHelper cl;
-    BackpropErrorsv2 *backwardImpl = BackpropErrorsv2::instanceForTest( &cl, dim, new ReluActivation() );
+    Backward *backwardImpl = Backward::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
     float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
     StatefulTimer::dump(true);
@@ -902,9 +903,9 @@ TEST( testbackward, comparespecific ) {
 //    errors[5] = 6;
 
     OpenCLHelper cl;
-    BackpropErrorsv2 *backwardImpl1 = BackpropErrorsv2::instanceSpecific( 0, &cl, dim, new ReluActivation() );
+    Backward *backwardImpl1 = Backward::instanceSpecific( 0, &cl, dim, new ReluActivation() );
     float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, biasWeights, errors );
-    BackpropErrorsv2 *backwardImpl2 = BackpropErrorsv2::instanceSpecific( 1, &cl, dim, new ReluActivation() );
+    Backward *backwardImpl2 = Backward::instanceSpecific( 1, &cl, dim, new ReluActivation() );
     float *errorsForUpstream2 = backwardImpl2->backward( batchSize, output, weights, biasWeights, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;

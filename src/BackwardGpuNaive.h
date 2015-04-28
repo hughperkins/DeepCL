@@ -1,12 +1,12 @@
 #pragma once
 
-#include "BackpropErrorsv2.h"
+#include "Backward.h"
 #include "OpenCLHelper.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class BackpropErrorsv2Naive : public BackpropErrorsv2 {
+class BackwardGpuNaive : public Backward {
 public:
     CLKernel *kernel;
 //    CLKernel *broadcastMultiply;
@@ -17,11 +17,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~BackpropErrorsv2Naive();
+    VIRTUAL ~BackwardGpuNaive();
     VIRTUAL void backward( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );
-    BackpropErrorsv2Naive( OpenCLHelper *cl, LayerDimensions dim );
+    BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };
