@@ -35,9 +35,9 @@ runs = [
     ('mnist-c1', '1i28-8c5', 'layer'),
     ('mnist-c2', '8i14-16c5', 'layer'),
     ('mnist-fc', '16i7-150n', 'layer'),
-    ('mnist-full', '1i24-8c5{relu,padzeros}-mp2-16c5{relu,padzeros}-mp3-150n{tanh}-10n{linear}', 'fullnet'),
+    ('mnist-full', '1i24-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n', 'fullnet'),
     ('mnist-full-factorized', '1i24-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n', 'fullnet'),
-    ('maddison-full', '8i19-12*128c3{relu,padzeros}-361n{linear}', 'fullnet'),
+    ('maddison-full', '8i19-12*128c3z-relu-361n', 'fullnet'),
     ('maddison-full-factorized', '8i19-12*(128c3z-relu)-361n', 'fullnet')
 ]
 
@@ -64,16 +64,16 @@ def time_layer(num_epochs, label, batch_size, net_string):
     input_string, layer_string = net_string.split('-')
     input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
     net = PyDeepCL.NeuralNet( input_planes, input_size )
-    net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backprop gradients to
+    net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backward gradients to
                           # this layer
     print( net.asString() )
     if 'c' in layer_string:
         num_filters, filter_size = map(lambda x: int(x), layer_string.split('c'))
         net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(num_filters)
-            .filterSize(filter_size).biased().linear() )
+            .filterSize(filter_size).biased() )
     elif 'n' in layer_string:
         num_neurons = int(layer_string.split('n')[0])
-        net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(num_neurons).imageSize(1).biased().linear() )
+        net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(num_neurons).imageSize(1).biased() )
     else:
         raise Exception('layer_string {layer_string} not recognized'.format(
             layer_string=layer_string))
@@ -97,19 +97,19 @@ def time_layer(num_epochs, label, batch_size, net_string):
     # warm up forward
     for i in range(8):
         last = time.time()
-        net.propagate( images )
+        net.forward( images )
         now = time.time()
-        print('  warm up propagate all-layer time', now - last )
+        print('  warm up forward all-layer time', now - last )
         last = now
-    net.backPropFromLabels( 0.001, labels )
+    net.backwardFromLabels( 0.001, labels )
     now = time.time()
-    print('   warm up backprop all-layer time', now - last )
+    print('   warm up backward all-layer time', now - last )
     last = now
 
     layer = net.getLayer(2)
     print('running forward prop timings:')
     for i in range(num_epochs):
-        layer.propagate()
+        layer.forward()
     now = time.time()
     print('forward layer total time', now - last )
     print('forward layer average time', ( now - last ) / float(num_epochs) )
@@ -119,14 +119,14 @@ def time_layer(num_epochs, label, batch_size, net_string):
         benchmark_type='layer', time_ms=( now - last ) / float(num_epochs) * 1000 )
 
     print('warm up backwards again')
-    layer.backProp(0.001)
-    layer.backProp(0.001)
+    layer.backward(0.001)
+    layer.backward(0.001)
     print('warm up backwards done. start timings:')
 
     now = time.time()
     last = now
     for i in range(num_epochs):
-        layer.backProp(0.001)
+        layer.backward(0.001)
     now = time.time()
     print('backwar layer total time', now - last )
     print('backwar layer average time', ( now - last ) / float(num_epochs) )
@@ -160,20 +160,20 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
     # warm up forward
     for i in range(8):
         last = time.time()
-        net.propagate( images )
+        net.forward( images )
         now = time.time()
-        print('  warm up propagate all-layer time', (now - last)*1000.0, 'ms')
+        print('  warm up forward all-layer time', (now - last)*1000.0, 'ms')
         last = now
 
-    print('warming up backprop:')
+    print('warming up backward:')
     last = time.time()
-    net.backPropFromLabels( 0.001, labels )
+    net.backwardFromLabels( 0.001, labels )
     now = time.time()
-    print('   warm up backprop time', (now - last) * 1000, 'ms' )
+    print('   warm up backward time', (now - last) * 1000, 'ms' )
     last = now
-    net.backPropFromLabels( 0.001, labels )
+    net.backwardFromLabels( 0.001, labels )
     now = time.time()
-    print('   warm up backprop time', (now - last) * 1000, 'ms' )
+    print('   warm up backward time', (now - last) * 1000, 'ms' )
 
     total_forward = 0
     total_backward = 0
@@ -184,7 +184,7 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
         print('epoch {epoch}'.format(epoch=num_epochs+1))
         print('run forward for real...')
         # last = time.time()
-        net.propagate(images)
+        net.forward(images)
         now = time.time()
         diff = now - last
         forward_ms = diff * 1000.0
@@ -195,7 +195,7 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
 
         print('backward for real:')
         # last = time.time()
-        net.backPropFromLabels( 0.001, labels )
+        net.backwardFromLabels( 0.001, labels )
         now = time.time()
         diff = now - last
         backward_ms = diff * 1000.0

@@ -62,8 +62,8 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
     net = PyDeepCL.NeuralNet( inputPlanes, inputSize )
 #    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(inputPlanes)
 #        .filterSize(1).padZeros().biased().linear() ) # this is just to make sure that gradient needs to be 
-#                                                      # backproped through next layer
-    net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backprop gradients to
+#                                                      # backwarded through next layer
+    net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backward gradients to
                           # this layer
     net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(outputPlanes)
         .filterSize(filterSize).biased() )
@@ -88,11 +88,11 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
         last = time.time()
         net.forward( images )
         now = time.time()
-        print('  warm up propagate all-layer time', now - last )
+        print('  warm up forward all-layer time', now - last )
         last = now
     net.backwardFromLabels( 0.001, labels )
     now = time.time()
-    print('   warm up backprop all-layer time', now - last )
+    print('   warm up backward all-layer time', now - last )
     last = now
 
     layer = net.getLayer(2)
@@ -104,18 +104,18 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
     print('forward layer average time', ( now - last ) / float(numEpochs) )
     writeResults( layer.asString() + ', forward: ' + str( ( now - last ) / float(numEpochs) * 1000 ) + 'ms' )
 
-    print('warm up backwards again')
+    print('warm up backward again')
     layer.backward(0.001)
     layer.backward(0.001)
-    print('warm up backwards done. start timings:')
+    print('warm up backward done. start timings:')
 
     now = time.time()
     last = now
     for i in range(numEpochs):
         layer.backward(0.001)
     now = time.time()
-    print('backwar layer total time', now - last )
-    print('backwar layer average time', ( now - last ) / float(numEpochs) )
+    print('backward layer total time', now - last )
+    print('backward layer average time', ( now - last ) / float(numEpochs) )
     writeResults( layer.asString() + ', backward: ' + str( ( now - last ) / float(numEpochs) * 1000 ) + 'ms' )
     last = now
 
