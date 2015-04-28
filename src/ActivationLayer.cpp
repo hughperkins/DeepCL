@@ -173,6 +173,10 @@ VIRTUAL int ActivationLayer::getBiasWeightsSize() const {
     return 0;
 }
 VIRTUAL float *ActivationLayer::getGradInput() {
+    if( !gradInputCopiedToHost ) {
+        gradInputWrapper->copyToHost();
+        gradInputCopiedToHost = true;
+    }
     return gradInput;
 }
 VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
