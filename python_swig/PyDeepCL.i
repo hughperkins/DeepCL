@@ -144,6 +144,10 @@ resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ActivationMak
     result = result-> clone();
 resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SquareLossMaker, 0 |  0 );
 %}
+%typemap(ret) DropoutMaker* %{ 
+    result = result-> clone();
+resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DropoutMaker, 0 |  0 );
+%}
 %typemap(ret) CrossEntropyLossMaker* %{ 
     result = result-> clone();
 resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_CrossEntropyLossMaker, 0 |  0 );
@@ -173,6 +177,12 @@ public:
                 << std::endl; 
         }
     }
+};
+
+class DropoutMaker : public LayerMaker2 {
+public:
+    DropoutMaker();
+    DropoutMaker *dropRatio( float _dropRatio );
 };
 
 

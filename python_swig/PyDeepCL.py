@@ -192,6 +192,21 @@ class NormalizationLayerMaker(LayerMaker2):
 NormalizationLayerMaker_swigregister = _PyDeepCL.NormalizationLayerMaker_swigregister
 NormalizationLayerMaker_swigregister(NormalizationLayerMaker)
 
+class DropoutMaker(LayerMaker2):
+    __swig_setmethods__ = {}
+    for _s in [LayerMaker2]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, DropoutMaker, name, value)
+    __swig_getmethods__ = {}
+    for _s in [LayerMaker2]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, DropoutMaker, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    def dropRatio(self, *args): return _PyDeepCL.DropoutMaker_dropRatio(self, *args)
+    __swig_destroy__ = _PyDeepCL.delete_DropoutMaker
+    __del__ = lambda self : None;
+DropoutMaker_swigregister = _PyDeepCL.DropoutMaker_swigregister
+DropoutMaker_swigregister(DropoutMaker)
+
 class InputLayerMaker(LayerMaker2):
     __swig_setmethods__ = {}
     for _s in [LayerMaker2]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))

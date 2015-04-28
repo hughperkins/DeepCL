@@ -2937,27 +2937,28 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_ActivationMaker swig_types[0]
 #define SWIGTYPE_p_ConvolutionalMaker swig_types[1]
 #define SWIGTYPE_p_CrossEntropyLossMaker swig_types[2]
-#define SWIGTYPE_p_FullyConnectedMaker swig_types[3]
-#define SWIGTYPE_p_GenericLoader swig_types[4]
-#define SWIGTYPE_p_InputLayerMaker swig_types[5]
-#define SWIGTYPE_p_LayerMaker2 swig_types[6]
-#define SWIGTYPE_p_NetLearner swig_types[7]
-#define SWIGTYPE_p_NetdefToNet swig_types[8]
-#define SWIGTYPE_p_NeuralNet swig_types[9]
-#define SWIGTYPE_p_NormalizationLayerMaker swig_types[10]
-#define SWIGTYPE_p_PoolingMaker swig_types[11]
-#define SWIGTYPE_p_QLearner2 swig_types[12]
-#define SWIGTYPE_p_SoftMaxMaker swig_types[13]
-#define SWIGTYPE_p_SquareLossMaker swig_types[14]
-#define SWIGTYPE_p_char swig_types[15]
-#define SWIGTYPE_p_float swig_types[16]
-#define SWIGTYPE_p_floatArray swig_types[17]
-#define SWIGTYPE_p_floatSlice swig_types[18]
-#define SWIGTYPE_p_int swig_types[19]
-#define SWIGTYPE_p_intArray swig_types[20]
-#define SWIGTYPE_p_intSlice swig_types[21]
-static swig_type_info *swig_types[23];
-static swig_module_info swig_module = {swig_types, 22, 0, 0, 0, 0};
+#define SWIGTYPE_p_DropoutMaker swig_types[3]
+#define SWIGTYPE_p_FullyConnectedMaker swig_types[4]
+#define SWIGTYPE_p_GenericLoader swig_types[5]
+#define SWIGTYPE_p_InputLayerMaker swig_types[6]
+#define SWIGTYPE_p_LayerMaker2 swig_types[7]
+#define SWIGTYPE_p_NetLearner swig_types[8]
+#define SWIGTYPE_p_NetdefToNet swig_types[9]
+#define SWIGTYPE_p_NeuralNet swig_types[10]
+#define SWIGTYPE_p_NormalizationLayerMaker swig_types[11]
+#define SWIGTYPE_p_PoolingMaker swig_types[12]
+#define SWIGTYPE_p_QLearner2 swig_types[13]
+#define SWIGTYPE_p_SoftMaxMaker swig_types[14]
+#define SWIGTYPE_p_SquareLossMaker swig_types[15]
+#define SWIGTYPE_p_char swig_types[16]
+#define SWIGTYPE_p_float swig_types[17]
+#define SWIGTYPE_p_floatArray swig_types[18]
+#define SWIGTYPE_p_floatSlice swig_types[19]
+#define SWIGTYPE_p_int swig_types[20]
+#define SWIGTYPE_p_intArray swig_types[21]
+#define SWIGTYPE_p_intSlice swig_types[22]
+static swig_type_info *swig_types[24];
+static swig_module_info swig_module = {swig_types, 23, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -4719,6 +4720,69 @@ SWIGINTERN PyObject *NormalizationLayerMaker_swigregister(PyObject *SWIGUNUSEDPA
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
   SWIG_TypeNewClientData(SWIGTYPE_p_NormalizationLayerMaker, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_DropoutMaker_dropRatio(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  DropoutMaker *arg1 = (DropoutMaker *) 0 ;
+  float arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  float val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  DropoutMaker *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:DropoutMaker_dropRatio",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DropoutMaker, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DropoutMaker_dropRatio" "', argument " "1"" of type '" "DropoutMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< DropoutMaker * >(argp1);
+  ecode2 = SWIG_AsVal_float(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DropoutMaker_dropRatio" "', argument " "2"" of type '" "float""'");
+  } 
+  arg2 = static_cast< float >(val2);
+  result = (DropoutMaker *)(arg1)->dropRatio(arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DropoutMaker, 0 |  0 );
+  
+  result = result-> clone();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DropoutMaker, 0 |  0 );
+  
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_DropoutMaker(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  DropoutMaker *arg1 = (DropoutMaker *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_DropoutMaker",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DropoutMaker, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_DropoutMaker" "', argument " "1"" of type '" "DropoutMaker *""'"); 
+  }
+  arg1 = reinterpret_cast< DropoutMaker * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *DropoutMaker_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_DropoutMaker, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -6979,6 +7043,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"NormalizationLayerMaker_show", _wrap_NormalizationLayerMaker_show, METH_VARARGS, NULL},
 	 { (char *)"delete_NormalizationLayerMaker", _wrap_delete_NormalizationLayerMaker, METH_VARARGS, NULL},
 	 { (char *)"NormalizationLayerMaker_swigregister", NormalizationLayerMaker_swigregister, METH_VARARGS, NULL},
+	 { (char *)"DropoutMaker_dropRatio", _wrap_DropoutMaker_dropRatio, METH_VARARGS, NULL},
+	 { (char *)"delete_DropoutMaker", _wrap_delete_DropoutMaker, METH_VARARGS, NULL},
+	 { (char *)"DropoutMaker_swigregister", DropoutMaker_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_InputLayerMaker", _wrap_new_InputLayerMaker, METH_VARARGS, NULL},
 	 { (char *)"InputLayerMaker_numPlanes", _wrap_InputLayerMaker_numPlanes, METH_VARARGS, NULL},
 	 { (char *)"InputLayerMaker_imageSize", _wrap_InputLayerMaker_imageSize, METH_VARARGS, NULL},
@@ -7078,6 +7145,9 @@ static void *_p_intArrayTo_p_int(void *x, int *SWIGUNUSEDPARM(newmemory)) {
 static void *_p_intSliceTo_p_int(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((int *)  ((intSlice *) x));
 }
+static void *_p_DropoutMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((LayerMaker2 *)  ((DropoutMaker *) x));
+}
 static void *_p_SoftMaxMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((SoftMaxMaker *) x));
 }
@@ -7108,6 +7178,7 @@ static void *_p_CrossEntropyLossMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPA
 static swig_type_info _swigt__p_ActivationMaker = {"_p_ActivationMaker", "ActivationMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ConvolutionalMaker = {"_p_ConvolutionalMaker", "ConvolutionalMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CrossEntropyLossMaker = {"_p_CrossEntropyLossMaker", "CrossEntropyLossMaker *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_DropoutMaker = {"_p_DropoutMaker", "DropoutMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_FullyConnectedMaker = {"_p_FullyConnectedMaker", "FullyConnectedMaker *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GenericLoader = {"_p_GenericLoader", "GenericLoader *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_InputLayerMaker = {"_p_InputLayerMaker", "InputLayerMaker *", 0, 0, (void*)0, 0};
@@ -7132,6 +7203,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_ActivationMaker,
   &_swigt__p_ConvolutionalMaker,
   &_swigt__p_CrossEntropyLossMaker,
+  &_swigt__p_DropoutMaker,
   &_swigt__p_FullyConnectedMaker,
   &_swigt__p_GenericLoader,
   &_swigt__p_InputLayerMaker,
@@ -7156,10 +7228,11 @@ static swig_type_info *swig_type_initial[] = {
 static swig_cast_info _swigc__p_ActivationMaker[] = {  {&_swigt__p_ActivationMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ConvolutionalMaker[] = {  {&_swigt__p_ConvolutionalMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CrossEntropyLossMaker[] = {  {&_swigt__p_CrossEntropyLossMaker, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_DropoutMaker[] = {  {&_swigt__p_DropoutMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_FullyConnectedMaker[] = {  {&_swigt__p_FullyConnectedMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GenericLoader[] = {  {&_swigt__p_GenericLoader, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_InputLayerMaker[] = {  {&_swigt__p_InputLayerMaker, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_LayerMaker2[] = {  {&_swigt__p_SoftMaxMaker, _p_SoftMaxMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ActivationMaker, _p_ActivationMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_LayerMaker2, 0, 0, 0},  {&_swigt__p_NormalizationLayerMaker, _p_NormalizationLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_InputLayerMaker, _p_InputLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_FullyConnectedMaker, _p_FullyConnectedMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_PoolingMaker, _p_PoolingMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ConvolutionalMaker, _p_ConvolutionalMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SquareLossMaker, _p_SquareLossMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_CrossEntropyLossMaker, _p_CrossEntropyLossMakerTo_p_LayerMaker2, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LayerMaker2[] = {  {&_swigt__p_DropoutMaker, _p_DropoutMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SoftMaxMaker, _p_SoftMaxMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ActivationMaker, _p_ActivationMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_LayerMaker2, 0, 0, 0},  {&_swigt__p_NormalizationLayerMaker, _p_NormalizationLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_InputLayerMaker, _p_InputLayerMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_FullyConnectedMaker, _p_FullyConnectedMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_PoolingMaker, _p_PoolingMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_ConvolutionalMaker, _p_ConvolutionalMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_SquareLossMaker, _p_SquareLossMakerTo_p_LayerMaker2, 0, 0},  {&_swigt__p_CrossEntropyLossMaker, _p_CrossEntropyLossMakerTo_p_LayerMaker2, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NetLearner[] = {  {&_swigt__p_NetLearner, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NetdefToNet[] = {  {&_swigt__p_NetdefToNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NeuralNet[] = {  {&_swigt__p_NeuralNet, 0, 0, 0},{0, 0, 0, 0}};
@@ -7180,6 +7253,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_ActivationMaker,
   _swigc__p_ConvolutionalMaker,
   _swigc__p_CrossEntropyLossMaker,
+  _swigc__p_DropoutMaker,
   _swigc__p_FullyConnectedMaker,
   _swigc__p_GenericLoader,
   _swigc__p_InputLayerMaker,
