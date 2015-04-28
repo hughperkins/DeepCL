@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "ActivationPropagate.h"
+#include "ActivationForward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class ActivationPropagateCpu : public ActivationPropagate {
+class ActivationForwardCpu : public ActivationForward {
 public:
 
     // [[[cog
@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    ActivationForwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
     VIRTUAL void forward( int batchSize, float *input, float *output );
 

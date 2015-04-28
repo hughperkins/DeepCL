@@ -15,7 +15,7 @@ class ActivationFunction;
 class OpenCLHelper;
 class CLWrapper;
 
-class DeepCL_EXPORT ActivationPropagate {
+class DeepCL_EXPORT ActivationForward {
 public:
     OpenCLHelper *cl;
 
@@ -26,7 +26,7 @@ public:
 
     ActivationFunction const*fn;
 
-    virtual ~ActivationPropagate() {}
+    virtual ~ActivationForward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
@@ -45,10 +45,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    ActivationForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    STATIC ActivationForward *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    STATIC ActivationForward *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    STATIC ActivationForward *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );

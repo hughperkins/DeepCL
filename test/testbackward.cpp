@@ -13,6 +13,7 @@
 #include "ActivationFunction.h"
 #include "LossLayer.h"
 #include "ForceBackpropLayerMaker.h"
+#include "ActivationMaker.h"
 
 #include "gtest/gtest.h"
 
@@ -318,7 +319,9 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
     WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
     WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
-    layer->setWeights( weights, biasWeights );
+    if( weightsSize > 0 || biasWeightsSize > 0 ) {
+        layer->setWeights( weights, biasWeights );
+    }
 
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
@@ -329,7 +332,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 //    net->input( input );
     net->forward( input );
     net->print();
-//    net->printOutput();
+    net->printOutput();
 
     // calculate loss
     float lossBefore = net->calcLoss( expectedOutput );
@@ -433,6 +436,21 @@ TEST( testbackward, fc1 ) {
     cout << net->asString() << endl;
 
     net->setBatchSize(4);
+
+    checkLayer( net, 2 );
+    delete net;
+}
+
+TEST( testbackward, act1 ) {
+    NeuralNet *net = new NeuralNet( 1, 2 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( ActivationMaker::instance()->linear() );
+    net->addLayer( SquareLossMaker::instance() );
+//    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
+                          // so that dont have to make filtersize == input image size?
+    cout << net->asString() << endl;
+
+    net->setBatchSize(1);
 
     checkLayer( net, 2 );
     delete net;

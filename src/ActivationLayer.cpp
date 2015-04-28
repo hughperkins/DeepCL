@@ -9,8 +9,8 @@
 
 #include "ActivationLayer.h"
 #include "ActivationMaker.h"
-#include "ActivationPropagate.h"
-#include "ActivationBackprop.h"
+#include "ActivationForward.h"
+#include "ActivationBackward.h"
 
 using namespace std;
 
@@ -42,8 +42,8 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
 //        maker->net->print();
         throw runtime_error("Error: Activation layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    activationPropagateImpl = ActivationPropagate::instance( cl, numPlanes, inputImageSize, fn );
-    activationBackpropImpl = ActivationBackprop::instance( cl, numPlanes, inputImageSize, fn );
+    activationPropagateImpl = ActivationForward::instance( cl, numPlanes, inputImageSize, fn );
+    activationBackpropImpl = ActivationBackward::instance( cl, numPlanes, inputImageSize, fn );
 }
 VIRTUAL ActivationLayer::~ActivationLayer() {
     delete activationPropagateImpl;
@@ -63,6 +63,42 @@ VIRTUAL ActivationLayer::~ActivationLayer() {
 }
 VIRTUAL std::string ActivationLayer::getClassName() const {
     return "ActivationLayer";
+}
+VIRTUAL float ActivationLayer::getOutput( int n, int plane, int row, int col ) {
+    int index = ( ( n
+        * numPlanes + plane )
+        * outputImageSize + row )
+        * outputImageSize + col;
+    return output[ index ];
+}
+VIRTUAL void ActivationLayer::printOutput() {
+//    float const*output = getOutput();
+//    int outPlanes = getOutputPlanes();
+//    int outputSize = getOutputImageSize();
+    std::cout << "  outputs: " << std::endl;
+    getOutput();
+// output are organized like [imageid][filterid][row][col]
+    for( int n = 0; n < std::min( 5, batchSize ); n++ ) {
+        std::cout << "    n: " << n << std::endl;
+        for( int plane = 0; plane < std::min(5, numPlanes ); plane++ ) {
+            if( numPlanes > 1 ) std::cout << "      plane " << plane << std::endl;
+            if( outputImageSize == 1 ) {
+                 std::cout << "        " << getOutput(n, plane, 0, 0 ) << std::endl;
+            } else {
+                for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
+                    std::cout << "      ";
+                    for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
+                        std::cout << getOutput( n, plane, i, j ) << " ";
+                    }
+                    if( outputImageSize > 5 ) std::cout << " ... ";
+                    std::cout << std::endl;
+                }
+                if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
+            }
+            if( numPlanes > 5 ) std::cout << " ... other planes ... " << std::endl;
+        }
+        if( batchSize > 5 ) std::cout << " ... other n ... " << std::endl;
+    }
 }
 VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
 //    cout << "ActivationLayer::setBatchSize" << endl;
@@ -127,6 +163,12 @@ VIRTUAL bool ActivationLayer::hasOutputWrapper() const {
 }
 VIRTUAL CLWrapper *ActivationLayer::getOutputWrapper() {
     return outputWrapper;
+}
+VIRTUAL int ActivationLayer::getWeightsSize() const {
+    return 0;
+}
+VIRTUAL int ActivationLayer::getBiasWeightsSize() const {
+    return 0;
 }
 VIRTUAL float *ActivationLayer::getGradInput() {
     return gradInput;

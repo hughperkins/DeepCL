@@ -114,7 +114,7 @@ public:
     void randomizeWeights();
     VIRTUAL void print();
     VIRTUAL void printWeights();
-    VIRTUAL void printOutput() const;
+    VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void forward();
     VIRTUAL float * getOutput();

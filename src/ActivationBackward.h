@@ -15,7 +15,7 @@ class OpenCLHelper;
 class CLWrapper;
 class ActivationFunction;
 
-class DeepCL_EXPORT ActivationBackprop {
+class DeepCL_EXPORT ActivationBackward {
 public:
     OpenCLHelper *cl;
 
@@ -25,7 +25,7 @@ public:
 
     const int outputImageSize;
 
-    virtual ~ActivationBackprop() {}
+    virtual ~ActivationBackward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
@@ -44,10 +44,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC ActivationBackprop *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    STATIC ActivationBackprop *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn);
-    STATIC ActivationBackprop *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    ActivationBackprop( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    STATIC ActivationBackward *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    STATIC ActivationBackward *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    ActivationBackward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
     VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );

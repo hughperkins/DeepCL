@@ -41,7 +41,7 @@ VIRTUAL int ForceBackpropLayer::getPersistSize() const {
 VIRTUAL bool ForceBackpropLayer::needsBackProp() {
     return true;
 }
-VIRTUAL void ForceBackpropLayer::printOutput() const {
+VIRTUAL void ForceBackpropLayer::printOutput() {
     if( output == 0 ) {
          return;
     }
@@ -68,7 +68,7 @@ VIRTUAL void ForceBackpropLayer::printOutput() const {
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
-VIRTUAL void ForceBackpropLayer::print() const {
+VIRTUAL void ForceBackpropLayer::print() {
     printOutput();
 }
 //VIRTUAL bool ForceBackpropLayer::needErrorsBackprop() {

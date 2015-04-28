@@ -54,8 +54,8 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool needsBackProp();
-    VIRTUAL void printOutput() const;
-    VIRTUAL void print() const;
+    VIRTUAL void printOutput();
+    VIRTUAL void print();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void forward();
     VIRTUAL void backward( float learningRate, float const *gradOutput );

@@ -13,8 +13,8 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class ActivationPropagate;
-class ActivationBackprop;
+class ActivationForward;
+class ActivationBackward;
 class ActivationMaker;
 
 // this will contain only activation, and then we can factorize activations away from
@@ -30,8 +30,8 @@ public:
     ActivationFunction const *fn;
 
     OpenCLHelper *const cl; // NOT owned by us
-    ActivationPropagate *activationPropagateImpl;
-    ActivationBackprop *activationBackpropImpl;
+    ActivationForward *activationPropagateImpl;
+    ActivationBackward *activationBackpropImpl;
 
     float *output;
     float *gradInput;
@@ -53,6 +53,8 @@ public:
     ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, ActivationMaker *maker );
     VIRTUAL ~ActivationLayer();
     VIRTUAL std::string getClassName() const;
+    VIRTUAL float getOutput( int n, int plane, int row, int col );
+    VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getOutputSize();
     VIRTUAL float *getOutput();
@@ -65,6 +67,8 @@ public:
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL int getWeightsSize() const;
+    VIRTUAL int getBiasWeightsSize() const;
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void forward();

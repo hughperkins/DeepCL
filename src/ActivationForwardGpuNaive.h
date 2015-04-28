@@ -6,12 +6,14 @@
 
 #pragma once
 
-#include "ActivationBackprop.h"
+#include "ActivationForward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class ActivationBackpropGpuNaive : public ActivationBackprop {
+class CLKernel;
+
+class ActivationForwardGpuNaive : public ActivationForward {
 public:
     CLKernel *kernel;
 
@@ -20,11 +22,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~ActivationBackpropGpuNaive();
-    VIRTUAL void backward( int batchSize, CLWrapper *inputWrapper,
-    CLWrapper *gradOutputWrapper,
-    CLWrapper *gradInputWrapper );
-    ActivationBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    VIRTUAL ~ActivationForwardGpuNaive();
+    VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
+    ActivationForwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
 
     // [[[end]]]
 };

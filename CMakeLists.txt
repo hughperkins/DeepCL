@@ -63,8 +63,8 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     PoolingBackpropGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
     ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-    ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
-    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp
+    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
+    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
     DropoutMaker.cpp DropoutLayer.cpp DropoutPropagate.cpp DropoutBackprop.cpp
     DropoutPropagateCpu.cpp DropoutPropagateGpuNaive.cpp
     DropoutBackpropCpu.cpp DropoutBackpropGpuNaive.cpp

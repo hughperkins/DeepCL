@@ -6,8 +6,8 @@
 
 #include "OpenCLHelper.h"
 
-#include "ActivationBackprop.h"
-#include "ActivationPropagate.h"
+#include "ActivationBackward.h"
+#include "ActivationForward.h"
 #include "ActivationFunction.h"
 
 #include "gtest/gtest.h"
@@ -22,7 +22,7 @@ TEST( testactivationbackprop, basic ) {
     int numPlanes = 1;
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationBackprop *activationBackprop = ActivationBackprop::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float inputs[] = {
         1, -0.1f, 0.1f,
         0.5f, -1000, 1000,
@@ -71,7 +71,7 @@ TEST( testactivationbackprop, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationBackprop *activationBackprop = ActivationBackprop::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float inputs[] = {
         2,
         -1,
@@ -124,8 +124,8 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
     TestArgsParser::go();
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationBackprop *p0 = ActivationBackprop::instanceSpecific( instance0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    ActivationBackprop *p1 = ActivationBackprop::instanceSpecific( instance1, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
+    ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
+    ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     int outputImageSize = p1->outputImageSize;
     int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
     float *errors = new float[ errorsSize ];
@@ -133,13 +133,13 @@ TEST( SLOW_testactivationbackprop, compare_args ) {
     float *errorsForUpstream0 = new float[ inputSize ];
     float *errorsForUpstream1 = new float[ inputSize ];
     
-    ActivationPropagate *forwardprop = ActivationPropagate::instanceSpecific( 0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
+    ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     float *output = new float[errorsSize];
     float *input = new float[inputSize];
     float *errorsForUpstream[2];
     errorsForUpstream[0] = errorsForUpstream0;
     errorsForUpstream[1] = errorsForUpstream1;
-    ActivationBackprop *props[2];
+    ActivationBackward *props[2];
     props[0] = p0;
     props[1] = p1;
     for( int it = 0; it < its; it++ ) {
@@ -191,7 +191,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int activationSize = 2;
     OpenCLHelper cl;
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceForTest( cl, numPlanes, imageSize, activationSize );
+    ActivationForward *activationPropagate = ActivationForward::instanceForTest( cl, numPlanes, imageSize, activationSize );
     float data[] = { 1, 2, 
                     5, 3,
 

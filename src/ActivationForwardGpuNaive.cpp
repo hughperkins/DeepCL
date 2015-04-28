@@ -13,7 +13,7 @@
 #include "stringhelper.h"
 #include "ActivationFunction.h"
 
-#include "ActivationPropagateGpuNaive.h"
+#include "ActivationForwardGpuNaive.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -24,12 +24,12 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-VIRTUAL ActivationPropagateGpuNaive::~ActivationPropagateGpuNaive() {
+VIRTUAL ActivationForwardGpuNaive::~ActivationForwardGpuNaive() {
     delete kernel;
 }
-VIRTUAL void ActivationPropagateGpuNaive::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "ActivationPropagateGpuNaive::forward( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::forward start" );
+VIRTUAL void ActivationForwardGpuNaive::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "ActivationForwardGpuNaive::forward( CLWrapper * )" << endl;
+    StatefulTimer::instance()->timeCheck("ActivationForwardGpuNaive::forward start" );
 
     kernel->input( batchSize * numPlanes * outputImageSize * outputImageSize );
     kernel->output( outputWrapper )->input( inputWrapper );
@@ -38,17 +38,17 @@ VIRTUAL void ActivationPropagateGpuNaive::forward( int batchSize, CLWrapper *inp
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "ActivationPropagateGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
+//    cout << "ActivationForwardGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
-//    cout << "ActivationPropagateGpuNaive::forward selectorswrapper:" << endl;
+//    cout << "ActivationForwardGpuNaive::forward selectorswrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
-    StatefulTimer::instance()->timeCheck("ActivationPropagateGpuNaive::forward end" );
+    StatefulTimer::instance()->timeCheck("ActivationForwardGpuNaive::forward end" );
 }
-ActivationPropagateGpuNaive::ActivationPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
-        ActivationPropagate( cl, numPlanes, inputImageSize, fn ) {
+ActivationForwardGpuNaive::ActivationForwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+        ActivationForward( cl, numPlanes, inputImageSize, fn ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );
     options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );

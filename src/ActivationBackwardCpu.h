@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "ActivationBackprop.h"
+#include "ActivationBackward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class ActivationBackpropCpu : public ActivationBackprop {
+class ActivationBackwardCpu : public ActivationBackward {
 public:
 
     // [[[cog
@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    ActivationBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );
     VIRTUAL void backward( int batchSize, CLWrapper *inputsWrapper,
     CLWrapper *gradOutputWrapper,

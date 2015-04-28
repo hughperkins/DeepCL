@@ -122,7 +122,7 @@ VIRTUAL void Layer::printBiasWeightsAsCode() const {
 VIRTUAL void Layer::printWeights() {
     std::cout << "printWeights() not implemented for this layer type" << std:: endl; 
 }
-VIRTUAL void Layer::printOutput() const {
+VIRTUAL void Layer::printOutput() {
     std::cout << "printOutput() not implemented for this layer type" << std:: endl; 
 }
 PUBLICAPI VIRTUAL void Layer::backward( float learningRate ) {

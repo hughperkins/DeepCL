@@ -207,7 +207,7 @@ VIRTUAL void ConvolutionalLayer::printWeights() {
     }
     if( dim.numFilters > 5 ) std::cout << " ... other filters ... " << std::endl;
  }
-VIRTUAL void ConvolutionalLayer::printOutput() const { 
+VIRTUAL void ConvolutionalLayer::printOutput() { 
     if( output == 0 ) {
         return;
     }

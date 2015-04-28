@@ -6,7 +6,7 @@
 
 #include "OpenCLHelper.h"
 
-#include "ActivationPropagate.h"
+#include "ActivationForward.h"
 #include "ActivationFunction.h"
 
 #include "gtest/gtest.h"
@@ -22,7 +22,7 @@ TEST( testactivationforward, basic ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationForward *activationPropagate = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -52,7 +52,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationForward *activationPropagate = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -88,7 +88,7 @@ TEST( testactivationforward, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationPropagate *activationPropagate = ActivationPropagate::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationForward *activationPropagate = ActivationForward::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -195,8 +195,8 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    ActivationPropagate *activationPropagate0 = ActivationPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
-    ActivationPropagate *activationPropagate1 = ActivationPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
+    ActivationForward *activationPropagate0 = ActivationForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
+    ActivationForward *activationPropagate1 = ActivationForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = activationPropagate0->getOutputSize( batchSize );

@@ -36,7 +36,7 @@ VIRTUAL bool InputLayer::needsBackProp() {
 VIRTUAL int InputLayer::getPersistSize() const {
     return 0;
 }
-VIRTUAL void InputLayer::printOutput() const {
+VIRTUAL void InputLayer::printOutput() {
     if( output == 0 ) {
          return;
     }
@@ -63,7 +63,7 @@ VIRTUAL void InputLayer::printOutput() const {
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
-VIRTUAL void InputLayer::print() const {
+VIRTUAL void InputLayer::print() {
     printOutput();
 }
  void InputLayer::in( float const*images ) {

@@ -46,8 +46,8 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getPersistSize() const;
-    VIRTUAL void printOutput() const;
-    VIRTUAL void print() const;
+    VIRTUAL void printOutput();
+    VIRTUAL void print();
     void in( float const*images );
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
