@@ -13,11 +13,13 @@
 
 class CLWrapper;
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
 // base class for trainers
-class Trainer {
+class DeepCL_EXPORT Trainer {
 public:
     // plausibly, we receive the current gradients, and current weights, and we 
     // can update them as we see fit...

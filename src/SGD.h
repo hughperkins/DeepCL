@@ -16,6 +16,8 @@
 class OpenCLHelper;
 class CLKernel;
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -28,7 +30,7 @@ class CLKernel;
 // we could always make like a 'prototype' or 'factory'
 // object that then gets passed to each weightful layer
 // Maybe a 'Maker' for trainers?
-class SGD : public Trainer {
+class DeepCL_EXPORT SGD : public Trainer {
 public:
     OpenCLHelper *cl;
     CLKernel *kernel;
