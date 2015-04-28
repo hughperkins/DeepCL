@@ -25,28 +25,29 @@ using namespace std;
 ActivationBackwardCpu::ActivationBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
         ActivationBackward( cl, numPlanes, inputImageSize, fn ) {
 }
-VIRTUAL void ActivationBackwardCpu::backward( int batchSize, float *inputs, float *gradOutput, float *gradInput ) {
+VIRTUAL void ActivationBackwardCpu::backward( int batchSize, float *outputs, float *gradOutput, float *gradInput ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
 //        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
 //            << " error=" << errors[i];
-        gradInput[i] = fn->calcDerivative( inputs[i] ) * gradOutput[i];
+        gradInput[i] = fn->calcDerivative( outputs[i] ) * gradOutput[i];
         cout << " gradInput=" << gradInput[i] << endl;
     }
 }
-VIRTUAL void ActivationBackwardCpu::backward( int batchSize, CLWrapper *inputsWrapper,
+VIRTUAL void ActivationBackwardCpu::backward( int batchSize, 
+        CLWrapper *outputWrapper,
          CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
     StatefulTimer::instance()->timeCheck("ActivationBackwardCpu::backward start" );
 
-    inputsWrapper->copyToHost();
+    outputWrapper->copyToHost();
     gradOutputWrapper->copyToHost();
 
-    float *inputs = reinterpret_cast<float *>( inputsWrapper->getHostArray() );
+    float *outputs = reinterpret_cast<float *>( outputWrapper->getHostArray() );
     float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     float *gradInput = new float[ getInputSize( batchSize ) ];
 
-    backward( batchSize, inputs, gradOutput, gradInput );
+    backward( batchSize, outputs, gradOutput, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
     memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );

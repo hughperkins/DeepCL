@@ -20,8 +20,9 @@ public:
     // ]]]
     // generated, using cog:
     ActivationBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );
-    VIRTUAL void backward( int batchSize, CLWrapper *inputsWrapper,
+    VIRTUAL void backward( int batchSize, float *outputs, float *gradOutput, float *gradInput );
+    VIRTUAL void backward( int batchSize,
+    CLWrapper *outputWrapper,
     CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
 

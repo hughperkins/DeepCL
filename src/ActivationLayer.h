@@ -33,11 +33,13 @@ public:
     ActivationForward *activationPropagateImpl;
     ActivationBackward *activationBackpropImpl;
 
-    float *output;
-    float *gradInput;
+    float *output; // this is not guaranteed to be up to date
+                // unless outputCopiedToHost is true
+    float *gradInput; // this is not guaranteed to be up to date
+                // unless gradInputCopiedToHost is true
 
-    CLWrapper *outputWrapper;
-    CLWrapper *gradInputWrapper;
+    CLWrapper *outputWrapper; // this is guaranteed to be up to date
+    CLWrapper *gradInputWrapper; // this is guaranteed to be up to date
 
     bool outputCopiedToHost;
     bool gradInputCopiedToHost;
