@@ -13,6 +13,9 @@
 
 using namespace std;
 
+// not sure whats in this file.  I might remove it soonish...
+// please use 'testbackward.cpp' for testing backward propagation
+
 void printSamples(int weightsSize, float *weightChanges, int numSamples = 5 ) {
     mt19937 random;
     random.seed(0);
