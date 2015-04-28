@@ -133,7 +133,12 @@ public:
     ActivationMaker *tanh();
     ActivationMaker *sigmoid();
 };
-/*%template(InputLayerMaker) InputLayerMaker<float>;*/
+
+class DropoutMaker : public LayerMaker2 {
+public:
+    DropoutMaker();
+    DropoutMaker *dropRatio( float _dropRatio );
+};
 
 class ConvolutionalMaker : public LayerMaker2 {
 public:
