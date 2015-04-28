@@ -49,11 +49,11 @@ Backward::Backward( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
         dim( layerDimensions ) {
 }
-VIRTUAL float * Backward::backward( int batchSize, float *inputData, float *gradOutput, float *filters ) {
+VIRTUAL float * Backward::backward( int batchSize, float *input, float *gradOutput, float *filters ) {
     StatefulTimer::timeCheck("Backward::backprop begin");
 
-    CLWrapper *inputDataWrapper = cl->wrap( batchSize * dim.inputCubeSize, inputData );
-    inputDataWrapper->copyToDevice();
+    CLWrapper *inputWrapper = cl->wrap( batchSize * dim.inputCubeSize, input );
+    inputWrapper->copyToDevice();
 
     CLWrapper *gradOutputWrapper = cl->wrap( batchSize * dim.outputCubeSize, gradOutput );
     gradOutputWrapper->copyToDevice();
@@ -62,13 +62,6 @@ VIRTUAL float * Backward::backward( int batchSize, float *inputData, float *grad
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-//    CLWrapper *biasWeightsWrapper = 0;
-//    if( dim.biased ) {
-//        int biasWeightsWrapperSize = dim.numFilters;
-//        biasWeightsWrapper = cl->wrap( biasWeightsWrapperSize, biases );
-//        biasWeightsWrapper->copyToDevice();
-//    }
-
     int outputDataSize = batchSize * dim.inputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
     int allocatedOutputSize = std::max(5000, outputDataSize );
@@ -76,7 +69,7 @@ VIRTUAL float * Backward::backward( int batchSize, float *inputData, float *grad
     CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputSize, gradInput );
 
     StatefulTimer::timeCheck("Backward::backprop after copied to device");
-    backward( batchSize, inputDataWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
+    backward( batchSize, inputWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
     StatefulTimer::timeCheck("Backward::backprop after call backprop");
     gradInputWrapper->copyToHost();
     StatefulTimer::timeCheck("Backward::backprop after copytohost");
@@ -84,10 +77,7 @@ VIRTUAL float * Backward::backward( int batchSize, float *inputData, float *grad
     delete gradInputWrapper;
     delete gradOutputWrapper;
     delete weightsWrapper;
-    delete inputDataWrapper;
-//    if( dim.biased ) {
-//        delete biasWeightsWrapper;
-//    }
+    delete inputWrapper;
 
     return gradInput;
 }

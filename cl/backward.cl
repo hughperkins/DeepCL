@@ -35,9 +35,6 @@ void kernel calcGradInput(
     const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
 
     float sumWeightTimesOutError = 0;
-//    int inputDataIndex = globalId;
-//    float inputDataValue = inputData[inputDataIndex];
-//    float inputDeriv = ACTIVATION_DERIV( inputDataValue );
     // aggregate over [outPlane][outRow][outCol]
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
@@ -60,6 +57,5 @@ void kernel calcGradInput(
         }
     }
     gradInput[globalId] = sumWeightTimesOutError;
-    //gradInput[globalId] = sumWeightTimesOutError * inputDeriv;
 }
 

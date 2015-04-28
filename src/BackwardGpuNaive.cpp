@@ -92,9 +92,6 @@ BackwardGpuNaive::BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim ) :
     "    const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );\n" 
     "\n" 
     "    float sumWeightTimesOutError = 0;\n" 
-    "//    int inputDataIndex = globalId;\n" 
-    "//    float inputDataValue = inputData[inputDataIndex];\n" 
-    "//    float inputDeriv = ACTIVATION_DERIV( inputDataValue );\n" 
     "    // aggregate over [outPlane][outRow][outCol]\n" 
     "    for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {\n" 
     "        for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {\n" 
@@ -117,7 +114,6 @@ BackwardGpuNaive::BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim ) :
     "        }\n" 
     "    }\n" 
     "    gradInput[globalId] = sumWeightTimesOutError;\n" 
-    "    //gradInput[globalId] = sumWeightTimesOutError * inputDeriv;\n" 
     "}\n" 
     "\n" 
     "";

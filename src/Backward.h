@@ -38,7 +38,7 @@ public:
     STATIC Backward *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
     STATIC Backward *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
     Backward( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    VIRTUAL float * backward( int batchSize, float *inputData, float *gradOutput, float *filters );
+    VIRTUAL float * backward( int batchSize, float *input, float *gradOutput, float *filters );
 
     // [[[end]]]
 };

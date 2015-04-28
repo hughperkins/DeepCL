@@ -20,8 +20,8 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
 // need to store locally:
-// - _errorImage. size = outputImageSizeSquared
-// - _filterImage. size = filtersizesquared
+// - _gradOutputPlane. size = outputImageSizeSquared
+// - _filterPlane. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
 // inputs: gradOutput :convolve: filters => gradInput
 //
@@ -37,8 +37,8 @@ void kernel calcGradInputCached(
         global const float *gradOutputGlobal,
         global const float *filtersGlobal, 
         global float *gradInput,
-        local float *_errorImage, 
-        local float *_filterImage ) {
+        local float *_gradOutputPlane, 
+        local float *_filterPlane ) {
 
     #define globalId get_global_id(0)
     #define localId get_local_id(0)
@@ -54,8 +54,8 @@ void kernel calcGradInputCached(
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _filterImage, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
-        copyLocal( _errorImage, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );
+        copyLocal( _filterPlane, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
+        copyLocal( _gradOutputPlane, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
@@ -63,8 +63,8 @@ void kernel calcGradInputCached(
                 int outCol = upstreamCol + gMargin - filterCol;
                 if( outCol >= 0 && outCol < gOutputImageSize && outRow >= 0 && outRow < gOutputImageSize ) {
                     float thisWeightTimesError = 
-                        _errorImage[outRow * gOutputImageSize + outCol] * 
-                        _filterImage[filterRow * gFilterSize + filterCol];
+                        _gradOutputPlane[outRow * gOutputImageSize + outCol] * 
+                        _filterPlane[filterRow * gFilterSize + filterCol];
                     sumWeightTimesOutError += thisWeightTimesError;
                 }
             }
