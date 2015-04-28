@@ -10,7 +10,9 @@ Lua wrappers are available.  [luajit](http://luajit.org) is becoming big in mach
 * For a demo of constructing layers by hand, and handling low-level propagating, batch by batch, you can look at the method `test_lowlevel`, in the same module, ie in [test_deepcl.lua](test_deepcl.lua).
 * For a demo of q-learning, you can look at [test_qlearning.lua](test_qlearning.lua)
 
-## Installation from luarocks
+## Luarocks build
+
+### Installation from luarocks
 
 * There is a source rock available on luarocks [luadeepcl](http://luarocks.org/modules/hughperkins/luadeepcl):
 
@@ -24,67 +26,28 @@ directly from github source, ie:
   * a C++ compiler, supporting c++0x
 * You'll also need a working OpenCL-enabled platform, eg OpenCL-enabled GPU, or OpenCL-enabled CPU
 
-## To build, linux
+### To build, using luarocks, linux
 
-### Pre-requisites
+#### Prerequisites
 
 * cmake
 * g++, supporting c++0x, on linux
 * lua development libraries (eg `sudo apt-get install liblua5.1-0-dev`)
+* luarocks
+* luajit
 
-### Procedure
+#### Procedure
 
 From this directory:
 ```bash
-mkdir build
-cd build
-cmake ..
-make -j 4
+luarocks make
 ```
 
-## To build, Windows (untested)
+### To run, using luarocks
 
-### Pre-requisites
-
-* cmake
-* visual studio 2010, or later
-* lua development libraries
-
-### Procedure
-
-- open cmake, point at the `lua` directory, and set to build in the `lua\build` subdirectory
-  - accept `yes` to create the new directory
-  - click `configure`
-  - select appropriate generator, eg Visual Studio 2010, according to which one you have
-  - click `generate`
-- open visual studio, and load any of the projects in the `build` directory
-  - change release type to `Release`
-  - choose `build` from the `build` menu
-
-## To run
-
-### Pre-requisites
-
-* have done build, or downloaded binaries
-* An OpenCL-compatible driver installed, and OpenCL-compatible GPU
-
-### On linux
-
-From this directory, the one with this README.md in, do eg:
+Simple run the test scripts, like:
 ```bash
-LUA_CPATH=build/?.so luajit test_lua.lua
-```
-or:
-```bash
-LUA_CPATH=build/?.so luajit test_qlearning.lua
-```
-
-### On Windows
-
-Something like (not tested, at all...), from this directory, the one with this README.md in:
-```cmd
-set LUA_CPATH=build/win32/Release/?.dll
-luajit test_lua.lua
+luajit test_deepcl.lua
 ```
 
 ## Unit-testing
@@ -103,7 +66,26 @@ To build a source rock, use linux:
 * whilst `pack.sh` only runs on linux, hopefully the resulting rock should be cross-platform.  Hopefully.  Let
 me know any issues please :-)
 
-## Development
+## Development builds
 
-* If you want to update the wrappers, you should install [swig](http://www.swig.org), and turn on the option 'RUN_SWIG' in cmake
+For development, we need swig installed:
+* [swig](http://www.swig.org)
+
+And we need to build using cmake.  On linux, this looks something like:
+```
+mkdir build
+cd build
+ccmake ..
+# click 'c' for configure
+# turn on the option 'RUN_SWIG'
+# click 'c' again
+# then 'g' to generate
+make -j 4
+```
+
+To run development builds, you can simply use the luarocks method above.  Alternatively, you can also try to
+use the library you built using cmake just now, using run.sh, eg:
+```
+./run.sh lua_deepcl.lua
+```
 
