@@ -125,7 +125,7 @@ function ScenarioImage.showQ(self, net)
             local bestAction = 0
             netinput[ size * size + y * size + x ] = 1
             net:setBatchSize(1)
-            net:propagate( netinput )
+            net:forward( netinput )
             netinput[ size * size + y * size + x ] = 0
             local output = deepcl.floatArray(self.numActions)
             net:getOutput(output)
@@ -186,10 +186,13 @@ function go()
 
     local net = deepcl.NeuralNet()
     net:addLayer( deepcl.InputLayerMaker():numPlanes(planes):imageSize(size) )
-    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased():relu() )
-    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased():relu() )
-    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(100):imageSize(1):biased():tanh() )
-    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(numActions):imageSize(1):biased():linear() )
+    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased() )
+    net:addLayer( deepcl.ActivationMaker():relu() )
+    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased() )
+    net:addLayer( deepcl.ActivationMaker():relu() )
+    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(100):imageSize(1):biased() )
+    net:addLayer( deepcl.ActivationMaker():tanh() )
+    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(numActions):imageSize(1):biased() )
     net:addLayer( deepcl.SquareLossMaker() )
     print( net:asString() )
 
