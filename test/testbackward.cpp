@@ -306,9 +306,19 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
+    Layer *layer = net->getLayer(targetLayerIndex);
+    int weightsSize = layer->getWeightsSize();
+    int biasWeightsSize = layer->getBiasWeightsSize();
+    cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
+    float *weights = new float[weightsSize];
+    float *biasWeights = new float[biasWeightsSize];
 
+    cout << "layer " << layer->asString() << endl;
     WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
+    layer->setWeights( weights, biasWeights );
 
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
@@ -325,7 +335,9 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    // should be zero, so we dont modify the weights
+    // otherwise the losses will be really strange :-)
+    net->backward( 0.0f, expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -396,16 +408,16 @@ TEST( testbackward, softmax2 ) {
     delete net;
 }
 
-TEST( testbackward, conv8c5 ) {
-    NeuralNet *net = new NeuralNet( 1, 3 );
+TEST( testbackward, conv1 ) {
+    NeuralNet *net = new NeuralNet( 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased(0)->padZeros(0) );
-    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
+    net->addLayer( SquareLossMaker::instance() );
+//    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
                           // so that dont have to make filtersize == input image size?
     cout << net->asString() << endl;
 
-    int batchSize = 1;
-    net->setBatchSize(batchSize);
+    net->setBatchSize(4);
 
     checkLayer( net, 2 );
     delete net;

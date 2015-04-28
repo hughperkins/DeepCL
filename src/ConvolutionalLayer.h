@@ -118,6 +118,7 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void forward();
     VIRTUAL float * getOutput();
+    VIRTUAL void setWeights( float *weights, float *biasWeights );
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getPersistSize() const;

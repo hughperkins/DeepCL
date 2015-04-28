@@ -309,6 +309,10 @@ VIRTUAL float * ConvolutionalLayer::getOutput() {
     }
     return output;
 };
+VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *biasWeights ) {
+    initWeights( weights );
+    initBiasWeights( biasWeights );
+}
 VIRTUAL void ConvolutionalLayer::initWeights( float const*weights ) {
     int weightsSize = dim.filtersSize;
     memcpy( this->weights, weights, sizeof(float) * weightsSize );

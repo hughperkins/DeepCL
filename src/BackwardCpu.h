@@ -20,7 +20,7 @@ public:
     // generated, using cog:
     BackwardCpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackwardCpu();
-    VIRTUAL float *backward( int batchSize, float *inputData,
+    VIRTUAL float *backward( int batchSize, float *inputs,
     float *gradOutput, float *weights );
     VIRTUAL void backward( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,

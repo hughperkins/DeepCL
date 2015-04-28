@@ -24,7 +24,7 @@ BackwardCpu::BackwardCpu( OpenCLHelper *cl, LayerDimensions dim ) :
 }
 VIRTUAL BackwardCpu::~BackwardCpu() {
 }
-VIRTUAL float *BackwardCpu::backward( int batchSize, float *inputData,
+VIRTUAL float *BackwardCpu::backward( int batchSize, float *inputs,
     float *gradOutput, float *weights ) {
     float *gradInput = new float[ batchSize * dim.inputCubeSize ];
 
@@ -43,21 +43,14 @@ VIRTUAL float *BackwardCpu::backward( int batchSize, float *inputData,
     //      [outPlane][inPlane][filterRow][filtercol]
     //    aggregating over: [n][outRow][outCol]
     // errors are provider per [n][inPlane][inRow][inCol]
-//    ActivationFunction *upstreamActivation = 
     for( int n = 0; n < batchSize; n++ ) {
         for( int upstreamPlane = 0; upstreamPlane < dim.inputPlanes; upstreamPlane++ ) {
             for( int upstreamRow = 0; upstreamRow < dim.inputImageSize; upstreamRow++ ) {
                 int minFilterRow = std::max( 0, upstreamRow + margin - (dim.outputImageSize - 1) );
                 int maxFilterRow = std::min( dim.filterSize - 1, upstreamRow + margin );
                 for( int upstreamCol = 0; upstreamCol < dim.inputImageSize; upstreamCol++ ) {
-                    float sumWeightTimesOutError = 0;
-                    int inputDataIndex = ( ( n
-                        * dim.inputPlanes + upstreamPlane )
-                        * dim.inputImageSize + upstreamRow )
-                        * dim.inputImageSize + upstreamCol;
-                    float inputValue = inputData[inputDataIndex];
+                    float sumWeightTimesGradOutput = 0;
                     //  TODO: check this :-)
-//                    float activationDerivativeUpstream = upstreamFn->calcDerivative(inputValue);
                     // aggregate over [outPlane][outRow][outCol]
                     int minFilterCol = std::max( 0, upstreamCol + margin - (dim.outputImageSize -1) );
                     int maxFilterCol = std::min( dim.filterSize - 1, upstreamCol + margin );
@@ -76,15 +69,15 @@ VIRTUAL float *BackwardCpu::backward( int batchSize, float *inputData,
                                     * dim.filterSize + filterRow )
                                     * dim.filterSize + filterCol;
                                 float thisWeight = weights[thisWeightIndex];
-                                sumWeightTimesOutError += thisWeight * thisGradOutput;
+                                sumWeightTimesGradOutput += thisWeight * thisGradOutput;
                             }
                         }
                     }
-                    int inputResultIndex = ( ( n
+                    int inputIndex = ( ( n
                         * dim.inputPlanes + upstreamPlane )
                         * dim.inputImageSize + upstreamRow )
                         * dim.inputImageSize + upstreamCol;
-                    gradInput[inputResultIndex] = sumWeightTimesOutError; // * activationDerivativeUpstream;
+                    gradInput[inputIndex] = sumWeightTimesGradOutput; // * activationDerivativeUpstream;
                 }
             }
         }
