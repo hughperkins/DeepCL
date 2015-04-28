@@ -2655,25 +2655,25 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_propagate(lua_State* L) {
+static int _wrap_NeuralNet_forward(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float *arg2 = (float *) 0 ;
   
-  SWIG_check_num_args("NeuralNet::propagate",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::propagate",1,"NeuralNet *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("NeuralNet::propagate",2,"float const *");
+  SWIG_check_num_args("NeuralNet::forward",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::forward",1,"NeuralNet *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("NeuralNet::forward",2,"float const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("NeuralNet_propagate",1,SWIGTYPE_p_NeuralNet);
+    SWIG_fail_ptr("NeuralNet_forward",1,SWIGTYPE_p_NeuralNet);
   }
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("NeuralNet_propagate",2,SWIGTYPE_p_float);
+    SWIG_fail_ptr("NeuralNet_forward",2,SWIGTYPE_p_float);
   }
   
-  (arg1)->propagate((float const *)arg2);
+  (arg1)->forward((float const *)arg2);
   
   return SWIG_arg;
   
@@ -2685,28 +2685,28 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_backPropFromLabels(lua_State* L) {
+static int _wrap_NeuralNet_backwardFromLabels(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float arg2 ;
   int *arg3 = (int *) 0 ;
   
-  SWIG_check_num_args("NeuralNet::backPropFromLabels",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::backPropFromLabels",1,"NeuralNet *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("NeuralNet::backPropFromLabels",2,"float");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("NeuralNet::backPropFromLabels",3,"int const *");
+  SWIG_check_num_args("NeuralNet::backwardFromLabels",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::backwardFromLabels",1,"NeuralNet *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("NeuralNet::backwardFromLabels",2,"float");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("NeuralNet::backwardFromLabels",3,"int const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("NeuralNet_backPropFromLabels",1,SWIGTYPE_p_NeuralNet);
+    SWIG_fail_ptr("NeuralNet_backwardFromLabels",1,SWIGTYPE_p_NeuralNet);
   }
   
   arg2 = (float)lua_tonumber(L, 2);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
-    SWIG_fail_ptr("NeuralNet_backPropFromLabels",3,SWIGTYPE_p_int);
+    SWIG_fail_ptr("NeuralNet_backwardFromLabels",3,SWIGTYPE_p_int);
   }
   
-  (arg1)->backPropFromLabels(arg2,(int const *)arg3);
+  (arg1)->backwardFromLabels(arg2,(int const *)arg3);
   
   return SWIG_arg;
   
@@ -2718,28 +2718,28 @@ fail:
 }
 
 
-static int _wrap_NeuralNet_backProp(lua_State* L) {
+static int _wrap_NeuralNet_backward(lua_State* L) {
   int SWIG_arg = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float arg2 ;
   float *arg3 = (float *) 0 ;
   
-  SWIG_check_num_args("NeuralNet::backProp",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::backProp",1,"NeuralNet *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("NeuralNet::backProp",2,"float");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("NeuralNet::backProp",3,"float const *");
+  SWIG_check_num_args("NeuralNet::backward",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::backward",1,"NeuralNet *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("NeuralNet::backward",2,"float");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("NeuralNet::backward",3,"float const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("NeuralNet_backProp",1,SWIGTYPE_p_NeuralNet);
+    SWIG_fail_ptr("NeuralNet_backward",1,SWIGTYPE_p_NeuralNet);
   }
   
   arg2 = (float)lua_tonumber(L, 2);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("NeuralNet_backProp",3,SWIGTYPE_p_float);
+    SWIG_fail_ptr("NeuralNet_backward",3,SWIGTYPE_p_float);
   }
   
-  (arg1)->backProp(arg2,(float const *)arg3);
+  (arg1)->backward(arg2,(float const *)arg3);
   
   return SWIG_arg;
   
@@ -2945,9 +2945,9 @@ delete arg1;
 static swig_lua_method swig_NeuralNet_methods[] = {
     {"addLayer", _wrap_NeuralNet_addLayer}, 
     {"setBatchSize", _wrap_NeuralNet_setBatchSize}, 
-    {"propagate", _wrap_NeuralNet_propagate}, 
-    {"backPropFromLabels", _wrap_NeuralNet_backPropFromLabels}, 
-    {"backProp", _wrap_NeuralNet_backProp}, 
+    {"forward", _wrap_NeuralNet_forward}, 
+    {"backwardFromLabels", _wrap_NeuralNet_backwardFromLabels}, 
+    {"backward", _wrap_NeuralNet_backward}, 
     {"calcNumRight", _wrap_NeuralNet_calcNumRight}, 
     {"getOutputSize", _wrap_NeuralNet_getOutputSize}, 
     {"asString", _wrap_NeuralNet_asString}, 
@@ -3639,102 +3639,6 @@ static int _wrap_ConvolutionalMaker_biased(lua_State* L) {
 }
 
 
-static int _wrap_ConvolutionalMaker_tanh(lua_State* L) {
-  int SWIG_arg = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  SWIG_check_num_args("ConvolutionalMaker::tanh",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ConvolutionalMaker::tanh",1,"ConvolutionalMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ConvolutionalMaker,0))){
-    SWIG_fail_ptr("ConvolutionalMaker_tanh",1,SWIGTYPE_p_ConvolutionalMaker);
-  }
-  
-  result = (ConvolutionalMaker *)(arg1)->tanh();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ConvolutionalMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_ConvolutionalMaker_relu(lua_State* L) {
-  int SWIG_arg = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  SWIG_check_num_args("ConvolutionalMaker::relu",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ConvolutionalMaker::relu",1,"ConvolutionalMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ConvolutionalMaker,0))){
-    SWIG_fail_ptr("ConvolutionalMaker_relu",1,SWIGTYPE_p_ConvolutionalMaker);
-  }
-  
-  result = (ConvolutionalMaker *)(arg1)->relu();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ConvolutionalMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_ConvolutionalMaker_sigmoid(lua_State* L) {
-  int SWIG_arg = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  SWIG_check_num_args("ConvolutionalMaker::sigmoid",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ConvolutionalMaker::sigmoid",1,"ConvolutionalMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ConvolutionalMaker,0))){
-    SWIG_fail_ptr("ConvolutionalMaker_sigmoid",1,SWIGTYPE_p_ConvolutionalMaker);
-  }
-  
-  result = (ConvolutionalMaker *)(arg1)->sigmoid();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ConvolutionalMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_ConvolutionalMaker_linear(lua_State* L) {
-  int SWIG_arg = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  SWIG_check_num_args("ConvolutionalMaker::linear",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("ConvolutionalMaker::linear",1,"ConvolutionalMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_ConvolutionalMaker,0))){
-    SWIG_fail_ptr("ConvolutionalMaker_linear",1,SWIGTYPE_p_ConvolutionalMaker);
-  }
-  
-  result = (ConvolutionalMaker *)(arg1)->linear();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_ConvolutionalMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static void swig_delete_ConvolutionalMaker(void *obj) {
 ConvolutionalMaker *arg1 = (ConvolutionalMaker *) obj;
 delete arg1;
@@ -3744,10 +3648,6 @@ static swig_lua_method swig_ConvolutionalMaker_methods[] = {
     {"filterSize", _wrap_ConvolutionalMaker_filterSize}, 
     {"padZeros", _wrap_ConvolutionalMaker_padZeros}, 
     {"biased", _wrap_ConvolutionalMaker_biased}, 
-    {"tanh", _wrap_ConvolutionalMaker_tanh}, 
-    {"relu", _wrap_ConvolutionalMaker_relu}, 
-    {"sigmoid", _wrap_ConvolutionalMaker_sigmoid}, 
-    {"linear", _wrap_ConvolutionalMaker_linear}, 
     {0,0}
 };
 static swig_lua_attribute swig_ConvolutionalMaker_attributes[] = {
@@ -3937,102 +3837,6 @@ static int _wrap_FullyConnectedMaker_biased(lua_State* L) {
 }
 
 
-static int _wrap_FullyConnectedMaker_linear(lua_State* L) {
-  int SWIG_arg = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  SWIG_check_num_args("FullyConnectedMaker::linear",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("FullyConnectedMaker::linear",1,"FullyConnectedMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_FullyConnectedMaker,0))){
-    SWIG_fail_ptr("FullyConnectedMaker_linear",1,SWIGTYPE_p_FullyConnectedMaker);
-  }
-  
-  result = (FullyConnectedMaker *)(arg1)->linear();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_FullyConnectedMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_FullyConnectedMaker_tanh(lua_State* L) {
-  int SWIG_arg = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  SWIG_check_num_args("FullyConnectedMaker::tanh",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("FullyConnectedMaker::tanh",1,"FullyConnectedMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_FullyConnectedMaker,0))){
-    SWIG_fail_ptr("FullyConnectedMaker_tanh",1,SWIGTYPE_p_FullyConnectedMaker);
-  }
-  
-  result = (FullyConnectedMaker *)(arg1)->tanh();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_FullyConnectedMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_FullyConnectedMaker_sigmoid(lua_State* L) {
-  int SWIG_arg = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  SWIG_check_num_args("FullyConnectedMaker::sigmoid",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("FullyConnectedMaker::sigmoid",1,"FullyConnectedMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_FullyConnectedMaker,0))){
-    SWIG_fail_ptr("FullyConnectedMaker_sigmoid",1,SWIGTYPE_p_FullyConnectedMaker);
-  }
-  
-  result = (FullyConnectedMaker *)(arg1)->sigmoid();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_FullyConnectedMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_FullyConnectedMaker_relu(lua_State* L) {
-  int SWIG_arg = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  SWIG_check_num_args("FullyConnectedMaker::relu",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("FullyConnectedMaker::relu",1,"FullyConnectedMaker *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_FullyConnectedMaker,0))){
-    SWIG_fail_ptr("FullyConnectedMaker_relu",1,SWIGTYPE_p_FullyConnectedMaker);
-  }
-  
-  result = (FullyConnectedMaker *)(arg1)->relu();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_FullyConnectedMaker,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static void swig_delete_FullyConnectedMaker(void *obj) {
 FullyConnectedMaker *arg1 = (FullyConnectedMaker *) obj;
 delete arg1;
@@ -4041,10 +3845,6 @@ static swig_lua_method swig_FullyConnectedMaker_methods[] = {
     {"numPlanes", _wrap_FullyConnectedMaker_numPlanes}, 
     {"imageSize", _wrap_FullyConnectedMaker_imageSize}, 
     {"biased", _wrap_FullyConnectedMaker_biased}, 
-    {"linear", _wrap_FullyConnectedMaker_linear}, 
-    {"tanh", _wrap_FullyConnectedMaker_tanh}, 
-    {"sigmoid", _wrap_FullyConnectedMaker_sigmoid}, 
-    {"relu", _wrap_FullyConnectedMaker_relu}, 
     {0,0}
 };
 static swig_lua_attribute swig_FullyConnectedMaker_attributes[] = {

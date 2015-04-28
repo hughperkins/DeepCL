@@ -119,9 +119,9 @@ class NeuralNet(_object):
         except: self.this = this
     def addLayer(self, *args): return _PyDeepCL.NeuralNet_addLayer(self, *args)
     def setBatchSize(self, *args): return _PyDeepCL.NeuralNet_setBatchSize(self, *args)
-    def propagate(self, *args): return _PyDeepCL.NeuralNet_propagate(self, *args)
-    def backPropFromLabels(self, *args): return _PyDeepCL.NeuralNet_backPropFromLabels(self, *args)
-    def backProp(self, *args): return _PyDeepCL.NeuralNet_backProp(self, *args)
+    def forward(self, *args): return _PyDeepCL.NeuralNet_forward(self, *args)
+    def backwardFromLabels(self, *args): return _PyDeepCL.NeuralNet_backwardFromLabels(self, *args)
+    def backward(self, *args): return _PyDeepCL.NeuralNet_backward(self, *args)
     def calcNumRight(self, *args): return _PyDeepCL.NeuralNet_calcNumRight(self, *args)
     def getOutputSize(self): return _PyDeepCL.NeuralNet_getOutputSize(self)
     def asString(self): return _PyDeepCL.NeuralNet_asString(self)
@@ -231,10 +231,6 @@ class ConvolutionalMaker(LayerMaker2):
     def filterSize(self, *args): return _PyDeepCL.ConvolutionalMaker_filterSize(self, *args)
     def padZeros(self, *args): return _PyDeepCL.ConvolutionalMaker_padZeros(self, *args)
     def biased(self, *args): return _PyDeepCL.ConvolutionalMaker_biased(self, *args)
-    def tanh(self): return _PyDeepCL.ConvolutionalMaker_tanh(self)
-    def relu(self): return _PyDeepCL.ConvolutionalMaker_relu(self)
-    def sigmoid(self): return _PyDeepCL.ConvolutionalMaker_sigmoid(self)
-    def linear(self): return _PyDeepCL.ConvolutionalMaker_linear(self)
     def clone(self): return _PyDeepCL.ConvolutionalMaker_clone(self)
     __swig_destroy__ = _PyDeepCL.delete_ConvolutionalMaker
     __del__ = lambda self : None;
@@ -256,10 +252,6 @@ class FullyConnectedMaker(LayerMaker2):
     def numPlanes(self, *args): return _PyDeepCL.FullyConnectedMaker_numPlanes(self, *args)
     def imageSize(self, *args): return _PyDeepCL.FullyConnectedMaker_imageSize(self, *args)
     def biased(self, *args): return _PyDeepCL.FullyConnectedMaker_biased(self, *args)
-    def linear(self): return _PyDeepCL.FullyConnectedMaker_linear(self)
-    def tanh(self): return _PyDeepCL.FullyConnectedMaker_tanh(self)
-    def sigmoid(self): return _PyDeepCL.FullyConnectedMaker_sigmoid(self)
-    def relu(self): return _PyDeepCL.FullyConnectedMaker_relu(self)
     def clone(self): return _PyDeepCL.FullyConnectedMaker_clone(self)
     __swig_destroy__ = _PyDeepCL.delete_FullyConnectedMaker
     __del__ = lambda self : None;

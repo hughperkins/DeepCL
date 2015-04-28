@@ -3962,7 +3962,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_NeuralNet_propagate(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_NeuralNet_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float *arg2 = (float *) 0 ;
@@ -3973,18 +3973,18 @@ SWIGINTERN PyObject *_wrap_NeuralNet_propagate(PyObject *SWIGUNUSEDPARM(self), P
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:NeuralNet_propagate",&obj0,&obj1)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OO:NeuralNet_forward",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_NeuralNet, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NeuralNet_propagate" "', argument " "1"" of type '" "NeuralNet *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NeuralNet_forward" "', argument " "1"" of type '" "NeuralNet *""'"); 
   }
   arg1 = reinterpret_cast< NeuralNet * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "NeuralNet_propagate" "', argument " "2"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "NeuralNet_forward" "', argument " "2"" of type '" "float const *""'"); 
   }
   arg2 = reinterpret_cast< float * >(argp2);
-  (arg1)->propagate((float const *)arg2);
+  (arg1)->forward((float const *)arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3992,7 +3992,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_NeuralNet_backPropFromLabels(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_NeuralNet_backwardFromLabels(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float arg2 ;
@@ -4007,23 +4007,23 @@ SWIGINTERN PyObject *_wrap_NeuralNet_backPropFromLabels(PyObject *SWIGUNUSEDPARM
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:NeuralNet_backPropFromLabels",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:NeuralNet_backwardFromLabels",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_NeuralNet, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NeuralNet_backPropFromLabels" "', argument " "1"" of type '" "NeuralNet *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NeuralNet_backwardFromLabels" "', argument " "1"" of type '" "NeuralNet *""'"); 
   }
   arg1 = reinterpret_cast< NeuralNet * >(argp1);
   ecode2 = SWIG_AsVal_float(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NeuralNet_backPropFromLabels" "', argument " "2"" of type '" "float""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NeuralNet_backwardFromLabels" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = static_cast< float >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_int, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "NeuralNet_backPropFromLabels" "', argument " "3"" of type '" "int const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "NeuralNet_backwardFromLabels" "', argument " "3"" of type '" "int const *""'"); 
   }
   arg3 = reinterpret_cast< int * >(argp3);
-  (arg1)->backPropFromLabels(arg2,(int const *)arg3);
+  (arg1)->backwardFromLabels(arg2,(int const *)arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4031,7 +4031,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_NeuralNet_backProp(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_NeuralNet_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   NeuralNet *arg1 = (NeuralNet *) 0 ;
   float arg2 ;
@@ -4046,23 +4046,23 @@ SWIGINTERN PyObject *_wrap_NeuralNet_backProp(PyObject *SWIGUNUSEDPARM(self), Py
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:NeuralNet_backProp",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:NeuralNet_backward",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_NeuralNet, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NeuralNet_backProp" "', argument " "1"" of type '" "NeuralNet *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "NeuralNet_backward" "', argument " "1"" of type '" "NeuralNet *""'"); 
   }
   arg1 = reinterpret_cast< NeuralNet * >(argp1);
   ecode2 = SWIG_AsVal_float(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NeuralNet_backProp" "', argument " "2"" of type '" "float""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "NeuralNet_backward" "', argument " "2"" of type '" "float""'");
   } 
   arg2 = static_cast< float >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "NeuralNet_backProp" "', argument " "3"" of type '" "float const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "NeuralNet_backward" "', argument " "3"" of type '" "float const *""'"); 
   }
   arg3 = reinterpret_cast< float * >(argp3);
-  (arg1)->backProp(arg2,(float const *)arg3);
+  (arg1)->backward(arg2,(float const *)arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -5224,110 +5224,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_ConvolutionalMaker_tanh(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:ConvolutionalMaker_tanh",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConvolutionalMaker_tanh" "', argument " "1"" of type '" "ConvolutionalMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< ConvolutionalMaker * >(argp1);
-  result = (ConvolutionalMaker *)(arg1)->tanh();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_ConvolutionalMaker_relu(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:ConvolutionalMaker_relu",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConvolutionalMaker_relu" "', argument " "1"" of type '" "ConvolutionalMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< ConvolutionalMaker * >(argp1);
-  result = (ConvolutionalMaker *)(arg1)->relu();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_ConvolutionalMaker_sigmoid(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:ConvolutionalMaker_sigmoid",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConvolutionalMaker_sigmoid" "', argument " "1"" of type '" "ConvolutionalMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< ConvolutionalMaker * >(argp1);
-  result = (ConvolutionalMaker *)(arg1)->sigmoid();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_ConvolutionalMaker_linear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  ConvolutionalMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:ConvolutionalMaker_linear",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConvolutionalMaker_linear" "', argument " "1"" of type '" "ConvolutionalMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< ConvolutionalMaker * >(argp1);
-  result = (ConvolutionalMaker *)(arg1)->linear();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_ConvolutionalMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_ConvolutionalMaker_clone(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   ConvolutionalMaker *arg1 = (ConvolutionalMaker *) 0 ;
@@ -5571,110 +5467,6 @@ fail:
     "    FullyConnectedMaker::biased()\n"
     "    FullyConnectedMaker::biased(int)\n");
   return 0;
-}
-
-
-SWIGINTERN PyObject *_wrap_FullyConnectedMaker_linear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:FullyConnectedMaker_linear",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "FullyConnectedMaker_linear" "', argument " "1"" of type '" "FullyConnectedMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< FullyConnectedMaker * >(argp1);
-  result = (FullyConnectedMaker *)(arg1)->linear();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_FullyConnectedMaker_tanh(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:FullyConnectedMaker_tanh",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "FullyConnectedMaker_tanh" "', argument " "1"" of type '" "FullyConnectedMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< FullyConnectedMaker * >(argp1);
-  result = (FullyConnectedMaker *)(arg1)->tanh();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_FullyConnectedMaker_sigmoid(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:FullyConnectedMaker_sigmoid",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "FullyConnectedMaker_sigmoid" "', argument " "1"" of type '" "FullyConnectedMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< FullyConnectedMaker * >(argp1);
-  result = (FullyConnectedMaker *)(arg1)->sigmoid();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_FullyConnectedMaker_relu(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  FullyConnectedMaker *arg1 = (FullyConnectedMaker *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  FullyConnectedMaker *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:FullyConnectedMaker_relu",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "FullyConnectedMaker_relu" "', argument " "1"" of type '" "FullyConnectedMaker *""'"); 
-  }
-  arg1 = reinterpret_cast< FullyConnectedMaker * >(argp1);
-  result = (FullyConnectedMaker *)(arg1)->relu();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  result = result-> clone();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_FullyConnectedMaker, 0 |  0 );
-  
-  return resultobj;
-fail:
-  return NULL;
 }
 
 
@@ -6984,9 +6776,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"new_NeuralNet", _wrap_new_NeuralNet, METH_VARARGS, NULL},
 	 { (char *)"NeuralNet_addLayer", _wrap_NeuralNet_addLayer, METH_VARARGS, NULL},
 	 { (char *)"NeuralNet_setBatchSize", _wrap_NeuralNet_setBatchSize, METH_VARARGS, NULL},
-	 { (char *)"NeuralNet_propagate", _wrap_NeuralNet_propagate, METH_VARARGS, NULL},
-	 { (char *)"NeuralNet_backPropFromLabels", _wrap_NeuralNet_backPropFromLabels, METH_VARARGS, NULL},
-	 { (char *)"NeuralNet_backProp", _wrap_NeuralNet_backProp, METH_VARARGS, NULL},
+	 { (char *)"NeuralNet_forward", _wrap_NeuralNet_forward, METH_VARARGS, NULL},
+	 { (char *)"NeuralNet_backwardFromLabels", _wrap_NeuralNet_backwardFromLabels, METH_VARARGS, NULL},
+	 { (char *)"NeuralNet_backward", _wrap_NeuralNet_backward, METH_VARARGS, NULL},
 	 { (char *)"NeuralNet_calcNumRight", _wrap_NeuralNet_calcNumRight, METH_VARARGS, NULL},
 	 { (char *)"NeuralNet_getOutputSize", _wrap_NeuralNet_getOutputSize, METH_VARARGS, NULL},
 	 { (char *)"NeuralNet_asString", _wrap_NeuralNet_asString, METH_VARARGS, NULL},
@@ -7025,10 +6817,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"ConvolutionalMaker_filterSize", _wrap_ConvolutionalMaker_filterSize, METH_VARARGS, NULL},
 	 { (char *)"ConvolutionalMaker_padZeros", _wrap_ConvolutionalMaker_padZeros, METH_VARARGS, NULL},
 	 { (char *)"ConvolutionalMaker_biased", _wrap_ConvolutionalMaker_biased, METH_VARARGS, NULL},
-	 { (char *)"ConvolutionalMaker_tanh", _wrap_ConvolutionalMaker_tanh, METH_VARARGS, NULL},
-	 { (char *)"ConvolutionalMaker_relu", _wrap_ConvolutionalMaker_relu, METH_VARARGS, NULL},
-	 { (char *)"ConvolutionalMaker_sigmoid", _wrap_ConvolutionalMaker_sigmoid, METH_VARARGS, NULL},
-	 { (char *)"ConvolutionalMaker_linear", _wrap_ConvolutionalMaker_linear, METH_VARARGS, NULL},
 	 { (char *)"ConvolutionalMaker_clone", _wrap_ConvolutionalMaker_clone, METH_VARARGS, NULL},
 	 { (char *)"delete_ConvolutionalMaker", _wrap_delete_ConvolutionalMaker, METH_VARARGS, NULL},
 	 { (char *)"ConvolutionalMaker_swigregister", ConvolutionalMaker_swigregister, METH_VARARGS, NULL},
@@ -7036,10 +6824,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"FullyConnectedMaker_numPlanes", _wrap_FullyConnectedMaker_numPlanes, METH_VARARGS, NULL},
 	 { (char *)"FullyConnectedMaker_imageSize", _wrap_FullyConnectedMaker_imageSize, METH_VARARGS, NULL},
 	 { (char *)"FullyConnectedMaker_biased", _wrap_FullyConnectedMaker_biased, METH_VARARGS, NULL},
-	 { (char *)"FullyConnectedMaker_linear", _wrap_FullyConnectedMaker_linear, METH_VARARGS, NULL},
-	 { (char *)"FullyConnectedMaker_tanh", _wrap_FullyConnectedMaker_tanh, METH_VARARGS, NULL},
-	 { (char *)"FullyConnectedMaker_sigmoid", _wrap_FullyConnectedMaker_sigmoid, METH_VARARGS, NULL},
-	 { (char *)"FullyConnectedMaker_relu", _wrap_FullyConnectedMaker_relu, METH_VARARGS, NULL},
 	 { (char *)"FullyConnectedMaker_clone", _wrap_FullyConnectedMaker_clone, METH_VARARGS, NULL},
 	 { (char *)"delete_FullyConnectedMaker", _wrap_delete_FullyConnectedMaker, METH_VARARGS, NULL},
 	 { (char *)"FullyConnectedMaker_swigregister", FullyConnectedMaker_swigregister, METH_VARARGS, NULL},

@@ -73,9 +73,9 @@ public:
     NeuralNet( int numPlanes, int imageSize );
     void addLayer( LayerMaker2 *maker );
     void setBatchSize( int batchSize );
-    void propagate( float const*images);
-    void backPropFromLabels( float learningRate, int const *labels);
-    void backProp( float learningRate, float const *expectedOutput);
+    void forward( float const*images);
+    void backwardFromLabels( float learningRate, int const *labels);
+    void backward( float learningRate, float const *expectedOutput);
     int calcNumRight( int const *labels );
 /*    int getOutputSize();*/
 /*    float *getOutput();*/
@@ -205,10 +205,6 @@ public:
     ConvolutionalMaker *padZeros( bool value );
     ConvolutionalMaker *biased();
     ConvolutionalMaker *biased(int _biased);
-    ConvolutionalMaker *tanh();
-    ConvolutionalMaker *relu();
-    ConvolutionalMaker *sigmoid();
-    ConvolutionalMaker *linear();
     virtual NormalizationLayerMaker *clone() const;
 //    virtual Layer *createLayer( Layer *previousLayer );
 };
@@ -220,10 +216,6 @@ public:
     FullyConnectedMaker *imageSize(int imageSize);
     FullyConnectedMaker *biased();
     FullyConnectedMaker *biased(int _biased);
-    FullyConnectedMaker *linear();
-    FullyConnectedMaker *tanh();
-    FullyConnectedMaker *sigmoid();
-    FullyConnectedMaker *relu();
     virtual NormalizationLayerMaker *clone() const;
 //    virtual Layer *createLayer( Layer *previousLayer );
 };
