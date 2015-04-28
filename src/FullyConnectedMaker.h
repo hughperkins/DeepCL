@@ -40,30 +40,6 @@ public:
         this->_biased = _biased;
         return this;
     }    
-//    PUBLICAPI FullyConnectedMaker *linear() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new LinearActivation();
-//        return this;
-//    }
-//    PUBLICAPI FullyConnectedMaker *tanh() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new TanhActivation();
-//        return this;
-//    }
-//    PUBLICAPI FullyConnectedMaker *sigmoid() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new SigmoidActivation();
-//        return this;
-//    }
-//    PUBLICAPI FullyConnectedMaker *relu() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new ReluActivation();
-//        return this;
-//    }
-//    PUBLICAPI FullyConnectedMaker *fn(ActivationFunction const*_fn) {
-//        this->_activationFunction = _fn;
-//        return this;
-//    }
     PUBLICAPI static FullyConnectedMaker *instance() {
         return new FullyConnectedMaker();
     }

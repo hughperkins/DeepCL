@@ -423,6 +423,21 @@ TEST( testbackward, conv1 ) {
     delete net;
 }
 
+TEST( testbackward, fc1 ) {
+    NeuralNet *net = new NeuralNet( 2, 4 );
+    net->addLayer( ForceBackpropLayerMaker::instance() );
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(2)->imageSize(3)->biased(0) );
+    net->addLayer( SquareLossMaker::instance() );
+//    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
+                          // so that dont have to make filtersize == input image size?
+    cout << net->asString() << endl;
+
+    net->setBatchSize(4);
+
+    checkLayer( net, 2 );
+    delete net;
+}
+
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {

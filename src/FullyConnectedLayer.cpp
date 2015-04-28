@@ -40,6 +40,9 @@ VIRTUAL void FullyConnectedLayer::setBatchSize( int batchSize ) {
     convolutionalLayer->setBatchSize( batchSize );
     this->batchSize = batchSize;
 }
+VIRTUAL int FullyConnectedLayer::getOutputCubeSize() const {
+    return numPlanes * imageSize * imageSize;
+}
 VIRTUAL int FullyConnectedLayer::getOutputImageSize() const {
     return imageSize;
 }
@@ -54,6 +57,10 @@ VIRTUAL void FullyConnectedLayer::persistToArray(float *array) {
 }
 VIRTUAL void FullyConnectedLayer::unpersistFromArray(float const*array) {
     convolutionalLayer->unpersistFromArray( array );
+}
+VIRTUAL void FullyConnectedLayer::setWeights( float *weights, float *biasWeights ) {
+    convolutionalLayer->initWeights( weights );
+    convolutionalLayer->initBiasWeights( biasWeights );
 }
 VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
     return convolutionalLayer->getWeightsSize();

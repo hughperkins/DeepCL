@@ -50,7 +50,6 @@ VIRTUAL float *BackwardCpu::backward( int batchSize, float *inputs,
                 int maxFilterRow = std::min( dim.filterSize - 1, upstreamRow + margin );
                 for( int upstreamCol = 0; upstreamCol < dim.inputImageSize; upstreamCol++ ) {
                     float sumWeightTimesGradOutput = 0;
-                    //  TODO: check this :-)
                     // aggregate over [outPlane][outRow][outCol]
                     int minFilterCol = std::max( 0, upstreamCol + margin - (dim.outputImageSize -1) );
                     int maxFilterCol = std::min( dim.filterSize - 1, upstreamCol + margin );
