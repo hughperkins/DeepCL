@@ -73,12 +73,12 @@ BackwardGpuCached::BackwardGpuCached( OpenCLHelper *cl, LayerDimensions dim ) :
     options += ""; // " -D " + upstreamFn->getDefineName();
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/backproperrorsv2cached.cl", "calcGradInputCached", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/backward_cached.cl", "calcGradInputCached", 'options' )
     // # stringify.write_kernel2( "broadcastMultiply", "cl/backproperrorsv2.cl", "broadcast_multiply", 'options' )
     // # stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
     // ]]]
-    // generated using cog, from cl/backproperrorsv2cached.cl:
+    // generated using cog, from cl/backward_cached.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -159,7 +159,7 @@ BackwardGpuCached::BackwardGpuCached( OpenCLHelper *cl, LayerDimensions dim ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "calcGradInputCached", options, "cl/backproperrorsv2cached.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "calcGradInputCached", options, "cl/backward_cached.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel( "backproperrorsv2.cl", "calcGradInput", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );

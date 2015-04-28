@@ -48,12 +48,12 @@ BackwardGpuNaive::BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim ) :
     options += ""; // " -D " + upstreamFn->getDefineName();
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/backproperrorsv2.cl", "calcGradInput", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/backward.cl", "calcGradInput", 'options' )
     // # stringify.write_kernel2( "broadcastMultiply", "cl/backproperrorsv2.cl", "broadcast_multiply", 'options' )
     // # stringify.write_kernel2( "applyActivationDeriv", "cl/applyActivationDeriv.cl", "applyActivationDeriv", 'options' )
     // # stringify.write_kernel( "kernelSource", "ClConvolve.cl")
     // ]]]
-    // generated using cog, from cl/backproperrorsv2.cl:
+    // generated using cog, from cl/backward.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014 hughperkins at gmail\n" 
     "//\n" 
@@ -121,7 +121,7 @@ BackwardGpuNaive::BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options, "cl/backproperrorsv2.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options, "cl/backward.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel( "backproperrorsv2.cl", "calcGradInput", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );
