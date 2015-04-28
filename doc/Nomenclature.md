@@ -16,3 +16,12 @@ Some verbs are:
 * forward: calculate the output, given the input
 * backward: calculate gradInput, given gradOutput
 
+(Note: these names are a work in progress, there are still plenty of old names about, like:
+* errorsForUpstream => gradInput
+* outputFromUpstream => input
+* errors => gradOutput
+* propagate => forward
+* backprop => backward
+* etc ...
+)
+
