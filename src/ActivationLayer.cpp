@@ -122,6 +122,7 @@ VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
     this->allocatedSize = batchSize;
     output = new float[ getOutputSize() ];
     outputWrapper = cl->wrap( getOutputSize(), output );
+    outputWrapper->createOnDevice();
     gradInput = new float[ previousLayer->getOutputSize() ];
     gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
     gradInputWrapper->createOnDevice();
@@ -134,6 +135,7 @@ VIRTUAL float *ActivationLayer::getOutput() {
         outputWrapper->copyToHost();
         outputCopiedToHost = true;
     }
+    cout << "getOutput output[0] " << output[0] << " output[1] " << output[1] << endl;
     return output;
 }
 VIRTUAL bool ActivationLayer::needsBackProp() {
@@ -193,30 +195,30 @@ VIRTUAL void ActivationLayer::forward() {
 VIRTUAL void ActivationLayer::backward( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
-    CLWrapper *imagesWrapper = 0;
-    if( previousLayer->hasOutputWrapper() ) {
-        imagesWrapper = previousLayer->getOutputWrapper();
-    } else {
-        imagesWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
-        imagesWrapper->copyToDevice();
-    }
+//    CLWrapper *imagesWrapper = 0;
+//    if( previousLayer->hasOutputWrapper() ) {
+//        imagesWrapper = previousLayer->getOutputWrapper();
+//    } else {
+//        imagesWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
+//        imagesWrapper->copyToDevice();
+//    }
 
     CLWrapper *gradOutputWrapper = 0;
-    bool weOwnErrorsWrapper = false;
+    bool weOwnGradOutputWrapper = false;
     if( nextLayer->providesGradInputWrapper() ) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
         gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
         gradOutputWrapper->copyToDevice();
-        weOwnErrorsWrapper = true;
+        weOwnGradOutputWrapper = true;
     }
 
-    activationBackpropImpl->backward( batchSize, imagesWrapper, gradOutputWrapper, gradInputWrapper );
+    activationBackpropImpl->backward( batchSize, outputWrapper, gradOutputWrapper, gradInputWrapper );
 
-    if( !previousLayer->hasOutputWrapper() ) {
-        delete imagesWrapper;
-    }
-    if( weOwnErrorsWrapper ) {
+//    if( !previousLayer->hasOutputWrapper() ) {
+//        delete imagesWrapper;
+//    }
+    if( weOwnGradOutputWrapper ) {
         delete gradOutputWrapper;
     }
 }

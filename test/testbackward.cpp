@@ -315,7 +315,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     float *biasWeights = new float[biasWeightsSize];
 
     cout << "layer " << layer->asString() << endl;
-    WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 0, input, inputTotalSize, -1.0f, 1.0f );
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
     WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
     WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
@@ -354,7 +354,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
         float grad = net->getLayer(2)->getGradInput()[inputIndex];
 //        cout << "grad=" << grad << endl;
         // tweak slightly
-        float newValue = oldValue * 1.001f;
+        float newValue = oldValue * 1.01f;
         float inputDelta = newValue - oldValue;
         float predictedLossChange = inputDelta * grad;
         input[inputIndex] = newValue;
@@ -362,7 +362,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
         // forwardProp
         net->forward( input );
         input[inputIndex] = oldValue;
-//        net->printOutput();
+        net->printOutput();
         float lossAfter = net->calcLoss( expectedOutput );
         float lossChange = lossAfter - lossBefore;
         cout << "idx=" << inputIndex << " predicted losschange=" << predictedLossChange << " actual=" << lossChange << endl;
@@ -444,7 +444,7 @@ TEST( testbackward, fc1 ) {
 TEST( testbackward, act1 ) {
     NeuralNet *net = new NeuralNet( 1, 2 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
-    net->addLayer( ActivationMaker::instance()->linear() );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
 //    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
                           // so that dont have to make filtersize == input image size?

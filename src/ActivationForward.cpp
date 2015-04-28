@@ -53,6 +53,7 @@ VIRTUAL void ActivationForward::forward( int batchSize, float *input, float *out
     CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     inputWrapper->copyToDevice();
+    outputWrapper->createOnDevice();
     forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();    
 

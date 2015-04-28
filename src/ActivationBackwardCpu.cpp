@@ -31,7 +31,7 @@ VIRTUAL void ActivationBackwardCpu::backward( int batchSize, float *inputs, floa
 //        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
 //            << " error=" << errors[i];
         gradInput[i] = fn->calcDerivative( inputs[i] ) * gradOutput[i];
-//        cout << " gradInput=" << gradInput[i] << endl;
+        cout << " gradInput=" << gradInput[i] << endl;
     }
 }
 VIRTUAL void ActivationBackwardCpu::backward( int batchSize, CLWrapper *inputsWrapper,
