@@ -24,9 +24,7 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC Backward *Backward::instance(OpenCLHelper *cl, LayerDimensions dim ) {
-    return new BackwardCpu( cl, dim ); // TODO: remove this line, so uses gpu again
     if( ( dim.inputImageSize - dim.filterSize > 6 ) && square( dim.inputImageSize ) <= cl->getMaxWorkgroupSize() ) {
-//        return new BackwardGpuNaive( cl, dim );
         return new BackwardGpuCached( cl, dim );
     } else {
         return new BackwardGpuNaive( cl, dim );
