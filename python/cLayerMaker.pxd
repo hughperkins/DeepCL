@@ -10,6 +10,15 @@ cdef extern from "InputLayerMaker.h":
         @staticmethod
         InputLayerMaker *instance() except +
 
+cdef extern from "ActivationMaker.h":
+    cdef cppclass ActivationMaker(LayerMaker2):
+        ActivationMaker *relu() except +
+        ActivationMaker *tanh() except +
+        ActivationMaker *linear() except +
+        ActivationMaker *sigmoid() except +
+        @staticmethod
+        ActivationMaker *instance() except +
+
 cdef extern from "NormalizationLayerMaker.h":
     cdef cppclass NormalizationLayerMaker(LayerMaker2):
         NormalizationLayerMaker *translate( float translate ) except +

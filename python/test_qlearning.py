@@ -168,10 +168,13 @@ def go():
 
     net = PyDeepCL.NeuralNet()
     net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size) )
-    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased().relu() )
-    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased().relu() )
-    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(100).imageSize(1).biased().tanh() )
-    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(numActions).imageSize(1).biased().linear() )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased() )
+    net.addLayer( PyDeepCL.ActivationMaker().relu() )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased() )
+    net.addLayer( PyDeepCL.ActivationMaker().relu() )
+    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(100).imageSize(1).biased() )
+    net.addLayer( PyDeepCL.ActivationMaker().tanh() )
+    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(numActions).imageSize(1).biased() )
     net.addLayer( PyDeepCL.SquareLossMaker() )
     print( net.asString() )
 

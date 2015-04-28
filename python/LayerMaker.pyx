@@ -84,6 +84,27 @@ cdef class PoolingMaker(LayerMaker2):
     def instance():
         return PoolingMaker()
 
+cdef class ActivationMaker(LayerMaker2):
+    cdef cDeepCL.ActivationMaker *thisptr
+    def __cinit__( self ):
+        self.thisptr = new cDeepCL.ActivationMaker()
+        self.baseptr = self.thisptr
+    def relu(self):
+        self.thisptr.relu()
+        return self
+    def sigmoid(self):
+        self.thisptr.sigmoid()
+        return self
+    def tanh(self):
+        self.thisptr.tanh()
+        return self
+    def linear(self):
+        self.thisptr.linear()
+        return self
+    @staticmethod
+    def instance():
+        return ActivationMaker()
+
 cdef class ForceBackpropMaker(LayerMaker2):
     cdef cDeepCL.ForceBackpropLayerMaker *thisptr
     def __cinit__( self ):
