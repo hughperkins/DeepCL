@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "BackpropWeights2Cpu.h"
+#include "BackpropWeightsCpu.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
@@ -16,13 +16,13 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropWeights2Cpu::BackpropWeights2Cpu( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropWeights2( cl, dim )
+BackpropWeightsCpu::BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropWeights( cl, dim )
             {
 }
-VIRTUAL BackpropWeights2Cpu::~BackpropWeights2Cpu() {
+VIRTUAL BackpropWeightsCpu::~BackpropWeightsCpu() {
 }
-VIRTUAL void BackpropWeights2Cpu::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     gradOutputWrapper->copyToHost();
     imagesWrapper->copyToHost();
     float *gradBiasWeights = 0;
@@ -37,10 +37,10 @@ VIRTUAL void BackpropWeights2Cpu::calcGradWeights( int batchSize, float learning
         gradBiasWeightsWrapper->copyToDevice();
     }
 }
-VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate, float *gradOutput,
+VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningRate, float *gradOutput,
     float *input, float *gradWeights, float *gradBiasWeights ) {
 
-    StatefulTimer::instance()->timeCheck(" BackpropWeights2Cpu start" );
+    StatefulTimer::instance()->timeCheck(" BackpropWeightsCpu start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
@@ -96,6 +96,6 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
             }
         }
     }
-    StatefulTimer::instance()->timeCheck(" BackpropWeights2Cpu end" );
+    StatefulTimer::instance()->timeCheck(" BackpropWeightsCpu end" );
 }
 

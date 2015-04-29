@@ -1,4 +1,4 @@
-// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail
+// Copyright Hugh Perkins 2014 hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -6,23 +6,24 @@
 
 #pragma once
 
-#include "BackpropWeights2.h"
+#include "BackpropWeights.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class BackpropWeights2Naive : public BackpropWeights2 {
+class BackpropWeightsCpu : public BackpropWeights {
 public:
-    CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~BackpropWeights2Naive();
+    BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim );
+    VIRTUAL ~BackpropWeightsCpu();
     VIRTUAL void calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper );
-    BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions dim );
+    VIRTUAL void backpropWeights( int batchSize, float learningRate, float *gradOutput,
+    float *input, float *gradWeights, float *gradBiasWeights );
 
     // [[[end]]]
 };

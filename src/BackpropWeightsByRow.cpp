@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "BackpropWeights2ByRow.h"
+#include "BackpropWeightsByRow.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
@@ -20,13 +20,13 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-VIRTUAL BackpropWeights2ByRow::~BackpropWeights2ByRow() {
+VIRTUAL BackpropWeightsByRow::~BackpropWeightsByRow() {
     delete kernel;
     delete reduce;
     delete perElementAdd;
 }
-VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropWeights2ByRow start" );
+VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+    StatefulTimer::instance()->timeCheck("BackpropWeightsByRow start" );
 
     cout << "input buffer:" << endl;
     PrintBuffer::printFloats( cl, imagesWrapper, batchSize * dim.inputImageSize, dim.inputImageSize );
@@ -74,7 +74,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
         biasWeights2Wrapper->createOnDevice();
     }
 
-    StatefulTimer::instance()->timeCheck("BackpropWeights2ByRow allocated buffers and wrappers" );
+    StatefulTimer::instance()->timeCheck("BackpropWeightsByRow allocated buffers and wrappers" );
 
     kernel
        ->in(learningMultiplier)
@@ -133,16 +133,16 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     delete[] weights2;
     delete[] weights1;
 
-    StatefulTimer::instance()->timeCheck("BackpropWeights2ByRow end" );
+    StatefulTimer::instance()->timeCheck("BackpropWeightsByRow end" );
 }
-BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropWeights2( cl, dim )
+BackpropWeightsByRow::BackpropWeightsByRow( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropWeights( cl, dim )
             {
     workgroupSize = std::max( 32, dim.filterSize ); // no point in wasting cores...
     numWorkgroups = dim.inputPlanes * dim.numFilters * dim.outputImageSize;
     cout << "numWorkgroups " << numWorkgroups << " workgropuSize=" << workgroupSize << endl;
     if( workgroupSize > cl->getMaxWorkgroupSize() ) {
-        throw runtime_error("filtersize larger than maxworkgroupsize, so cannot use BackpropWeights2ByRow kernel");
+        throw runtime_error("filtersize larger than maxworkgroupsize, so cannot use BackpropWeightsByRow kernel");
     }    
 
     std::string options = dim.buildOptionsString();

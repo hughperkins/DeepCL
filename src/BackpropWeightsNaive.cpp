@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "BackpropWeights2Naive.h"
+#include "BackpropWeightsNaive.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
@@ -16,12 +16,12 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-VIRTUAL BackpropWeights2Naive::~BackpropWeights2Naive() {
+VIRTUAL BackpropWeightsNaive::~BackpropWeightsNaive() {
 //    cout << "~backpropgradWeights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeights2Naive::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropWeights2Naive start" );
+VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
@@ -42,10 +42,10 @@ VIRTUAL void BackpropWeights2Naive::calcGradWeights( int batchSize, float learni
 
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("BackpropWeights2Naive end" );
+    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive end" );
 }
-BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropWeights2( cl, dim )
+BackpropWeightsNaive::BackpropWeightsNaive( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropWeights( cl, dim )
             {
     std::string options = dim.buildOptionsString();
 

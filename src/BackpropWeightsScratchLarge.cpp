@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "BackpropWeights2ScratchLarge.h"
+#include "BackpropWeightsScratchLarge.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
@@ -18,11 +18,11 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-VIRTUAL BackpropWeights2ScratchLarge::~BackpropWeights2ScratchLarge() {
+VIRTUAL BackpropWeightsScratchLarge::~BackpropWeightsScratchLarge() {
     delete kernel;
 }
-VIRTUAL void BackpropWeights2ScratchLarge::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropWeights2ScratchLarge start" );
+VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+    StatefulTimer::instance()->timeCheck("BackpropWeightsScratchLarge start" );
 
     int workgroupSize = 32 * ( ( square(dim.filterSize) + 32 - 1 ) / 32 ); // quantize to nearest 32
 //    int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
@@ -50,10 +50,10 @@ VIRTUAL void BackpropWeights2ScratchLarge::calcGradWeights( int batchSize, float
 
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("BackpropWeights2ScratchLarge end" );
+    StatefulTimer::instance()->timeCheck("BackpropWeightsScratchLarge end" );
 }
-BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, LayerDimensions dim ) :
-        BackpropWeights2( cl, dim )
+BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( OpenCLHelper *cl, LayerDimensions dim ) :
+        BackpropWeights( cl, dim )
             {
     // [[[cog
     // import stringify
@@ -108,9 +108,9 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/BackpropWeights2ScratchLarge.cl", "backprop_floats_withscratch_dobias_striped", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/BackpropWeightsScratchLarge.cl", "backprop_floats_withscratch_dobias_striped", 'options' )
     // ]]]
-    // generated using cog, from cl/BackpropWeights2ScratchLarge.cl:
+    // generated using cog, from cl/BackpropWeightsScratchLarge.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014,2015 hughperkins at gmail\n" 
     "//\n" 
@@ -259,7 +259,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "backprop_floats_withscratch_dobias_striped", options, "cl/BackpropWeights2ScratchLarge.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "backprop_floats_withscratch_dobias_striped", options, "cl/BackpropWeightsScratchLarge.cl" );
     // [[[end]]]
 }
 

@@ -141,8 +141,8 @@ deepcl_sourcestring = """
     ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
     Forward4.cpp 
     Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
-    BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
-    BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
+    BackpropWeights.cpp BackpropWeightsCpu.cpp BackpropWeightsNaive.cpp 
+    BackpropWeightsScratch.cpp BackpropWeightsScratchLarge.cpp
     FullyConnectedLayer.cpp  EpochMaker.cpp
     PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
     PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp

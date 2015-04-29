@@ -1,25 +1,22 @@
 #pragma once
 
-#include "BackpropWeights2.h"
+#include "BackpropWeights.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class BackpropWeights2ScratchLarge : public BackpropWeights2 {
+class BackpropWeightsScratch : public BackpropWeights {
 public:
     CLKernel *kernel;
-    int numStripes;
-    int inputStripeOuterSize;
-    int outputStripeSize;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~BackpropWeights2ScratchLarge();
+    VIRTUAL ~BackpropWeightsScratch();
     VIRTUAL void calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper );
-    BackpropWeights2ScratchLarge( OpenCLHelper *cl, LayerDimensions dim );
+    BackpropWeightsScratch( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

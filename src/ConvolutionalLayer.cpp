@@ -10,7 +10,7 @@
 #include "Forward.h"
 #include "WeightsHelper.h"
 #include "Backward.h"
-#include "BackpropWeights2.h"
+#include "BackpropWeights.h"
 #include "SGD.h"
 
 using namespace std;
@@ -66,7 +66,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
     forwardimpl = Forward::instance( cl, dim );
-    backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
+    backpropWeightsImpl = BackpropWeights::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
         backwardImpl = Backward::instance( cl, dim );
     }

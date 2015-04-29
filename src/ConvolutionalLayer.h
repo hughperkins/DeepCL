@@ -20,7 +20,7 @@
 
 class Forward;
 class Backward;
-class BackpropWeights2;
+class BackpropWeights;
 class ConvolutionalMaker;
 
 class ConvolutionalLayer : public Layer {
@@ -30,7 +30,7 @@ public:
     Trainer *biasWeightsTrainer; // OWNED by us, we should delete (if non-zero)
 
     Forward *forwardimpl;
-    BackpropWeights2 *backpropWeightsImpl;
+    BackpropWeights *backpropWeightsImpl;
     Backward *backwardImpl;
 
     LayerDimensions dim;

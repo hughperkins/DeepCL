@@ -17,13 +17,13 @@
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT BackpropWeights2 {
+class DeepCL_EXPORT BackpropWeights {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
     bool debug; // = false;
 
-    virtual ~BackpropWeights2() {}
+    virtual ~BackpropWeights() {}
     virtual void calcGradWeights( int batchSize, float learningRate, CLWrapper *gradOutputWrapper, CLWrapper *inputDataWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) = 0;
 
     // [[[cog
@@ -31,10 +31,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropWeights2( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC BackpropWeights2 *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC BackpropWeights2 *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC BackpropWeights2 *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC BackpropWeights *instance(OpenCLHelper *cl, LayerDimensions dim );
+    STATIC BackpropWeights *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC BackpropWeights *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
     VIRTUAL void calcGradWeights( int batchSize, float learningRate, float *gradOutput, float *inputs, float *gradWeights, float *gradBiasWeights );
     float learningRateToMultiplier( int batchSize, float rate );
 

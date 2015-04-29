@@ -10,8 +10,8 @@
 
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
-#include "BackpropWeights2.h"
-#include "BackpropWeights2Naive.h"
+#include "BackpropWeights.h"
+#include "BackpropWeightsNaive.h"
 
 #include "test/myasserts.h"
 #include "gtest/gtest.h"
@@ -283,7 +283,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     memset( biasWeights, 0, sizeof(float) * 10 );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceForTest( cl, dim );
+    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( cl, dim );
     backpropWeightsImpl->calcGradWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
     delete backpropWeightsImpl;
     
@@ -575,11 +575,11 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     weights0Wrap->copyToDevice();
     weights1Wrap->copyToDevice();
     
-    BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, cl, dim );
+    BackpropWeights *backpropWeightsImpl0 = BackpropWeights::instanceSpecific( 0, cl, dim );
     backpropWeightsImpl0->debug = true;
     backpropWeightsImpl0->calcGradWeights( batchSize, learningRate,
         errorsWrap, inputWrap, weights0Wrap, 0 );
-    BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 3, cl, dim );
+    BackpropWeights *backpropWeightsImpl1 = BackpropWeights::instanceSpecific( 3, cl, dim );
     backpropWeightsImpl1->debug = true;
     backpropWeightsImpl1->calcGradWeights( batchSize, learningRate,
         errorsWrap, inputWrap, weights1Wrap, 0 );
@@ -755,12 +755,12 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
     float *biasWeightsByInstance[2];
     biasWeightsByInstance[0] = biasWeights1;
     biasWeightsByInstance[1] = biasWeights2;
-    BackpropWeights2 *instanceObjects[2];
-    instanceObjects[0] = BackpropWeights2::instanceSpecific( instance0, cl, dim );
-    instanceObjects[1] = BackpropWeights2::instanceSpecific( instance1, cl, dim );
+    BackpropWeights *instanceObjects[2];
+    instanceObjects[0] = BackpropWeights::instanceSpecific( instance0, cl, dim );
+    instanceObjects[1] = BackpropWeights::instanceSpecific( instance1, cl, dim );
     for( int instance = 0; instance < 2; instance++ ) {
         Timer timer;
-        BackpropWeights2 *backpropWeightsImpl = instanceObjects[instance];
+        BackpropWeights *backpropWeightsImpl = instanceObjects[instance];
         backpropWeightsImpl->debug = true;
         for( int it = 0; it < its; it++ ) {
             backpropWeightsImpl->calcGradWeights( batchSize, learningRate,
@@ -944,7 +944,7 @@ void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     
-    BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceSpecific( instance, cl, dim );
+    BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceSpecific( instance, cl, dim );
     Timer timer;
     backpropWeightsImpl->calcGradWeights( batchSize, 1.0f,
         errors, inputData, weights, biasWeights );
