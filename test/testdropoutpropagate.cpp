@@ -43,7 +43,7 @@ TEST( testdropoutforward, basic ) {
     int numPlanes = 1;
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
                              1,0,1
@@ -54,11 +54,11 @@ TEST( testdropoutforward, basic ) {
                      3, 8.2f, 4.1f,
                      3, -33.1f, 14.2f,
     };
-    int outputSize = dropoutPropagate->getOutputSize( batchSize );
+    int outputSize = dropoutForward->getOutputSize( batchSize );
     EXPECT_FLOAT_NEAR( outputSize, imageSize * imageSize );
     float *output = new float[outputSize];
 
-    dropoutPropagate->forward( batchSize, mask, data, output );
+    dropoutForward->forward( batchSize, mask, data, output );
 
     EXPECT_FLOAT_NEAR( 1, output[0] );
     EXPECT_FLOAT_NEAR( 0, output[1] );
@@ -72,7 +72,7 @@ TEST( testdropoutforward, basic ) {
     EXPECT_FLOAT_NEAR( 0, output[7] );
     EXPECT_FLOAT_NEAR( 14.2f, output[8] );
 
-    delete dropoutPropagate;
+    delete dropoutForward;
     delete[] output;
     delete cl;
 }
@@ -82,7 +82,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -108,10 +108,10 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
         1,1,
         0,1
     };
-    int outputSize = dropoutPropagate->getOutputSize( batchSize );
+    int outputSize = dropoutForward->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
-    dropoutPropagate->forward( batchSize, mask, data, output );
+    dropoutForward->forward( batchSize, mask, data, output );
 
     EXPECT_FLOAT_NEAR( output[0], 0 );
     EXPECT_FLOAT_NEAR( output[1], 2 );
@@ -122,7 +122,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     EXPECT_FLOAT_NEAR( output[14], 0 );
     EXPECT_FLOAT_NEAR( output[15], 5 );
 
-    delete dropoutPropagate;
+    delete dropoutForward;
     delete[] output;
     delete cl;
 }
@@ -132,7 +132,7 @@ TEST( testdropoutforward, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -144,7 +144,7 @@ TEST( testdropoutforward, fromwrappers ) {
             1,0,1,0,
             0,0,1,1
     };
-    int outputSize = dropoutPropagate->getOutputSize( batchSize );
+    int outputSize = dropoutForward->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
@@ -155,7 +155,7 @@ TEST( testdropoutforward, fromwrappers ) {
     maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
 
-    dropoutPropagate->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
+    dropoutForward->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
 
     outputWrapper->copyToHost();
 
@@ -171,7 +171,7 @@ TEST( testdropoutforward, fromwrappers ) {
     delete maskWrapper;
     delete inputWrapper;
     delete outputWrapper;
-    delete dropoutPropagate;
+    delete dropoutForward;
     delete[] output;
     delete cl;
 }
@@ -242,11 +242,11 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    DropoutForward *dropoutPropagate0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
-    DropoutForward *dropoutPropagate1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutForward *dropoutForward0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutForward *dropoutForward1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = dropoutPropagate0->getOutputSize( batchSize );
+    int outputSize = dropoutForward0->getOutputSize( batchSize );
 
     unsigned char *mask = new unsigned char[ inputSize ];
     float *input = new float[ inputSize ];
@@ -269,7 +269,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    dropoutPropagate0->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
+    dropoutForward0->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
     float *output0 = new float[ outputSize ];
@@ -281,7 +281,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    dropoutPropagate1->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
+    dropoutForward1->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
     
     int numErrors = 0;
@@ -335,8 +335,8 @@ void compareSpecific( CompareSpecificArgs args ) {
     delete maskWrapper;
     delete inputWrapper;
     delete outputWrapper;
-    delete dropoutPropagate0;
-    delete dropoutPropagate1;
+    delete dropoutForward0;
+    delete dropoutForward1;
     delete[] output0;
     delete[] output;
     delete[] input;

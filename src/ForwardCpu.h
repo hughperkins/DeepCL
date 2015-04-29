@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "Propagate.h"
+#include "Forward.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class PropagateCpu : public Propagate {
+class ForwardCpu : public Forward {
 public:
 
     // [[[cog
@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PropagateCpu( OpenCLHelper *cl, LayerDimensions dim );
+    ForwardCpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL void forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
     VIRTUAL float *forward( int batchSize, float *inputData, float *weights, float *biasWeights );
 

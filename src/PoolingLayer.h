@@ -28,7 +28,7 @@ public:
     const int outputImageSize;
 
     OpenCLHelper *const cl; // NOT owned by us
-    PoolingForward *poolingPropagateImpl;
+    PoolingForward *poolingForwardImpl;
     PoolingBackward *poolingBackpropImpl;
 
     float *output;

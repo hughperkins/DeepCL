@@ -1,23 +1,22 @@
 #pragma once
 
-#include "Propagate.h"
+#include "Forward.h"
 
-class PropagateByInputPlane : public Propagate {
+class Forward4 : public Forward {
 public:
     CLKernel *kernel;
-    CLKernel *reduceSegments;
-    CLKernel *repeatedAdd;
-//    CLKernel *activate;
+    int workgroupSize;
+    int pixelsPerThread;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~PropagateByInputPlane();
+    VIRTUAL ~Forward4();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
-    PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim );
+    Forward4( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

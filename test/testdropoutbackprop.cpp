@@ -81,8 +81,8 @@ TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
 
     dropoutBackprop->backward( batchSize, mask, errors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ dropoutPropagate->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutPropagate->getInputSize( batchSize ) ];
+//    float *expectedErrorsForUpstream = new float[ dropoutForward->getInputSize( batchSize ) ];
+//    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutForward->getInputSize( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         3,
         5,
@@ -186,7 +186,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int dropoutSize = 2;
     OpenCLHelper cl;
-    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, dropoutSize );
+    DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, dropoutSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -199,11 +199,11 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = dropoutPropagate->getOutputSize( batchSize );
+    int outputSize = dropoutForward->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    dropoutPropagate->forward( batchSize, data, selectors, output );
+    dropoutForward->forward( batchSize, data, selectors, output );
 
     EXPECT_FLOAT_NEAR( selectors[0], 2 );
     EXPECT_FLOAT_NEAR( selectors[1], 1 );
@@ -215,7 +215,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     EXPECT_FLOAT_NEAR( output[2], 33 );
     EXPECT_FLOAT_NEAR( output[3], 37.4f );
 
-    delete dropoutPropagate;
+    delete dropoutForward;
     delete[] selectors;
     delete[] output;
 }

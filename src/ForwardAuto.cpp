@@ -8,16 +8,16 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "PropagateAuto.h"
+#include "ForwardAuto.h"
 #include "stringhelper.h"
-#include "PropagateCpu.h"
-#include "Propagate1.h"
-#include "Propagate2.h"
-#include "Propagate3.h"
-#include "Propagate4.h"
-#include "PropagateFc.h"
-#include "PropagateByInputPlane.h"
-#include "PropagateExperimental.h"
+#include "ForwardCpu.h"
+#include "Forward1.h"
+#include "Forward2.h"
+#include "Forward3.h"
+#include "Forward4.h"
+#include "ForwardFc.h"
+#include "ForwardByInputPlane.h"
+#include "ForwardExperimental.h"
 #include "StatefulTimer.h"
 #include "Timer.h"
 
@@ -29,20 +29,20 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-PropagateAuto::PropagateAuto( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardAuto::ForwardAuto( OpenCLHelper *cl, LayerDimensions dim ) :
 //        dim( layerDimensions ),
 //        cl( cl ),
 //        fn( fn ),
-        Propagate( cl, dim ),
+        Forward( cl, dim ),
         milliseconds( 0 ),
         valid( 0 ),
         chosenIndex( -1 ),
         instances( 0 )
          {
-    num = Propagate::getNumImplementations();
+    num = Forward::getNumImplementations();
     milliseconds = new int[ num];
     valid = new bool[ num ];
-    instances = new Propagate *[ num ];
+    instances = new Forward *[ num ];
     for( int i = 0; i < num; i++ ) {
         instances[i] = 0;
         valid[i] = false;
@@ -50,28 +50,28 @@ PropagateAuto::PropagateAuto( OpenCLHelper *cl, LayerDimensions dim ) :
     }
     nextIndex = 0;
 }
-VIRTUAL PropagateAuto::~PropagateAuto() {
+VIRTUAL ForwardAuto::~ForwardAuto() {
     for( int i = 0; i < num; i++ ) {
         if( instances[i] != 0 ) {
             delete instances[i];
         }
     }
 }
-VIRTUAL void PropagateAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
+VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
         CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
-//    Propagate *instance = 0;
-//    cout << "PropagateAuto::forward" << endl;
+//    Forward *instance = 0;
+//    cout << "ForwardAuto::forward" << endl;
     while( chosenIndex == -1 && nextIndex < num ) {
         int thisIndex = nextIndex;
         nextIndex++;
-        if( Propagate::plausiblyOptimal( thisIndex, batchSize, dim ) ) {
-            Propagate *candidate = 0;
+        if( Forward::plausiblyOptimal( thisIndex, batchSize, dim ) ) {
+            Forward *candidate = 0;
             try {
-                candidate = Propagate::instanceSpecific( thisIndex, cl, dim );
+                candidate = Forward::instanceSpecific( thisIndex, cl, dim );
                 instances[thisIndex] = candidate;
                 valid[thisIndex] = true;
             } catch( runtime_error &e ) {
-                cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << ": this instance cant be used: " << e.what() << endl;
+                cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << ": this instance cant be used: " << e.what() << endl;
                 valid[thisIndex] = false;
             }
             if( valid[thisIndex] ) {
@@ -79,10 +79,10 @@ VIRTUAL void PropagateAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWr
                 try {
                     candidate->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
                     milliseconds[thisIndex] = (int)timer.lap();
-//                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+//                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch( runtime_error &e ) {
-                    cout << StatefulTimer::instance()->prefix << "PropagateAuto: instance " << thisIndex << " this instance cant be used: " << e.what() << endl;
+                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << " this instance cant be used: " << e.what() << endl;
                     valid[thisIndex] = false;
                     delete instances[thisIndex];
                     instances[thisIndex] = 0;
@@ -91,7 +91,7 @@ VIRTUAL void PropagateAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWr
         }
     }
     if( chosenIndex == -1 ) {
-        cout << StatefulTimer::instance()->prefix + "PropagateAuto::forward choosing best instance:" << endl;
+        cout << StatefulTimer::instance()->prefix + "ForwardAuto::forward choosing best instance:" << endl;
         int bestIndex = -1;
         int bestTime = 0;
         for( int i = 0; i < num; i++ ) {
@@ -117,7 +117,7 @@ VIRTUAL void PropagateAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWr
             throw runtime_error(StatefulTimer::instance()->prefix + "No valid forward implementations found" );
         }
     }
-//    cout << "PropagateAuto::forward using instance index: " << chosenIndex << endl;
+//    cout << "ForwardAuto::forward using instance index: " << chosenIndex << endl;
     instances[chosenIndex]->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
 }
 

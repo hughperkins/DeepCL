@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "Propagate2.h"
+#include "Forward2.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -17,12 +17,12 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL Propagate2::~Propagate2() {
+VIRTUAL Forward2::~Forward2() {
     delete kernel;
 }
 // only works for small filters
 // condition: square( dim.filterSize ) * dim.inputPlanes * 4 < 5000 (about 5KB)
-VIRTUAL void Propagate2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
     kernel->in(batchSize);
     kernel->input( dataWrapper );
@@ -38,10 +38,10 @@ VIRTUAL void Propagate2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapp
 //    cout << "forward2 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate2::forward after call forward");
+    StatefulTimer::timeCheck("Forward2::forward after call forward");
 }
-Propagate2::Propagate2( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+Forward2::Forward2( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("cannot use forward2, since outputimagesize * outputimagesize > maxworkgroupsize");

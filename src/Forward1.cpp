@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Propagate1.h"
+#include "Forward1.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -15,10 +15,10 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-VIRTUAL Propagate1::~Propagate1() {
+VIRTUAL Forward1::~Forward1() {
     delete kernel;
 }
-VIRTUAL void Propagate1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
     kernel->in(batchSize)
         ->in( dim.inputPlanes )->in( dim.numFilters )
@@ -36,10 +36,10 @@ VIRTUAL void Propagate1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapp
 
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate1::forward after call forward");
+    StatefulTimer::timeCheck("Forward1::forward after call forward");
 }
-Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+Forward1::Forward1( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
 
     std::string options = ""; // "-D " + fn->getDefineName();

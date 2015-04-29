@@ -47,11 +47,11 @@ PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker
 //        maker->net->print();
         throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    poolingPropagateImpl = PoolingForward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    poolingForwardImpl = PoolingForward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
     poolingBackpropImpl = PoolingBackward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
 VIRTUAL PoolingLayer::~PoolingLayer() {
-    delete poolingPropagateImpl;
+    delete poolingForwardImpl;
     delete poolingBackpropImpl;
     if( outputWrapper != 0 ) {
         delete outputWrapper;
@@ -163,7 +163,7 @@ VIRTUAL void PoolingLayer::forward() {
         upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
         upstreamOutputWrapper->copyToDevice();
     }
-    poolingPropagateImpl->forward( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
+    poolingForwardImpl->forward( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
     if( !previousLayer->hasOutputWrapper() ) {
         delete upstreamOutputWrapper;
     }

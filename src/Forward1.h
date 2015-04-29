@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Propagate.h"
+#include "Forward.h"
 
-class Propagate1 : public Propagate {
+class Forward1 : public Forward {
 public:
     CLKernel *kernel;
 
@@ -17,10 +17,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~Propagate1();
+    VIRTUAL ~Forward1();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
-    Propagate1( OpenCLHelper *cl, LayerDimensions dim );
+    Forward1( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

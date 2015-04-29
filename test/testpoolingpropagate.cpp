@@ -22,17 +22,17 @@ TEST( testpoolingforward, basic ) {
     int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingForward *poolingPropagate = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = poolingPropagate->getOutputSize( batchSize );
+    int outputSize = poolingForward->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    poolingPropagate->forward( batchSize, data, selectors, output );
+    poolingForward->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 3 );
     EXPECT_EQ( selectors[1], 0 );
@@ -44,7 +44,7 @@ TEST( testpoolingforward, basic ) {
     EXPECT_EQ( output[2], 33 );
     EXPECT_EQ( output[3], 37.4f );
 
-    delete poolingPropagate;
+    delete poolingForward;
     delete[] selectors;
     delete[] output;
     delete cl;
@@ -56,7 +56,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingForward *poolingPropagate = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -69,11 +69,11 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = poolingPropagate->getOutputSize( batchSize );
+    int outputSize = poolingForward->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    poolingPropagate->forward( batchSize, data, selectors, output );
+    poolingForward->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 2 );
     EXPECT_EQ( selectors[1], 1 );
@@ -85,7 +85,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     EXPECT_EQ( output[2], 33 );
     EXPECT_EQ( output[3], 37.4f );
 
-    delete poolingPropagate;
+    delete poolingForward;
     delete[] selectors;
     delete[] output;
     delete cl;
@@ -97,13 +97,13 @@ TEST( testpoolingforward, fromwrappers ) {
     int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingForward *poolingPropagate = PoolingForward::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingForward = PoolingForward::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = poolingPropagate->getOutputSize( batchSize );
+    int outputSize = poolingForward->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
@@ -114,7 +114,7 @@ TEST( testpoolingforward, fromwrappers ) {
 
     inputWrapper->copyToDevice();
 
-    poolingPropagate->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    poolingForward->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
 
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
@@ -132,7 +132,7 @@ TEST( testpoolingforward, fromwrappers ) {
     delete inputWrapper;
     delete selectorsWrapper;
     delete outputWrapper;
-    delete poolingPropagate;
+    delete poolingForward;
     delete[] selectors;
     delete[] output;
     delete cl;
@@ -210,11 +210,11 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    PoolingForward *poolingPropagate0 = PoolingForward::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
-    PoolingForward *poolingPropagate1 = PoolingForward::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingForward0 = PoolingForward::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingForward1 = PoolingForward::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = poolingPropagate0->getOutputSize( batchSize );
+    int outputSize = poolingForward0->getOutputSize( batchSize );
 
     float *input = new float[ inputSize ];
     int *selectors = new int[ outputSize ];
@@ -233,7 +233,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    poolingPropagate0->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    poolingForward0->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
 
@@ -249,7 +249,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    poolingPropagate1->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    poolingForward1->forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
     
@@ -287,8 +287,8 @@ void compareSpecific( CompareSpecificArgs args ) {
     delete inputWrapper;
     delete selectorsWrapper;
     delete outputWrapper;
-    delete poolingPropagate0;
-    delete poolingPropagate1;
+    delete poolingForward0;
+    delete poolingForward1;
     delete[] selectors0;
     delete[] output0;
     delete[] selectors;

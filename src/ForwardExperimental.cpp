@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "PropagateExperimental.h"
+#include "ForwardExperimental.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -15,12 +15,12 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-VIRTUAL PropagateExperimental::~PropagateExperimental() {
+VIRTUAL ForwardExperimental::~ForwardExperimental() {
     delete kernel;
 }
-VIRTUAL void PropagateExperimental::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void ForwardExperimental::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateExperimental::forward start");
+    StatefulTimer::timeCheck("ForwardExperimental::forward start");
 //    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
 //    int maxglobalId = 0;
 
@@ -40,10 +40,10 @@ VIRTUAL void PropagateExperimental::forward( int batchSize, CLWrapper *dataWrapp
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
 
-    StatefulTimer::timeCheck("PropagateExperimental::forward after call forward");
+    StatefulTimer::timeCheck("ForwardExperimental::forward after call forward");
 }
-PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+ForwardExperimental::ForwardExperimental( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
     std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
@@ -53,7 +53,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     // classname = cog_getfilename.get_class_name()
     // stringify.write_kernel2( "kernel", "cl/" + classname + ".cl", "forward", 'options' )
     // ]]]
-    // generated using cog, from cl/PropagateExperimental.cl:
+    // generated using cog, from cl/ForwardExperimental.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -147,7 +147,7 @@ PropagateExperimental::PropagateExperimental( OpenCLHelper *cl, LayerDimensions 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "forward", options, "cl/PropagateExperimental.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "forward", options, "cl/ForwardExperimental.cl" );
     // [[[end]]]
 }
 

@@ -22,17 +22,17 @@ TEST( testactivationforward, basic ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationForward *activationPropagate = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = activationPropagate->getOutputSize( batchSize );
+    int outputSize = activationForward->getOutputSize( batchSize );
     EXPECT_EQ( outputSize, imageSize * imageSize );
     float *output = new float[outputSize];
 
-    activationPropagate->forward( batchSize, data, output );
+    activationForward->forward( batchSize, data, output );
 
     EXPECT_EQ( 1, output[0] );
     EXPECT_EQ( 2, output[1] );
@@ -42,7 +42,7 @@ TEST( testactivationforward, basic ) {
     EXPECT_EQ( 37.4f, output[14] );
     EXPECT_EQ( 5, output[15] );
 
-    delete activationPropagate;
+    delete activationForward;
     delete[] output;
     delete cl;
 }
@@ -52,7 +52,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationForward *activationPropagate = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -65,10 +65,10 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationPropagate->getOutputSize( batchSize );
+    int outputSize = activationForward->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
-    activationPropagate->forward( batchSize, data, output );
+    activationForward->forward( batchSize, data, output );
 
     EXPECT_EQ( output[0], 1 );
     EXPECT_EQ( output[1], 2 );
@@ -78,7 +78,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     EXPECT_EQ( output[14], 37.4f );
     EXPECT_EQ( output[15], 5 );
 
-    delete activationPropagate;
+    delete activationForward;
     delete[] output;
     delete cl;
 }
@@ -88,13 +88,13 @@ TEST( testactivationforward, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    ActivationForward *activationPropagate = ActivationForward::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
+    ActivationForward *activationForward = ActivationForward::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputSize = activationPropagate->getOutputSize( batchSize );
+    int outputSize = activationForward->getOutputSize( batchSize );
     float *output = new float[outputSize];
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
@@ -103,7 +103,7 @@ TEST( testactivationforward, fromwrappers ) {
 
     inputWrapper->copyToDevice();
 
-    activationPropagate->forward( batchSize, inputWrapper, outputWrapper );
+    activationForward->forward( batchSize, inputWrapper, outputWrapper );
 
     outputWrapper->copyToHost();
 
@@ -118,7 +118,7 @@ TEST( testactivationforward, fromwrappers ) {
 
     delete inputWrapper;
     delete outputWrapper;
-    delete activationPropagate;
+    delete activationForward;
     delete[] output;
     delete cl;
 }
@@ -195,11 +195,11 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    ActivationForward *activationPropagate0 = ActivationForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
-    ActivationForward *activationPropagate1 = ActivationForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
+    ActivationForward *activationForward0 = ActivationForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
+    ActivationForward *activationForward1 = ActivationForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = activationPropagate0->getOutputSize( batchSize );
+    int outputSize = activationForward0->getOutputSize( batchSize );
 
     float *input = new float[ inputSize ];
     float *output = new float[ outputSize ];
@@ -214,7 +214,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    activationPropagate0->forward( batchSize, inputWrapper, outputWrapper );
+    activationForward0->forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
     float *output0 = new float[ outputSize ];
@@ -225,7 +225,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
 
-    activationPropagate1->forward( batchSize, inputWrapper, outputWrapper );
+    activationForward1->forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
     
     int numErrors = 0;
@@ -278,8 +278,8 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     delete inputWrapper;
     delete outputWrapper;
-    delete activationPropagate0;
-    delete activationPropagate1;
+    delete activationForward0;
+    delete activationForward1;
     delete[] output0;
     delete[] output;
     delete[] input;

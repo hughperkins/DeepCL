@@ -42,11 +42,11 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
 //        maker->net->print();
         throw runtime_error("Error: Activation layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    activationPropagateImpl = ActivationForward::instance( cl, numPlanes, inputImageSize, fn );
+    activationForwardImpl = ActivationForward::instance( cl, numPlanes, inputImageSize, fn );
     activationBackpropImpl = ActivationBackward::instance( cl, numPlanes, inputImageSize, fn );
 }
 VIRTUAL ActivationLayer::~ActivationLayer() {
-    delete activationPropagateImpl;
+    delete activationForwardImpl;
     delete activationBackpropImpl;
     if( outputWrapper != 0 ) {
         delete outputWrapper;
@@ -191,7 +191,7 @@ VIRTUAL void ActivationLayer::forward() {
         inputWrapper = cl->wrap( previousLayer->getOutputSize(), input );
         inputWrapper->copyToDevice();
     }
-    activationPropagateImpl->forward( batchSize, inputWrapper, outputWrapper );
+    activationForwardImpl->forward( batchSize, inputWrapper, outputWrapper );
     outputCopiedToHost = false;
     if( !previousLayer->hasOutputWrapper() ) {
         delete inputWrapper;

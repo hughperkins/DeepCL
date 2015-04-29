@@ -34,7 +34,7 @@ EpochResult BatchLearner::runBatchedNetAction( int batchSize, int N, float *data
 
 int BatchLearner::test( int batchSize, int N, float *testData, int const*testLabels ) {
     net->setTraining( false );
-    NetPropagateAction *action = new NetPropagateAction();
+    NetForwardAction *action = new NetForwardAction();
     int numRight = runBatchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
     delete action;
     return numRight;
@@ -42,7 +42,7 @@ int BatchLearner::test( int batchSize, int N, float *testData, int const*testLab
 
 int BatchLearner::forwardForTrain( int batchSize, int N, float *data, int const*labels ) {
     net->setTraining( true );
-    NetPropagateAction *action = new NetPropagateAction();
+    NetForwardAction *action = new NetForwardAction();
     int numRight = runBatchedNetAction( batchSize, N, data, labels, action ).numRight;
     delete action;
     return numRight;

@@ -137,9 +137,9 @@ deepcl_sourcestring = """
     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
     ActivationFunction.cpp 
     SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
-    Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
-    PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp 
-    Propagate4.cpp 
+    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
+    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
+    Forward4.cpp 
     Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
     BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
     BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
@@ -152,7 +152,7 @@ deepcl_sourcestring = """
     RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
     PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    PropagateFc.cpp PropagateByInputPlane.cpp
+    ForwardFc.cpp ForwardByInputPlane.cpp
     PoolingBackwardGpuNaive.cpp
     ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp

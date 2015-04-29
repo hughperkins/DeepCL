@@ -31,7 +31,7 @@ PUBLICAPI NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net,
 //    batchSize = 128;
         {
     learnAction = new NetLearnLabeledAction( 0 );
-    testAction = new NetPropagateAction();
+    testAction = new NetForwardAction();
     learnBatcher = new OnDemandBatcher( net, learnAction, trainFilepath, Ntrain, fileReadBatches, batchSize );
     testBatcher = new OnDemandBatcher( net, testAction, testFilepath, Ntest, fileReadBatches, batchSize );
     annealLearningRate = 1.0f;

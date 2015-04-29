@@ -95,9 +95,9 @@ public:
 };
 
 
-class DeepCL_EXPORT PropagateBatcher : public Batcher {
+class DeepCL_EXPORT ForwardBatcher : public Batcher {
 public:
-    PropagateBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels);
+    ForwardBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels);
     virtual void internalTick( float const*batchData, int const*batchLabels);
 };
 

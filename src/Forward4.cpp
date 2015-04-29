@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Propagate4.h"
+#include "Forward4.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -15,12 +15,12 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-VIRTUAL Propagate4::~Propagate4() {
+VIRTUAL Forward4::~Forward4() {
     delete kernel;
 }
-VIRTUAL void Propagate4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("Propagate4::forward start");
+    StatefulTimer::timeCheck("Forward4::forward start");
 
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
     int globalSize = workgroupSize * numWorkgroups;
@@ -39,10 +39,10 @@ VIRTUAL void Propagate4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapp
 
     kernel->run_1d( globalSize, workgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate4::forward after call forward");
+    StatefulTimer::timeCheck("Forward4::forward after call forward");
 }
-Propagate4::Propagate4( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+Forward4::Forward4( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
     workgroupSize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();

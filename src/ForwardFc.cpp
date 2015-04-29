@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "PropagateFc_workgroupPerFilterPlane.h"
+#include "ForwardFc.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -17,48 +17,101 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-VIRTUAL PropagateFc_workgroupPerFilterPlane::~PropagateFc_workgroupPerFilterPlane() {
+VIRTUAL ForwardFc::~ForwardFc() {
     delete kernel1;
-    delete kernel2;
+    delete kernel_reduce;
+//    delete kernel_activate;
+    delete kPerElementTiledAdd;
 }
-VIRTUAL void PropagateFc_workgroupPerFilterPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::forward begin");
-    const int output1Size = batchSize * dim.numFilters * dim.filterSize;
+VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+    StatefulTimer::timeCheck("ForwardFc::forward begin");
+
+    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+
+    const int output1Size = batchSize * dim.numFilters * dim.numInputPlanes * dim.filterSize;
     float *output1 = new float[ output1Size ];
     CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
     output1Wrapper->createOnDevice();
 
+    const int output2Size = batchSize * dim.numFilters * dim.numInputPlanes;
+    float *output2 = new float[ output2Size ];
+    CLWrapper *output2Wrapper = cl->wrap( output2Size, output2 );
+    output2Wrapper->createOnDevice();
+
     kernel1->in(batchSize);
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
-    if( dim.biased ) kernel1->input( biasWeightsWrapper );
+//    if( dim.biased ) kernel1->input( biasWeightsWrapper );
     kernel1->output( output1Wrapper );
     kernel1->localFloats( dim.inputImageSize );
-    kernel1->localFloats( batchSize * dim.filterSize );
+    kernel1->localFloats( dim.numFilters * dim.filterSize );
 
     int workgroupSize = dim.numFilters;
-    int numWorkgroups = dim.filterSize;
+    int numWorkgroups = dim.filterSize * dim.numInputPlanes;
 
     int globalSize = workgroupSize * numWorkgroups;
-/////    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel1->run_1d( globalSize, workgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::forward after first kernel");
+    StatefulTimer::timeCheck("ForwardFc::forward after first kernel");
 
-    // now reduce again...
-    kernel2->in(batchSize)->in( output1Wrapper )->out( outputWrapper );
-    int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-    kernel2->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+    // now reduce over rows 
+    kernel_reduce->in(batchSize * dim.numFilters * dim.numInputPlanes)
+        ->in( dim.filterSize )
+        ->in( output1Wrapper )->out( output2Wrapper );
+    int maxglobalId = batchSize * dim.numFilters * dim.numInputPlanes;
+//    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+//    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
+    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
     cl->finish();
+    StatefulTimer::timeCheck("ForwardFc::forward after reduce1");
+
+    // reduce over input planes 
+    kernel_reduce->in(batchSize * dim.numFilters)->in( dim.numInputPlanes )
+        ->in( output2Wrapper )->out( outputWrapper );
+    maxglobalId = batchSize * dim.numFilters;
+    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+//    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
+//    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
+    cl->finish();
+    StatefulTimer::timeCheck("ForwardFc::forward after reduce2");
+
+    // add bias...
+    if( dim.biased ) {
+        kPerElementTiledAdd->in( batchSize * dim.numFilters )->in( dim.numFilters )->inout( outputWrapper )->in( biasWeightsWrapper );
+        maxglobalId = batchSize * dim.numFilters;
+        numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+        kPerElementTiledAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+        cl->finish();
+        StatefulTimer::timeCheck("ForwardFc::forward after add bias");        
+    }
+
+//    kernel_activate->in( batchSize * dim.numFilters )
+//        ->inout( outputWrapper );
+//    maxglobalId = batchSize * dim.numFilters;
+//    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
+//    kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
+//    cl->finish();
+//    StatefulTimer::timeCheck("ForwardFc::forward after activate");
+
+    delete output2Wrapper;
+    delete[] output2;
 
     delete output1Wrapper;
     delete[] output1;
-    StatefulTimer::timeCheck("PropagateFc_workgroupPerFilterPlane::forward end");
+    StatefulTimer::timeCheck("ForwardFc::forward end");
 }
-PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+ForwardFc::ForwardFc( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
+
+    if( dim.inputImageSize != dim.filterSize ) {
+        throw runtime_error("For ForwardFc, filtersize and inputimagesize must be identical");
+    }
+    if( dim.padZeros ) {
+        throw runtime_error("For ForwardFc, padzeros must be disabled");
+    }
 
     std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
@@ -66,7 +119,10 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
-    // stringify.write_kernel2( "kernel2", "cl/forward_fc.cl", "reduce_rows", 'options' )
+    // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
+    // # stringify.write_kernel2( "kernel_activate", "cl/activate.cl", "activate", 'options' )
+    // # stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
+    // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
     // generated using cog, from cl/forward_fc_wgperrow.cl:
     const char * kernel1Source =  
@@ -175,150 +231,70 @@ PropagateFc_workgroupPerFilterPlane::PropagateFc_workgroupPerFilterPlane( OpenCL
     "\n" 
     "";
     kernel1 = cl->buildKernelFromString( kernel1Source, "forward_fc_workgroup_perrow", options, "cl/forward_fc_wgperrow.cl" );
-    // generated using cog, from cl/forward_fc.cl:
-    const char * kernel2Source =  
-    "// Copyright Hugh Perkins 2014, 2015 hughperkins at gmail\n" 
+    // generated using cog, from cl/reduce_segments.cl:
+    const char * kernel_reduceSource =  
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
     "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "// expected defines:\n" 
-    "// one of: [ TANH | RELU | LINEAR ]\n" 
-    "// BIASED (or not)\n" 
-    "\n" 
-    "#ifdef TANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) (tanh(output))\n" 
-    "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))\n" 
-    "#elif SIGMOID\n" 
-    "    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))\n" 
-    "#elif defined RELU\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)\n" 
-    "#elif defined LINEAR\n" 
-    "    #define ACTIVATION_FUNCTION(output) (output)\n" 
-    "#endif\n" 
-    "\n" 
-    "\n" 
-    "// each thread handles one filter, ie globalId as [n][inputplane][filterId]\n" 
-    "// output1: [n][inputplane][filter][filterrow]\n" 
-    "// output2: [n][inputplane][filter]\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void reduce_rows( const int batchSize, global float const *output1, global float*output2 ) {\n" 
+    "kernel void reduce_segments( const int numSegments, const int segmentLength,\n" 
+    "        global float const *in, global float* out ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    const int n = globalId / gNumInputPlanes / gNumFilters;\n" 
-    "    if( n >= batchSize ) {\n" 
+    "    const int segmentId = globalId;\n" 
+    "\n" 
+    "    if( segmentId >= numSegments ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    const int filterId = globalId % gNumFilters;\n" 
-    "    float sum = 0;\n" 
-    "    global const float *output1Col = output1 + globalId * gFilterSize;\n" 
-    "    for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {\n" 
-    "        sum += output1Col[filterRow];\n" 
-    "    }\n" 
-    "    output2[globalId] = sum;\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "// each thread handles one filter, ie globalId as [n][filterId]\n" 
-    "// output2: [n][inputplane][filter]\n" 
-    "// output: [n][filter]\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "kernel void reduce_inputplanes( const int batchSize, global float const *output2, global float*output ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    const int n = globalId / gNumFilters;\n" 
-    "    if( n >= batchSize ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    const int filterId = globalId % gNumFilters;\n" 
-    "    float sum = 0;\n" 
-    "    global const float *output2Col = output2 + globalId * gNumInputPlanes;\n" 
-    "    for( int inputPlane = 0; inputPlane < gNumInputPlanes; inputPlane++ ) {\n" 
-    "        sum += output2Col[inputPlane];\n" 
-    "    }\n" 
-    "    // activate...\n" 
-    "    output[globalId] = ACTIVATION_FUNCTION(sum);\n" 
-    "}\n" 
-    "#endif\n" 
-    "\n" 
-    "#ifdef gOutImageSize // for previous tests that dont define it\n" 
-    "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
-    "// workgroupid [n][outputplane]\n" 
-    "// localid: [filterrow][filtercol]\n" 
-    "//  each thread iterates over: [inplane]\n" 
-    "// this kernel assumes:\n" 
-    "//   padzeros == 0 (mandatory)\n" 
-    "//   filtersize == inputimagesize (mandatory)\n" 
-    "//   outputImageSize == 1\n" 
-    "//   lots of outplanes, hundreds, but less than max work groupsize, eg 350, 500, 361\n" 
-    "//   lots of inplanes, eg 32\n" 
-    "//   inputimagesize around 19, not too small\n" 
-    "#if gFilterSize == gInputImageSize && gPadZeros == 0\n" 
-    "void kernel forward_filter_matches_inimage( const int batchSize,\n" 
-    "      global const float *images, global const float *filters,\n" 
-    "        #ifdef BIASED\n" 
-    "            global const float*biases,\n" 
-    "        #endif\n" 
-    "    global float *output,\n" 
-    "    local float *_upstreamImage, local float *_filterImage ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "\n" 
-    "    const int workgroupId = get_group_id(0);\n" 
-    "    const int workgroupSize = get_local_size(0);\n" 
-    "    const int n = workgroupId / gNumOutPlanes;\n" 
-    "    const int outPlane = workgroupId % gNumOutPlanes;\n" 
-    "\n" 
-    "    const int localId = get_local_id(0);\n" 
-    "    const int filterRow = localId / gFilterSize;\n" 
-    "    const int filterCol = localId % gFilterSize;\n" 
     "\n" 
     "    float sum = 0;\n" 
-    "    for( int upstreamPlane = 0; upstreamPlane < gUpstreamNumPlanes; upstreamPlane++ ) {\n" 
-    "        int thisUpstreamImageOffset = ( n * gUpstreamNumPlanes + upstreamPlane ) * gUpstreamImageSizeSquared;\n" 
-    "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
-    "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gUpstreamImageSizeSquared ) {\n" 
-    "                _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];\n" 
-    "            }\n" 
-    "        }\n" 
-    "        const int filterGlobalOffset = ( outPlane * gUpstreamNumPlanes + upstreamPlane ) * gFilterSizeSquared;\n" 
-    "        for( int i = 0; i < numFilterPixelsPerThread; i++ ) {\n" 
-    "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gFilterSizeSquared ) {\n" 
-    "                _filterCube[thisOffset] = filters[filterGlobalOffset + thisOffset];\n" 
-    "            }\n" 
-    "        }\n" 
-    "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        if( localId < gOutImageSizeSquared ) {\n" 
-    "            for( int u = minu; u <= maxu; u++ ) {\n" 
-    "                int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
-    "                int inputimagerowoffset = inputRow * gUpstreamImageSize;\n" 
-    "                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "                for( int v = minv; v <= maxv; v++ ) {\n" 
-    "                    int inputCol = outputCol + v + ( gPadZeros ? 0 : gHalfFilterSize );\n" 
-    "                    sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
-    "                }\n" 
-    "            }\n" 
-    "        }\n" 
+    "    global const float *segment = in + segmentId * segmentLength;\n" 
+    "    for( int i = 0; i < segmentLength; i++ ) {\n" 
+    "        sum += segment[i];\n" 
     "    }\n" 
-    "    #ifdef BIASED\n" 
-    "        sum += biases[outPlane];\n" 
-    "    #endif\n" 
-    "    // output are organized like [imageid][filterid][row][col]\n" 
-    "    int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared + localId;\n" 
-    "    if( localId < gOutImageSizeSquared ) {\n" 
-    "        output[resultIndex ] = ACTIVATION_FUNCTION(sum);\n" 
-    "//        output[resultIndex ] = 123;\n" 
-    "    }\n" 
+    "    out[segmentId] = sum;\n" 
     "}\n" 
-    "#endif\n" 
-    "#endif\n" 
-    "#endif\n" 
     "\n" 
     "\n" 
     "";
-    kernel2 = cl->buildKernelFromString( kernel2Source, "reduce_rows", options, "cl/forward_fc.cl" );
+    kernel_reduce = cl->buildKernelFromString( kernel_reduceSource, "reduce_segments", options, "cl/reduce_segments.cl" );
+    // generated using cog, from cl/per_element_add.cl:
+    const char * kPerElementTiledAddSource =  
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
+    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[globalId];\n" 
+    "}\n" 
+    "\n" 
+    "// adds source to target\n" 
+    "// tiles source as necessary, according to tilingSize\n" 
+    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[globalId % tilingSize];\n" 
+    "}\n" 
+    "\n" 
+    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
+    "}\n" 
+    "\n" 
+    "";
+    kPerElementTiledAdd = cl->buildKernelFromString( kPerElementTiledAddSource, "per_element_tiled_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
 }
 

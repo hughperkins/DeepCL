@@ -30,7 +30,7 @@ public:
     ActivationFunction const *fn;
 
     OpenCLHelper *const cl; // NOT owned by us
-    ActivationForward *activationPropagateImpl;
+    ActivationForward *activationForwardImpl;
     ActivationBackward *activationBackpropImpl;
 
     float *output; // this is not guaranteed to be up to date

@@ -18,7 +18,7 @@
 
 #define VIRTUAL virtual
 
-class Propagate;
+class Forward;
 class Backward;
 class BackpropWeights2;
 class ConvolutionalMaker;
@@ -29,7 +29,7 @@ public:
     Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
     Trainer *biasWeightsTrainer; // OWNED by us, we should delete (if non-zero)
 
-    Propagate *forwardimpl;
+    Forward *forwardimpl;
     BackpropWeights2 *backpropWeightsImpl;
     Backward *backwardImpl;
 

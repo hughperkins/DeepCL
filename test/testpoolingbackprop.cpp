@@ -35,8 +35,8 @@ TEST( testpoolingbackprop, basic ) {
 
     poolingBackprop->backward( batchSize, errors, selectors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ poolingPropagate->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingPropagate->getInputSize( batchSize ) ];
+//    float *expectedErrorsForUpstream = new float[ poolingForward->getInputSize( batchSize ) ];
+//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingForward->getInputSize( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         0,0,0,5,
         3,0,0,0,
@@ -75,8 +75,8 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
 
     poolingBackprop->backward( batchSize, errors, selectors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ poolingPropagate->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingPropagate->getInputSize( batchSize ) ];
+//    float *expectedErrorsForUpstream = new float[ poolingForward->getInputSize( batchSize ) ];
+//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingForward->getInputSize( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         0,0,
         3,0,
@@ -188,7 +188,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingForward *poolingPropagate = PoolingForward::instanceForTest( cl, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -201,11 +201,11 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = poolingPropagate->getOutputSize( batchSize );
+    int outputSize = poolingForward->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    poolingPropagate->forward( batchSize, data, selectors, output );
+    poolingForward->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 2 );
     EXPECT_EQ( selectors[1], 1 );
@@ -217,7 +217,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     EXPECT_EQ( output[2], 33 );
     EXPECT_EQ( output[3], 37.4f );
 
-    delete poolingPropagate;
+    delete poolingForward;
     delete[] selectors;
     delete[] output;
 }

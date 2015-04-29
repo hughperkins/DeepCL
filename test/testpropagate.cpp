@@ -6,7 +6,7 @@
 
 #include "OpenCLHelper.h"
 #include "NeuralNet.h"
-#include "Propagate.h"
+#include "Forward.h"
 #include "ActivationFunction.h"
 
 #include "test/myasserts.h"
@@ -25,7 +25,7 @@ using namespace std;
 
 #include "test/gtest_supp.h"
 
-void forwardWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *output ) {
+void forwardWithWipe( Forward *prop, int batchSize, LayerDimensions dim, float *inputData, float *filters, float *biases, float *output ) {
     int inputDataSize = batchSize * dim.inputCubeSize;
     CLWrapper *dataWrapper = prop->cl->wrap( inputDataSize, inputData );
     dataWrapper->copyToDevice();
@@ -47,9 +47,9 @@ void forwardWithWipe( Propagate *prop, int batchSize, LayerDimensions dim, float
     StatefulTimer::timeCheck("testforward: after data wrapper processing");
     prop->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
             outputWrapper );
-//    StatefulTimer::timeCheck("Propagate::forward after call forward");
+//    StatefulTimer::timeCheck("Forward::forward after call forward");
     outputWrapper->copyToHost();
-//    StatefulTimer::timeCheck("Propagate::forward after copytohost");
+//    StatefulTimer::timeCheck("Forward::forward after copytohost");
     delete outputWrapper;
 
     delete dataWrapper;
@@ -87,7 +87,7 @@ TEST( testforward, imagesize2_nopadzeros ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
-        Propagate *forward = Propagate::instanceSpecific( 99, cl,
+        Forward *forward = Forward::instanceSpecific( 99, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ) );
         float *output = forward->forward( batchSize, data, filter1, 0 );  
@@ -146,7 +146,7 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
-        Propagate *forward = Propagate::instanceSpecific( 0, cl,
+        Forward *forward = Forward::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ).setSkip(1) );
         float *output = forward->forward( batchSize, data, filter1, 0 );  
@@ -230,7 +230,7 @@ TEST( testforward, imagesize2_padzeros ) {
 
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *forward = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
+    Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
     float *output = forward->forward( batchSize, data, filter1, 0 );        
 
@@ -291,7 +291,7 @@ TEST( testforward, imagesize3 ) {
 
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *forward = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
+    Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
     float *output = forward->forward( 
         batchSize, data, filter1, 0 );        
@@ -339,7 +339,7 @@ TEST( testforward, test2 ) {
 
     float *biases = 0;
 
-    Propagate *forward = Propagate::instanceSpecific( 1, cl, dim );
+    Forward *forward = Forward::instanceSpecific( 1, cl, dim );
     float *output = forward->forward( batchSize, data, filter1, biases );
 
     EXPECT_FLOAT_NEAR( -0.5f * 0.300809f -0.5f * 0.11011f, output[0] );
@@ -369,7 +369,7 @@ TEST( testforward, test3 ) {
 
 //    int outputImageSize = 0;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *forward = Propagate::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
+    Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ) );
     float *output = forward->forward( 
         batchSize, data, filter, 0 );        
@@ -435,19 +435,19 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     float *output2 = new float[ outputSize ];
     
     int numBatches = ( N + batchSize - 1 ) / batchSize;
-    Propagate *p1 = Propagate::instanceSpecific( instance0, cl, dim );
-    Propagate *p2 = Propagate::instanceSpecific( instance1, cl, dim );
+    Forward *p1 = Forward::instanceSpecific( instance0, cl, dim );
+    Forward *p2 = Forward::instanceSpecific( instance1, cl, dim );
 
 //    float *outputtemps[2];
     for( int instance = 0; instance < 2; instance++ ) {
-        Propagate *thisPropagate = 0;
+        Forward *thisForward = 0;
         float *thisOutput = 0;
         if( instance == 0 ) { 
-            thisPropagate = p1;
+            thisForward = p1;
             thisOutput = output1;
         }
         if( instance == 1 ) {
-            thisPropagate = p2;
+            thisForward = p2;
             thisOutput = output2;
         }
         for( int batch = 0; batch < numBatches; batch++ ) {
@@ -461,8 +461,8 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
                 // cant just reuse the work of previous forward :-)
 //            outputtemps[instance] = 
 //            StatefulTimer::timeCheck("after memset");
-            forwardWithWipe( thisPropagate, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
-//            thisPropagate->forward( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
+            forwardWithWipe( thisForward, thisBatchSize, dim, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
+//            thisForward->forward( thisBatchSize, inputs + batchSize * batch * dim.inputCubeSize, filters, biasFilters, outputtemp );
             memcpy( thisOutput + batch * batchSize * dim.outputCubeSize, outputtemp, thisBatchSize * dim.outputCubeSize * sizeof(float) );
             delete[] outputtemp;
         }
@@ -820,7 +820,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    Propagate *p1 = Propagate::instanceSpecific( instance, cl, dim );
+    Forward *p1 = Forward::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;
         float *output1 = p1->forward( thisBatchSize, inputs, filters, biasFilters );

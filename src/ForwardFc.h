@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "Propagate.h"
+#include "Forward.h"
 
 #define STATIC static
 #define VIRTUAL virtual
 
-class PropagateFc : public Propagate {
+class ForwardFc : public Forward {
 public:
     CLKernel *kernel1;
     CLKernel *kernel_reduce;
@@ -24,9 +24,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~PropagateFc();
+    VIRTUAL ~ForwardFc();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
-    PropagateFc( OpenCLHelper *cl, LayerDimensions dim );
+    ForwardFc( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

@@ -6,7 +6,7 @@
 
 #include "OpenCLHelper.h"
 
-#include "PropagateCpu.h"
+#include "ForwardCpu.h"
 
 using namespace std;
 
@@ -15,11 +15,11 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-PropagateCpu::PropagateCpu( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+ForwardCpu::ForwardCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
     {
 }
-VIRTUAL void PropagateCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void ForwardCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
     inputDataWrapper->copyToHost();
     weightsWrapper->copyToHost();
 //    weightsWrapper->copyToHost();
@@ -39,8 +39,8 @@ VIRTUAL void PropagateCpu::forward( int batchSize, CLWrapper *inputDataWrapper, 
     outputWrapper->copyToDevice();
     delete[] output;
 }
-VIRTUAL float *PropagateCpu::forward( int batchSize, float *inputData, float *weights, float *biasWeights ) {
-//    cout << "PropagateCpu::forward outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
+VIRTUAL float *ForwardCpu::forward( int batchSize, float *inputData, float *weights, float *biasWeights ) {
+//    cout << "ForwardCpu::forward outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
     float *output = new float[ dim.outputCubeSize * batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
         for( int filter = 0; filter < dim.numFilters; filter++ ) {

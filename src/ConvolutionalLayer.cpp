@@ -7,7 +7,7 @@
 #include "ConvolutionalLayer.h"
 #include "NeuralNet.h"
 #include "stringhelper.h"
-#include "Propagate.h"
+#include "Forward.h"
 #include "WeightsHelper.h"
 #include "Backward.h"
 #include "BackpropWeights2.h"
@@ -54,7 +54,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
-    forwardimpl = Propagate::instance( cl, dim );
+    forwardimpl = Forward::instance( cl, dim );
     backpropWeightsImpl = BackpropWeights2::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
         backwardImpl = Backward::instance( cl, dim );

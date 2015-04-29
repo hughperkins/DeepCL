@@ -12,7 +12,7 @@
 
 #include "OpenCLHelper.h"
 #include "ActivationFunction.h"
-#include "Propagate.h"
+#include "Forward.h"
 #include "LayerDimensions.h"
 #include "DeepCLDllExport.h"
 
@@ -25,7 +25,7 @@ using namespace std;
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT PropagateAuto : public Propagate {
+class DeepCL_EXPORT ForwardAuto : public Forward {
 public:
 //    OpenCLHelper *cl;
 //    LayerDimensions dim;
@@ -35,7 +35,7 @@ public:
     int *milliseconds;
     bool *valid;
     int chosenIndex;
-    Propagate **instances;
+    Forward **instances;
     int nextIndex;
 
     // [[[cog
@@ -43,8 +43,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PropagateAuto( OpenCLHelper *cl, LayerDimensions dim );
-    VIRTUAL ~PropagateAuto();
+    ForwardAuto( OpenCLHelper *cl, LayerDimensions dim );
+    VIRTUAL ~ForwardAuto();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
     CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
 

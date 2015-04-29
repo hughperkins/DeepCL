@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "Propagate.h"
+#include "Forward.h"
 
-class PropagateFc_workgroupPerFilterPlane : public Propagate {
+class ForwardFc_workgroupPerFilterPlane : public Forward {
 public:
     CLKernel *kernel1;
     CLKernel *kernel2;
@@ -18,9 +18,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~PropagateFc_workgroupPerFilterPlane();
+    VIRTUAL ~ForwardFc_workgroupPerFilterPlane();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
-    PropagateFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim );
+    ForwardFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

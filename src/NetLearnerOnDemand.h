@@ -19,7 +19,7 @@
 class NeuralNet;
 class Trainable;
 class NetLearnLabeledAction;
-class NetPropagateAction;
+class NetForwardAction;
 class OnDemandBatcher;
 
 #include "DeepCLDllExport.h"
@@ -39,7 +39,7 @@ protected:
     Timer timer;
     Trainable *net;
     NetLearnLabeledAction *learnAction;
-    NetPropagateAction *testAction;
+    NetForwardAction *testAction;
     OnDemandBatcher *learnBatcher;
     OnDemandBatcher *testBatcher;
 public:

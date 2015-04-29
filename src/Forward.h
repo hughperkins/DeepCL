@@ -24,12 +24,12 @@ using namespace std;
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT Propagate {
+class DeepCL_EXPORT Forward {
 public:
     OpenCLHelper *cl;
     LayerDimensions dim;
 
-    virtual ~Propagate() {}
+    virtual ~Forward() {}
     virtual void forward( int batchSize, 
         CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
         CLWrapper *outputWrapper ) = 0;
@@ -39,13 +39,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Propagate( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC Propagate *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC Propagate *instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
+    Forward( OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Forward *instance(OpenCLHelper *cl, LayerDimensions dim );
+    STATIC Forward *instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
     STATIC int getNumImplementations();
     STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim );
-    STATIC Propagate *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC Propagate *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Forward *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Forward *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions );
     VIRTUAL float * forward( int batchSize, float *inputData, float *filters, float *biases );
     VIRTUAL void forward( int batchSize, float *inputData, float *filters, float *biases, float *output );
 

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "Propagate3.h"
+#include "Forward3.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -17,14 +17,14 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-VIRTUAL Propagate3::~Propagate3() {
+VIRTUAL Forward3::~Forward3() {
     delete kernel;
     delete repeatedAdd;
 //    delete activate;
 }
-VIRTUAL void Propagate3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("Propagate3::forward begin");
+    StatefulTimer::timeCheck("Forward3::forward begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
 
@@ -43,7 +43,7 @@ VIRTUAL void Propagate3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapp
 //    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("Propagate3::forward after kernel1");
+    StatefulTimer::timeCheck("Forward3::forward after kernel1");
 
 //    {
 //        outputWrapper->copyToHost();
@@ -62,7 +62,7 @@ VIRTUAL void Propagate3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapp
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
-        StatefulTimer::timeCheck("Propagate3::forward after repeatedAdd");
+        StatefulTimer::timeCheck("Forward3::forward after repeatedAdd");
     }
 
 //    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
@@ -71,12 +71,12 @@ VIRTUAL void Propagate3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapp
 //    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
 //    cl->finish();
-//    StatefulTimer::timeCheck("Propagate3::forward after activate");
+//    StatefulTimer::timeCheck("Forward3::forward after activate");
 
-    StatefulTimer::timeCheck("Propagate3::forward after call forward");
+    StatefulTimer::timeCheck("Forward3::forward after call forward");
 }
-Propagate3::Propagate3( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+Forward3::Forward3( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
 
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {

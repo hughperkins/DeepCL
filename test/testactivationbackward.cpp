@@ -39,8 +39,8 @@ TEST( testactivationbackward, basic ) {
 
     activationBackprop->backward( batchSize, outputs, gradOutput, gradInput );
 
-//    float *expectedGradInput = new float[ activationPropagate->getInputSize( batchSize ) ];
-//    memset( expectedGradInput, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
+//    float *expectedGradInput = new float[ activationForward->getInputSize( batchSize ) ];
+//    memset( expectedGradInput, 0, sizeof(float) * activationForward->getInputSize( batchSize ) ];
 //    float expectedGradInput[] = {
 //        3,0,-2.7f,
 //        2,0,2.1f,
@@ -88,8 +88,8 @@ TEST( testactivationbackward, basic_2plane_batchsize2 ) {
 
     activationBackprop->backward( batchSize, outputs, gradOutput, gradInput );
 
-//    float *expectedGradInput = new float[ activationPropagate->getInputSize( batchSize ) ];
-//    memset( expectedGradInput, 0, sizeof(float) * activationPropagate->getInputSize( batchSize ) ];
+//    float *expectedGradInput = new float[ activationForward->getInputSize( batchSize ) ];
+//    memset( expectedGradInput, 0, sizeof(float) * activationForward->getInputSize( batchSize ) ];
     float expectedGradInput[] = {
         3,
         0,
@@ -191,7 +191,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int activationSize = 2;
     OpenCLHelper cl;
-    ActivationForward *activationPropagate = ActivationForward::instanceForTest( cl, numPlanes, imageSize, activationSize );
+    ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, activationSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -204,11 +204,11 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationPropagate->getOutputSize( batchSize );
+    int outputSize = activationForward->getOutputSize( batchSize );
     int *selectors = new int[outputSize];
     float *output = new float[outputSize];
 
-    activationPropagate->forward( batchSize, data, selectors, output );
+    activationForward->forward( batchSize, data, selectors, output );
 
     EXPECT_EQ( selectors[0], 2 );
     EXPECT_EQ( selectors[1], 1 );
@@ -220,7 +220,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     EXPECT_EQ( output[2], 33 );
     EXPECT_EQ( output[3], 37.4f );
 
-    delete activationPropagate;
+    delete activationForward;
     delete[] selectors;
     delete[] output;
 }

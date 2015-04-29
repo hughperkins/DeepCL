@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Propagate.h"
+#include "Forward.h"
 
-class Propagate3 : public Propagate {
+class Forward3 : public Forward {
 public:
     CLKernel *kernel;
     CLKernel *repeatedAdd;
@@ -13,10 +13,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~Propagate3();
+    VIRTUAL ~Forward3();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper );
-    Propagate3( OpenCLHelper *cl, LayerDimensions dim );
+    Forward3( OpenCLHelper *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

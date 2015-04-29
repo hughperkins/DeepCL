@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "PropagateByInputPlane.h"
+#include "ForwardByInputPlane.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -17,15 +17,15 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-VIRTUAL PropagateByInputPlane::~PropagateByInputPlane() {
+VIRTUAL ForwardByInputPlane::~ForwardByInputPlane() {
     delete kernel;
     delete reduceSegments;
     delete repeatedAdd;
 //    delete activate;
 }
-VIRTUAL void PropagateByInputPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void ForwardByInputPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
     CLWrapper *outputWrapper ) {
-    StatefulTimer::timeCheck("PropagateByInputPlane::forward begin");
+    StatefulTimer::timeCheck("ForwardByInputPlane::forward begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     int maxglobalId = 0;
 
@@ -58,7 +58,7 @@ VIRTUAL void PropagateByInputPlane::forward( int batchSize, CLWrapper *dataWrapp
 //    cout << "forwardbyinputplane numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " numinputplanes=" << dim.numInputPlanes << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateByInputPlane::forward after kernel1");
+    StatefulTimer::timeCheck("ForwardByInputPlane::forward after kernel1");
 
 //    {
 //        output1Wrapper->copyToHost();
@@ -72,7 +72,7 @@ VIRTUAL void PropagateByInputPlane::forward( int batchSize, CLWrapper *dataWrapp
     numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
     reduceSegments->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
     cl->finish();
-    StatefulTimer::timeCheck("PropagateByInputPlane::forward after reduce over inputplanes");
+    StatefulTimer::timeCheck("ForwardByInputPlane::forward after reduce over inputplanes");
 
     if( dim.biased ) {
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
@@ -83,7 +83,7 @@ VIRTUAL void PropagateByInputPlane::forward( int batchSize, CLWrapper *dataWrapp
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
         cl->finish();
-        StatefulTimer::timeCheck("PropagateByInputPlane::forward after repeatedAdd");
+        StatefulTimer::timeCheck("ForwardByInputPlane::forward after repeatedAdd");
     }
 
 //    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
@@ -92,15 +92,15 @@ VIRTUAL void PropagateByInputPlane::forward( int batchSize, CLWrapper *dataWrapp
 //    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
 //    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
 //    cl->finish();
-//    StatefulTimer::timeCheck("PropagateByInputPlane::forward after activate");
+//    StatefulTimer::timeCheck("ForwardByInputPlane::forward after activate");
 
     delete output1Wrapper;
     delete[] output1;
 
-    StatefulTimer::timeCheck("PropagateByInputPlane::forward after call forward");
+    StatefulTimer::timeCheck("ForwardByInputPlane::forward after call forward");
 }
-PropagateByInputPlane::PropagateByInputPlane( OpenCLHelper *cl, LayerDimensions dim ) :
-        Propagate( cl, dim )
+ForwardByInputPlane::ForwardByInputPlane( OpenCLHelper *cl, LayerDimensions dim ) :
+        Forward( cl, dim )
             {
 
     std::string options = ""; // "-D " + fn->getDefineName();
