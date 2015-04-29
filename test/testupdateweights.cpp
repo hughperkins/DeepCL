@@ -305,7 +305,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     for( int i = 0; i < dim.filtersSize; i++ ) {
         if( expectedOutput[i] != -999 && expectedOutput[i] != weights[i] ) {
             cout << "mismatch for i " << i << endl;
-            EXPECT_EQ( expectedOutput[i], weights[i] );
+            EXPECT_EQ( - expectedOutput[i], weights[i] );
         }
     }
     delete[] output;
