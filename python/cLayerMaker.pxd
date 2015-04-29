@@ -10,6 +10,12 @@ cdef extern from "InputLayerMaker.h":
         @staticmethod
         InputLayerMaker *instance() except +
 
+cdef extern from "DropoutMaker.h":
+    cdef cppclass DropoutMaker(LayerMaker2):
+        DropoutMaker *dropRatio( float _dropRatio ) except +
+        @staticmethod
+        DropoutMaker *instance() except +
+
 cdef extern from "ActivationMaker.h":
     cdef cppclass ActivationMaker(LayerMaker2):
         ActivationMaker *relu() except +

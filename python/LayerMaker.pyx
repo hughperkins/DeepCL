@@ -84,6 +84,18 @@ cdef class PoolingMaker(LayerMaker2):
     def instance():
         return PoolingMaker()
 
+cdef class DropoutMaker(LayerMaker2):
+    cdef cDeepCL.DropoutMaker *thisptr
+    def __cinit__( self ):
+        self.thisptr = new cDeepCL.DropoutMaker()
+        self.baseptr = self.thisptr
+    def dropRatio(self, float _dropRatio):
+        self.thisptr.dropRatio(_dropRatio)
+        return self
+    @staticmethod
+    def instance():
+        return ActivationMaker()
+
 cdef class ActivationMaker(LayerMaker2):
     cdef cDeepCL.ActivationMaker *thisptr
     def __cinit__( self ):
