@@ -11,7 +11,7 @@
 
 #include "StatefulTimer.h"
 
-#include "PoolingPropagateCpu.h"
+#include "PoolingForwardCpu.h"
 
 using namespace std;
 
@@ -20,11 +20,11 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingPropagateCpu::PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingPropagate( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingForwardCpu::PoolingForwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
-VIRTUAL void PoolingPropagateCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
-//    cout << "PoolingPropagateCpu::forward( CLWrapper * )" << endl;
+VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+//    cout << "PoolingForwardCpu::forward( CLWrapper * )" << endl;
 
     inputWrapper->copyToHost();
 
@@ -46,10 +46,10 @@ VIRTUAL void PoolingPropagateCpu::forward( int batchSize, CLWrapper *inputWrappe
     delete[] selectors;
     delete[] output;
 }
-VIRTUAL void PoolingPropagateCpu::forward( int batchSize, float *input, int *selectors, float *output ) {
+VIRTUAL void PoolingForwardCpu::forward( int batchSize, float *input, int *selectors, float *output ) {
 //    float *output = new float[ getOutputSize( batchSize ) ];
-//    cout << "PoolingPropagateCpu::forward( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::forward start" );
+//    cout << "PoolingForwardCpu::forward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("PoolingForwardCpu::forward start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
@@ -76,7 +76,7 @@ VIRTUAL void PoolingPropagateCpu::forward( int batchSize, float *input, int *sel
             }
         }
     }
-    StatefulTimer::instance()->timeCheck("PoolingPropagateCpu::forward end" );
+    StatefulTimer::instance()->timeCheck("PoolingForwardCpu::forward end" );
 //    return output;
 }
 

@@ -12,7 +12,7 @@
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
-#include "PoolingPropagateGpuNaive.h"
+#include "PoolingForwardGpuNaive.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -23,28 +23,28 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-VIRTUAL PoolingPropagateGpuNaive::~PoolingPropagateGpuNaive() {
+VIRTUAL PoolingForwardGpuNaive::~PoolingForwardGpuNaive() {
     delete kernel;
 }
-VIRTUAL void PoolingPropagateGpuNaive::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "PoolingPropagateGpuNaive::forward( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::forward start" );
+VIRTUAL void PoolingForwardGpuNaive::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "PoolingForwardGpuNaive::forward( CLWrapper * )" << endl;
+    StatefulTimer::instance()->timeCheck("PoolingForwardGpuNaive::forward start" );
 
     kernel->input( batchSize )->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "PoolingPropagateGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
+//    cout << "PoolingForwardGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
-//    cout << "PoolingPropagateGpuNaive::forward selectorswrapper:" << endl;
+//    cout << "PoolingForwardGpuNaive::forward selectorswrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
-    StatefulTimer::instance()->timeCheck("PoolingPropagateGpuNaive::forward end" );
+    StatefulTimer::instance()->timeCheck("PoolingForwardGpuNaive::forward end" );
 }
-PoolingPropagateGpuNaive::PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingPropagate( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingForwardGpuNaive::PoolingForwardGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );
     options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );

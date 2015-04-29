@@ -9,10 +9,10 @@
 #include <cstring>
 
 #include "OpenCLHelper.h"
-#include "PoolingBackprop.h"
+#include "PoolingBackward.h"
 #include "StatefulTimer.h"
 
-#include "PoolingBackpropCpu.h"
+#include "PoolingBackwardCpu.h"
 
 using namespace std;
 
@@ -21,10 +21,10 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingBackpropCpu::PoolingBackpropCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingBackwardCpu::PoolingBackwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingBackward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
-VIRTUAL void PoolingBackpropCpu::backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput ) {
+VIRTUAL void PoolingBackwardCpu::backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput ) {
     memset( gradInput, 0, sizeof( float ) * getInputSize( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
@@ -43,9 +43,9 @@ VIRTUAL void PoolingBackpropCpu::backward( int batchSize,  float *gradOutput, in
         }
     }
 }
-VIRTUAL void PoolingBackpropCpu::backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
+VIRTUAL void PoolingBackwardCpu::backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
         CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backward start" );
+    StatefulTimer::instance()->timeCheck("PoolingBackwardCpu::backward start" );
 
     gradOutputWrapper->copyToHost();
     selectorsWrapper->copyToHost();
@@ -62,6 +62,6 @@ VIRTUAL void PoolingBackpropCpu::backward( int batchSize, CLWrapper *gradOutputW
 
     delete[] gradInput;
     
-    StatefulTimer::instance()->timeCheck("PoolingBackpropCpu::backward end" );
+    StatefulTimer::instance()->timeCheck("PoolingBackwardCpu::backward end" );
 }
 

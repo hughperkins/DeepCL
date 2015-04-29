@@ -13,8 +13,8 @@
 
 class CLKernel;
 class CLWrapper;
-class PoolingPropagate;
-class PoolingBackprop;
+class PoolingForward;
+class PoolingBackward;
 
 class PoolingMaker;
 
@@ -28,8 +28,8 @@ public:
     const int outputImageSize;
 
     OpenCLHelper *const cl; // NOT owned by us
-    PoolingPropagate *poolingPropagateImpl;
-    PoolingBackprop *poolingBackpropImpl;
+    PoolingForward *poolingPropagateImpl;
+    PoolingBackward *poolingBackpropImpl;
 
     float *output;
     int *selectors;

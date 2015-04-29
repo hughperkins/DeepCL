@@ -44,8 +44,8 @@ set( lua_DeepCL_sources
     BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
     BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
     FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingPropagate.cpp PoolingPropagateCpu.cpp PoolingLayer.cpp PoolingBackprop.cpp
-    PoolingBackpropCpu.cpp PoolingPropagateGpuNaive.cpp
+    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
+    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
     BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
     RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
     Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
@@ -53,7 +53,7 @@ set( lua_DeepCL_sources
     PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
     PropagateFc.cpp PropagateByInputPlane.cpp
-    PoolingBackpropGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
+    PoolingBackwardGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
     ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
     ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp

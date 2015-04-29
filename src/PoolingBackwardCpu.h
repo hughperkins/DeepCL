@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "PoolingPropagate.h"
+#include "PoolingBackward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class PoolingPropagateCpu : public PoolingPropagate {
+class PoolingBackwardCpu : public PoolingBackward {
 public:
 
     // [[[cog
@@ -19,9 +19,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingPropagateCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
-    VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
+    PoolingBackwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    VIRTUAL void backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput );
+    VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
+    CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

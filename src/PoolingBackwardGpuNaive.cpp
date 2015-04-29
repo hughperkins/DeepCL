@@ -9,11 +9,11 @@
 #include <cstring>
 
 #include "OpenCLHelper.h"
-#include "PoolingBackprop.h"
+#include "PoolingBackward.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
-#include "PoolingBackpropGpuNaive.h"
+#include "PoolingBackwardGpuNaive.h"
 
 using namespace std;
 
@@ -22,14 +22,14 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-VIRTUAL PoolingBackpropGpuNaive::~PoolingBackpropGpuNaive() {
+VIRTUAL PoolingBackwardGpuNaive::~PoolingBackwardGpuNaive() {
     delete kernel;
     delete kMemset;
 }
-VIRTUAL void PoolingBackpropGpuNaive::backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
+VIRTUAL void PoolingBackwardGpuNaive::backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, 
         CLWrapper *gradInputWrapper ) {
 
-    StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backward start" );
+    StatefulTimer::instance()->timeCheck("PoolingBackwardGpuNaive::backward start" );
 
     // first, memset errors to 0 ...
     kMemset->out( gradInputWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputImageSize * inputImageSize );
@@ -46,10 +46,10 @@ VIRTUAL void PoolingBackpropGpuNaive::backward( int batchSize, CLWrapper *gradOu
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("PoolingBackpropGpuNaive::backward end" );
+    StatefulTimer::instance()->timeCheck("PoolingBackwardGpuNaive::backward end" );
 }
-PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingBackprop( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingBackwardGpuNaive::PoolingBackwardGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+        PoolingBackward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
     options += " -D gNumPlanes=" + toString( numPlanes );
@@ -62,10 +62,10 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/PoolingBackpropGpuNaive.cl", "backward", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/PoolingBackwardGpuNaive.cl", "backward", 'options' )
     // stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
     // ]]]
-    // generated using cog, from cl/PoolingBackpropGpuNaive.cl:
+    // generated using cog, from cl/PoolingBackwardGpuNaive.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -116,7 +116,7 @@ PoolingBackpropGpuNaive::PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZero
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "backward", options, "cl/PoolingBackpropGpuNaive.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "backward", options, "cl/PoolingBackwardGpuNaive.cl" );
     // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 

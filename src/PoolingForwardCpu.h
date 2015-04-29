@@ -6,25 +6,22 @@
 
 #pragma once
 
-#include "PoolingBackprop.h"
+#include "PoolingForward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class PoolingBackpropGpuNaive : public PoolingBackprop {
+class PoolingForwardCpu : public PoolingForward {
 public:
-    CLKernel *kernel;
-    CLKernel *kMemset;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~PoolingBackpropGpuNaive();
-    VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
-    CLWrapper *gradInputWrapper );
-    PoolingBackpropGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingForwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
+    VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
 
     // [[[end]]]
 };

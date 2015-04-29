@@ -6,7 +6,7 @@
 
 #include "OpenCLHelper.h"
 
-#include "PoolingPropagate.h"
+#include "PoolingForward.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -22,7 +22,7 @@ TEST( testpoolingforward, basic ) {
     int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingPropagate = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -56,7 +56,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingPropagate = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -97,7 +97,7 @@ TEST( testpoolingforward, fromwrappers ) {
     int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingPropagate = PoolingForward::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -210,8 +210,8 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    PoolingPropagate *poolingPropagate0 = PoolingPropagate::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
-    PoolingPropagate *poolingPropagate1 = PoolingPropagate::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingPropagate0 = PoolingForward::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingPropagate1 = PoolingForward::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = poolingPropagate0->getOutputSize( batchSize );

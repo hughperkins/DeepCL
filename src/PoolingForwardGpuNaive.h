@@ -6,14 +6,14 @@
 
 #pragma once
 
-#include "PoolingPropagate.h"
+#include "PoolingForward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
 class CLKernel;
 
-class PoolingPropagateGpuNaive : public PoolingPropagate {
+class PoolingForwardGpuNaive : public PoolingForward {
 public:
     CLKernel *kernel;
 
@@ -22,9 +22,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~PoolingPropagateGpuNaive();
+    VIRTUAL ~PoolingForwardGpuNaive();
     VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
-    PoolingPropagateGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingForwardGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
 
     // [[[end]]]
 };

@@ -13,8 +13,8 @@
 
 class CLKernel;
 class CLWrapper;
-class PoolingPropagate;
-class PoolingBackprop;
+class PoolingForward;
+class PoolingBackward;
 class RandomTranslationsMaker;
 
 class RandomTranslations : public Layer {

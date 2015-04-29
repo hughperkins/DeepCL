@@ -9,8 +9,8 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "PoolingLayer.h"
-#include "PoolingPropagate.h"
-#include "PoolingBackprop.h"
+#include "PoolingForward.h"
+#include "PoolingBackward.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -47,8 +47,8 @@ PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker
 //        maker->net->print();
         throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    poolingPropagateImpl = PoolingPropagate::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    poolingBackpropImpl = PoolingBackprop::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    poolingPropagateImpl = PoolingForward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    poolingBackpropImpl = PoolingBackward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
 VIRTUAL PoolingLayer::~PoolingLayer() {
     delete poolingPropagateImpl;

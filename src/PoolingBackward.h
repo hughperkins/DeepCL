@@ -14,7 +14,7 @@
 class OpenCLHelper;
 class CLWrapper;
 
-class DeepCL_EXPORT PoolingBackprop {
+class DeepCL_EXPORT PoolingBackward {
 public:
     OpenCLHelper *cl;
 
@@ -26,7 +26,7 @@ public:
     const int outputImageSize;
 //    const int poolingSizeSquared;
 
-    virtual ~PoolingBackprop() {}
+    virtual ~PoolingBackward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
@@ -45,10 +45,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC PoolingBackprop *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingBackprop *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize);
-    STATIC PoolingBackprop *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    PoolingBackprop( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingBackward *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingBackward *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize);
+    STATIC PoolingBackward *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingBackward( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
     VIRTUAL void backward( int batchSize, float *gradOutput, int *selectors, float *gradInput );

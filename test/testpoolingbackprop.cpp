@@ -6,8 +6,8 @@
 
 #include "OpenCLHelper.h"
 
-#include "PoolingBackprop.h"
-#include "PoolingPropagate.h"
+#include "PoolingBackward.h"
+#include "PoolingForward.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -22,7 +22,7 @@ TEST( testpoolingbackprop, basic ) {
     int imageSize = 4;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
+    PoolingBackward *poolingBackprop = PoolingBackward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 5,
         2, 9
@@ -58,7 +58,7 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingBackprop *poolingBackprop = PoolingBackprop::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
+    PoolingBackward *poolingBackprop = PoolingBackward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 
         5,
@@ -119,8 +119,8 @@ TEST( SLOW_testpoolingbackprop, compare_args ) {
     bool padZeros = true;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    PoolingBackprop *p0 = PoolingBackprop::instanceSpecific( instance0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    PoolingBackprop *p1 = PoolingBackprop::instanceSpecific( instance1, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputImageSize, poolingSize );
     int outputImageSize = p1->outputImageSize;
     int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
     float *errors = new float[ errorsSize ];
@@ -129,13 +129,13 @@ TEST( SLOW_testpoolingbackprop, compare_args ) {
     float *errorsForUpstream0 = new float[ inputSize ];
     float *errorsForUpstream1 = new float[ inputSize ];
     
-    PoolingPropagate *forwardprop = PoolingPropagate::instanceSpecific( 0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    PoolingForward *forwardprop = PoolingForward::instanceSpecific( 0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
     float *output = new float[errorsSize];
     float *input = new float[inputSize];
     float *errorsForUpstream[2];
     errorsForUpstream[0] = errorsForUpstream0;
     errorsForUpstream[1] = errorsForUpstream1;
-    PoolingBackprop *props[2];
+    PoolingBackward *props[2];
     props[0] = p0;
     props[1] = p1;
     for( int it = 0; it < its; it++ ) {
@@ -188,7 +188,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int imageSize = 2;
     int poolingSize = 2;
     OpenCLHelper cl;
-    PoolingPropagate *poolingPropagate = PoolingPropagate::instanceForTest( cl, numPlanes, imageSize, poolingSize );
+    PoolingForward *poolingPropagate = PoolingForward::instanceForTest( cl, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
 
