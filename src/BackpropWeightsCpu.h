@@ -23,7 +23,7 @@ public:
     VIRTUAL ~BackpropWeightsCpu();
     VIRTUAL void calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper );
     VIRTUAL void backpropWeights( int batchSize, float learningRate, float *gradOutput,
-    float *input, float *gradWeights, float *gradBiasWeights );
+    float *inputs, float *gradWeights, float *gradBiasWeights );
 
     // [[[end]]]
 };

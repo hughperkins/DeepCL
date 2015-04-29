@@ -38,7 +38,7 @@ VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningR
     }
 }
 VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningRate, float *gradOutput,
-    float *input, float *gradWeights, float *gradBiasWeights ) {
+    float *inputs, float *gradWeights, float *gradBiasWeights ) {
 
     StatefulTimer::instance()->timeCheck(" BackpropWeightsCpu start" );
 
@@ -69,19 +69,18 @@ VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningR
                                 continue;
                             }
                             for( int n = 0; n < batchSize; n++ ) {
-                                int resultIndex = ( ( n
+                                int outputIndex = ( ( n
                                     * dim.numFilters + outPlane )
                                     * dim.outputImageSize + outRow )
                                     * dim.outputImageSize + outCol;
-                                float _gradOutput = gradOutput[resultIndex];
+                                float gradOutputValue = gradOutput[outputIndex];
                                 int inputIndex = ( ( n
                                     * dim.inputPlanes + inputPlane )
                                     * dim.inputImageSize + inputRow )
                                     * dim.inputImageSize + inputCol;
-                                float inputValue = input[ inputIndex ];
-                                float thisimagethiswchange = _gradOutput * inputValue;
-                                thiswchange += thisimagethiswchange;
-                                thisBiasChange += _gradOutput; // fairly sure this is right.  Fairly :-P
+                                float inputValue = inputs[ inputIndex ];
+                                thiswchange += gradOutputValue * inputValue;
+                                thisBiasChange += gradOutputValue; // fairly sure this is right.  Fairly :-P
                             }
                         }
                     }

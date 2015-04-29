@@ -113,12 +113,24 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
 }
 
 TEST( testupdateweights, conv1 ) {
-    NeuralNet *net = new NeuralNet( 1, 2 );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(2)->biased(0)->padZeros(0) );
+    NeuralNet *net = new NeuralNet( 2, 5 );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
 
-    net->setBatchSize(1);
+    net->setBatchSize(4);
+
+    checkWeightsUpdate( net, 1 );
+    delete net;
+}
+
+TEST( testupdateweights, conv1z ) {
+    NeuralNet *net = new NeuralNet( 2, 3 );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(1) );
+    net->addLayer( SquareLossMaker::instance() );
+    cout << net->asString() << endl;
+
+    net->setBatchSize(4);
 
     checkWeightsUpdate( net, 1 );
     delete net;

@@ -24,7 +24,7 @@ public:
     bool debug; // = false;
 
     virtual ~BackpropWeights() {}
-    virtual void calcGradWeights( int batchSize, float learningRate, CLWrapper *gradOutputWrapper, CLWrapper *inputDataWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) = 0;
+    virtual void calcGradWeights( int batchSize, float learningRate, CLWrapper *gradOutputWrapper, CLWrapper *inputsWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) = 0;
 
     // [[[cog
     // import cog_addheaders
