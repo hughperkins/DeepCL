@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeightsScratchLarge::~BackpropWeightsScratchLarge() {
     delete kernel;
 }
-VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsScratchLarge start" );
 
     int workgroupSize = 32 * ( ( square(dim.filterSize) + 32 - 1 ) / 32 ); // quantize to nearest 32
@@ -31,7 +31,7 @@ VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, float 
 //    globalSize = ( ( globalSize + workgroupSize - 1 ) / workgroupSize ) * workgroupSize;
 //    cout << "workgroupsize " << workgroupSize << " numworkgroups " << numWorkgroups << " globalsize " << globalSize << endl;
 
-    const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
+    const float learningMultiplier = learningRateToMultiplier( batchSize );
 
     kernel
        ->in(learningMultiplier)

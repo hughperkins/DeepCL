@@ -296,7 +296,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( cl, dim );
-    backpropWeightsImpl->calcGradWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
+    backpropWeightsImpl->calcGradWeights( batchSize, errors, data, weights, biasWeights );
     delete backpropWeightsImpl;
     
 //    for( int i = 0; i < 20; i++ ) {
@@ -518,7 +518,7 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     dim.setInputImageSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
-    const float learningRate = 1;
+//    const float learningRate = 1;
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
@@ -589,12 +589,10 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     
     BackpropWeights *backpropWeightsImpl0 = BackpropWeights::instanceSpecific( 0, cl, dim );
     backpropWeightsImpl0->debug = true;
-    backpropWeightsImpl0->calcGradWeights( batchSize, learningRate,
-        errorsWrap, inputWrap, weights0Wrap, 0 );
+    backpropWeightsImpl0->calcGradWeights( batchSize, errorsWrap, inputWrap, weights0Wrap, 0 );
     BackpropWeights *backpropWeightsImpl1 = BackpropWeights::instanceSpecific( 3, cl, dim );
     backpropWeightsImpl1->debug = true;
-    backpropWeightsImpl1->calcGradWeights( batchSize, learningRate,
-        errorsWrap, inputWrap, weights1Wrap, 0 );
+    backpropWeightsImpl1->calcGradWeights( batchSize, errorsWrap, inputWrap, weights1Wrap, 0 );
     weights0Wrap->copyToHost();
     weights1Wrap->copyToHost();
 
@@ -740,17 +738,17 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
     memset( biasWeights1, 0, sizeof(float) * biasWeightsAllocated );
     memset( biasWeights2, 0, sizeof(float) * biasWeightsAllocated );
 
-    float *errors = new float[outputAllocated];
+    float *gradOutput = new float[outputAllocated];
     float *inputData = new float[inputAllocated];
     float *weights1 = new float[weightsAllocated];
     float *weights2 = new float[weightsAllocated];
 
-    memset( errors, 0, sizeof(float) * outputAllocated );
+    memset( gradOutput, 0, sizeof(float) * outputAllocated );
     memset( inputData, 0, sizeof(float) * inputAllocated );
     memset( weights1, 0, sizeof(float) * weightsAllocated );
     memset( weights2, 0, sizeof(float) * weightsAllocated );
 
-    WeightRandomizer::randomize( errors, outputAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( gradOutput, outputAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( inputData, inputAllocated, -0.3f, 0.7f );
 
 //    WeightRandomizer::randomizeInts( errors, outputAllocated, 0, 99 );
@@ -775,8 +773,8 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
         BackpropWeights *backpropWeightsImpl = instanceObjects[instance];
         backpropWeightsImpl->debug = true;
         for( int it = 0; it < its; it++ ) {
-            backpropWeightsImpl->calcGradWeights( batchSize, learningRate,
-                errors, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
+            backpropWeightsImpl->calcGradWeights( batchSize,
+                gradOutput, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
         }
         timer.timeCheck("instance " + toString( instances[instance] ) + " backpropweights" );
 //        delete backpropWeightsImpl;
@@ -839,7 +837,7 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
 
     delete[] weights1;
     delete[] weights2;
-    delete[] errors;
+    delete[] gradOutput;
     delete[] inputData;
 
     delete cl;
@@ -943,29 +941,28 @@ void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
     float *biasWeights = new float[ biasWeightsAllocated ];
     memset( biasWeights, 0, sizeof(float) * biasWeightsAllocated );
 
-    float *errors = new float[outputAllocated];
+    float *gradOutput = new float[outputAllocated];
     float *inputData = new float[inputAllocated];
     float *weights = new float[weightsAllocated];
 
-    memset( errors, 0, sizeof(float) * outputAllocated );
+    memset( gradOutput, 0, sizeof(float) * outputAllocated );
     memset( inputData, 0, sizeof(float) * inputAllocated );
     memset( weights, 0, sizeof(float) * weightsAllocated );
 
-    WeightRandomizer::randomizeInts( errors, outputAllocated, 0, 99 );
+    WeightRandomizer::randomizeInts( gradOutput, outputAllocated, 0, 99 );
     WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceSpecific( instance, cl, dim );
     Timer timer;
-    backpropWeightsImpl->calcGradWeights( batchSize, 1.0f,
-        errors, inputData, weights, biasWeights );
+    backpropWeightsImpl->calcGradWeights( batchSize, gradOutput, inputData, weights, biasWeights );
     timer.timeCheck("backprop time");
 
     delete backpropWeightsImpl;
 
     delete[] weights;
-    delete[] errors;
+    delete[] gradOutput;
     delete[] inputData;
 
     delete cl;

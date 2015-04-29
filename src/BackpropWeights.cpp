@@ -30,7 +30,6 @@ BackpropWeights::BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensi
         debug( false ) {
 }
 STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensions dim ) {
-    return new BackpropWeightsScratchLarge( cl, dim );
     if( dim.inputImageSize - dim.filterSize < 4 ) {
         return new BackpropWeightsNaive( cl, dim );
     }
@@ -42,15 +41,6 @@ STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensi
     } else {
         return new BackpropWeightsNaive( cl, dim );
     }
-
-//    return new BackpropWeightsScratchLarge( cl, dim );
-
-//    if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
-//            && dim.inputImageSize <= 32 ) { // if inputimagesize too big, we run out of local memory
-//        return new BackpropWeightsScratch( cl, dim );
-//    } else {
-//        return new BackpropWeightsNaive( cl, dim );
-//    }
 }
 STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
     return new BackpropWeightsScratchLarge( cl, layerDimensions );
@@ -71,7 +61,7 @@ STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, OpenCLHelper
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx) );
 }
 
-VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float learningRate, float *gradOutput, float *inputs, float *gradWeights, float *gradBiasWeights ) {
+VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBiasWeights ) {
     StatefulTimer::timeCheck("BackpropWeights::backprop begin");
 
 //    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
@@ -89,9 +79,6 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float learningRate
     gradWeightsWrapper = cl->wrap( gradWeightsSize, gradWeights );
     gradWeightsWrapper->copyToDevice();
 
-//    cout << "backpropgradWeights2::backpropgradWeights outputSize=" << outputSize << " inputSize=" << inputSize << 
-//        " weightSize=" << gradWeightsSize << endl;
-
     CLWrapper *gradBiasWeightsWrapper = 0;
     if( dim.biased ) {
         gradBiasWeightsWrapper = cl->wrap( dim.numFilters, gradBiasWeights );
@@ -99,7 +86,7 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float learningRate
     }
 
     StatefulTimer::timeCheck("BackpropWeights::backprop after copied to device");
-    calcGradWeights( batchSize, learningRate, gradOutputWrapper, inputDataWrapper, gradWeightsWrapper, gradBiasWeightsWrapper );
+    calcGradWeights( batchSize, gradOutputWrapper, inputDataWrapper, gradWeightsWrapper, gradBiasWeightsWrapper );
     StatefulTimer::timeCheck("BackpropWeights::backprop after call backprop");
     gradWeightsWrapper->copyToHost();
     if( dim.biased ) {
@@ -115,11 +102,11 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float learningRate
     }
 }
 
-float BackpropWeights::learningRateToMultiplier( int batchSize, float rate ) {
+float BackpropWeights::learningRateToMultiplier( int batchSize ) {
 //        float multiplier = rate / batchSize / sqrt( dim.outputImageSize );
-    float multiplier = rate;
+//    float multiplier = rate;
 //    std::cout << "rate " << rate << " multiplier " << multiplier << std::endl;
-    return multiplier;
+    return 1.0f;
 }
 
 

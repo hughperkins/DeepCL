@@ -411,7 +411,7 @@ VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
         StatefulTimer::instance()->timeCheck("backproperrors(): calced gradInput, layer " + ::toString( layerIndex ) );
     }
 
-    backpropWeightsImpl->calcGradWeights( batchSize, learningRate, gradOutputWrapper, imagesWrapper,  gradWeightsWrapper, gradBiasWeightsWrapper );
+    backpropWeightsImpl->calcGradWeights( batchSize, gradOutputWrapper, imagesWrapper,  gradWeightsWrapper, gradBiasWeightsWrapper );
     weightsCopiedToHost = false;
     gradWeightsCopiedToHost = false;
     gradBiasWeightsCopiedToHost = false;

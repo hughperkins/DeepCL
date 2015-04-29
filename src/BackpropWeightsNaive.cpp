@@ -20,10 +20,10 @@ VIRTUAL BackpropWeightsNaive::~BackpropWeightsNaive() {
 //    cout << "~backpropgradWeights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start" );
 
-    const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
+    const float learningMultiplier = learningRateToMultiplier( batchSize );
 
     kernel
        ->in(learningMultiplier)

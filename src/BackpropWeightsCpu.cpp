@@ -22,7 +22,7 @@ BackpropWeightsCpu::BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim ) 
 }
 VIRTUAL BackpropWeightsCpu::~BackpropWeightsCpu() {
 }
-VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     gradOutputWrapper->copyToHost();
     imagesWrapper->copyToHost();
     float *gradBiasWeights = 0;
@@ -30,19 +30,19 @@ VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningR
         gradBiasWeightsWrapper->copyToHost();
         gradBiasWeights =  (float *)gradBiasWeightsWrapper->getHostArray();
     }
-    calcGradWeights( batchSize, learningRate, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
+    calcGradWeights( batchSize, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
         (float *)gradWeightsWrapper->getHostArray(), gradBiasWeights );
     gradWeightsWrapper->copyToDevice();
     if( dim.biased ) {
         gradBiasWeightsWrapper->copyToDevice();
     }
 }
-VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningRate, float *gradOutput,
+VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float *gradOutput,
     float *inputs, float *gradWeights, float *gradBiasWeights ) {
 
     StatefulTimer::instance()->timeCheck(" calcGradWeightsCpu start" );
 
-    const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
+    const float learningMultiplier = learningRateToMultiplier( batchSize );
 
     const int halfFilterSize = dim.filterSize >> 1;
     const int margin = dim.padZeros ? halfFilterSize : 0;

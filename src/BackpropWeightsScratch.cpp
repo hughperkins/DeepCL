@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeightsScratch::~BackpropWeightsScratch() {
     delete kernel;
 }
-VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsScratch start" );
 
     int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
@@ -36,7 +36,7 @@ VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, float learn
             toString( cl->getLocalMemorySizeKB() ) + "KB local memory" );
     }
 
-    const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
+    const float learningMultiplier = learningRateToMultiplier( batchSize );
 
     kernel
        ->in(learningMultiplier)

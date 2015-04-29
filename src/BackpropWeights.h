@@ -24,7 +24,7 @@ public:
     bool debug; // = false;
 
     virtual ~BackpropWeights() {}
-    virtual void calcGradWeights( int batchSize, float learningRate, CLWrapper *gradOutputWrapper, CLWrapper *inputsWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) = 0;
+    virtual void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *inputsWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -35,8 +35,8 @@ public:
     STATIC BackpropWeights *instance(OpenCLHelper *cl, LayerDimensions dim );
     STATIC BackpropWeights *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
     STATIC BackpropWeights *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    VIRTUAL void calcGradWeights( int batchSize, float learningRate, float *gradOutput, float *inputs, float *gradWeights, float *gradBiasWeights );
-    float learningRateToMultiplier( int batchSize, float rate );
+    VIRTUAL void calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBiasWeights );
+    float learningRateToMultiplier( int batchSize );
 
     // [[[end]]]
 };
