@@ -128,6 +128,12 @@ VIRTUAL void Layer::printOutput() {
 PUBLICAPI VIRTUAL void Layer::backward( float learningRate ) {
     throw std::runtime_error("backward not implemented for this layertype, layerindex " + toString(layerIndex ) );
 }
+VIRTUAL float *Layer::getGradWeights() {
+    throw std::runtime_error("getGradWeights not implemented for " + getClassName() );
+}
+VIRTUAL float *Layer::getGradBiasWeights() {
+    throw std::runtime_error("getGradBiasWeights not implemented for " + getClassName() );
+}
 PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
     throw std::runtime_error("getWeightsSize not implemented for this layertype");
 }

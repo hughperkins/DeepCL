@@ -124,7 +124,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototypin
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
 
-set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testforward.cpp test/testfilehelper.cpp
+set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackward.cpp test/testsinglebatch.cpp 
  test/testpoolingforward.cpp test/testpoolingbackward.cpp test/testNorbLoader.cpp

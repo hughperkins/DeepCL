@@ -78,6 +78,8 @@ public:
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
     PUBLICAPI VIRTUAL void backward( float learningRate );
+    VIRTUAL float *getGradWeights();
+    VIRTUAL float *getGradBiasWeights();
     PUBLICAPI VIRTUAL int getWeightsSize() const;
     PUBLICAPI VIRTUAL int getBiasWeightsSize() const;
     PUBLICAPI VIRTUAL void persistToArray(float *array);

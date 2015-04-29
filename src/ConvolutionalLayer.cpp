@@ -28,18 +28,29 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         biasWeightsTrainer( 0 ),
         backwardImpl(0),
 //        activationFunction( maker->_activationFunction ),
-        output(0),
+
         weights(0),
         biasWeights(0),
+        output(0),
+        gradInput( 0 ),
+        gradWeights( 0 ),
+        gradBiasWeights( 0 ),
+
         weightsWrapper( 0 ),
         outputWrapper( 0 ),
         gradInputWrapper( 0 ),
+        gradWeightsWrapper( 0 ),
+        gradBiasWeightsWrapper( 0 ),
+
         batchSize( 0 ),
         allocatedSpaceNumExamples( 0 ),
-        gradInput( 0 ),
+
+        weightsCopiedToHost( false ),
         outputCopiedToHost( false ),
         gradInputCopiedToHost( false ),
-        weightsCopiedToHost(false) {
+        gradWeightsCopiedToHost( false ),
+        gradBiasWeightsCopiedToHost( false ) 
+            {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
         .setInputImageSize( previousLayer->getOutputImageSize() )
         .setNumFilters( maker->_numFilters )
@@ -67,32 +78,35 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
     biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
     randomizeWeights();
+
     weightsWrapper = cl->wrap( getWeightsSize(), weights );
     weightsWrapper->copyToDevice();
     weightsCopiedToHost = true;
+
+    gradWeights = new float[ getWeightsSize() ];
+    gradWeightsWrapper = cl->wrap( getWeightsSize(), gradWeights );
+    gradWeightsWrapper->createOnDevice();
+
+    if( dim.biased ) {
+        gradBiasWeights = new float[ getBiasWeightsSize() ];
+        gradBiasWeightsWrapper = cl->wrap( getBiasWeightsSize(), gradBiasWeights );
+        gradBiasWeightsWrapper->createOnDevice();
+    }
 }
 VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
-    if( weightsWrapper != 0 ) {
-        delete weightsWrapper;
-    }
-    if( outputWrapper != 0 ) {
-        delete outputWrapper;
-    }
-    if( output != 0 ) {
-        delete[] output;
-    }
-    if( weights != 0 ) {
-        delete[] weights;
-    }
-    if( biasWeights != 0 ) {
-        delete[] biasWeights;
-    }
-    if( gradInputWrapper != 0 ) {
-        delete gradInputWrapper;
-    }
-    if( gradInput != 0 ) {
-        delete[] gradInput;
-    }
+    delete weightsWrapper;
+    delete outputWrapper;
+    delete gradInputWrapper;
+    delete gradWeightsWrapper;
+    delete gradBiasWeightsWrapper;
+
+    delete[] output;
+    delete[] weights;
+    delete[] biasWeights;
+    delete[] gradInput;
+    delete[] gradWeights;
+    delete[] gradBiasWeights;
+
     delete forwardimpl;
     delete backpropWeightsImpl;
     delete backwardImpl;
@@ -112,6 +126,22 @@ VIRTUAL float *ConvolutionalLayer::getGradInput() {
         gradInputCopiedToHost = true;
     }
     return gradInput;
+}
+VIRTUAL float *ConvolutionalLayer::getGradWeights() {
+    if( !gradWeightsCopiedToHost ) {
+        std::cout << "copying gradWeights to host, from GPU" << std::endl;
+        gradWeightsWrapper->copyToHost();
+        gradWeightsCopiedToHost = true;
+    }
+    return gradWeights;
+}
+VIRTUAL float *ConvolutionalLayer::getGradBiasWeights() {
+    if( !gradBiasWeightsCopiedToHost ) {
+        std::cout << "copying gradBiasWeights to host, from GPU" << std::endl;
+        gradBiasWeightsWrapper->copyToHost();
+        gradBiasWeightsCopiedToHost = true;
+    }
+    return gradBiasWeights;
 }
 VIRTUAL bool ConvolutionalLayer::providesGradInputWrapper() const {
     return true;
@@ -219,12 +249,12 @@ VIRTUAL void ConvolutionalLayer::printOutput() {
         for( int plane = 0; plane < std::min(5, dim.numFilters ); plane++ ) {
             if( dim.numFilters > 1 ) std::cout << "      plane " << plane << std::endl;
             if( dim.outputImageSize == 1 ) {
-                 std::cout << "        " << getResult(n, plane, 0, 0 ) << std::endl;
+                 std::cout << "        " << getOutput(n, plane, 0, 0 ) << std::endl;
             } else {
                 for( int i = 0; i < std::min(5, dim.outputImageSize); i++ ) {
                     std::cout << "      ";
                     for( int j = 0; j < std::min(5, dim.outputImageSize); j++ ) {
-                        std::cout << getResult( n, plane, i, j ) << " ";
+                        std::cout << getOutput( n, plane, i, j ) << " ";
                     }
                     if( dim.outputImageSize > 5 ) std::cout << " ... ";
                     std::cout << std::endl;
@@ -244,20 +274,15 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
 
     this->batchSize = batchSize;
     this->allocatedSpaceNumExamples = batchSize;
-    if( output != 0 ) {
-        delete[] output;
-    }
+
+    delete outputWrapper;
+    delete gradInputWrapper;
+    delete[] output;
+    delete[] gradInput;
+
     output = new float[getOutputSize()];
-    if( outputWrapper != 0 ) {
-        delete outputWrapper;
-    }
     outputWrapper = cl->wrap( getOutputSize(), output );
-    if( gradInput != 0 ) {
-        delete[] gradInput;
-    }
-    if( gradInputWrapper != 0 ) {
-        delete gradInputWrapper;
-    }
+
     if( layerIndex > 1 ) {
         gradInput = new float[ previousLayer->getOutputSize() ];
         gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
@@ -267,12 +292,6 @@ VIRTUAL void ConvolutionalLayer::forward() {
     if( batchSize == 0 ) {
         throw runtime_error("Need to call setBatchSize(size) before calling forward etc");
     }
-//    if( imageSizeSquared <= cl->getMaxWorkgroupSize() ) {
-////        forward2();
-//    } else {
-//  //      forward1();
-//    }
-//    forward1();
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", START");
 
     CLWrapper *upstreamWrapper = 0;
@@ -360,13 +379,7 @@ VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
     }
 }
 
-// weights:     [outPlane][upstreamPlane][filterRow][filterCol]
-//       aggregate over:  [outRow][outCol][n]
-// biasweights: [outPlane]
-//       aggregate over:  [upstreamPlane][filterRow][filterCol][outRow][outCol][n]
-
 VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
-//        Timer timer;
     StatefulTimer::instance()->timeCheck("backprop(): start, layer " + toString( layerIndex ) );
 
     CLWrapper *biasWeightsWrapper = 0;
@@ -390,19 +403,18 @@ VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
     } else {
         gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
         gradOutputWrapper->copyToDevice();
-//        int outputSize = getOutputSize();
-//        for( int i = 0; i < outputSize; i++ ) {
-//            cout << "convolutional::backproperrors errorsfromupstream[" << i << "]=" << nextLayer->getGradInput()[i] << endl;
-//        }
         weOwnGradOutputWrapper = true;
     }
+
     if( previousLayer->needsBackProp() ) {
         backwardImpl->backward( batchSize, imagesWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
-        StatefulTimer::instance()->timeCheck("backproperrors(): calced errors for upstream, layer " + ::toString( layerIndex ) );
+        StatefulTimer::instance()->timeCheck("backproperrors(): calced gradInput, layer " + ::toString( layerIndex ) );
     }
 
-    backpropWeightsImpl->backpropWeights( batchSize, learningRate, gradOutputWrapper, imagesWrapper,  weightsWrapper, biasWeightsWrapper );
+    backpropWeightsImpl->backpropWeights( batchSize, learningRate, gradOutputWrapper, imagesWrapper,  gradWeightsWrapper, gradBiasWeightsWrapper );
     weightsCopiedToHost = false;
+    gradWeightsCopiedToHost = false;
+    gradBiasWeightsCopiedToHost = false;
     StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + ::toString( layerIndex ) );
 
     if( dim.biased ) {

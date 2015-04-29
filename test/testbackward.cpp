@@ -27,7 +27,7 @@ TEST( testbackward, squareloss ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
@@ -102,7 +102,7 @@ TEST( testbackward, crossentropyloss ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
@@ -192,7 +192,7 @@ TEST( testbackward, softmaxloss ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
@@ -286,7 +286,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
@@ -308,18 +308,22 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
     Layer *layer = net->getLayer(targetLayerIndex);
-    if( layer->getPersistSize() > 0 ) {
-        int weightsSize = layer->getWeightsSize();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
-        float *weights = new float[weightsSize];
-        float *biasWeights = new float[biasWeightsSize];
-        WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
-        if( weightsSize > 0 || biasWeightsSize > 0 ) {
-            layer->setWeights( weights, biasWeights );
-        }
-    }
+    // in fact we dont really need to randomize the weights, since
+    // the weights are randomized anyway
+//    if( layer->getPersistSize() > 0 ) {
+//        int weightsSize = layer->getWeightsSize();
+//        int biasWeightsSize = layer->getBiasWeightsSize();
+//        cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
+//        float *weights = new float[weightsSize];
+//        float *biasWeights = new float[biasWeightsSize];
+//        WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
+//        WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
+//        if( weightsSize > 0 || biasWeightsSize > 0 ) {
+//            layer->setWeights( weights, biasWeights );
+//        }
+//        delete[] weights;
+//        delete[] biasWeights;
+//    }
 
     cout << "layer " << layer->asString() << endl;
     WeightRandomizer::randomize( 0, input, inputTotalSize, -1.0f, 1.0f );

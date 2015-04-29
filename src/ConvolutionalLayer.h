@@ -36,9 +36,12 @@ public:
     LayerDimensions dim;
 //    ActivationFunction const *const activationFunction;
 
-    float *output;
     float *weights;
     float *biasWeights;
+    float *output;
+    float *gradInput;
+    float *gradWeights;
+    float *gradBiasWeights;
 
 //    const int filterSize;
 //    const int filterSizeSquared;
@@ -47,15 +50,17 @@ public:
     CLWrapper *weightsWrapper;
     CLWrapper *outputWrapper;
     CLWrapper *gradInputWrapper;
+    CLWrapper *gradWeightsWrapper;
+    CLWrapper *gradBiasWeightsWrapper;
 
     int batchSize;
     int allocatedSpaceNumExamples;
 
-    float *gradInput;
-
+    bool weightsCopiedToHost;
     bool outputCopiedToHost;
     bool gradInputCopiedToHost;
-    bool weightsCopiedToHost;
+    bool gradWeightsCopiedToHost;
+    bool gradBiasWeightsCopiedToHost;
 
     inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
         return ( ( filterId 
@@ -67,14 +72,14 @@ public:
 //        getWeights();
         return weights[ getWeightIndex( filterId, inputPlane, filterRow, filterCol ) ];
     }
-    inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
+    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * dim.numFilters + outPlane )
             * dim.outputImageSize + outRow )
             * dim.outputImageSize + outCol;
     }
-    inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
     }
 
 //    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
@@ -100,6 +105,8 @@ public:
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getGradInput();
+    VIRTUAL float *getGradWeights();
+    VIRTUAL float *getGradBiasWeights();
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;

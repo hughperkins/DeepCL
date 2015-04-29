@@ -22,6 +22,107 @@
 
 using namespace std;
 
+void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
+    // here's the plan:
+    // generate some input, randomly
+    // generate some expected output, randomly
+    // forward propagate
+    // calculate loss
+    // calculate gradWeights
+    // change some of the weights, forward prop, recalculate loss, check corresponds
+    // to the gradient
+    cout << net->asString() << endl;
+
+    int batchSize = dynamic_cast< InputLayer *>(net->getLayer(0))->batchSize;
+    cout << "batchSize: " << batchSize << endl;
+//    const int outputPlanes = net->getOutputPlanes();
+
+    int inputCubeSize = net->getInputCubeSize();
+    int outputCubeSize = net->getOutputCubeSize();
+
+    int inputTotalSize = inputCubeSize * batchSize;
+    int outputTotalSize = outputCubeSize * batchSize;
+
+    cout << "inputtotalsize=" << inputTotalSize << " outputTotalSize=" << outputTotalSize << endl;
+
+    float *input = new float[inputTotalSize];
+    float *expectedOutput = new float[outputTotalSize];
+    Layer *layer = net->getLayer(targetLayerIndex);
+
+    cout << "layer " << layer->asString() << endl;
+    WeightRandomizer::randomize( 0, input, inputTotalSize, -1.0f, 1.0f );
+    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, -1.0f, 1.0f );
+
+    int weightsSize = layer->getWeightsSize();
+    int biasWeightsSize = layer->getBiasWeightsSize();
+    cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
+    float *weights = new float[weightsSize];
+    float *biasWeights = new float[biasWeightsSize];
+    WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
+    if( weightsSize > 0 || biasWeightsSize > 0 ) {
+        layer->setWeights( weights, biasWeights );
+    }
+
+    // now, forward prop
+    net->forward( input );
+    net->print();
+//    net->printOutput();
+
+    // calculate loss
+    float lossBefore = net->calcLoss( expectedOutput );
+
+    // calculate gradInput
+    // should be zero, so we dont modify the weights
+    // otherwise the losses will be really strange :-)
+    net->backward( 0.0f, expectedOutput);
+
+    // modify input slightly
+    mt19937 random;
+    const int numSamples = 10;
+    for( int i = 0; i < numSamples; i++ ) {
+        int weightIndex;
+        WeightRandomizer::randomizeInts( i, &weightIndex, 1, 0, weightsSize );
+//        cout << "i=" << i << " index " << inputIndex << endl;
+        float oldValue = weights[weightIndex];
+        // grad for this index is....
+        float grad = layer->getGradWeights()[weightIndex];
+//        cout << "grad=" << grad << endl;
+        // tweak slightly
+        float newValue = oldValue * 1.01f;
+        float inputDelta = newValue - oldValue;
+        float predictedLossChange = inputDelta * grad;
+        weights[weightIndex] = newValue;
+        layer->setWeights( weights, biasWeights );
+//        cout << "oldvalue=" << oldValue << " newvalue=" << newValue << endl;
+        // forwardProp
+        net->forward( input );
+        weights[weightIndex] = oldValue;
+        layer->setWeights( weights, biasWeights );
+//        net->printOutput();
+        float lossAfter = net->calcLoss( expectedOutput );
+        float lossChange = lossAfter - lossBefore;
+        cout << "idx=" << weightIndex << " predicted losschange=" << predictedLossChange << " actual=" << lossChange << endl;
+    }
+
+    delete[] weights;
+    delete[] biasWeights;
+    delete[] expectedOutput;
+    delete[] input;
+}
+
+TEST( testupdateweights, conv1 ) {
+    NeuralNet *net = new NeuralNet( 1, 2 );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(2)->biased(0)->padZeros(0) );
+    net->addLayer( SquareLossMaker::instance() );
+    cout << net->asString() << endl;
+
+    net->setBatchSize(1);
+
+    checkWeightsUpdate( net, 1 );
+    delete net;
+}
+
 void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     float learningRate = 0.01f;
 //    const int batchSize = 1;
@@ -107,67 +208,67 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     delete[] inputData;
 }
 
-TEST( testbackpropweights, numericallytest ) {
+TEST( testupdateweights, numericallytest ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(1, 1, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize3 ) {
+TEST( testupdateweights, numericallytest_imagesize3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(3, 1, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize5 ) {
+TEST( testupdateweights, numericallytest_imagesize5 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(5, 1, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize9 ) {
+TEST( testupdateweights, numericallytest_imagesize9 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(9, 1, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize9_filtersize9 ) {
+TEST( testupdateweights, numericallytest_imagesize9_filtersize9 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(9, 9, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize9_filtersize3 ) {
+TEST( testupdateweights, numericallytest_imagesize9_filtersize3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(9, 3, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize3_filtersize3 ) {
+TEST( testupdateweights, numericallytest_imagesize3_filtersize3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(3, 3, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize5_filtersize3 ) {
+TEST( testupdateweights, numericallytest_imagesize5_filtersize3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(5, 3, 1, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize5_filtersize3_batchsize3 ) {
+TEST( testupdateweights, numericallytest_imagesize5_filtersize3_batchsize3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(5, 3, 1, 3 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize5_filtersize3_planes3 ) {
+TEST( testupdateweights, numericallytest_imagesize5_filtersize3_planes3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(5, 3, 3, 1 );
 }
 
-TEST( testbackpropweights, numericallytest_imagesize5_filtersize3_planes3_batchsize3 ) {
+TEST( testupdateweights, numericallytest_imagesize5_filtersize3_planes3_batchsize3 ) {
     // do one learning, with very small learning rate, and check that loss function changed by
     // the amount that we kind of expect
     test(5, 3, 3, 3 );
@@ -200,7 +301,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     delete cl;
 }
 
-TEST( testbackpropweights, backprop_weights_2 ) {
+TEST( testupdateweights, backprop_weights_2 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 1 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -215,7 +316,7 @@ TEST( testbackpropweights, backprop_weights_2 ) {
 }
 
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize2 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize2 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 2 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -232,7 +333,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize2 ) {
     testBackpropWeights( dim, batchSize, learningMultiplier, data, DerivLossBySum, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize3_filtersize3 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize3_filtersize3 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 3 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -250,7 +351,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize3_filtersize3 ) {
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize4_filtersize3 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize4_filtersize3 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 4 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -270,7 +371,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize4_filtersize3 ) {
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize5_filtersize3 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize5_filtersize3 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 5 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -305,7 +406,7 @@ float *allocateErrorsCleared( int batchSize, LayerDimensions &dim ) {
     return errors;
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize3_filtersize1 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize3_filtersize1 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 3 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -327,7 +428,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize3_filtersize1 ) {
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize16_filtersize1 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize16_filtersize1 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 16 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -347,7 +448,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize16_filtersize1 ) 
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize17_filtersize1 ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -372,7 +473,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize17_filtersize1 ) 
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_weights_2_upstreamimagesize17_filtersize1_moredata ) {
+TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1_moredata ) {
     LayerDimensions dim;
     dim.setInputImageSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -399,7 +500,7 @@ TEST( testbackpropweights, backprop_weights_2_upstreamimagesize17_filtersize1_mo
     testBackpropWeights( dim, batchSize, learningMultiplier, data, errors, expectedOutput );
 }
 
-TEST( testbackpropweights, backprop_instance3_smaller2 ) {
+TEST( testupdateweights, backprop_instance3_smaller2 ) {
     LayerDimensions dim;
     dim.setInputImageSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
         .setBiased( 0 ).setPadZeros( 0 );
@@ -604,7 +705,7 @@ public:
     // [[[end]]]
 };
 
-namespace testbackpropweights {
+namespace testupdateweights {
 
 void compareSpecific( bool debug, float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
@@ -731,7 +832,7 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
     delete cl;
 }
 
-TEST( SLOW_testbackpropweights, compare_args ) {
+TEST( SLOW_testupdateweights, compare_args ) {
     bool debug = false;
     int instance0 = 1;
     int instance1 = 3;
@@ -758,7 +859,7 @@ TEST( SLOW_testbackpropweights, compare_args ) {
     compareSpecific( debug, learningRate, its, batchSize, dim, instance0, instance1 );        
 }
 
-//    TEST( testbackpropweights, compare_instance3_smaller2 ) {
+//    TEST( testupdateweights, compare_instance3_smaller2 ) {
 //        LayerDimensions dim;
 //        dim.setInputImageSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
 //            .setBiased( 0 ).setPadZeros( 0 );
@@ -770,42 +871,42 @@ TEST( SLOW_testbackpropweights, compare_args ) {
 //            .instance0(0).instance1(3) );
 //    }
 
-//    TEST( SLOW_testbackpropweights, compare_specific ) {
+//    TEST( SLOW_testupdateweights, compare_specific ) {
 //        compareSpecific( CompareSpecificArgs::instance()
 //            .batchSize( 128 ).inputPlanes( 32 ).inputImageSize( 19 ).numFilters( 32 )
 //            .filterSize( 3 ).biased( 0 ).padZeros( false )
 //            .instance0(1).instance1(3) );
 //    }
 
-//    TEST( SLOW_testbackpropweights, compare_specific_96image ) {
+//    TEST( SLOW_testupdateweights, compare_specific_96image ) {
 //        compareSpecific( CompareSpecificArgs::instance()
 //            .batchSize( 128 ).inputPlanes( 2 ).inputImageSize( 96 ).numFilters( 8 )
 //            .filterSize( 6 ).biased( 1 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
-//    TEST( SLOW_testbackpropweights, compare_specific_96image_smaller ) {
+//    TEST( SLOW_testupdateweights, compare_specific_96image_smaller ) {
 //        compareSpecific( CompareSpecificArgs::instance()
 //            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 48 ).numFilters( 1 )
 //            .filterSize( 2 ).biased( 1 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
-//    TEST( SLOW_testbackpropweights, compare_specific_96image_smaller2 ) {
+//    TEST( SLOW_testupdateweights, compare_specific_96image_smaller2 ) {
 //        compareSpecific( CompareSpecificArgs::instance()
 //            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 96 ).numFilters( 1 )
 //            .filterSize( 4 ).biased( 0 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
-//    TEST( SLOW_testbackpropweights, compare_specific_96image_smaller3 ) {
+//    TEST( SLOW_testupdateweights, compare_specific_96image_smaller3 ) {
 //        compareSpecific( CompareSpecificArgs::instance()
 //            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 96 ).numFilters( 1 )
 //            .filterSize( 6 ).biased( false ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
-//    TEST( SLOW_testbackpropweights, compare_specific_96image_smaller4 ) {
+//    TEST( SLOW_testupdateweights, compare_specific_96image_smaller4 ) {
 //        compareSpecific( CompareSpecificArgs::instance()
 //            .batchSize( 1 ).inputPlanes( 2 ).inputImageSize( 96 ).numFilters( 8 )
 //            .filterSize( 4 ).biased( 1 ).padZeros( false )
