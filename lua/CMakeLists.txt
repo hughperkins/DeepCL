@@ -21,16 +21,11 @@ set(SRCTREE ${CMAKE_CURRENT_SOURCE_DIR}/pkgsrc)
 else()
 set(SRCTREE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 endif()
-message("Using source tree at: ${SRCTREE}")
+# message("Using source tree at: ${SRCTREE}")
 
 find_package(SWIG QUIET)
-# INCLUDE(${SWIG_USE_FILE})
 
-if(SWIG_EXECUTABLE AND ON_LINUX)
-    OPTION(DEV_RUN_SWIG "Re-runs swig.  Only needed for development.  Linux only." ON)
-else()
-    OPTION(DEV_RUN_SWIG "Re-runs swig.  Only needed for development." OFF)
-endif()
+OPTION(DEV_RUN_SWIG "DeepCL developers should turn this on." OFF)
 
 set( lua_DeepCL_sources 
     LayerMaker.cpp NeuralNetMould.cpp

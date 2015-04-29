@@ -14,16 +14,13 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 OPTION(PROTOTYPING "Only for devs." OFF)
-
-#find_package(MPI QUIET)
-#if( MPI_FOUND )
-#    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." ON)
-#else()
-#    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." OFF)
-#endif()
-#if( MPI_AVAILABLE )
-#find_package(MPI REQUIRED)
-#endif()
+mark_as_advanced( FORCE PROTOTYPING )
+unset(BUILD_PYSWIG_WRAPPERS CACHE)
+unset(BUILD_PYTHON_WRAPPERS CACHE)
+unset(RUN_COG CACHE)
+unset(RUN_SWIG CACHE)
+unset(PYTHON_AVAILABLE CACHE)
+unset(LUA51_AVAILABLE CACHE)
 
 include_directories( . )
 include_directories( src )
@@ -88,8 +85,6 @@ target_link_libraries( gpuinfo dl )
 endif()
 
 add_library( DeepCL SHARED ${DeepCL_sources_prefixed} )
-#    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
-#    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
 
 execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
@@ -108,26 +103,8 @@ add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/sr
 add_dependencies( DeepCL git_submodules_update )
 endif()
 
-#find_package(Lua51 QUIET)
-#if( LUA51_FOUND )
-#    OPTION(LUA51_AVAILABLE "Builds lua wrappers." ON)
-#else()
-#    OPTION(LUA51_AVAILABLE "Builds lua wrappers." OFF)
-#endif()
-
-find_package(PNG QUIET)
-if( PNG_FOUND )
-    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." ON)
-else()
-    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
-endif()
-
-#if( LUA51_AVAILABLE )
-#    find_package(Lua51 REQUIRED)
-#    add_library( luaDeepCL SHARED lua/DeepCL_wrap.cxx )
-#    target_include_directories(luaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
-#    target_link_libraries(luaDeepCL ${LUA_LIBRARIES})
-#endif()
+OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
 
 if( LIBPNGPP_AVAILABLE)
 find_package(PNG REQUIRED)
@@ -136,13 +113,7 @@ endif(LIBPNGPP_AVAILABLE)
 
 link_libraries(DeepCL)
 
-execute_process( COMMAND python -V ERROR_VARIABLE python_test )
-if( ${python_test} MATCHES "Python 2\\.7\\..*" )
-    #message("Python 2.7 found")
-    OPTION(DEV_RUN_COG "For developers: re-run cogapp." ON)
-else()
-    OPTION(DEV_RUN_COG "For developers: re-run cogapp." OFF)
-endif()
+OPTION(DEV_RUN_COG "DeepCL developers should turn this on." OFF)
 
 if(DEV_RUN_COG)
     add_custom_target( 
@@ -152,11 +123,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototypin
     )
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
-
-#add_custom_target(
-#    git-submodule-update
-#    git submodule update --init --recursive
-#)
 
 set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
@@ -169,33 +135,14 @@ set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/t
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutpropagate.cpp test/testdropoutbackprop.cpp
  )
-#
-#
-#test/testbackprop.cpp test/testbiasbackprop.cpp
-#
 
 add_executable( deepclrun src/deepclrun.cpp src/stringhelper.cpp )
-#add_executable( clconvolve1 src/deepclrun.cpp src/stringhelper.cpp ) # same as deepcl, just for 
-              # backwards compatibility, so dont need to increment major version :-P
 
-#add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
-#add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
-# target_link_libraries( testmnist-mpi DeepCL )
-
-#if( MPI_AVAILABLE )
-    #add_definitions(-DMPI_AVAILABLE)
-
-    #target_include_directories(testmnist-mpi PRIVATE ${MPI_C_INCLUDE_PATH})
-    #target_link_libraries(testmnist-mpi ${MPI_CXX_LIBRARIES})
-#endif()
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
-#    add_executable( printMnist test/printMnist.cpp src/stringhelper.cpp )
-#    set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testimageshelper.cpp )
-#    add_executable( printmat test/printMat.cpp src/stringhelper.cpp )
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/stringhelper.cpp src/PatchExtractor.cpp )
     add_executable( testtranslator test/testTranslator.cpp src/stringhelper.cpp src/Translator.cpp )
     add_executable( testgenericloader test/testGenericLoader.cpp src/stringhelper.cpp )
@@ -215,19 +162,6 @@ target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
-#    add_executable( prototyping prototyping/testreduce.cpp src/stringhelper.cpp thirdparty/gtest/gtest_main.cc )
-#    target_link_libraries( prototyping gtest )
-#    target_include_directories( prototyping PRIVATE thirdparty/gtest )
-#    add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
-#    add_executable( testrawstring prototyping/testRawString.cpp )
-#    add_executable( testpassdim prototyping/testPassDim.cpp )
-#    add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-#       test/SpeedTemplates.cpp )
-#    add_executable( testmemperf prototyping/testmemperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-#       test/SpeedTemplates.cpp )
-#    add_executable( testfloat4 prototyping/testFloat4.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-#       test/SpeedTemplates.cpp )
-#    add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/stringhelper.cpp )
     add_executable( learn_scenario_image prototyping/qlearning/learnScenarioImage.cpp 
         prototyping/qlearning/ScenarioImage.cpp )
@@ -239,40 +173,10 @@ add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main
 target_link_libraries( testgtestsupp gtest )
 target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
-#if( ON_LINUX )
-#add_custom_target( 
-#    clfiles
-#    cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
-#)
-#add_dependencies( DeepCL clfiles )
-#else()
-## no idea how to fix this, for Windows.  If you have any ideas, please send a pull request :-)
-##add_custom_target( 
-##    clfiles
-##    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
-##)
-#endif()
-
-find_package(Lua51 QUIET)
-if(LUA51_FOUND)
-    OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" ON)
-else()
-    OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
-endif()
+OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 
 if( BUILD_LUA_WRAPPERS )
 add_subdirectory(lua)
-endif()
-
-find_package(PythonLibs QUIET)
-if(PYTHONLIBS_FOUND)
-    OPTION(BUILD_PYSWIG_WRAPPERS "Builds Python swig wrappers (not the Cython ones)." ON)
-else()
-    OPTION(BUILD_PYSWIG_WRAPPERS "Builds Python swig wrappers (not the Cython ones)." OFF)
-endif()
-
-if( BUILD_PYSWIG_WRAPPERS)
-add_subdirectory(python_swig)
 endif()
 
 
