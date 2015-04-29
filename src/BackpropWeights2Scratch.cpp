@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeights2Scratch::~BackpropWeights2Scratch() {
     delete kernel;
 }
-VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2Scratch::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2Scratch start" );
 
     int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
@@ -43,9 +43,9 @@ VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float lear
        ->in( batchSize )
        ->in( gradOutputWrapper )
         ->in( imagesWrapper )
-       ->inout( weightsWrapper );
+       ->inout( gradWeightsWrapper );
     if( dim.biased ) {
-        kernel->inout( biasWeightsWrapper );
+        kernel->inout( gradBiasWeightsWrapper );
     }
     kernel
         ->localFloats( square( dim.outputImageSize ) )
@@ -189,7 +189,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "";
     kernel = cl->buildKernelFromString( kernelSource, "backprop_floats_withscratch_dobias", options, "cl/BackpropWeights2Scratch.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "backpropweights2.cl", "backprop_floats_withscratch_dobias", options );
+//    kernel = cl->buildKernel( "backpropgradWeights2.cl", "backprop_floats_withscratch_dobias", options );
 //    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );
 }
 

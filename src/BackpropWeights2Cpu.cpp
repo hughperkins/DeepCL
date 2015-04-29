@@ -22,23 +22,23 @@ BackpropWeights2Cpu::BackpropWeights2Cpu( OpenCLHelper *cl, LayerDimensions dim 
 }
 VIRTUAL BackpropWeights2Cpu::~BackpropWeights2Cpu() {
 }
-VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2Cpu::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     gradOutputWrapper->copyToHost();
     imagesWrapper->copyToHost();
-    float *biasWeights = 0;
+    float *gradBiasWeights = 0;
     if( dim.biased ) {
-        biasWeightsWrapper->copyToHost();
-        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+        gradBiasWeightsWrapper->copyToHost();
+        gradBiasWeights =  (float *)gradBiasWeightsWrapper->getHostArray();
     }
     backpropWeights( batchSize, learningRate, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
-        (float *)weightsWrapper->getHostArray(), biasWeights );
-    weightsWrapper->copyToDevice();
+        (float *)gradWeightsWrapper->getHostArray(), gradBiasWeights );
+    gradWeightsWrapper->copyToDevice();
     if( dim.biased ) {
-        biasWeightsWrapper->copyToDevice();
+        gradBiasWeightsWrapper->copyToDevice();
     }
 }
 VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate, float *gradOutput,
-    float *images, float *weights, float *biasWeights ) {
+    float *input, float *gradWeights, float *gradBiasWeights ) {
 
     StatefulTimer::instance()->timeCheck(" BackpropWeights2Cpu start" );
 
@@ -47,25 +47,25 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
     const int halfFilterSize = dim.filterSize >> 1;
     const int margin = dim.padZeros ? halfFilterSize : 0;
     for( int outPlane = 0; outPlane < dim.numFilters; outPlane++ ) {
-        for( int upstreamPlane = 0; upstreamPlane < dim.inputPlanes; upstreamPlane++ ) {
+        for( int inputPlane = 0; inputPlane < dim.inputPlanes; inputPlane++ ) {
             for( int filterRow = 0; filterRow < dim.filterSize; filterRow++ ) {
                 for( int filterCol = 0; filterCol <dim.filterSize; filterCol++ ) {
                     int weightIndex = ( ( outPlane
-                        * dim.inputPlanes + upstreamPlane )
+                        * dim.inputPlanes + inputPlane )
                         * dim.filterSize + filterRow )
                         * dim.filterSize + filterCol;
                     float thiswchange = 0;
                     float thisBiasChange = 0;
-                    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+                    // gradWeights:     [outPlane][inputPlane][filterRow][filterCol]
                     //       aggregate over:  [outRow][outCol][n]
                     for( int outRow = 0; outRow < dim.outputImageSize; outRow++ ) {
-                        int upstreamRow = outRow - margin + filterRow;
-                        if( upstreamRow < 0 || upstreamRow > dim.inputImageSize - 1 ) {
+                        int inputRow = outRow - margin + filterRow;
+                        if( inputRow < 0 || inputRow > dim.inputImageSize - 1 ) {
                             continue;
                         }
                         for( int outCol = 0; outCol < dim.outputImageSize; outCol++ ) {
-                            int upstreamCol = outCol - margin + filterCol;
-                            if( upstreamCol < 0 || upstreamCol > dim.inputImageSize - 1 ) {
+                            int inputCol = outCol - margin + filterCol;
+                            if( inputCol < 0 || inputCol > dim.inputImageSize - 1 ) {
                                 continue;
                             }
                             for( int n = 0; n < batchSize; n++ ) {
@@ -74,22 +74,22 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
                                     * dim.outputImageSize + outRow )
                                     * dim.outputImageSize + outCol;
                                 float _gradOutput = gradOutput[resultIndex];
-                                int upstreamResultIndex = ( ( n
-                                    * dim.inputPlanes + upstreamPlane )
-                                    * dim.inputImageSize + upstreamRow )
-                                    * dim.inputImageSize + upstreamCol;
-                                float upstreamResult = images[ upstreamResultIndex ];
-                                float thisimagethiswchange = _gradOutput * upstreamResult;
+                                int inputIndex = ( ( n
+                                    * dim.inputPlanes + inputPlane )
+                                    * dim.inputImageSize + inputRow )
+                                    * dim.inputImageSize + inputCol;
+                                float inputValue = input[ inputIndex ];
+                                float thisimagethiswchange = _gradOutput * inputValue;
                                 thiswchange += thisimagethiswchange;
                                 thisBiasChange += _gradOutput; // fairly sure this is right.  Fairly :-P
                             }
                         }
                     }
 //                    cout << "weight change " << weightIndex << " " << learningMultiplier * thiswchange << endl;
-                    weights[ weightIndex ] += - thiswchange * learningMultiplier;
+                    gradWeights[ weightIndex ] = thiswchange * learningMultiplier;
                     if( dim.biased ) {
-                        if( filterRow == margin && filterCol == margin && upstreamPlane == 0 ) {
-                            biasWeights[ outPlane ] += - learningMultiplier * thisBiasChange;
+                        if( filterRow == margin && filterCol == margin && inputPlane == 0 ) {
+                            gradBiasWeights[ outPlane ] = learningMultiplier * thisBiasChange;
                         }
                     }
                 }

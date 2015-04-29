@@ -17,10 +17,10 @@ using namespace std;
 #define VIRTUAL 
 
 VIRTUAL BackpropWeights2Naive::~BackpropWeights2Naive() {
-//    cout << "~backpropweights2naive: deleting kernel" << endl;
+//    cout << "~backpropgradWeights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2Naive::calcGradWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2Naive start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
@@ -30,9 +30,9 @@ VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learni
        ->in( batchSize )
        ->in( gradOutputWrapper )
         ->in( imagesWrapper )
-       ->inout( weightsWrapper );
+       ->inout( gradWeightsWrapper );
     if( dim.biased ) {
-        kernel->inout( biasWeightsWrapper );
+        kernel->inout( gradBiasWeightsWrapper );
     }
 
     int globalSize = dim.filtersSize;

@@ -284,7 +284,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceForTest( cl, dim );
-    backpropWeightsImpl->backpropWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
+    backpropWeightsImpl->calcGradWeights( batchSize, learningMultiplier, errors, data, weights, biasWeights );
     delete backpropWeightsImpl;
     
 //    for( int i = 0; i < 20; i++ ) {
@@ -577,11 +577,11 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     
     BackpropWeights2 *backpropWeightsImpl0 = BackpropWeights2::instanceSpecific( 0, cl, dim );
     backpropWeightsImpl0->debug = true;
-    backpropWeightsImpl0->backpropWeights( batchSize, learningRate,
+    backpropWeightsImpl0->calcGradWeights( batchSize, learningRate,
         errorsWrap, inputWrap, weights0Wrap, 0 );
     BackpropWeights2 *backpropWeightsImpl1 = BackpropWeights2::instanceSpecific( 3, cl, dim );
     backpropWeightsImpl1->debug = true;
-    backpropWeightsImpl1->backpropWeights( batchSize, learningRate,
+    backpropWeightsImpl1->calcGradWeights( batchSize, learningRate,
         errorsWrap, inputWrap, weights1Wrap, 0 );
     weights0Wrap->copyToHost();
     weights1Wrap->copyToHost();
@@ -763,7 +763,7 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
         BackpropWeights2 *backpropWeightsImpl = instanceObjects[instance];
         backpropWeightsImpl->debug = true;
         for( int it = 0; it < its; it++ ) {
-            backpropWeightsImpl->backpropWeights( batchSize, learningRate,
+            backpropWeightsImpl->calcGradWeights( batchSize, learningRate,
                 errors, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
         }
         timer.timeCheck("instance " + toString( instances[instance] ) + " backpropweights" );
@@ -946,7 +946,7 @@ void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
     
     BackpropWeights2 *backpropWeightsImpl = BackpropWeights2::instanceSpecific( instance, cl, dim );
     Timer timer;
-    backpropWeightsImpl->backpropWeights( batchSize, 1.0f,
+    backpropWeightsImpl->calcGradWeights( batchSize, 1.0f,
         errors, inputData, weights, biasWeights );
     timer.timeCheck("backprop time");
 
