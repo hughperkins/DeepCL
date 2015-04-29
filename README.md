@@ -7,7 +7,6 @@ Global Contents
 - [This page](doc/README.md)
 - [Command line usage](doc/Commandline.md)
 - [Neural Net API](doc/NeuralNetAPI.md)
-- [Python wrappers](python_swig/README.md)
 - [Cython wrappers](python/README.md)
 - [Lua wrappers](lua/README.md)
 - [Q-learning](doc/QLearning.md)
@@ -68,7 +67,7 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 ## Python
 
-* For python, please use [pip](https://pypi.python.org/pypi/DeepCL/3.5.0)
+* For python, please use [pip](https://pypi.python.org/pypi/DeepCL)
 
 ## Commandline tools, and c++ libraries
 
