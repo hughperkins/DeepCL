@@ -187,7 +187,5 @@ Propagate1::Propagate1( OpenCLHelper *cl, LayerDimensions dim ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, "cl/forward1.cl" );
     // [[[end]]]
-    //kernel = cl->buildKernel( "forward1.cl", "convolve_imagecubes_float2", options );
-    //kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, kernelFilename );
 }
 

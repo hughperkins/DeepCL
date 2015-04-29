@@ -308,20 +308,22 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
     Layer *layer = net->getLayer(targetLayerIndex);
-    int weightsSize = layer->getWeightsSize();
-    int biasWeightsSize = layer->getBiasWeightsSize();
-    cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
-    float *weights = new float[weightsSize];
-    float *biasWeights = new float[biasWeightsSize];
+    if( layer->getPersistSize() > 0 ) {
+        int weightsSize = layer->getWeightsSize();
+        int biasWeightsSize = layer->getBiasWeightsSize();
+        cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
+        float *weights = new float[weightsSize];
+        float *biasWeights = new float[biasWeightsSize];
+        WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
+        WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
+        if( weightsSize > 0 || biasWeightsSize > 0 ) {
+            layer->setWeights( weights, biasWeights );
+        }
+    }
 
     cout << "layer " << layer->asString() << endl;
     WeightRandomizer::randomize( 0, input, inputTotalSize, -1.0f, 1.0f );
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
-    WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
-    if( weightsSize > 0 || biasWeightsSize > 0 ) {
-        layer->setWeights( weights, biasWeights );
-    }
 
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
@@ -332,7 +334,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 //    net->input( input );
     net->forward( input );
     net->print();
-    net->printOutput();
+//    net->printOutput();
 
     // calculate loss
     float lossBefore = net->calcLoss( expectedOutput );
@@ -362,7 +364,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
         // forwardProp
         net->forward( input );
         input[inputIndex] = oldValue;
-        net->printOutput();
+//        net->printOutput();
         float lossAfter = net->calcLoss( expectedOutput );
         float lossChange = lossAfter - lossBefore;
         cout << "idx=" << inputIndex << " predicted losschange=" << predictedLossChange << " actual=" << lossChange << endl;
@@ -429,7 +431,7 @@ TEST( testbackward, conv1 ) {
 TEST( testbackward, fc1 ) {
     NeuralNet *net = new NeuralNet( 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
-    net->addLayer( FullyConnectedMaker::instance()->numPlanes(2)->imageSize(3)->biased(0) );
+    net->addLayer( FullyConnectedMaker::instance()->numPlanes(4)->imageSize(1)->biased(0) );
     net->addLayer( SquareLossMaker::instance() );
 //    net->addLayer( SoftMaxMaker::instance() ); // maybe should use square loss maker, or cross entropy,
                           // so that dont have to make filtersize == input image size?
