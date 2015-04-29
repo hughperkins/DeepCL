@@ -9,10 +9,10 @@
 #include <cstring>
 
 #include "OpenCLHelper.h"
-#include "DropoutBackprop.h"
+#include "DropoutBackward.h"
 #include "StatefulTimer.h"
 
-#include "DropoutBackpropCpu.h"
+#include "DropoutBackwardCpu.h"
 
 using namespace std;
 
@@ -21,18 +21,18 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutBackpropCpu::DropoutBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutBackprop( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutBackwardCpu::DropoutBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+        DropoutBackward( cl, numPlanes, inputImageSize, dropRatio ) {
 }
-VIRTUAL void DropoutBackpropCpu::backward( int batchSize, uchar *mask,  float *gradOutput, float *gradInput ) {
+VIRTUAL void DropoutBackwardCpu::backward( int batchSize, uchar *mask,  float *gradOutput, float *gradInput ) {
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
         gradInput[i] = mask[i] == 1 ? gradOutput[i] : 0.0f;
     }
 }
-VIRTUAL void DropoutBackpropCpu::backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, 
+VIRTUAL void DropoutBackwardCpu::backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, 
         CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("DropoutBackpropCpu::backward start" );
+    StatefulTimer::instance()->timeCheck("DropoutBackwardCpu::backward start" );
 
     maskWrapper->copyToHost();
     gradOutputWrapper->copyToHost();
@@ -49,6 +49,6 @@ VIRTUAL void DropoutBackpropCpu::backward( int batchSize, CLWrapper *maskWrapper
 
     delete[] gradInput;
     
-    StatefulTimer::instance()->timeCheck("DropoutBackpropCpu::backward end" );
+    StatefulTimer::instance()->timeCheck("DropoutBackwardCpu::backward end" );
 }
 

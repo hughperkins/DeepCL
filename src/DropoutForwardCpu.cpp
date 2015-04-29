@@ -11,7 +11,7 @@
 
 #include "StatefulTimer.h"
 
-#include "DropoutPropagateCpu.h"
+#include "DropoutForwardCpu.h"
 
 using namespace std;
 
@@ -20,11 +20,11 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutPropagateCpu::DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutForwardCpu::DropoutForwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+        DropoutForward( cl, numPlanes, inputImageSize, dropRatio ) {
 }
-VIRTUAL void DropoutPropagateCpu::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << "DropoutPropagateCpu::forward( CLWrapper * )" << endl;
+VIRTUAL void DropoutForwardCpu::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << "DropoutForwardCpu::forward( CLWrapper * )" << endl;
 
     inputWrapper->copyToHost();
 
@@ -41,16 +41,16 @@ VIRTUAL void DropoutPropagateCpu::forward( int batchSize, CLWrapper *masksWrappe
 
     delete[] output;
 }
-VIRTUAL void DropoutPropagateCpu::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
+VIRTUAL void DropoutForwardCpu::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
 //    float *output = new float[ getOutputSize( batchSize ) ];
-//    cout << "DropoutPropagateCpu::forward( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::forward start" );
+//    cout << "DropoutForwardCpu::forward( float * )" << endl;
+    StatefulTimer::instance()->timeCheck("DropoutForwardCpu::forward start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
 //    float inverseDropRatio = 1.0f / dropRatio; // since multiply faster than divide, just divide once
     for( int i = 0; i < totalLinearSize; i++ ) {
         output[i] = masks[i] == 1 ? input[i] : 0;
     }
-    StatefulTimer::instance()->timeCheck("DropoutPropagateCpu::forward end" );
+    StatefulTimer::instance()->timeCheck("DropoutForwardCpu::forward end" );
 //    return output;
 }
 

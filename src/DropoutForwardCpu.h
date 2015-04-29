@@ -6,25 +6,22 @@
 
 #pragma once
 
-#include "DropoutPropagate.h"
+#include "DropoutForward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class CLKernel;
-
-class DropoutPropagateGpuNaive : public DropoutPropagate {
+class DropoutForwardCpu : public DropoutForward {
 public:
-    CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~DropoutPropagateGpuNaive();
+    DropoutForwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
     VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    VIRTUAL void forward( int batchSize, unsigned char *masks, float *input, float *output );
 
     // [[[end]]]
 };

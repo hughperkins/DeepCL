@@ -8,10 +8,10 @@
 
 #include "OpenCLHelper.h"
 #include "stringhelper.h"
-#include "DropoutPropagateCpu.h"
-#include "DropoutPropagateGpuNaive.h"
+#include "DropoutForwardCpu.h"
+#include "DropoutForwardGpuNaive.h"
 
-#include "DropoutPropagate.h"
+#include "DropoutForward.h"
 
 using namespace std;
 
@@ -20,7 +20,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutPropagate::DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutForward::DropoutForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),
@@ -30,28 +30,28 @@ DropoutPropagate::DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputIm
 //        throw runtime_error("inputImageSize should be an exact multiple of dropoutsize: " + toString( inputImageSize ) + " " + toString(dropoutSize ) );
 //    }
 }
-STATIC DropoutPropagate *DropoutPropagate::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
-//    return new DropoutPropagateCpu( cl, padZeros, numPlanes, inputImageSize, dropoutSize );
+STATIC DropoutForward *DropoutForward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+    return new DropoutForwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+//    return new DropoutForwardCpu( cl, padZeros, numPlanes, inputImageSize, dropoutSize );
 }
-STATIC DropoutPropagate *DropoutPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutPropagateCpu( cl, numPlanes, inputImageSize, dropRatio );
+STATIC DropoutForward *DropoutForward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+    return new DropoutForwardCpu( cl, numPlanes, inputImageSize, dropRatio );
 }
-STATIC DropoutPropagate *DropoutPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutForward *DropoutForward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     if( idx == 0 ) {
-        return new DropoutPropagateCpu( cl, numPlanes, inputImageSize, dropRatio );
+        return new DropoutForwardCpu( cl, numPlanes, inputImageSize, dropRatio );
     }
     if( idx == 1 ) {
-        return new DropoutPropagateGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+        return new DropoutForwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
     }
     cout << "idx " << idx << " not known" << endl;
-    throw runtime_error("DropoutPropagate::instanceSpecific idx not known: " + toString( idx ) );
+    throw runtime_error("DropoutForward::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void DropoutPropagate::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData ) {
+VIRTUAL void DropoutForward::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData ) {
     throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void DropoutPropagate::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
-//    cout << "DropoutPropagate::forward( float * )" << endl;
+VIRTUAL void DropoutForward::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
+//    cout << "DropoutForward::forward( float * )" << endl;
     int inputLinearSize = getInputSize( batchSize );
     CLWrapper *masksWrapper = cl->wrap( inputLinearSize, masks );
     CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
@@ -66,10 +66,10 @@ VIRTUAL void DropoutPropagate::forward( int batchSize, unsigned char *masks, flo
     delete inputWrapper;
     delete masksWrapper;
 }
-VIRTUAL int DropoutPropagate::getInputSize( int batchSize ) {
+VIRTUAL int DropoutForward::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int DropoutPropagate::getOutputSize(int batchSize) {
+VIRTUAL int DropoutForward::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

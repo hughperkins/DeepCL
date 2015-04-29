@@ -6,23 +6,28 @@
 
 #pragma once
 
-#include "DropoutBackprop.h"
+#include "DropoutBackward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class DropoutBackpropCpu : public DropoutBackprop {
+class DropoutBackwardGpuNaive : public DropoutBackward {
 public:
+    CLKernel *kernel;
+//    CLKernel *kMemset;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutBackpropCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    VIRTUAL void backward( int batchSize, uchar *mask,  float *gradOutput, float *gradInput );
-    VIRTUAL void backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper,
+    VIRTUAL ~DropoutBackwardGpuNaive();
+    VIRTUAL void backward(
+    int batchSize,
+    CLWrapper *maskWrapper,
+    CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
+    DropoutBackwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
 
     // [[[end]]]
 };

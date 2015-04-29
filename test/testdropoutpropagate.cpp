@@ -6,7 +6,7 @@
 
 #include "OpenCLHelper.h"
 
-#include "DropoutPropagate.h"
+#include "DropoutForward.h"
 #include "ActivationFunction.h"
 
 #include "gtest/gtest.h"
@@ -43,7 +43,7 @@ TEST( testdropoutforward, basic ) {
     int numPlanes = 1;
     int imageSize = 3;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
                              1,0,1
@@ -82,7 +82,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
 
@@ -132,7 +132,7 @@ TEST( testdropoutforward, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-    DropoutPropagate *dropoutPropagate = DropoutPropagate::instanceForTest( cl, numPlanes, imageSize, 0.6f );
+    DropoutForward *dropoutPropagate = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
                      3, 33, 14,23,
@@ -242,8 +242,8 @@ void compareSpecific( CompareSpecificArgs args ) {
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 
-    DropoutPropagate *dropoutPropagate0 = DropoutPropagate::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
-    DropoutPropagate *dropoutPropagate1 = DropoutPropagate::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutForward *dropoutPropagate0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
+    DropoutForward *dropoutPropagate1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
 
     const int inputSize = batchSize * numPlanes * imageSize * imageSize;
     int outputSize = dropoutPropagate0->getOutputSize( batchSize );

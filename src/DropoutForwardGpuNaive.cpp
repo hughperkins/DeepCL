@@ -12,7 +12,7 @@
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
-#include "DropoutPropagateGpuNaive.h"
+#include "DropoutForwardGpuNaive.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -23,12 +23,12 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-VIRTUAL DropoutPropagateGpuNaive::~DropoutPropagateGpuNaive() {
+VIRTUAL DropoutForwardGpuNaive::~DropoutForwardGpuNaive() {
     delete kernel;
 }
-VIRTUAL void DropoutPropagateGpuNaive::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "DropoutPropagateGpuNaive::forward( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::forward start" );
+VIRTUAL void DropoutForwardGpuNaive::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
+//    cout << StatefulTimer::instance()->prefix << "DropoutForwardGpuNaive::forward( CLWrapper * )" << endl;
+    StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward start" );
 
     kernel  ->input( batchSize * numPlanes * outputImageSize * outputImageSize )
             ->input( masksWrapper )
@@ -37,17 +37,17 @@ VIRTUAL void DropoutPropagateGpuNaive::forward( int batchSize, CLWrapper *masksW
     int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "DropoutPropagateGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
+//    cout << "DropoutForwardGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
-//    cout << "DropoutPropagateGpuNaive::forward selectorswrapper:" << endl;
+//    cout << "DropoutForwardGpuNaive::forward selectorswrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
-    StatefulTimer::instance()->timeCheck("DropoutPropagateGpuNaive::forward end" );
+    StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward end" );
 }
-DropoutPropagateGpuNaive::DropoutPropagateGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutPropagate( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutForwardGpuNaive::DropoutForwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+        DropoutForward( cl, numPlanes, inputImageSize, dropRatio ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );
     options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );

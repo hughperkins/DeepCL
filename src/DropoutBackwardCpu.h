@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "DropoutPropagate.h"
+#include "DropoutBackward.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class DropoutPropagateCpu : public DropoutPropagate {
+class DropoutBackwardCpu : public DropoutBackward {
 public:
 
     // [[[cog
@@ -19,9 +19,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutPropagateCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    VIRTUAL void forward( int batchSize, unsigned char *masks, float *input, float *output );
+    DropoutBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    VIRTUAL void backward( int batchSize, uchar *mask,  float *gradOutput, float *gradInput );
+    VIRTUAL void backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper,
+    CLWrapper *gradInputWrapper );
 
     // [[[end]]]
 };

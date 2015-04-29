@@ -9,11 +9,11 @@
 #include <cstring>
 
 #include "OpenCLHelper.h"
-#include "DropoutBackprop.h"
+#include "DropoutBackward.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 
-#include "DropoutBackpropGpuNaive.h"
+#include "DropoutBackwardGpuNaive.h"
 
 using namespace std;
 
@@ -22,18 +22,18 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-VIRTUAL DropoutBackpropGpuNaive::~DropoutBackpropGpuNaive() {
+VIRTUAL DropoutBackwardGpuNaive::~DropoutBackwardGpuNaive() {
     delete kernel;
 //    delete kMemset;
 }
-VIRTUAL void DropoutBackpropGpuNaive::backward( 
+VIRTUAL void DropoutBackwardGpuNaive::backward( 
             int batchSize, 
             CLWrapper *maskWrapper, 
             CLWrapper *gradOutputWrapper, 
             CLWrapper *gradInputWrapper ) 
         {
 
-    StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backward start" );
+    StatefulTimer::instance()->timeCheck("DropoutBackwardGpuNaive::backward start" );
 
     // first, memset errors to 0 ...
 //    kMemset ->out( gradInputWrapper )
@@ -55,10 +55,10 @@ VIRTUAL void DropoutBackpropGpuNaive::backward(
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("DropoutBackpropGpuNaive::backward end" );
+    StatefulTimer::instance()->timeCheck("DropoutBackwardGpuNaive::backward end" );
 }
-DropoutBackpropGpuNaive::DropoutBackpropGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutBackprop( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutBackwardGpuNaive::DropoutBackwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+        DropoutBackward( cl, numPlanes, inputImageSize, dropRatio ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
     options += " -D gNumPlanes=" + toString( numPlanes );

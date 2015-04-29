@@ -48,9 +48,9 @@ set( pyswig_DeepCL_sources
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
     ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
     ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutPropagate.cpp DropoutBackprop.cpp
-    DropoutPropagateCpu.cpp DropoutPropagateGpuNaive.cpp
-    DropoutBackpropCpu.cpp DropoutBackpropGpuNaive.cpp
+    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
+    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
+    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
     CopyBuffer.cpp MultiplyBuffer.cpp
     Trainer.cpp SGD.cpp
  ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp

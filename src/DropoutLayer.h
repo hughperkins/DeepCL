@@ -13,8 +13,8 @@
 
 class CLKernel;
 class CLWrapper;
-class DropoutPropagate;
-class DropoutBackprop;
+class DropoutForward;
+class DropoutBackward;
 class RandomSingleton;
 class DropoutMaker;
 class MultiplyBuffer;
@@ -30,8 +30,8 @@ public:
     RandomSingleton *random;
 
     OpenCLHelper *const cl; // NOT owned by us
-    DropoutPropagate *dropoutPropagateImpl;
-    DropoutBackprop *dropoutBackpropImpl;
+    DropoutForward *dropoutForwardImpl;
+    DropoutBackward *dropoutBackwardImpl;
     MultiplyBuffer *multiplyBuffer; // for skipping dropout...
 
     unsigned char *masks;

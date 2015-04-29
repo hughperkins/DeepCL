@@ -14,7 +14,7 @@
 class OpenCLHelper;
 class CLWrapper;
 
-class DeepCL_EXPORT DropoutPropagate {
+class DeepCL_EXPORT DropoutForward {
 public:
     OpenCLHelper *cl;
 
@@ -24,7 +24,7 @@ public:
 
     const int outputImageSize;
 
-    virtual ~DropoutPropagate() {}
+    virtual ~DropoutForward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
@@ -43,10 +43,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutPropagate *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutPropagate *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutPropagate *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    DropoutForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    STATIC DropoutForward *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    STATIC DropoutForward *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    STATIC DropoutForward *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
     VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, unsigned char *masks, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );

@@ -9,8 +9,8 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "DropoutLayer.h"
-#include "DropoutPropagate.h"
-#include "DropoutBackprop.h"
+#include "DropoutForward.h"
+#include "DropoutBackward.h"
 #include "RandomSingleton.h"
 #include "MultiplyBuffer.h"
 
@@ -49,14 +49,14 @@ DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker
 //        maker->net->print();
         throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    dropoutPropagateImpl = DropoutPropagate::instance( cl, numPlanes, inputImageSize, dropRatio );
-    dropoutBackpropImpl = DropoutBackprop::instance( cl, numPlanes, inputImageSize, dropRatio );
+    dropoutForwardImpl = DropoutForward::instance( cl, numPlanes, inputImageSize, dropRatio );
+    dropoutBackwardImpl = DropoutBackward::instance( cl, numPlanes, inputImageSize, dropRatio );
     multiplyBuffer = new MultiplyBuffer( cl, dropRatio );
 }
 VIRTUAL DropoutLayer::~DropoutLayer() {
     delete multiplyBuffer;
-    delete dropoutPropagateImpl;
-    delete dropoutBackpropImpl;
+    delete dropoutForwardImpl;
+    delete dropoutBackwardImpl;
     if( maskWrapper != 0 ) {
         delete maskWrapper;
     }
@@ -207,7 +207,7 @@ VIRTUAL void DropoutLayer::forward() {
         // create new masks...
         generateMasks();
         maskWrapper->copyToDevice();
-        dropoutPropagateImpl->forward( batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper );
+        dropoutForwardImpl->forward( batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper );
     } else {
         // if not training, then simply skip the dropout bit, copy the buffers directly
         multiplyBuffer->multiply( getOutputSize(), upstreamOutputWrapper, outputWrapper );
@@ -228,7 +228,7 @@ VIRTUAL void DropoutLayer::backward( float learningRate ) {
         gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
-    dropoutBackpropImpl->backward( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
+    dropoutBackwardImpl->backward( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
     if( weOwnErrorsWrapper ) {
         delete gradOutputWrapper;
     }
