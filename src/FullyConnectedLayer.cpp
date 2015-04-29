@@ -102,7 +102,10 @@ VIRTUAL void FullyConnectedLayer::backward( float learningRate ) {
     convolutionalLayer->backward( learningRate );
 }
 VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
-    return false; // not handle fc layer for now, conv only for now
+    return true;
+}
+VIRTUAL void FullyConnectedLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
+    convolutionalLayer->setTrainerMaker( trainerMaker );
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
     return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " }";

@@ -9,7 +9,7 @@ kernel void updateWeights(
         const float learningRate,
         const float momentum,
         global float *lastUpdate,
-        global const float *currentGradients,
+        global const float *gradWeights,
         global float *weights
             ) {
     const int globalId = get_global_id(0);
@@ -18,8 +18,8 @@ kernel void updateWeights(
     }
     // first update the update
     lastUpdate[globalId] = 
-        learningRate * currentGradients[globalId] +
-        momentum * lastUpdate[globalId];
+        momentum * lastUpdate[globalId]
+        - learningRate * gradWeights[globalId];
     // now update the weight
     weights[globalId] += lastUpdate[globalId];
     // thats it... :-)

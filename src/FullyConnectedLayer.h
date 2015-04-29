@@ -52,6 +52,7 @@ public:
     VIRTUAL void forward();
     VIRTUAL void backward( float learningRate );
     VIRTUAL bool needsTrainer() const;
+    VIRTUAL void setTrainerMaker( TrainerMaker *trainerMaker );
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

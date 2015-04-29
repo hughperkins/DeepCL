@@ -54,7 +54,7 @@ using namespace std;
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
         ('trainer', 'string', 'which trainer, currently must be sgd, no other options', 'sgd', False ),
         ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
-        ('momentum', 'float', 'momentum', 0.0, False),
+        ('momentum', 'float', 'momentum', 0.0, True),
         ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, False)
     ]
 *///]]]
@@ -262,6 +262,7 @@ void go(Config config) {
         for( int i = 0; i < net->getNumLayers(); i++ ) {
             Layer *layer = net->getLayer(i);
             if( layer->needsTrainer() ) {
+                cout << "setting trainermaker layer " << i << endl;
                 layer->setTrainerMaker( sgdMaker );
             }
         }
@@ -414,6 +415,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
+    cout << "    momentum=[momentum] (" << config.momentum << ")" << endl;
     // [[[end]]]
 }
 

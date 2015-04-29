@@ -39,6 +39,8 @@ VIRTUAL void SGD::updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsW
     // that's it :-)
 
     StatefulTimer::instance()->timeCheck("SGD::updateWeights start" );
+//    cout << "SGD::updateWeights, learningRate=" << learningRate << " momentum=" << momentum
+//        << " numWeights=" << numWeights << endl;
 
     kernel  ->in( numWeights )
             ->in( learningRate )
@@ -100,7 +102,7 @@ SGD::SGD( OpenCLHelper *cl, int numWeights ) :
     "        const float learningRate,\n" 
     "        const float momentum,\n" 
     "        global float *lastUpdate,\n" 
-    "        global const float *currentGradients,\n" 
+    "        global const float *gradWeights,\n" 
     "        global float *weights\n" 
     "            ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
@@ -109,8 +111,8 @@ SGD::SGD( OpenCLHelper *cl, int numWeights ) :
     "    }\n" 
     "    // first update the update\n" 
     "    lastUpdate[globalId] =\n" 
-    "        learningRate * currentGradients[globalId] +\n" 
-    "        momentum * lastUpdate[globalId];\n" 
+    "        momentum * lastUpdate[globalId]\n" 
+    "        - learningRate * gradWeights[globalId];\n" 
     "    // now update the weight\n" 
     "    weights[globalId] += lastUpdate[globalId];\n" 
     "    // thats it... :-)\n" 
