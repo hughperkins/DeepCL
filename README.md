@@ -121,17 +121,16 @@ Related projects
 
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
 
-License
-=======
-
-[Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
-
 Credits
 =======
 
 * Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state.
-* Thank-you very, very much to everyone who has clicked on the 'star' button above.  It is highly motivational, and very encouraging.  Every star pushes me forward to keep going, and gradually improve DeepCL :-)
 * Also, very happy to the person who submitted a link to DeepCL to Reddit MachineLearning, and for everyone who upvoted that link.  Thank-you very much :-)
+
+License
+=======
+
+[Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
 
 To get in contact
 =================
