@@ -1,6 +1,16 @@
   DeepCL
 ==========
 
+# What is the python_swig branch?
+
+* Current mainstream wrappers for python use Cython, which works well
+* For Lua wrappers, we are using swig
+* Therefore we are writing a swig interface file anyway
+* Maybe can re-use it for Python?
+* Turns out it's not quite so simple though, and these swig-based python wrappers are not ready for prime-time yet, so I've pushed them out to a branch, for now
+
+Python swig wrapper status: draft, for discussion purposes only
+
 Global Contents
 ===============
 
