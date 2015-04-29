@@ -1,9 +1,9 @@
 # Architecture
 
 * [NeuralNet.h](../src/NeuralNet.h) is a container for layers. It contains three types of method:
-  * methods that iterate over each layer, eg `propagate`
+  * methods that iterate over each layer, eg `forward`
   * methods that call a method on the first layer, eg `getInputCubeSize`
-  * methods that call a method on the last layer, eg `getResults()`
+  * methods that call a method on the last layer, eg `getOutput()`
 * Various net layers, eg [ConvolutionalLayer.cpp](../src/ConvolutionalLayer.cpp), [PoolingLayer.cpp](../src/PoolingLayer.cpp), etc
 * Trying to debug/unit-test by training whole layers is challenging, so the layer implementations are factorized, over two levels.  The first level abstracts away propagation, backprop of errors, and backprop of weights:
   * [Forward.cpp](../src/Forward.cpp) handles forward propagation
