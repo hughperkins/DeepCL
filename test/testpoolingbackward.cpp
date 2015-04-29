@@ -16,7 +16,7 @@
 
 using namespace std;
 
-TEST( testpoolingbackprop, basic ) {
+TEST( testpoolingbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
@@ -52,7 +52,7 @@ TEST( testpoolingbackprop, basic ) {
     delete cl;
 }
 
-TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
+TEST( testpoolingbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -99,7 +99,7 @@ TEST( testpoolingbackprop, basic_2plane_batchsize2 ) {
     delete cl;
 }
 
-TEST( SLOW_testpoolingbackprop, compare_args ) {
+TEST( SLOW_testpoolingbackward, compare_args ) {
     int inputImageSize = 9;
     int poolingSize = 2;
     int instance0 = 0;

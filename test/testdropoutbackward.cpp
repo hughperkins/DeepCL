@@ -17,7 +17,7 @@
 
 using namespace std;
 
-TEST( testdropoutbackprop, basic ) {
+TEST( testdropoutbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
@@ -59,7 +59,7 @@ TEST( testdropoutbackprop, basic ) {
     delete cl;
 }
 
-TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
+TEST( testdropoutbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
@@ -98,7 +98,7 @@ TEST( testdropoutbackprop, basic_2plane_batchsize2 ) {
     delete cl;
 }
 
-TEST( testdropoutbackprop, compare_args ) {
+TEST( testdropoutbackward, compare_args ) {
     int inputImageSize = 9;
     float dropRatio = 0.6f;
     int instance0 = 0;

@@ -127,13 +127,13 @@ endif(DEV_RUN_COG)
 set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackward.cpp test/testsinglebatch.cpp 
- test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
+ test/testpoolingforward.cpp test/testpoolingbackward.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp 
  src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
- test/testRandomSingleton.cpp test/testdropoutpropagate.cpp test/testdropoutbackprop.cpp
+ test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  )
 
 add_executable( deepclrun src/deepclrun.cpp src/stringhelper.cpp )
