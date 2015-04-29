@@ -162,7 +162,7 @@ deepcl_sourcestring = """
     DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
     DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
     CopyBuffer.cpp MultiplyBuffer.cpp
-    Trainer.cpp SGD.cpp
+    Trainer.cpp SGD.cpp TrainerMaker.cpp SGDMaker.cpp
 """ 
 deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []

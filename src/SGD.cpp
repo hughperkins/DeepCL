@@ -20,7 +20,7 @@ using namespace std;
 VIRTUAL SGD::~SGD() {
     delete lastUpdateWrapper;
     delete[] lastUpdate;
-    delete kernel;
+    //delete kernel;
 }
 
 VIRTUAL void SGD::setMomentum( float momentum ) {
@@ -68,9 +68,20 @@ SGD::SGD( OpenCLHelper *cl, int numWeights ) :
     // lastUpdate buffer never needs to change size,
     //  since number of weights is invariant with batchSize etc
     lastUpdate = new float[numWeights];
+    for( int i = 0; i < numWeights; i++ ) {
+        lastUpdate[i] = 0.0f;
+    }
     lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
+    lastUpdateWrapper->copyToDevice();
 
     string options = "";
+
+    static CLKernel *kernel = 0; // since kernel contains no defines, we 
+                                 // can share it across all SGD instances,
+                                 // save some compile time :-)
+    if( kernel != 0 ) {
+        this->kernel = kernel;
+    }
 
     // [[[cog
     // import stringify
@@ -108,6 +119,7 @@ SGD::SGD( OpenCLHelper *cl, int numWeights ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "updateWeights", options, "cl/SGD.cl" );
     // [[[end]]]
+    this->kernel = kernel;
 }
 
 

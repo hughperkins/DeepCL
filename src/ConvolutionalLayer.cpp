@@ -11,6 +11,8 @@
 #include "WeightsHelper.h"
 #include "Backward.h"
 #include "BackpropWeights.h"
+#include "TrainerMaker.h"
+#include "Trainer.h"
 #include "SGD.h"
 
 using namespace std;
@@ -276,8 +278,9 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     this->allocatedSpaceNumExamples = batchSize;
 
     delete outputWrapper;
-    delete gradInputWrapper;
     delete[] output;
+
+    delete gradInputWrapper;
     delete[] gradInput;
 
     output = new float[getOutputSize()];
@@ -412,6 +415,10 @@ VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
     }
 
     backpropWeightsImpl->calcGradWeights( batchSize, gradOutputWrapper, imagesWrapper,  gradWeightsWrapper, gradBiasWeightsWrapper );
+    weightsTrainer->updateWeights( gradWeightsWrapper, weightsWrapper );
+    if( dim.biased ) {
+        biasWeightsTrainer->updateWeights( gradBiasWeightsWrapper, biasWeightsWrapper );
+    }
     weightsCopiedToHost = false;
     gradWeightsCopiedToHost = false;
     gradBiasWeightsCopiedToHost = false;
@@ -438,11 +445,11 @@ VIRTUAL bool ConvolutionalLayer::needsTrainer() const {
     return true;
 }
 
-VIRTUAL void ConvolutionalLayer::setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer ) {
+VIRTUAL void ConvolutionalLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
     delete weightsTrainer;
     delete biasWeightsTrainer;
-    this->weightsTrainer = weightsTrainer;
-    this->biasWeightsTrainer = biasWeightsTrainer;
+    this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
+    this->biasWeightsTrainer = trainerMaker->instance( cl, getBiasWeightsSize() );
 }
 
 ostream &operator<<( ostream &os, ConvolutionalLayer &layer ) {

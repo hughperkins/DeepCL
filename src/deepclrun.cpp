@@ -23,6 +23,7 @@
 #include "BatchProcess.h"
 #include "NetLearnerOnDemand.h"
 #include "SGD.h"
+#include "SGDMaker.h"
 
 using namespace std;
 
@@ -257,16 +258,11 @@ void go(Config config) {
     }
     // apply the trainer
     if( toLower( config.trainer ) == "sgd" ) {
+        SGDMaker *sgdMaker = new SGDMaker( config.learningRate, config.momentum );
         for( int i = 0; i < net->getNumLayers(); i++ ) {
             Layer *layer = net->getLayer(i);
             if( layer->needsTrainer() ) {
-                SGD *weightsSgd = new SGD( net->getCl(), layer->getWeightsSize() );
-                weightsSgd->learningRate = config.learningRate;
-                weightsSgd->momentum = config.momentum;
-                SGD *biasWeightsSgd = new SGD( net->getCl(), layer->getBiasWeightsSize() );
-                biasWeightsSgd->learningRate = config.learningRate;
-                biasWeightsSgd->momentum = config.momentum;
-                layer->setTrainer( weightsSgd, biasWeightsSgd );
+                layer->setTrainerMaker( sgdMaker );
             }
         }
     } else {

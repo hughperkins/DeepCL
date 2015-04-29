@@ -66,7 +66,7 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
     DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
     CopyBuffer.cpp MultiplyBuffer.cpp
-    Trainer.cpp SGD.cpp
+    Trainer.cpp SGD.cpp TrainerMaker.cpp SGDMaker.cpp
  )
 foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})

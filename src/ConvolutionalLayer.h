@@ -137,7 +137,7 @@ public:
     VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainer() const;
-    VIRTUAL void setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer );
+    VIRTUAL void setTrainerMaker( TrainerMaker *trainerMaker );
 
     // [[[end]]]
 };
