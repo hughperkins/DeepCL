@@ -25,9 +25,9 @@
 void kernel backprop_floats_withscratch_dobias_striped( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *gradOutput, global const float *images, 
-        global float *weights,
+        global float *gradWeights,
         #ifdef BIASED
-             global float *biasWeights,
+             global float *gradBiasWeights,
         #endif
         local float *_errorStripe, local float *_imageStripe
  ) {
@@ -56,7 +56,7 @@ void kernel backprop_floats_withscratch_dobias_striped(
     const int outPlane = workgroupId / gInputPlanes;
     const int upstreamPlane = workgroupId % gInputPlanes;
 
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    // gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
     float thiswchange = 0;
 #ifdef BIASED
@@ -99,10 +99,10 @@ void kernel backprop_floats_withscratch_dobias_striped(
             barrier(CLK_LOCAL_MEM_FENCE);
 //            if( localId == 13 ) {
 //                for( int i = 0; i < 12; i++ ) {
-//                    weights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputImageSize];
+//                    gradWeights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputImageSize];
 //                }
 //                for( int i = 0; i < 20; i++ ) {
-//                    weights[200 + stripe * 20 + i ] = _imageStripe[i * gInputImageSize];
+//                    gradWeights[200 + stripe * 20 + i ] = _imageStripe[i * gInputImageSize];
 //                }
 //            }
             if( localId < gFilterSizeSquared ) {
@@ -131,16 +131,16 @@ void kernel backprop_floats_withscratch_dobias_striped(
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weights[ workgroupId * gFilterSizeSquared + localId ] += - learningRateMultiplier * thiswchange;
+        gradWeights[ workgroupId * gFilterSizeSquared + localId ] = learningRateMultiplier * thiswchange;
 //        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
     }
 #ifdef BIASED
     bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
     if( writeBias ) {
-        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
+        gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
     }
 #endif
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    // gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
 }
 

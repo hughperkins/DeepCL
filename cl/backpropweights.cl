@@ -12,9 +12,9 @@
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, 
          global const float *gradOutput, global const float *images, 
-        global float *weights
+        global float *gradWeights
         #ifdef BIASED
-            , global float *biasWeights
+            , global float *gradBiasWeights
         #endif
  ) {
     int globalId = get_global_id(0);
@@ -31,7 +31,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
     int upstreamPlane = filter2Id % gInputPlanes;
 
     float thiswchange = 0;
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    // gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
 #ifdef BIASED
     float thisbiaschange = 0;
@@ -63,13 +63,13 @@ void kernel backprop_floats( const float learningRateMultiplier,
             }
         }
     }
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    // gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
-    weights[ globalId ] += - learningRateMultiplier * thiswchange;
+    gradWeights[ globalId ] = learningRateMultiplier * thiswchange;
 #ifdef BIASED
     bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
     if( writeBias ) {
-        biasWeights[outPlane] += - learningRateMultiplier * thisbiaschange;
+        gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
     }
 #endif
 }

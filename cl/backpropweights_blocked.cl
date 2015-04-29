@@ -35,9 +35,9 @@
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *gradOutput, global const float *images, 
-        global float *weights,
+        global float *gradWeights,
         #ifdef BIASED
-             global float *biasWeights,
+             global float *gradBiasWeights,
         #endif
         local float *_errorImage, local float *_imageImage
  ) {
@@ -54,7 +54,7 @@ void kernel backprop_floats_withscratch_dobias(
 //    #define outPlane ( workgroupId / gInputPlanes )
 //    #define upstreamPlane ( workgroupId % gInputPlanes )
 
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    // gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
     float thiswchange = 0;
 #ifdef BIASED
@@ -91,15 +91,15 @@ void kernel backprop_floats_withscratch_dobias(
         }
     }
     if( localId < gFilterSizeSquared ) {
-        weights[ workgroupId * gFilterSizeSquared + localId ] = learningRateMultiplier * thiswchange;
+        gradWeights[ workgroupId * gFilterSizeSquared + localId ] = learningRateMultiplier * thiswchange;
     }
 #ifdef BIASED
     #define writeBias ( upstreamPlane == 0 && localId == 0 )
     if( writeBias ) {
-        biasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
+        gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
     }
 #endif
-    // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
+    // gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
 }
 

@@ -22,11 +22,11 @@
 // workgroup: [outputPlane][inputPlane][outputRow]
 // localid: [filterRow][filterCol]
 // weightChanges1: [outputPlane][inputPlane][filterRow][filterCol][outputRow]
-// biasWeights1: [outputPlane][outputRow]
+// gradBiasWeights1: [outputPlane][outputRow]
 kernel void backprop_weights( const float learningRateMultiplier, const int batchSize,
-    global float const *gradOutput, global float const *input, global float *restrict weights1,
+    global float const *gradOutput, global float const *input, global float *restrict gradWeights1,
     #ifdef BIASED
-         global float *restrict biasWeights1,
+         global float *restrict gradBiasWeights1,
     #endif
     local float *restrict _errorRow, local float *restrict _inputRow ) {
     #define globalId ( get_global_id(0) )
@@ -85,20 +85,20 @@ kernel void backprop_weights( const float learningRateMultiplier, const int batc
     }
 
     if( workgroupId == 0 && localId == 0 ) {
-        weights1[0] = _inputRow[0];
-        weights1[1] = _inputRow[1];
+        gradWeights1[0] = _inputRow[0];
+        gradWeights1[1] = _inputRow[1];
     }
 
     if( localId < gFilterSizeSquared ) {
         #define weightsIndex ( ( ( outInCombo \
             * gFilterSizeSquared ) + localId \
             * gOutputImageSize ) + outputRow )
-        //weights1[ weightsIndex ] -= learningRateMultiplier * thiswchange;
-        //weights1[weightsIndex] = 123.0f;
+        //gradWeights1[ weightsIndex ] -= learningRateMultiplier * thiswchange;
+        //gradWeights1[weightsIndex] = 123.0f;
     }
     #ifdef BIASED
         if( inputPlane == 0 && localId == 0 ) {
-            biasWeights1[outputPlane * gOutputImageSize + outputRow ] -= learningRateMultiplier * thisbiaschange;
+            gradBiasWeights1[outputPlane * gOutputImageSize + outputRow ] = learningRateMultiplier * thisbiaschange;
         }
     #endif
 }

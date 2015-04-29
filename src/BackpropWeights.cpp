@@ -30,7 +30,7 @@ BackpropWeights::BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensi
         debug( false ) {
 }
 STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensions dim ) {
-    return new BackpropWeightsNaive( cl, dim );
+    return new BackpropWeightsScratchLarge( cl, dim );
     if( dim.inputImageSize - dim.filterSize < 4 ) {
         return new BackpropWeightsNaive( cl, dim );
     }
