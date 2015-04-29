@@ -30,17 +30,17 @@ VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningR
         gradBiasWeightsWrapper->copyToHost();
         gradBiasWeights =  (float *)gradBiasWeightsWrapper->getHostArray();
     }
-    backpropWeights( batchSize, learningRate, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
+    calcGradWeights( batchSize, learningRate, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
         (float *)gradWeightsWrapper->getHostArray(), gradBiasWeights );
     gradWeightsWrapper->copyToDevice();
     if( dim.biased ) {
         gradBiasWeightsWrapper->copyToDevice();
     }
 }
-VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningRate, float *gradOutput,
+VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float learningRate, float *gradOutput,
     float *inputs, float *gradWeights, float *gradBiasWeights ) {
 
-    StatefulTimer::instance()->timeCheck(" BackpropWeightsCpu start" );
+    StatefulTimer::instance()->timeCheck(" calcGradWeightsCpu start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
@@ -95,6 +95,6 @@ VIRTUAL void BackpropWeightsCpu::backpropWeights( int batchSize, float learningR
             }
         }
     }
-    StatefulTimer::instance()->timeCheck(" BackpropWeightsCpu end" );
+    StatefulTimer::instance()->timeCheck(" calcGradWeightsCpu end" );
 }
 

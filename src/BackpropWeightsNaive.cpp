@@ -51,9 +51,9 @@ BackpropWeightsNaive::BackpropWeightsNaive( OpenCLHelper *cl, LayerDimensions di
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/backpropweights2.cl", "backprop_floats", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/backpropweights.cl", "backprop_floats", 'options' )
     // ]]]
-    // generated using cog, from cl/backpropweights2.cl:
+    // generated using cog, from cl/backpropweights.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2014,2015 hughperkins at gmail\n" 
     "//\n" 
@@ -134,7 +134,7 @@ BackpropWeightsNaive::BackpropWeightsNaive( OpenCLHelper *cl, LayerDimensions di
     "\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "backprop_floats", options, "cl/backpropweights2.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "backprop_floats", options, "cl/backpropweights.cl" );
     // [[[end]]]
 }
 
