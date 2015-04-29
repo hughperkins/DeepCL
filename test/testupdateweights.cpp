@@ -75,7 +75,8 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
     // calculate gradInput
     // should be zero, so we dont modify the weights
     // otherwise the losses will be really strange :-)
-    net->backward( 0.0f, expectedOutput);
+    // temporarily putting 1.0f, because of the way this works currently...
+    net->backward( 1.0f, expectedOutput);
 
     // modify input slightly
     mt19937 random;
