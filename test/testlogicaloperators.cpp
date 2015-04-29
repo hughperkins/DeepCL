@@ -81,14 +81,14 @@ using namespace std;
 //    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->insert();
 //    float weights1[] = {-1.04243, 0.251409, -0.806014, -0.0268563};
 //    float weights2[] = {0.107038, -0.144079, 0.1492, -0.395718};
-//    float biasWeights1[] = {-0.415169, 0.536681};
-//    float biasWeights2[] = {-0.0480136, 0.167825};
-//    net->initWeights( 1, weights1, biasWeights1 );
-//    net->initWeights( 2, weights2, biasWeights2 );
+//    float bias1[] = {-0.415169, 0.536681};
+//    float bias2[] = {-0.0480136, 0.167825};
+//    net->initWeights( 1, weights1, bias1 );
+//    net->initWeights( 2, weights2, bias2 );
 //    for( int epoch = 0; epoch < 200; epoch++ ) {
 //        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedOutput );
 ////        net->printWeightsAsCode();
-////        net->printBiasWeightsAsCode();
+////        net->printBiasAsCode();
 
 //        if( epoch % 50 == 0 ) {
 //            float loss = net->calcLoss(ldc.expectedOutput);

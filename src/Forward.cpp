@@ -127,11 +127,11 @@ VIRTUAL void Forward::forward( int batchSize, float *inputData, float *filters, 
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-    CLWrapper *biasWeightsWrapper = 0;
+    CLWrapper *biasWrapper = 0;
     if( dim.biased ) {
-        int biasWeightsWrapperSize = dim.numFilters;
-        biasWeightsWrapper = cl->wrap( biasWeightsWrapperSize, biases );
-        biasWeightsWrapper->copyToDevice();
+        int biasWrapperSize = dim.numFilters;
+        biasWrapper = cl->wrap( biasWrapperSize, biases );
+        biasWrapper->copyToDevice();
     }
 
 //    int outputDataSize = batchSize * dim.outputCubeSize;
@@ -143,7 +143,7 @@ VIRTUAL void Forward::forward( int batchSize, float *inputData, float *filters, 
     cl->finish();
 
     StatefulTimer::timeCheck("Forward::forward after copied to device");
-    forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
+    forward( batchSize, dataWrapper, weightsWrapper, biasWrapper,
             outputWrapper );
     StatefulTimer::timeCheck("Forward::forward after call forward");
     outputWrapper->copyToHost();
@@ -156,7 +156,7 @@ VIRTUAL void Forward::forward( int batchSize, float *inputData, float *filters, 
     delete dataWrapper;
     delete weightsWrapper;
     if( dim.biased ) {
-        delete biasWeightsWrapper;
+        delete biasWrapper;
     }
 
 //    return output;

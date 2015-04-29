@@ -18,7 +18,7 @@ using namespace std;
 VIRTUAL Forward4::~Forward4() {
     delete kernel;
 }
-VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Forward4::forward start");
 
@@ -30,7 +30,7 @@ VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
 //    kernel->in( pixelsPerThread );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWeightsWrapper );
+    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 //    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );

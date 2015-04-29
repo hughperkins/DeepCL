@@ -23,7 +23,7 @@ VIRTUAL ForwardByInputPlane::~ForwardByInputPlane() {
     delete repeatedAdd;
 //    delete activate;
 }
-VIRTUAL void ForwardByInputPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void ForwardByInputPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardByInputPlane::forward begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -78,7 +78,7 @@ VIRTUAL void ForwardByInputPlane::forward( int batchSize, CLWrapper *dataWrapper
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
             ->in( dim.numFilters )
             ->in( dim.outputImageSize * dim.outputImageSize )
-            ->inout( outputWrapper )->in( biasWeightsWrapper );
+            ->inout( outputWrapper )->in( biasWrapper );
         maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );

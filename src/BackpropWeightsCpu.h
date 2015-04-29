@@ -21,9 +21,9 @@ public:
     // generated, using cog:
     BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeightsCpu();
-    VIRTUAL void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper );
+    VIRTUAL void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper );
     VIRTUAL void calcGradWeights( int batchSize, float *gradOutput,
-    float *inputs, float *gradWeights, float *gradBiasWeights );
+    float *inputs, float *gradWeights, float *gradBias );
 
     // [[[end]]]
 };

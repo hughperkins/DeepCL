@@ -23,7 +23,7 @@ VIRTUAL ForwardFc::~ForwardFc() {
 //    delete kernel_activate;
     delete kPerElementTiledAdd;
 }
-VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardFc::forward begin");
 
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -41,7 +41,7 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     kernel1->in(batchSize);
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
-//    if( dim.biased ) kernel1->input( biasWeightsWrapper );
+//    if( dim.biased ) kernel1->input( biasWrapper );
     kernel1->output( output1Wrapper );
     kernel1->localFloats( dim.inputImageSize );
     kernel1->localFloats( dim.numFilters * dim.filterSize );
@@ -79,7 +79,7 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
 
     // add bias...
     if( dim.biased ) {
-        kPerElementTiledAdd->in( batchSize * dim.numFilters )->in( dim.numFilters )->inout( outputWrapper )->in( biasWeightsWrapper );
+        kPerElementTiledAdd->in( batchSize * dim.numFilters )->in( dim.numFilters )->inout( outputWrapper )->in( biasWrapper );
         maxglobalId = batchSize * dim.numFilters;
         numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         kPerElementTiledAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );

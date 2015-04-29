@@ -21,7 +21,7 @@ VIRTUAL ForwardFc_workgroupPerFilterPlane::~ForwardFc_workgroupPerFilterPlane() 
     delete kernel1;
     delete kernel2;
 }
-VIRTUAL void ForwardFc_workgroupPerFilterPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void ForwardFc_workgroupPerFilterPlane::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardFc_workgroupPerFilterPlane::forward begin");
     const int output1Size = batchSize * dim.numFilters * dim.filterSize;
     float *output1 = new float[ output1Size ];
@@ -31,7 +31,7 @@ VIRTUAL void ForwardFc_workgroupPerFilterPlane::forward( int batchSize, CLWrappe
     kernel1->in(batchSize);
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
-    if( dim.biased ) kernel1->input( biasWeightsWrapper );
+    if( dim.biased ) kernel1->input( biasWrapper );
     kernel1->output( output1Wrapper );
     kernel1->localFloats( dim.inputImageSize );
     kernel1->localFloats( batchSize * dim.filterSize );

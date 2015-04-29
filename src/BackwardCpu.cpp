@@ -93,10 +93,10 @@ VIRTUAL void BackwardCpu::backward( int batchSize,
     inputDataWrapper->copyToHost();
     gradOutputWrapper->copyToHost();
     weightsWrapper->copyToHost();
-//    float *biasWeights = 0;
+//    float *bias = 0;
 //    if( dim.biased ) {
-//        biasWeightsWrapper->copyToHost();
-//        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+//        biasWrapper->copyToHost();
+//        bias =  (float *)biasWrapper->getHostArray();
 //    }
     float *gradInput = backward( batchSize, (float *)inputDataWrapper->getHostArray(),
          (float *)gradOutputWrapper->getHostArray(), (float *)weightsWrapper->getHostArray() );

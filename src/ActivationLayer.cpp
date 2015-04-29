@@ -169,7 +169,7 @@ VIRTUAL CLWrapper *ActivationLayer::getOutputWrapper() {
 VIRTUAL int ActivationLayer::getWeightsSize() const {
     return 0;
 }
-VIRTUAL int ActivationLayer::getBiasWeightsSize() const {
+VIRTUAL int ActivationLayer::getBiasSize() const {
     return 0;
 }
 VIRTUAL float *ActivationLayer::getGradInput() {

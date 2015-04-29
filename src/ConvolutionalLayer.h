@@ -22,12 +22,14 @@ class Forward;
 class Backward;
 class BackpropWeights;
 class ConvolutionalMaker;
+class GpuAdd;
+class CopyBuffer;
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
     Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
-    Trainer *biasWeightsTrainer; // OWNED by us, we should delete (if non-zero)
+    Trainer *biasTrainer; // OWNED by us, we should delete (if non-zero)
 
     Forward *forwardimpl;
     BackpropWeights *backpropWeightsImpl;
@@ -37,30 +39,35 @@ public:
 //    ActivationFunction const *const activationFunction;
 
     float *weights;
-    float *biasWeights;
+    float *bias;
     float *output;
     float *gradInput;
     float *gradWeights;
-    float *gradBiasWeights;
+    float *gradBias;
 
 //    const int filterSize;
 //    const int filterSizeSquared;
 //    const bool padZeros;
 
     CLWrapper *weightsWrapper;
+    CLWrapper *biasWrapper;
     CLWrapper *outputWrapper;
     CLWrapper *gradInputWrapper;
     CLWrapper *gradWeightsWrapper;
-    CLWrapper *gradBiasWeightsWrapper;
+    CLWrapper *gradBiasWrapper;
 
     int batchSize;
     int allocatedSpaceNumExamples;
 
     bool weightsCopiedToHost;
+    bool biasCopiedToHost;
     bool outputCopiedToHost;
     bool gradInputCopiedToHost;
     bool gradWeightsCopiedToHost;
-    bool gradBiasWeightsCopiedToHost;
+    bool gradBiasCopiedToHost;
+
+    GpuAdd *gpuAdd;
+    CopyBuffer *copyBuffer;
 
     inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
         return ( ( filterId 
@@ -106,7 +113,7 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getGradInput();
     VIRTUAL float *getGradWeights();
-    VIRTUAL float *getGradBiasWeights();
+    VIRTUAL float *getGradBias();
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
@@ -114,7 +121,7 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
-    VIRTUAL float *getBiasWeights();
+    VIRTUAL float *getBias();
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
@@ -123,18 +130,20 @@ public:
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void forward();
-    VIRTUAL float * getOutput();
-    VIRTUAL void setWeights( float *weights, float *biasWeights );
+    VIRTUAL void setWeights( float *weights, float *bias );
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL void persistToArray(float *array);
     VIRTUAL void unpersistFromArray(float const*array);
-    VIRTUAL void initBiasWeights( float const*biasWeights );
+    VIRTUAL void initBias( float const*bias );
     VIRTUAL int getWeightsSize() const;
-    VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL int getBiasSize() const;
+    VIRTUAL float * getOutput();
+    VIRTUAL void forward();
     VIRTUAL void backward( float learningRate );
+    VIRTUAL void setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper );
+    VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
     VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainer() const;
     VIRTUAL void setTrainerMaker( TrainerMaker *trainerMaker );

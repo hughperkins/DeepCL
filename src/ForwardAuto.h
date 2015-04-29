@@ -46,7 +46,7 @@ public:
     ForwardAuto( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~ForwardAuto();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
+    CLWrapper *biasWrapper, CLWrapper *outputWrapper );
 
     // [[[end]]]
 

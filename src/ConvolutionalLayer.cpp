@@ -14,6 +14,8 @@
 #include "TrainerMaker.h"
 #include "Trainer.h"
 #include "SGD.h"
+#include "GpuAdd.h"
+#include "CopyBuffer.h"
 
 using namespace std;
 
@@ -27,31 +29,33 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 //        padZeros( maker->_padZeros ),
         cl( cl ),
         weightsTrainer( 0 ),
-        biasWeightsTrainer( 0 ),
+        biasTrainer( 0 ),
         backwardImpl(0),
 //        activationFunction( maker->_activationFunction ),
 
         weights(0),
-        biasWeights(0),
+        bias(0),
         output(0),
         gradInput( 0 ),
         gradWeights( 0 ),
-        gradBiasWeights( 0 ),
+        gradBias( 0 ),
 
         weightsWrapper( 0 ),
+        biasWrapper( 0 ),
         outputWrapper( 0 ),
         gradInputWrapper( 0 ),
         gradWeightsWrapper( 0 ),
-        gradBiasWeightsWrapper( 0 ),
+        gradBiasWrapper( 0 ),
 
         batchSize( 0 ),
         allocatedSpaceNumExamples( 0 ),
 
         weightsCopiedToHost( false ),
+        biasCopiedToHost( false ),
         outputCopiedToHost( false ),
         gradInputCopiedToHost( false ),
         gradWeightsCopiedToHost( false ),
-        gradBiasWeightsCopiedToHost( false ) 
+        gradBiasCopiedToHost( false ) 
             {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
         .setInputImageSize( previousLayer->getOutputImageSize() )
@@ -63,7 +67,7 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
         throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
     }
     weightsTrainer = new SGD( cl, getWeightsSize() ); // so it doesnt crash...
-    biasWeightsTrainer = new SGD( cl, getBiasWeightsSize() );
+    biasTrainer = new SGD( cl, getBiasSize() );
 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
@@ -77,43 +81,54 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
             throw std::runtime_error("filter size cannot be larger than upstream image size: " + toString( dim.filterSize) +
                 " > " + toString(dim.inputImageSize) );
     }
-    biasWeights = new float[ getBiasWeightsSize() ];
     weights = new float[ getWeightsSize() ];
+    bias = new float[ getBiasSize() ];
     randomizeWeights();
 
     weightsWrapper = cl->wrap( getWeightsSize(), weights );
     weightsWrapper->copyToDevice();
     weightsCopiedToHost = true;
 
+    biasWrapper = cl->wrap( getBiasSize(), bias );
+    biasWrapper->copyToDevice();
+    biasCopiedToHost = true;
+
     gradWeights = new float[ getWeightsSize() ];
     gradWeightsWrapper = cl->wrap( getWeightsSize(), gradWeights );
     gradWeightsWrapper->createOnDevice();
 
     if( dim.biased ) {
-        gradBiasWeights = new float[ getBiasWeightsSize() ];
-        gradBiasWeightsWrapper = cl->wrap( getBiasWeightsSize(), gradBiasWeights );
-        gradBiasWeightsWrapper->createOnDevice();
+        gradBias = new float[ getBiasSize() ];
+        gradBiasWrapper = cl->wrap( getBiasSize(), gradBias );
+        gradBiasWrapper->createOnDevice();
     }
+
+    gpuAdd = new GpuAdd( cl );
+    copyBuffer = new CopyBuffer( cl );
 }
 VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
+    delete gpuAdd;
+    delete copyBuffer;
+
     delete weightsWrapper;
+    delete biasWrapper;
     delete outputWrapper;
     delete gradInputWrapper;
     delete gradWeightsWrapper;
-    delete gradBiasWeightsWrapper;
+    delete gradBiasWrapper;
 
     delete[] output;
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
     delete[] gradInput;
     delete[] gradWeights;
-    delete[] gradBiasWeights;
+    delete[] gradBias;
 
     delete forwardimpl;
     delete backpropWeightsImpl;
     delete backwardImpl;
     delete weightsTrainer;
-    delete biasWeightsTrainer;
+    delete biasTrainer;
 }
 VIRTUAL std::string ConvolutionalLayer::getClassName() const {
     return "ConvolutionalLayer";
@@ -137,13 +152,13 @@ VIRTUAL float *ConvolutionalLayer::getGradWeights() {
     }
     return gradWeights;
 }
-VIRTUAL float *ConvolutionalLayer::getGradBiasWeights() {
-    if( !gradBiasWeightsCopiedToHost ) {
-        std::cout << "copying gradBiasWeights to host, from GPU" << std::endl;
-        gradBiasWeightsWrapper->copyToHost();
-        gradBiasWeightsCopiedToHost = true;
+VIRTUAL float *ConvolutionalLayer::getGradBias() {
+    if( !gradBiasCopiedToHost ) {
+        std::cout << "copying gradBias to host, from GPU" << std::endl;
+        gradBiasWrapper->copyToHost();
+        gradBiasCopiedToHost = true;
     }
-    return gradBiasWeights;
+    return gradBias;
 }
 VIRTUAL bool ConvolutionalLayer::providesGradInputWrapper() const {
     return true;
@@ -174,13 +189,13 @@ VIRTUAL float *ConvolutionalLayer::getWeights() {
     }
     return weights;
 }
-VIRTUAL float *ConvolutionalLayer::getBiasWeights() {
-    //if( !biasWeightsCopiedToHost ) {
+VIRTUAL float *ConvolutionalLayer::getBias() {
+    //if( !biasCopiedToHost ) {
 //        cout << "copying weights to host" << endl;
       //  cl->finish();
-       // biasWeightsWrapper->copyToHost();
+       // biasWrapper->copyToHost();
     //}
-    return biasWeights;
+    return bias;
 }
 VIRTUAL int ConvolutionalLayer::getOutputSize() const {
     return batchSize * dim.outputCubeSize;
@@ -200,7 +215,7 @@ void ConvolutionalLayer::randomizeWeights() {
         weights[i] = WeightsHelper::generateWeight( fanin );
     }
     for( int i = 0; i < dim.numFilters; i++ ) {
-        biasWeights[i] = WeightsHelper::generateWeight( fanin );
+        bias[i] = WeightsHelper::generateWeight( fanin );
     }
 }
 VIRTUAL void ConvolutionalLayer::print() {
@@ -217,7 +232,7 @@ VIRTUAL void ConvolutionalLayer::printWeights() {
     for( int filter = 0; filter < std::min( 5, dim.numFilters ); filter++ ) {
        std::cout << "    filter " << filter << std::endl;
        if( dim.biased ) {
-           std::cout << "       bias=" << biasWeights[filter] << std::endl;            
+           std::cout << "       bias=" << bias[filter] << std::endl;            
        }
        for( int plane = 0; plane < std::min(5, dim.inputPlanes); plane++ ) {
            if( dim.inputPlanes > 1 ) std::cout << "    inplane " << plane << std::endl;
@@ -291,6 +306,63 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
         gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
     }
 }
+VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *bias ) {
+    initWeights( weights );
+    initBias( bias );
+}
+VIRTUAL void ConvolutionalLayer::initWeights( float const*weights ) {
+    int weightsSize = dim.filtersSize;
+    memcpy( this->weights, weights, sizeof(float) * weightsSize );
+    weightsWrapper->copyToDevice();
+}
+VIRTUAL int ConvolutionalLayer::getOutputCubeSize() const {
+    return dim.outputCubeSize;
+}
+VIRTUAL int ConvolutionalLayer::getPersistSize() const {
+    if( dim.biased ) {
+        return getWeightsSize() + getBiasSize();
+    } else {
+        return getWeightsSize();
+    }
+}
+VIRTUAL void ConvolutionalLayer::persistToArray(float *array) {
+    float const*weights = getWeights();
+//    float const*bias = getBias();
+    memcpy( array, weights, sizeof(float) * getWeightsSize() );
+    if( dim.biased ) {
+        memcpy( array + getWeightsSize(), bias, sizeof(float) * getBiasSize() );
+    }
+}
+VIRTUAL void ConvolutionalLayer::unpersistFromArray(float const*array) {
+    float const*newweights = array;
+    initWeights( newweights );
+    if( dim.biased ) {
+        float const*newbias = array + getWeightsSize();
+        initBias( newbias );
+    }
+}
+VIRTUAL void ConvolutionalLayer::initBias( float const*bias ) {
+    int biasSize = dim.numFilters;
+    memcpy( this->bias, bias, sizeof(float) * biasSize );
+//    biasWrapper->copyToDevice();
+}
+VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
+    return dim.numFilters * dim.inputPlanes * dim.filterSize * dim.filterSize;
+}
+VIRTUAL int ConvolutionalLayer::getBiasSize() const {
+    if( dim.biased ) {
+        return dim.numFilters;
+    } else {
+        return 0;
+    }
+}
+VIRTUAL float * ConvolutionalLayer::getOutput() {
+    if( !outputCopiedToHost ) {
+        outputWrapper->copyToHost();
+        outputCopiedToHost = true;
+    }
+    return output;
+};
 VIRTUAL void ConvolutionalLayer::forward() {
     if( batchSize == 0 ) {
         throw runtime_error("Need to call setBatchSize(size) before calling forward etc");
@@ -306,97 +378,24 @@ VIRTUAL void ConvolutionalLayer::forward() {
         upstreamWrapper = cl->wrap( previousLayer->getOutputSize(), (float *)previousLayer->getOutput() );
         upstreamWrapper->copyToDevice();
     }
-    CLFloatWrapper *biasWeightsWrapper = 0;
-    if( dim.biased ) {
-        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
-        biasWeightsWrapper->copyToDevice();
-    }
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", copied to device");
-    forwardimpl->forward( batchSize, upstreamWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
+    forwardimpl->forward( batchSize, upstreamWrapper, weightsWrapper, biasWrapper, outputWrapper );
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ",  after clFinish");
 
     if( !previousLayer->hasOutputWrapper() ) {
         delete upstreamWrapper;
     }
-    if( dim.biased ) {
-        delete biasWeightsWrapper;
-    }
     outputCopiedToHost = false;
 }
-VIRTUAL float * ConvolutionalLayer::getOutput() {
-    if( !outputCopiedToHost ) {
-//            std::cout << "layer " << layerIndex << " copying output to host " << std::endl;
-        outputWrapper->copyToHost();
-        outputCopiedToHost = true;
-    }
-    return output;
-};
-VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *biasWeights ) {
-    initWeights( weights );
-    initBiasWeights( biasWeights );
-}
-VIRTUAL void ConvolutionalLayer::initWeights( float const*weights ) {
-    int weightsSize = dim.filtersSize;
-    memcpy( this->weights, weights, sizeof(float) * weightsSize );
-    weightsWrapper->copyToDevice();
-}
-VIRTUAL int ConvolutionalLayer::getOutputCubeSize() const {
-    return dim.outputCubeSize;
-}
-VIRTUAL int ConvolutionalLayer::getPersistSize() const {
-    if( dim.biased ) {
-        return getWeightsSize() + getBiasWeightsSize();
-    } else {
-        return getWeightsSize();
-    }
-}
-VIRTUAL void ConvolutionalLayer::persistToArray(float *array) {
-    float const*weights = getWeights();
-//    float const*biasWeights = getBiasWeights();
-    memcpy( array, weights, sizeof(float) * getWeightsSize() );
-    if( dim.biased ) {
-        memcpy( array + getWeightsSize(), biasWeights, sizeof(float) * getBiasWeightsSize() );
-    }
-}
-VIRTUAL void ConvolutionalLayer::unpersistFromArray(float const*array) {
-    float const*newweights = array;
-    initWeights( newweights );
-    if( dim.biased ) {
-        float const*newbiasWeights = array + getWeightsSize();
-        initBiasWeights( newbiasWeights );
-    }
-}
-VIRTUAL void ConvolutionalLayer::initBiasWeights( float const*biasWeights ) {
-    int biasWeightsSize = dim.numFilters;
-    memcpy( this->biasWeights, biasWeights, sizeof(float) * biasWeightsSize );
-//    biasWeightsWrapper->copyToDevice();
-}
-VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
-    return dim.numFilters * dim.inputPlanes * dim.filterSize * dim.filterSize;
-}
-VIRTUAL int ConvolutionalLayer::getBiasWeightsSize() const {
-    if( dim.biased ) {
-        return dim.numFilters;
-    } else {
-        return 0;
-    }
-}
-
 VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
     StatefulTimer::instance()->timeCheck("backprop(): start, layer " + toString( layerIndex ) );
 
-    CLWrapper *biasWeightsWrapper = 0;
-    if( dim.biased ) {
-        biasWeightsWrapper = cl->wrap( getBiasWeightsSize(), biasWeights );
-        biasWeightsWrapper->copyToDevice();
-    }
-
-    CLWrapper *imagesWrapper = 0;
+    CLWrapper *inputWrapper = 0;
     if( previousLayer->hasOutputWrapper() ) {
-        imagesWrapper = previousLayer->getOutputWrapper();
+        inputWrapper = previousLayer->getOutputWrapper();
     } else {
-        imagesWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
-        imagesWrapper->copyToDevice();
+        inputWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
+        inputWrapper->copyToDevice();
     }
 
     CLWrapper *gradOutputWrapper = 0;
@@ -410,48 +409,53 @@ VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
     }
 
     if( previousLayer->needsBackProp() ) {
-        backwardImpl->backward( batchSize, imagesWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
+        backwardImpl->backward( batchSize, inputWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );
         StatefulTimer::instance()->timeCheck("backproperrors(): calced gradInput, layer " + ::toString( layerIndex ) );
     }
 
-    backpropWeightsImpl->calcGradWeights( batchSize, gradOutputWrapper, imagesWrapper,  gradWeightsWrapper, gradBiasWeightsWrapper );
-    weightsTrainer->updateWeights( gradWeightsWrapper, weightsWrapper );
-    if( dim.biased ) {
-        biasWeightsTrainer->updateWeights( gradBiasWeightsWrapper, biasWeightsWrapper );
-    }
-    weightsCopiedToHost = false;
-    gradWeightsCopiedToHost = false;
-    gradBiasWeightsCopiedToHost = false;
-    StatefulTimer::instance()->timeCheck("backproperrors(): done weight backprop, layer " + ::toString( layerIndex ) );
+    backpropWeightsImpl->calcGradWeights( batchSize, gradOutputWrapper, inputWrapper,  gradWeightsWrapper, gradBiasWrapper );
+    StatefulTimer::instance()->timeCheck("backproperrors(): done calc gradWeights, layer " + ::toString( layerIndex ) );
 
-    if( dim.biased ) {
-        biasWeightsWrapper->copyToHost();
-        delete biasWeightsWrapper;
-    }
+    gradWeightsCopiedToHost = false;
+    gradBiasCopiedToHost = false;
+
     if( !previousLayer->hasOutputWrapper() ) {
-        delete imagesWrapper;
+        delete inputWrapper;
     }
     if( weOwnGradOutputWrapper ) {
         delete gradOutputWrapper;
     }
-    StatefulTimer::instance()->timeCheck("backproperrors(): updated weights, layer " + ::toString( layerIndex ) );
 }
-
+VIRTUAL void ConvolutionalLayer::setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper ) {
+    copyBuffer->copy( getWeightsSize(), weightWrapper, this->weightsWrapper );
+    if( dim.biased ) {
+        copyBuffer->copy( getBiasSize(), biasWrapper, this->biasWrapper );
+    }
+    weightsCopiedToHost = false;
+    biasCopiedToHost = false;
+    StatefulTimer::instance()->timeCheck("ConvolutionalLayer::setWeights(): set weights, layer " + ::toString( layerIndex ) );
+}
+VIRTUAL void ConvolutionalLayer::updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper ) {
+    gpuAdd->add( getWeightsSize(), weightsWrapper, weightChangesWrapper );
+    if( dim.biased ) {
+        gpuAdd->add( getBiasSize(), biasWrapper, biasChangesWrapper );
+    }
+    weightsCopiedToHost = false;
+    biasCopiedToHost = false;
+    StatefulTimer::instance()->timeCheck("ConvolutionalLayer::updateWeights(): updated weights, layer " + ::toString( layerIndex ) );
+}
 VIRTUAL std::string ConvolutionalLayer::asString() const {
     return "ConvolutionalLayer{ " + toString( dim ) + " }";
 }
-
 VIRTUAL bool ConvolutionalLayer::needsTrainer() const {
     return true;
 }
-
 VIRTUAL void ConvolutionalLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
     delete weightsTrainer;
-    delete biasWeightsTrainer;
+    delete biasTrainer;
     this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
-    this->biasWeightsTrainer = trainerMaker->instance( cl, getBiasWeightsSize() );
+    this->biasTrainer = trainerMaker->instance( cl, getBiasSize() );
 }
-
 ostream &operator<<( ostream &os, ConvolutionalLayer &layer ) {
     os << "ConvolutionalLayer { " << layer.dim << " }";
     return os;

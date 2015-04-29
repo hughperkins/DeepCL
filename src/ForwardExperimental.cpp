@@ -18,7 +18,7 @@ using namespace std;
 VIRTUAL ForwardExperimental::~ForwardExperimental() {
     delete kernel;
 }
-VIRTUAL void ForwardExperimental::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void ForwardExperimental::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardExperimental::forward start");
 //    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -27,7 +27,7 @@ VIRTUAL void ForwardExperimental::forward( int batchSize, CLWrapper *dataWrapper
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-//    if( dim.biased ) kernel->input( biasWeightsWrapper );
+//    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 //    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );

@@ -19,17 +19,17 @@ ForwardCpu::ForwardCpu( OpenCLHelper *cl, LayerDimensions dim ) :
         Forward( cl, dim )
     {
 }
-VIRTUAL void ForwardCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void ForwardCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
     inputDataWrapper->copyToHost();
     weightsWrapper->copyToHost();
 //    weightsWrapper->copyToHost();
-  //  biasWeightsWrapper->copyToHost();
-    float *biasWeights = 0;
+  //  biasWrapper->copyToHost();
+    float *bias = 0;
     if( dim.biased ) {
-        biasWeightsWrapper->copyToHost();
-        biasWeights =  (float *)biasWeightsWrapper->getHostArray();
+        biasWrapper->copyToHost();
+        bias =  (float *)biasWrapper->getHostArray();
     }
-    float *output = forward( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), biasWeights );
+    float *output = forward( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), bias );
     int outputSize = batchSize * dim.outputCubeSize;
 //        memcpy( (float *)outputWrapper->getHostArray(), output, sizeof(float) * outputSize );
     float *hostArray = (float *)outputWrapper->getHostArray();
@@ -39,7 +39,7 @@ VIRTUAL void ForwardCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CL
     outputWrapper->copyToDevice();
     delete[] output;
 }
-VIRTUAL float *ForwardCpu::forward( int batchSize, float *inputData, float *weights, float *biasWeights ) {
+VIRTUAL float *ForwardCpu::forward( int batchSize, float *inputData, float *weights, float *bias ) {
 //    cout << "ForwardCpu::forward outputcubesize=" << dim.outputCubeSize << " batchSize=" << batchSize << endl;
     float *output = new float[ dim.outputCubeSize * batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
@@ -83,7 +83,7 @@ VIRTUAL float *ForwardCpu::forward( int batchSize, float *inputData, float *weig
                         }
                     }
                     if( dim.biased ) {
-                        sum += biasWeights[filter];
+                        sum += bias[filter];
                     }
 //                    sum = fn->calc( sum );
                     int outputIndex = ( ( n 

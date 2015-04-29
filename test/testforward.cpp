@@ -34,10 +34,10 @@ void forwardWithWipe( Forward *prop, int batchSize, LayerDimensions dim, float *
     CLWrapper *weightsWrapper = prop->cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-    CLWrapper *biasWeightsWrapper = 0;
+    CLWrapper *biasWrapper = 0;
     if( dim.biased ) {
-        biasWeightsWrapper = prop->cl->wrap( dim.numFilters, biases );
-        biasWeightsWrapper->copyToDevice();
+        biasWrapper = prop->cl->wrap( dim.numFilters, biases );
+        biasWrapper->copyToDevice();
     }
 
     CLWrapper *outputWrapper = prop->cl->wrap( batchSize * dim.outputCubeSize, output );
@@ -45,7 +45,7 @@ void forwardWithWipe( Forward *prop, int batchSize, LayerDimensions dim, float *
     outputWrapper->copyToDevice(); // so we can wipe it...
 
     StatefulTimer::timeCheck("testforward: after data wrapper processing");
-    prop->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper,
+    prop->forward( batchSize, dataWrapper, weightsWrapper, biasWrapper,
             outputWrapper );
 //    StatefulTimer::timeCheck("Forward::forward after call forward");
     outputWrapper->copyToHost();
@@ -55,7 +55,7 @@ void forwardWithWipe( Forward *prop, int batchSize, LayerDimensions dim, float *
     delete dataWrapper;
     delete weightsWrapper;
     if( dim.biased ) {
-        delete biasWeightsWrapper;
+        delete biasWrapper;
     }
 }
 

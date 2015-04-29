@@ -65,11 +65,11 @@ public:
     OpenCLHelper *getCl();
     STATIC NeuralNetMould *maker();
     PUBLICAPI void addLayer( LayerMaker2 *maker );
-    PUBLICAPI void initWeights( int layerIndex, float *weights, float *biasWeights );
+    PUBLICAPI void initWeights( int layerIndex, float *weights, float *bias );
     PUBLICAPI void initWeights( int layerIndex, float *weights );
-    PUBLICAPI void initBiasWeights( int layerIndex, float *weights );
+    PUBLICAPI void initBias( int layerIndex, float *weights );
     void printWeightsAsCode();
-    void printBiasWeightsAsCode();
+    void printBiasAsCode();
     PUBLICAPI float calcLoss(float const *expectedValues );
     PUBLICAPI float calcLossFromLabels(int const *labels );
     EpochMaker *epochMaker();

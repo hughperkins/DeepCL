@@ -83,6 +83,7 @@ SGD::SGD( OpenCLHelper *cl, int numWeights ) :
                                  // save some compile time :-)
     if( kernel != 0 ) {
         this->kernel = kernel;
+        return;
     }
 
     // [[[cog

@@ -51,6 +51,10 @@ public:
         throw std::runtime_error("setTrainer not implemented for " + getClassName() );
     }
 
+    virtual void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper ) {
+        throw std::runtime_error("updateWeights not implemented for " + getClassName() );
+    }
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
@@ -73,22 +77,22 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();
     VIRTUAL void initWeights( float const*weights );
-    VIRTUAL void initBiasWeights( float const *biasWeights );
+    VIRTUAL void initBias( float const *bias );
     VIRTUAL void printWeightsAsCode() const;
-    VIRTUAL void printBiasWeightsAsCode() const;
+    VIRTUAL void printBiasAsCode() const;
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
     PUBLICAPI VIRTUAL void backward( float learningRate );
     VIRTUAL float *getGradWeights();
-    VIRTUAL float *getGradBiasWeights();
+    VIRTUAL float *getGradBias();
     PUBLICAPI VIRTUAL int getWeightsSize() const;
-    PUBLICAPI VIRTUAL int getBiasWeightsSize() const;
+    PUBLICAPI VIRTUAL int getBiasSize() const;
     PUBLICAPI VIRTUAL void persistToArray(float *array);
     PUBLICAPI VIRTUAL void unpersistFromArray(float const*array);
-    VIRTUAL void setWeights(float *weights, float *biasWeights);
+    VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
-    VIRTUAL float const*getBiasWeights() const;
+    VIRTUAL float const*getBias() const;
     PUBLICAPI VIRTUAL std::string asString() const;
 
     // [[[end]]]

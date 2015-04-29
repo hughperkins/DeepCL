@@ -22,23 +22,23 @@ BackpropWeightsCpu::BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim ) 
 }
 VIRTUAL BackpropWeightsCpu::~BackpropWeightsCpu() {
 }
-VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) {
     gradOutputWrapper->copyToHost();
     imagesWrapper->copyToHost();
-    float *gradBiasWeights = 0;
+    float *gradBias = 0;
     if( dim.biased ) {
-        gradBiasWeightsWrapper->copyToHost();
-        gradBiasWeights =  (float *)gradBiasWeightsWrapper->getHostArray();
+        gradBiasWrapper->copyToHost();
+        gradBias =  (float *)gradBiasWrapper->getHostArray();
     }
     calcGradWeights( batchSize, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
-        (float *)gradWeightsWrapper->getHostArray(), gradBiasWeights );
+        (float *)gradWeightsWrapper->getHostArray(), gradBias );
     gradWeightsWrapper->copyToDevice();
     if( dim.biased ) {
-        gradBiasWeightsWrapper->copyToDevice();
+        gradBiasWrapper->copyToDevice();
     }
 }
 VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float *gradOutput,
-    float *inputs, float *gradWeights, float *gradBiasWeights ) {
+    float *inputs, float *gradWeights, float *gradBias ) {
 
     StatefulTimer::instance()->timeCheck(" calcGradWeightsCpu start" );
 
@@ -88,7 +88,7 @@ VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float *gradOutp
                     gradWeights[ weightIndex ] = thiswchange * learningMultiplier;
                     if( dim.biased ) {
                         if( filterRow == margin && filterCol == margin && inputPlane == 0 ) {
-                            gradBiasWeights[ outPlane ] = learningMultiplier * thisBiasChange;
+                            gradBias[ outPlane ] = learningMultiplier * thisBiasChange;
                         }
                     }
                 }

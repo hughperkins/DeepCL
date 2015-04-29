@@ -83,9 +83,9 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     net->addLayer( ActivationMaker::instance()->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {0.382147f, -1.77522f};
-    float biasweights1[] = {-1.00181f, 0.891056f};
+    float bias1[] = {-1.00181f, 0.891056f};
     net->initWeights(1, weights1);
-    net->initBiasWeights(1, biasweights1);
+    net->initBias(1, bias1);
 
     BatchLearner batchLearner( net );
     for( int epoch = 0; epoch < 30; epoch++ ) {
@@ -149,15 +149,15 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {-0.171115f, 0.28369f, 0.201354f, -0.496124f, 0.391512f, 0.120458f, 0.396952f, -0.1356f, -0.319595f, 0.251043f, 0.318859f, 0.220892f, -0.480651f, -0.51708f, 0.2173f, 0.365935f, 0.304687f, -0.712624f};
-    float biasWeights1[] = {0.375101f, 0.00130748f};
+    float bias1[] = {0.375101f, 0.00130748f};
     net->initWeights(1, weights1);
-    net->initBiasWeights(1, biasWeights1 );
+    net->initBias(1, bias1 );
     float const*output = 0;
     BatchLearner batchLearner( net );
     for( int epoch = 0; epoch < 15; epoch++ ) {
         batchLearner.runEpochFromExpected( 0.4f, 4, 4, data, expectedOutput );
 //        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
+//        net->printBiasAsCode();
         if( epoch % 5 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
             output = net->getOutput();
@@ -196,8 +196,8 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {-0.380177f, -1.5738f};
-    float biasWeights1[] = {0.5f, 0.0606055f};
-    net->initWeights( 1, weights1, biasWeights1 );
+    float bias1[] = {0.5f, 0.0606055f};
+    net->initWeights( 1, weights1, bias1 );
     BatchLearner batchLearner( net );
     for( int epoch = 0; epoch < 5; epoch++ ) {
         batchLearner.runEpochFromExpected( 1.2f, 2, 2, data, expectedOutput );
@@ -205,7 +205,7 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //            net->print();
     //        net->printWeightsAsCode();
-    //        net->printBiasWeightsAsCode();
+    //        net->printBiasAsCode();
             float const*output = net->getOutput();
             AccuracyHelper::printAccuracy( 2, 2, labels, output );
         }
@@ -268,8 +268,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     double _weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
     vector<float> __weights1( _weights1, _weights1 + sizeof( _weights1 ) / sizeof(double) );
     float *weights1 = &__weights1[0];
-    float biasWeights1[] = {0.0418723f, 0.158733f};
-    net->initWeights( 1, weights1, biasWeights1 );
+    float bias1[] = {0.0418723f, 0.158733f};
+    net->initWeights( 1, weights1, bias1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.4f)
@@ -281,7 +281,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
         if( epoch % 5 == 0 ) {
             output = net->getOutput();
     //        net->printWeightsAsCode();
-    //        net->printBiasWeightsAsCode();
+    //        net->printBiasAsCode();
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
             AccuracyHelper::printAccuracy( 4, 2, labels, output );
         }
@@ -340,8 +340,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     net->addLayer( SquareLossMaker::instance() );;
     float const*output = 0;
     float weights1[] = {0.715867f, -0.428623f, -0.281465f, -0.736675f, -0.224507f, 0.335028f, -0.384762f, -0.213304f, 0.679177f, -0.170055f, 0.335075f, -0.572057f, -0.175718f, -0.410962f, -0.175277f, 0.536131f, -0.0568329f, -0.00297278f};
-    float biasWeights1[] = {0.5f, 0.5f};
-    net->initWeights( 1, weights1, biasWeights1 );
+    float bias1[] = {0.5f, 0.5f};
+    net->initWeights( 1, weights1, bias1 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.09f)
@@ -351,7 +351,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
             ->expectedOutputs(expectedOutput)
             ->run();
 //        net->printWeightsAsCode();
-//        net->printBiasWeightsAsCode();
+//        net->printBiasAsCode();
         if( epoch % 5 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
             output = net->getOutput();
@@ -445,10 +445,10 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     net->addLayer( SquareLossMaker::instance() );
 float weights1[] = {1.12739f, 1.21476f};
 float weights2[] = {-0.352846f, 0.534554f, -1.13343f, -0.191175f};
-float biasWeights1[] = {0.971267f, 1.42629f};
-float biasWeights2[] = {-0.071288f, 0.443919f};
-    net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(3, weights2, biasWeights2 );
+float bias1[] = {0.971267f, 1.42629f};
+float bias2[] = {-0.071288f, 0.443919f};
+    net->initWeights(1, weights1, bias1 );
+    net->initWeights(3, weights2, bias2 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.4f)
@@ -459,7 +459,7 @@ float biasWeights2[] = {-0.071288f, 0.443919f};
             ->run();
         if( epoch % 5 == 0 ) {
 //           net->printWeightsAsCode();
-//            net->printBiasWeightsAsCode();
+//            net->printBiasAsCode();
         cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
         }
 //        net->print();
@@ -639,10 +639,10 @@ vector<float> vweights1( _weights1, _weights1 + sizeof(_weights1) / sizeof(_weig
 float *weights1 = &vweights1[0];
 vector<float> vweights2( _weights2, _weights2 + sizeof(_weights2) / sizeof(_weights2[0] ) );
 float *weights2 = &vweights2[0];
-float biasWeights1[] = {0.0998941f, -0.365008f, 0.188937f};
-float biasWeights2[] = {0.232961f, 0.141537f, 0.159074f};
-    net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(3, weights2, biasWeights2 );
+float bias1[] = {0.0998941f, -0.365008f, 0.188937f};
+float bias2[] = {0.232961f, 0.141537f, 0.159074f};
+    net->initWeights(1, weights1, bias1 );
+    net->initWeights(3, weights2, bias2 );
     for( int epoch = 0; epoch < 500; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.04f)
@@ -655,7 +655,7 @@ float biasWeights2[] = {0.232961f, 0.141537f, 0.159074f};
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
 //           net->printWeightsAsCode();
-//            net->printBiasWeightsAsCode();
+//            net->printBiasAsCode();
         }
 //        float const*output = net->getOutput();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, output );
@@ -752,10 +752,10 @@ vector<float> __weights1( _weights1, _weights1 + sizeof( _weights1 ) / sizeof(do
 vector<float> __weights2( _weights2, _weights2 + sizeof( _weights2  ) / sizeof(double) );
 float *weights1 = &__weights1[0];
 float *weights2 = &__weights2[0];
-float biasWeights1[] = {0.224118f, -0.246188f, -0.22282f};
-float biasWeights2[] = {-0.0863176f, -0.227985f, -0.147554f};
-    net->initWeights(1, weights1, biasWeights1 );
-    net->initWeights(3, weights2, biasWeights2 );
+float bias1[] = {0.224118f, -0.246188f, -0.22282f};
+float bias2[] = {-0.0863176f, -0.227985f, -0.147554f};
+    net->initWeights(1, weights1, bias1 );
+    net->initWeights(3, weights2, bias2 );
     for( int epoch = 0; epoch < 300; epoch++ ) {
         net->epochMaker()
             ->learningRate(0.04f)
@@ -768,7 +768,7 @@ float biasWeights2[] = {-0.0863176f, -0.227985f, -0.147554f};
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
 //           net->printWeightsAsCode();
-//            net->printBiasWeightsAsCode();
+//            net->printBiasAsCode();
         }
 //        float const*output = net->getOutput();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, output );
@@ -941,7 +941,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
 //           net->printWeightsAsCode();
-//            net->printBiasWeightsAsCode();
+//            net->printBiasAsCode();
         }
 //        float const*output = net->getOutput();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, output );

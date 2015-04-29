@@ -22,7 +22,7 @@ VIRTUAL Forward3::~Forward3() {
     delete repeatedAdd;
 //    delete activate;
 }
-VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Forward3::forward begin");
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -31,7 +31,7 @@ VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-//    if( dim.biased ) kernel->input( biasWeightsWrapper );
+//    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 //    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
@@ -57,7 +57,7 @@ VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
         repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
             ->in( dim.numFilters )
             ->in( dim.outputImageSize * dim.outputImageSize )
-            ->inout( outputWrapper )->in( biasWeightsWrapper );
+            ->inout( outputWrapper )->in( biasWrapper );
         maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
         numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
         repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );

@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeightsScratch::~BackpropWeightsScratch() {
     delete kernel;
 }
-VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsScratch start" );
 
     int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
@@ -45,7 +45,7 @@ VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *
         ->in( imagesWrapper )
        ->inout( gradWeightsWrapper );
     if( dim.biased ) {
-        kernel->inout( gradBiasWeightsWrapper );
+        kernel->inout( gradBiasWrapper );
     }
     kernel
         ->localFloats( square( dim.outputImageSize ) )

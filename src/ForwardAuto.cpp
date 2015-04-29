@@ -58,7 +58,7 @@ VIRTUAL ForwardAuto::~ForwardAuto() {
     }
 }
 VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
-        CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper ) {
+        CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
 //    Forward *instance = 0;
 //    cout << "ForwardAuto::forward" << endl;
     while( chosenIndex == -1 && nextIndex < num ) {
@@ -77,7 +77,7 @@ VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrap
             if( valid[thisIndex] ) {
                 Timer timer;
                 try {
-                    candidate->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
+                    candidate->forward( batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper );
                     milliseconds[thisIndex] = (int)timer.lap();
 //                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
@@ -118,6 +118,6 @@ VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrap
         }
     }
 //    cout << "ForwardAuto::forward using instance index: " << chosenIndex << endl;
-    instances[chosenIndex]->forward( batchSize, dataWrapper, weightsWrapper, biasWeightsWrapper, outputWrapper );
+    instances[chosenIndex]->forward( batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper );
 }
 

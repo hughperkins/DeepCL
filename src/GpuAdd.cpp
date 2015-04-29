@@ -6,9 +6,9 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
 #include "StatefulTimer.h"
-#include "CopyBuffer.h"
+#include "OpenCLHelper.h"
+#include "GpuAdd.h"
 
 using namespace std;
 
@@ -17,42 +17,36 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
-        StatefulTimer::instance()->timeCheck("CopyBuffer::copy start" );
+VIRTUAL void GpuAdd::add( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper ) {
+    StatefulTimer::instance()->timeCheck("GpuAdd::add start" );
 
-    kernel  ->in( N )
-            ->in( in )
-            ->out( out );
-
+    kernel->in( N );
+    kernel->in( destinationWrapper );
+    kernel->in( deltaWrapper );
     int globalSize = N;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("CopyBuffer::copy end" );
+    StatefulTimer::instance()->timeCheck("GpuAdd::add end" );
 }
-
-VIRTUAL CopyBuffer::~CopyBuffer() {
-//    delete kernel;
+VIRTUAL GpuAdd::~GpuAdd() {
 }
-
-CopyBuffer::CopyBuffer( OpenCLHelper *cl ) :
+GpuAdd::GpuAdd( OpenCLHelper *cl ) :
         cl( cl ) {
     static CLKernel *kernel = 0;
     if( kernel != 0 ) {
         this->kernel = kernel;
         return;
     }
-
-//    std::string options = "-D " + fn->getDefineName();
     string options = "";
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/per_element_add.cl", "per_element_add", 'options' )
     // ]]]
-    // generated using cog, from cl/copy.cl:
+    // generated using cog, from cl/per_element_add.cl:
     const char * kernelSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
     "//\n" 
@@ -60,35 +54,34 @@ CopyBuffer::CopyBuffer( OpenCLHelper *cl ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "// simply copies from one to the other...\n" 
-    "// there might be something built-in to opencl for this\n" 
-    "// anyway... :-)\n" 
-    "kernel void copy(\n" 
-    "        const int N,\n" 
-    "        global const float *in,\n" 
-    "        global float *out ) {\n" 
+    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    out[globalId] = in[globalId];\n" 
+    "    target[globalId] += source[globalId];\n" 
     "}\n" 
     "\n" 
-    "#ifdef gMultiplier\n" 
-    "kernel void multiplyConstant(\n" 
-    "        const int N,\n" 
-    "        global const float *in,\n" 
-    "        global float *out ) {\n" 
+    "// adds source to target\n" 
+    "// tiles source as necessary, according to tilingSize\n" 
+    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    out[globalId] = gMultiplier * in[globalId];\n" 
+    "    target[globalId] += source[globalId % tilingSize];\n" 
     "}\n" 
-    "#endif\n" 
+    "\n" 
+    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
+    "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "per_element_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
     this->kernel = kernel;
 }

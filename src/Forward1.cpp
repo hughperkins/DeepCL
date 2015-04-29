@@ -18,7 +18,7 @@ using namespace std;
 VIRTUAL Forward1::~Forward1() {
     delete kernel;
 }
-VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     kernel->in(batchSize)
         ->in( dim.inputPlanes )->in( dim.numFilters )
@@ -26,7 +26,7 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
        ->in( dim.padZeros ? 1 : 0 );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWeightsWrapper );
+    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 
     int globalSize = batchSize * dim.outputCubeSize;

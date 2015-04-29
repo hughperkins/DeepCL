@@ -82,24 +82,24 @@ PUBLICAPI void NeuralNet::addLayer( LayerMaker2 *maker ) {
     Layer *layer = maker->createLayer( getLastLayer() );
     layers.push_back( layer );
 }
-PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights, float *biasWeights ) {
+PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights, float *bias ) {
     initWeights( layerIndex, weights );
-    initBiasWeights( layerIndex, biasWeights );
+    initBias( layerIndex, bias );
 }
 PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights ) {
     layers[layerIndex]->initWeights( weights );
 }
-PUBLICAPI void NeuralNet::initBiasWeights( int layerIndex, float *weights ) {
-    layers[layerIndex]->initBiasWeights( weights );
+PUBLICAPI void NeuralNet::initBias( int layerIndex, float *weights ) {
+    layers[layerIndex]->initBias( weights );
 }
 void NeuralNet::printWeightsAsCode() {
     for( int layer = 1; layer < (int)layers.size(); layer++ ) {
         layers[layer]->printWeightsAsCode();
     }
 }
-void NeuralNet::printBiasWeightsAsCode() {
+void NeuralNet::printBiasAsCode() {
     for( int layer = 1; layer < (int)layers.size(); layer++ ) {
-        layers[layer]->printBiasWeightsAsCode();
+        layers[layer]->printBiasAsCode();
     }
 }
 /// \brief calculate the loss, based on the passed in expectedValues array

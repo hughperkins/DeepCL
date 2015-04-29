@@ -70,7 +70,7 @@ public:
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL int getWeightsSize() const;
-    VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL int getBiasSize() const;
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void forward();

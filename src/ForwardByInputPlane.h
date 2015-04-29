@@ -15,7 +15,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ForwardByInputPlane();
-    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper );
     ForwardByInputPlane( OpenCLHelper *cl, LayerDimensions dim );
 

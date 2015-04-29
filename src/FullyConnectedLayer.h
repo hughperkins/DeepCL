@@ -38,9 +38,9 @@ public:
     VIRTUAL int getPersistSize() const;
     VIRTUAL void persistToArray(float *array);
     VIRTUAL void unpersistFromArray(float const*array);
-    VIRTUAL void setWeights( float *weights, float *biasWeights );
+    VIRTUAL void setWeights( float *weights, float *bias );
     VIRTUAL int getWeightsSize() const;
-    VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL int getBiasSize() const;
     VIRTUAL int getOutputSize() const;
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();

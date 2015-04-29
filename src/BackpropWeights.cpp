@@ -61,7 +61,7 @@ STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, OpenCLHelper
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx) );
 }
 
-VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBiasWeights ) {
+VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBias ) {
     StatefulTimer::timeCheck("BackpropWeights::backprop begin");
 
 //    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
@@ -79,18 +79,18 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput,
     gradWeightsWrapper = cl->wrap( gradWeightsSize, gradWeights );
     gradWeightsWrapper->copyToDevice();
 
-    CLWrapper *gradBiasWeightsWrapper = 0;
+    CLWrapper *gradBiasWrapper = 0;
     if( dim.biased ) {
-        gradBiasWeightsWrapper = cl->wrap( dim.numFilters, gradBiasWeights );
-        gradBiasWeightsWrapper->copyToDevice();
+        gradBiasWrapper = cl->wrap( dim.numFilters, gradBias );
+        gradBiasWrapper->copyToDevice();
     }
 
     StatefulTimer::timeCheck("BackpropWeights::backprop after copied to device");
-    calcGradWeights( batchSize, gradOutputWrapper, inputDataWrapper, gradWeightsWrapper, gradBiasWeightsWrapper );
+    calcGradWeights( batchSize, gradOutputWrapper, inputDataWrapper, gradWeightsWrapper, gradBiasWrapper );
     StatefulTimer::timeCheck("BackpropWeights::backprop after call backprop");
     gradWeightsWrapper->copyToHost();
     if( dim.biased ) {
-        gradBiasWeightsWrapper->copyToHost();
+        gradBiasWrapper->copyToHost();
     }
     StatefulTimer::timeCheck("BackpropWeights::backprop after copytohost");
 
@@ -98,7 +98,7 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput,
     delete inputDataWrapper;
     delete gradWeightsWrapper;
     if( dim.biased ) {
-        delete gradBiasWeightsWrapper;
+        delete gradBiasWrapper;
     }
 }
 

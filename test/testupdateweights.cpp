@@ -54,14 +54,14 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, -1.0f, 1.0f );
 
     int weightsSize = layer->getWeightsSize();
-    int biasWeightsSize = layer->getBiasWeightsSize();
-    cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
+    int biasSize = layer->getBiasSize();
+    cout << "weightsize=" << weightsSize << " biassize=" << biasSize << endl;
     float *weights = new float[weightsSize];
-    float *biasWeights = new float[biasWeightsSize];
+    float *bias = new float[biasSize];
     WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
-    if( weightsSize > 0 || biasWeightsSize > 0 ) {
-        layer->setWeights( weights, biasWeights );
+    WeightRandomizer::randomize( 3, bias, biasSize, -0.1f, 0.1f );
+    if( weightsSize > 0 || biasSize > 0 ) {
+        layer->setWeights( weights, bias );
     }
 
     // now, forward prop
@@ -94,12 +94,12 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
         float inputDelta = newValue - oldValue;
         float predictedLossChange = inputDelta * grad;
         weights[weightIndex] = newValue;
-        layer->setWeights( weights, biasWeights );
+        layer->setWeights( weights, bias );
 //        cout << "oldvalue=" << oldValue << " newvalue=" << newValue << endl;
         // forwardProp
         net->forward( input );
         weights[weightIndex] = oldValue;
-        layer->setWeights( weights, biasWeights );
+        layer->setWeights( weights, bias );
 //        net->printOutput();
         float lossAfter = net->calcLoss( expectedOutput );
         float lossChange = lossAfter - lossBefore;
@@ -107,7 +107,7 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
     }
 
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
     delete[] expectedOutput;
     delete[] input;
 }
@@ -290,13 +290,13 @@ TEST( testupdateweights, numericallytest_imagesize5_filtersize3_planes3_batchsiz
 void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMultiplier, float *data, float *errors, float * expectedOutput ) {
     float *output = new float[batchSize * dim.outputCubeSize]; // ignored, for LINEAR
     float *weights = new float[max(dim.filtersSize,20)];
-    float *biasWeights = new float[10];
+    float *bias = new float[10];
     memset( weights, 0, sizeof( float ) * max( dim.filtersSize, 20 ) );
-    memset( biasWeights, 0, sizeof(float) * 10 );
+    memset( bias, 0, sizeof(float) * 10 );
 
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( cl, dim );
-    backpropWeightsImpl->calcGradWeights( batchSize, errors, data, weights, biasWeights );
+    backpropWeightsImpl->calcGradWeights( batchSize, errors, data, weights, bias );
     delete backpropWeightsImpl;
     
 //    for( int i = 0; i < 20; i++ ) {
@@ -310,7 +310,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     }
     delete[] output;
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
     delete cl;
 }
 
@@ -525,7 +525,7 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     int outputSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
-//    int biasWeightsSize = dim.numFilters;
+//    int biasSize = dim.numFilters;
 
     cout << "numweights: " << weightsSize << endl;
 
@@ -724,19 +724,19 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
     int outputSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+    int biasSize = dim.numFilters;
 
     int outputAllocated = max( 10000, outputSize );
     int inputAllocated = max( 10000, inputSize );
     int weightsAllocated = max( 10000, weightsSize );
-    int biasWeightsAllocated = max( 10000, biasWeightsSize );
+    int biasAllocated = max( 10000, biasSize );
 
 //    cout << "numweights: " << weightsSize << endl;
 
-    float *biasWeights1 = new float[ biasWeightsAllocated ];
-    float *biasWeights2 = new float[ biasWeightsAllocated ];
-    memset( biasWeights1, 0, sizeof(float) * biasWeightsAllocated );
-    memset( biasWeights2, 0, sizeof(float) * biasWeightsAllocated );
+    float *bias1 = new float[ biasAllocated ];
+    float *bias2 = new float[ biasAllocated ];
+    memset( bias1, 0, sizeof(float) * biasAllocated );
+    memset( bias2, 0, sizeof(float) * biasAllocated );
 
     float *gradOutput = new float[outputAllocated];
     float *inputData = new float[inputAllocated];
@@ -762,9 +762,9 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
     float *weightsByInstance[2];
     weightsByInstance[0] = weights1;
     weightsByInstance[1] = weights2;
-    float *biasWeightsByInstance[2];
-    biasWeightsByInstance[0] = biasWeights1;
-    biasWeightsByInstance[1] = biasWeights2;
+    float *biasByInstance[2];
+    biasByInstance[0] = bias1;
+    biasByInstance[1] = bias2;
     BackpropWeights *instanceObjects[2];
     instanceObjects[0] = BackpropWeights::instanceSpecific( instance0, cl, dim );
     instanceObjects[1] = BackpropWeights::instanceSpecific( instance1, cl, dim );
@@ -774,7 +774,7 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
         backpropWeightsImpl->debug = true;
         for( int it = 0; it < its; it++ ) {
             backpropWeightsImpl->calcGradWeights( batchSize,
-                gradOutput, inputData, weightsByInstance[instance], biasWeightsByInstance[instance] );
+                gradOutput, inputData, weightsByInstance[instance], biasByInstance[instance] );
         }
         timer.timeCheck("instance " + toString( instances[instance] ) + " backpropweights" );
 //        delete backpropWeightsImpl;
@@ -817,10 +817,10 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
     }
     if( dim.biased ) {
         errCount = 0;
-        for( int i = 0; i < biasWeightsSize; i++ ) {
-            if( abs( biasWeights1[i] - biasWeights2[i] ) > 0.001 * max( abs( biasWeights1[i] ), abs( biasWeights2[i] ) ) ) {
+        for( int i = 0; i < biasSize; i++ ) {
+            if( abs( bias1[i] - bias2[i] ) > 0.001 * max( abs( bias1[i] ), abs( bias2[i] ) ) ) {
     //        if( abs( weights1[i] - weights2[i] ) > abs(weights1[i]) / 10000.0f ) {
-                cout << "DIFF: biasWeights i " << i << " " << biasWeights1[i] << " != " << biasWeights2[i] << endl;
+                cout << "DIFF: bias i " << i << " " << bias1[i] << " != " << bias2[i] << endl;
                 same = false;
                 errCount++;
                 if( errCount == 5 ) {
@@ -929,17 +929,17 @@ void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
     int outputSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+    int biasSize = dim.numFilters;
 
     int outputAllocated = outputSize;
     int inputAllocated = inputSize;
     int weightsAllocated = weightsSize;
-    int biasWeightsAllocated = biasWeightsSize;
+    int biasAllocated = biasSize;
 
     cout << "numweights: " << weightsSize << endl;
 
-    float *biasWeights = new float[ biasWeightsAllocated ];
-    memset( biasWeights, 0, sizeof(float) * biasWeightsAllocated );
+    float *bias = new float[ biasAllocated ];
+    memset( bias, 0, sizeof(float) * biasAllocated );
 
     float *gradOutput = new float[outputAllocated];
     float *inputData = new float[inputAllocated];
@@ -956,7 +956,7 @@ void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
     
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceSpecific( instance, cl, dim );
     Timer timer;
-    backpropWeightsImpl->calcGradWeights( batchSize, gradOutput, inputData, weights, biasWeights );
+    backpropWeightsImpl->calcGradWeights( batchSize, gradOutput, inputData, weights, bias );
     timer.timeCheck("backprop time");
 
     delete backpropWeightsImpl;

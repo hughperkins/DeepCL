@@ -20,8 +20,8 @@ public:
     // ]]]
     // generated, using cog:
     ForwardCpu( OpenCLHelper *cl, LayerDimensions dim );
-    VIRTUAL void forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper, CLWrapper *outputWrapper );
-    VIRTUAL float *forward( int batchSize, float *inputData, float *weights, float *biasWeights );
+    VIRTUAL void forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper );
+    VIRTUAL float *forward( int batchSize, float *inputData, float *weights, float *bias );
 
     // [[[end]]]
 };

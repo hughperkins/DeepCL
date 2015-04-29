@@ -20,7 +20,7 @@ VIRTUAL BackpropWeightsNaive::~BackpropWeightsNaive() {
 //    cout << "~backpropgradWeights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize );
@@ -32,7 +32,7 @@ VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gr
         ->in( imagesWrapper )
        ->inout( gradWeightsWrapper );
     if( dim.biased ) {
-        kernel->inout( gradBiasWeightsWrapper );
+        kernel->inout( gradBiasWrapper );
     }
 
     int globalSize = dim.filtersSize;

@@ -312,17 +312,17 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     // the weights are randomized anyway
 //    if( layer->getPersistSize() > 0 ) {
 //        int weightsSize = layer->getWeightsSize();
-//        int biasWeightsSize = layer->getBiasWeightsSize();
-//        cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
+//        int biasSize = layer->getBiasSize();
+//        cout << "weightsize=" << weightsSize << " biassize=" << biasSize << endl;
 //        float *weights = new float[weightsSize];
-//        float *biasWeights = new float[biasWeightsSize];
+//        float *bias = new float[biasSize];
 //        WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
-//        WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
-//        if( weightsSize > 0 || biasWeightsSize > 0 ) {
-//            layer->setWeights( weights, biasWeights );
+//        WeightRandomizer::randomize( 3, bias, biasSize, -0.1f, 0.1f );
+//        if( weightsSize > 0 || biasSize > 0 ) {
+//            layer->setWeights( weights, bias );
 //        }
 //        delete[] weights;
-//        delete[] biasWeights;
+//        delete[] bias;
 //    }
 
     cout << "layer " << layer->asString() << endl;
@@ -772,21 +772,21 @@ float *test( int imageSize ) {
         .setBiased( true ).setPadZeros( true );
 
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+    int biasSize = dim.numFilters;
     int outputSize = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
-    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+    float *bias = new float[max( 10000, biasSize)];
     float *errors = new float[max(10000, outputSize )];
     float *output = new float[max(10000, outputSize )];
     WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
     WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
     WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
     OpenCLHelper cl;
     Backward *backwardImpl = Backward::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
-    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
     StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
@@ -796,7 +796,7 @@ float *test( int imageSize ) {
 
     delete[] errors;
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
 
     return errorsForUpstream;
 }
@@ -834,21 +834,21 @@ float *test( int imageSize ) {
 //        .setBiased( true ).setPadZeros( true );
 
 //    int weightsSize = dim.filtersSize;
-//    int biasWeightsSize = dim.numFilters;
+//    int biasSize = dim.numFilters;
 //    int outputSize = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
-//    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+//    float *bias = new float[max( 10000, biasSize)];
 //    float *errors = new float[max(10000, outputSize )];
 //    float *output = new float[max(10000, outputSize )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-//    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+//    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
 //    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
 //    OpenCLHelper cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
+//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -865,25 +865,25 @@ float *test( int imageSize ) {
 //    delete[] errorsForUpstream;
 //    delete[] errors;
 //    delete[] weights;
-//    delete[] biasWeights;
+//    delete[] bias;
 
 
 //    int weightsSize = dim.filtersSize;
-//    int biasWeightsSize = dim.numFilters;
+//    int biasSize = dim.numFilters;
 //    int outputSize = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
-//    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+//    float *bias = new float[max( 10000, biasSize)];
 //    float *errors = new float[max(10000, outputSize )];
 //    float *output = new float[max(10000, outputSize )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-//    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+//    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
 //    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
 //    OpenCLHelper cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
+//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -900,7 +900,7 @@ float *test( int imageSize ) {
 //    delete[] errorsForUpstream;
 //    delete[] errors;
 //    delete[] weights;
-//    delete[] biasWeights;
+//    delete[] bias;
 //}
 
 /*
@@ -911,22 +911,22 @@ TEST( testbackward, comparespecific ) {
         .setBiased( true ).setPadZeros( false );
 
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+    int biasSize = dim.numFilters;
     int outputSize = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
-    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+    float *bias = new float[max( 10000, biasSize)];
     float *errors = new float[max(10000, outputSize )];
     float *output = new float[max(10000, outputSize )];
     memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
-    memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
+    memset( bias, 0, sizeof(float) * max(10000, biasSize ) );
     memset( errors, 0, sizeof(float) * max(10000, outputSize ) );
     memset( output, 0, sizeof(float) * max(10000, outputSize ) );
     mt19937 random = WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-    WeightRandomizer::randomize( random, biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+    WeightRandomizer::randomize( random, bias, max( 10000, biasSize), -1, 1 );
     WeightRandomizer::randomize( random, errors, max(10000, outputSize ), -1, 1 );
     WeightRandomizer::randomize( random, output, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
-//    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
+//    WeightRandomizer::randomizeInts( bias, max( 10000, biasSize), 0, 3 );
 //    WeightRandomizer::randomizeInts( errors, max(10000, outputSize ), 0, 3 );
 //    WeightRandomizer::randomizeInts( output, max(10000, outputSize ), 0, 3 );
 
@@ -955,9 +955,9 @@ TEST( testbackward, comparespecific ) {
 
     OpenCLHelper cl;
     Backward *backwardImpl1 = Backward::instanceSpecific( 0, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, bias, errors );
     Backward *backwardImpl2 = Backward::instanceSpecific( 1, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream2 = backwardImpl2->backward( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream2 = backwardImpl2->backward( batchSize, output, weights, bias, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
     cout << dim << endl;
@@ -1002,7 +1002,7 @@ TEST( testbackward, comparespecific ) {
     delete[] errorsForUpstream2;
     delete[] errors;
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
 }
 */
 

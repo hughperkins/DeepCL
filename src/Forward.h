@@ -31,7 +31,7 @@ public:
 
     virtual ~Forward() {}
     virtual void forward( int batchSize, 
-        CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+        CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
         CLWrapper *outputWrapper ) = 0;
 
     // [[[cog

@@ -14,7 +14,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~Forward4();
-    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper,
+    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper );
     Forward4( OpenCLHelper *cl, LayerDimensions dim );
 

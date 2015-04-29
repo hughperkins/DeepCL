@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeightsScratchLarge::~BackpropWeightsScratchLarge() {
     delete kernel;
 }
-VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsScratchLarge start" );
 
     int workgroupSize = 32 * ( ( square(dim.filterSize) + 32 - 1 ) / 32 ); // quantize to nearest 32
@@ -40,7 +40,7 @@ VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, CLWrap
         ->in( imagesWrapper )
        ->inout( gradWeightsWrapper );
     if( dim.biased ) {
-        kernel->inout( gradBiasWeightsWrapper );
+        kernel->inout( gradBiasWrapper );
     }
     kernel
         ->localFloats( outputStripeSize )

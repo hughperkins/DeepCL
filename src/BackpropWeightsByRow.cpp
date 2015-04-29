@@ -25,7 +25,7 @@ VIRTUAL BackpropWeightsByRow::~BackpropWeightsByRow() {
     delete reduce;
     delete perElementAdd;
 }
-VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeightsByRow start" );
 
     cout << "input buffer:" << endl;
@@ -53,25 +53,25 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
     CLWrapper *weights1Wrapper = cl->wrap( weights1Size, weights1 );
     weights1Wrapper->createOnDevice();
 
-    float *biasWeights1 = 0;
-    CLWrapper *biasWeights1Wrapper = 0;
+    float *bias1 = 0;
+    CLWrapper *bias1Wrapper = 0;
     if( dim.biased ) {
-        const int biasWeights1Size = dim.numFilters * dim.outputImageSize;
-        biasWeights1 = new float[ biasWeights1Size ];
-        biasWeights1Wrapper = cl->wrap( biasWeights1Size, biasWeights1 );
-        biasWeights1Wrapper->createOnDevice();
+        const int bias1Size = dim.numFilters * dim.outputImageSize;
+        bias1 = new float[ bias1Size ];
+        bias1Wrapper = cl->wrap( bias1Size, bias1 );
+        bias1Wrapper->createOnDevice();
     }
 
     float *weights2 = new float[ dim.filtersSize ];
     CLWrapper *weights2Wrapper = cl->wrap( dim.filtersSize, weights2 );
     weights2Wrapper->createOnDevice();
 
-    float *biasWeights2 = 0;
-    CLWrapper *biasWeights2Wrapper = 0;
+    float *bias2 = 0;
+    CLWrapper *bias2Wrapper = 0;
     if( dim.biased ) {
-        biasWeights2 = new float[ dim.numFilters ];
-        biasWeights2Wrapper = cl->wrap( dim.numFilters, biasWeights2 );
-        biasWeights2Wrapper->createOnDevice();
+        bias2 = new float[ dim.numFilters ];
+        bias2Wrapper = cl->wrap( dim.numFilters, bias2 );
+        bias2Wrapper->createOnDevice();
     }
 
     StatefulTimer::instance()->timeCheck("BackpropWeightsByRow allocated buffers and wrappers" );
@@ -83,7 +83,7 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
         ->in( imagesWrapper )
        ->out( weights1Wrapper );
     if( dim.biased ) {
-        kernel->out( biasWeights1Wrapper );
+        kernel->out( bias1Wrapper );
     }
     kernel
         ->localFloats( dim.outputImageSize )
@@ -101,7 +101,7 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
     reduce->run_1d( ( dim.filtersSize + 64 - 1 ) / 64 * 64, 64 );
     if( dim.biased ) {
         reduce->in( dim.numFilters )->in( dim.outputImageSize )
-            ->in( biasWeights1Wrapper )->out( biasWeights2Wrapper );
+            ->in( bias1Wrapper )->out( bias2Wrapper );
         reduce->run_1d( ( dim.numFilters + 64 - 1 ) / 64 * 64, 64 );
     }
     cl->finish();
@@ -114,7 +114,7 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
     perElementAdd->run_1d( ( dim.filtersSize + 64 - 1 ) / 64 * 64, 64 );
     
     if( dim.biased ) {
-        perElementAdd->in( dim.numFilters )->inout( biasWeightsWrapper )->in( biasWeights2Wrapper );
+        perElementAdd->in( dim.numFilters )->inout( biasWrapper )->in( bias2Wrapper );
         perElementAdd->run_1d( ( dim.numFilters + 64 - 1 ) / 64 * 64, 64 );
     }
 
@@ -123,10 +123,10 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
     PrintBuffer::printFloats( cl, weightsWrapper, dim.filterSize, dim.filterSize );
 
     if( dim.biased ) {
-        delete biasWeights2Wrapper;
-        delete biasWeights1Wrapper;
-        delete[] biasWeights2;
-        delete[] biasWeights1;
+        delete bias2Wrapper;
+        delete bias1Wrapper;
+        delete[] bias2;
+        delete[] bias1;
     }
     delete weights2Wrapper;
     delete weights1Wrapper;

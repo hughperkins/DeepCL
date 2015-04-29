@@ -58,15 +58,15 @@ VIRTUAL void FullyConnectedLayer::persistToArray(float *array) {
 VIRTUAL void FullyConnectedLayer::unpersistFromArray(float const*array) {
     convolutionalLayer->unpersistFromArray( array );
 }
-VIRTUAL void FullyConnectedLayer::setWeights( float *weights, float *biasWeights ) {
+VIRTUAL void FullyConnectedLayer::setWeights( float *weights, float *bias ) {
     convolutionalLayer->initWeights( weights );
-    convolutionalLayer->initBiasWeights( biasWeights );
+    convolutionalLayer->initBias( bias );
 }
 VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
     return convolutionalLayer->getWeightsSize();
 }
-VIRTUAL int FullyConnectedLayer::getBiasWeightsSize() const {
-    return convolutionalLayer->getBiasWeightsSize();
+VIRTUAL int FullyConnectedLayer::getBiasSize() const {
+    return convolutionalLayer->getBiasSize();
 }
 VIRTUAL int FullyConnectedLayer::getOutputSize() const {
     return convolutionalLayer->getOutputSize();
