@@ -13,12 +13,6 @@
 ## New, in next version, 4.x.x
 
 * lua wrappers created, using swig
-* new set of python wrappers, in `python_swig` directory, using swig instead of cython
-  * plausibly will be published to pypi as 'PyDeepCLSwig', in parallel to the existing Cython version
-  * compared to the cython wrappers, these are easier to maintain, and to build
-  * but we need to solve two issues:
-    * get ctrl-c working
-    * make sure can pass numpy types in
 * added new ActivationLayer layer type, to implement relu, sigmoid etc in a separate layer from the convolutional,
 and fc layers
 * in commandline netdef, can put 'z' at the end of a convolutional layer to make it zero-padded, eg `32c5z`
@@ -34,6 +28,12 @@ and fc layers
   * true for netdef syntax
   * true also for c++ Maker classes
   * will be true also for Python, Lua (not sure if it is true at the moment or not, would need to test)
+* internal C++ name changes, in line with torch nomenclature, which seems simple, concise, easy to understand:
+  * errors -> gradOutput
+  * errorsForUpstream -> gradInput
+  * resultsFromUpstream -> input
+  * results -> output
+  * dLossDOutput -> gradOutput
 
 ## Deprecated, in next version, 4.x.x
 
@@ -45,11 +45,12 @@ and fc layers
   * again, more compatible with writing wrappers for scripting languages, since inter-language callbacks tend to be hard work to implement
 * idx-to-mat removed; since GenericLoader can directly handle reading mnist format now
 * clconvolve1 executable removed (replaced by deeplclrun)
-* activation layers within convolutional and fc layers will either be removed, or marked as
-deprecated
+* activation layers within convolutional and fc layers removed
 
 ## Recent changes, to 4.x.x branch
 
+* 29th April: move python_swig to branch, since not production ready, and I dont have time to make it production-ready
+* 28th April: removed internal activation layer from conv and fc layers, so we will use the explicit ActivationLayer for activation now
 * 26th April: added dropout :-)
 * 25th April: added independent activation layers, and changed default for convolutional and fc layers to linear
 * 25th April: cleaned up the benchmarks a lot, added them to jenkins, added a couple more, created an Angular/Bootstrap page to display them [DeepCL benchmarks](http://hughperkins.github.io/DeepCL/benchmarking/)

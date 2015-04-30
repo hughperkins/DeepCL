@@ -23,16 +23,16 @@ public:
     const int outputImageSize;
 
     float const*input; // we dont own this
-    float *results; // we own this :-)
+    float *output; // we own this :-)
 
-    inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
+    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * outputPlanes + outPlane )
             * outputImageSize + outRow )
             * outputImageSize + outCol;
     }
-    inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
@@ -43,21 +43,20 @@ public:
     InputLayer( InputLayerMaker *maker );
     VIRTUAL ~InputLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float *getResults();
-    VIRTUAL ActivationFunction const *getActivationFunction();
+    VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getPersistSize() const;
-    VIRTUAL void printOutput() const;
-    VIRTUAL void print() const;
+    VIRTUAL void printOutput();
+    VIRTUAL void print();
     void in( float const*images );
     VIRTUAL bool needErrorsBackprop();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void propagate();
-    VIRTUAL void backPropErrors( float learningRate, float const *errors );
+    VIRTUAL void forward();
+    VIRTUAL void backward( float learningRate, float const *gradOutput );
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL std::string toString();
     VIRTUAL std::string asString() const;
 

@@ -15,7 +15,7 @@
 // output weight changes: [outputPlane][inputPlane][filterRow][filterCol][outRow]
 void kernel backprop_weights( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *errors, global const float *images, 
+         global const float *gradOutput, global const float *images, 
         global float *weightChanges,
         #ifdef BIASED
              global float *biasWeightChanges,
@@ -52,11 +52,11 @@ void kernel backprop_weights(
             }
         }
         int resultImageGlobalOffset = ( n * gNumFilters + outputPlane ) * gOutputImageSizeSquared;
-        int numLoopsForResults = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        for( int i = 0; i < numLoopsForResults; i++ ) {
+        int numLoopsForOutput = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForOutput; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutputImageSizeSquared ) {
-                _errorImage[thisOffset ] = errors[resultImageGlobalOffset + thisOffset];
+                _errorImage[thisOffset ] = gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);

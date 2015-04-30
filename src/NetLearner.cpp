@@ -36,7 +36,7 @@ PUBLICAPI NetLearner::NetLearner( Trainable *net,
     learningDone = false;
 
     trainBatcher = new LearnBatcher( net, batchSize, Ntrain, trainData, trainLabels, 0 );
-    testBatcher = new PropagateBatcher( net, batchSize, Ntest, testData, testLabels );   
+    testBatcher = new ForwardBatcher( net, batchSize, Ntest, testData, testLabels );   
 //    reset();
 }
 

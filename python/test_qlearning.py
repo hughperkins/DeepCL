@@ -111,11 +111,11 @@ class ScenarioImage(PyDeepCL.Scenario):
                 highestQ = 0
                 bestAction = 0
                 netinput[ size * size + y * size + x ] = 1
-                net.propagate( netinput )
+                net.forward( netinput )
                 netinput[ size * size + y * size + x ] = 0
-                results = net.getResults()
+                output = net.getOutput()
                 for action in range(4):
-                    thisQ = results[action]
+                    thisQ = output[action]
                     if action == 0 or thisQ > highestQ:
                         highestQ = thisQ
                         bestAction = action
@@ -168,10 +168,13 @@ def go():
 
     net = PyDeepCL.NeuralNet()
     net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size) )
-    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased().relu() )
-    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased().relu() )
-    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(100).imageSize(1).biased().tanh() )
-    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(numActions).imageSize(1).biased().linear() )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased() )
+    net.addLayer( PyDeepCL.ActivationMaker().relu() )
+    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased() )
+    net.addLayer( PyDeepCL.ActivationMaker().relu() )
+    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(100).imageSize(1).biased() )
+    net.addLayer( PyDeepCL.ActivationMaker().tanh() )
+    net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(numActions).imageSize(1).biased() )
     net.addLayer( PyDeepCL.SquareLossMaker() )
     print( net.asString() )
 

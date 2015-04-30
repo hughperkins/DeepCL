@@ -15,7 +15,7 @@
 // specific characteristic: load one stripe of each image at a time,
 // so we dont run out of memory
 // number of stripes set in: gNumStripes
-// note that whilst we can stripe the errors simply, 
+// note that whilst we can stripe the gradOutput simply, 
 // we actually need to add a half-filter widthed additional few rows
 // onto the images stripe, otherwise we will be missing data
 //   we will call the size of the non-overlapping image stripes: gInputStripeInnerSize
@@ -24,7 +24,7 @@
 //      corresponding outer margin would be
 void kernel backprop_floats_withscratch_dobias_striped( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *errors, global const float *images, 
+         global const float *gradOutput, global const float *images, 
         global float *weights,
         #ifdef BIASED
              global float *biasWeights,
@@ -91,7 +91,7 @@ void kernel backprop_floats_withscratch_dobias_striped(
                 bool process = thisOffset < gOutputStripeSize 
                     && globalErrorsOffset < errorImageGlobalOffsetAfter;
                 if( process ) {
-                    _errorStripe[thisOffset ] = errors[globalErrorsOffset];
+                    _errorStripe[thisOffset ] = gradOutput[globalErrorsOffset];
                 }
             }
             const int stripeOutRowStart = stripe * gOutputStripeNumRows;

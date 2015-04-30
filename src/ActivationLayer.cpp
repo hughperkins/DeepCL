@@ -9,8 +9,8 @@
 
 #include "ActivationLayer.h"
 #include "ActivationMaker.h"
-#include "ActivationPropagate.h"
-#include "ActivationBackprop.h"
+#include "ActivationForward.h"
+#include "ActivationBackward.h"
 
 using namespace std;
 
@@ -26,12 +26,12 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
         outputImageSize( previousLayer->getOutputImageSize() ),
         fn( maker->_activationFunction ),
         cl( cl ),
-        results(0),
-        errorsForUpstream(0),
-        resultsWrapper(0),
-        errorsForUpstreamWrapper(0),
-        resultsCopiedToHost(false),
-        errorsForUpstreamCopiedToHost(false),
+        output(0),
+        gradInput(0),
+        outputWrapper(0),
+        gradInputWrapper(0),
+        outputCopiedToHost(false),
+        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
     if( inputImageSize == 0 ){
@@ -42,27 +42,63 @@ ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, Activa
 //        maker->net->print();
         throw runtime_error("Error: Activation layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    activationPropagateImpl = ActivationPropagate::instance( cl, numPlanes, inputImageSize, fn );
-    activationBackpropImpl = ActivationBackprop::instance( cl, numPlanes, inputImageSize, fn );
+    activationForwardImpl = ActivationForward::instance( cl, numPlanes, inputImageSize, fn );
+    activationBackpropImpl = ActivationBackward::instance( cl, numPlanes, inputImageSize, fn );
 }
 VIRTUAL ActivationLayer::~ActivationLayer() {
-    delete activationPropagateImpl;
+    delete activationForwardImpl;
     delete activationBackpropImpl;
-    if( resultsWrapper != 0 ) {
-        delete resultsWrapper;
+    if( outputWrapper != 0 ) {
+        delete outputWrapper;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string ActivationLayer::getClassName() const {
     return "ActivationLayer";
+}
+VIRTUAL float ActivationLayer::getOutput( int n, int plane, int row, int col ) {
+    int index = ( ( n
+        * numPlanes + plane )
+        * outputImageSize + row )
+        * outputImageSize + col;
+    return output[ index ];
+}
+VIRTUAL void ActivationLayer::printOutput() {
+//    float const*output = getOutput();
+//    int outPlanes = getOutputPlanes();
+//    int outputSize = getOutputImageSize();
+    std::cout << "  outputs: " << std::endl;
+    getOutput();
+// output are organized like [imageid][filterid][row][col]
+    for( int n = 0; n < std::min( 5, batchSize ); n++ ) {
+        std::cout << "    n: " << n << std::endl;
+        for( int plane = 0; plane < std::min(5, numPlanes ); plane++ ) {
+            if( numPlanes > 1 ) std::cout << "      plane " << plane << std::endl;
+            if( outputImageSize == 1 ) {
+                 std::cout << "        " << getOutput(n, plane, 0, 0 ) << std::endl;
+            } else {
+                for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
+                    std::cout << "      ";
+                    for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
+                        std::cout << getOutput( n, plane, i, j ) << " ";
+                    }
+                    if( outputImageSize > 5 ) std::cout << " ... ";
+                    std::cout << std::endl;
+                }
+                if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
+            }
+            if( numPlanes > 5 ) std::cout << " ... other planes ... " << std::endl;
+        }
+        if( batchSize > 5 ) std::cout << " ... other n ... " << std::endl;
+    }
 }
 VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
 //    cout << "ActivationLayer::setBatchSize" << endl;
@@ -70,42 +106,47 @@ VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( resultsWrapper != 0 ) {
-        delete resultsWrapper;
+    if( outputWrapper != 0 ) {
+        delete outputWrapper;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[ getResultsSize() ];
-    resultsWrapper = cl->wrap( getResultsSize(), results );
-    errorsForUpstream = new float[ previousLayer->getResultsSize() ];
-    errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
-    errorsForUpstreamWrapper->createOnDevice();
+    output = new float[ getOutputSize() ];
+    outputWrapper = cl->wrap( getOutputSize(), output );
+    outputWrapper->createOnDevice();
+    gradInput = new float[ previousLayer->getOutputSize() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    gradInputWrapper->createOnDevice();
 }
-VIRTUAL int ActivationLayer::getResultsSize() {
+VIRTUAL int ActivationLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL float *ActivationLayer::getResults() {
-    if( !resultsCopiedToHost ) {
-        resultsWrapper->copyToHost();
-        resultsCopiedToHost = true;
+VIRTUAL float *ActivationLayer::getOutput() {
+    if( !outputCopiedToHost ) {
+        outputWrapper->copyToHost();
+        outputCopiedToHost = true;
     }
-    return results;
+//    cout << "getOutput output[0] " << output[0] << " output[1] " << output[1] << endl;
+    return output;
 }
 VIRTUAL bool ActivationLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL int ActivationLayer::getResultsSize() const {
+VIRTUAL int ActivationLayer::getOutputSize() const {
 //    int outputImageSize = inputImageSize / poolingSize;
     return batchSize * numPlanes * outputImageSize * outputImageSize;
+}
+VIRTUAL int ActivationLayer::getOutputCubeSize() const {
+    return numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL int ActivationLayer::getOutputImageSize() const {
     return outputImageSize;
@@ -113,66 +154,78 @@ VIRTUAL int ActivationLayer::getOutputImageSize() const {
 VIRTUAL int ActivationLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL bool ActivationLayer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool ActivationLayer::providesGradInputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *ActivationLayer::getErrorsForUpstreamWrapper() {
-    return errorsForUpstreamWrapper;
+VIRTUAL CLWrapper *ActivationLayer::getGradInputWrapper() {
+    return gradInputWrapper;
 }
-VIRTUAL bool ActivationLayer::hasResultsWrapper() const {
+VIRTUAL bool ActivationLayer::hasOutputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *ActivationLayer::getResultsWrapper() {
-    return resultsWrapper;
+VIRTUAL CLWrapper *ActivationLayer::getOutputWrapper() {
+    return outputWrapper;
 }
-VIRTUAL float *ActivationLayer::getErrorsForUpstream() {
-    return errorsForUpstream;
+VIRTUAL int ActivationLayer::getWeightsSize() const {
+    return 0;
+}
+VIRTUAL int ActivationLayer::getBiasWeightsSize() const {
+    return 0;
+}
+VIRTUAL float *ActivationLayer::getGradInput() {
+    if( !gradInputCopiedToHost ) {
+        gradInputWrapper->copyToHost();
+        gradInputCopiedToHost = true;
+    }
+    return gradInput;
 }
 VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
     return fn;
 }
-VIRTUAL void ActivationLayer::propagate() {
-    CLWrapper *upstreamResultsWrapper = 0;
-    if( previousLayer->hasResultsWrapper() ) {
-        upstreamResultsWrapper = previousLayer->getResultsWrapper();
+VIRTUAL void ActivationLayer::forward() {
+    CLWrapper *inputWrapper = 0;
+    if( previousLayer->hasOutputWrapper() ) {
+        inputWrapper = previousLayer->getOutputWrapper();
     } else {
-        float *upstreamResults = previousLayer->getResults();
-        upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
-        upstreamResultsWrapper->copyToDevice();
+        float *input = previousLayer->getOutput();
+        inputWrapper = cl->wrap( previousLayer->getOutputSize(), input );
+        inputWrapper->copyToDevice();
     }
-    activationPropagateImpl->propagate( batchSize, upstreamResultsWrapper, resultsWrapper );
-    if( !previousLayer->hasResultsWrapper() ) {
-        delete upstreamResultsWrapper;
+    activationForwardImpl->forward( batchSize, inputWrapper, outputWrapper );
+    outputCopiedToHost = false;
+    if( !previousLayer->hasOutputWrapper() ) {
+        delete inputWrapper;
     }
 }
-VIRTUAL void ActivationLayer::backProp( float learningRate ) {
+VIRTUAL void ActivationLayer::backward( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
-    CLWrapper *imagesWrapper = 0;
-    if( previousLayer->hasResultsWrapper() ) {
-        imagesWrapper = previousLayer->getResultsWrapper();
+//    CLWrapper *imagesWrapper = 0;
+//    if( previousLayer->hasOutputWrapper() ) {
+//        imagesWrapper = previousLayer->getOutputWrapper();
+//    } else {
+//        imagesWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
+//        imagesWrapper->copyToDevice();
+//    }
+
+    CLWrapper *gradOutputWrapper = 0;
+    bool weOwnGradOutputWrapper = false;
+    if( nextLayer->providesGradInputWrapper() ) {
+        gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        imagesWrapper = cl->wrap( previousLayer->getResultsSize(), previousLayer->getResults() );
-        imagesWrapper->copyToDevice();
+        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper->copyToDevice();
+        weOwnGradOutputWrapper = true;
     }
 
-    CLWrapper *errorsWrapper = 0;
-    bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
-    } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
-        errorsWrapper->copyToDevice();
-        weOwnErrorsWrapper = true;
-    }
+    activationBackpropImpl->backward( batchSize, outputWrapper, gradOutputWrapper, gradInputWrapper );
+    gradInputCopiedToHost = false;
 
-    activationBackpropImpl->backpropErrors( batchSize, imagesWrapper, errorsWrapper, errorsForUpstreamWrapper );
-
-    if( !previousLayer->hasResultsWrapper() ) {
-        delete imagesWrapper;
-    }
-    if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+//    if( !previousLayer->hasOutputWrapper() ) {
+//        delete imagesWrapper;
+//    }
+    if( weOwnGradOutputWrapper ) {
+        delete gradOutputWrapper;
     }
 }
 VIRTUAL std::string ActivationLayer::asString() const {

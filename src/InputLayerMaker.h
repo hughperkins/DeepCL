@@ -15,7 +15,7 @@
 /// \brief Use to create an InputLayer, which can be added to a NeuralNet
 ///
 /// This is the first layer in any network, and can receive one batch of data,
-/// that we want to forward-propagate
+/// that we want to forward-forward
 PUBLICAPI
 class DeepCL_EXPORT InputLayerMaker : public LayerMaker2 {
 public:

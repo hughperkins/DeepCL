@@ -26,8 +26,8 @@ public:
     const int numPlanes;
     const int imageSizeSquared;
 
-    float *results;
-    float *errorsForUpstream;
+    float *output;
+    float *gradInput;
     int allocatedSize;
     int batchSize;
 
@@ -39,18 +39,18 @@ public:
     SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker );
     VIRTUAL ~SoftMaxLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float *getResults();
-    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL float *getOutput();
+    VIRTUAL float *getGradInput();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL float calcLossFromLabels( int const *labels );
     VIRTUAL float calcLoss( float const *expectedValues );
-    VIRTUAL void calcErrorsFromLabels( int const *labels );
-    VIRTUAL void calcErrors( float const *expectedValues );
+    VIRTUAL void calcGradInputFromLabels( int const *labels );
+    VIRTUAL void calcGradInput( float const *expectedValues );
     VIRTUAL int getNumLabelsPerExample();
     VIRTUAL int getPersistSize() const;
     VIRTUAL int calcNumRight( int const*labels );
-    VIRTUAL void propagate();
-    VIRTUAL void backPropErrors( float learningRate );
+    VIRTUAL void forward();
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

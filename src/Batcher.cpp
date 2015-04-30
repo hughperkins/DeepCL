@@ -181,13 +181,13 @@ void NetActionBatcher::internalTick( float const*batchData, int const*batchLabel
 }
 
 
-PropagateBatcher::PropagateBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
+ForwardBatcher::ForwardBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
     Batcher( net, batchSize, N, data, labels ) {
 }
 
 
-void PropagateBatcher::internalTick( float const*batchData, int const*batchLabels) {
-    this->net->propagate( batchData );
+void ForwardBatcher::internalTick( float const*batchData, int const*batchLabels) {
+    this->net->forward( batchData );
 }
 
 

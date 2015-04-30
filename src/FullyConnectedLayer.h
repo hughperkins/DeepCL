@@ -18,7 +18,7 @@ class FullyConnectedLayer : public Layer {
 public:
     const int numPlanes;
     const int imageSize;
-    ActivationFunction const*fn;
+//    ActivationFunction const*fn;
 
     ConvolutionalLayer *convolutionalLayer;
     int batchSize;
@@ -32,24 +32,26 @@ public:
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL void persistToArray(float *array);
     VIRTUAL void unpersistFromArray(float const*array);
+    VIRTUAL void setWeights( float *weights, float *biasWeights );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL int getResultsSize() const;
-    VIRTUAL float *getResults();
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
-    VIRTUAL ActivationFunction const*getActivationFunction();
+    VIRTUAL int getOutputSize() const;
+    VIRTUAL float *getOutput();
+    VIRTUAL float *getGradInput();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
-    VIRTUAL void propagate();
-    VIRTUAL void backProp( float learningRate );
+    VIRTUAL void forward();
+    VIRTUAL void backward( float learningRate );
+    VIRTUAL bool needsTrainer() const;
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

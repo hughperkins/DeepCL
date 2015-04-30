@@ -20,7 +20,7 @@ print( net.asString() )
 print('printed net')
 net.addLayer( PyDeepCL.NormalizationLayerMaker().translate(-0.5).scale(1/255.0) )
 print('added layer ')
-PyDeepCL.NetdefToNet.createNetFromNetdef( net, "rt2-8c5-mp2-16c5-mp3-150n-10n" ) 
+PyDeepCL.NetdefToNet.createNetFromNetdef( net, "rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n" ) 
 print( net.asString() )
  
 (N,planes,size) = PyDeepCL.GenericLoader.getDimensions(mnistFilePath)

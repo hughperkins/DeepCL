@@ -22,7 +22,7 @@ using namespace std;
 #define VIRTUAL
 
 MultiNet::MultiNet( int numNets, NeuralNet *model ) :
-        results( 0 ),
+        output( 0 ),
         batchSize( 0 ),
         allocatedSize( 0 ),
         proxyInputLayer( 0 ),
@@ -44,8 +44,8 @@ VIRTUAL MultiNet::~MultiNet() {
     if( lossLayer != 0 ) {
         delete lossLayer;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
         delete (*it);
@@ -57,8 +57,8 @@ VIRTUAL int MultiNet::getInputCubeSize() const {
 VIRTUAL int MultiNet::getOutputCubeSize() const {
     return trainables[0]->getOutputCubeSize();
 }
-VIRTUAL int MultiNet::getResultsSize() const {
-    return trainables[0]->getResultsSize();
+VIRTUAL int MultiNet::getOutputSize() const {
+    return trainables[0]->getOutputSize();
 }
 VIRTUAL int MultiNet::getOutputPlanes() const {
     return trainables[0]->getOutputPlanes();
@@ -78,7 +78,7 @@ VIRTUAL float MultiNet::calcLoss(float const *expectedValues ) {
     // but .... we need a loss layer?
     // maybe just report average/total child loss, for now?
 //    float totalLoss = 0.0f;
-//    const int resultsSize = trainables[0]->getResultsSize();
+//    const int outputSize = trainables[0]->getOutputSize();
 //    float *expectedValuesSum = new 
 //    for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
 //        //totalLoss += (*it)->calcLoss( expectedValues );
@@ -113,12 +113,12 @@ VIRTUAL void MultiNet::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[ trainables[0]->getResultsSize() ];
+    output = new float[ trainables[0]->getOutputSize() ];
 }
 VIRTUAL void MultiNet::setTraining( bool training ) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
@@ -128,11 +128,11 @@ VIRTUAL void MultiNet::setTraining( bool training ) {
 VIRTUAL int MultiNet::calcNumRight( int const *labels ) {
 //    cout << proxyInputLayer->asString() << endl;
 //    cout << lossLayer->asString() << endl;
-//    proxyInputLayer->in( trainables[0]->getResults() );
+//    proxyInputLayer->in( trainables[0]->getOutput() );
 //    return dynamic_cast< SoftMaxLayer *>( lossLayer )->calcNumRight( labels );
 //    return trainables[0]->calcNumRight( labels );
 
-    // call getResults(), then work out the predictions, then compare with the labels
+    // call getOutput(), then work out the predictions, then compare with the labels
     // or, use a losslayer?
     // depends on the configuration of the softmax layer too, ie per-plane or not
 //    SoftMaxMaker *maker = trainables[0]->cloneLossLayerMaker();
@@ -143,42 +143,42 @@ VIRTUAL int MultiNet::calcNumRight( int const *labels ) {
     }
     return softMaxLayer->calcNumRight( labels );
 }
-void MultiNet::propagateToOurselves() {
-    // now propagate to ourselves :-)
+void MultiNet::forwardToOurselves() {
+    // now forward to ourselves :-)
     // I suppose this could be done in GPU, but what if we want to split across mpi?
-    const int resultsSize = trainables[0]->getResultsSize();
-    memset( results, 0, sizeof( float ) * resultsSize );
+    const int outputSize = trainables[0]->getOutputSize();
+    memset( output, 0, sizeof( float ) * outputSize );
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        float const*childResults = (*it)->getResults();
-        for( int i = 0; i < resultsSize; i++ ) {
-            results[i] += childResults[i];
+        float const*childOutput = (*it)->getOutput();
+        for( int i = 0; i < outputSize; i++ ) {
+            output[i] += childOutput[i];
         }
     }    
     const int numChildren = (int)trainables.size();
-    for( int i = 0; i < resultsSize; i++ ) {
-        results[i] /= numChildren;
+    for( int i = 0; i < outputSize; i++ ) {
+        output[i] /= numChildren;
     }
-    memcpy( dynamic_cast< SoftMaxLayer * >( lossLayer )->results, results, sizeof(float) * lossLayer->getResultsSize() );
-//    proxyInputLayer->in( results );
+    memcpy( dynamic_cast< SoftMaxLayer * >( lossLayer )->output, output, sizeof(float) * lossLayer->getOutputSize() );
+//    proxyInputLayer->in( output );
 }
-VIRTUAL void MultiNet::propagate( float const*images) {
+VIRTUAL void MultiNet::forward( float const*images) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->propagate( images );
+        (*it)->forward( images );
     }
-    propagateToOurselves();
+    forwardToOurselves();
 }
-VIRTUAL void MultiNet::backPropFromLabels( float learningRate, int const *labels) {
+VIRTUAL void MultiNet::backwardFromLabels( float learningRate, int const *labels) {
     // dont think we need to backprop onto ourselves?  Just direclty onto children, right?
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->backPropFromLabels( learningRate, labels );
+        (*it)->backwardFromLabels( learningRate, labels );
     }
 }
-VIRTUAL void MultiNet::backProp( float learningRate, float const *expectedResults) {
+VIRTUAL void MultiNet::backward( float learningRate, float const *expectedOutput) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->backProp( learningRate, expectedResults );
+        (*it)->backward( learningRate, expectedOutput );
     }
 }
-VIRTUAL float const *MultiNet::getResults() const {
-    return results;
+VIRTUAL float const *MultiNet::getOutput() const {
+    return output;
 }
 

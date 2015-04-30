@@ -21,8 +21,8 @@ public:
     // generated, using cog:
     BackpropWeights2Cpu( OpenCLHelper *cl, LayerDimensions dim );
     VIRTUAL ~BackpropWeights2Cpu();
-    VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *derivLossBySumWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
-    VIRTUAL void backpropWeights( int batchSize, float learningRate, float *derivLossBySum,
+    VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper );
+    VIRTUAL void backpropWeights( int batchSize, float learningRate, float *gradOutput,
     float *images, float *weights, float *biasWeights );
 
     // [[[end]]]

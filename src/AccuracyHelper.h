@@ -8,18 +8,18 @@
 
 class AccuracyHelper{
 public:
-    static int calcNumRight( int numImages, int numPlanes, int const*labels, float const*results ) {
+    static int calcNumRight( int numImages, int numPlanes, int const*labels, float const*output ) {
         int correct = 0;
         for( int n = 0; n < numImages; n++ ) {
             double maxValue = -100000;
             int bestIndex = -1;
             int bestCount = 0;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                if( results[ n * numPlanes + plane ] > maxValue ) {
+                if( output[ n * numPlanes + plane ] > maxValue ) {
                     bestIndex = plane;
-                    maxValue = results[ n * numPlanes + plane ];
+                    maxValue = output[ n * numPlanes + plane ];
                    bestCount = 1;
-                } else if ( results[ n * numPlanes + plane ] == maxValue ) {
+                } else if ( output[ n * numPlanes + plane ] == maxValue ) {
                    bestCount++;
                 }
             }
@@ -30,15 +30,15 @@ public:
         }
         return correct;
     }
-    static void printAccuracy( int numImages, int numPlanes, int const*labels, float const*results ) {
+    static void printAccuracy( int numImages, int numPlanes, int const*labels, float const*output ) {
         int correct = 0;
         for( int n = 0; n < numImages; n++ ) {
             double maxValue = -100000;
             int bestIndex = -1;
             for( int plane = 0; plane < numPlanes; plane++ ) {
-                if( results[ n * numPlanes + plane ] > maxValue ) {
+                if( output[ n * numPlanes + plane ] > maxValue ) {
                     bestIndex = plane;
-                    maxValue = results[ n * numPlanes + plane ];
+                    maxValue = output[ n * numPlanes + plane ];
                 }
             }
 //            cout << "expected: " << labels[n] << " got " << bestIndex << endl;

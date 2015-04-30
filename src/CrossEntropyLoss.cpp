@@ -16,53 +16,35 @@ using namespace std;
 
 CrossEntropyLoss::CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker ) :
         LossLayer( previousLayer, maker ),
-        errors( 0 ),
+        gradInput( 0 ),
         allocatedSize( 0 ) {
 }
 VIRTUAL CrossEntropyLoss::~CrossEntropyLoss(){
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string CrossEntropyLoss::getClassName() const {
     return "CrossEntropyLoss";
 }
-VIRTUAL float*CrossEntropyLoss::getErrorsForUpstream() {
-    return errors;
+VIRTUAL float*CrossEntropyLoss::getGradInput() {
+    return gradInput;
 }
 VIRTUAL int CrossEntropyLoss::getPersistSize() const {
     return 0;
 }
-//VIRTUAL float*CrossEntropyLoss::getDerivLossBySumForUpstream() {
-//    return errors;
-//}
 VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
     float loss = 0;
-    float *results = getResults();
+    int inputSize = previousLayer->getOutputSize();
+    float *input = previousLayer->getOutput();
 //    cout << "CrossEntropyLoss::calcLoss" << endl;
-    // this is matrix subtraction, then element-wise square, then aggregation
-    int numPlanes = previousLayer->getOutputPlanes();
-    int imageSize = previousLayer->getOutputImageSize();
-    for( int imageId = 0; imageId < batchSize; imageId++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outRow = 0; outRow < imageSize; outRow++ ) {
-                for( int outCol = 0; outCol < imageSize; outCol++ ) {
-                    int resultOffset = ( ( imageId
-                         * numPlanes + plane )
-                         * imageSize + outRow )
-                         * imageSize + outCol;
- //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
-                    float expectedOutput = expected[resultOffset];
-                    float actualOutput = results[resultOffset];
-                    float negthisloss = expectedOutput * log( actualOutput ) 
-                        + ( 1 - expectedOutput ) * log( 1 - actualOutput );
-                    loss -= negthisloss;
-                }
-            }
-        }            
+    for( int i = 0; i < inputSize; i++ ) {
+        float expectedOutput = expected[i];
+        float inputValue = input[i];
+        float negthisloss = expectedOutput * log( inputValue ) 
+            + ( 1 - expectedOutput ) * log( 1 - inputValue );
+        loss -= negthisloss;
     }
-    loss *= 0.5f;
-//    cout << "loss " << loss << endl;
     return loss;
  }
 VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
@@ -70,23 +52,19 @@ VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
-    errors = new float[ batchSize * previousLayer->getResultsSize() ];
+    gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
     this->batchSize = batchSize;
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
-VIRTUAL void CrossEntropyLoss::calcErrors( float const*expectedResults ) {
-    ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int resultsSize = previousLayer->getResultsSize();
-    float *results = previousLayer->getResults();
-    for( int i = 0; i < resultsSize; i++ ) {
-        float result = results[i];
-        float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = ( result - expectedResults[i] ) / result / ( 1.0f - result );
-        errors[i] = partialLossByOut * partialOutBySum;
+VIRTUAL void CrossEntropyLoss::calcGradInput( float const*expectedOutput ) {
+    int inputSize = previousLayer->getOutputSize();
+    float *input = previousLayer->getOutput();
+    for( int i = 0; i < inputSize; i++ ) {
+        gradInput[i] = ( input[i] - expectedOutput[i] ) / input[i] / ( 1.0f - input[i] );
     }
 }
 

@@ -18,23 +18,25 @@
 
 #define VIRTUAL virtual
 
-class Propagate;
-class BackpropErrorsv2;
+class Forward;
+class Backward;
 class BackpropWeights2;
 class ConvolutionalMaker;
 
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
+    Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
+    Trainer *biasWeightsTrainer; // OWNED by us, we should delete (if non-zero)
 
-    Propagate *propagateimpl;
+    Forward *forwardimpl;
     BackpropWeights2 *backpropWeightsImpl;
-    BackpropErrorsv2 *backpropErrorsImpl;
+    Backward *backwardImpl;
 
     LayerDimensions dim;
-    ActivationFunction const *const activationFunction;
+//    ActivationFunction const *const activationFunction;
 
-    float *results;
+    float *output;
     float *weights;
     float *biasWeights;
 
@@ -43,16 +45,16 @@ public:
 //    const bool padZeros;
 
     CLWrapper *weightsWrapper;
-    CLWrapper *resultsWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *outputWrapper;
+    CLWrapper *gradInputWrapper;
 
     int batchSize;
     int allocatedSpaceNumExamples;
 
-    float *errorsForUpstream;
+    float *gradInput;
 
-    bool resultsCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool outputCopiedToHost;
+    bool gradInputCopiedToHost;
     bool weightsCopiedToHost;
 
     inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
@@ -72,13 +74,13 @@ public:
             * dim.outputImageSize + outCol;
     }
     inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
     }
 
 //    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
     // images are organized like [imageId][plane][imagerow][imagecol]
     // filters are organized like [filterid][plane][filterrow][filtercol]
-    // results are organized like [imageid][filterid][imagerow][imagecol]
+    // output are organized like [imageid][filterid][imagerow][imagecol]
 //    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
 //        return ( ( outPlane * upstreamNumPlanes 
 //             + inPlane ) * filterSize 
@@ -97,26 +99,26 @@ public:
     ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker *maker );
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL ActivationFunction const*getActivationFunction();
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
+    VIRTUAL float *getGradInput();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL float *getBiasWeights();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
     void randomizeWeights();
     VIRTUAL void print();
     VIRTUAL void printWeights();
-    VIRTUAL void printOutput() const;
+    VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void propagate();
-    VIRTUAL float * getResults();
+    VIRTUAL void forward();
+    VIRTUAL float * getOutput();
+    VIRTUAL void setWeights( float *weights, float *biasWeights );
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getPersistSize() const;
@@ -125,8 +127,10 @@ public:
     VIRTUAL void initBiasWeights( float const*biasWeights );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasWeightsSize() const;
-    VIRTUAL void backProp( float learningRate );
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
+    VIRTUAL bool needsTrainer() const;
+    VIRTUAL void setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer );
 
     // [[[end]]]
 };

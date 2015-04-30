@@ -7,15 +7,13 @@ Global Contents
 - [This page](doc/README.md)
 - [Command line usage](doc/Commandline.md)
 - [Neural Net API](doc/NeuralNetAPI.md)
-- [Python wrappers](python_swig/README.md)
 - [Cython wrappers](python/README.md)
 - [Lua wrappers](lua/README.md)
 - [Q-learning](doc/QLearning.md)
 - [To build](doc/Build.md)
 - [Stable API](doc/PublicApis.md)
+- [Development](doc/Development.md)
 - [Benchmarking](doc/Benchmarking.md)
-- [Testing](doc/Testing.md)
-- [Architecture](doc/Architecture.md)
 - [Changes](doc/Changes.md)
 - [Doc for old 3.x.x](https://github.com/hughperkins/DeepCL/blob/3.x.x/README.md)
 
@@ -69,7 +67,7 @@ For Python wrappers, please see [python/README.md](python/README.md)
 
 ## Python
 
-* For python, please use [pip](https://pypi.python.org/pypi/DeepCL/3.5.0)
+* For python, please use [pip](https://pypi.python.org/pypi/DeepCL)
 
 ## Commandline tools, and c++ libraries
 
@@ -123,17 +121,16 @@ Related projects
 
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
 
-License
-=======
-
-[Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
-
 Credits
 =======
 
 * Thank-you very much to Tambet Matilsen for his assistance in morphing the project into a somewhat presentable state.
-* Thank-you very, very much to everyone who has clicked on the 'star' button above.  It is highly motivational, and very encouraging.  Every star pushes me forward to keep going, and gradually improve DeepCL :-)
 * Also, very happy to the person who submitted a link to DeepCL to Reddit MachineLearning, and for everyone who upvoted that link.  Thank-you very much :-)
+
+License
+=======
+
+[Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
 
 To get in contact
 =================

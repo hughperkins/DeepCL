@@ -66,22 +66,22 @@ public:
     NeuralNet( int numPlanes, int imageSize );
     void addLayer( LayerMaker2 *maker );
     void setBatchSize( int batchSize );
-    void propagate( float const*images);
-    void backPropFromLabels( float learningRate, int const *labels);
-    void backProp( float learningRate, float const *expectedResults);
+    void forward( float const*images);
+    void backwardFromLabels( float learningRate, int const *labels);
+    void backward( float learningRate, float const *expectedOutput);
     int calcNumRight( int const *labels );
-/*    int getResultsSize();*/
-/*    float *getResults();*/
-    float const *getResults() const;
-    virtual int getResultsSize() const;
-    //floatSlice getResults();
+/*    int getOutputSize();*/
+/*    float *getOutput();*/
+    float const *getOutput() const;
+    virtual int getOutputSize() const;
+    //floatSlice getOutput();
     std::string asString();
     %extend {
-        void getResults( float *resultsParam ) {
-            int resultsSize = $self->getResultsSize();
-            float const*results = $self->getResults();
-            for( int i = 0; i < resultsSize; i++ ) {
-                resultsParam[i] = results[i];
+        void getOutput( float *outputParam ) {
+            int outputSize = $self->getOutputSize();
+            float const*output = $self->getOutput();
+            for( int i = 0; i < outputSize; i++ ) {
+                outputParam[i] = output[i];
             }
         }
     }
@@ -124,7 +124,21 @@ public:
     InputLayerMaker *numPlanes( int _numPlanes );
     InputLayerMaker *imageSize( int _imageSize );
 };
-/*%template(InputLayerMaker) InputLayerMaker<float>;*/
+
+class ActivationMaker : public LayerMaker2 {
+public:
+    ActivationMaker();
+    ActivationMaker *relu();
+    ActivationMaker *linear(); // nop basically
+    ActivationMaker *tanh();
+    ActivationMaker *sigmoid();
+};
+
+class DropoutMaker : public LayerMaker2 {
+public:
+    DropoutMaker();
+    DropoutMaker *dropRatio( float _dropRatio );
+};
 
 class ConvolutionalMaker : public LayerMaker2 {
 public:
@@ -135,10 +149,6 @@ public:
     ConvolutionalMaker *padZeros( bool value );
     ConvolutionalMaker *biased();
     ConvolutionalMaker *biased(int _biased);
-    ConvolutionalMaker *tanh();
-    ConvolutionalMaker *relu();
-    ConvolutionalMaker *sigmoid();
-    ConvolutionalMaker *linear();
 };
 
 class FullyConnectedMaker : public LayerMaker2 {
@@ -148,10 +158,6 @@ public:
     FullyConnectedMaker *imageSize(int imageSize);
     FullyConnectedMaker *biased();
     FullyConnectedMaker *biased(int _biased);
-    FullyConnectedMaker *linear();
-    FullyConnectedMaker *tanh();
-    FullyConnectedMaker *sigmoid();
-    FullyConnectedMaker *relu();
 };
 
 class PoolingMaker : public LayerMaker2 {
@@ -224,7 +230,7 @@ typedef struct {
 NAME(TYPE *base, int offset) {
   return base + offset;
 }
-NAME(TYPE *base) { // will try using this for `float *getResults()`
+NAME(TYPE *base) { // will try using this for `float *getOutput()`
   return base;
 }
 ~NAME() {

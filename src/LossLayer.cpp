@@ -16,16 +16,16 @@ using namespace std;
 LossLayer::LossLayer( Layer *previousLayer, LossLayerMaker *maker ) :
         Layer( previousLayer, maker ) {
 }
-VIRTUAL void LossLayer::propagate() {
+VIRTUAL void LossLayer::forward() {
 }
 VIRTUAL bool LossLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL float *LossLayer::getResults() {
-    return previousLayer->getResults();
+VIRTUAL float *LossLayer::getOutput() {
+    return previousLayer->getOutput();
 }
-VIRTUAL int LossLayer::getResultsSize() const {
-    return previousLayer->getResultsSize();
+VIRTUAL int LossLayer::getOutputSize() const {
+    return previousLayer->getOutputSize();
 }
 VIRTUAL int LossLayer::getOutputCubeSize() const {
     return previousLayer->getOutputCubeSize();

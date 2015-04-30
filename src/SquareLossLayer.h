@@ -18,10 +18,9 @@ class SquareLossMaker;
 class SquareLossLayer : public LossLayer {
 public:
 
-    float *errors;
+    float *gradInput;
     int allocatedSize;
     int batchSize;
-//    ActivationFunction const*const activationFunction;
 
     // [[[cog
     // import cog_addheaders
@@ -31,10 +30,10 @@ public:
     SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker );
     VIRTUAL ~SquareLossLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float*getErrorsForUpstream();
+    VIRTUAL float*getGradInput();
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcErrors( float const*expectedResults );
+    VIRTUAL void calcGradInput( float const*expectedOutput );
     VIRTUAL int getPersistSize() const;
     VIRTUAL std::string asString() const;
 

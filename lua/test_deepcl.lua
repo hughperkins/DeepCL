@@ -18,7 +18,7 @@ deepcl = LuaDeepCL
 
 function test_genericloader()
 
-    local deepcl = luaDeepCL
+    local deepcl = LuaDeepCL
 
     -- local genericLoader = deepcl.GenericLoader()
 
@@ -43,7 +43,7 @@ end
 
 function test_basic()
 
-    local deepcl = luaDeepCL
+    local deepcl = LuaDeepCL
 
     -- local genericLoader = deepcl.GenericLoader()
 
@@ -63,7 +63,7 @@ function test_basic()
     print(net:asString())
     net:addLayer( deepcl.NormalizationLayerMaker():translate(-40):scale(1/255.0) )
     print(net:asString())
-    deepcl.NetdefToNet_createNetFromNetdef( net, "rt2-8c5-mp2-16c5-mp3-150n-10n" ) 
+    deepcl.NetdefToNet_createNetFromNetdef( net, "rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n" ) 
     print(net:asString())
 
     local learner = deepcl.NetLearner( net,
@@ -82,12 +82,15 @@ function test_lowlevel()
     local net = deepcl.NeuralNet()
     net:addLayer( deepcl.InputLayerMaker():numPlanes(1):imageSize(28) )
     net:addLayer( deepcl.NormalizationLayerMaker():translate(-0.5):scale(1/255.0) )
-    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased():relu() )
+    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased() )
+    net:addLayer( deepcl.ActivationMaker():relu() )
     net:addLayer( deepcl.PoolingMaker():poolingSize(2) )
-    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased():relu() )
+    net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased() )
+    net:addLayer( deepcl.ActivationMaker():relu() )
     net:addLayer( deepcl.PoolingMaker():poolingSize(3) )
-    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(150):imageSize(1):biased():tanh() )
-    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(10):imageSize(1):biased():linear() )
+    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(150):imageSize(1):biased() )
+    net:addLayer( deepcl.ActivationMaker():tanh() )
+    net:addLayer( deepcl.FullyConnectedMaker():numPlanes(10):imageSize(1):biased() )
     print( net:asString() )
     -- net.addLayer( deepcl.SquareLossMaker() )
     net:addLayer( deepcl.SoftMaxMaker() )
@@ -109,9 +112,9 @@ function test_lowlevel()
         for batch = 0, math.floor( N /  batchSize ) - 1 do
             imagesslice = deepcl.floatSlice( images, batch * batchSize * planes * size * size )
 --            print('imagesslice', imagesslice)
-            net:propagate( imagesslice )
+            net:forward( imagesslice )
             labelsslice = deepcl.intSlice( labels, batch * batchSize )
-            net:backPropFromLabels( 0.002, labelsslice )
+            net:backwardFromLabels( 0.002, labelsslice )
             numRight = numRight + net:calcNumRight( labelsslice )
             -- print( 'numright ' + str( net:calcNumRight( labels ) ) )
         end

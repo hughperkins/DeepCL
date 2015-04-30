@@ -34,7 +34,7 @@ TEST( testNetdefToNet, onefc ) {
     EXPECT_EQ( 1, fc->imageSize );
     EXPECT_EQ( 150, fc->numPlanes );
     EXPECT_EQ( 150, fc->numPlanes );
-    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
+//    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
 }
 
@@ -49,7 +49,7 @@ TEST( testNetdefToNet, onefclinear ) {
     EXPECT_EQ( 1, fc->imageSize );
     EXPECT_EQ( 150, fc->numPlanes );
     EXPECT_EQ( 150, fc->numPlanes );
-    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
+//    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
 }
 
@@ -64,12 +64,12 @@ TEST( testNetdefToNet, 150n_10n ) {
     FullyConnectedLayer *fc1 = dynamic_cast< FullyConnectedLayer * >( net->getLayer(1) );
     EXPECT_EQ( 1, fc1->imageSize );
     EXPECT_EQ( 150, fc1->numPlanes );
-    EXPECT_EQ( "TANH", fc1->fn->getDefineName() );
+//    EXPECT_EQ( "TANH", fc1->fn->getDefineName() );
 
     FullyConnectedLayer *fc2 = dynamic_cast< FullyConnectedLayer * >( net->getLayer(2) );
     EXPECT_EQ( 1, fc2->imageSize );
     EXPECT_EQ( 10, fc2->numPlanes );
-    EXPECT_EQ( "LINEAR", fc2->fn->getDefineName() );
+//    EXPECT_EQ( "LINEAR", fc2->fn->getDefineName() );
 
     delete net;
 }
@@ -77,7 +77,7 @@ TEST( testNetdefToNet, 150n_10n ) {
 TEST( testNetdefToNet, 3xfclinear ) {
     NeuralNet *net = new NeuralNet();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
-    ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*150n{linear}" ) );
+    ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*150n" ) );
     net->print();
     EXPECT_EQ( 5, net->getNumLayers() );
     EXPECT_TRUE( dynamic_cast< FullyConnectedLayer * >( net->getLayer(1) ) != 0 );
@@ -87,14 +87,14 @@ TEST( testNetdefToNet, 3xfclinear ) {
     FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( net->getLayer(1) );
     EXPECT_EQ( 1, fc->imageSize );
     EXPECT_EQ( 150, fc->numPlanes );
-    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
+//    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
 }
 
 TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
     NeuralNet *net = new NeuralNet();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
-    ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "mp2-3*32c5{z}-10n " ) );
+    ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "mp2-3*32c5z-10n " ) );
     net->print();
     EXPECT_EQ( 7, net->getNumLayers() );
     EXPECT_TRUE( dynamic_cast< PoolingLayer * >( net->getLayer(1) ) != 0 );
@@ -106,14 +106,14 @@ TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
     FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( net->getLayer(5) );
     EXPECT_EQ( 1, fc->imageSize );
     EXPECT_EQ( 10, fc->numPlanes );
-    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
+//    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
 }
 
 TEST( testNetdefToNet, 3x32c5zmp2 ) {
     NeuralNet *net = new NeuralNet();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(128) );
-    ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*(32c5{z}-mp2)-10n" ) );
+    ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*(32c5z-mp2)-10n" ) );
     net->print();
     EXPECT_EQ( 9, net->getNumLayers() );
     EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->getLayer(1) ) != 0 );
@@ -130,14 +130,14 @@ TEST( testNetdefToNet, 3x32c5zmp2 ) {
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 1, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
-    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+//    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
     delete net;
 }
 
 TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     NeuralNet *net = new NeuralNet();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
-    EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7{z}-3*32c5{z}-10n" ) );
+    EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7z-3*32c5z-10n" ) );
     net->print();
     EXPECT_EQ( 8, net->getNumLayers() );
     EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->getLayer(1) ) != 0 );
@@ -152,7 +152,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     EXPECT_EQ( 1, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
     EXPECT_EQ( 7, conv->dim.filterSize );
-    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+//    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(2) );
     EXPECT_EQ( 19, conv->dim.inputImageSize );
@@ -160,7 +160,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     EXPECT_EQ( 32, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
     EXPECT_EQ( 7, conv->dim.filterSize );
-    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+//    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(3) );
     EXPECT_EQ( 19, conv->dim.inputImageSize );
@@ -168,7 +168,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     EXPECT_EQ( 32, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
     EXPECT_EQ( 5, conv->dim.filterSize );
-    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+//    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(5) );
     EXPECT_EQ( 19, conv->dim.inputImageSize );
@@ -176,7 +176,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     EXPECT_EQ( 32, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
     EXPECT_EQ( 5, conv->dim.filterSize );
-    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
+//    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     delete net;
 }

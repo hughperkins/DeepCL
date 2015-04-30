@@ -132,32 +132,37 @@ def distutils_dir_name(dname):
 def lib_build_dir():
     return os.path.join('build', distutils_dir_name('lib'))
 
-deepcl_sourcestring = """LayerMaker.cpp NeuralNetMould.cpp
-     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-    Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
-    Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
-    BackpropWeights2Cpu.cpp BackpropErrorsv2.cpp BackpropErrorsv2Cpu.cpp
-    BackpropWeights2Naive.cpp BackpropErrorsv2Naive.cpp BackpropWeights2Scratch.cpp
-    CrossEntropyLoss.cpp SoftMaxLayer.cpp FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingPropagate.cpp PoolingPropagateCpu.cpp PoolingLayer.cpp PoolingBackprop.cpp
-    PoolingBackpropCpu.cpp PoolingPropagateGpuNaive.cpp BackpropWeights2ScratchLarge.cpp
+deepcl_sourcestring = """
+    LayerMaker.cpp NeuralNetMould.cpp
+    ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
+    ActivationFunction.cpp 
+    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
+    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
+    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
+    Forward4.cpp 
+    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
+    BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
+    BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
+    FullyConnectedLayer.cpp  EpochMaker.cpp
+    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
+    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
     BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
     RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
     Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
     RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
     PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
-    PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
-    PoolingBackpropGpuNaive.cpp ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp
-    MnistLoader.cpp OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp
-    ActivationMaker.cpp
-    ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
-    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutPropagate.cpp DropoutBackprop.cpp
-    DropoutPropagateCpu.cpp DropoutPropagateGpuNaive.cpp
-    DropoutBackpropCpu.cpp DropoutBackpropGpuNaive.cpp
+    ForwardFc.cpp ForwardByInputPlane.cpp
+    PoolingBackwardGpuNaive.cpp
+    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
+    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
+    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
+    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
+    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
+    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
+    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
     CopyBuffer.cpp MultiplyBuffer.cpp
+    Trainer.cpp SGD.cpp
 """ 
 deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []

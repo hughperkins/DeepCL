@@ -311,7 +311,7 @@ void go(Config config) {
     netLearner.setDumpTimings( config.dumpTimings );  
     netLearner.learn( config.learningRate, 1.0f );
 
-    cout << "forward results" << endl;
+    cout << "forward output" << endl;
     for( int layerId = 0; layerId < net->getNumLayers(); layerId++ ) {
         Layer *layer = net->getLayer(layerId);
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );
@@ -340,10 +340,10 @@ void go(Config config) {
             continue;
         }
         cout << "layer " << layerId << endl;
-//        conv->getResults();
-        float const*results = layer->getResults();
+//        conv->getOutput();
+        float const*output = layer->getOutput();
 //        for( int i = 0; i < 3; i++ ) {
-//            cout << conv->getResults()[i] << endl;
+//            cout << conv->getOutput()[i] << endl;
 //        }
         initrand.seed(0);
 //        LayerDimensions &dim = conv->dim;
@@ -354,14 +354,14 @@ void go(Config config) {
             int rowcol = seq % ( imageSize * imageSize );
             int row = rowcol / imageSize;
             int col = rowcol % imageSize;
-            cout << "out[" << outPlane << "," << row << "," << col << "]=" << results[ seq ] << endl;
+            cout << "out[" << outPlane << "," << row << "," << col << "]=" << output[ seq ] << endl;
         }
     }
 
     cout << "weight samples after learning:" << endl;
     sampleWeights(net);
 
-    cout << "backprop results" << endl;
+    cout << "backprop output" << endl;
     for( int layerId = net->getNumLayers() - 1; layerId >= 0; layerId-- ) {
         Layer *layer = net->getLayer(layerId);
         FullyConnectedLayer *fc = dynamic_cast< FullyConnectedLayer * >( layer );

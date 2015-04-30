@@ -37,7 +37,7 @@ class DeepCL_EXPORT NetLearner : public NetLearnerBase {
 public:
     Trainable *net;
     LearnBatcher *trainBatcher;
-    PropagateBatcher *testBatcher;
+    ForwardBatcher *testBatcher;
 
     float learningRate;
     float annealLearningRate;

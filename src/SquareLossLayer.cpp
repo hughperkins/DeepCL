@@ -17,47 +17,33 @@ using namespace std;
 
 SquareLossLayer::SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker ) :
         LossLayer( previousLayer, maker ),
-        errors( 0 ),
+        gradInput( 0 ),
         allocatedSize( 0 ) {
 }
 VIRTUAL SquareLossLayer::~SquareLossLayer(){
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string SquareLossLayer::getClassName() const {
     return "SquareLossLayer";
 }
-VIRTUAL float*SquareLossLayer::getErrorsForUpstream() {
-    return errors;
+VIRTUAL float*SquareLossLayer::getGradInput() {
+    return gradInput;
 }
-//VIRTUAL float*SquareLossLayer::getDerivLossBySumForUpstream() {
-//    return derivLossBySum;
-//}
 VIRTUAL float SquareLossLayer::calcLoss( float const *expected ) {
     float loss = 0;
-    float *results = getResults();
+//    float *output = getOutput();
+    float *input = previousLayer->getOutput();
 //    cout << "SquareLossLayer::calcLoss" << endl;
-    // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
     int imageSize = previousLayer->getOutputImageSize();
-    for( int imageId = 0; imageId < batchSize; imageId++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outRow = 0; outRow < imageSize; outRow++ ) {
-                for( int outCol = 0; outCol < imageSize; outCol++ ) {
-                    int resultOffset = ( ( imageId
-                         * numPlanes + plane )
-                         * imageSize + outRow )
-                         * imageSize + outCol;
- //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
-                    float expectedOutput = expected[resultOffset];
-                    float actualOutput = results[resultOffset];
-                    float diff = actualOutput - expectedOutput;
-                    float squarederror = diff * diff;
-                    loss += squarederror;
-                }
-            }
-        }            
+    int totalLinearSize = batchSize * numPlanes * imageSize * imageSize;
+    for( int i = 0; i < totalLinearSize; i++ ) {
+//        if( i < 5 ) cout << "input[" << i << "]=" << input[i] << endl;
+        float diff = input[i] - expected[i];
+        float diffSquared = diff * diff;
+        loss += diffSquared;
     }
     loss *= 0.5f;
 //    cout << "loss " << loss << endl;
@@ -68,22 +54,18 @@ VIRTUAL void SquareLossLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( errors != 0 ) {
-        delete[] errors;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     allocatedSize = batchSize;
-    errors = new float[ batchSize * previousLayer->getResultsSize() ];
+    gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
 }
-VIRTUAL void SquareLossLayer::calcErrors( float const*expectedResults ) {
-    ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int resultsSize = previousLayer->getResultsSize();
-    float *results = previousLayer->getResults();
-    for( int i = 0; i < resultsSize; i++ ) {
-        float result = results[i];
-        float partialOutBySum = fn->calcDerivative( result );
-        float partialLossByOut = result - expectedResults[i];
-        errors[i] = partialLossByOut * partialOutBySum;
+VIRTUAL void SquareLossLayer::calcGradInput( float const*expectedOutput ) {
+    int inputSize = previousLayer->getOutputSize();
+    float *input = previousLayer->getOutput();
+    for( int i = 0; i < inputSize; i++ ) {
+        gradInput[i] = input[i] - expectedOutput[i];
     }
 }
 VIRTUAL int SquareLossLayer::getPersistSize() const {

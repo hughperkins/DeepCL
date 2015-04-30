@@ -19,6 +19,8 @@
 
 #define VIRTUAL virtual
 
+class Trainer;
+
 PUBLICAPI
 /// A single layer within the neural net
 class Layer {
@@ -31,13 +33,22 @@ public:
     LayerMaker2 *maker;
 
     // \brief Get the activated output from this layer, after forward propagation
-    PUBLICAPI virtual float * getResults() = 0;
+    PUBLICAPI virtual float * getOutput() = 0;
 //    virtual Layer *clone() = 0;
     /// \brief Get the size of array needed for persisting to/from an array
     PUBLICAPI virtual int getPersistSize() const = 0;
     /// \brief Get the size of the activated output from this layer
-    PUBLICAPI virtual int getResultsSize() const = 0;
+    PUBLICAPI virtual int getOutputSize() const = 0;
     virtual std::string getClassName() const = 0;
+    virtual bool needsTrainer() const {
+        return false;
+    }
+    // This transfers ownership of the trainer to the layer,
+    // which is responsible for deleting it
+    // probably should pass in a Maker class instead
+    virtual void setTrainer( Trainer *weightsTrainer, Trainer *biasWeightsTrainer ) {
+        throw std::runtime_error("setTrainer not implemented for " + getClassName() );
+    }
 
     // [[[cog
     // import cog_addheaders
@@ -48,17 +59,16 @@ public:
     VIRTUAL ~Layer();
     PUBLICAPI VIRTUAL void setTraining( bool training );
     PUBLICAPI VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL float *getErrorsForUpstream();
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL float *getGradInput();
+    VIRTUAL CLWrapper *getGradInputWrapper();
     PUBLICAPI VIRTUAL bool getBiased() const;
-    PUBLICAPI VIRTUAL bool hasResultsWrapper() const;
-    PUBLICAPI VIRTUAL CLWrapper *getResultsWrapper();
-    PUBLICAPI VIRTUAL ActivationFunction const*getActivationFunction();
+    PUBLICAPI VIRTUAL bool hasOutputWrapper() const;
+    PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
     PUBLICAPI VIRTUAL int getOutputImageSize() const;
-    VIRTUAL void propagate();
+    VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();
     VIRTUAL void initWeights( float const*weights );
@@ -66,8 +76,8 @@ public:
     VIRTUAL void printWeightsAsCode() const;
     VIRTUAL void printBiasWeightsAsCode() const;
     VIRTUAL void printWeights();
-    VIRTUAL void printOutput() const;
-    PUBLICAPI VIRTUAL void backProp( float learningRate );
+    VIRTUAL void printOutput();
+    PUBLICAPI VIRTUAL void backward( float learningRate );
     PUBLICAPI VIRTUAL int getWeightsSize() const;
     PUBLICAPI VIRTUAL int getBiasWeightsSize() const;
     PUBLICAPI VIRTUAL void persistToArray(float *array);

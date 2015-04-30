@@ -18,13 +18,12 @@ FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer
         Layer( previousLayer, maker ),
         numPlanes( maker->_numPlanes ),
         imageSize( maker->_imageSize ),
-        fn( maker->_activationFunction ),
+//        fn( maker->_activationFunction ),
         batchSize(0) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * imageSize * imageSize )
                       ->filterSize( previousLayer->getOutputImageSize() )
-                        ->biased( maker->_biased )
-                        ->fn( maker->_activationFunction );
+                        ->biased( maker->_biased );
     convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
 //    delete convolutionalMaker;
 }
@@ -41,6 +40,9 @@ VIRTUAL void FullyConnectedLayer::setBatchSize( int batchSize ) {
     convolutionalLayer->setBatchSize( batchSize );
     this->batchSize = batchSize;
 }
+VIRTUAL int FullyConnectedLayer::getOutputCubeSize() const {
+    return numPlanes * imageSize * imageSize;
+}
 VIRTUAL int FullyConnectedLayer::getOutputImageSize() const {
     return imageSize;
 }
@@ -56,46 +58,53 @@ VIRTUAL void FullyConnectedLayer::persistToArray(float *array) {
 VIRTUAL void FullyConnectedLayer::unpersistFromArray(float const*array) {
     convolutionalLayer->unpersistFromArray( array );
 }
+VIRTUAL void FullyConnectedLayer::setWeights( float *weights, float *biasWeights ) {
+    convolutionalLayer->initWeights( weights );
+    convolutionalLayer->initBiasWeights( biasWeights );
+}
 VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
     return convolutionalLayer->getWeightsSize();
 }
 VIRTUAL int FullyConnectedLayer::getBiasWeightsSize() const {
     return convolutionalLayer->getBiasWeightsSize();
 }
-VIRTUAL int FullyConnectedLayer::getResultsSize() const {
-    return convolutionalLayer->getResultsSize();
+VIRTUAL int FullyConnectedLayer::getOutputSize() const {
+    return convolutionalLayer->getOutputSize();
 }
-VIRTUAL float *FullyConnectedLayer::getResults() {
-    return convolutionalLayer->getResults();
+VIRTUAL float *FullyConnectedLayer::getOutput() {
+    return convolutionalLayer->getOutput();
 }
-VIRTUAL float *FullyConnectedLayer::getErrorsForUpstream() {
-    return convolutionalLayer->getErrorsForUpstream();
+VIRTUAL float *FullyConnectedLayer::getGradInput() {
+    return convolutionalLayer->getGradInput();
 }
-VIRTUAL bool FullyConnectedLayer::providesErrorsForUpstreamWrapper() const {
-    return convolutionalLayer->providesErrorsForUpstreamWrapper();
+VIRTUAL bool FullyConnectedLayer::providesGradInputWrapper() const {
+    return convolutionalLayer->providesGradInputWrapper();
 }
-VIRTUAL CLWrapper *FullyConnectedLayer::getErrorsForUpstreamWrapper() {
-    return convolutionalLayer->getErrorsForUpstreamWrapper();
+VIRTUAL CLWrapper *FullyConnectedLayer::getGradInputWrapper() {
+    return convolutionalLayer->getGradInputWrapper();
 }
-VIRTUAL bool FullyConnectedLayer::hasResultsWrapper() const {
-    return convolutionalLayer->hasResultsWrapper();
+VIRTUAL bool FullyConnectedLayer::hasOutputWrapper() const {
+    return convolutionalLayer->hasOutputWrapper();
 }
-VIRTUAL CLWrapper *FullyConnectedLayer::getResultsWrapper() {
-    return convolutionalLayer->getResultsWrapper();
+VIRTUAL CLWrapper *FullyConnectedLayer::getOutputWrapper() {
+    return convolutionalLayer->getOutputWrapper();
 }
-VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
-    return fn;
-}
+//VIRTUAL ActivationFunction const*FullyConnectedLayer::getActivationFunction() {
+//    return fn;
+//}
 VIRTUAL bool FullyConnectedLayer::needsBackProp() {
     return true;;
 }
-VIRTUAL void FullyConnectedLayer::propagate() {
-    convolutionalLayer->propagate();
+VIRTUAL void FullyConnectedLayer::forward() {
+    convolutionalLayer->forward();
 }
-VIRTUAL void FullyConnectedLayer::backProp( float learningRate ) {
-    convolutionalLayer->backProp( learningRate );
+VIRTUAL void FullyConnectedLayer::backward( float learningRate ) {
+    convolutionalLayer->backward( learningRate );
+}
+VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
+    return false; // not handle fc layer for now, conv only for now
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
-    return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " " + fn->getDefineName() + " }";
+    return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " }";
 }
 

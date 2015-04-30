@@ -20,7 +20,7 @@ VIRTUAL BackpropWeights2Naive::~BackpropWeights2Naive() {
 //    cout << "~backpropweights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2Naive start" );
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
@@ -28,7 +28,7 @@ VIRTUAL void BackpropWeights2Naive::backpropWeights( int batchSize, float learni
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
-       ->in( errorsWrapper )
+       ->in( gradOutputWrapper )
         ->in( imagesWrapper )
        ->inout( weightsWrapper );
     if( dim.biased ) {
@@ -68,7 +68,7 @@ BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions 
     "// per-thread iteration: [n][outputRow][outputCol]\n" 
     "void kernel backprop_floats( const float learningRateMultiplier,\n" 
     "        const int batchSize,\n" 
-    "         global const float *errors, global const float *images,\n" 
+    "         global const float *gradOutput, global const float *images,\n" 
     "        global float *weights\n" 
     "        #ifdef BIASED\n" 
     "            , global float *biasWeights\n" 
@@ -105,7 +105,7 @@ BackpropWeights2Naive::BackpropWeights2Naive( OpenCLHelper *cl, LayerDimensions 
     "                              + outPlane ) * gOutputImageSize\n" 
     "                              + outRow ) * gOutputImageSize\n" 
     "                              + outCol;\n" 
-    "                    float error = errors[resultIndex];\n" 
+    "                    float error = gradOutput[resultIndex];\n" 
     "                    int upstreamDataIndex = ( ( n * gInputPlanes\n" 
     "                                     + upstreamPlane ) * gInputImageSize\n" 
     "                                     + upstreamRow ) * gInputImageSize\n" 

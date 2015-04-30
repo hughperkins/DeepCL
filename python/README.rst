@@ -16,7 +16,7 @@ How to use
 ==========
 
 See
-`test\_clconvolve.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_clconvolve.py>`__
+`test\_deepcl.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl.py>`__
 for an example of:
 
 -  creating a network, with several layers

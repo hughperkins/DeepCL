@@ -30,7 +30,7 @@ kernel void activate( const int N, global float *inout ) {
 #endif
 
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void propagateNaive( const int N, global float *out, global const float *in ) {
+kernel void forwardNaive( const int N, global float *out, global const float *in ) {
     const int globalId = get_global_id(0);
     if( globalId >= N ) {
         return;

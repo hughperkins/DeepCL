@@ -25,7 +25,7 @@ VIRTUAL BackpropWeights2ByRow::~BackpropWeights2ByRow() {
     delete reduce;
     delete perElementAdd;
 }
-VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2ByRow start" );
 
     cout << "input buffer:" << endl;
@@ -33,7 +33,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     cout << endl;
 
     cout << "errors buffer:" << endl;
-    PrintBuffer::printFloats( cl, errorsWrapper, batchSize * dim.outputImageSize, dim.outputImageSize );
+    PrintBuffer::printFloats( cl, gradOutputWrapper, batchSize * dim.outputImageSize, dim.outputImageSize );
     cout << endl;
 
     int globalSize = workgroupSize * numWorkgroups;
@@ -79,7 +79,7 @@ VIRTUAL void BackpropWeights2ByRow::backpropWeights( int batchSize, float learni
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
-       ->in( errorsWrapper )
+       ->in( gradOutputWrapper )
         ->in( imagesWrapper )
        ->out( weights1Wrapper );
     if( dim.biased ) {
@@ -181,7 +181,7 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "// weightChanges1: [outputPlane][inputPlane][filterRow][filterCol][outputRow]\n" 
     "// biasWeights1: [outputPlane][outputRow]\n" 
     "kernel void backprop_weights( const float learningRateMultiplier, const int batchSize,\n" 
-    "    global float const *errors, global float const *input, global float *restrict weights1,\n" 
+    "    global float const *gradOutput, global float const *input, global float *restrict weights1,\n" 
     "    #ifdef BIASED\n" 
     "         global float *restrict biasWeights1,\n" 
     "    #endif\n" 
@@ -205,15 +205,15 @@ BackpropWeights2ByRow::BackpropWeights2ByRow( OpenCLHelper *cl, LayerDimensions 
     "    #endif\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        // copy down the errors row...\n" 
+    "        // copy down the gradOutput row...\n" 
     "        {\n" 
-    "            global float const*errorsRow = errors +\n" 
+    "            global float const*gradOutputRow = gradOutput +\n" 
     "                ( ( n\n" 
     "                    * gNumOutputPlanes + outputPlane )\n" 
     "                    * gOutputImageSize + outputRow )\n" 
     "                    * gOutputImageSize;\n" 
     "            if( localId < gOutputImageSize ) { // assume we have enough threads for now... should fix later\n" 
-    "                _errorRow[ localId ] = errorsRow[ localId ];\n" 
+    "                _errorRow[ localId ] = gradOutputRow[ localId ];\n" 
     "            }\n" 
     "        }\n" 
     "        // copy down the input row\n" 

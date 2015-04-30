@@ -11,7 +11,7 @@
 // per-thread iteration: [n][outputRow][outputCol]
 void kernel backprop_floats( const float learningRateMultiplier,
         const int batchSize, 
-         global const float *errors, global const float *images, 
+         global const float *gradOutput, global const float *images, 
         global float *weights
         #ifdef BIASED
             , global float *biasWeights
@@ -48,7 +48,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
                               + outPlane ) * gOutputImageSize
                               + outRow ) * gOutputImageSize
                               + outCol;
-                    float error = errors[resultIndex];
+                    float error = gradOutput[resultIndex];
                     int upstreamDataIndex = ( ( n * gInputPlanes 
                                      + upstreamPlane ) * gInputImageSize
                                      + upstreamRow ) * gInputImageSize

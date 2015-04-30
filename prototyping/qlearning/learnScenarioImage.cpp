@@ -25,10 +25,13 @@ int main( int argc, char *argv[] ) {
     const int planes = scenario->getPerceptionPlanes();
     const int numActions = scenario->getNumActions();
     net->addLayer( InputLayerMaker::instance()->numPlanes(planes)->imageSize(size) );
-    net->addLayer( ConvolutionalMaker::instance()->filterSize(5)->numFilters(8)->biased()->padZeros()->relu() );
-    net->addLayer( ConvolutionalMaker::instance()->filterSize(5)->numFilters(8)->biased()->padZeros()->relu() );
-    net->addLayer( FullyConnectedMaker::instance()->imageSize(1)->numPlanes(100)->biased()->tanh() );
-    net->addLayer( FullyConnectedMaker::instance()->imageSize(1)->numPlanes(numActions)->linear()->biased() );
+    net->addLayer( ConvolutionalMaker::instance()->filterSize(5)->numFilters(8)->biased()->padZeros() );
+    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->filterSize(5)->numFilters(8)->biased()->padZeros() );
+    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( FullyConnectedMaker::instance()->imageSize(1)->numPlanes(100)->biased() );
+        net->addLayer( ActivationMaker::instance()->tanh() );
+    net->addLayer( FullyConnectedMaker::instance()->imageSize(1)->numPlanes(numActions)->biased() );
     net->addLayer( SquareLossMaker::instance() );
     net->print();
 

@@ -13,8 +13,8 @@
 
 class CLKernel;
 class CLWrapper;
-class PoolingPropagate;
-class PoolingBackprop;
+class PoolingForward;
+class PoolingBackward;
 
 class PoolingMaker;
 
@@ -28,19 +28,19 @@ public:
     const int outputImageSize;
 
     OpenCLHelper *const cl; // NOT owned by us
-    PoolingPropagate *poolingPropagateImpl;
-    PoolingBackprop *poolingBackpropImpl;
+    PoolingForward *poolingForwardImpl;
+    PoolingBackward *poolingBackpropImpl;
 
-    float *results;
+    float *output;
     int *selectors;
-    float *errorsForUpstream;
+    float *gradInput;
 
-    CLWrapper *resultsWrapper;
+    CLWrapper *outputWrapper;
     CLWrapper *selectorsWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *gradInputWrapper;
 
-    bool resultsCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool outputCopiedToHost;
+    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;
@@ -54,21 +54,21 @@ public:
     VIRTUAL ~PoolingLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getResultsSize();
-    VIRTUAL float *getResults();
+    VIRTUAL int getOutputSize();
+    VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize() const;
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
-    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
-    VIRTUAL void propagate();
-    VIRTUAL void backProp( float learningRate );
+    VIRTUAL void forward();
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

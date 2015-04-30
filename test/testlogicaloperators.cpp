@@ -23,20 +23,20 @@ using namespace std;
 //    for( int epoch = 0; epoch < 100; epoch++ ) {
 //        net->epochMaker()
 //           ->learningRate(1)->batchSize(4)->numExamples(4)
-//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedOutput)
 //           ->run();
 //        if( epoch % 20 == 0 ) {
-//            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-//            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//            cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
+//            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 //        }
 ////        net->printWeights();
 //    }
 ////    net->print();
-//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
 //    assertEquals( numCorrect, ldc.N );
 
-//    float loss = net->calcLoss(ldc.expectedResults);
+//    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
 //    assertLessThan( 0.4, loss );
 
@@ -52,19 +52,19 @@ using namespace std;
 //    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
 //    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->tanh()->insert();
 //    for( int epoch = 0; epoch < 10; epoch++ ) {
-//        net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedResults );
+//        net->doEpoch( 5, 4, 4, ldc.data, ldc.expectedOutput );
 //        if( epoch % 5 == 0 ) {
-//            cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-//            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//            cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
+//            AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 //        }
 ////        net->printWeights();
 //    }
 
-//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
 //    assertEquals( numCorrect, ldc.N );
 
-//    float loss = net->calcLoss(ldc.expectedResults);
+//    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
 //    assertLessThan( 0.4, loss );
 
@@ -86,29 +86,29 @@ using namespace std;
 //    net->initWeights( 1, weights1, biasWeights1 );
 //    net->initWeights( 2, weights2, biasWeights2 );
 //    for( int epoch = 0; epoch < 200; epoch++ ) {
-//        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedResults );
+//        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedOutput );
 ////        net->printWeightsAsCode();
 ////        net->printBiasWeightsAsCode();
 
 //        if( epoch % 50 == 0 ) {
-//            float loss = net->calcLoss(ldc.expectedResults);
+//            float loss = net->calcLoss(ldc.expectedOutput);
 //            cout << "loss, E, " << loss << endl;
 //        }
-////        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+////        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 ////        net->printWeights();
 ////        if( loss < 0.00001 ) {
 ////            break;
 ////        }
 //    }
-//    cout << " Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    cout << " Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
 ////    if( numCorrect != ldc.N ) {
 ////        net->print();
 ////    }
 //    assertEquals( numCorrect, ldc.N );
 
-//    float loss = net->calcLoss(ldc.expectedResults);
+//    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
 //    assertLessThan( 0.00001, loss );
 
@@ -123,12 +123,12 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(4)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedResults)->run();
-        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+           ->expectedOutputs(ldc.expectedOutput)->run();
+        cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
     }
 //    net->print();
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
     delete net;
@@ -142,17 +142,17 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedResults)->run();
-        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
+        net->epochMaker()->learningRate(0.1f)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+           ->expectedOutputs(ldc.expectedOutput)->run();
+        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
     }
 //        net->print();
-    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
 
-    float loss = net->calcLoss(ldc.expectedResults);
+    float loss = net->calcLoss(ldc.expectedOutput);
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.4f, loss );
 
@@ -167,16 +167,16 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(1)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedResults)->run();
-        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-//        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        net->epochMaker()->learningRate(0.1f)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+           ->expectedOutputs(ldc.expectedOutput)->run();
+        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
+//        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 //        net->printWeights();
     }
 //        net->print();
-        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 
-    float loss = net->calcLoss(ldc.expectedResults);
+    float loss = net->calcLoss(ldc.expectedOutput);
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.4f, loss );
 
@@ -226,7 +226,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
        0.1f,
        1.1
     };
-    float expectedResults[] = {
+    float expectedOutput[] = {
         1, 0,
         0, 1,
         0, 1,
@@ -240,25 +240,27 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     };
 
     NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1)->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
+    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
+    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );;
     cout << "hand-setting weights..." << endl;
     net->initWeights( 1, layer1weights, layer1bias );
-    net->initWeights( 2, layer2weights, layer2bias );
+    net->initWeights( 3, layer2weights, layer2bias );
 //    net->printWeights();
 //    net->setBatchSize(4);
-//    net->propagate( data );
+//    net->forward( data );
 //    net->print();
     for( int epoch = 0; epoch < 200; epoch++ ) {
         net->epochMaker()->learningRate(0.1f)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
-           ->expectedOutputs(expectedResults)->run();
-        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(expectedResults) << endl;
+           ->expectedOutputs(expectedOutput)->run();
+        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(expectedOutput) << endl;
     }
     net->print();
-    AccuracyHelper::printAccuracy( numExamples, 2, labels, net->getResults() );
+    AccuracyHelper::printAccuracy( numExamples, 2, labels, net->getOutput() );
 
-    float loss = net->calcLoss(expectedResults);
+    float loss = net->calcLoss(expectedOutput);
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.0000001f, loss );
 
@@ -276,14 +278,14 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    for( int epoch = 0; epoch < 10; epoch++ ) {
 //        net->epochMaker()
 //           ->learningRate(3)->batchSize(4)->numExamples(4)
-//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedOutput)
 //           ->run();
-//        cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-//        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//        cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
+//        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 ////        net->printWeights();
 //    }
 //    net->print();
-//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
 //    assertEquals( numCorrect, ldc.N );
 //    delete net;
@@ -301,19 +303,19 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    for( int epoch = 0; epoch < 20; epoch++ ) {
 //        net->epochMaker()
 //           ->learningRate(3)->batchSize(4)->numExamples(4)
-//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedResults)
+//           ->inputData(ldc.data)->expectedOutputs(ldc.expectedOutput)
 //           ->run();
 //                
-//        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedResults) << endl;
-////        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getResults() );
+//        if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
+////        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 ////        net->printWeights();
 //    }
 ////    net->print();
-//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getResults() );
+//    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
 //    assertEquals( numCorrect, ldc.N );
 
-//    float loss = net->calcLoss(ldc.expectedResults);
+//    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
 //    assertLessThan( 0.4, loss );
 

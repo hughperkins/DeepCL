@@ -43,9 +43,9 @@ public:
 };
 
 
-class DeepCL_EXPORT NetPropagateAction : public NetAction {
+class DeepCL_EXPORT NetForwardAction : public NetAction {
 public:
-    NetPropagateAction() {
+    NetForwardAction() {
     }
     virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
 };

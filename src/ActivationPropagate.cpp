@@ -8,10 +8,10 @@
 
 #include "OpenCLHelper.h"
 #include "stringhelper.h"
-#include "ActivationPropagateCpu.h"
-#include "ActivationPropagateGpuNaive.h"
+#include "ActivationForwardCpu.h"
+#include "ActivationForwardGpuNaive.h"
 
-#include "ActivationPropagate.h"
+#include "ActivationForward.h"
 
 using namespace std;
 
@@ -20,49 +20,49 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationPropagate::ActivationPropagate( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+ActivationForward::ActivationForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),
         outputImageSize( inputImageSize ),
         fn(fn) {
 }
-STATIC ActivationPropagate *ActivationPropagate::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
-    return new ActivationPropagateGpuNaive( cl, numPlanes, inputImageSize, fn );
-//    return new ActivationPropagateCpu( cl, numPlanes, inputImageSize );
+STATIC ActivationForward *ActivationForward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+    return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
+//    return new ActivationForwardCpu( cl, numPlanes, inputImageSize );
 }
-STATIC ActivationPropagate *ActivationPropagate::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
-    return new ActivationPropagateGpuNaive( cl, numPlanes, inputImageSize, fn );
+STATIC ActivationForward *ActivationForward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+    return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
-STATIC ActivationPropagate *ActivationPropagate::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+STATIC ActivationForward *ActivationForward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
     if( idx == 0 ) {
-        return new ActivationPropagateCpu( cl, numPlanes, inputImageSize, fn );
+        return new ActivationForwardCpu( cl, numPlanes, inputImageSize, fn );
     }
     if( idx == 1 ) {
-        return new ActivationPropagateGpuNaive( cl, numPlanes, inputImageSize, fn );
+        return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
     }
     cout << "idx " << idx << " not known" << endl;
-    throw runtime_error("ActivationPropagate::instanceSpecific idx not known: " + toString( idx ) );
+    throw runtime_error("ActivationForward::instanceSpecific idx not known: " + toString( idx ) );
 }
-VIRTUAL void ActivationPropagate::propagate( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
-    throw runtime_error("propagate not implemented for this child type");
+VIRTUAL void ActivationForward::forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData ) {
+    throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void ActivationPropagate::propagate( int batchSize, float *input, float *output ) {
-//    cout << "ActivationPropagate::propagate( float * )" << endl;
+VIRTUAL void ActivationForward::forward( int batchSize, float *input, float *output ) {
+//    cout << "ActivationForward::forward( float * )" << endl;
     CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
-    CLWrapper *outputWrapper = cl->wrap( getResultsSize( batchSize ), output );
+    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
 
     inputWrapper->copyToDevice();
-    propagate( batchSize, inputWrapper, outputWrapper );
+    forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();    
 
     delete outputWrapper;
     delete inputWrapper;
 }
-VIRTUAL int ActivationPropagate::getInputSize( int batchSize ) {
+VIRTUAL int ActivationForward::getInputSize( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int ActivationPropagate::getResultsSize(int batchSize) {
+VIRTUAL int ActivationForward::getOutputSize(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

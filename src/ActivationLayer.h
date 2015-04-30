@@ -13,8 +13,8 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class ActivationPropagate;
-class ActivationBackprop;
+class ActivationForward;
+class ActivationBackward;
 class ActivationMaker;
 
 // this will contain only activation, and then we can factorize activations away from
@@ -30,17 +30,19 @@ public:
     ActivationFunction const *fn;
 
     OpenCLHelper *const cl; // NOT owned by us
-    ActivationPropagate *activationPropagateImpl;
-    ActivationBackprop *activationBackpropImpl;
+    ActivationForward *activationForwardImpl;
+    ActivationBackward *activationBackpropImpl;
 
-    float *results;
-    float *errorsForUpstream;
+    float *output; // this is not guaranteed to be up to date
+                // unless outputCopiedToHost is true
+    float *gradInput; // this is not guaranteed to be up to date
+                // unless gradInputCopiedToHost is true
 
-    CLWrapper *resultsWrapper;
-    CLWrapper *errorsForUpstreamWrapper;
+    CLWrapper *outputWrapper; // this is guaranteed to be up to date
+    CLWrapper *gradInputWrapper; // this is guaranteed to be up to date
 
-    bool resultsCopiedToHost;
-    bool errorsForUpstreamCopiedToHost;
+    bool outputCopiedToHost;
+    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;
@@ -53,21 +55,26 @@ public:
     ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, ActivationMaker *maker );
     VIRTUAL ~ActivationLayer();
     VIRTUAL std::string getClassName() const;
+    VIRTUAL float getOutput( int n, int plane, int row, int col );
+    VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getResultsSize();
-    VIRTUAL float *getResults();
+    VIRTUAL int getOutputSize();
+    VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL bool providesErrorsForUpstreamWrapper() const;
-    VIRTUAL CLWrapper *getErrorsForUpstreamWrapper();
-    VIRTUAL bool hasResultsWrapper() const;
-    VIRTUAL CLWrapper *getResultsWrapper();
-    VIRTUAL float *getErrorsForUpstream();
+    VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL bool hasOutputWrapper() const;
+    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL int getWeightsSize() const;
+    VIRTUAL int getBiasWeightsSize() const;
+    VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
-    VIRTUAL void propagate();
-    VIRTUAL void backProp( float learningRate );
+    VIRTUAL void forward();
+    VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
     VIRTUAL int getPersistSize() const;
 

@@ -16,14 +16,14 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-void Trainable::learnBatch( float learningRate, float const*images, float const *expectedResults ) {
+void Trainable::learnBatch( float learningRate, float const*images, float const *expectedOutput ) {
     setTraining( true );
-    propagate( images);
-    backProp( learningRate, expectedResults );
+    forward( images);
+    backward( learningRate, expectedOutput );
 }
 void Trainable::learnBatchFromLabels( float learningRate, float const*images, int const *labels ) {
     setTraining( true );
-    propagate( images);
-    backPropFromLabels( learningRate, labels );
+    forward( images);
+    backwardFromLabels( learningRate, labels );
 }
 

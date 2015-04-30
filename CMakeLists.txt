@@ -14,16 +14,13 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 OPTION(PROTOTYPING "Only for devs." OFF)
-
-#find_package(MPI QUIET)
-#if( MPI_FOUND )
-#    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." ON)
-#else()
-#    OPTION(MPI_AVAILABLE "Parallelization over multiple hosts." OFF)
-#endif()
-#if( MPI_AVAILABLE )
-#find_package(MPI REQUIRED)
-#endif()
+mark_as_advanced( FORCE PROTOTYPING )
+unset(BUILD_PYSWIG_WRAPPERS CACHE)
+unset(BUILD_PYTHON_WRAPPERS CACHE)
+unset(RUN_COG CACHE)
+unset(RUN_SWIG CACHE)
+unset(PYTHON_AVAILABLE CACHE)
+unset(LUA51_AVAILABLE CACHE)
 
 include_directories( . )
 include_directories( src )
@@ -42,30 +39,34 @@ endif()
 
 set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
      ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-    Propagate1.cpp Propagate.cpp Propagate2.cpp Propagate3.cpp LayerDimensions.cpp
-    Propagate4.cpp ActivationFunction.cpp SquareLossLayer.cpp LossLayer.cpp BackpropWeights2.cpp
-    BackpropWeights2Cpu.cpp BackpropErrorsv2.cpp BackpropErrorsv2Cpu.cpp
-    BackpropWeights2Naive.cpp BackpropErrorsv2Naive.cpp BackpropWeights2Scratch.cpp
-    CrossEntropyLoss.cpp SoftMaxLayer.cpp FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingPropagate.cpp PoolingPropagateCpu.cpp PoolingLayer.cpp PoolingBackprop.cpp
-    PoolingBackpropCpu.cpp PoolingPropagateGpuNaive.cpp BackpropWeights2ScratchLarge.cpp
+    ActivationFunction.cpp 
+    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
+    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
+    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
+    Forward4.cpp 
+    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
+    BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
+    BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
+    FullyConnectedLayer.cpp  EpochMaker.cpp
+    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
+    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
     BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
     RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
     Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
     RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
     PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
     BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    PropagateFc.cpp BackpropErrorsv2Cached.cpp PropagateByInputPlane.cpp
-    PropagateExperimental.cpp PropagateAuto.cpp PropagateCpu.cpp Propagate3_unfactorized.cpp
-    PoolingBackpropGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
+    ForwardFc.cpp ForwardByInputPlane.cpp
+    PoolingBackwardGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
     ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
     OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-    ActivationPropagate.cpp ActivationPropagateCpu.cpp ActivationPropagateGpuNaive.cpp
-    ActivationBackprop.cpp ActivationBackpropCpu.cpp ActivationBackpropGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutPropagate.cpp DropoutBackprop.cpp
-    DropoutPropagateCpu.cpp DropoutPropagateGpuNaive.cpp
-    DropoutBackpropCpu.cpp DropoutBackpropGpuNaive.cpp
+    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
+    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
+    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
+    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
+    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
     CopyBuffer.cpp MultiplyBuffer.cpp
+    Trainer.cpp SGD.cpp
  )
 foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
@@ -84,8 +85,6 @@ target_link_libraries( gpuinfo dl )
 endif()
 
 add_library( DeepCL SHARED ${DeepCL_sources_prefixed} )
-#    BackpropErrors.cpp BackpropErrors1.cpp BackpropErrorsCpu.cpp BackpropErrors2.cpp
-#    BackpropWeights.cpp BackpropWeightsScratchBias.cpp BackpropWeightsNaive.cpp BackpropWeightsCpu.cpp
 
 execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
@@ -104,26 +103,8 @@ add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/sr
 add_dependencies( DeepCL git_submodules_update )
 endif()
 
-#find_package(Lua51 QUIET)
-#if( LUA51_FOUND )
-#    OPTION(LUA51_AVAILABLE "Builds lua wrappers." ON)
-#else()
-#    OPTION(LUA51_AVAILABLE "Builds lua wrappers." OFF)
-#endif()
-
-find_package(PNG QUIET)
-if( PNG_FOUND )
-    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." ON)
-else()
-    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
-endif()
-
-#if( LUA51_AVAILABLE )
-#    find_package(Lua51 REQUIRED)
-#    add_library( luaDeepCL SHARED lua/DeepCL_wrap.cxx )
-#    target_include_directories(luaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
-#    target_link_libraries(luaDeepCL ${LUA_LIBRARIES})
-#endif()
+OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
 
 if( LIBPNGPP_AVAILABLE)
 find_package(PNG REQUIRED)
@@ -132,13 +113,7 @@ endif(LIBPNGPP_AVAILABLE)
 
 link_libraries(DeepCL)
 
-execute_process( COMMAND python -V ERROR_VARIABLE python_test )
-if( ${python_test} MATCHES "Python 2\\.7\\..*" )
-    #message("Python 2.7 found")
-    OPTION(DEV_RUN_COG "For developers: re-run cogapp." ON)
-else()
-    OPTION(DEV_RUN_COG "For developers: re-run cogapp." OFF)
-endif()
+OPTION(DEV_RUN_COG "DeepCL developers should turn this on." OFF)
 
 if(DEV_RUN_COG)
     add_custom_target( 
@@ -149,49 +124,25 @@ ${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototypin
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
 
-#add_custom_target(
-#    git-submodule-update
-#    git submodule update --init --recursive
-#)
-
 set( UNITTEST_SOURCES test/testbackpropweights.cpp test/testpropagate.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
- test/testbackproperrors.cpp test/testsinglebatch.cpp 
- test/testpoolingpropagate.cpp test/testpoolingbackprop.cpp test/testNorbLoader.cpp
+ test/testbackward.cpp test/testsinglebatch.cpp 
+ test/testpoolingforward.cpp test/testpoolingbackward.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp 
  src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
- test/testNetdefToNet.cpp test/testactivationpropagate.cpp test/testactivationbackprop.cpp
- test/testRandomSingleton.cpp test/testdropoutpropagate.cpp test/testdropoutbackprop.cpp
+ test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
+ test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  )
-#
-#
-#test/testbackprop.cpp test/testbiasbackprop.cpp
-#
 
 add_executable( deepclrun src/deepclrun.cpp src/stringhelper.cpp )
-#add_executable( clconvolve1 src/deepclrun.cpp src/stringhelper.cpp ) # same as deepcl, just for 
-              # backwards compatibility, so dont need to increment major version :-P
 
-#add_executable( idx-to-mat test/idxToMat.cpp src/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
-#add_executable( testmnist-mpi test/testmnist-mpi.cpp src/stringhelper.cpp )
-# target_link_libraries( testmnist-mpi DeepCL )
-
-#if( MPI_AVAILABLE )
-    #add_definitions(-DMPI_AVAILABLE)
-
-    #target_include_directories(testmnist-mpi PRIVATE ${MPI_C_INCLUDE_PATH})
-    #target_link_libraries(testmnist-mpi ${MPI_CXX_LIBRARIES})
-#endif()
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
-#    add_executable( printMnist test/printMnist.cpp src/stringhelper.cpp )
-#    set( UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testimageshelper.cpp )
-#    add_executable( printmat test/printMat.cpp src/stringhelper.cpp )
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/stringhelper.cpp src/PatchExtractor.cpp )
     add_executable( testtranslator test/testTranslator.cpp src/stringhelper.cpp src/Translator.cpp )
     add_executable( testgenericloader test/testGenericLoader.cpp src/stringhelper.cpp )
@@ -211,19 +162,6 @@ target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
-#    add_executable( prototyping prototyping/testreduce.cpp src/stringhelper.cpp thirdparty/gtest/gtest_main.cc )
-#    target_link_libraries( prototyping gtest )
-#    target_include_directories( prototyping PRIVATE thirdparty/gtest )
-#    add_executable( blocking prototyping/blocking.cpp src/stringhelper.cpp )
-#    add_executable( testrawstring prototyping/testRawString.cpp )
-#    add_executable( testpassdim prototyping/testPassDim.cpp )
-#    add_executable( testperf prototyping/testperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-#       test/SpeedTemplates.cpp )
-#    add_executable( testmemperf prototyping/testmemperf.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-#       test/SpeedTemplates.cpp )
-#    add_executable( testfloat4 prototyping/testFloat4.cpp test/TestArgsParser.cpp test/GtestGlobals.cpp
-#       test/SpeedTemplates.cpp )
-#    add_executable( testrandomizevector prototyping/testRandomizeVector.cpp test/WeightRandomizer.cpp )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/stringhelper.cpp )
     add_executable( learn_scenario_image prototyping/qlearning/learnScenarioImage.cpp 
         prototyping/qlearning/ScenarioImage.cpp )
@@ -235,40 +173,10 @@ add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main
 target_link_libraries( testgtestsupp gtest )
 target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
-#if( ON_LINUX )
-#add_custom_target( 
-#    clfiles
-#    cp ${CMAKE_CURRENT_SOURCE_DIR}/cl/*.cl ${CMAKE_BINARY_DIR}
-#)
-#add_dependencies( DeepCL clfiles )
-#else()
-## no idea how to fix this, for Windows.  If you have any ideas, please send a pull request :-)
-##add_custom_target( 
-##    clfiles
-##    copy ${CMAKE_CURRENT_SOURCE_DIR}\\cl\\*.cl ${CMAKE_BINARY_DIR}
-##)
-#endif()
-
-find_package(Lua51 QUIET)
-if(LUA51_FOUND)
-    OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" ON)
-else()
-    OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
-endif()
+OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 
 if( BUILD_LUA_WRAPPERS )
 add_subdirectory(lua)
-endif()
-
-find_package(PythonLibs QUIET)
-if(PYTHONLIBS_FOUND)
-    OPTION(BUILD_PYSWIG_WRAPPERS "Builds Python swig wrappers (not the Cython ones)." ON)
-else()
-    OPTION(BUILD_PYSWIG_WRAPPERS "Builds Python swig wrappers (not the Cython ones)." OFF)
-endif()
-
-if( BUILD_PYSWIG_WRAPPERS)
-add_subdirectory(python_swig)
 endif()
 
 

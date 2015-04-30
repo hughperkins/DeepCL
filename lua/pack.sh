@@ -72,7 +72,7 @@ if [[ $upload == 1  ]]; then {
     (
         cd ../../DeepCL-ghpages
         git add Downloads/lua/${package}-${version}.tar.gz;
-        git commit -m "test rock upload"
+        git commit -m "lua rock upload"
         git push
     )
 } else  {

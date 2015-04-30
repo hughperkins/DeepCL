@@ -10,8 +10,10 @@
 
 using namespace std;
 
+#undef VIRTUAL
+#define VIRTUAL
+
 Layer *ForceBackpropLayerMaker::createLayer( Layer *previousLayer ) {
     return new ForceBackpropLayer( previousLayer, this );
 }
-
 

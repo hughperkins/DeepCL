@@ -16,7 +16,7 @@
 class MultinomialCrossEntropy : public LossLayer {
 public:
 
-    float *errors;
+    float *gradOutput;
     int allocatedSize;
     int batchSize;
 //    ActivationFunction const*const activationFunction;
@@ -28,10 +28,10 @@ public:
     // generated, using cog:
     MultinomialCrossEntropy( Layer *previousLayer, MultinomialCrossEntropyMaker const*maker );
     VIRTUAL ~MultinomialCrossEntropy();
-    VIRTUAL float*getErrorsForUpstream();
+    VIRTUAL float*getGradInput();
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcErrors( float const*expectedResults );
+    VIRTUAL void calcGradInput( float const*expectedOutput );
 
     // [[[end]]]
 };

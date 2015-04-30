@@ -60,17 +60,17 @@ void QLearner::learnFromPast() {
     }
 
     // get next q values, based on forward prop 'afters'
-    net->propagate( afters );
-    float const *allResults = net->getResults();
+    net->forward( afters );
+    float const *allOutput = net->getOutput();
     float *bestQ = new float[ batchSize ];
     int *bestAction = new int[ batchSize ];
     for( int n = 0; n < batchSize; n++ ) {
-        float const *results = allResults + n * numActions;
-        float thisBestQ = results[0];
+        float const *output = allOutput + n * numActions;
+        float thisBestQ = output[0];
         int thisBestAction = 0;
         for( int action = 1; action < numActions; action++ ) {
-            if( results[action] > thisBestQ ) {
-                thisBestQ = results[action];
+            if( output[action] > thisBestQ ) {
+                thisBestQ = output[action];
                 thisBestAction = action;
             }
         }
@@ -79,10 +79,10 @@ void QLearner::learnFromPast() {
     }
     // forward prop 'befores', set up expected values, and backprop
     // new q values
-    net->propagate( befores );
-    allResults = net->getResults();
+    net->forward( befores );
+    allOutput = net->getOutput();
     float *expectedValues = new float[ numActions * batchSize ];
-    arrayCopy( expectedValues, allResults, batchSize * numActions );
+    arrayCopy( expectedValues, allOutput, batchSize * numActions );
     for( int n = 0; n < batchSize; n++ ) {
         Experience *experience = experiences[n]; 
         if( experience->isEndState ) {
@@ -92,7 +92,7 @@ void QLearner::learnFromPast() {
         }
     }
     // backprop...
-    net->backProp( learningRate / batchSize, expectedValues );
+    net->backward( learningRate / batchSize, expectedValues );
     net->setBatchSize(1);
 
     delete[] expectedValues;
@@ -129,13 +129,13 @@ int QLearner::step( float lastReward, bool wasReset, float *perception ) { // do
 //            cout << "action, rand: " << action << endl;
     } else {
         net->setBatchSize(1);
-        net->propagate( perception );
+        net->forward( perception );
         float highestQ = 0;
         int bestAction = 0;
-        float const*results = net->getResults();
+        float const*output = net->getOutput();
         for( int i = 0; i < numActions; i++ ) {
-            if( i == 0 || results[i] > highestQ ) {
-                highestQ = results[i];
+            if( i == 0 || output[i] > highestQ ) {
+                highestQ = output[i];
                 bestAction = i;
             }
         }

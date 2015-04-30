@@ -30,16 +30,16 @@ public:
 
     int batchSize;
     int allocatedSize;
-    float *results;
+    float *output;
 
-    inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
+    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * outputPlanes + outPlane )
             * outputImageSize + outRow )
             * outputImageSize + outCol;
     }
-    inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return results[ getResultIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
     }
 
     // [[[cog
@@ -50,20 +50,19 @@ public:
     ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayerMaker *maker );
     VIRTUAL ~ForceBackpropLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float *getResults();
-    VIRTUAL ActivationFunction const *getActivationFunction();
+    VIRTUAL void backward( float learningRate );
+    VIRTUAL float *getOutput();
     VIRTUAL int getPersistSize() const;
     VIRTUAL bool needsBackProp();
-    VIRTUAL void printOutput() const;
-    VIRTUAL void print() const;
-    VIRTUAL bool needErrorsBackprop();
+    VIRTUAL void printOutput();
+    VIRTUAL void print();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void propagate();
-    VIRTUAL void backPropErrors( float learningRate, float const *errors );
+    VIRTUAL void forward();
+    VIRTUAL void backward( float learningRate, float const *gradOutput );
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getResultsSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL std::string toString();
     VIRTUAL std::string asString() const;
 

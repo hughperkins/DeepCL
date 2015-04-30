@@ -7,8 +7,8 @@
 // expected defines:
 // BIASED (or not)
 
-// not specifci to this kernel, but basically we have to convolve one plane of the propagate output
-// with one plane of each propagate input, to get one filter plane change output plane
+// not specifci to this kernel, but basically we have to convolve one plane of the forward output
+// with one plane of each forward input, to get one filter plane change output plane
 // (and do this for each example, sum them together)
 
 // eg plane f from each output: 128 * 28 * 28 * 4 = 401KB
@@ -17,7 +17,7 @@
 // plane i from all filters: 5 * 5 * 4 * 8 = 800 bytes (ok :-) )
 // all planes from all filters eg: 5 * 5 * 4 * 8 * 1 = 800 bytes (ok :-) )
 //
-// in propagate, filter plane i of filter f:
+// in forward, filter plane i of filter f:
 // convolves with plane i from each input cube
 // to contribute to plane f of each output
 // so, for backprop, need to take plane i from each input cube, and plane f
@@ -37,7 +37,7 @@
 //        imageimage: inputImageSize * inputImageSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
-         global const float *errors, global const float *images, 
+         global const float *gradOutput, global const float *images, 
         global float *weights,
         #ifdef BIASED
              global float *biasWeights,
@@ -83,11 +83,11 @@ void kernel backprop_floats_withscratch_dobias(
             }
         }
         int resultImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
-        int numLoopsForResults = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        for( int i = 0; i < numLoopsForResults; i++ ) {
+        int numLoopsForOutput = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        for( int i = 0; i < numLoopsForOutput; i++ ) {
             int thisOffset = i * workgroupSize + localId;
             if( thisOffset < gOutputImageSizeSquared ) {
-                _errorImage[thisOffset ] = errors[resultImageGlobalOffset + thisOffset];
+                _errorImage[thisOffset ] = gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);

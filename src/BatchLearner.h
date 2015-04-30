@@ -40,10 +40,10 @@ public:
     EpochResult batchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
     EpochResult runBatchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
     int test( int batchSize, int N, float *testData, int const*testLabels );
-    int propagateForTrain( int batchSize, int N, float *data, int const*labels );
+    int forwardForTrain( int batchSize, int N, float *data, int const*labels );
     EpochResult backprop( float learningRate, int batchSize, int N, float *data, int const*labels );
     EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, float *trainData, int const*trainLabels );
-    float runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedResults );
+    float runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedOutput );
 
     // [[[end]]]
 };

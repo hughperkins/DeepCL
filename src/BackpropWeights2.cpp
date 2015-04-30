@@ -70,14 +70,14 @@ STATIC BackpropWeights2 *BackpropWeights2::instanceSpecific( int idx, OpenCLHelp
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx) );
 }
 
-VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRate, float *derivLossBySum, float *inputData, float *filters, float *biasWeights ) {
+VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRate, float *gradOutput, float *inputData, float *filters, float *biasWeights ) {
     StatefulTimer::timeCheck("BackpropWeights2::backprop begin");
 
 //    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
 
-    int resultsSize = batchSize * dim.outputCubeSize;
-    CLWrapper *derivLossBySumWrapper = cl->wrap( resultsSize, derivLossBySum );
-    derivLossBySumWrapper->copyToDevice();
+    int outputSize = batchSize * dim.outputCubeSize;
+    CLWrapper *gradOutputWrapper = cl->wrap( outputSize, gradOutput );
+    gradOutputWrapper->copyToDevice();
 
     int inputSize = batchSize * dim.inputCubeSize;
     CLWrapper *inputDataWrapper = cl->wrap( inputSize, inputData );
@@ -88,7 +88,7 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
     weightsWrapper = cl->wrap( weightsSize, filters );
     weightsWrapper->copyToDevice();
 
-//    cout << "backpropweights2::backpropweights resultsSize=" << resultsSize << " inputSize=" << inputSize << 
+//    cout << "backpropweights2::backpropweights outputSize=" << outputSize << " inputSize=" << inputSize << 
 //        " weightSize=" << weightsSize << endl;
 
     CLWrapper *biasWeightsWrapper = 0;
@@ -98,7 +98,7 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
     }
 
     StatefulTimer::timeCheck("BackpropWeights2::backprop after copied to device");
-    backpropWeights( batchSize, learningRate, derivLossBySumWrapper, inputDataWrapper, weightsWrapper, biasWeightsWrapper );
+    backpropWeights( batchSize, learningRate, gradOutputWrapper, inputDataWrapper, weightsWrapper, biasWeightsWrapper );
     StatefulTimer::timeCheck("BackpropWeights2::backprop after call backprop");
     weightsWrapper->copyToHost();
     if( dim.biased ) {
@@ -106,7 +106,7 @@ VIRTUAL void BackpropWeights2::backpropWeights( int batchSize, float learningRat
     }
     StatefulTimer::timeCheck("BackpropWeights2::backprop after copytohost");
 
-    delete derivLossBySumWrapper;
+    delete gradOutputWrapper;
     delete inputDataWrapper;
     delete weightsWrapper;
     if( dim.biased ) {

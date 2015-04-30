@@ -19,30 +19,30 @@ ForceBackpropLayer::ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayer
     outputImageSize( previousLayer->getOutputImageSize() ),
     batchSize(0),
     allocatedSize(0),
-    results(0) {
+    output(0) {
 }
 VIRTUAL ForceBackpropLayer::~ForceBackpropLayer() {
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
 }
 VIRTUAL std::string ForceBackpropLayer::getClassName() const {
     return "ForceBackpropLayer";
 }
-VIRTUAL float *ForceBackpropLayer::getResults() {
-    return results;
+VIRTUAL void ForceBackpropLayer::backward( float learningRate ) {
+    // do nothing...
 }
-VIRTUAL ActivationFunction const *ForceBackpropLayer::getActivationFunction() {
-    return new LinearActivation();
+VIRTUAL float *ForceBackpropLayer::getOutput() {
+    return output;
 }
 VIRTUAL int ForceBackpropLayer::getPersistSize() const {
     return 0;
 }
 VIRTUAL bool ForceBackpropLayer::needsBackProp() {
-    return previousLayer->needsBackProp();
+    return true;
 }
-VIRTUAL void ForceBackpropLayer::printOutput() const {
-    if( results == 0 ) {
+VIRTUAL void ForceBackpropLayer::printOutput() {
+    if( output == 0 ) {
          return;
     }
     for( int n = 0; n < std::min(5,batchSize); n++ ) {
@@ -52,8 +52,8 @@ VIRTUAL void ForceBackpropLayer::printOutput() const {
             for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
                 std::cout << "      ";
                 for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
-                    std::cout << getResult( n, plane, i, j ) << " ";
-//results[
+                    std::cout << getOutput( n, plane, i, j ) << " ";
+//output[
 //                            n * numPlanes * imageSize*imageSize +
 //                            plane*imageSize*imageSize +
 //                            i * imageSize +
@@ -68,33 +68,33 @@ VIRTUAL void ForceBackpropLayer::printOutput() const {
     }
     if( batchSize > 5 ) std::cout << "   ... other n ... " << std::endl;
 }
-VIRTUAL void ForceBackpropLayer::print() const {
+VIRTUAL void ForceBackpropLayer::print() {
     printOutput();
 }
-VIRTUAL bool ForceBackpropLayer::needErrorsBackprop() {
-    return true; // the main reason for this layer :-)
-}
+//VIRTUAL bool ForceBackpropLayer::needErrorsBackprop() {
+//    return true; // the main reason for this layer :-)
+//}
 VIRTUAL void ForceBackpropLayer::setBatchSize( int batchSize ) {
     if( batchSize <= allocatedSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = allocatedSize;
-    results = new float[ getResultsSize() ];
+    output = new float[ getOutputSize() ];
 }
-VIRTUAL void ForceBackpropLayer::propagate() {
-    int totalLinearLength = getResultsSize();
-    float *upstreamResults = previousLayer->getResults();
+VIRTUAL void ForceBackpropLayer::forward() {
+    int totalLinearLength = getOutputSize();
+    float *input = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {
-        results[i] = upstreamResults[i];
+        output[i] = input[i];
     }
 }
-VIRTUAL void ForceBackpropLayer::backPropErrors( float learningRate, float const *errors ) {
-  // do nothing...
+VIRTUAL void ForceBackpropLayer::backward( float learningRate, float const *gradOutput ) {
+  // do nothing... ?
 }
 VIRTUAL int ForceBackpropLayer::getOutputImageSize() const {
     return outputImageSize;
@@ -105,7 +105,7 @@ VIRTUAL int ForceBackpropLayer::getOutputPlanes() const {
 VIRTUAL int ForceBackpropLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int ForceBackpropLayer::getResultsSize() const {
+VIRTUAL int ForceBackpropLayer::getOutputSize() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string ForceBackpropLayer::toString() {

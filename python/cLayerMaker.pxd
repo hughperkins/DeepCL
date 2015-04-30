@@ -10,6 +10,21 @@ cdef extern from "InputLayerMaker.h":
         @staticmethod
         InputLayerMaker *instance() except +
 
+cdef extern from "DropoutMaker.h":
+    cdef cppclass DropoutMaker(LayerMaker2):
+        DropoutMaker *dropRatio( float _dropRatio ) except +
+        @staticmethod
+        DropoutMaker *instance() except +
+
+cdef extern from "ActivationMaker.h":
+    cdef cppclass ActivationMaker(LayerMaker2):
+        ActivationMaker *relu() except +
+        ActivationMaker *tanh() except +
+        ActivationMaker *linear() except +
+        ActivationMaker *sigmoid() except +
+        @staticmethod
+        ActivationMaker *instance() except +
+
 cdef extern from "NormalizationLayerMaker.h":
     cdef cppclass NormalizationLayerMaker(LayerMaker2):
         NormalizationLayerMaker *translate( float translate ) except +
@@ -23,10 +38,6 @@ cdef extern from "FullyConnectedMaker.h":
         FullyConnectedMaker *imageSize( int imageSize ) except +
         FullyConnectedMaker *biased() except +
         FullyConnectedMaker *biased(bint _biased) except +
-        FullyConnectedMaker *linear() except +
-        FullyConnectedMaker *tanh() except +
-        FullyConnectedMaker *sigmoid() except +
-        FullyConnectedMaker *relu() except +
         @staticmethod
         FullyConnectedMaker *instance() except +
 
@@ -38,10 +49,6 @@ cdef extern from "ConvolutionalMaker.h":
         ConvolutionalMaker *padZeros(bint _padZeros) except +
         ConvolutionalMaker *biased() except +
         ConvolutionalMaker *biased(bint _biased) except +
-        ConvolutionalMaker *linear() except +
-        ConvolutionalMaker *tanh() except +
-        ConvolutionalMaker *sigmoid() except +
-        ConvolutionalMaker *relu() except +
         @staticmethod
         ConvolutionalMaker *instance() except +
 

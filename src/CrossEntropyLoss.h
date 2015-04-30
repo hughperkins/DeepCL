@@ -16,7 +16,7 @@
 class CrossEntropyLoss : public LossLayer {
 public:
 
-    float *errors;
+    float *gradInput;
     int allocatedSize;
     int batchSize;
 //    ActivationFunction const*const activationFunction;
@@ -29,11 +29,11 @@ public:
     CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker );
     VIRTUAL ~CrossEntropyLoss();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float*getErrorsForUpstream();
+    VIRTUAL float*getGradInput();
     VIRTUAL int getPersistSize() const;
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcErrors( float const*expectedResults );
+    VIRTUAL void calcGradInput( float const*expectedOutput );
 
     // [[[end]]]
 };

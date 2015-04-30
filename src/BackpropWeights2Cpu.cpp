@@ -22,22 +22,22 @@ BackpropWeights2Cpu::BackpropWeights2Cpu( OpenCLHelper *cl, LayerDimensions dim 
 }
 VIRTUAL BackpropWeights2Cpu::~BackpropWeights2Cpu() {
 }
-VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate,  CLWrapper *derivLossBySumWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
-    derivLossBySumWrapper->copyToHost();
+VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+    gradOutputWrapper->copyToHost();
     imagesWrapper->copyToHost();
     float *biasWeights = 0;
     if( dim.biased ) {
         biasWeightsWrapper->copyToHost();
         biasWeights =  (float *)biasWeightsWrapper->getHostArray();
     }
-    backpropWeights( batchSize, learningRate, (float *)derivLossBySumWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
+    backpropWeights( batchSize, learningRate, (float *)gradOutputWrapper->getHostArray(), (float *)imagesWrapper->getHostArray(),
         (float *)weightsWrapper->getHostArray(), biasWeights );
     weightsWrapper->copyToDevice();
     if( dim.biased ) {
         biasWeightsWrapper->copyToDevice();
     }
 }
-VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate, float *derivLossBySum,
+VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learningRate, float *gradOutput,
     float *images, float *weights, float *biasWeights ) {
 
     StatefulTimer::instance()->timeCheck(" BackpropWeights2Cpu start" );
@@ -73,15 +73,15 @@ VIRTUAL void BackpropWeights2Cpu::backpropWeights( int batchSize, float learning
                                     * dim.numFilters + outPlane )
                                     * dim.outputImageSize + outRow )
                                     * dim.outputImageSize + outCol;
-                                float _derivLossBySum = derivLossBySum[resultIndex];
+                                float _gradOutput = gradOutput[resultIndex];
                                 int upstreamResultIndex = ( ( n
                                     * dim.inputPlanes + upstreamPlane )
                                     * dim.inputImageSize + upstreamRow )
                                     * dim.inputImageSize + upstreamCol;
                                 float upstreamResult = images[ upstreamResultIndex ];
-                                float thisimagethiswchange = _derivLossBySum * upstreamResult;
+                                float thisimagethiswchange = _gradOutput * upstreamResult;
                                 thiswchange += thisimagethiswchange;
-                                thisBiasChange += _derivLossBySum; // fairly sure this is right.  Fairly :-P
+                                thisBiasChange += _gradOutput; // fairly sure this is right.  Fairly :-P
                             }
                         }
                     }

@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeights2Scratch::~BackpropWeights2Scratch() {
     delete kernel;
 }
-VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2Scratch start" );
 
     int workgroupsize = std::max( 32, square( dim.filterSize ) ); // no point in wasting cores...
@@ -41,7 +41,7 @@ VIRTUAL void BackpropWeights2Scratch::backpropWeights( int batchSize, float lear
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
-       ->in( errorsWrapper )
+       ->in( gradOutputWrapper )
         ->in( imagesWrapper )
        ->inout( weightsWrapper );
     if( dim.biased ) {
@@ -126,7 +126,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "//        imageimage: inputImageSize * inputImageSize\n" 
     "void kernel backprop_floats_withscratch_dobias(\n" 
     "        const float learningRateMultiplier, const int batchSize,\n" 
-    "         global const float *errors, global const float *images,\n" 
+    "         global const float *gradOutput, global const float *images,\n" 
     "        global float *weights,\n" 
     "        #ifdef BIASED\n" 
     "             global float *biasWeights,\n" 
@@ -148,7 +148,7 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        copyLocal( _imageImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );\n" 
-    "        copyLocal(_errorImage, errors + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );\n" 
+    "        copyLocal(_errorImage, gradOutput + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        if( localId < gFilterSizeSquared ) {\n" 
     "            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {\n" 
@@ -190,6 +190,6 @@ BackpropWeights2Scratch::BackpropWeights2Scratch( OpenCLHelper *cl, LayerDimensi
     kernel = cl->buildKernelFromString( kernelSource, "backprop_floats_withscratch_dobias", options, "cl/BackpropWeights2Scratch.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel( "backpropweights2.cl", "backprop_floats_withscratch_dobias", options );
-//    kernel = cl->buildKernelFromString( kernelSource, "calcErrorsForUpstream", options );
+//    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options );
 }
 

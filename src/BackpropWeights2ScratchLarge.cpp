@@ -21,7 +21,7 @@ using namespace std;
 VIRTUAL BackpropWeights2ScratchLarge::~BackpropWeights2ScratchLarge() {
     delete kernel;
 }
-VIRTUAL void BackpropWeights2ScratchLarge::backpropWeights( int batchSize, float learningRate,  CLWrapper *errorsWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
+VIRTUAL void BackpropWeights2ScratchLarge::backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWeightsWrapper ) {
     StatefulTimer::instance()->timeCheck("BackpropWeights2ScratchLarge start" );
 
     int workgroupSize = 32 * ( ( square(dim.filterSize) + 32 - 1 ) / 32 ); // quantize to nearest 32
@@ -36,7 +36,7 @@ VIRTUAL void BackpropWeights2ScratchLarge::backpropWeights( int batchSize, float
     kernel
        ->in(learningMultiplier)
        ->in( batchSize )
-       ->in( errorsWrapper )
+       ->in( gradOutputWrapper )
         ->in( imagesWrapper )
        ->inout( weightsWrapper );
     if( dim.biased ) {
@@ -129,7 +129,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "// specific characteristic: load one stripe of each image at a time,\n" 
     "// so we dont run out of memory\n" 
     "// number of stripes set in: gNumStripes\n" 
-    "// note that whilst we can stripe the errors simply,\n" 
+    "// note that whilst we can stripe the gradOutput simply,\n" 
     "// we actually need to add a half-filter widthed additional few rows\n" 
     "// onto the images stripe, otherwise we will be missing data\n" 
     "//   we will call the size of the non-overlapping image stripes: gInputStripeInnerSize\n" 
@@ -138,7 +138,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "//      corresponding outer margin would be\n" 
     "void kernel backprop_floats_withscratch_dobias_striped(\n" 
     "        const float learningRateMultiplier, const int batchSize,\n" 
-    "         global const float *errors, global const float *images,\n" 
+    "         global const float *gradOutput, global const float *images,\n" 
     "        global float *weights,\n" 
     "        #ifdef BIASED\n" 
     "             global float *biasWeights,\n" 
@@ -205,7 +205,7 @@ BackpropWeights2ScratchLarge::BackpropWeights2ScratchLarge( OpenCLHelper *cl, La
     "                bool process = thisOffset < gOutputStripeSize\n" 
     "                    && globalErrorsOffset < errorImageGlobalOffsetAfter;\n" 
     "                if( process ) {\n" 
-    "                    _errorStripe[thisOffset ] = errors[globalErrorsOffset];\n" 
+    "                    _errorStripe[thisOffset ] = gradOutput[globalErrorsOffset];\n" 
     "                }\n" 
     "            }\n" 
     "            const int stripeOutRowStart = stripe * gOutputStripeNumRows;\n" 

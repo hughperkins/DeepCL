@@ -9,8 +9,8 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "PoolingLayer.h"
-#include "PoolingPropagate.h"
-#include "PoolingBackprop.h"
+#include "PoolingForward.h"
+#include "PoolingBackward.h"
 
 //#include "test/PrintBuffer.h"
 
@@ -29,14 +29,14 @@ PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker
         poolingSize( maker->_poolingSize ),
         outputImageSize( maker->_padZeros ? ( previousLayer->getOutputImageSize() + maker->_poolingSize - 1 ) / maker->_poolingSize : previousLayer->getOutputImageSize() / maker->_poolingSize ),
         cl( cl ),
-        results(0),
+        output(0),
         selectors(0),
-        errorsForUpstream(0),
-        resultsWrapper(0),
+        gradInput(0),
+        outputWrapper(0),
         selectorsWrapper(0),
-        errorsForUpstreamWrapper(0),
-        resultsCopiedToHost(false),
-        errorsForUpstreamCopiedToHost(false),
+        gradInputWrapper(0),
+        outputCopiedToHost(false),
+        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0){
     if( inputImageSize == 0 ){
@@ -47,17 +47,17 @@ PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker
 //        maker->net->print();
         throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    poolingPropagateImpl = PoolingPropagate::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    poolingBackpropImpl = PoolingBackprop::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    poolingForwardImpl = PoolingForward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    poolingBackpropImpl = PoolingBackward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
 VIRTUAL PoolingLayer::~PoolingLayer() {
-    delete poolingPropagateImpl;
+    delete poolingForwardImpl;
     delete poolingBackpropImpl;
-    if( resultsWrapper != 0 ) {
-        delete resultsWrapper;
+    if( outputWrapper != 0 ) {
+        delete outputWrapper;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     if( selectorsWrapper != 0 ) {
         delete selectorsWrapper;
@@ -65,11 +65,11 @@ VIRTUAL PoolingLayer::~PoolingLayer() {
     if( selectors != 0 ) {
         delete[] selectors;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
 }
 VIRTUAL std::string PoolingLayer::getClassName() const {
@@ -81,11 +81,11 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( resultsWrapper != 0 ) {
-        delete resultsWrapper;
+    if( outputWrapper != 0 ) {
+        delete outputWrapper;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     if( selectorsWrapper != 0 ) {
         delete selectorsWrapper;
@@ -93,36 +93,36 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     if( selectors != 0 ) {
         delete[] selectors;
     }
-    if( errorsForUpstreamWrapper != 0 ) {
-        delete errorsForUpstreamWrapper;
+    if( gradInputWrapper != 0 ) {
+        delete gradInputWrapper;
     }
-    if( errorsForUpstream != 0 ) {
-        delete[] errorsForUpstream;
+    if( gradInput != 0 ) {
+        delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[ getResultsSize() ];
-    resultsWrapper = cl->wrap( getResultsSize(), results );
-    selectors = new int[ getResultsSize() ];
-    selectorsWrapper = cl->wrap( getResultsSize(), selectors );
-    errorsForUpstream = new float[ previousLayer->getResultsSize() ];
-    errorsForUpstreamWrapper = cl->wrap( previousLayer->getResultsSize(), errorsForUpstream );
-    errorsForUpstreamWrapper->createOnDevice();
+    output = new float[ getOutputSize() ];
+    outputWrapper = cl->wrap( getOutputSize(), output );
+    selectors = new int[ getOutputSize() ];
+    selectorsWrapper = cl->wrap( getOutputSize(), selectors );
+    gradInput = new float[ previousLayer->getOutputSize() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    gradInputWrapper->createOnDevice();
 }
-VIRTUAL int PoolingLayer::getResultsSize() {
+VIRTUAL int PoolingLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL float *PoolingLayer::getResults() {
-    if( !resultsCopiedToHost ) {
-        resultsWrapper->copyToHost();
-        resultsCopiedToHost = true;
+VIRTUAL float *PoolingLayer::getOutput() {
+    if( !outputCopiedToHost ) {
+        outputWrapper->copyToHost();
+        outputCopiedToHost = true;
     }
-    return results;
+    return output;
 }
 VIRTUAL bool PoolingLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL int PoolingLayer::getResultsSize() const {
+VIRTUAL int PoolingLayer::getOutputSize() const {
 //    int outputImageSize = inputImageSize / poolingSize;
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
@@ -135,40 +135,40 @@ VIRTUAL int PoolingLayer::getOutputPlanes() const {
 VIRTUAL int PoolingLayer::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool PoolingLayer::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool PoolingLayer::providesGradInputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *PoolingLayer::getErrorsForUpstreamWrapper() {
-    return errorsForUpstreamWrapper;
+VIRTUAL CLWrapper *PoolingLayer::getGradInputWrapper() {
+    return gradInputWrapper;
 }
-VIRTUAL bool PoolingLayer::hasResultsWrapper() const {
+VIRTUAL bool PoolingLayer::hasOutputWrapper() const {
     return true;
 }
-VIRTUAL CLWrapper *PoolingLayer::getResultsWrapper() {
-    return resultsWrapper;
+VIRTUAL CLWrapper *PoolingLayer::getOutputWrapper() {
+    return outputWrapper;
 }
-VIRTUAL float *PoolingLayer::getErrorsForUpstream() {
-    return errorsForUpstream;
+VIRTUAL float *PoolingLayer::getGradInput() {
+    return gradInput;
 }
 VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
     //return previousLayer->getActivationFunction(); // I guess???
     return new LinearActivation();
 }
-VIRTUAL void PoolingLayer::propagate() {
-    CLWrapper *upstreamResultsWrapper = 0;
-    if( previousLayer->hasResultsWrapper() ) {
-        upstreamResultsWrapper = previousLayer->getResultsWrapper();
+VIRTUAL void PoolingLayer::forward() {
+    CLWrapper *upstreamOutputWrapper = 0;
+    if( previousLayer->hasOutputWrapper() ) {
+        upstreamOutputWrapper = previousLayer->getOutputWrapper();
     } else {
-        float *upstreamResults = previousLayer->getResults();
-        upstreamResultsWrapper = cl->wrap( previousLayer->getResultsSize(), upstreamResults );
-        upstreamResultsWrapper->copyToDevice();
+        float *upstreamOutput = previousLayer->getOutput();
+        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
+        upstreamOutputWrapper->copyToDevice();
     }
-    poolingPropagateImpl->propagate( batchSize, upstreamResultsWrapper, selectorsWrapper, resultsWrapper );
-    if( !previousLayer->hasResultsWrapper() ) {
-        delete upstreamResultsWrapper;
+    poolingForwardImpl->forward( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
+    if( !previousLayer->hasOutputWrapper() ) {
+        delete upstreamOutputWrapper;
     }
 
-//    cout << "PoolingLayer::propagate() selectors after propagate: " << endl;
+//    cout << "PoolingLayer::forward() selectors after forward: " << endl;
 //    for( int i = 0; i < outputImageSize; i++ ) {
 //        for( int j = 0; j < outputImageSize; j++ ) {
 //            cout << selectors[ i * outputImageSize + j ] << " ";
@@ -176,27 +176,27 @@ VIRTUAL void PoolingLayer::propagate() {
 //        cout << endl;
 //    }
 
-//    cout << "PoolingLayer::propagate() selectorsWrapper after propagate: " << endl;
+//    cout << "PoolingLayer::forward() selectorsWrapper after forward: " << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 }
-VIRTUAL void PoolingLayer::backProp( float learningRate ) {
+VIRTUAL void PoolingLayer::backward( float learningRate ) {
     // have no weights to backprop to, just need to backprop the errors
 
-    CLWrapper *errorsWrapper = 0;
+    CLWrapper *gradOutputWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesErrorsForUpstreamWrapper() ) {
-        errorsWrapper = nextLayer->getErrorsForUpstreamWrapper();
+    if( nextLayer->providesGradInputWrapper() ) {
+        gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        errorsWrapper = cl->wrap( getResultsSize(), nextLayer->getErrorsForUpstream() );
-        errorsWrapper->copyToDevice();
+        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
 
-//    cout << "PoolingLayer::backProp selectorsWrapper:" << endl;
+//    cout << "PoolingLayer::backward selectorsWrapper:" << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 
 //    int *selectors = reinterpret_cast< int * >( selectorsWrapper->getHostArray() );
-//    cout << "PoolingLayer::backProp selectors before copy to host:" << endl;
+//    cout << "PoolingLayer::backward selectors before copy to host:" << endl;
 //    for( int i = 0; i < outputImageSize; i++ ) {
 //        for( int j = 0; j < outputImageSize; j++ ) {
 //            cout << " " << selectors[i * outputImageSize + j];
@@ -204,7 +204,7 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 //        cout << endl;
 //    }
 //    selectorsWrapper->copyToHost();
-//    cout << "PoolingLayer::backProp selectors after copy to host:" << endl;
+//    cout << "PoolingLayer::backward selectors after copy to host:" << endl;
 //    for( int i = 0; i < outputImageSize; i++ ) {
 //        for( int j = 0; j < outputImageSize; j++ ) {
 //            cout << " " << selectors[i * outputImageSize + j];
@@ -215,15 +215,15 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 
 //    selectorsWrapper->copyToHost();
 
-    poolingBackpropImpl->backpropErrors( batchSize, errorsWrapper, selectorsWrapper, errorsForUpstreamWrapper );
+    poolingBackpropImpl->backward( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
 
-//    errorsForUpstreamWrapper->copyToHost();
-//    float *errorsForUpstream = reinterpret_cast< float * >( errorsForUpstreamWrapper->getHostArray() );
-//    cout << "errorsForUpstream:" << endl;
+//    gradInputWrapper->copyToHost();
+//    float *gradInput = reinterpret_cast< float * >( gradInputWrapper->getHostArray() );
+//    cout << "gradInput:" << endl;
 //    for( int i = 0; i < inputImageSize; i++ ) {
 //        for( int j = 0; j < inputImageSize; j++ ) {
-////            cout << " " << errorsForUpstream[i * inputImageSize + j];
-//            if( errorsForUpstream[i * inputImageSize + j] != 0 ) {
+////            cout << " " << gradInput[i * inputImageSize + j];
+//            if( gradInput[i * inputImageSize + j] != 0 ) {
 //                cout << " *";
 //            } else {
 //                cout << " .";
@@ -233,7 +233,7 @@ VIRTUAL void PoolingLayer::backProp( float learningRate ) {
 //    }
 
     if( weOwnErrorsWrapper ) {
-        delete errorsWrapper;
+        delete gradOutputWrapper;
     }
 }
 VIRTUAL std::string PoolingLayer::asString() const {

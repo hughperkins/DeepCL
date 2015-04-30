@@ -37,18 +37,6 @@ cdef class FullyConnectedMaker(LayerMaker2):
     def biased(self, int _biased):
         self.thisptr.biased( _biased )
         return self
-    def linear(self):
-        self.thisptr.linear()
-        return self
-    def tanh(self):
-        self.thisptr.tanh()
-        return self
-    def sigmoid(self):
-        self.thisptr.sigmoid()
-        return self
-    def relu(self):
-        self.thisptr.relu()
-        return self
     @staticmethod
     def instance():
         return FullyConnectedMaker()
@@ -78,18 +66,6 @@ cdef class ConvolutionalMaker(LayerMaker2):
     def biased(self, bint _biased):
         self.thisptr.biased( _biased )
         return self
-    def linear(self):
-        self.thisptr.linear()
-        return self
-    def tanh(self):
-        self.thisptr.tanh()
-        return self
-    def sigmoid(self):
-        self.thisptr.sigmoid()
-        return self
-    def relu(self):
-        self.thisptr.relu()
-        return self
     @staticmethod
     def instance():
         return ConvolutionalMaker()
@@ -107,6 +83,39 @@ cdef class PoolingMaker(LayerMaker2):
     @staticmethod
     def instance():
         return PoolingMaker()
+
+cdef class DropoutMaker(LayerMaker2):
+    cdef cDeepCL.DropoutMaker *thisptr
+    def __cinit__( self ):
+        self.thisptr = new cDeepCL.DropoutMaker()
+        self.baseptr = self.thisptr
+    def dropRatio(self, float _dropRatio):
+        self.thisptr.dropRatio(_dropRatio)
+        return self
+    @staticmethod
+    def instance():
+        return ActivationMaker()
+
+cdef class ActivationMaker(LayerMaker2):
+    cdef cDeepCL.ActivationMaker *thisptr
+    def __cinit__( self ):
+        self.thisptr = new cDeepCL.ActivationMaker()
+        self.baseptr = self.thisptr
+    def relu(self):
+        self.thisptr.relu()
+        return self
+    def sigmoid(self):
+        self.thisptr.sigmoid()
+        return self
+    def tanh(self):
+        self.thisptr.tanh()
+        return self
+    def linear(self):
+        self.thisptr.linear()
+        return self
+    @staticmethod
+    def instance():
+        return ActivationMaker()
 
 cdef class ForceBackpropMaker(LayerMaker2):
     cdef cDeepCL.ForceBackpropLayerMaker *thisptr

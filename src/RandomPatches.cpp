@@ -25,7 +25,7 @@ RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker *maker ) 
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputImageSize( previousLayer->getOutputImageSize() ),
         outputImageSize( maker->_patchSize ),
-        results(0),
+        output(0),
         batchSize(0),
         allocatedSize(0) {
     if( inputImageSize == 0 ) {
@@ -41,8 +41,8 @@ RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker *maker ) 
     }
 }
 VIRTUAL RandomPatches::~RandomPatches() {
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
 }
 VIRTUAL std::string RandomPatches::getClassName() const {
@@ -53,23 +53,23 @@ VIRTUAL void RandomPatches::setBatchSize( int batchSize ) {
         this->batchSize = batchSize;
         return;
     }
-    if( results != 0 ) {
-        delete[] results;
+    if( output != 0 ) {
+        delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    results = new float[ getResultsSize() ];
+    output = new float[ getOutputSize() ];
 }
-VIRTUAL int RandomPatches::getResultsSize() {
+VIRTUAL int RandomPatches::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL float *RandomPatches::getResults() {
-    return results;
+VIRTUAL float *RandomPatches::getOutput() {
+    return output;
 }
 VIRTUAL bool RandomPatches::needsBackProp() {
     return false;
 }
-VIRTUAL int RandomPatches::getResultsSize() const {
+VIRTUAL int RandomPatches::getOutputSize() const {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL int RandomPatches::getOutputImageSize() const {
@@ -81,14 +81,14 @@ VIRTUAL int RandomPatches::getOutputPlanes() const {
 VIRTUAL int RandomPatches::getPersistSize() const {
     return 0;
 }
-VIRTUAL bool RandomPatches::providesErrorsForUpstreamWrapper() const {
+VIRTUAL bool RandomPatches::providesGradInputWrapper() const {
     return false;
 }
-VIRTUAL bool RandomPatches::hasResultsWrapper() const {
+VIRTUAL bool RandomPatches::hasOutputWrapper() const {
     return false;
 }
-VIRTUAL void RandomPatches::propagate() {
-    float *upstreamResults = previousLayer->getResults();
+VIRTUAL void RandomPatches::forward() {
+    float *upstreamOutput = previousLayer->getOutput();
     for( int n = 0; n < batchSize; n++ ) {
         int patchMargin = inputImageSize - outputImageSize;
         int patchRow = patchMargin / 2;
@@ -97,7 +97,7 @@ VIRTUAL void RandomPatches::propagate() {
             patchRow = RandomSingleton::instance()->uniformInt( 0, patchMargin );
             patchCol = RandomSingleton::instance()->uniformInt( 0, patchMargin );
         }
-        PatchExtractor::extractPatch( n, numPlanes, inputImageSize, patchSize, patchRow, patchCol, upstreamResults, results );
+        PatchExtractor::extractPatch( n, numPlanes, inputImageSize, patchSize, patchRow, patchCol, upstreamOutput, output );
     }
 }
 VIRTUAL std::string RandomPatches::asString() const {

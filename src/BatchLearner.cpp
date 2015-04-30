@@ -34,15 +34,15 @@ EpochResult BatchLearner::runBatchedNetAction( int batchSize, int N, float *data
 
 int BatchLearner::test( int batchSize, int N, float *testData, int const*testLabels ) {
     net->setTraining( false );
-    NetPropagateAction *action = new NetPropagateAction();
+    NetForwardAction *action = new NetForwardAction();
     int numRight = runBatchedNetAction( batchSize, N, testData, testLabels, action ).numRight;
     delete action;
     return numRight;
 }
 
-int BatchLearner::propagateForTrain( int batchSize, int N, float *data, int const*labels ) {
+int BatchLearner::forwardForTrain( int batchSize, int N, float *data, int const*labels ) {
     net->setTraining( true );
-    NetPropagateAction *action = new NetPropagateAction();
+    NetForwardAction *action = new NetForwardAction();
     int numRight = runBatchedNetAction( batchSize, N, data, labels, action ).numRight;
     delete action;
     return numRight;
@@ -64,7 +64,7 @@ EpochResult BatchLearner::runEpochFromLabels( float learningRate, int batchSize,
     return epochResult;
 }
 
-float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedResults ) {
+float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedOutput ) {
     net->setTraining( true );
     float loss = 0;
     net->setBatchSize( batchSize );
@@ -76,8 +76,8 @@ float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int
         if( batch == numBatches - 1 ) {
             net->setBatchSize( N - batchStart );
         }
-        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedResults[batchStart * outputCubeSize]) );
-        loss += net->calcLoss( &( expectedResults[batchStart * outputCubeSize]) );
+        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedOutput[batchStart * outputCubeSize]) );
+        loss += net->calcLoss( &( expectedOutput[batchStart * outputCubeSize]) );
     }
     return loss;
 }
@@ -95,9 +95,9 @@ float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int
 //        if( batch == numBatches - 1 ) {
 //            net->setBatchSize( N - batchStart );
 //        }
-//        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedResults[batchStart * outputCubeSize]) );
-//        loss += net->calcLoss( &( expectedResults[batchStart * outputCubeSize]) );
-//        numRight += AccuracyHelper::calcNumRight( thisBatchSize, net->getLayerLayer()->getOutputPlanes(), &( labels[ batchStart] ), net->getResults() );
+//        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedOutput[batchStart * outputCubeSize]) );
+//        loss += net->calcLoss( &( expectedOutput[batchStart * outputCubeSize]) );
+//        numRight += AccuracyHelper::calcNumRight( thisBatchSize, net->getLayerLayer()->getOutputPlanes(), &( labels[ batchStart] ), net->getOutput() );
 //    }
 //    EpochResult epochResult( loss, numRight );
 //    return epochResult;

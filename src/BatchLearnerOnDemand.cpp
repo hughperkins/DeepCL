@@ -32,7 +32,7 @@ EpochResult BatchLearnerOnDemand::runBatchedNetAction( std::string filepath, int
 
 int BatchLearnerOnDemand::test( std::string filepath, int fileReadBatches, int batchSize, int Ntest ) {
     net->setTraining( false );
-    NetAction *action = new NetPropagateAction();
+    NetAction *action = new NetForwardAction();
     int numRight = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntest, action ).numRight;
     delete action;
     return numRight;
