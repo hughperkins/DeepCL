@@ -51,8 +51,8 @@ public:
     VIRTUAL int calcNumRight( int const *labels );
     void forwardToOurselves();
     VIRTUAL void forward( float const*images);
-    VIRTUAL void backwardFromLabels( float learningRate, int const *labels);
-    VIRTUAL void backward( float learningRate, float const *expectedOutput);
+    VIRTUAL void backwardFromLabels( int const *labels);
+    VIRTUAL void backward( float const *expectedOutput);
     VIRTUAL float const *getOutput() const;
     VIRTUAL int getNumNets() const;
     VIRTUAL Trainable *getNet( int idx );

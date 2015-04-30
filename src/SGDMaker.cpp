@@ -8,6 +8,7 @@
 
 #include "SGDMaker.h"
 #include "SGD.h"
+#include "OpenCLHelper.h"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL Trainer *SGDMaker::instance( OpenCLHelper *cl, NeuralNet *net ) {
-    return new SGD( cl, net );
+VIRTUAL Trainer *SGDMaker::instance( OpenCLHelper *cl ) {
+    return new SGD( cl );
 }
 

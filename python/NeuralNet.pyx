@@ -1,12 +1,12 @@
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
 
-    def __cinit__(self, planes = None, size = None):
+    def __cinit__(self, OpenCLHelper cl, planes = None, size = None):
 #        print( '__cinit__(planes,size)')
         if planes == None and size == None:
-             self.thisptr = new cDeepCL.NeuralNet()
+             self.thisptr = new cDeepCL.NeuralNet(cl.thisptr)
         else:
-            self.thisptr = new cDeepCL.NeuralNet(planes, size)
+            self.thisptr = new cDeepCL.NeuralNet(cl.thisptr, planes, size)
 
     def __dealloc(self):
         del self.thisptr 
@@ -25,10 +25,10 @@ cdef class NeuralNet:
         cdef c_array.array imagesArray = array('f', imagesList )
         cdef float[:] imagesArray_view = imagesArray
         self.thisptr.forward( &imagesArray_view[0] )
-    def backwardFromLabels( self, float learningRate, int[:] labels):
-        return self.thisptr.backwardFromLabels( learningRate, &labels[0] ) 
-    def backward( self, float learningRate, float[:] expectedOutput):
-        return self.thisptr.backward( learningRate, &expectedOutput[0] )
+    def backwardFromLabels( self, int[:] labels):
+        return self.thisptr.backwardFromLabels( &labels[0] ) 
+    def backward( self, float[:] expectedOutput):
+        return self.thisptr.backward( &expectedOutput[0] )
     def calcNumRight( self, int[:] labels ):
         return self.thisptr.calcNumRight( &labels[0] )
     def addLayer( self, LayerMaker2 layerMaker ):

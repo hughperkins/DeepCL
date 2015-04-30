@@ -14,6 +14,9 @@
 #include "Trainer.h"
 
 class SGDState;
+class CLWrapper;
+class OpenCLHelper;
+class CLKernel;
 
 #define VIRTUAL virtual
 #define STATIC static

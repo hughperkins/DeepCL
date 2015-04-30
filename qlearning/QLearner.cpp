@@ -92,7 +92,8 @@ void QLearner::learnFromPast() {
         }
     }
     // backprop...
-    net->backward( learningRate / batchSize, expectedValues );
+    throw runtime_error("need to implement this");
+//    net->backward( learningRate / batchSize, expectedValues );
     net->setBatchSize(1);
 
     delete[] expectedValues;

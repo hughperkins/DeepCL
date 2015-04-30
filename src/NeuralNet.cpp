@@ -192,7 +192,7 @@ PUBLICAPI void NeuralNet::forward( float const*images) {
         StatefulTimer::setPrefix("" );
     }
 }
-PUBLICAPI void NeuralNet::backwardFromLabels( float learningRate, int const *labels) {
+PUBLICAPI void NeuralNet::backwardFromLabels( int const *labels) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
     if( acceptsLabels == 0 ) {
         throw std::runtime_error("Must add a child of IAcceptsLabels as last layer, to use backwardFromLabels");
@@ -208,7 +208,7 @@ PUBLICAPI void NeuralNet::backwardFromLabels( float learningRate, int const *lab
         StatefulTimer::setPrefix("" );
     }
 }
-PUBLICAPI void NeuralNet::backward( float learningRate, float const *expectedOutput) {
+PUBLICAPI void NeuralNet::backward( float const *expectedOutput) {
     LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
     if( lossLayer == 0 ) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");

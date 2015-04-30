@@ -167,15 +167,15 @@ VIRTUAL void MultiNet::forward( float const*images) {
     }
     forwardToOurselves();
 }
-VIRTUAL void MultiNet::backwardFromLabels( float learningRate, int const *labels) {
+VIRTUAL void MultiNet::backwardFromLabels( int const *labels) {
     // dont think we need to backprop onto ourselves?  Just direclty onto children, right?
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->backwardFromLabels( learningRate, labels );
+        (*it)->backwardFromLabels( labels );
     }
 }
-VIRTUAL void MultiNet::backward( float learningRate, float const *expectedOutput) {
+VIRTUAL void MultiNet::backward( float const *expectedOutput) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
-        (*it)->backward( learningRate, expectedOutput );
+        (*it)->backward( expectedOutput );
     }
 }
 VIRTUAL float const *MultiNet::getOutput() const {

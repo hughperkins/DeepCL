@@ -7,6 +7,7 @@
 from libcpp.string cimport string
 from libcpp cimport bool
 
+include "cOpenCLHelper.pxd"
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
 include "cGenericLoader.pxd"

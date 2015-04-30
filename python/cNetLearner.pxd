@@ -9,7 +9,7 @@ cdef extern from "CyWrappers.h":
         void setSchedule( int numEpochs ) except +
         void setDumpTimings( bool dumpTimings ) except +
         # void setBatchSize( int batchSize ) except +
-        void learn( float learningRate ) nogil
+        # void learn( float learningRate ) nogil
         #void setSchedule( int numEpochs, int startEpoch )
         # VIRTUAL void addPostEpochAction( PostEpochAction *action );
         #void learn( float learningRate, float annealLearningRate )

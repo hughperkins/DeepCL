@@ -76,7 +76,7 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
     // should be zero, so we dont modify the weights
     // otherwise the losses will be really strange :-)
     // temporarily putting 1.0f, because of the way this works currently...
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -189,7 +189,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 
 //    cout << "backprop now" <<endl;
     net->print();
-    net->backward( learningRate, expectedOutput );
+    net->backward( expectedOutput );
 //    net->getLayer(1)->print();
     net->forward( inputData );
     net->print();

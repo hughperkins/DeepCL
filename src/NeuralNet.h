@@ -88,8 +88,8 @@ public:
     PUBLICAPI void setTraining( bool training );
     PUBLICAPI int calcNumRight( int const *labels );
     PUBLICAPI void forward( float const*images);
-    PUBLICAPI void backwardFromLabels( float learningRate, int const *labels);
-    PUBLICAPI void backward( float learningRate, float const *expectedOutput);
+    PUBLICAPI void backwardFromLabels( int const *labels);
+    PUBLICAPI void backward( float const *expectedOutput);
     PUBLICAPI int getNumLayers();
     PUBLICAPI float const *getOutput( int layer ) const;
     PUBLICAPI int getInputCubeSize() const;

@@ -16,22 +16,22 @@ void checkException( int *wasRaised, std::string *message );
 // (which I *think* adding 'except +' requires?)
 class CyNetLearner : public NetLearner {
 public:
-    CyNetLearner(Trainable *neuralNet,
+    CyNetLearner(Trainer *trainer, Trainable *neuralNet,
             int Ntrain, float *trainData, int *trainLabels,
             int Ntest, float *testData, int *testLabels,
             int batchSize ) :
-        NetLearner( neuralNet,
+        NetLearner( trainer, neuralNet,
             Ntrain, trainData, trainLabels,
             Ntest, testData, testLabels,
             batchSize ) {
     }
-    void learn( float learningRate ) {
-        try {
-            NetLearner::learn(learningRate);
-        } catch( std::runtime_error &e ) {
-            std::cout << e.what() << std::endl;
-            raiseException( e.what() );
-        }
-    }
+//    void learn( float learningRate ) {
+//        try {
+//            NetLearner::learn(learningRate);
+//        } catch( std::runtime_error &e ) {
+//            std::cout << e.what() << std::endl;
+//            raiseException( e.what() );
+//        }
+//    }
 };
 

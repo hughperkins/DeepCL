@@ -65,7 +65,7 @@ TEST( testbackward, squareloss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -142,7 +142,7 @@ TEST( testbackward, crossentropyloss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -253,7 +253,7 @@ TEST( testbackward, softmaxloss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -352,7 +352,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     // calculate gradInput
     // should be zero, so we dont modify the weights
     // otherwise the losses will be really strange :-)
-    net->backward( 0.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -525,7 +525,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     //    net->print();
         float loss = net->calcLoss(expectedOutput);
         dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
-        net->backward( learningRate, expectedOutput );
+        net->backward( expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {

@@ -1,14 +1,14 @@
 cdef extern from "NeuralNet.h":
     cdef cppclass NeuralNet:
         #pass
-        NeuralNet() except +
+        NeuralNet( OpenCLHelper *cl ) except +
         #void print()
-        NeuralNet( int numPlanes, int size ) except +
+        NeuralNet( OpenCLHelper *cl, int numPlanes, int size ) except +
         string asString() except +
         void setBatchSize( int batchSize ) except +
         void forward( const float *images) except +
-        void backwardFromLabels( float learningRate, const int *labels) except +
-        void backward( float learningRate, const float *expectedOutput) except +
+        void backwardFromLabels( const int *labels) except +
+        void backward( const float *expectedOutput) except +
         int calcNumRight( const int *labels ) except +
         void addLayer( LayerMaker2 *maker ) except +
         Layer *getLayer( int index )

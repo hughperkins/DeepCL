@@ -27,8 +27,8 @@ public:
     virtual void setTraining( bool training ) = 0;
     virtual int calcNumRight( int const *labels ) = 0;
     virtual void forward( float const*images) = 0;
-    virtual void backwardFromLabels( float learningRate, int const *labels) = 0;
-    virtual void backward( float learningRate, float const *expectedOutput) = 0;
+    virtual void backwardFromLabels( int const *labels) = 0;
+    virtual void backward( float const *expectedOutput) = 0;
     virtual float const *getOutput() const = 0;
     virtual LossLayerMaker *cloneLossLayerMaker() const = 0;
     virtual int getOutputPlanes() const = 0;
@@ -42,8 +42,6 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    void learnBatch( float learningRate, float const*images, float const *expectedOutput );
-    void learnBatchFromLabels( float learningRate, float const*images, int const *labels );
 
     // [[[end]]]
 };

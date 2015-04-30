@@ -145,7 +145,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
         net->forward( inputData );
-        net->backward( learningRate, expectedOutput );
+        net->backward( expectedOutput );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
@@ -345,7 +345,7 @@ void testLabelled( TestArgs args ) {
     for( int i = 0; i < args.numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
         net->forward( inputData );
-        net->backwardFromLabels( args.learningRate, labels );
+        net->backwardFromLabels( labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         for( int layer = 1; layer < (int)net->getNumLayers(); layer++ ) {
             checkErrorsForLayer( layer, lastloss, net, lastWeights, currentWeights, args.learningRate, inputData, labels );

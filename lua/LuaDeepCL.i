@@ -24,6 +24,8 @@
 #include "NetLearner.h"
 #include "NormalizationLayerMaker.h"
 #include "LayerMaker.h"
+#include "OpenCLHelper.h"
+#include "SGD.h"
 #include "InputLayerMaker.h"
 //#include "LuaWrappers.h"
 #include "QLearner2.h"
@@ -60,15 +62,39 @@ void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, in
 
 // class LayerMaker2;
 
+class OpenCLHelper {
+public:
+    static OpenCLHelper *createForFirstGpu();
+    static OpenCLHelper *createForFirstGpuOtherwiseCpu();
+    static OpenCLHelper *createForIndexedGpu( int gpu );
+    static OpenCLHelper *createForPlatformDeviceIndexes(int platformIndex, int deviceIndex);
+    static OpenCLHelper *createForPlatformDeviceIds(cl_platform_id platformId, cl_device_id deviceId);
+};
+
+class Trainer {
+public:
+    virtual void train( NeuralNet *net, float const*input, float const*expectedOutput ) = 0;
+    virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels ) = 0;
+};
+
+class SGD : public Trainer {
+public:
+    virtual void setMomentum( float momentum );
+    virtual std::string asString();
+    virtual void train( NeuralNet *net, float const*input, float const*expectedOutput );
+    virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
+    SGD( OpenCLHelper *cl );
+};
+
 class NeuralNet {
 public:
-    NeuralNet();
-    NeuralNet( int numPlanes, int imageSize );
+    NeuralNet( OpenCLHelper *cl );
+    NeuralNet( OpenCLHelper *cl, int numPlanes, int imageSize );
     void addLayer( LayerMaker2 *maker );
     void setBatchSize( int batchSize );
     void forward( float const*images);
-    void backwardFromLabels( float learningRate, int const *labels);
-    void backward( float learningRate, float const *expectedOutput);
+    void backwardFromLabels( int const *labels);
+    void backward( float const *expectedOutput);
     int calcNumRight( int const *labels );
 /*    int getOutputSize();*/
 /*    float *getOutput();*/
@@ -95,13 +121,25 @@ public:
 /*%rename (NetLearnerBase) NetLearner;*/
 class NetLearner {
 public:
-    NetLearner( NeuralNet *net,
+    NetLearner( Trainer *trainer, NeuralNet *net,
         int Ntrain, float *images, int *labels,
         int Ntest, float *images, int *labels,
         int batchSize );
-    void setSchedule( int numEpochs );
-/*    void setBatchSize( int batchSize );*/
-    void learn( float learningRate );
+    virtual void setSchedule( int numEpochs );
+    virtual void setDumpTimings( bool dumpTimings );
+    virtual void setSchedule( int numEpochs, int nextEpoch );
+    virtual void reset();
+    virtual bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
+    virtual bool getEpochDone();
+    virtual int getNextEpoch();
+    virtual int getNextBatch();
+    virtual int getNTrain();
+    virtual int getBatchNumRight();
+    virtual float getBatchLoss();
+    virtual void setBatchState( int nextBatch, int numRight, float loss );
+    virtual bool tickEpoch();
+    virtual void run();
+    virtual bool isLearningDone();
 };
 /*%rename(NetLearner) NetLearnerFloats;*/
 /*%template(NetLearner) NetLearner<float>;*/
