@@ -32,7 +32,8 @@ TEST( testbackward, squareloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 3, 5 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
@@ -96,6 +97,7 @@ TEST( testbackward, squareloss ) {
     delete[] input;
 
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, crossentropyloss ) {
@@ -107,7 +109,8 @@ TEST( testbackward, crossentropyloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 3, 5 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
     cout << net->asString() << endl;
@@ -171,6 +174,7 @@ TEST( testbackward, crossentropyloss ) {
     delete[] input;
 
     delete net;
+    delete cl;
 }
 
 void normalizeAsProbabilityDistribution( int numPlanes, float *values, int N ) {
@@ -197,7 +201,8 @@ TEST( testbackward, softmaxloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
@@ -280,6 +285,7 @@ TEST( testbackward, softmaxloss ) {
     delete[] input;
 
     delete net;
+    delete cl;
 }
 
 void checkLayer( NeuralNet *net, int targetLayerIndex ) {
@@ -379,7 +385,8 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 }
 
 TEST( testbackward, squareloss2 ) {
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
@@ -389,10 +396,12 @@ TEST( testbackward, squareloss2 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, crossentropy2 ) {
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
     cout << net->asString() << endl;
@@ -402,10 +411,12 @@ TEST( testbackward, crossentropy2 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, softmax2 ) {
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
@@ -415,10 +426,12 @@ TEST( testbackward, softmax2 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, conv1 ) {
-    NeuralNet *net = new NeuralNet( 2, 4 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
@@ -430,10 +443,12 @@ TEST( testbackward, conv1 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, fc1 ) {
-    NeuralNet *net = new NeuralNet( 2, 4 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( FullyConnectedMaker::instance()->numPlanes(4)->imageSize(1)->biased(0) );
     net->addLayer( SquareLossMaker::instance() );
@@ -445,10 +460,12 @@ TEST( testbackward, fc1 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, act1 ) {
-    NeuralNet *net = new NeuralNet( 1, 2 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 1, 2 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
@@ -460,12 +477,14 @@ TEST( testbackward, act1 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
-    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->imageSize(imageSize)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
     net->addLayer( ActivationMaker::instance()->fn(fn) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
@@ -551,6 +570,8 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
 //    delete[] errors;
 //    delete[] output;
     delete[] inputData;
+    delete net;
+    delete cl;
 }
 
 TEST( testbackward, checknumerically ) {

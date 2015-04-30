@@ -42,8 +42,8 @@ net->print();
 
 ```c++
 #include "NeuralNet.h"
-
-NeuralNet *net = new NeuralNet();
+OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+NeuralNet *net = new NeuralNet( cl );
 ```
 
 ## Add an input layer

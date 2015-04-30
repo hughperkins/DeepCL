@@ -34,12 +34,26 @@ VIRTUAL std::string SGD::asString() {
 }
 VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
         SGDState *trainerState ) {
-    
+    int numWeights = trainerState->numWeights;
+    CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
+    kernel  ->in( numWeights )
+            ->in( learningRate )
+            ->in( momentum )
+            ->inout( lastUpdateWrapper )
+            ->in( gradWeightsWrapper )
+            ->inout( weightsWrapper );
+    int globalSize = numWeights;
+    int workgroupSize = 64;
+    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
+    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    cl->finish();
 }
-VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one batch, including updating weights
+VIRTUAL void SGD::train( NeuralNet *net, float *input, float *expectedOutput ) {
+//VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one batch, including updating weights
                                   // doesnt have to think about running multiple batches,
                                   // or loading data, or anything like that
     // net->calcGrad();
+    bindState( net );
     net->forward( input );
     int numLayers = net->getNumLayers();
     LossLayer *lossLayer = dynamic_cast< LossLayer * >( net->getLastLayer() );
@@ -58,17 +72,25 @@ VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one b
         }
     }
 }
-SGD::SGD( OpenCLHelper *cl, NeuralNet *net ) :
-        Trainer( cl, net ),
-        kernel( 0 ) {
+VIRTUAL void SGD::bindState( NeuralNet *net ) {
     SGDStateMaker stateMaker;
     // go through network layers, and assign SGD objects (should probably rename these sometime somehow)
     for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
         Layer *layer = net->getLayer( layerIdx );
         if( layer->needsTrainerState() ) {
-            layer->setTrainerState( &stateMaker );
+            TrainerState *state = layer->getTrainerState();
+            SGDState *sgdState = dynamic_cast< SGDState *>( state );
+            if( sgdState == 0 ) {
+//                sgdState = new SGDState();
+                layer->setTrainerState( &stateMaker );
+            }
         }
     }
+//    net->setTrainer( this );
+}
+SGD::SGD( OpenCLHelper *cl ) :
+        Trainer( cl ),
+        kernel( 0 ) {
     string options = "";
     // [[[cog
     // import stringify

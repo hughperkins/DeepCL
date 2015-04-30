@@ -181,4 +181,9 @@ VIRTUAL void MultiNet::backward( float learningRate, float const *expectedOutput
 VIRTUAL float const *MultiNet::getOutput() const {
     return output;
 }
+//VIRTUAL void MultiNet::setTrainer( TrainerMaker *trainerMaker ) {
+//    for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
+//        (*it)->setTrainer( trainerMaker );
+//    }
+//}
 

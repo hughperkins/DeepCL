@@ -15,16 +15,19 @@
 #include "SoftMaxLayer.h"
 
 TEST( testNetdefToNet, empty ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "" ) );
     EXPECT_EQ( 2, net->getNumLayers() );
     EXPECT_TRUE( dynamic_cast< SoftMaxLayer * >( net->getLayer(1) ) != 0 );
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, onefc ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n" ) );
     EXPECT_EQ( 3, net->getNumLayers() );
@@ -36,10 +39,12 @@ TEST( testNetdefToNet, onefc ) {
     EXPECT_EQ( 150, fc->numPlanes );
 //    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, onefclinear ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n" ) );
     EXPECT_EQ( 3, net->getNumLayers() );
@@ -51,10 +56,12 @@ TEST( testNetdefToNet, onefclinear ) {
     EXPECT_EQ( 150, fc->numPlanes );
 //    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, 150n_10n ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n-10n" ) );
     EXPECT_EQ( 4, net->getNumLayers() );
@@ -72,10 +79,12 @@ TEST( testNetdefToNet, 150n_10n ) {
 //    EXPECT_EQ( "LINEAR", fc2->fn->getDefineName() );
 
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, 3xfclinear ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*150n" ) );
     net->print();
@@ -89,10 +98,12 @@ TEST( testNetdefToNet, 3xfclinear ) {
     EXPECT_EQ( 150, fc->numPlanes );
 //    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "mp2-3*32c5z-10n " ) );
     net->print();
@@ -108,10 +119,12 @@ TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
     EXPECT_EQ( 10, fc->numPlanes );
 //    EXPECT_EQ( "LINEAR", fc->fn->getDefineName() );
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, 3x32c5zmp2 ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(128) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*(32c5z-mp2)-10n" ) );
     net->print();
@@ -132,10 +145,12 @@ TEST( testNetdefToNet, 3x32c5zmp2 ) {
     EXPECT_EQ( 32, conv->dim.numFilters );
 //    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
     delete net;
+    delete cl;
 }
 
 TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
-    NeuralNet *net = new NeuralNet();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7z-3*32c5z-10n" ) );
     net->print();
@@ -179,5 +194,6 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
 //    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     delete net;
+    delete cl;
 }
 

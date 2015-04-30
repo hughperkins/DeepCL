@@ -31,7 +31,8 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
     net->addLayer( ActivationMaker::instance()->tanh() );
@@ -60,6 +61,7 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     assertLessThan( 0.03, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
@@ -77,7 +79,8 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
     net->addLayer( ActivationMaker::instance()->tanh() );
@@ -108,6 +111,7 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     assertLessThan( 0.01, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
@@ -143,7 +147,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     expectedOutput[5] = -0.5f;
     expectedOutput[6] = -0.5f;
     expectedOutput[7] = 0.5f;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
@@ -174,6 +179,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     assertLessThan( 0.0001f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
@@ -189,7 +195,8 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
     expectedOutput[1] = 0;
     expectedOutput[2] = 0;
     expectedOutput[3] = 1;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
@@ -223,6 +230,7 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
     assertLessThan( 0.001f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
@@ -258,7 +266,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     expectedOutput[5] = 0;
     expectedOutput[6] = 0;
     expectedOutput[7] = 1;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
@@ -298,6 +307,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     assertLessThan( 0.000001, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
@@ -333,7 +343,8 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     expectedOutput[5] = 0;
     expectedOutput[6] = 0;
     expectedOutput[7] = 1;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
@@ -370,6 +381,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     assertLessThan( 0.001f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
@@ -385,7 +397,8 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
@@ -420,6 +433,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     assertLessThan( 0.0001f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
@@ -435,7 +449,8 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
@@ -483,6 +498,7 @@ float bias2[] = {-0.071288f, 0.443919f};
     assertLessThan( 0.0001f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
@@ -523,7 +539,8 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
@@ -559,6 +576,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     assertLessThan( 0.01f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
@@ -617,7 +635,8 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
@@ -674,6 +693,7 @@ float bias2[] = {0.232961f, 0.141537f, 0.159074f};
     assertLessThan( 0.00001f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
@@ -732,7 +752,8 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
@@ -787,6 +808,7 @@ float bias2[] = {-0.0863176f, -0.227985f, -0.147554f};
     assertLessThan( 0.1f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
@@ -920,7 +942,8 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
@@ -960,5 +983,6 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     assertLessThan( 0.1f, loss );
 
     delete net;
+    delete cl;
 }
 

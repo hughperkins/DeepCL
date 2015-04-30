@@ -27,12 +27,12 @@ using namespace std;
 
 TEST( testsgd, basic ) {
     // this is mostly to help me figure out how to design the SGD and Trainer classes
-    NeuralNet *net = new NeuralNet( 1, 5 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 1, 5 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
     net->setBatchSize(2);
-    OpenCLHelper *cl = net->getCl();
 
     int batchSize = dynamic_cast< InputLayer *>(net->getLayer(0))->batchSize;
 //    const int outputPlanes = net->getOutputPlanes();
@@ -51,14 +51,15 @@ TEST( testsgd, basic ) {
     WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
 
-    SGD *sgd = new SGD( cl, net );
+    SGD *sgd = new SGD( cl );
     sgd->setLearningRate( 0.002f );
     sgd->setMomentum( 0.1f );
 
 //    net->forward( input );
-    sgd->learn( input, expectedOutput );
+    sgd->train( net, input, expectedOutput );
 
     delete sgd;
     delete net;
+    delete cl;
 }
 

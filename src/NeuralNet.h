@@ -10,11 +10,11 @@
 #include <algorithm>
 
 #include "Layer.h"
-#include "NeuralNetMould.h"
 #include "EpochMaker.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
 #include "Trainable.h"
+#include "NeuralNetMould.h"
 #include "InputLayerMaker.h"
 #include "ConvolutionalMaker.h"
 #include "RandomTranslationsMaker.h"
@@ -33,6 +33,8 @@ class ConvolutionalMaker;
 class LayerMaker;
 class RandomTranslatorMaker;
 class InputLayerMaker;
+class Trainer;
+//class NeuralNetMould;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -48,7 +50,9 @@ protected:
 #ifdef _WIN32
 #pragma warning( default: 4251 )
 #endif
-    OpenCLHelper *cl;
+    OpenCLHelper *cl; // NOT owned by us, dont delete
+    Trainer *trainer; // NOT owned by us, dont delete
+
 public:
     int isTraining; // = true;
 
@@ -57,13 +61,12 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI NeuralNet();
-    NeuralNet( int gpu );
-    PUBLICAPI NeuralNet( int numPlanes, int imageSize );
+    NeuralNet( OpenCLHelper *cl );
+    PUBLICAPI NeuralNet(  OpenCLHelper *cl, int numPlanes, int imageSize );
     ~NeuralNet();
+    STATIC NeuralNetMould *maker( OpenCLHelper *cl );
     NeuralNet *clone();
     OpenCLHelper *getCl();
-    STATIC NeuralNetMould *maker();
     PUBLICAPI void addLayer( LayerMaker2 *maker );
     PUBLICAPI void initWeights( int layerIndex, float *weights, float *bias );
     PUBLICAPI void initWeights( int layerIndex, float *weights );
@@ -96,6 +99,7 @@ public:
     void print();
     void printWeights();
     void printOutput();
+    VIRTUAL void setTrainer( Trainer *trainer );
     PUBLICAPI std::string asString();
 
     // [[[end]]]

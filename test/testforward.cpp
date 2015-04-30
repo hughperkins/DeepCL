@@ -682,7 +682,8 @@ TEST( SLOW_testforward, compare_args ) {
 //}
 
 TEST( testforward, softmax ) {
-    NeuralNet *net = NeuralNet::maker()->imageSize(1)->planes(4)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->imageSize(1)->planes(4)->instance();
     net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
     float *input = new float[net->getLayer(0)->getOutputPlanes()];
@@ -737,10 +738,12 @@ TEST( testforward, softmax ) {
     delete[] input;
     delete[] expected;
     delete net;
+    delete cl;
 }
 
 TEST( testforward, softmax_byplane ) {
-    NeuralNet *net = NeuralNet::maker()->imageSize(2)->planes(1)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->imageSize(2)->planes(1)->instance();
     net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
     int imageSizeSquared = net->getLayer(0)->getOutputImageSize() * net->getLayer(0)->getOutputImageSize();
@@ -796,6 +799,7 @@ TEST( testforward, softmax_byplane ) {
     delete[] input;
     delete[] expected;
     delete net;
+    delete cl;
 }
 
 void testPerf( int instance, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {

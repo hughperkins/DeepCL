@@ -113,7 +113,8 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
 }
 
 TEST( testupdateweights, conv1 ) {
-    NeuralNet *net = new NeuralNet( 2, 5 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 2, 5 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
@@ -122,10 +123,12 @@ TEST( testupdateweights, conv1 ) {
 
     checkWeightsUpdate( net, 1 );
     delete net;
+    delete cl;
 }
 
 TEST( testupdateweights, conv1z ) {
-    NeuralNet *net = new NeuralNet( 2, 3 );
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 2, 3 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(1) );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
@@ -134,6 +137,7 @@ TEST( testupdateweights, conv1z ) {
 
     checkWeightsUpdate( net, 1 );
     delete net;
+    delete cl;
 }
 
 void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
@@ -141,7 +145,8 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    const int batchSize = 1;
 //    const int imageSize = 1;
 
-    NeuralNet *net = NeuralNet::maker()->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0) );
     net->addLayer( ActivationMaker::instance()->tanh() );
@@ -219,6 +224,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    delete[] errors;
 //    delete[] output;
     delete[] inputData;
+    delete cl;
 }
 
 TEST( testupdateweights, numericallytest ) {

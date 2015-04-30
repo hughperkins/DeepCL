@@ -22,8 +22,9 @@
 #include "MultiNet.h"
 #include "BatchProcess.h"
 #include "NetLearnerOnDemand.h"
-#include "SGDState.h"
-#include "SGDStateMaker.h"
+#include "SGD.h"
+//#include "SGDState.h"
+//#include "SGDStateMaker.h"
 
 using namespace std;
 
@@ -244,12 +245,17 @@ void go(Config config) {
 
 //    const int numToTrain = Ntrain;
 //    const int batchSize = config.batchSize;
-    NeuralNet *net;
+
+    OpenCLHelper *cl = 0;
     if( config.gpuIndex >= 0 ) {
-        net = new NeuralNet(config.gpuIndex);
+        cl = OpenCLHelper::createForIndexedGpu( config.gpuIndex );
     } else {
-        net = new NeuralNet();
+        cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     }
+
+    NeuralNet *net;
+    net = new NeuralNet(cl);
+
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
@@ -257,19 +263,18 @@ void go(Config config) {
         return;
     }
     // apply the trainer
+    Trainer *trainer = 0;
     if( toLower( config.trainer ) == "sgd" ) {
-        SGDStateMaker *sgdStateMaker = new SGDStateMaker();
-        for( int i = 0; i < net->getNumLayers(); i++ ) {
-            Layer *layer = net->getLayer(i);
-            if( layer->needsTrainerState() ) {
-                cout << "setting trainermaker layer " << i << endl;
-                layer->setTrainerState( sgdStateMaker );
-            }
-        }
+        SGD *sgd = new SGD( cl );
+        sgd->setLearningRate( config.learningRate );
+        sgd->setMomentum( config.momentum );
+        trainer = sgd;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
     }
+//    trainer->bindTo( net );
+//    net->setTrainer( trainer );
     net->setBatchSize( config.batchSize );
     net->print();
 
@@ -324,13 +329,14 @@ void go(Config config) {
             config.batchSize 
         );
     }
+//    netLearner->setTrainer( trainer );
     netLearner->reset();
     netLearner->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
     if( afterRestart ) {
         netLearner->setBatchState( restartBatch, restartNumRight, restartLoss ); 
     }
     netLearner->setDumpTimings( config.dumpTimings );
-    netLearner->setLearningRate( config.learningRate, config.annealLearningRate );
+//    netLearner->setLearningRate( config.learningRate, config.annealLearningRate );
     Timer weightsWriteTimer;
     while( !netLearner->isLearningDone() ) {
 //        netLearnerBase->tickEpoch();
@@ -364,6 +370,7 @@ void go(Config config) {
         }
     }
 
+    delete trainer;
     delete netLearner;
     if( multiNet != 0 ) {
         delete multiNet;
@@ -381,6 +388,7 @@ void go(Config config) {
     if( trainLabels != 0 ) {
         delete[] trainLabels;
     }
+    delete cl;
 }
 
 void printUsage( char *argv[], Config config ) {

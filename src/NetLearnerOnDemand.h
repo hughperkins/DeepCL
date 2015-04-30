@@ -21,6 +21,7 @@ class Trainable;
 class NetLearnLabeledAction;
 class NetForwardAction;
 class OnDemandBatcher;
+class Trainer;
 
 #include "DeepCLDllExport.h"
 
@@ -44,14 +45,16 @@ protected:
     OnDemandBatcher *testBatcher;
 public:
 
-    float learningRate;
-    float annealLearningRate;
+//    float learningRate;
+//    float annealLearningRate;
 
     bool dumpTimings;
 
     int nextEpoch;
     int numEpochs;
     bool learningDone;
+
+//    Trainer *trainer;
 
     // [[[cog
     // import cog_addheaders
@@ -68,8 +71,6 @@ public:
     VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
     PUBLICAPI VIRTUAL bool getEpochDone();
     PUBLICAPI VIRTUAL int getNextEpoch();
-    VIRTUAL void setLearningRate( float learningRate );
-    VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
     PUBLICAPI VIRTUAL int getNextBatch();
     PUBLICAPI VIRTUAL int getNTrain();
     PUBLICAPI VIRTUAL int getBatchNumRight();
@@ -81,8 +82,6 @@ public:
     PUBLICAPI VIRTUAL bool tickEpoch();
     PUBLICAPI VIRTUAL void run();
     PUBLICAPI VIRTUAL bool isLearningDone();
-    PUBLICAPI VIRTUAL void learn( float learningRate );
-    VIRTUAL void learn( float learningRate, float annealLearningRate );
 
     // [[[end]]]
 };

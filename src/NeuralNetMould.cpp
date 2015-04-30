@@ -9,6 +9,7 @@
 #include "Layer.h"
 #include "NeuralNet.h"
 #include "InputLayerMaker.h"
+#include "OpenCLHelper.h"
 
 #include "NeuralNetMould.h"
 
@@ -23,11 +24,11 @@ NeuralNet *NeuralNetMould::instance() {
         if( _imageSize == 0 ) {
             throw runtime_error("Must provide ->imageSize(imageSize)");
         }
-        NeuralNet *net = new NeuralNet( _numPlanes, _imageSize );
+        NeuralNet *net = new NeuralNet( cl, _numPlanes, _imageSize );
         delete this;
         return net;
     } else {
-        NeuralNet *net = new NeuralNet();
+        NeuralNet *net = new NeuralNet( cl );
         delete this;
         return net;
     }

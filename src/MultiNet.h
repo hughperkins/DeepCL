@@ -23,6 +23,7 @@ class NeuralNet;
 
 // This handles grouping several NeuralNets into one single MultiNet
 class DeepCL_EXPORT MultiNet : public Trainable {
+//    OpenCLHelper *cl; // we own; should delete
     std::vector<Trainable * > trainables;
     float *output;
     int batchSize;

@@ -119,7 +119,8 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker()->learningRate(4)->batchSize(4)->numExamples(4)->inputData(ldc.data)
@@ -132,13 +133,15 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
     delete net;
+    delete cl;
 }
 
 TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
@@ -157,13 +160,15 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     assertLessThan( 0.4f, loss );
 
     delete net;
+    delete cl;
 }
 
 TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
     for( int epoch = 0; epoch < 20; epoch++ ) {
@@ -181,6 +186,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     assertLessThan( 0.4f, loss );
 
     delete net;
+    delete cl;
 }
 
 //      n=0       n=1       n=2       n=3
@@ -239,7 +245,8 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
         0
     };
 
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
@@ -265,6 +272,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     assertLessThan( 0.0000001f, loss );
 
     delete net;
+    delete cl;
 }
 
 //TEST( testlogicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {

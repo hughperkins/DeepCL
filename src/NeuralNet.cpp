@@ -10,10 +10,10 @@
 #include "Timer.h"
 #include "ConvolutionalLayer.h"
 #include "LayerMaker.h"
+#include "NeuralNetMould.h"
 #include "ActivationFunction.h"
 #include "StatefulTimer.h"
 #include "AccuracyHelper.h"
-#include "NeuralNetMould.h"
 #include "Layer.h"
 #include "InputLayer.h"
 #include "FullyConnectedLayer.h"
@@ -22,6 +22,8 @@
 #include "IAcceptsLabels.h"
 #include "ExceptionMacros.h"
 #include "InputLayerMaker.h"
+#include "Trainer.h"
+#include "TrainerMaker.h"
 
 #include "NeuralNet.h"
 
@@ -34,30 +36,27 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PUBLICAPI NeuralNet::NeuralNet() :
-    isTraining( true ) {
-    cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
-}
-NeuralNet::NeuralNet( int gpu ) :
-    isTraining( true ) {
-
-    cl = OpenCLHelper::createForIndexedGpu( gpu );
+NeuralNet::NeuralNet( OpenCLHelper *cl ) :
+        cl( cl ) {
+    trainer = 0;
+    isTraining = true;
 }
 /// Constructor
-PUBLICAPI NeuralNet::NeuralNet( int numPlanes, int imageSize ) {
-//    cout << "NeuralNet( " << numPlanes << ", " << imageSize << " )" << endl;
-    cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+PUBLICAPI NeuralNet::NeuralNet(  OpenCLHelper *cl, int numPlanes, int imageSize ) :
+        cl( cl ) {
     addLayer( InputLayerMaker::instance()->numPlanes( numPlanes )->imageSize( imageSize ) );
-//    print();
+    trainer = 0;
 }
 NeuralNet::~NeuralNet() {
     for( int i = 0; i < (int)layers.size(); i++ ) {
         delete layers[i];
     }
-    delete cl;
+}
+STATIC NeuralNetMould *NeuralNet::maker( OpenCLHelper *cl ) {
+    return new NeuralNetMould( cl );
 }
 NeuralNet *NeuralNet::clone() {
-    NeuralNet *copy = new NeuralNet();
+    NeuralNet *copy = new NeuralNet( cl );
     for( vector<Layer *>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         LayerMaker2 *maker = (*it)->maker;
 
@@ -71,10 +70,6 @@ NeuralNet *NeuralNet::clone() {
 OpenCLHelper *NeuralNet::getCl() {
     return cl;
 }
-STATIC NeuralNetMould *NeuralNet::maker() {
-    return new NeuralNetMould();
-}
-
 /// Add a network layer, using a LayerMaker2 object
 PUBLICAPI void NeuralNet::addLayer( LayerMaker2 *maker ) {
 //    cout << "neuralnet::insert numplanes " << inputLayerMaker._numPlanes << " imageSize " << inputLayerMaker._imageSize << endl;
@@ -267,6 +262,9 @@ void NeuralNet::printOutput() {
         (*it)->printOutput();
         i++;
     }
+}
+VIRTUAL void NeuralNet::setTrainer( Trainer *trainer ) {
+    this->trainer = trainer;
 }
 PUBLICAPI std::string NeuralNet::asString() {
     std::string result = "";

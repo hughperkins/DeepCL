@@ -14,6 +14,8 @@
 
 class LossLayerMaker;
 class Layer;
+class Trainer;
+class TrainerMaker;
 
 class DeepCL_EXPORT Trainable {
 public:
@@ -33,6 +35,7 @@ public:
     virtual int getOutputImageSize() const = 0;
     virtual int getInputCubeSize() const = 0;
     virtual int getOutputCubeSize() const = 0;
+//    virtual void setTrainer( TrainerMaker *trainer ) = 0;
 
     // [[[cog
     // import cog_addheaders

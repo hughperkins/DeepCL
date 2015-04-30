@@ -19,6 +19,7 @@
 
 class NeuralNet;
 //class Trainable;
+class Trainer;
 
 #include "DeepCLDllExport.h"
 
@@ -39,8 +40,8 @@ public:
     LearnBatcher *trainBatcher;
     ForwardBatcher *testBatcher;
 
-    float learningRate;
-    float annealLearningRate;
+//    float learningRate;
+//    float annealLearningRate;
 //    float annealedLearningRate;
 
     bool dumpTimings;
@@ -49,6 +50,8 @@ public:
     int numEpochs;
     int nextEpoch;
     bool learningDone;
+
+//    Trainer *trainer;
 
     // [[[cog
     // import cog_addheaders
@@ -76,10 +79,6 @@ public:
     PUBLICAPI VIRTUAL bool tickEpoch();
     PUBLICAPI VIRTUAL void run();
     PUBLICAPI VIRTUAL bool isLearningDone();
-    PUBLICAPI VIRTUAL void setLearningRate( float learningRate );
-    VIRTUAL void setLearningRate( float learningRate, float annealLearningRate );
-    PUBLICAPI VIRTUAL void learn( float learningRate );
-    VIRTUAL void learn( float learningRate, float annealLearningRate );
 
     // [[[end]]]
 };

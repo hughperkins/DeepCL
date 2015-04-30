@@ -7,22 +7,17 @@
 #pragma once
 
 class NeuralNet;
+class OpenCLHelper;
 
-#if defined(_WIN32) 
-# if defined(DeepCL_EXPORTS)
-#  define DeepCL_EXPORT __declspec(dllexport)
-# else
-#  define DeepCL_EXPORT __declspec(dllimport)
-# endif // DeepCL_EXPORTS
-#else // _WIN32
-# define DeepCL_EXPORT
-#endif
+#include "DeepCLDllExport.h"
 
 class DeepCL_EXPORT NeuralNetMould {
 public:
+    OpenCLHelper *cl; // NOT delete
     int _numPlanes;
     int _imageSize;
-    NeuralNetMould(){
+    NeuralNetMould( OpenCLHelper *cl ) :
+            cl( cl ) {
         _numPlanes = 0;
         _imageSize = 0;
     }

@@ -201,7 +201,8 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 }
 
 void test( ActivationFunction *fn, TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased() );
         net->addLayer( ActivationMaker::instance()->fn(fn) );
@@ -220,6 +221,7 @@ void test( ActivationFunction *fn, TestArgs args ) {
     net->print();
     test( args.learningRate, args.numEpochs, args.batchSize, net );
     delete net;
+    delete cl;
 }
 
 TEST( testsinglebatch, imagesize5_filtersize3_batchsize2 ) {
@@ -289,7 +291,8 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
 }
 
 void testLabelled( TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
+    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased()->padZeros() );
         net->addLayer( ActivationMaker::instance()->relu() );
@@ -399,6 +402,7 @@ void testLabelled( TestArgs args ) {
     delete[] labels;
     delete[] inputData;
     delete net;
+    delete cl;
 }
 
 TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_softmax ) {

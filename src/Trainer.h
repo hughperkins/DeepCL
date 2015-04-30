@@ -26,19 +26,19 @@ class NeuralNet;
 // create new ones
 class Trainer{
 public:
-    OpenCLHelper *cl;
-    NeuralNet *net;
+    OpenCLHelper *cl; // NOT delete
+//    NeuralNet *net;
 
     float learningRate;
 
-    virtual void learn( float *input, float *expectedOutput ) = 0;
+    virtual void train( NeuralNet *net, float *input, float *expectedOutput ) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Trainer( OpenCLHelper *cl, NeuralNet *net );
+    Trainer( OpenCLHelper *cl );
     VIRTUAL ~Trainer();
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL std::string asString();

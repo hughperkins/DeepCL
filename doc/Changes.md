@@ -34,6 +34,9 @@ and fc layers
   * resultsFromUpstream -> input
   * results -> output
   * dLossDOutput -> gradOutput
+* Have to create an OpenCLHelper object yourself, and pass it into NeuralNet constructor
+  * not sure this increases the difficulty of usage too much?  and simplifies internal design quite a lot, since
+one can assume that there is one and only one cl, shared everywhere (cf, otherwise MultiNet complicates things, or have to start reference-counting and stuff)
 
 ## Deprecated, in next version, 4.x.x
 

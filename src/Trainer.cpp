@@ -19,9 +19,8 @@ using namespace std;
 #define VIRTUAL
 
 
-Trainer::Trainer( OpenCLHelper *cl, NeuralNet *net ) :
+Trainer::Trainer( OpenCLHelper *cl ) :
     cl( cl ),
-    net( net ),
     learningRate( 0 ) {
 }
 VIRTUAL Trainer::~Trainer() {

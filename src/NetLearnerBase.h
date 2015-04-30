@@ -10,6 +10,8 @@
 
 #include "DeepCLDllExport.h"
 
+class Trainer;
+
 class DeepCL_EXPORT NetLearnerBase {
 public:
     virtual ~NetLearnerBase() {}
@@ -17,10 +19,10 @@ public:
     virtual void setSchedule( int numEpochs ) = 0;
     virtual void setDumpTimings( bool dumpTimings ) = 0;
     virtual void setSchedule( int numEpochs, int startEpoch ) = 0;
-    virtual void setLearningRate( float learningRate ) = 0;
-    virtual void setLearningRate( float learningRate, float annealLearningRate ) = 0;
-    virtual void learn( float learningRate ) = 0;
-    virtual void learn( float learningRate, float annealLearningRate ) = 0;
+//    virtual void setLearningRate( float learningRate ) = 0;
+//    virtual void setLearningRate( float learningRate, float annealLearningRate ) = 0;
+//    virtual void learn( float learningRate ) = 0;
+//    virtual void learn( float learningRate, float annealLearningRate ) = 0;
     virtual void reset() = 0;
     virtual bool tickEpoch() = 0;
     virtual bool tickBatch() = 0;
@@ -32,5 +34,6 @@ public:
     virtual int getNTrain() = 0;
     virtual void setBatchState( int batch, int numRight, float loss ) = 0;
     virtual void run() = 0;
+//    virtual void setTrainer( Trainer *trainer ) = 0;
 };
 
