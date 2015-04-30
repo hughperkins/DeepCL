@@ -13,6 +13,8 @@
 
 #include "Trainer.h"
 
+class SGDState;
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -20,16 +22,20 @@ class SGD : public Trainer{
 public:
     float momentum;
 
+    CLKernel *kernel;
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SGD( OpenCLHelper *cl, NeuralNet *net );
     VIRTUAL ~SGD();
     VIRTUAL void setMomentum( float momentum );
     VIRTUAL std::string asString();
+    VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    SGDState *trainerState );
     VIRTUAL void learn( float *input, float *expectedOutput );  // learns one batch, including updating weights
+    SGD( OpenCLHelper *cl, NeuralNet *net );
 
     // [[[end]]]
 };

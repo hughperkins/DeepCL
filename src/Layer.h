@@ -41,19 +41,6 @@ public:
     /// \brief Get the size of the activated output from this layer
     PUBLICAPI virtual int getOutputSize() const = 0;
     virtual std::string getClassName() const = 0;
-    virtual bool needsTrainerState() const {
-        return false;
-    }
-    // This transfers ownership of the trainer to the layer,
-    // which is responsible for deleting it
-    // probably should pass in a Maker class instead
-    virtual void setTrainerState( TrainerStateMaker *trainerMaker ) {
-        throw std::runtime_error("setTrainer not implemented for " + getClassName() );
-    }
-
-    virtual void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper ) {
-        throw std::runtime_error("updateWeights not implemented for " + getClassName() );
-    }
 
     // [[[cog
     // import cog_addheaders
@@ -66,6 +53,10 @@ public:
     PUBLICAPI VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL float *getGradInput();
+    VIRTUAL CLWrapper *getGradWeightsWrapper();
+    VIRTUAL CLWrapper *getGradBiasWrapper();
+    VIRTUAL CLWrapper *getWeightsWrapper();
+    VIRTUAL CLWrapper *getBiasWrapper();
     VIRTUAL CLWrapper *getGradInputWrapper();
     PUBLICAPI VIRTUAL bool getBiased() const;
     PUBLICAPI VIRTUAL bool hasOutputWrapper() const;
@@ -85,6 +76,7 @@ public:
     PUBLICAPI VIRTUAL void backward();
     VIRTUAL float *getGradWeights();
     VIRTUAL float *getGradBias();
+    VIRTUAL bool biased();
     PUBLICAPI VIRTUAL int getWeightsSize() const;
     PUBLICAPI VIRTUAL int getBiasSize() const;
     PUBLICAPI VIRTUAL void persistToArray(float *array);
@@ -94,6 +86,11 @@ public:
     VIRTUAL float *getWeights();
     VIRTUAL float const*getBias() const;
     PUBLICAPI VIRTUAL std::string asString() const;
+    VIRTUAL bool needsTrainerState  () const;
+    VIRTUAL void setTrainerState( TrainerStateMaker *trainerMaker );
+    VIRTUAL TrainerState *getTrainerState();
+    VIRTUAL TrainerState *getBiasTrainerState();
+    VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
 
     // [[[end]]]
 

@@ -37,6 +37,18 @@ VIRTUAL bool Layer::providesGradInputWrapper() const {
 VIRTUAL float *Layer::getGradInput() {
     throw std::runtime_error("getGradInput not implemented for this layer type, layer " + toString(layerIndex) );
 }
+VIRTUAL CLWrapper *Layer::getGradWeightsWrapper() {
+    throw std::runtime_error("getGradWeightsWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+}
+VIRTUAL CLWrapper *Layer::getGradBiasWrapper() {
+    throw std::runtime_error("getGradBiasWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+}
+VIRTUAL CLWrapper *Layer::getWeightsWrapper() {
+    throw std::runtime_error("getWeightsWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+}
+VIRTUAL CLWrapper *Layer::getBiasWrapper() {
+    throw std::runtime_error("getBiasWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+}
 VIRTUAL CLWrapper *Layer::getGradInputWrapper() {
     throw std::runtime_error("getGradInputWrapper not implemented for this layer type, layer " + toString(layerIndex) );
 }
@@ -49,13 +61,6 @@ PUBLICAPI VIRTUAL bool Layer::hasOutputWrapper() const {
 PUBLICAPI VIRTUAL CLWrapper *Layer::getOutputWrapper() {
     throw std::runtime_error("getOutputWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
 }
-//PUBLICAPI VIRTUAL ActivationFunction const*Layer::getActivationFunction() {
-//    throw std::runtime_error("getActivationFunction not implemetned for this layer type, layer " + toString(layerIndex) );
-//}
-//VIRTUAL int Layer::getOutputSize() const {
-//    throw std::runtime_error("getOutputSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
-// //     return numPlanes * imageSize * imageSize * batchSize;
-//}
 PUBLICAPI VIRTUAL int Layer::getOutputCubeSize() const {
     throw std::runtime_error("getOutputCubeSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
  //     return numPlanes * imageSize * imageSize * batchSize;
@@ -134,6 +139,9 @@ VIRTUAL float *Layer::getGradWeights() {
 VIRTUAL float *Layer::getGradBias() {
     throw std::runtime_error("getGradBias not implemented for " + getClassName() );
 }
+VIRTUAL bool Layer::biased() {
+    throw std::runtime_error("biased not implemented for " + getClassName() );
+}
 PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
     throw std::runtime_error("getWeightsSize not implemented for " + getClassName() );
 }
@@ -164,5 +172,23 @@ VIRTUAL float const*Layer::getBias() const {
 /// \brief Get a string representation of the layer
 PUBLICAPI VIRTUAL std::string Layer::asString() const {
     return "Layer{}";
+}
+VIRTUAL bool Layer::needsTrainerState  () const {
+    return false;
+}
+// This transfers ownership of the trainer to the layer,
+// which is responsible for deleting it
+// probably should pass in a Maker class instead
+VIRTUAL void Layer::setTrainerState( TrainerStateMaker *trainerMaker ) {
+    throw std::runtime_error("setTrainer not implemented for " + getClassName() );
+}
+VIRTUAL TrainerState *Layer::getTrainerState() {
+    throw std::runtime_error("getTrainerState not implemented for " + getClassName() );
+}
+VIRTUAL TrainerState *Layer::getBiasTrainerState() {
+    throw std::runtime_error("getBiasTrainerState not implemented for " + getClassName() );
+}
+VIRTUAL void Layer::updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper ) {
+    throw std::runtime_error("updateWeights not implemented for " + getClassName() );
 }
 

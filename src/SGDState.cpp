@@ -23,9 +23,9 @@ VIRTUAL SGDState::~SGDState() {
     //delete kernel;
 }
 
-VIRTUAL void SGDState::setMomentum( float momentum ) {
-    this->momentum = momentum;
-}
+//VIRTUAL void SGDState::setMomentum( float momentum ) {
+//    this->momentum = momentum;
+//}
 
 VIRTUAL void SGDState::updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsWrapper ) {
     // first, determine updates, based on gradient, and last updates
@@ -38,31 +38,31 @@ VIRTUAL void SGDState::updateWeights(CLWrapper *gradientsWrapper, CLWrapper *wei
     // 2. update weights
     // that's it :-)
 
-    StatefulTimer::instance()->timeCheck("SGDState::updateWeights start" );
+//    StatefulTimer::instance()->timeCheck("SGDState::updateWeights start" );
 //    cout << "SGDState::updateWeights, learningRate=" << learningRate << " momentum=" << momentum
 //        << " numWeights=" << numWeights << endl;
 
-    kernel  ->in( numWeights )
-            ->in( learningRate )
-            ->in( momentum )
-            ->inout( lastUpdateWrapper )
-            ->in( gradientsWrapper )
-            ->inout( weightsWrapper );
-    int globalSize = numWeights;
-    int workgroupSize = 64;
-    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
-    cl->finish();
+//    kernel  ->in( numWeights )
+//            ->in( learningRate )
+//            ->in( momentum )
+//            ->inout( lastUpdateWrapper )
+//            ->in( gradientsWrapper )
+//            ->inout( weightsWrapper );
+//    int globalSize = numWeights;
+//    int workgroupSize = 64;
+//    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
+//    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+//    cl->finish();
 
-    StatefulTimer::instance()->timeCheck("SGDState::updateWeights end" );
+//    StatefulTimer::instance()->timeCheck("SGDState::updateWeights end" );
 }
 
 SGDState::SGDState( OpenCLHelper *cl, int numWeights ) :
-        cl( cl ),
-        kernel( 0 ),
-        numWeights( numWeights ),
-        learningRate(1.0f),
-        momentum( 0.0f )
+//        cl( cl ),
+//        kernel( 0 ),
+        numWeights( numWeights )
+//        learningRate(1.0f),
+//        momentum( 0.0f )
     { // should we handle bias separately?  maybe... not?
       // or each layer could have one trainer for biases, and one for the
       // non-biases?  Maybe kind of ok?
@@ -76,53 +76,22 @@ SGDState::SGDState( OpenCLHelper *cl, int numWeights ) :
     lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
     lastUpdateWrapper->copyToDevice();
 
-    string options = "";
+//    string options = "";
 
-    static CLKernel *kernel = 0; // since kernel contains no defines, we 
-                                 // can share it across all SGDState instances,
-                                 // save some compile time :-)
-    if( kernel != 0 ) {
-        this->kernel = kernel;
-        return;
-    }
+//    static CLKernel *kernel = 0; // since kernel contains no defines, we 
+//                                 // can share it across all SGDState instances,
+//                                 // save some compile time :-)
+//    if( kernel != 0 ) {
+//        this->kernel = kernel;
+//        return;
+//    }
 
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernel", "cl/SGD.cl", "updateWeights", 'options' )
-    // ]]]
-    // generated using cog, from cl/SGD.cl:
-    const char * kernelSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void updateWeights(\n" 
-    "        const int N,\n" 
-    "        const float learningRate,\n" 
-    "        const float momentum,\n" 
-    "        global float *lastUpdate,\n" 
-    "        global const float *gradWeights,\n" 
-    "        global float *weights\n" 
-    "            ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    // first update the update\n" 
-    "    lastUpdate[globalId] =\n" 
-    "        momentum * lastUpdate[globalId]\n" 
-    "        - learningRate * gradWeights[globalId];\n" 
-    "    // now update the weight\n" 
-    "    weights[globalId] += lastUpdate[globalId];\n" 
-    "    // thats it... :-)\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernel = cl->buildKernelFromString( kernelSource, "updateWeights", options, "cl/SGD.cl" );
-    // [[[end]]]
-    this->kernel = kernel;
+//    // [[[cog
+//    // # import stringify
+//    // # stringify.write_kernel2( "kernel", "cl/SGD.cl", "updateWeights", 'options' )
+//    // ]]]
+//    // [[[end]]]
+//    this->kernel = kernel;
 }
 
 

@@ -28,8 +28,8 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 //        filterSizeSquared( filterSize * filterSize ),
 //        padZeros( maker->_padZeros ),
         cl( cl ),
-        weightsTrainer( 0 ),
-        biasTrainer( 0 ),
+        trainerState( 0 ),
+        biasTrainerState( 0 ),
         forwardImpl(0),
         backwardImpl(0),
 //        activationFunction( maker->_activationFunction ),
@@ -132,8 +132,8 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete forwardImpl;
     delete backpropWeightsImpl;
     delete backwardImpl;
-    delete weightsTrainer;
-    delete biasTrainer;
+    delete trainerState;
+    delete biasTrainerState;
 }
 VIRTUAL std::string ConvolutionalLayer::getClassName() const {
     return "ConvolutionalLayer";
@@ -170,6 +170,18 @@ VIRTUAL bool ConvolutionalLayer::providesGradInputWrapper() const {
 }
 VIRTUAL CLWrapper *ConvolutionalLayer::getGradInputWrapper() {
     return gradInputWrapper;
+}
+VIRTUAL CLWrapper *ConvolutionalLayer::getWeightsWrapper() {
+    return weightsWrapper;
+}
+VIRTUAL CLWrapper *ConvolutionalLayer::getBiasWrapper() {
+    return biasWrapper;
+}
+VIRTUAL CLWrapper *ConvolutionalLayer::getGradWeightsWrapper() {
+    return gradWeightsWrapper;
+}
+VIRTUAL CLWrapper *ConvolutionalLayer::getGradBiasWrapper() {
+    return gradBiasWrapper;
 }
 VIRTUAL bool ConvolutionalLayer::hasOutputWrapper() const {
     return true;
@@ -457,12 +469,21 @@ VIRTUAL std::string ConvolutionalLayer::asString() const {
 VIRTUAL bool ConvolutionalLayer::needsTrainerState() const {
     return true;
 }
+VIRTUAL bool ConvolutionalLayer::biased() {
+    return dim.biased;
+}
+VIRTUAL TrainerState *ConvolutionalLayer::getTrainerState() {
+    return trainerState;
+}
+VIRTUAL TrainerState *ConvolutionalLayer::getBiasTrainerState() {
+    return biasTrainerState;
+}
 VIRTUAL void ConvolutionalLayer::setTrainerState( TrainerStateMaker *trainerStateMaker ) {
-    delete weightsTrainer;
-    delete biasTrainer;
-    this->weightsTrainer = trainerStateMaker->instance( cl, getWeightsSize() );
+    delete trainerState;
+    delete biasTrainerState;
+    this->trainerState = trainerStateMaker->instance( cl, getWeightsSize() );
     if( dim.biased ) {
-        this->biasTrainer = trainerStateMaker->instance( cl, getBiasSize() );
+        this->biasTrainerState = trainerStateMaker->instance( cl, getBiasSize() );
     }
 }
 

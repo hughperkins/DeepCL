@@ -32,13 +32,13 @@ class CLKernel;
 // Maybe a 'Maker' for trainers?
 class DeepCL_EXPORT SGDState : public TrainerState {
 public:
-    OpenCLHelper *cl;
-    CLKernel *kernel;
+//    OpenCLHelper *cl;
+//    CLKernel *kernel;
 
     const int numWeights;
 
-    float learningRate;
-    float momentum;
+//    float learningRate;
+//    float momentum;
 
     // should store last weights
     float *lastUpdate;
@@ -50,7 +50,6 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~SGDState();
-    VIRTUAL void setMomentum( float momentum );
     VIRTUAL void updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsWrapper );
     SGDState( OpenCLHelper *cl, int numWeights );
 

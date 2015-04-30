@@ -30,8 +30,8 @@ class CopyBuffer;
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
-    TrainerState *weightsTrainer; // OWNED by us, we should delete (if non-zero)
-    TrainerState *biasTrainer; // OWNED by us, we should delete (if non-zero)
+    TrainerState *trainerState; // OWNED by us, we should delete (if non-zero)
+    TrainerState *biasTrainerState; // OWNED by us, we should delete (if non-zero)
 
     Forward *forwardImpl;
     BackpropWeights *backpropWeightsImpl;
@@ -118,6 +118,10 @@ public:
     VIRTUAL float *getGradBias();
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL CLWrapper *getWeightsWrapper();
+    VIRTUAL CLWrapper *getBiasWrapper();
+    VIRTUAL CLWrapper *getGradWeightsWrapper();
+    VIRTUAL CLWrapper *getGradBiasWrapper();
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
@@ -148,6 +152,9 @@ public:
     VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
     VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainerState() const;
+    VIRTUAL bool biased();
+    VIRTUAL TrainerState *getTrainerState();
+    VIRTUAL TrainerState *getBiasTrainerState();
     VIRTUAL void setTrainerState( TrainerStateMaker *trainerStateMaker );
 
     // [[[end]]]
