@@ -114,7 +114,7 @@ VIRTUAL std::string NormalizationLayer::toString() {
     return toString();
 }
 VIRTUAL std::string NormalizationLayer::asString() const {
-    return std::string("") + "NormalizationLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " translate=" + ::toString( translate ) + 
+    return std::string("") + "NormalizationLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " translate=" + ::toString( translate ) + 
         " scale=" + ::toString( scale ) + " }";
 }
 

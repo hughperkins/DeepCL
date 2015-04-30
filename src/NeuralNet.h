@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iomanip>
 
 #include "Layer.h"
 #include "NeuralNetMould.h"
@@ -96,6 +97,7 @@ public:
     void print();
     void printWeights();
     void printOutput();
+    void printParamStats();
     PUBLICAPI std::string asString();
 
     // [[[end]]]

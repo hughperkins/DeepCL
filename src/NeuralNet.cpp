@@ -244,6 +244,7 @@ PUBLICAPI VIRTUAL int NeuralNet::getOutputSize() const {
 }
 void NeuralNet::print() {
     cout << this->asString();
+    printParamStats();
 //    int i = 0; 
 //    for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
 //        std::cout << "layer " << i << ":" << (*it)->asString() << endl;
@@ -264,6 +265,25 @@ void NeuralNet::printOutput() {
         std::cout << "layer " << i << ":" << std::endl;
         (*it)->printOutput();
         i++;
+    }
+}
+void NeuralNet::printParamStats() {
+    int sum = 0;
+    for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
+        sum += (*it)->getPersistSize();
+    }
+
+    int i = 0;
+    for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++, i++ ) {
+        int size = (*it)->getPersistSize();
+    
+        std::cout << "layer " << i << ": params=" << size << "\t";
+        std::cout << std::fixed << std::setprecision(1) << ((float) 100 * size)/sum << "%";
+        std::cout << std::endl;
+        i++;
+    }
+    if( i ){
+        std::cout << "TOTAL  : params=" << sum << std::endl;
     }
 }
 PUBLICAPI std::string NeuralNet::asString() {
