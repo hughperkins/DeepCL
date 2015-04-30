@@ -113,15 +113,15 @@ VIRTUAL std::string InputLayer::toString() {
     return asString();
 }
 VIRTUAL std::string InputLayer::asString() const {
-    return std::string("") + "InputLayer { outputPlanes " + ::toString( outputPlanes ) + " outputImageSize " +  ::toString( outputImageSize ) + " }";
+    return std::string("") + "InputLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
 }
 
 //template<>VIRTUAL std::string InputLayer<unsigned char>::asString() const {
-//    return std::string("") + "InputLayer<unsigned char>{ outputPlanes " + ::toString( outputPlanes ) + " outputImageSize " +  ::toString( outputImageSize ) + " }";
+//    return std::string("") + "InputLayer<unsigned char>{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
 //}
 
 //template<>VIRTUAL std::string InputLayer<float>::asString() const {
-//    return std::string("") + "InputLayer<float>{ outputPlanes " + ::toString( outputPlanes ) + " outputImageSize " +  ::toString( outputImageSize ) + " }";
+//    return std::string("") + "InputLayer<float>{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
 //}
 
 
