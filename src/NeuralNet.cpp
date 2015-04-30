@@ -269,18 +269,24 @@ void NeuralNet::printOutput() {
 }
 void NeuralNet::printParamStats() {
     int sum = 0;
+    int skip = 0;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        sum += (*it)->getPersistSize();
+        int size = (*it)->getPersistSize();
+        sum += size;
+        if( ! size ){
+            skip++;
+        }
     }
+    std::cout << "Parameters overview: (skipping " << skip << " layers with 0 params)" << std::endl;
 
     int i = 0;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++, i++ ) {
         int size = (*it)->getPersistSize();
-    
-        std::cout << "layer " << i << ": params=" << size << "\t";
-        std::cout << std::fixed << std::setprecision(1) << ((float) 100 * size)/sum << "%";
-        std::cout << std::endl;
-        i++;
+        if( size ) {
+            std::cout << "layer " << i << ": params=" << size << "\t";
+            std::cout << std::fixed << std::setprecision(1) << ((float) 100 * size)/sum << "%";
+            std::cout << std::endl;
+        }
     }
     if( i ){
         std::cout << "TOTAL  : params=" << sum << std::endl;
