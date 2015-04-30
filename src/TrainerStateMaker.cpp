@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "TrainerMaker.h"
+#include "TrainerStateMaker.h"
 
 using namespace std;
 

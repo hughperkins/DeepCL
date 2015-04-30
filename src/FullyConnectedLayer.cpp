@@ -101,11 +101,11 @@ VIRTUAL void FullyConnectedLayer::forward() {
 VIRTUAL void FullyConnectedLayer::backward() {
     convolutionalLayer->backward();
 }
-VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
+VIRTUAL bool FullyConnectedLayer::needsTrainerState() const {
     return true;
 }
-VIRTUAL void FullyConnectedLayer::setTrainer( TrainerMaker *trainerMaker ) {
-    convolutionalLayer->setTrainer( trainerMaker );
+VIRTUAL void FullyConnectedLayer::setTrainerState( TrainerStateMaker *TrainerStateMaker ) {
+    convolutionalLayer->setTrainerState( TrainerStateMaker );
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
     return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " }";

@@ -11,27 +11,37 @@
 #include <iostream>
 #include <algorithm>
 
-class CLWrapper;
-
-#include "DeepCLDllExport.h"
+class OpenCLHelper;
+class NeuralNet;
 
 #define VIRTUAL virtual
 #define STATIC static
 
-// base class for trainers
-class DeepCL_EXPORT Trainer {
+// responsible for handling one batch of learning for the passed in network
+// TODO: ponder NeuralNet vs Trainable
+// Assumptions: this class and its children can assume that the NeuralNet
+// is not going to change structure during their lifetime
+// If we want to change the NeuralNet structure, we should do it before creating
+// the Trainer objects, or we should delete the existing Trainer objects, and
+// create new ones
+class Trainer{
 public:
-    // plausibly, we receive the current gradients, and current weights, and we 
-    // can update them as we see fit...
-    VIRTUAL void updateWeights(CLWrapper *gradients, CLWrapper *weights) = 0;
+    OpenCLHelper *cl;
+    NeuralNet *net;
+
+    float learningRate;
+
+    virtual void learn( float *input, float *expectedOutput ) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Trainer();
+    Trainer( OpenCLHelper *cl, NeuralNet *net );
     VIRTUAL ~Trainer();
+    VIRTUAL void setLearningRate( float learningRate );
+    VIRTUAL std::string asString();
 
     // [[[end]]]
 };

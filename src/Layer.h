@@ -19,8 +19,8 @@
 
 #define VIRTUAL virtual
 
-class Trainer;
-class TrainerMaker;
+class TrainerState;
+class TrainerStateMaker;
 
 PUBLICAPI
 /// A single layer within the neural net
@@ -41,13 +41,13 @@ public:
     /// \brief Get the size of the activated output from this layer
     PUBLICAPI virtual int getOutputSize() const = 0;
     virtual std::string getClassName() const = 0;
-    virtual bool needsTrainer() const {
+    virtual bool needsTrainerState() const {
         return false;
     }
     // This transfers ownership of the trainer to the layer,
     // which is responsible for deleting it
     // probably should pass in a Maker class instead
-    virtual void setTrainer( TrainerMaker *trainerMaker ) {
+    virtual void setTrainerState( TrainerStateMaker *trainerMaker ) {
         throw std::runtime_error("setTrainer not implemented for " + getClassName() );
     }
 

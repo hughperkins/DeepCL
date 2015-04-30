@@ -6,6 +6,9 @@
 
 #include <iostream>
 
+#include "OpenCLHelper.h"
+#include "NeuralNet.h"
+#include "stringhelper.h"
 #include "Trainer.h"
 
 using namespace std;
@@ -15,10 +18,18 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-Trainer::Trainer() {
-}
 
+Trainer::Trainer( OpenCLHelper *cl, NeuralNet *net ) :
+    cl( cl ),
+    net( net ),
+    learningRate( 0 ) {
+}
 VIRTUAL Trainer::~Trainer() {
 }
-
+VIRTUAL void Trainer::setLearningRate( float learningRate ) {
+    this->learningRate = learningRate;
+}
+VIRTUAL std::string Trainer::asString() {
+    return "Trainer{ learningRate=" + toString( learningRate ) + " }";
+}
 

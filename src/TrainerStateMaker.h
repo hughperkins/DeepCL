@@ -11,25 +11,21 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Trainerv2.h"
-
 #define VIRTUAL virtual
 #define STATIC static
 
-class SGDv2 : public Trainerv2 {
+class TrainerState;
+class OpenCLHelper;
+
+class TrainerStateMaker {
 public:
-    float momentum;
+    virtual TrainerState *instance( OpenCLHelper *cl, int numWeights ) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SGDv2( OpenCLHelper *cl, NeuralNet *net );
-    VIRTUAL ~SGDv2();
-    VIRTUAL void setMomentum( float momentum );
-    VIRTUAL std::string asString();
-    VIRTUAL void learn( float *input, float *expectedOutput );  // learns one batch, including updating weights
 
     // [[[end]]]
 };

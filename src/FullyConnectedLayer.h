@@ -51,8 +51,8 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL void forward();
     VIRTUAL void backward();
-    VIRTUAL bool needsTrainer() const;
-    VIRTUAL void setTrainer( TrainerMaker *trainerMaker );
+    VIRTUAL bool needsTrainerState() const;
+    VIRTUAL void setTrainerState( TrainerStateMaker *TrainerStateMaker );
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-#include "SGDMaker.h"
-#include "SGD.h"
+#include "SGDStateMaker.h"
+#include "SGDState.h"
 
 using namespace std;
 
@@ -16,23 +16,23 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-SGDMaker::SGDMaker() {
+SGDStateMaker::SGDStateMaker() {
 //    this->learningRate = learningRate;
 //    this->momentum = 0.0f;
 }
 
-//SGDMaker::SGDMaker( float learningRate ) {
+//SGDStateMaker::SGDStateMaker( float learningRate ) {
 //    this->learningRate = learningRate;
 //    this->momentum = 0.0f;
 //}
 
-//SGDMaker::SGDMaker( float learningRate, float momentum ) {
+//SGDStateMaker::SGDStateMaker( float learningRate, float momentum ) {
 //    this->learningRate = learningRate;
 //    this->momentum = momentum;
 //}
 
-Trainer *SGDMaker::instance( OpenCLHelper *cl, int numWeights ) {
-    SGD *sgd = new SGD( cl, numWeights );
+TrainerState *SGDStateMaker::instance( OpenCLHelper *cl, int numWeights ) {
+    SGDState *sgd = new SGDState( cl, numWeights );
 //    sgd->learningRate = learningRate;
 //    sgd->momentum = momentum;
     return sgd;

@@ -11,12 +11,12 @@
 #include <iostream>
 #include <algorithm>
 
-#include "TrainerMaker.h"
+#include "TrainerStateMaker.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class SGDMaker : public TrainerMaker {
+class SGDStateMaker : public TrainerStateMaker {
 public:
 //    float learningRate;
 //    float momentum;
@@ -26,8 +26,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SGDMaker();
-    Trainer *instance( OpenCLHelper *cl, int numWeights );
+    SGDStateMaker();
+    TrainerState *instance( OpenCLHelper *cl, int numWeights );
 
     // [[[end]]]
 };

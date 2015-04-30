@@ -6,8 +6,11 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
-#include "StatefulTimer.h"
+#include "stringhelper.h"
+#include "NeuralNet.h"
+#include "Layer.h"
+#include "LossLayer.h"
+#include "SGDStateMaker.h"
 #include "SGD.h"
 
 using namespace std;
@@ -17,112 +20,41 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL SGD::~SGD() {
-    delete lastUpdateWrapper;
-    delete[] lastUpdate;
-    //delete kernel;
-}
 
+SGD::SGD( OpenCLHelper *cl, NeuralNet *net ) :
+        Trainer( cl, net ) {
+    SGDStateMaker stateMaker;
+    // go through network layers, and assign SGD objects (should probably rename these sometime somehow)
+    for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
+        Layer *layer = net->getLayer( layerIdx );
+        if( layer->needsTrainerState() ) {
+            layer->setTrainerState( &stateMaker );
+        }
+    }    
+}
+VIRTUAL SGD::~SGD() {
+}
 VIRTUAL void SGD::setMomentum( float momentum ) {
     this->momentum = momentum;
 }
-
-VIRTUAL void SGD::updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsWrapper ) {
-    // first, determine updates, based on gradient, and last updates
-    // can copy this directly into lastUpdateWrapper
-    // then, we update the weights
-    // actually, can directly update the weights too
-    // so:
-    // input: last updates, current gradient, current weights
-    // 1. update last updates to this updates
-    // 2. update weights
-    // that's it :-)
-
-    StatefulTimer::instance()->timeCheck("SGD::updateWeights start" );
-//    cout << "SGD::updateWeights, learningRate=" << learningRate << " momentum=" << momentum
-//        << " numWeights=" << numWeights << endl;
-
-    kernel  ->in( numWeights )
-            ->in( learningRate )
-            ->in( momentum )
-            ->inout( lastUpdateWrapper )
-            ->in( gradientsWrapper )
-            ->inout( weightsWrapper );
-    int globalSize = numWeights;
-    int workgroupSize = 64;
-    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
-    cl->finish();
-
-    StatefulTimer::instance()->timeCheck("SGD::updateWeights end" );
+VIRTUAL std::string SGD::asString() {
+    return "SGD{ learningRate=" + toString( learningRate ) + ", momentum=" + 
+        toString( momentum ) + " }";
 }
-
-SGD::SGD( OpenCLHelper *cl, int numWeights ) :
-        cl( cl ),
-        kernel( 0 ),
-        numWeights( numWeights ),
-        learningRate(1.0f),
-        momentum( 0.0f )
-    { // should we handle bias separately?  maybe... not?
-      // or each layer could have one trainer for biases, and one for the
-      // non-biases?  Maybe kind of ok?
-
-    // lastUpdate buffer never needs to change size,
-    //  since number of weights is invariant with batchSize etc
-    lastUpdate = new float[numWeights];
-    for( int i = 0; i < numWeights; i++ ) {
-        lastUpdate[i] = 0.0f;
+VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one batch, including updating weights
+                                  // doesnt have to think about running multiple batches,
+                                  // or loading data, or anything like that
+    // net->calcGrad();
+    net->forward( input );
+    int numLayers = net->getNumLayers();
+    LossLayer *lossLayer = dynamic_cast< LossLayer * >( net->getLastLayer() );
+    if( lossLayer == 0 ) {
+        throw runtime_error( "last layer of net should be a LossLayer class" );
     }
-    lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
-    lastUpdateWrapper->copyToDevice();
-
-    string options = "";
-
-    static CLKernel *kernel = 0; // since kernel contains no defines, we 
-                                 // can share it across all SGD instances,
-                                 // save some compile time :-)
-    if( kernel != 0 ) {
-        this->kernel = kernel;
-        return;
+    lossLayer->calcGradInput( expectedOutput );
+    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
+        Layer *layer = net->getLayer( layerIdx );
+        layer->backward();
     }
-
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernel", "cl/SGD.cl", "updateWeights", 'options' )
-    // ]]]
-    // generated using cog, from cl/SGD.cl:
-    const char * kernelSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void updateWeights(\n" 
-    "        const int N,\n" 
-    "        const float learningRate,\n" 
-    "        const float momentum,\n" 
-    "        global float *lastUpdate,\n" 
-    "        global const float *gradWeights,\n" 
-    "        global float *weights\n" 
-    "            ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    // first update the update\n" 
-    "    lastUpdate[globalId] =\n" 
-    "        momentum * lastUpdate[globalId]\n" 
-    "        - learningRate * gradWeights[globalId];\n" 
-    "    // now update the weight\n" 
-    "    weights[globalId] += lastUpdate[globalId];\n" 
-    "    // thats it... :-)\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernel = cl->buildKernelFromString( kernelSource, "updateWeights", options, "cl/SGD.cl" );
-    // [[[end]]]
-    this->kernel = kernel;
 }
-
 

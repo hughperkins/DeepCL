@@ -11,21 +11,27 @@
 #include <iostream>
 #include <algorithm>
 
+class CLWrapper;
+
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
-class Trainer;
-class OpenCLHelper;
-
-class TrainerMaker {
+// base class for trainers
+class DeepCL_EXPORT TrainerState {
 public:
-    virtual Trainer *instance( OpenCLHelper *cl, int numWeights ) = 0;
+    // plausibly, we receive the current gradients, and current weights, and we 
+    // can update them as we see fit...
+    VIRTUAL void updateWeights(CLWrapper *gradients, CLWrapper *weights) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    TrainerState();
+    VIRTUAL ~TrainerState();
 
     // [[[end]]]
 };

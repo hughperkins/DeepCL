@@ -11,9 +11,9 @@
 #include "WeightsHelper.h"
 #include "Backward.h"
 #include "BackpropWeights.h"
-#include "TrainerMaker.h"
-#include "Trainer.h"
-//#include "SGD.h"
+#include "TrainerStateMaker.h"
+#include "TrainerState.h"
+#include "SGDState.h"
 #include "GpuAdd.h"
 #include "CopyBuffer.h"
 
@@ -454,15 +454,15 @@ VIRTUAL void ConvolutionalLayer::updateWeights( CLWrapper *weightChangesWrapper,
 VIRTUAL std::string ConvolutionalLayer::asString() const {
     return "ConvolutionalLayer{ " + toString( dim ) + " }";
 }
-VIRTUAL bool ConvolutionalLayer::needsTrainer() const {
+VIRTUAL bool ConvolutionalLayer::needsTrainerState() const {
     return true;
 }
-VIRTUAL void ConvolutionalLayer::setTrainer( TrainerMaker *trainerMaker ) {
+VIRTUAL void ConvolutionalLayer::setTrainerState( TrainerStateMaker *trainerStateMaker ) {
     delete weightsTrainer;
     delete biasTrainer;
-    this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
+    this->weightsTrainer = trainerStateMaker->instance( cl, getWeightsSize() );
     if( dim.biased ) {
-        this->biasTrainer = trainerMaker->instance( cl, getBiasSize() );
+        this->biasTrainer = trainerStateMaker->instance( cl, getBiasSize() );
     }
 }
 

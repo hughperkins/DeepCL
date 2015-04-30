@@ -21,7 +21,7 @@
 #include "test/Sampler.h"
 #include "test/WeightRandomizer.h"
 
-#include "SGDv2.h"
+#include "SGD.h"
 
 using namespace std;
 
@@ -51,7 +51,7 @@ TEST( testsgd, basic ) {
     WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
     WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
 
-    SGDv2 *sgd = new SGDv2( cl, net );
+    SGD *sgd = new SGD( cl, net );
     sgd->setLearningRate( 0.002f );
     sgd->setMomentum( 0.1f );
 

@@ -15,9 +15,11 @@
 #include "StatefulTimer.h"
 #include "stringhelper.h"
 #include "LayerDimensions.h"
+#include "TrainerState.h"
 
 #define VIRTUAL virtual
 
+class TrainerStateMaker;
 class Forward;
 class Backward;
 class BackpropWeights;
@@ -28,8 +30,8 @@ class CopyBuffer;
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
-    Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
-    Trainer *biasTrainer; // OWNED by us, we should delete (if non-zero)
+    TrainerState *weightsTrainer; // OWNED by us, we should delete (if non-zero)
+    TrainerState *biasTrainer; // OWNED by us, we should delete (if non-zero)
 
     Forward *forwardImpl;
     BackpropWeights *backpropWeightsImpl;
@@ -145,8 +147,8 @@ public:
     VIRTUAL void setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper );
     VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
     VIRTUAL std::string asString() const;
-    VIRTUAL bool needsTrainer() const;
-    VIRTUAL void setTrainer( TrainerMaker *trainerMaker );
+    VIRTUAL bool needsTrainerState() const;
+    VIRTUAL void setTrainerState( TrainerStateMaker *trainerStateMaker );
 
     // [[[end]]]
 };

@@ -22,8 +22,8 @@
 #include "MultiNet.h"
 #include "BatchProcess.h"
 #include "NetLearnerOnDemand.h"
-#include "SGD.h"
-#include "SGDMaker.h"
+#include "SGDState.h"
+#include "SGDStateMaker.h"
 
 using namespace std;
 
@@ -258,12 +258,12 @@ void go(Config config) {
     }
     // apply the trainer
     if( toLower( config.trainer ) == "sgd" ) {
-        SGDMaker *sgdMaker = new SGDMaker( config.learningRate, config.momentum );
+        SGDStateMaker *sgdStateMaker = new SGDStateMaker();
         for( int i = 0; i < net->getNumLayers(); i++ ) {
             Layer *layer = net->getLayer(i);
-            if( layer->needsTrainer() ) {
+            if( layer->needsTrainerState() ) {
                 cout << "setting trainermaker layer " << i << endl;
-                layer->setTrainerMaker( sgdMaker );
+                layer->setTrainerState( sgdStateMaker );
             }
         }
     } else {
