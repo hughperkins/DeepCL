@@ -104,8 +104,8 @@ VIRTUAL void FullyConnectedLayer::backward() {
 VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
     return true;
 }
-VIRTUAL void FullyConnectedLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
-    convolutionalLayer->setTrainerMaker( trainerMaker );
+VIRTUAL void FullyConnectedLayer::setTrainer( TrainerMaker *trainerMaker ) {
+    convolutionalLayer->setTrainer( trainerMaker );
 }
 VIRTUAL std::string FullyConnectedLayer::asString() const {
     return "FullyConnectedLayer{ numPlanes=" + toString( numPlanes ) + " imageSize=" + toString( imageSize ) + " }";

@@ -13,7 +13,7 @@
 #include "BackpropWeights.h"
 #include "TrainerMaker.h"
 #include "Trainer.h"
-#include "SGD.h"
+//#include "SGD.h"
 #include "GpuAdd.h"
 #include "CopyBuffer.h"
 
@@ -28,8 +28,8 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 //        filterSizeSquared( filterSize * filterSize ),
 //        padZeros( maker->_padZeros ),
         cl( cl ),
-//        weightsTrainer( 0 ),
-//        biasTrainer( 0 ),
+        weightsTrainer( 0 ),
+        biasTrainer( 0 ),
         forwardImpl(0),
         backwardImpl(0),
 //        activationFunction( maker->_activationFunction ),
@@ -132,8 +132,8 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete forwardImpl;
     delete backpropWeightsImpl;
     delete backwardImpl;
-//    delete weightsTrainer;
-//    delete biasTrainer;
+    delete weightsTrainer;
+    delete biasTrainer;
 }
 VIRTUAL std::string ConvolutionalLayer::getClassName() const {
     return "ConvolutionalLayer";
@@ -457,10 +457,12 @@ VIRTUAL std::string ConvolutionalLayer::asString() const {
 VIRTUAL bool ConvolutionalLayer::needsTrainer() const {
     return true;
 }
-//VIRTUAL void ConvolutionalLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
-//    delete weightsTrainer;
-//    delete biasTrainer;
-//    this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
-//    this->biasTrainer = trainerMaker->instance( cl, getBiasSize() );
-//}
+VIRTUAL void ConvolutionalLayer::setTrainer( TrainerMaker *trainerMaker ) {
+    delete weightsTrainer;
+    delete biasTrainer;
+    this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
+    if( dim.biased ) {
+        this->biasTrainer = trainerMaker->instance( cl, getBiasSize() );
+    }
+}
 

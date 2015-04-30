@@ -47,7 +47,7 @@ public:
     // This transfers ownership of the trainer to the layer,
     // which is responsible for deleting it
     // probably should pass in a Maker class instead
-    virtual void setTrainerMaker( TrainerMaker *trainerMaker ) {
+    virtual void setTrainer( TrainerMaker *trainerMaker ) {
         throw std::runtime_error("setTrainer not implemented for " + getClassName() );
     }
 

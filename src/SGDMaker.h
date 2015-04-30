@@ -18,16 +18,15 @@
 
 class SGDMaker : public TrainerMaker {
 public:
-    float learningRate;
-    float momentum;
+//    float learningRate;
+//    float momentum;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SGDMaker( float learningRate );
-    SGDMaker( float learningRate, float momentum );
+    SGDMaker();
     Trainer *instance( OpenCLHelper *cl, int numWeights );
 
     // [[[end]]]

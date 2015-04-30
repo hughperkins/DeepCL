@@ -19,6 +19,11 @@ class NeuralNet;
 
 // responsible for handling one batch of learning for the passed in network
 // TODO: ponder NeuralNet vs Trainable
+// Assumptions: this class and its children can assume that the NeuralNet
+// is not going to change structure during their lifetime
+// If we want to change the NeuralNet structure, we should do it before creating
+// the Trainerv2 objects, or we should delete the existing Trainerv2 objects, and
+// create new ones
 class Trainerv2 {
 public:
     OpenCLHelper *cl;

@@ -16,20 +16,25 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-SGDMaker::SGDMaker( float learningRate ) {
-    this->learningRate = learningRate;
-    this->momentum = 0.0f;
+SGDMaker::SGDMaker() {
+//    this->learningRate = learningRate;
+//    this->momentum = 0.0f;
 }
 
-SGDMaker::SGDMaker( float learningRate, float momentum ) {
-    this->learningRate = learningRate;
-    this->momentum = momentum;
-}
+//SGDMaker::SGDMaker( float learningRate ) {
+//    this->learningRate = learningRate;
+//    this->momentum = 0.0f;
+//}
+
+//SGDMaker::SGDMaker( float learningRate, float momentum ) {
+//    this->learningRate = learningRate;
+//    this->momentum = momentum;
+//}
 
 Trainer *SGDMaker::instance( OpenCLHelper *cl, int numWeights ) {
     SGD *sgd = new SGD( cl, numWeights );
-    sgd->learningRate = learningRate;
-    sgd->momentum = momentum;
+//    sgd->learningRate = learningRate;
+//    sgd->momentum = momentum;
     return sgd;
 }
 
