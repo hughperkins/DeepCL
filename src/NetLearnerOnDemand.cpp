@@ -30,7 +30,7 @@ PUBLICAPI NetLearnerOnDemand::NetLearnerOnDemand( Trainer *trainer, Trainable *n
         testBatcher(0)
 //    batchSize = 128;
         {
-    learnAction = new NetLearnLabeledAction( 0 );
+    learnAction = new NetLearnLabeledAction( trainer );
     testAction = new NetForwardAction();
     learnBatcher = new OnDemandBatcher( net, learnAction, trainFilepath, Ntrain, fileReadBatches, batchSize );
     testBatcher = new OnDemandBatcher( net, testAction, testFilepath, Ntest, fileReadBatches, batchSize );
