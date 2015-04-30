@@ -280,7 +280,6 @@ void NeuralNet::printParamStats() {
         std::cout << "layer " << i << ": params=" << size << "\t";
         std::cout << std::fixed << std::setprecision(1) << ((float) 100 * size)/sum << "%";
         std::cout << std::endl;
-        i++;
     }
     if( i ){
         std::cout << "TOTAL  : params=" << sum << std::endl;
