@@ -38,9 +38,9 @@ int BatchLearnerOnDemand::test( std::string filepath, int fileReadBatches, int b
     return numRight;
 }
 
-EpochResult BatchLearnerOnDemand::runEpochFromLabels( float learningRate, std::string filepath, int fileReadBatches, int batchSize, int Ntrain ) {
+EpochResult BatchLearnerOnDemand::runEpochFromLabels( Trainer *trainer, std::string filepath, int fileReadBatches, int batchSize, int Ntrain ) {
     net->setTraining( true );
-    NetAction *action = new NetLearnLabeledAction( learningRate );
+    NetAction *action = new NetLearnLabeledAction( trainer );
     EpochResult epochResult = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntrain, action );
     delete action;
     return epochResult;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+class Trainer;
 
 #include "DeepCLDllExport.h"
 
@@ -8,23 +9,25 @@ class NeuralNet;
 
 class DeepCL_EXPORT EpochMaker {
     NeuralNet *net;
-    float _learningRate;
+    Trainer *trainer;
+//    float _learningRate;
     int _batchSize;
     int _numExamples;
     float *_inputData;
     float *_expectedOutputs;
     int const*_labels;
 public:
-    EpochMaker( NeuralNet *net ) {
+    EpochMaker( NeuralNet *net, Trainer *trainer ) {
         memset( this, 0, sizeof(EpochMaker) );
         _expectedOutputs = 0;
         _labels = 0;
         this->net = net;
+        this->trainer = trainer;
     }
-    EpochMaker *learningRate(float learningRate){
-        this->_learningRate = learningRate;
-        return this;
-    }
+//    EpochMaker *learningRate(float learningRate){
+//        this->_learningRate = learningRate;
+//        return this;
+//    }
     EpochMaker *batchSize(int batchSize){
         this->_batchSize = batchSize;
         return this;

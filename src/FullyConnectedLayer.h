@@ -44,6 +44,11 @@ public:
     VIRTUAL int getOutputSize() const;
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
+    VIRTUAL CLWrapper *getGradWeightsWrapper();
+    VIRTUAL CLWrapper *getGradBiasWrapper();
+    VIRTUAL CLWrapper *getWeightsWrapper();
+    VIRTUAL CLWrapper *getBiasWrapper();
+    VIRTUAL bool biased();
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
@@ -52,6 +57,8 @@ public:
     VIRTUAL void forward();
     VIRTUAL void backward();
     VIRTUAL bool needsTrainerState() const;
+    VIRTUAL TrainerState *getTrainerState();
+    VIRTUAL TrainerState *getBiasTrainerState();
     VIRTUAL void setTrainerState( TrainerStateMaker *TrainerStateMaker );
     VIRTUAL std::string asString() const;
 

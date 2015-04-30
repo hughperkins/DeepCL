@@ -9,6 +9,7 @@
 #include "DeepCLDllExport.h"
 
 class Trainable;
+class Trainer;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -32,12 +33,13 @@ public:
 
 class DeepCL_EXPORT NetLearnLabeledAction : public NetAction {
 public:
-    float learningRate;
-    float getLearningRate() {
-        return learningRate;
-    }
-    NetLearnLabeledAction( float learningRate ) :
-        learningRate( learningRate ) {
+//    float learningRate;
+//    float getLearningRate() {
+//        return learningRate;
+//    }
+    Trainer *trainer;
+    NetLearnLabeledAction( Trainer *trainer ) :
+        trainer( trainer ) {
     }   
     virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
 };
@@ -51,16 +53,16 @@ public:
 };
 
 
-class DeepCL_EXPORT NetBackpropAction : public NetAction {
-public:
-    float learningRate;
-    float getLearningRate() {
-        return learningRate;
-    }
-    NetBackpropAction( float learningRate ) :
-        learningRate( learningRate ) {
-    }
-    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
-};
+//class DeepCL_EXPORT NetBackpropAction : public NetAction {
+//public:
+//    float learningRate;
+//    float getLearningRate() {
+//        return learningRate;
+//    }
+//    NetBackpropAction( float learningRate ) :
+//        learningRate( learningRate ) {
+//    }
+//    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
+//};
 
 

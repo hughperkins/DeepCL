@@ -6,6 +6,7 @@
 
 #include "Trainable.h"
 #include "NetAction.h"
+#include "Trainer.h"
 
 using namespace std;
 
@@ -16,17 +17,18 @@ using namespace std;
 
 void NetLearnLabeledAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
-    net->learnBatchFromLabels( learningRate, batchData, batchLabels );
+    trainer->trainFromLabels( net, batchData, batchLabels );
 }
 
 void NetForwardAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetForwardBatch" << endl;
     net->forward( batchData );
+//    trainer->train( net, batchData, batchLabels );
 }
 
-void NetBackpropAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
-//    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
-    net->backwardFromLabels( learningRate, batchLabels );
-}
+//void NetBackpropAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
+////    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
+//    net->backwardFromLabels( learningRate, batchLabels );
+//}
 
 

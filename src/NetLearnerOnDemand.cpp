@@ -21,7 +21,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLICAPI NetLearnerOnDemand::NetLearnerOnDemand( Trainable *net, 
+PUBLICAPI NetLearnerOnDemand::NetLearnerOnDemand( Trainer *trainer, Trainable *net, 
             std::string trainFilepath, int Ntrain,
             std::string testFilepath, int Ntest,
             int fileReadBatches, int batchSize ) :

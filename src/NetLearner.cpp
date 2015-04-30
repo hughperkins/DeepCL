@@ -20,7 +20,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLICAPI NetLearner::NetLearner( Trainable *net,
+PUBLICAPI NetLearner::NetLearner( Trainer *trainer, Trainable *net,
         int Ntrain, float *trainData, int *trainLabels,
         int Ntest, float *testData, int *testLabels,
         int batchSize ) :
@@ -32,7 +32,7 @@ PUBLICAPI NetLearner::NetLearner( Trainable *net,
     dumpTimings = false;
     learningDone = false;
 
-    trainBatcher = new LearnBatcher( net, batchSize, Ntrain, trainData, trainLabels, 0 );
+    trainBatcher = new LearnBatcher( trainer, net, batchSize, Ntrain, trainData, trainLabels );
     testBatcher = new ForwardBatcher( net, batchSize, Ntest, testData, testLabels );   
 }
 VIRTUAL NetLearner::~NetLearner() {

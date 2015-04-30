@@ -17,6 +17,7 @@
 class Trainable;
 class EpochResult;
 class NetAction;
+class Trainer;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -41,9 +42,8 @@ public:
     EpochResult runBatchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
     int test( int batchSize, int N, float *testData, int const*testLabels );
     int forwardForTrain( int batchSize, int N, float *data, int const*labels );
-    EpochResult backprop( float learningRate, int batchSize, int N, float *data, int const*labels );
-    EpochResult runEpochFromLabels( float learningRate, int batchSize, int Ntrain, float *trainData, int const*trainLabels );
-    float runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedOutput );
+    EpochResult runEpochFromLabels( Trainer *trainer, int batchSize, int Ntrain, float *trainData, int const*trainLabels );
+    float runEpochFromExpected( Trainer *trainer, int batchSize, int N, float *data, float *expectedOutput );
 
     // [[[end]]]
 };

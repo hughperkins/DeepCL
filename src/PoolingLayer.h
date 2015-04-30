@@ -68,7 +68,7 @@ public:
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void forward();
-    VIRTUAL void backward( float learningRate );
+    VIRTUAL void backward();
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

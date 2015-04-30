@@ -11,6 +11,7 @@ using namespace std;
 #include "AccuracyHelper.h"
 #include "LogicalDataCreator.h"
 #include "test/myasserts.h"
+#include "SGD.h"
 
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;
@@ -122,8 +123,9 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
+    SGD *sgd = SGD::instance( cl, 4.0f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(4)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+        net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedOutput)->run();
         cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
@@ -132,6 +134,7 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
     assertEquals( numCorrect, ldc.N );
+    delete sgd;
     delete net;
     delete cl;
 }
@@ -144,8 +147,9 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(0.1f)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+        net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedOutput)->run();
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
@@ -159,6 +163,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.4f, loss );
 
+    delete sgd;
     delete net;
     delete cl;
 }
@@ -171,8 +176,9 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(0.1f)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+        net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
            ->expectedOutputs(ldc.expectedOutput)->run();
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
@@ -185,6 +191,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.4f, loss );
 
+    delete sgd;
     delete net;
     delete cl;
 }
@@ -259,8 +266,9 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    net->setBatchSize(4);
 //    net->forward( data );
 //    net->print();
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 200; epoch++ ) {
-        net->epochMaker()->learningRate(0.1f)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
+        net->epochMaker(sgd)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
            ->expectedOutputs(expectedOutput)->run();
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(expectedOutput) << endl;
     }
@@ -271,6 +279,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     cout << "loss, E, " << loss << endl;
     assertLessThan( 0.0000001f, loss );
 
+    delete sgd;
     delete net;
     delete cl;
 }

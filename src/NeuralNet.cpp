@@ -110,8 +110,8 @@ PUBLICAPI float NeuralNet::calcLoss(float const *expectedValues ) {
 PUBLICAPI float NeuralNet::calcLossFromLabels(int const *labels ) {
     return dynamic_cast<IAcceptsLabels*>(getLastLayer())->calcLossFromLabels( labels );
 }
-EpochMaker *NeuralNet::epochMaker() {
-     return new EpochMaker(this);
+EpochMaker *NeuralNet::epochMaker( Trainer *trainer ) {
+     return new EpochMaker(this, trainer);
 }
 VIRTUAL LossLayerMaker *NeuralNet::cloneLossLayerMaker() const {
     LossLayer const *lossLayer = dynamic_cast< LossLayer const*>( getLastLayer() );

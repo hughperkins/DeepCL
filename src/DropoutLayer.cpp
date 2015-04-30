@@ -216,7 +216,7 @@ VIRTUAL void DropoutLayer::forward() {
         delete upstreamOutputWrapper;
     }
 }
-VIRTUAL void DropoutLayer::backward( float learningRate ) {
+VIRTUAL void DropoutLayer::backward() {
     // have no weights to backprop to, just need to backprop the errors
 
     CLWrapper *gradOutputWrapper = 0;

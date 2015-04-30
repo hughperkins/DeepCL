@@ -77,6 +77,21 @@ VIRTUAL float *FullyConnectedLayer::getOutput() {
 VIRTUAL float *FullyConnectedLayer::getGradInput() {
     return convolutionalLayer->getGradInput();
 }
+VIRTUAL CLWrapper *FullyConnectedLayer::getGradWeightsWrapper() {
+    return convolutionalLayer->getGradWeightsWrapper();
+}
+VIRTUAL CLWrapper *FullyConnectedLayer::getGradBiasWrapper() {
+    return convolutionalLayer->getGradBiasWrapper();
+}
+VIRTUAL CLWrapper *FullyConnectedLayer::getWeightsWrapper() {
+    return convolutionalLayer->getWeightsWrapper();
+}
+VIRTUAL CLWrapper *FullyConnectedLayer::getBiasWrapper() {
+    return convolutionalLayer->getBiasWrapper();
+}
+VIRTUAL bool FullyConnectedLayer::biased() {
+    return convolutionalLayer->biased();
+}
 VIRTUAL bool FullyConnectedLayer::providesGradInputWrapper() const {
     return convolutionalLayer->providesGradInputWrapper();
 }
@@ -103,6 +118,12 @@ VIRTUAL void FullyConnectedLayer::backward() {
 }
 VIRTUAL bool FullyConnectedLayer::needsTrainerState() const {
     return true;
+}
+VIRTUAL TrainerState *FullyConnectedLayer::getTrainerState() {
+    return convolutionalLayer->getTrainerState();
+}
+VIRTUAL TrainerState *FullyConnectedLayer::getBiasTrainerState() {
+    return convolutionalLayer->getBiasTrainerState();
 }
 VIRTUAL void FullyConnectedLayer::setTrainerState( TrainerStateMaker *TrainerStateMaker ) {
     convolutionalLayer->setTrainerState( TrainerStateMaker );

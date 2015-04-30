@@ -31,60 +31,22 @@ PUBLICAPI OnDemandBatcher::OnDemandBatcher( Trainable *net, NetAction *netAction
             inputCubeSize( net->getInputCubeSize() )
         {
     numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
-//    dataBuffer = 0;
-//    labelsBuffer = 0;
-//    allocatedSize = 0;
-//    cout << "OnDemandBatcher::OnDemandBatcher inputCubeSize " << inputCubeSize << " filebatchsize " << fileBatchSize << endl;
     dataBuffer = new float[ fileBatchSize * inputCubeSize ];
     labelsBuffer = new int[ fileBatchSize ];
-//    int lastFileBatchSize = N - ( numFileBatches - 1 ) * fileBatchSize;
     netActionBatcher = new NetActionBatcher( net, batchSize, fileBatchSize, dataBuffer, labelsBuffer, netAction );
-//    updateVars();
     reset();
 }
 VIRTUAL OnDemandBatcher::~OnDemandBatcher() {
-//    delete netActionLastBatcher;
     delete netActionBatcher;
     delete[] dataBuffer;
     delete[] labelsBuffer;
 }
-//void OnDemandBatcher::updateBuffers() {
-//    fileBatchSize = batchSize * fileReadBatches;
-//    fileBatchSize = fileBatchSize > N ? N : fileBatchSize;
-//    if( fileBatchSize == 0 ) {
-//        return;
-//    }
-//    numFileBatches = ( N + fileBatchSize - 1 ) / fileBatchSize;
-//    int newAllocatedSize = fileBatchSize;
-//    if( newAllocatedSize != allocatedSize ) {
-//        if( dataBuffer != 0 ) {
-//            delete[] dataBuffer;
-//        }
-//        if( labelsBuffer != 0 ) {
-//            delete[] labelsBuffer;
-//        }
-//        dataBuffer = new float[ newAllocatedSize * inputCubeSize ];
-//        labelsBuffer = new int[ newAllocatedSize ];
-//        netActionBatcher->setData( dataBuffer, labelsBuffer );
-////        netActionBatcher->labels = labelsBuffer;
-//        allocatedSize = newAllocatedSize;
-//    }
-//}
 VIRTUAL void OnDemandBatcher::setBatchState( int nextBatch, int numRight, float loss ) {
     this->nextFileBatch = nextBatch / fileReadBatches;
     this->numRight = numRight;
     this->loss = loss;
     epochDone = false;
 }
-//VIRTUAL void OnDemandBatcher::setData( std::string filepath ) {
-//    this->filepath = filepath;
-//}
-//VIRTUAL void OnDemandBatcher::setN( int N ) {
-//    if( N != this->N ) {
-//        this->N = N;
-////        updateBuffers();
-//    }
-//}
 VIRTUAL int OnDemandBatcher::getBatchSize() {
     return batchSize;
 }

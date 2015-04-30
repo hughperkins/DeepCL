@@ -11,6 +11,7 @@
 #include "NetAction.h"
 #include "BatchLearner.h"
 #include "Batcher.h"
+#include "Trainer.h"
 
 using namespace std;
 
@@ -48,23 +49,23 @@ int BatchLearner::forwardForTrain( int batchSize, int N, float *data, int const*
     return numRight;
 }
 
-EpochResult BatchLearner::backprop( float learningRate, int batchSize, int N, float *data, int const*labels ) {
-    net->setTraining( true );
-    NetBackpropAction *action = new NetBackpropAction( learningRate );
-    EpochResult epochResult = runBatchedNetAction( batchSize, N, data, labels, action );
-    delete action;
-    return epochResult;
-}
+//EpochResult BatchLearner::backprop( float learningRate, int batchSize, int N, float *data, int const*labels ) {
+//    net->setTraining( true );
+//    NetBackpropAction *action = new NetBackpropAction( learningRate );
+//    EpochResult epochResult = runBatchedNetAction( batchSize, N, data, labels, action );
+//    delete action;
+//    return epochResult;
+//}
 
-EpochResult BatchLearner::runEpochFromLabels( float learningRate, int batchSize, int Ntrain, float *trainData, int const*trainLabels ) {
+EpochResult BatchLearner::runEpochFromLabels( Trainer *trainer, int batchSize, int Ntrain, float *trainData, int const*trainLabels ) {
     net->setTraining( true );
-    NetLearnLabeledAction *action = new NetLearnLabeledAction( learningRate );
+    NetLearnLabeledAction *action = new NetLearnLabeledAction( trainer );
     EpochResult epochResult = runBatchedNetAction( batchSize, Ntrain, trainData, trainLabels, action );
     delete action;
     return epochResult;
 }
 
-float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int N, float *data, float *expectedOutput ) {
+float BatchLearner::runEpochFromExpected( Trainer *trainer, int batchSize, int N, float *data, float *expectedOutput ) {
     net->setTraining( true );
     float loss = 0;
     net->setBatchSize( batchSize );
@@ -76,7 +77,7 @@ float BatchLearner::runEpochFromExpected( float learningRate, int batchSize, int
         if( batch == numBatches - 1 ) {
             net->setBatchSize( N - batchStart );
         }
-        net->learnBatch( learningRate, &(data[ batchStart * inputCubeSize ]), &(expectedOutput[batchStart * outputCubeSize]) );
+        trainer->train( net, &(data[ batchStart * inputCubeSize ]), &(expectedOutput[batchStart * outputCubeSize]) );
         loss += net->calcLoss( &( expectedOutput[batchStart * outputCubeSize]) );
     }
     return loss;

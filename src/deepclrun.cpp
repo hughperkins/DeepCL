@@ -317,13 +317,13 @@ void go(Config config) {
     }
     NetLearnerBase *netLearner = 0;
     if( config.loadOnDemand ) {
-        netLearner = new NetLearnerOnDemand( trainable,
+        netLearner = new NetLearnerOnDemand( trainer, trainable,
             config.dataDir + "/" + config.trainFile, Ntrain,
             config.dataDir + "/" + config.validateFile, Ntest,
             config.fileReadBatches, config.batchSize
         );
     } else {
-        netLearner = new NetLearner( trainable,
+        netLearner = new NetLearner( trainer, trainable,
             Ntrain, trainData, trainLabels,
             Ntest, testData, testLabels,
             config.batchSize 

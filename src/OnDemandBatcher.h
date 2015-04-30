@@ -73,12 +73,5 @@ public:
     PUBLICAPI EpochResult run();
 
     // [[[end]]]
-
-//    OnDemandBatcher( Trainable *net, NetAction *netAction, 
-//                std::string filepath, int N, int fileReadBatches, int batchSize );
-//    virtual ~OnDemandBatcher();
-//    void reset();
-//    bool tick();
-//    EpochResult run();
 };
 

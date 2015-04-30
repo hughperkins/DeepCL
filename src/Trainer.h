@@ -13,6 +13,7 @@
 
 class OpenCLHelper;
 class NeuralNet;
+class Trainable;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -31,7 +32,8 @@ public:
 
     float learningRate;
 
-    virtual void train( NeuralNet *net, float *input, float *expectedOutput ) = 0;
+    virtual void train( NeuralNet *net, float const*input, float const*expectedOutput ) = 0;
+    virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels ) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -42,6 +44,8 @@ public:
     VIRTUAL ~Trainer();
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL std::string asString();
+    VIRTUAL void train( Trainable *trainable, float const*input, float const*expectedOutput );
+    VIRTUAL void trainFromLabels( Trainable *trainable, float const*input, int const*labels );
 
     // [[[end]]]
 };

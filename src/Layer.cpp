@@ -35,47 +35,47 @@ VIRTUAL bool Layer::providesGradInputWrapper() const {
     return false;
 }
 VIRTUAL float *Layer::getGradInput() {
-    throw std::runtime_error("getGradInput not implemented for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getGradInput not implemented for " + getClassName() );
 }
 VIRTUAL CLWrapper *Layer::getGradWeightsWrapper() {
-    throw std::runtime_error("getGradWeightsWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getGradWeightsWrapper not implemented for " + getClassName() );
 }
 VIRTUAL CLWrapper *Layer::getGradBiasWrapper() {
-    throw std::runtime_error("getGradBiasWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getGradBiasWrapper not implemented for " + getClassName() );
 }
 VIRTUAL CLWrapper *Layer::getWeightsWrapper() {
-    throw std::runtime_error("getWeightsWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getWeightsWrapper not implemented for " + getClassName() );
 }
 VIRTUAL CLWrapper *Layer::getBiasWrapper() {
-    throw std::runtime_error("getBiasWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getBiasWrapper not implemented for " + getClassName() );
 }
 VIRTUAL CLWrapper *Layer::getGradInputWrapper() {
-    throw std::runtime_error("getGradInputWrapper not implemented for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getGradInputWrapper not implemented for " + getClassName() );
 }
 PUBLICAPI VIRTUAL bool Layer::getBiased() const {
-     throw std::runtime_error("getBiased not implemented for this layer type, layer " + toString(layerIndex) );
+     throw std::runtime_error("getBiased not implemented for " + getClassName());
 }
 PUBLICAPI VIRTUAL bool Layer::hasOutputWrapper() const {
     return false;
 }
 PUBLICAPI VIRTUAL CLWrapper *Layer::getOutputWrapper() {
-    throw std::runtime_error("getOutputWrapper not implemetned for this layer type, layer " + toString(layerIndex) );
+    throw std::runtime_error("getOutputWrapper not implemetned for " + getClassName() );
 }
 PUBLICAPI VIRTUAL int Layer::getOutputCubeSize() const {
-    throw std::runtime_error("getOutputCubeSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+    throw std::runtime_error("getOutputCubeSize not implemetned for " + getClassName() );
  //     return numPlanes * imageSize * imageSize * batchSize;
 }
 PUBLICAPI VIRTUAL int Layer::getOutputPlanes() const {
-    throw std::runtime_error("getOutputPlanes not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+    throw std::runtime_error("getOutputPlanes not implemetned for " + getClassName() );
 }
 PUBLICAPI VIRTUAL int Layer::getOutputImageSize() const {
-    throw std::runtime_error("getOutputImageSize not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+    throw std::runtime_error("getOutputImageSize not implemetned for " + getClassName() );
 }
 VIRTUAL void Layer::forward() {
-    throw std::runtime_error("forward not implemented for this layer type");
+    throw std::runtime_error("forward not implemented for " + getClassName() );
 }
 VIRTUAL bool Layer::needsBackProp() {
-    throw std::runtime_error("needsBackProp not implemented for this layer type");
+    throw std::runtime_error("needsBackProp not implemented for " + getClassName() );
 }
 VIRTUAL void Layer::print() {
 //    printWeights();
@@ -87,14 +87,14 @@ VIRTUAL void Layer::print() {
 //    }
 }
 VIRTUAL void Layer::initWeights( float const*weights ) {
-    throw std::runtime_error("initWeights not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+    throw std::runtime_error("initWeights not implemetned for " + getClassName() );
 //    int numWeights = getWeightsSize();
 //    for( int i = 0; i < numWeights; i++ ) {
 //        this->weights[i] = weights[i];
 //    }
 }
 VIRTUAL void Layer::initBias( float const *bias ) {
-    throw std::runtime_error("initBias not implemetned for this layer type, layer " + toString(layerIndex) + " " + toString(this) );
+    throw std::runtime_error("initBias not implemetned for " + getClassName() );
 //    int numBias = getBiasSize();
 //    for( int i = 0; i < numBias; i++ ) {
 //        this->bias[i] = bias[i];

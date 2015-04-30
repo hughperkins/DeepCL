@@ -8,6 +8,7 @@
 #include <string>
 
 #include "NetAction.h"
+#include "Trainer.h"
 
 #include "Batcher.h"
 
@@ -158,15 +159,15 @@ PUBLICAPI EpochResult Batcher::run() {
 //    }
 //}
 
-LearnBatcher::LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate ) :
+LearnBatcher::LearnBatcher( Trainer *trainer, Trainable *net, int batchSize, int N, float *data, int const*labels ) :
     Batcher( net, batchSize, N, data, labels ),
-    learningRate( learningRate ) {
+    trainer( trainer ) {
 }
 
 VIRTUAL void LearnBatcher::internalTick( float const*batchData, int const*batchLabels) {
 //    cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
 //        " batchLabels=" << batchLabels << endl;
-    net->learnBatchFromLabels( learningRate, batchData, batchLabels );
+    trainer->trainFromLabels( net, batchData, batchLabels );
 }
  
 

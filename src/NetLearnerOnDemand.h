@@ -61,7 +61,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI NetLearnerOnDemand( Trainable *net,
+    PUBLICAPI NetLearnerOnDemand( Trainer *trainer, Trainable *net,
     std::string trainFilepath, int Ntrain,
     std::string testFilepath, int Ntest,
     int fileReadBatches, int batchSize );

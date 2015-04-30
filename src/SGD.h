@@ -34,8 +34,10 @@ public:
     VIRTUAL std::string asString();
     VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
     SGDState *trainerState );
-    VIRTUAL void train( NeuralNet *net, float *input, float *expectedOutput );
+    VIRTUAL void train( NeuralNet *net, float const*input, float const*expectedOutput );
+    VIRTUAL void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
     VIRTUAL void bindState( NeuralNet *net );
+    STATIC SGD *instance( OpenCLHelper *cl, float learningRate, float momentum );
     SGD( OpenCLHelper *cl );
 
     // [[[end]]]

@@ -12,6 +12,7 @@
 
 class EpochResult;
 class NetAction;
+class Trainer;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -76,15 +77,17 @@ public:
 
 class DeepCL_EXPORT LearnBatcher : public Batcher {
 public:
-    float learningRate;
-    virtual void setLearningRate( float learningRate ) {
-        this->learningRate = learningRate;
-    }
-    LearnBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, float learningRate );
+    Trainer *trainer; // NOT delete
+
+//    float learningRate;
+//    virtual void setLearningRate( float learningRate ) {
+//        this->learningRate = learningRate;
+//    }
+    LearnBatcher( Trainer *trainer, Trainable *net, int batchSize, int N, float *data, int const*labels );
     virtual void internalTick( float const*batchData, int const*batchLabels);
-    float getLearningRate() {
-        return learningRate;
-    }
+//    float getLearningRate() {
+//        return learningRate;
+//    }
 };
 
 class DeepCL_EXPORT NetActionBatcher : public Batcher {

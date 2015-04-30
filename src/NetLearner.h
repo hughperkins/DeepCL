@@ -58,7 +58,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI NetLearner( Trainable *net,
+    PUBLICAPI NetLearner( Trainer *trainer, Trainable *net,
     int Ntrain, float *trainData, int *trainLabels,
     int Ntest, float *testData, int *testLabels,
     int batchSize );

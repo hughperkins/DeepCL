@@ -35,7 +35,7 @@ public:
     BatchLearnerOnDemand( Trainable *net );
     EpochResult runBatchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction *netAction );
     int test( std::string filepath, int fileReadBatches, int batchSize, int Ntest );
-    EpochResult runEpochFromLabels( float learningRate, std::string filepath, int fileReadBatches, int batchSize, int Ntrain );
+    EpochResult runEpochFromLabels( Trainer *trainer, std::string filepath, int fileReadBatches, int batchSize, int Ntrain );
 
     // [[[end]]]
 };

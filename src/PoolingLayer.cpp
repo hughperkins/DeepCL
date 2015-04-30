@@ -179,7 +179,7 @@ VIRTUAL void PoolingLayer::forward() {
 //    cout << "PoolingLayer::forward() selectorsWrapper after forward: " << endl;
 //    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
 }
-VIRTUAL void PoolingLayer::backward( float learningRate ) {
+VIRTUAL void PoolingLayer::backward() {
     // have no weights to backprop to, just need to backprop the errors
 
     CLWrapper *gradOutputWrapper = 0;
