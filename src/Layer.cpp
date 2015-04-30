@@ -120,13 +120,13 @@ VIRTUAL void Layer::printBiasAsCode() const {
 //        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
 }
 VIRTUAL void Layer::printWeights() {
-    std::cout << "printWeights() not implemented for this layer type" << std:: endl; 
+    throw std::runtime_error("printWeights not implemented for " + getClassName() );
 }
 VIRTUAL void Layer::printOutput() {
-    std::cout << "printOutput() not implemented for this layer type" << std:: endl; 
+    throw std::runtime_error("printOutput not implemented for " + getClassName() );
 }
-PUBLICAPI VIRTUAL void Layer::backward( float learningRate ) {
-    throw std::runtime_error("backward not implemented for this layertype, layerindex " + toString(layerIndex ) );
+PUBLICAPI VIRTUAL void Layer::backward() {
+    throw std::runtime_error("backward not implemented for " + getClassName() );
 }
 VIRTUAL float *Layer::getGradWeights() {
     throw std::runtime_error("getGradWeights not implemented for " + getClassName() );
@@ -135,42 +135,34 @@ VIRTUAL float *Layer::getGradBias() {
     throw std::runtime_error("getGradBias not implemented for " + getClassName() );
 }
 PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
-    throw std::runtime_error("getWeightsSize not implemented for this layertype");
+    throw std::runtime_error("getWeightsSize not implemented for " + getClassName() );
 }
 PUBLICAPI VIRTUAL int Layer::getBiasSize() const {
-    throw std::runtime_error("getBiasSize not implemented for this layertype");
+    throw std::runtime_error("getBiasSize not implemented for " + getClassName() );
 }
-//VIRTUAL int Layer::getPersistSize() const {
-//    throw std::runtime_error("getPersistSize not implemented for this layertype, layerindex " + toString(layerIndex ) );
-//}
 /// \brief store the current weights and biases to array
 /// Note that you need to allocate array first
 PUBLICAPI VIRTUAL void Layer::persistToArray(float *array) {
-    throw std::runtime_error("persistToArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
+    throw std::runtime_error("persistToArray not implemented for " + getClassName() );
 }
 /// \brief initialize the current weights and biases from array
 PUBLICAPI VIRTUAL void Layer::unpersistFromArray(float const*array) {
-    throw std::runtime_error("unpersistFromArray not implemented for this layertype, layerindex " + toString(layerIndex ) );
+    throw std::runtime_error("unpersistFromArray not implemented for " + getClassName() );
 }
 VIRTUAL void Layer::setWeights(float *weights, float *bias) {
-    throw std::runtime_error("setWeights not implemented for this layertype");
+    throw std::runtime_error("setWeights not implemented for " + getClassName() );
 }
 VIRTUAL float const *Layer::getWeights() const {
-    throw std::runtime_error("getWeights const not implemented for this layertype");
+    throw std::runtime_error("getWeights const not implemented for " + getClassName() );
 }
 VIRTUAL float *Layer::getWeights() {
-    throw std::runtime_error("getWeights not implemented for this layertype " + toString(layerIndex) );
+    throw std::runtime_error("getWeights not implemented for " + getClassName() );
 }
 VIRTUAL float const*Layer::getBias() const {
-    throw std::runtime_error("getBias not implemented for this layertype");
+    throw std::runtime_error("getBias not implemented for " + getClassName() );
 }
 /// \brief Get a string representation of the layer
 PUBLICAPI VIRTUAL std::string Layer::asString() const {
     return "Layer{}";
-}
-
-ostream &operator<<(ostream&os, Layer const*layer ) {
-    os << layer->asString();
-    return os;
 }
 

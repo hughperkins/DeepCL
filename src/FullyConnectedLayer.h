@@ -50,7 +50,7 @@ public:
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
     VIRTUAL void forward();
-    VIRTUAL void backward( float learningRate );
+    VIRTUAL void backward();
     VIRTUAL bool needsTrainer() const;
     VIRTUAL void setTrainerMaker( TrainerMaker *trainerMaker );
     VIRTUAL std::string asString() const;

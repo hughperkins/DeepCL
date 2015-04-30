@@ -28,8 +28,9 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
 //        filterSizeSquared( filterSize * filterSize ),
 //        padZeros( maker->_padZeros ),
         cl( cl ),
-        weightsTrainer( 0 ),
-        biasTrainer( 0 ),
+//        weightsTrainer( 0 ),
+//        biasTrainer( 0 ),
+        forwardImpl(0),
         backwardImpl(0),
 //        activationFunction( maker->_activationFunction ),
 
@@ -66,12 +67,12 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
     if( dim.padZeros && dim.filterSize % 2 == 0 ) {
         throw std::runtime_error("filter size must be an odd number, if padZeros is true, so either turn off padZeros, or choose a different filtersize :-)");
     }
-    weightsTrainer = new SGD( cl, getWeightsSize() ); // so it doesnt crash...
-    biasTrainer = new SGD( cl, getBiasSize() );
+//    weightsTrainer = new SGD( cl, getWeightsSize() ); // so it doesnt crash...
+//    biasTrainer = new SGD( cl, getBiasSize() );
 
 //    dim = LayerDimensions( upstreamNumPlanes, upstreamImageSize, 
 //        numPlanes, filterSize, padZeros, biased );
-    forwardimpl = Forward::instance( cl, dim );
+    forwardImpl = Forward::instance( cl, dim );
     backpropWeightsImpl = BackpropWeights::instance( cl, dim );
     if( previousLayer->needsBackProp() ) {
         backwardImpl = Backward::instance( cl, dim );
@@ -82,16 +83,20 @@ ConvolutionalLayer::ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, 
                 " > " + toString(dim.inputImageSize) );
     }
     weights = new float[ getWeightsSize() ];
-    bias = new float[ getBiasSize() ];
+    if( dim.biased ) {
+        bias = new float[ getBiasSize() ];
+    }
     randomizeWeights();
 
     weightsWrapper = cl->wrap( getWeightsSize(), weights );
     weightsWrapper->copyToDevice();
     weightsCopiedToHost = true;
 
-    biasWrapper = cl->wrap( getBiasSize(), bias );
-    biasWrapper->copyToDevice();
-    biasCopiedToHost = true;
+    if( dim.biased ) {
+        biasWrapper = cl->wrap( getBiasSize(), bias );
+        biasWrapper->copyToDevice();
+        biasCopiedToHost = true;
+    }
 
     gradWeights = new float[ getWeightsSize() ];
     gradWeightsWrapper = cl->wrap( getWeightsSize(), gradWeights );
@@ -124,11 +129,11 @@ VIRTUAL ConvolutionalLayer::~ConvolutionalLayer() {
     delete[] gradWeights;
     delete[] gradBias;
 
-    delete forwardimpl;
+    delete forwardImpl;
     delete backpropWeightsImpl;
     delete backwardImpl;
-    delete weightsTrainer;
-    delete biasTrainer;
+//    delete weightsTrainer;
+//    delete biasTrainer;
 }
 VIRTUAL std::string ConvolutionalLayer::getClassName() const {
     return "ConvolutionalLayer";
@@ -214,8 +219,10 @@ void ConvolutionalLayer::randomizeWeights() {
     for( int i = 0; i < numThisLayerWeights; i++ ) {
         weights[i] = WeightsHelper::generateWeight( fanin );
     }
-    for( int i = 0; i < dim.numFilters; i++ ) {
-        bias[i] = WeightsHelper::generateWeight( fanin );
+    if( dim.biased ) {
+        for( int i = 0; i < dim.numFilters; i++ ) {
+            bias[i] = WeightsHelper::generateWeight( fanin );
+        }
     }
 }
 VIRTUAL void ConvolutionalLayer::print() {
@@ -379,7 +386,7 @@ VIRTUAL void ConvolutionalLayer::forward() {
         upstreamWrapper->copyToDevice();
     }
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", copied to device");
-    forwardimpl->forward( batchSize, upstreamWrapper, weightsWrapper, biasWrapper, outputWrapper );
+    forwardImpl->forward( batchSize, upstreamWrapper, weightsWrapper, biasWrapper, outputWrapper );
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ",  after clFinish");
 
     if( !previousLayer->hasOutputWrapper() ) {
@@ -387,7 +394,7 @@ VIRTUAL void ConvolutionalLayer::forward() {
     }
     outputCopiedToHost = false;
 }
-VIRTUAL void ConvolutionalLayer::backward( float learningRate ) {
+VIRTUAL void ConvolutionalLayer::backward() {
     StatefulTimer::instance()->timeCheck("backprop(): start, layer " + toString( layerIndex ) );
 
     CLWrapper *inputWrapper = 0;
@@ -450,14 +457,10 @@ VIRTUAL std::string ConvolutionalLayer::asString() const {
 VIRTUAL bool ConvolutionalLayer::needsTrainer() const {
     return true;
 }
-VIRTUAL void ConvolutionalLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
-    delete weightsTrainer;
-    delete biasTrainer;
-    this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
-    this->biasTrainer = trainerMaker->instance( cl, getBiasSize() );
-}
-ostream &operator<<( ostream &os, ConvolutionalLayer &layer ) {
-    os << "ConvolutionalLayer { " << layer.dim << " }";
-    return os;
-}
+//VIRTUAL void ConvolutionalLayer::setTrainerMaker( TrainerMaker *trainerMaker ) {
+//    delete weightsTrainer;
+//    delete biasTrainer;
+//    this->weightsTrainer = trainerMaker->instance( cl, getWeightsSize() );
+//    this->biasTrainer = trainerMaker->instance( cl, getBiasSize() );
+//}
 

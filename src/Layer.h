@@ -82,7 +82,7 @@ public:
     VIRTUAL void printBiasAsCode() const;
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
-    PUBLICAPI VIRTUAL void backward( float learningRate );
+    PUBLICAPI VIRTUAL void backward();
     VIRTUAL float *getGradWeights();
     VIRTUAL float *getGradBias();
     PUBLICAPI VIRTUAL int getWeightsSize() const;
@@ -98,6 +98,4 @@ public:
     // [[[end]]]
 
 };
-
-std::ostream &operator<<(std::ostream&os, Layer const*layer );
 

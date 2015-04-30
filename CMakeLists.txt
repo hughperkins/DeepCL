@@ -65,9 +65,9 @@ set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
     DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
     DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
     DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp
+    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp
     Trainer.cpp SGD.cpp TrainerMaker.cpp SGDMaker.cpp
-    GpuAdd.cpp
+    Trainerv2.cpp SGDv2.cpp
  )
 foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
@@ -135,6 +135,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
+ test/testsgd.cpp
  )
 
 add_executable( deepclrun src/deepclrun.cpp src/stringhelper.cpp )

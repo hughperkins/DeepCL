@@ -207,7 +207,8 @@ PUBLICAPI void NeuralNet::backwardFromLabels( float learningRate, int const *lab
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         Layer *layer = layers[layerIdx];
         if( layer->needsBackProp() ) {
-            layer->backward( learningRate );
+            throw std::runtime_error("NeuralNet::backwardFromLabels TODO");
+//            layer->backward( learningRate );
         }
         StatefulTimer::setPrefix("" );
     }
@@ -220,7 +221,8 @@ PUBLICAPI void NeuralNet::backward( float learningRate, float const *expectedOut
     lossLayer->calcGradInput( expectedOutput );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
-        layers[layerIdx]->backward( learningRate );
+        throw std::runtime_error("NeuralNet::backward TODO");
+//        layers[layerIdx]->backward( learningRate );
         StatefulTimer::setPrefix("" );
     }
 }

@@ -28,10 +28,10 @@ class CopyBuffer;
 class ConvolutionalLayer : public Layer {
 public:
     OpenCLHelper *const cl; // NOT owned by us
-    Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
-    Trainer *biasTrainer; // OWNED by us, we should delete (if non-zero)
+//    Trainer *weightsTrainer; // OWNED by us, we should delete (if non-zero)
+//    Trainer *biasTrainer; // OWNED by us, we should delete (if non-zero)
 
-    Forward *forwardimpl;
+    Forward *forwardImpl;
     BackpropWeights *backpropWeightsImpl;
     Backward *backwardImpl;
 
@@ -141,12 +141,11 @@ public:
     VIRTUAL int getBiasSize() const;
     VIRTUAL float * getOutput();
     VIRTUAL void forward();
-    VIRTUAL void backward( float learningRate );
+    VIRTUAL void backward();
     VIRTUAL void setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper );
     VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
     VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainer() const;
-    VIRTUAL void setTrainerMaker( TrainerMaker *trainerMaker );
 
     // [[[end]]]
 };

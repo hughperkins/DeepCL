@@ -98,8 +98,8 @@ VIRTUAL bool FullyConnectedLayer::needsBackProp() {
 VIRTUAL void FullyConnectedLayer::forward() {
     convolutionalLayer->forward();
 }
-VIRTUAL void FullyConnectedLayer::backward( float learningRate ) {
-    convolutionalLayer->backward( learningRate );
+VIRTUAL void FullyConnectedLayer::backward() {
+    convolutionalLayer->backward();
 }
 VIRTUAL bool FullyConnectedLayer::needsTrainer() const {
     return true;
