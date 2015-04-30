@@ -10,17 +10,18 @@ void raiseException( std::string message );
 void checkException( int *wasRaised, std::string *message );
 
 #include "NetLearner.h"
+#include "SGD.h"
 
 // we need this, so we can catch the c++ exception, and raise
 // it in our altenrative way, all without needing to use the gil
 // (which I *think* adding 'except +' requires?)
 class CyNetLearner : public NetLearner {
 public:
-    CyNetLearner(Trainer *trainer, Trainable *neuralNet,
+    CyNetLearner(SGD *sgd, Trainable *neuralNet,
             int Ntrain, float *trainData, int *trainLabels,
             int Ntest, float *testData, int *testLabels,
             int batchSize ) :
-        NetLearner( trainer, neuralNet,
+        NetLearner( sgd, neuralNet,
             Ntrain, trainData, trainLabels,
             Ntest, testData, testLabels,
             batchSize ) {

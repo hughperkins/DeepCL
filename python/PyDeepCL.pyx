@@ -14,6 +14,7 @@ from libcpp cimport bool
 cimport cDeepCL
 
 include "OpenCLHelper.pyx"
+include "SGD.pyx"
 include "NeuralNet.pyx"
 include "Layer.pyx"
 include "LayerMaker.pyx"

@@ -1,10 +1,11 @@
 cdef class NetLearner: 
     cdef cDeepCL.CyNetLearner *thisptr
-    def __cinit__( self, NeuralNet neuralnet,
+    def __cinit__( self, SGD sgd, NeuralNet neuralnet,
             Ntrain, float[:] trainData, int[:] trainLabels,
             Ntest, float[:] testData, int[:] testLabels,
             batchSize ):
-        self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr,
+        self.thisptr = new cDeepCL.CyNetLearner(
+            sgd.thisptr, neuralnet.thisptr,
             Ntrain, &trainData[0], &trainLabels[0],
             Ntest, &testData[0], &testLabels[0],
             batchSize )

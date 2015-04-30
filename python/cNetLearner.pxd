@@ -1,6 +1,6 @@
 cdef extern from "CyWrappers.h":
     cdef cppclass CyNetLearner:
-        CyNetLearner( NeuralNet *net,
+        CyNetLearner( SGD *sgd, NeuralNet *net,
             int Ntrain, float *trainData, int *trainLabels,
             int Ntest, float *testData, int *testLabels,
             int batchSize ) except +

@@ -10,6 +10,7 @@ from libcpp cimport bool
 include "cOpenCLHelper.pxd"
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
+include "cSGD.pxd"
 include "cGenericLoader.pxd"
 include "cNetDefToNet.pxd"
 include "cNetLearner.pxd"
