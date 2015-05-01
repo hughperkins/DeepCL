@@ -158,7 +158,7 @@ add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
 target_include_directories( gtest PRIVATE thirdparty/gtest )
 
-add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp test/myasserts.cpp
+add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
 target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )

@@ -19,7 +19,6 @@
 #include "InputLayer.h"
 #include "LayerMakers.h"
 
-#include "test/myasserts.h"
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 #include "test/WeightRandomizer.h"
@@ -63,9 +62,12 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
     int biasSize = layer->getBiasSize();
     cout << "weightsize=" << weightsSize << " biassize=" << biasSize << endl;
     float *weights = new float[weightsSize];
-    float *bias = new float[biasSize];
     WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 3, bias, biasSize, -0.1f, 0.1f );
+    float *bias = 0;
+    if( layer->biased() ) {
+        bias = new float[biasSize];
+        WeightRandomizer::randomize( 3, bias, biasSize, -0.1f, 0.1f );
+    }
     if( weightsSize > 0 || biasSize > 0 ) {
         layer->setWeights( weights, bias );
     }

@@ -329,7 +329,9 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
 }
 VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *bias ) {
     initWeights( weights );
-    initBias( bias );
+    if( dim.biased ) {
+        initBias( bias );
+    }
 }
 VIRTUAL void ConvolutionalLayer::initWeights( float const*weights ) {
     int weightsSize = dim.filtersSize;

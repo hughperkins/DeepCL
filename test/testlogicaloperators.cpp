@@ -17,8 +17,6 @@ using namespace std;
 #include "EpochMaker.h"
 #include "LayerMakers.h"
 
-#include "test/myasserts.h"
-
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;
 //    LogicalDataCreator ldc;
@@ -41,11 +39,11 @@ using namespace std;
 ////    net->print();
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.4, loss );
+//    EXPECT_GE( 0.4, loss );
 
 //    delete net;
 //}
@@ -69,11 +67,11 @@ using namespace std;
 
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.4, loss );
+//    EXPECT_GE( 0.4, loss );
 
 //    delete net;
 //}
@@ -113,11 +111,11 @@ using namespace std;
 ////    if( numCorrect != ldc.N ) {
 ////        net->print();
 ////    }
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.00001, loss );
+//    EXPECT_GE( 0.00001, loss );
 
 //    delete net;
 //}
@@ -139,7 +137,7 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
 //    net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
+    EXPECT_EQ( numCorrect, ldc.N );
     delete sgd;
     delete net;
     delete cl;
@@ -163,11 +161,11 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
 //        net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
+    EXPECT_EQ( numCorrect, ldc.N );
 
     float loss = net->calcLoss(ldc.expectedOutput);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4f, loss );
+    EXPECT_GE( 0.4f, loss );
 
     delete sgd;
     delete net;
@@ -195,7 +193,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
 
     float loss = net->calcLoss(ldc.expectedOutput);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4f, loss );
+    EXPECT_GE( 0.4f, loss );
 
     delete sgd;
     delete net;
@@ -283,7 +281,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 
     float loss = net->calcLoss(expectedOutput);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.0000001f, loss );
+    EXPECT_GE( 0.0000001f, loss );
 
     delete sgd;
     delete net;
@@ -310,7 +308,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    net->print();
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 //    delete net;
 
 //}
@@ -336,11 +334,11 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 ////    net->print();
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.4, loss );
+//    EXPECT_GE( 0.4, loss );
 
 //    delete net;
 //}

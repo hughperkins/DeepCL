@@ -93,7 +93,7 @@ VIRTUAL void ForceBackpropLayer::forward() {
         output[i] = input[i];
     }
 }
-VIRTUAL void ForceBackpropLayer::backward( float learningRate, float const *gradOutput ) {
+VIRTUAL void ForceBackpropLayer::backward() {
   // do nothing... ?
 }
 VIRTUAL int ForceBackpropLayer::getOutputImageSize() const {

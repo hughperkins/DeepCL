@@ -218,7 +218,7 @@ PUBLICAPI void NeuralNet::backward( float const *expectedOutput) {
     lossLayer->calcGradInput( expectedOutput );
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
-        throw std::runtime_error("NeuralNet::backward TODO");
+//        throw std::runtime_error("NeuralNet::backward TODO");
         layers[layerIdx]->backward();
         StatefulTimer::setPrefix("" );
     }

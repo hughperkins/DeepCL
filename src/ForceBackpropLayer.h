@@ -58,7 +58,7 @@ public:
     VIRTUAL void print();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void forward();
-    VIRTUAL void backward( float learningRate, float const *gradOutput );
+    VIRTUAL void backward();
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;

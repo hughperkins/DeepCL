@@ -13,7 +13,6 @@
 #include "StatefulTimer.h"
 #include "NeuralNetMould.h"
 
-#include "test/myasserts.h"
 #include "test/WeightRandomizer.h"
 #include "test/GtestGlobals.h"
 #include "test/TestArgsParser.h"
@@ -300,16 +299,16 @@ TEST( testforward, imagesize3 ) {
     float *output = forward->forward( 
         batchSize, data, filter1, 0 );        
 
-    assertEquals( 0, output[0] );
-    assertEquals( 1.25f, output[1] );
-    assertEquals( -0.5f, output[2] );
-    assertEquals( 0.75f, output[3] );
-    assertEquals( -0.25f, output[4] );
-    assertEquals( 1, output[5] );
-    assertEquals( -0.5f, output[6] );
-    assertEquals( 7, output[7] );
-    assertEquals( 0.5f, output[8] );
-    assertEquals( 0.5f, output[9] );
+    EXPECT_EQ( 0, output[0] );
+    EXPECT_EQ( 1.25f, output[1] );
+    EXPECT_EQ( -0.5f, output[2] );
+    EXPECT_EQ( 0.75f, output[3] );
+    EXPECT_EQ( -0.25f, output[4] );
+    EXPECT_EQ( 1, output[5] );
+    EXPECT_EQ( -0.5f, output[6] );
+    EXPECT_EQ( 7, output[7] );
+    EXPECT_EQ( 0.5f, output[8] );
+    EXPECT_EQ( 0.5f, output[9] );
         cout << "test1 ok" << endl;
     delete forward;
     delete[] output;
@@ -393,7 +392,7 @@ TEST( testforward, test3 ) {
    for( int i = 0; i < 8; i++ ) {
 //      cout << " checking result " << i << endl;
 //        cout << "output[" << i << "]=" << output[i] << endl;
-      assertEquals( expectedOutput[i], output[i], 0.0001f);
+      EXPECT_FLOAT_NEAR( expectedOutput[i], output[i] );
    }
     delete forward;
     delete cl;
