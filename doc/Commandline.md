@@ -127,6 +127,7 @@
 
 | Option | Description |
 |----|----|
+| gpuindex=1 | choose which gpu device to use.  Default -1 means first gpu, or else cpu.  Otherwise, gpu index from 0 |
 | dataset=norb | sets datadir, trainfile and validatefile according to one of several dataset profiles.  Current choices: mnist, norb, cifar10, kgsgo, kgsgoall |
 | datadir=../data/mnist | path to data files |
 | trainfile=train-dat.mat | name of training data file, the one with the images in.  Note that the labels file will be determined automatically, based on the data filename and type, eg in this case `train-cat.mat` |

@@ -23,7 +23,8 @@
 
 * You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
 ```c++
-NeuralNet *net = new NeuralNet();
+EasyCL *cl = new EasyCL();
+NeuralNet *net = new NeuralNet(cl);
 net->addLayer( InputMaker::instance()->numPlanes(1)->imageSize(28) );
 net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
 net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
@@ -187,21 +188,26 @@ For non-categorical data, you can provide expected output values as a contiguous
 * output row
 * output column
 
+## Create a Trainer
+
+```c++
+// create a Trainer object, currently SGD,
+// passing in learning rate, and momentum:
+Trainer *trainer = SGD::instance( cl, 0.02f, 0.0f );
+
 ## Train
 
 eg:
 ```c++
-// (create a net, as above)
-// train, eg:
-NetLearner netLearner( net );
-netLearner.setTrainingData( Ntrain, trainData, trainLabels );
-netLearner.setTestingData( Ntest, testData, testLabels );
+NetLearner netLearner(
+    sgd, net,
+    Ntrain, trainData, trainLabels,
+    Ntest, testData, testLabels );
 netLearner.setSchedule( numEpochs );
 netLearner.setBatchSize( batchSize );
-netLearner.learn( learningRate );
+netLearner.learn();
 // learning is now done :-)
 ```
-
 
 ## Test
 
