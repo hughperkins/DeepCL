@@ -14,7 +14,7 @@
 #include <string>
 
 #include "QLearner.h"
-#include "Trainer.h"
+#include "trainers/Trainer.h"
 
 class ScenarioProxy : public Scenario {
 public:

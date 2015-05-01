@@ -9,8 +9,8 @@ extern std::string exceptionMessage;
 void raiseException( std::string message );
 void checkException( int *wasRaised, std::string *message );
 
-#include "NetLearner.h"
-#include "SGD.h"
+#include "batch/NetLearner.h"
+#include "trainers/SGD.h"
 
 // we need this, so we can catch the c++ exception, and raise
 // it in our altenrative way, all without needing to use the gil

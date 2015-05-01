@@ -1,4 +1,4 @@
-cdef extern from "NeuralNet.h":
+cdef extern from "net/NeuralNet.h":
     cdef cppclass NeuralNet:
         #pass
         NeuralNet( EasyCL *cl ) except +

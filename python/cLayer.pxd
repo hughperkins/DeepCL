@@ -1,4 +1,4 @@
-cdef extern from "Layer.h":
+cdef extern from "layer/Layer.h":
     cdef cppclass Layer:
         void forward()
         void backward()

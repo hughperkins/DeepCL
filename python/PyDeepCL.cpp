@@ -18,24 +18,24 @@
             "."
         ], 
         "depends": [
-            "mysrc/FullyConnectedMaker.h", 
+            "mysrc/activate/ActivationMaker.h", 
+            "mysrc/trainers/SGD.h", 
             "CyWrappers.h", 
-            "mysrc/GenericLoader.h", 
+            "mysrc/input/InputLayerMaker.h", 
             "mysrc/EasyCL.h", 
-            "mysrc/NormalizationLayerMaker.h", 
+            "mysrc/forcebackprop/ForceBackpropLayerMaker.h", 
+            "mysrc/fc/FullyConnectedMaker.h", 
+            "mysrc/netdef/NetdefToNet.h", 
             "CyScenario.h", 
-            "mysrc/Layer.h", 
-            "mysrc/SGD.h", 
-            "mysrc/InputLayerMaker.h", 
-            "mysrc/LayerMaker.h", 
-            "mysrc/NeuralNet.h", 
-            "mysrc/ConvolutionalMaker.h", 
-            "mysrc/NetdefToNet.h", 
-            "mysrc/ForceBackpropLayerMaker.h", 
-            "mysrc/PoolingMaker.h", 
+            "mysrc/loaders/GenericLoader.h", 
+            "mysrc/layer/LayerMaker.h", 
+            "mysrc/normalize/NormalizationLayerMaker.h", 
+            "mysrc/conv/ConvolutionalMaker.h", 
+            "mysrc/net/NeuralNet.h", 
             "mysrc/QLearner.h", 
-            "mysrc/ActivationMaker.h", 
-            "mysrc/DropoutMaker.h"
+            "mysrc/pooling/PoolingMaker.h", 
+            "mysrc/dropout/DropoutMaker.h", 
+            "mysrc/layer/Layer.h"
         ], 
         "extra_compile_args": [
             "-std=c++0x", 
@@ -301,21 +301,21 @@ class __Pyx_FakeReference {
 #include "stdexcept"
 #include "typeinfo"
 #include "EasyCL.h"
-#include "LayerMaker.h"
-#include "InputLayerMaker.h"
-#include "DropoutMaker.h"
-#include "ActivationMaker.h"
-#include "NormalizationLayerMaker.h"
-#include "FullyConnectedMaker.h"
-#include "ConvolutionalMaker.h"
-#include "PoolingMaker.h"
-#include "ForceBackpropLayerMaker.h"
-#include "NeuralNet.h"
-#include "SGD.h"
-#include "GenericLoader.h"
-#include "NetdefToNet.h"
+#include "layer/LayerMaker.h"
+#include "input/InputLayerMaker.h"
+#include "dropout/DropoutMaker.h"
+#include "activate/ActivationMaker.h"
+#include "normalize/NormalizationLayerMaker.h"
+#include "fc/FullyConnectedMaker.h"
+#include "conv/ConvolutionalMaker.h"
+#include "pooling/PoolingMaker.h"
+#include "forcebackprop/ForceBackpropLayerMaker.h"
+#include "net/NeuralNet.h"
+#include "trainers/SGD.h"
+#include "loaders/GenericLoader.h"
+#include "netdef/NetdefToNet.h"
 #include "CyWrappers.h"
-#include "Layer.h"
+#include "layer/Layer.h"
 #include "QLearner.h"
 #include "CyScenario.h"
 #include "stdlib.h"

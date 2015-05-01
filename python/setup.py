@@ -40,6 +40,10 @@ for arg in sys.argv:
     if arg in ('sdist','bdist','bdist_egg','build_ext'):
         docopy = True
 
+srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
+    'input','layer','loaders','loss','net','netdef','normalize','patches',
+    'pooling','trainers','util','weights']
+
 if docopy:
     if not os.path.isdir('mysrc'):
         os.makedirs('mysrc')
@@ -51,6 +55,13 @@ if docopy:
             if os.path.isfile(thisfilepath):
                 distutils.file_util.copy_file( thisfilepath, 'mysrc/' + thisfile )
     distutils.file_util.copy_file( '../jenkins/version.txt', 'version.txt' )
+    for srcdir in srcdirs:
+        if not os.path.isdir('mysrc/' + srcdir):
+            os.makedirs('mysrc/' + srcdir)
+        for thisfile in os.listdir('../src/' + srcdir):
+            thisfilepath = '../src/' + srcdir +'/' + thisfile
+            if os.path.isfile(thisfilepath):
+                distutils.file_util.copy_file( thisfilepath, 'mysrc/' + srcdir + '/' + thisfile )
 
 #        distutils.dir_util.copy_tree( thisdir, 'mysrc' )
 
@@ -132,43 +143,16 @@ def distutils_dir_name(dname):
 def lib_build_dir():
     return os.path.join('build', distutils_dir_name('lib'))
 
-deepcl_sourcestring = """
-    LayerMaker.cpp NeuralNetMould.cpp
-    ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-    ActivationFunction.cpp 
-    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
-    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
-    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
-    Forward4.cpp 
-    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
-    BackpropWeights.cpp BackpropWeightsCpu.cpp BackpropWeightsNaive.cpp 
-    BackpropWeightsScratch.cpp BackpropWeightsScratchLarge.cpp
-    FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
-    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
-    BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
-    RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
-    Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
-    RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
-    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
-    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    ForwardFc.cpp ForwardByInputPlane.cpp
-    PoolingBackwardGpuNaive.cpp
-    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
-    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
-    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
-    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
-    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp MultiplyInPlace.cpp
-    TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
-    Trainer.cpp SGD.cpp
-""" 
-deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []
-for source in deepcl_sources_all:
-    deepcl_sources.append(source)
+for srcdir in srcdirs:
+    filespath = 'mysrc/' + srcdir + '/files.txt'
+    with open( filespath, 'r' ) as f:
+        fileslist = map(lambda x: 'mysrc/' + srcdir + '/' + x.strip(), f.readlines())
+#    print('fileslist: ', fileslist)
+    deepcl_sources = deepcl_sources + fileslist
+print('deeplcl_sources', deepcl_sources)
+#for source in deepcl_sources_all:
+#    deepcl_sources.append(source)
 
 easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
         'EasyCL/EasyCL.cpp',
@@ -236,7 +220,7 @@ ext_modules = [
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
                 + easyclsources
-                + list(map( lambda name : 'mysrc/' + name, deepcl_sources))
+                + deepcl_sources
                 + ['mysrc/QLearner.cpp','mysrc/array_helper.cpp'], 
 #                glob.glob('DeepCL/EasyCL/*.h'),
               include_dirs = ['mysrc'],
