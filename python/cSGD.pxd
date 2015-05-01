@@ -3,4 +3,5 @@ cdef extern from "SGD.h":
         SGD( EasyCL *cl ) except +
         void setLearningRate( float learningRate )
         void setMomentum( float momentum )
+        void setWeightDecay( float weightDecay )
 

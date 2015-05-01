@@ -10,4 +10,6 @@ cdef class SGD:
         self.thisptr.setLearningRate(learningRate)
     def setMomentum(self, float momentum):
         self.thisptr.setMomentum(momentum)
+    def setWeightDecay(self, float weightDecay):
+        self.thisptr.setWeightDecay(weightDecay)
 

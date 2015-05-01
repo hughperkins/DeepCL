@@ -2938,6 +2938,32 @@ fail:
 }
 
 
+static int _wrap_SGD_setWeightDecay(lua_State* L) {
+  int SWIG_arg = 0;
+  SGD *arg1 = (SGD *) 0 ;
+  float arg2 ;
+  
+  SWIG_check_num_args("SGD::setWeightDecay",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::setWeightDecay",1,"SGD *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("SGD::setWeightDecay",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SGD,0))){
+    SWIG_fail_ptr("SGD_setWeightDecay",1,SWIGTYPE_p_SGD);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  (arg1)->setWeightDecay(arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_SGD_asString(lua_State* L) {
   int SWIG_arg = 0;
   SGD *arg1 = (SGD *) 0 ;
@@ -3080,6 +3106,7 @@ delete arg1;
 }
 static swig_lua_method swig_SGD_methods[] = {
     {"setMomentum", _wrap_SGD_setMomentum}, 
+    {"setWeightDecay", _wrap_SGD_setWeightDecay}, 
     {"asString", _wrap_SGD_asString}, 
     {"train", _wrap_SGD_train}, 
     {"trainFromLabels", _wrap_SGD_trainFromLabels}, 

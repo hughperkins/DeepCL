@@ -1739,6 +1739,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_2__dealloc(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_4setLearningRate(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_momentum); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_3SGD_8setWeightDecay(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_weightDecay); /* proto */
 static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_2__dealloc(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_4asString(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self); /* proto */
@@ -2665,7 +2666,7 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_4setLearningRate(struct __pyx_obj_8PyDe
  *         self.thisptr.setLearningRate(learningRate)
  *     def setMomentum(self, float momentum):             # <<<<<<<<<<<<<<
  *         self.thisptr.setMomentum(momentum)
- * 
+ *     def setWeightDecay(self, float weightDecay):
  */
 
 /* Python wrapper */
@@ -2703,7 +2704,8 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL
  *         self.thisptr.setLearningRate(learningRate)
  *     def setMomentum(self, float momentum):
  *         self.thisptr.setMomentum(momentum)             # <<<<<<<<<<<<<<
- * 
+ *     def setWeightDecay(self, float weightDecay):
+ *         self.thisptr.setWeightDecay(weightDecay)
  */
   __pyx_v_self->thisptr->setMomentum(__pyx_v_momentum);
 
@@ -2712,6 +2714,68 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL
  *         self.thisptr.setLearningRate(learningRate)
  *     def setMomentum(self, float momentum):             # <<<<<<<<<<<<<<
  *         self.thisptr.setMomentum(momentum)
+ *     def setWeightDecay(self, float weightDecay):
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "SGD.pyx":13
+ *     def setMomentum(self, float momentum):
+ *         self.thisptr.setMomentum(momentum)
+ *     def setWeightDecay(self, float weightDecay):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setWeightDecay(weightDecay)
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_3SGD_9setWeightDecay(PyObject *__pyx_v_self, PyObject *__pyx_arg_weightDecay); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_3SGD_9setWeightDecay(PyObject *__pyx_v_self, PyObject *__pyx_arg_weightDecay) {
+  float __pyx_v_weightDecay;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setWeightDecay (wrapper)", 0);
+  assert(__pyx_arg_weightDecay); {
+    __pyx_v_weightDecay = __pyx_PyFloat_AsFloat(__pyx_arg_weightDecay); if (unlikely((__pyx_v_weightDecay == (float)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("PyDeepCL.SGD.setWeightDecay", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8PyDeepCL_3SGD_8setWeightDecay(((struct __pyx_obj_8PyDeepCL_SGD *)__pyx_v_self), ((float)__pyx_v_weightDecay));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_3SGD_8setWeightDecay(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_weightDecay) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("setWeightDecay", 0);
+
+  /* "SGD.pyx":14
+ *         self.thisptr.setMomentum(momentum)
+ *     def setWeightDecay(self, float weightDecay):
+ *         self.thisptr.setWeightDecay(weightDecay)             # <<<<<<<<<<<<<<
+ * 
+ */
+  __pyx_v_self->thisptr->setWeightDecay(__pyx_v_weightDecay);
+
+  /* "SGD.pyx":13
+ *     def setMomentum(self, float momentum):
+ *         self.thisptr.setMomentum(momentum)
+ *     def setWeightDecay(self, float weightDecay):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setWeightDecay(weightDecay)
  * 
  */
 
@@ -23057,6 +23121,7 @@ static PyMethodDef __pyx_methods_8PyDeepCL_SGD[] = {
   {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_3SGD_3__dealloc, METH_NOARGS, 0},
   {"setLearningRate", (PyCFunction)__pyx_pw_8PyDeepCL_3SGD_5setLearningRate, METH_O, 0},
   {"setMomentum", (PyCFunction)__pyx_pw_8PyDeepCL_3SGD_7setMomentum, METH_O, 0},
+  {"setWeightDecay", (PyCFunction)__pyx_pw_8PyDeepCL_3SGD_9setWeightDecay, METH_O, 0},
   {0, 0, 0, 0}
 };
 

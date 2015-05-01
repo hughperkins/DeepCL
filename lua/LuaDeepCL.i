@@ -73,6 +73,7 @@ public:
     static SGD *instance( EasyCL *cl, float learningRate );
     static SGD *instance( EasyCL *cl, float learningRate, float momentum );
     virtual void setMomentum( float momentum );
+    virtual void setWeightDecay( float weightDecay );
     virtual std::string asString();
     virtual void train( NeuralNet *net, float const*input, float const*expectedOutput );
     virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
