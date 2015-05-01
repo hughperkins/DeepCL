@@ -21,7 +21,7 @@
 * Syntax is based on that specified in Ciresan et al's [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf), section 3, first paragraph:
   * network is defined by a string like: `100C5-MP2-100C5-MP2-100C4-MP2-300N-100N-6N`
   * `100c5` means: a convolutional layer, with 100 filters, each 5x5
-  * `8c5z` means: a convolutional layer, with 8 filters, each 5x5, zero-padded
+  * adding `z` to a convolutional layer makes it zero-padded, eg `8c5z` is: a convolutional layer, with 8 filters, each 5x5, zero-padded
   * `mp2` means a max-pooling layer, over non-overlapping regions of 2x2
   * `300n` means a fully connected layer with 300 hidden units
   * `relu` means a relu layer
@@ -40,24 +40,46 @@
 ./deepclrun netdef=MP3-300C6-RELU-MP2-500C4-RELU-MP4-500N-TANH-5N learningrate=0.0001 dataset=norb
 ```
 
-## Additional net-def options
+## Convolutional
 
-* You can add additional options in `{}` brackets after each layer, eg:
-```bash
-./deepclrun netdef=8c5{tanh}-mp2-16c5{tanh}-mp3-10n learningrate=0.002 dataset=mnist
-```
-* Options currently available:
-  * For convolution layers:
-    * `sigmoid` (possibly deprecated by putting a separate sigmoid layer after the conv layer)
-    * `tanh` (possibly deprecated by putting a separate tanh layer after the conv layer)
-    * `scaledtanh` (ie, 1.7159f * tanh( 0.66667f * x ) )
-    * `linear` (default)
-    * `relu` (possibly deprecated by putting a separate relu layer after the conv layer)
-    * `padzeros` (or simply `z`)
-* can be combined, comma-separated (no spaces), eg:
-```bash
-./deepclrun netdef=8c5{tanh,z}-mp2-16c5{tanh,z}-mp3-10n learningrate=0.002 dataset=mnist
-```
+* eg `-32c5` is a convolutional layer with 32 filters of 5x5
+* `-32c5z` is a convolutional layer with zero-padding, of 32 filters of 5x5
+
+## Fully-connected
+
+* eg `-150n` is a fully connected layer, with 150 neurons.
+
+## Max-pooling
+
+* Eg `-mp3` will add a max-pooling layer, over 3x3 non-overlapping regions.  The number is the size of the regions, and can be modified
+
+## Dropout layers
+
+* Simply add `-drop` into the netdef string
+  * this will use a dropout ratio of 0.5
+
+## Activation layers
+
+* Simply add any of the following into the netdef string:
+  * `-tanh`
+  * `-sigmoid`
+  * `-relu`
+
+### Random patches
+
+* `RP24` means a random patch layer, which will cut a 24x24 patch from a random position in each incoming image, and send that to its output
+* during testing, the patch will be cut from the centre of each image
+
+### Random translations
+
+* `RT2` means a random translations layer, which will translate the image randomly during training, up to 2 pixels, in either direction, along both axes
+* Can specify any non-negative integer, less than the image size
+* During testing, no translation is done
+
+## Multi-column deep neural network "MultiNet"
+
+* You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
+* Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
 
 ## Repeated layers
 
@@ -75,53 +97,25 @@
 ./deepclrun netdef=32c5z-relu-mp2-32c5z-relu-mp2-32c5z-relu-mp2-150n-10n
 ```
 
-
-## Additional layer types
-
-### Random patches
-
-* `RP24` means a random patch layer, which will cut a 24x24 patch from a random position in each incoming image, and send that to its output
-* during testing, the patch will be cut from the centre of each image
-* can reduce over-training, and thus give better test accuracies
-* image size output by this layer equals the the patch size
-* eg you can try, on MNIST, `netdef=rp24-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
-* example paper using this approach: [ImageNet Classification with Deep Convolutional Networks](http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks)
-
-### Random translations
-
-* `RT2` means a random translations layer, which will translate the image randomly during training, up to 2 pixels, in either direction, along both axes
-* Can specify any non-negative integer, less than the image size
-* Image size is unchanged by this layer
-* During testing, no translation is done
-* eg you can try, on MNIST, `netdef=rt2-8c5{padzeros}-mp2-16c5{padzeros}-mp3-150n-10n`
-* example paper using this approach: [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf)
-
-## Multi-column deep neural network "MultiNet"
-
-* You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
-* Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
-
 ## File types
 
-* Using the new `GenericLoader.cpp`, it's possible to automatically detect various filetypes
-* When specifying a training or validation file, if there is both a labels and an images file, then specify the images file, and the labels file will be detected automatically
-* Currently, the following filetypes are supported:
+* Simply pass in the filename of the data file with the images in
+* Filetype will be detected automatically
+* Following filetypes are supported:
   * Norb .mat format as specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
   * MNIST format, as specified at [MNIST dataset](http://yann.lecun.com/exdb/mnist/) 
   * kgs go v2 format, [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-* For other formats, as long as the format has a recognizable header section, there's no particular reason why it couldnt be added
+* Other filetypes could be added, on request
 
 ## Weight persistence
 
-* If we're going to train for hours or days, we probably want to make sure that if our process gets interrupted, we don't lose our training so far
 * By default, weights will be written to `weights.dat`, after each epoch
   * You can add option `writeweightsinterval=5` to write weights every 5 minutes, even if the epoch hasnt finished yet.  Just replace `5` with the number of minutes between each write
 * If you specify option `loadweights=1`, the weights will be loadeded at the start
-* You can change the weights file with option `weightsfile=somefilename.dat`
-* If you specify option `loadweights=1`:
-  * the `netdef`, the `datadir`, and the `trainfile` will be compared to that used to generate the current weights file: if any of them are different, then DeepCL will refuse to carry on, so that you don't overwrite the weights file inadvertently
-    * If you need something like, DeepCL prompts you, showing the differences, and asks if you want to continue, then please raise an issue, and I will add this in
-  * Note that the epoch number will continue from the weights.dat file, so make sure to increase `numepochs` appropriately, otherwise DeepCL will start, load the weights file, and then exit again, since all epochs have been finished :-P
+* You can change the weights filepath with option eg `weightsfile=somefilename.dat`
+* If you specify option `loadweights=1`, the `netdef` will be compared to that used to generate the current weights file: if it is different, then DeepCL will ask you if you're sure you want to continue, to avoid corrupting the weights file
+* Epoch number, batch number, batch loss, and batch numcorrect will all be loaded from where they left off, from the weights file, so you can freely stop and start training, without losing the training
+  * be sure to use the `writeweightsinterval=5` option if you are going to stop/start often, with long epochs, to avoid losing hours/days of training!
 
 ## Command-line options
 
@@ -136,7 +130,7 @@
 | numtest=1000 | only uses the first 1000 testing samples |
 | netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
 | learningrate=0.0001 | specify learning rate |
-| anneallearningrate=0.95 | multiply learning rate by this after each epoch, as described in [Ciresan et al](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf) |
+| momentum=0.1 | specify momentum (default: 0) |
 | numepochs=20 | train for this many epochs |
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
 | normalization=maxmin | can choose maxmin or stddev.  Default is stddev |
