@@ -23,9 +23,9 @@ class CLKernel;
 
 class SGD : public Trainer{
 public:
-    float momentum;
-
     CLKernel *kernel;
+
+    float momentum;
 
     // [[[cog
     // import cog_addheaders
@@ -40,6 +40,7 @@ public:
     VIRTUAL void train( NeuralNet *net, float const*input, float const*expectedOutput );
     VIRTUAL void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
     VIRTUAL void bindState( NeuralNet *net );
+    STATIC SGD *instance( OpenCLHelper *cl, float learningRate );
     STATIC SGD *instance( OpenCLHelper *cl, float learningRate, float momentum );
     SGD( OpenCLHelper *cl );
 

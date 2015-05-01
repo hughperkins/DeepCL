@@ -192,6 +192,7 @@ PUBLICAPI void NeuralNet::forward( float const*images) {
         StatefulTimer::setPrefix("" );
     }
 }
+/// \brief note: this does no learning, just calculates the gradients
 PUBLICAPI void NeuralNet::backwardFromLabels( int const *labels) {
     IAcceptsLabels *acceptsLabels = dynamic_cast<IAcceptsLabels*>(getLastLayer());
     if( acceptsLabels == 0 ) {
@@ -202,12 +203,13 @@ PUBLICAPI void NeuralNet::backwardFromLabels( int const *labels) {
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         Layer *layer = layers[layerIdx];
         if( layer->needsBackProp() ) {
-            throw std::runtime_error("NeuralNet::backwardFromLabels TODO");
-//            layer->backward( learningRate );
+            //throw std::runtime_error("NeuralNet::backwardFromLabels TODO");
+            layer->backward();
         }
         StatefulTimer::setPrefix("" );
     }
 }
+/// \brief note: this does no learning, just calculates the gradients
 PUBLICAPI void NeuralNet::backward( float const *expectedOutput) {
     LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
     if( lossLayer == 0 ) {
@@ -217,7 +219,7 @@ PUBLICAPI void NeuralNet::backward( float const *expectedOutput) {
     for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         throw std::runtime_error("NeuralNet::backward TODO");
-//        layers[layerIdx]->backward( learningRate );
+        layers[layerIdx]->backward();
         StatefulTimer::setPrefix("" );
     }
 }

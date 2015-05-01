@@ -79,6 +79,8 @@ public:
 
 class SGD : public Trainer {
 public:
+    static SGD *instance( OpenCLHelper *cl, float learningRate );
+    static SGD *instance( OpenCLHelper *cl, float learningRate, float momentum );
     virtual void setMomentum( float momentum );
     virtual std::string asString();
     virtual void train( NeuralNet *net, float const*input, float const*expectedOutput );

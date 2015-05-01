@@ -2805,6 +2805,122 @@ static swig_lua_class *swig_Trainer_bases[] = {0};
 static const char *swig_Trainer_base_names[] = {0};
 static swig_lua_class _wrap_class_Trainer = { "Trainer", &SWIGTYPE_p_Trainer,0, swig_delete_Trainer, swig_Trainer_methods, swig_Trainer_attributes, { "Trainer", swig_Trainer_cls_methods, swig_Trainer_cls_attributes, swig_Trainer_cls_constants }, swig_Trainer_bases, swig_Trainer_base_names };
 
+static int _wrap_SGD_instance__SWIG_0(lua_State* L) {
+  int SWIG_arg = 0;
+  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  float arg2 ;
+  SGD *result = 0 ;
+  
+  SWIG_check_num_args("SGD::instance",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::instance",1,"OpenCLHelper *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("SGD::instance",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
+    SWIG_fail_ptr("SGD_instance",1,SWIGTYPE_p_OpenCLHelper);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  result = (SGD *)SGD::instance(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SGD,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_SGD_instance__SWIG_1(lua_State* L) {
+  int SWIG_arg = 0;
+  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  SGD *result = 0 ;
+  
+  SWIG_check_num_args("SGD::instance",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::instance",1,"OpenCLHelper *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("SGD::instance",2,"float");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("SGD::instance",3,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
+    SWIG_fail_ptr("SGD_instance",1,SWIGTYPE_p_OpenCLHelper);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  arg3 = (float)lua_tonumber(L, 3);
+  result = (SGD *)SGD::instance(arg1,arg2,arg3);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SGD,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_SGD_instance(lua_State* L) {
+  int argc;
+  int argv[4]={
+    1,2,3,4
+  };
+  
+  argc = lua_gettop(L);
+  if (argc == 2) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OpenCLHelper, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        return _wrap_SGD_instance__SWIG_0(L);
+      }
+    }
+  }
+  if (argc == 3) {
+    int _v;
+    {
+      void *ptr;
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OpenCLHelper, 0)) {
+        _v = 0;
+      } else {
+        _v = 1;
+      }
+    }
+    if (_v) {
+      {
+        _v = lua_isnumber(L,argv[1]);
+      }
+      if (_v) {
+        {
+          _v = lua_isnumber(L,argv[2]);
+        }
+        if (_v) {
+          return _wrap_SGD_instance__SWIG_1(L);
+        }
+      }
+    }
+  }
+  
+  SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'SGD_instance'\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    SGD::instance(OpenCLHelper *,float)\n"
+    "    SGD::instance(OpenCLHelper *,float,float)\n");
+  lua_error(L);return 0;
+}
+
+
 static int _wrap_SGD_setMomentum(lua_State* L) {
   int SWIG_arg = 0;
   SGD *arg1 = (SGD *) 0 ;
@@ -2985,6 +3101,7 @@ static swig_lua_attribute swig_SGD_cls_attributes[] = {
     {0,0,0}
 };
 static swig_lua_method swig_SGD_cls_methods[] = {
+    {"instance", _wrap_SGD_instance}, 
     {0,0}
 };
 static swig_lua_const_info swig_SGD_cls_constants[] = {
@@ -6019,6 +6136,7 @@ static const struct luaL_Reg swig_commands[] = {
     { "OpenCLHelper_createForIndexedGpu", _wrap_OpenCLHelper_createForIndexedGpu},
     { "OpenCLHelper_createForPlatformDeviceIndexes", _wrap_OpenCLHelper_createForPlatformDeviceIndexes},
     { "OpenCLHelper_createForPlatformDeviceIds", _wrap_OpenCLHelper_createForPlatformDeviceIds},
+    { "SGD_instance",_wrap_SGD_instance},
     { "NetdefToNet_createNetFromNetdef", _wrap_NetdefToNet_createNetFromNetdef},
     { "floatArray_frompointer", _wrap_floatArray_frompointer},
     { "intArray_frompointer", _wrap_intArray_frompointer},
