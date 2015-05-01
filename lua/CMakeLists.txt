@@ -31,12 +31,12 @@ set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights ../qlearning)
 foreach(dir ${dirs})
     file( STRINGS ${SRCTREE}/src/${dir}/files.txt ${dir}_src)
-    message("${dir}_src ${${dir}_src}")
+#    message("${dir}_src ${${dir}_src}")
     foreach(source ${${dir}_src})
-        set( deepcl_sources ${deepcl_sources} ${SRCTREE}/src/${dir}/${source})
+        set( lua_deepcl_sources ${lua_deepcl_sources} ${SRCTREE}/src/${dir}/${source})
     endforeach()
 endforeach()
-message("deepcl_sources ${deepcl_sources}")
+#message("deepcl_sources ${lua_deepcl_sources}")
 
 #set( lua_DeepCL_sources 
 #    LayerMaker.cpp NeuralNetMould.cpp
@@ -85,7 +85,7 @@ foreach(source ${lua_EasyCL_sources})
     set( lua_EasyCL_sources_prefixed ${lua_EasyCL_sources_prefixed} ${SRCTREE}/${source})
 endforeach()
 
-add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${deepcl_sources} ${lua_EasyCL_sources_prefixed} )
+add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${lua_deepcl_sources} ${lua_EasyCL_sources_prefixed} )
 target_include_directories( LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
 target_include_directories( LuaDeepCL PRIVATE ${SRCTREE}/src ${SRCTREE}/qlearning ${SRCTREE}/EasyCL )
 SET_TARGET_PROPERTIES( LuaDeepCL PROPERTIES PREFIX "") 

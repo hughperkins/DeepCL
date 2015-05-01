@@ -41,12 +41,12 @@ set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights ../qlearning)
 foreach(dir ${dirs})
     file( STRINGS src/${dir}/files.txt ${dir}_src)
-    message("${dir}_src ${${dir}_src}")
+#    message("${dir}_src ${${dir}_src}")
     foreach(source ${${dir}_src})
         set( deepcl_sources ${deepcl_sources} src/${dir}/${source})
     endforeach()
 endforeach()
-message("deepcl_sources ${deepcl_sources}")
+#message("deepcl_sources ${deepcl_sources}")
 
 #set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
 #     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
