@@ -21,12 +21,12 @@ cdef extern from "CyWrappers.h":
 
 cdef extern from "QLearner.h":
     cdef cppclass QLearner:
-        QLearner( CyScenario *scenario, NeuralNet *net ) except +
+        QLearner( SGD *sgd, CyScenario *scenario, NeuralNet *net ) except +
         void run() except +
         void setLambda( float thislambda )
         void setMaxSamples( int maxSamples )
         void setEpsilon( float epsilon )
-        void setLearningRate( float learningRate )
+        # void setLearningRate( float learningRate )
 
 cdef extern from "CyScenario.h":
     #[[[cog

@@ -45,9 +45,10 @@ def toCppString( pyString ):
 
 cdef class QLearner:
     cdef cDeepCL.QLearner *thisptr
-    def __cinit__(self,Scenario scenario,NeuralNet net):
+    def __cinit__(self,SGD sgd, Scenario scenario,NeuralNet net):
         scenario.net = net
-        self.thisptr = new cDeepCL.QLearner(scenario.thisptr, net.thisptr)
+        self.thisptr = new cDeepCL.QLearner(
+            sgd.thisptr, scenario.thisptr, net.thisptr)
     def __dealloc__(self):
         del self.thisptr
     def _run( self ):
@@ -60,8 +61,8 @@ cdef class QLearner:
         self.thisptr.setMaxSamples( maxSamples )
     def setEpsilon( self, float epsilon ):
         self.thisptr.setEpsilon( epsilon )
-    def setLearningRate( self, float learningRate ):
-        self.thisptr.setLearningRate( learningRate )
+    # def setLearningRate( self, float learningRate ):
+    #     self.thisptr.setLearningRate( learningRate )
 
 
 #cdef void Scenario_print(  void *pyObject ):

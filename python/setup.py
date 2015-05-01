@@ -162,14 +162,16 @@ deepcl_sourcestring = """
     DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
     DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
     CopyBuffer.cpp MultiplyBuffer.cpp
-    Trainer.cpp SGD.cpp TrainerMaker.cpp SGDMaker.cpp
+    TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
+    Trainer.cpp SGD.cpp
 """ 
 deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []
 for source in deepcl_sources_all:
     deepcl_sources.append(source)
 
-easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [ 'EasyCL/EasyCL.cpp',
+easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
+        'EasyCL/EasyCL.cpp',
         'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
         'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
 print(easyclsources)

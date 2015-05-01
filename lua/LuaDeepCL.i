@@ -225,7 +225,7 @@ public:
 
 class QLearner2 {
 public:
-    QLearner2( NeuralNet *net, int numActions, int planes, int size );
+    QLearner2( Trainer *trainer, NeuralNet *net, int numActions, int planes, int size );
     //QLearner2 *setPlanes( int planes );
     //QLearner2 *setSize( int size );
     //QLearner2 *setNumActions( int numActions );
@@ -233,7 +233,7 @@ public:
     void setLambda( float lambda );
     void setMaxSamples( int maxSamples );
     void setEpsilon( float epsilon );
-    void setLearningRate( float learningRate );
+    // void setLearningRate( float learningRate );
 };
 
 /*%inline %{

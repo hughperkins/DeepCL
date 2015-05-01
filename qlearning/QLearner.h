@@ -11,11 +11,11 @@
 
 #include "Scenario.h"
 #include "mt19937defs.h"
+#include "Trainer.h"
 
 #include "DeepCLDllExport.h"
 
 class NeuralNet;
-class Trainer;
 
 class Experience {
 public:

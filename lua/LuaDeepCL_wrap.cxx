@@ -5619,26 +5619,33 @@ static swig_lua_class _wrap_class_intArray = { "intArray", &SWIGTYPE_p_intArray,
 
 static int _wrap_new_QLearner2(lua_State* L) {
   int SWIG_arg = 0;
-  NeuralNet *arg1 = (NeuralNet *) 0 ;
-  int arg2 ;
+  Trainer *arg1 = (Trainer *) 0 ;
+  NeuralNet *arg2 = (NeuralNet *) 0 ;
   int arg3 ;
   int arg4 ;
+  int arg5 ;
   QLearner2 *result = 0 ;
   
-  SWIG_check_num_args("QLearner2::QLearner2",4,4)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::QLearner2",1,"NeuralNet *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::QLearner2",2,"int");
+  SWIG_check_num_args("QLearner2::QLearner2",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::QLearner2",1,"Trainer *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("QLearner2::QLearner2",2,"NeuralNet *");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("QLearner2::QLearner2",3,"int");
   if(!lua_isnumber(L,4)) SWIG_fail_arg("QLearner2::QLearner2",4,"int");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("QLearner2::QLearner2",5,"int");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_NeuralNet,0))){
-    SWIG_fail_ptr("new_QLearner2",1,SWIGTYPE_p_NeuralNet);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Trainer,0))){
+    SWIG_fail_ptr("new_QLearner2",1,SWIGTYPE_p_Trainer);
   }
   
-  arg2 = (int)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("new_QLearner2",2,SWIGTYPE_p_NeuralNet);
+  }
+  
   arg3 = (int)lua_tonumber(L, 3);
   arg4 = (int)lua_tonumber(L, 4);
-  result = (QLearner2 *)new QLearner2(arg1,arg2,arg3,arg4);
+  arg5 = (int)lua_tonumber(L, 5);
+  result = (QLearner2 *)new QLearner2(arg1,arg2,arg3,arg4,arg5);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_QLearner2,1); SWIG_arg++; 
   return SWIG_arg;
   
@@ -5765,32 +5772,6 @@ fail:
 }
 
 
-static int _wrap_QLearner2_setLearningRate(lua_State* L) {
-  int SWIG_arg = 0;
-  QLearner2 *arg1 = (QLearner2 *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("QLearner2::setLearningRate",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("QLearner2::setLearningRate",1,"QLearner2 *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("QLearner2::setLearningRate",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_QLearner2,0))){
-    SWIG_fail_ptr("QLearner2_setLearningRate",1,SWIGTYPE_p_QLearner2);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  (arg1)->setLearningRate(arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static void swig_delete_QLearner2(void *obj) {
 QLearner2 *arg1 = (QLearner2 *) obj;
 delete arg1;
@@ -5800,7 +5781,6 @@ static swig_lua_method swig_QLearner2_methods[] = {
     {"setLambda", _wrap_QLearner2_setLambda}, 
     {"setMaxSamples", _wrap_QLearner2_setMaxSamples}, 
     {"setEpsilon", _wrap_QLearner2_setEpsilon}, 
-    {"setLearningRate", _wrap_QLearner2_setLearningRate}, 
     {0,0}
 };
 static swig_lua_attribute swig_QLearner2_attributes[] = {

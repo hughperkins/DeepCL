@@ -186,6 +186,7 @@ function go()
 
     local cl = deepcl.EasyCL()
     local net = deepcl.NeuralNet(cl)
+    local sgd = deepcl.SGD.instance(cl, 0.1, 0.0)
     net:addLayer( deepcl.InputLayerMaker():numPlanes(planes):imageSize(size) )
     net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased() )
     net:addLayer( deepcl.ActivationMaker():relu() )
@@ -197,7 +198,7 @@ function go()
     net:addLayer( deepcl.SquareLossMaker() )
     print( net:asString() )
 
-    qlearner = deepcl.QLearner2( net, numActions, planes, size )
+    qlearner = deepcl.QLearner2(sgd, net, numActions, planes, size)
     -- qlearner:setLambda(0.9) # sets decay of the eligibility trace decay rate
     -- qlearner:setMaxSamples(32) # how many samples to learn from after each move
     -- qlearner:setEpsilon(0.1) # probability of exploring, instead of exploiting

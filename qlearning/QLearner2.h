@@ -14,6 +14,7 @@
 #include <string>
 
 #include "QLearner.h"
+#include "Trainer.h"
 
 class ScenarioProxy : public Scenario {
 public:
@@ -68,9 +69,9 @@ class QLearner2 {
 //    int size;
 //    int numActions;
 public:
-    QLearner2( NeuralNet *net, int numActions, int planes, int size ) : net(net) {
+    QLearner2( Trainer *trainer, NeuralNet *net, int numActions, int planes, int size ) : net(net) {
         scenario = new ScenarioProxy( numActions, planes, size );
-        qlearner = new QLearner( scenario, net );
+        qlearner = new QLearner( trainer, scenario, net );
     }
     ~QLearner2() {
         delete qlearner;
@@ -101,6 +102,6 @@ public:
     void setLambda( float lambda ) { qlearner->setLambda( lambda ); }
     void setMaxSamples( int maxSamples ) { qlearner->setMaxSamples( maxSamples ); }
     void setEpsilon( float epsilon ) { qlearner->setEpsilon( epsilon ); }
-    void setLearningRate( float learningRate ) { qlearner->setLearningRate( learningRate ); }
+//    void setLearningRate( float learningRate ) { qlearner->setLearningRate( learningRate ); }
 };
 
