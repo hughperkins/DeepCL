@@ -112,7 +112,7 @@ VIRTUAL std::string ForceBackpropLayer::toString() {
     return toString();
 }
 VIRTUAL std::string ForceBackpropLayer::asString() const {
-    return std::string("") + "ForceBackpropLayer { outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
+    return std::string("") + "ForceBackpropLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
 }
 
 

@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <iomanip>
 
 #include "Trainable.h"
 
@@ -89,6 +90,7 @@ public:
     void printWeights();
     void printOutput();
     VIRTUAL void setTrainer( Trainer *trainer );
+    void printParamStats();
     PUBLICAPI std::string asString();
 
     // [[[end]]]
