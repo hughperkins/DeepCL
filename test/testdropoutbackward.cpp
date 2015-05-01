@@ -6,8 +6,8 @@
 
 #include "EasyCL.h"
 
-#include "DropoutBackward.h"
-#include "DropoutForward.h"
+#include "dropout/DropoutBackward.h"
+#include "dropout/DropoutForward.h"
 //#include "DropoutFunction.h"
 
 #include "gtest/gtest.h"

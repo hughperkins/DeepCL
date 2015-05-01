@@ -5,7 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "array_helper.h"
-#include "stringhelper.h"
+#include "util/stringhelper.h"
 
 using namespace std;
 

@@ -4,18 +4,18 @@
 #include <iostream>
 #include <vector>
 
-#include "Timer.h"
-#include "NeuralNet.h"
+#include "util/Timer.h"
+#include "net/NeuralNet.h"
 #include "AccuracyHelper.h"
-#include "StatefulTimer.h"
-#include "BatchLearner.h"
-#include "NetLearner.h"
-#include "SGD.h"
-#include "Layer.h"
+#include "util/StatefulTimer.h"
+#include "batch/BatchLearner.h"
+#include "batch/NetLearner.h"
+#include "trainers/SGD.h"
+#include "layer/Layer.h"
 #include "EasyCL.h"
-#include "NeuralNetMould.h"
-#include "LayerMakers.h"
-#include "EpochMaker.h"
+#include "net/NeuralNetMould.h"
+#include "layer/LayerMakers.h"
+#include "batch/EpochMaker.h"
 
 #include "gtest/gtest.h"
 

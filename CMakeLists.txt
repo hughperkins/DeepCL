@@ -37,41 +37,52 @@ if( ON_WINDOWS)
 link_libraries(winmm) # needed for timeGetTime
 endif()
 
-set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
-     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-    ActivationFunction.cpp 
-    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
-    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
-    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
-    Forward4.cpp 
-    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
-    BackpropWeights.cpp BackpropWeightsCpu.cpp BackpropWeightsNaive.cpp 
-    BackpropWeightsScratch.cpp BackpropWeightsScratchLarge.cpp
-    FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
-    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
-    BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
-    RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
-    Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
-    RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
-    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
-    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    ForwardFc.cpp ForwardByInputPlane.cpp
-    PoolingBackwardGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
-    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
-    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
-    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
-    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
-    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp MultiplyInPlace.cpp
-    TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
-    Trainer.cpp SGD.cpp
- )
-foreach(source ${DeepCL_sources})
-    set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
+set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
+   loss net netdef normalize patches pooling trainers util weights ../qlearning)
+foreach(dir ${dirs})
+    file( STRINGS src/${dir}/files.txt ${dir}_src)
+    message("${dir}_src ${${dir}_src}")
+    foreach(source ${${dir}_src})
+        set( deepcl_sources ${deepcl_sources} src/${dir}/${source})
+    endforeach()
 endforeach()
+message("deepcl_sources ${deepcl_sources}")
+
+#set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
+#     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
+#    ActivationFunction.cpp 
+#    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
+#    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
+#    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
+#    Forward4.cpp 
+#    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
+#    BackpropWeights.cpp BackpropWeightsCpu.cpp BackpropWeightsNaive.cpp 
+#    BackpropWeightsScratch.cpp BackpropWeightsScratchLarge.cpp
+#    FullyConnectedLayer.cpp  EpochMaker.cpp
+#    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
+#    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
+#    BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
+#    RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
+#    Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
+#    RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
+#    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
+#    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
+#    ForwardFc.cpp ForwardByInputPlane.cpp
+#    PoolingBackwardGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
+#    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
+#    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
+#    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
+#    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
+#    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
+#    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
+#    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
+#    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp MultiplyInPlace.cpp
+#    TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
+#    Trainer.cpp SGD.cpp
+# )
+#foreach(source ${DeepCL_sources})
+#    set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
+#endforeach()
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
@@ -85,7 +96,7 @@ if( ON_LINUX )
 target_link_libraries( gpuinfo dl )
 endif()
 
-add_library( DeepCL SHARED ${DeepCL_sources_prefixed} )
+add_library( DeepCL SHARED ${deepcl_sources} )
 
 execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
@@ -117,10 +128,12 @@ link_libraries(DeepCL)
 OPTION(DEV_RUN_COG "DeepCL developers should turn this on." OFF)
 
 if(DEV_RUN_COG)
-    add_custom_target( 
+    foreach( dir ${dirs})
+        set(cog_dirs ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/src/${dir}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/${dir}/*.h)
+    endforeach()
+    add_custom_target(
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/qlearning/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/qlearning/*.h
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
     )
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
@@ -130,7 +143,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/testbackward.cpp test/testsinglebatch.cpp 
  test/testpoolingforward.cpp test/testpoolingbackward.cpp test/testNorbLoader.cpp
  test/teststringhelper.cpp test/testGtestGlobals.cpp 
- src/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
+ src/util/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
@@ -138,16 +151,16 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/testsgd.cpp
  )
 
-add_executable( deepclrun src/deepclrun.cpp src/stringhelper.cpp )
+add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
 
-add_executable( cifar-to-mat test/CifarToMat.cpp src/stringhelper.cpp test/CifarLoader.cpp )
-add_executable( prepare-norb test/prepare-norb.cpp src/stringhelper.cpp )
+add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
+add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
-    add_executable( testpatchextractor test/testPatchExtractor.cpp src/stringhelper.cpp src/PatchExtractor.cpp )
-    add_executable( testtranslator test/testTranslator.cpp src/stringhelper.cpp src/Translator.cpp )
-    add_executable( testgenericloader test/testGenericLoader.cpp src/stringhelper.cpp )
+    add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/PatchExtractor.cpp )
+    add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/Translator.cpp )
+    add_executable( testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp )
 endif(LIBPNGPP_AVAILABLE)
 
 if( ON_LINUX )
@@ -164,7 +177,7 @@ target_link_libraries( unittests gtest )
 target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
-    add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/stringhelper.cpp )
+    add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
     add_executable( learn_scenario_image prototyping/qlearning/learnScenarioImage.cpp 
         prototyping/qlearning/ScenarioImage.cpp )
 endif( PROTOTYPING )

@@ -5,18 +5,18 @@
 #include <cstring>
 #include <cmath>
 
-#include "NeuralNet.h"
-#include "WeightsPersister.h"
-#include "Layer.h"
-#include "ConvolutionalLayer.h"
-#include "NeuralNetMould.h"
-#include "LayerMakers.h"
+#include "net/NeuralNet.h"
+#include "weights/WeightsPersister.h"
+#include "layer/Layer.h"
+#include "conv/ConvolutionalLayer.h"
+#include "net/NeuralNetMould.h"
+#include "layer/LayerMakers.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 #include "test/Sampler.h"
 #include "test/TestArgsParser.h"
-#include "Timer.h"
+#include "util/Timer.h"
 
 //#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
 #ifdef _MSC_VER // make consistent across all msvc versions, so dont have to retest on different msvc versions...

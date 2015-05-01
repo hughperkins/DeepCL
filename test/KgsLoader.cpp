@@ -7,8 +7,8 @@
 #include <iostream>
 #include <string>
 
-#include "FileHelper.h"
-#include "stringhelper.h"
+#include "util/FileHelper.h"
+#include "util/stringhelper.h"
 
 #include "KgsLoader.h"
 

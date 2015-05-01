@@ -7,7 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "stringhelper.h"
+#include "util/stringhelper.h"
 #include "GtestGlobals.h"
 
 #include "TestArgsParser.h"

@@ -5,7 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
-#include "Timer.h"
+#include "util/Timer.h"
 #include "EasyCL.h"
 
 using namespace std;

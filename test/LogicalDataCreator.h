@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ActivationFunction.h"
+#include "activate/ActivationFunction.h"
 
 class LogicalDataCreator {
 public:

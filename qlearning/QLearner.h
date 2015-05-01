@@ -10,8 +10,8 @@
 #include <random>
 
 #include "Scenario.h"
-#include "mt19937defs.h"
-#include "Trainer.h"
+#include "util/mt19937defs.h"
+#include "trainers/Trainer.h"
 
 #include "DeepCLDllExport.h"
 

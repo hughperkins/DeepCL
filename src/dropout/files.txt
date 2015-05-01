@@ -1,0 +1,8 @@
+DropoutBackward.cpp
+DropoutBackwardCpu.cpp
+DropoutBackwardGpuNaive.cpp
+DropoutForward.cpp
+DropoutForwardCpu.cpp
+DropoutForwardGpuNaive.cpp
+DropoutLayer.cpp
+DropoutMaker.cpp

@@ -8,16 +8,16 @@
 #include <random>
 #include <algorithm>
 
-#include "NeuralNet.h"
-#include "Backward.h"
-#include "ActivationFunction.h"
-#include "LossLayer.h"
-#include "ForceBackpropLayerMaker.h"
-#include "LayerMakers.h"
-#include "NeuralNetMould.h"
-#include "ConvolutionalLayer.h"
-#include "InputLayer.h"
-#include "SGD.h"
+#include "net/NeuralNet.h"
+#include "conv/Backward.h"
+#include "activate/ActivationFunction.h"
+#include "loss/LossLayer.h"
+#include "forcebackprop/ForceBackpropLayerMaker.h"
+#include "layer/LayerMakers.h"
+#include "net/NeuralNetMould.h"
+#include "conv/ConvolutionalLayer.h"
+#include "input/InputLayer.h"
+#include "trainers/SGD.h"
 
 #include "gtest/gtest.h"
 

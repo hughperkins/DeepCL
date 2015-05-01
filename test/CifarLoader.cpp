@@ -6,7 +6,7 @@
 
 #include <cstring>
 
-#include "FileHelper.h"
+#include "util/FileHelper.h"
 
 #include "CifarLoader.h"
 

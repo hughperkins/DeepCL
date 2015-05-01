@@ -6,8 +6,8 @@
 
 #include "EasyCL.h"
 
-#include "ActivationForward.h"
-#include "ActivationFunction.h"
+#include "activate/ActivationForward.h"
+#include "activate/ActivationFunction.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"

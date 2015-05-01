@@ -8,14 +8,14 @@
 #include <random>
 #include <algorithm>
 
-#include "NeuralNet.h"
-#include "Backward.h"
-#include "ActivationFunction.h"
-#include "LossLayer.h"
-#include "ForceBackpropLayerMaker.h"
-#include "ActivationMaker.h"
-#include "LayerMakers.h"
-#include "InputLayer.h"
+#include "net/NeuralNet.h"
+#include "conv/Backward.h"
+#include "activate/ActivationFunction.h"
+#include "loss/LossLayer.h"
+#include "forcebackprop/ForceBackpropLayerMaker.h"
+#include "activate/ActivationMaker.h"
+#include "layer/LayerMakers.h"
+#include "input/InputLayer.h"
 
 #include "gtest/gtest.h"
 
@@ -23,7 +23,7 @@
 #include "test/Sampler.h"
 #include "test/WeightRandomizer.h"
 
-#include "SGD.h"
+#include "trainers/SGD.h"
 
 using namespace std;
 

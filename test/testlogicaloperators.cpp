@@ -6,16 +6,16 @@ using namespace std;
 
 #include "gtest/gtest.h"
 
-#include "Timer.h"
-#include "NeuralNet.h"
+#include "util/Timer.h"
+#include "net/NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "LogicalDataCreator.h"
-#include "SGD.h"
-#include "NeuralNetMould.h"
-#include "LayerMaker.h"
+#include "trainers/SGD.h"
+#include "net/NeuralNetMould.h"
+#include "layer/LayerMaker.h"
 #include "EasyCL.h"
-#include "EpochMaker.h"
-#include "LayerMakers.h"
+#include "batch/EpochMaker.h"
+#include "layer/LayerMakers.h"
 
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;

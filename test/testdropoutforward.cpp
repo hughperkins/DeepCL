@@ -6,8 +6,8 @@
 
 #include "EasyCL.h"
 
-#include "DropoutForward.h"
-#include "ActivationFunction.h"
+#include "dropout/DropoutForward.h"
+#include "activate/ActivationFunction.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"

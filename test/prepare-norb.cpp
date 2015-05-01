@@ -16,7 +16,7 @@
 #include <cstring>
 #include <random>
 
-#include "NorbLoader.h"
+#include "loaders/NorbLoader.h"
 
 //#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
 #ifdef _MSC_VER // make consistent across all msvc versions, so dont have to retest on different msvc versions...

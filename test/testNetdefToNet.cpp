@@ -7,13 +7,13 @@
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 
-#include "NeuralNet.h"
-#include "NetdefToNet.h"
-#include "PoolingLayer.h"
-#include "FullyConnectedLayer.h"
-#include "ConvolutionalLayer.h"
-#include "SoftMaxLayer.h"
-#include "LayerMakers.h"
+#include "net/NeuralNet.h"
+#include "netdef/NetdefToNet.h"
+#include "pooling/PoolingLayer.h"
+#include "fc/FullyConnectedLayer.h"
+#include "conv/ConvolutionalLayer.h"
+#include "loss/SoftMaxLayer.h"
+#include "layer/LayerMakers.h"
 
 TEST( testNetdefToNet, empty ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();

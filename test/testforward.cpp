@@ -5,13 +5,13 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "EasyCL.h"
-#include "NeuralNet.h"
-#include "Forward.h"
-#include "ActivationFunction.h"
-#include "Layer.h"
-#include "LayerMakers.h"
-#include "StatefulTimer.h"
-#include "NeuralNetMould.h"
+#include "net/NeuralNet.h"
+#include "conv/Forward.h"
+#include "activate/ActivationFunction.h"
+#include "layer/Layer.h"
+#include "layer/LayerMakers.h"
+#include "util/StatefulTimer.h"
+#include "net/NeuralNetMould.h"
 
 #include "test/WeightRandomizer.h"
 #include "test/GtestGlobals.h"

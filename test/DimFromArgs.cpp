@@ -7,7 +7,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "LayerDimensions.h"
+#include "conv/LayerDimensions.h"
 #include "test/GtestGlobals.h"
 #include "test/TestArgsParser.h"
 

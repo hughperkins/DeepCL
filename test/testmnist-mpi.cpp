@@ -9,12 +9,12 @@
 #include "ImageHelper.h"
 #include "MnistLoader.h"
 // #include "ImagePng.h"
-#include "Timer.h"
-#include "NeuralNet.h"
+#include "util/Timer.h"
+#include "net/NeuralNet.h"
 #include "AccuracyHelper.h"
-#include "stringhelper.h"
-#include "FileHelper.h"
-#include "StatefulTimer.h"
+#include "util/stringhelper.h"
+#include "util/FileHelper.h"
+#include "util/StatefulTimer.h"
 #include "WeightsPersister.h"
 
 using namespace std;
