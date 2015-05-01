@@ -15,6 +15,8 @@ class EasyCL;
 class NeuralNet;
 class Trainable;
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -25,7 +27,7 @@ class Trainable;
 // If we want to change the NeuralNet structure, we should do it before creating
 // the Trainer objects, or we should delete the existing Trainer objects, and
 // create new ones
-class Trainer{
+class DeepCL_EXPORT Trainer{
 public:
     EasyCL *cl; // NOT delete
 //    NeuralNet *net;

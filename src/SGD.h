@@ -18,10 +18,12 @@ class CLWrapper;
 class EasyCL;
 class CLKernel;
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
-class SGD : public Trainer{
+class DeepCL_EXPORT SGD : public Trainer{
 public:
     CLKernel *kernel;
 
