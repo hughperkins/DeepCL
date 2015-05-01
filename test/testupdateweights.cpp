@@ -18,6 +18,7 @@
 #include "NeuralNetMould.h"
 #include "InputLayer.h"
 #include "LayerMakers.h"
+#include "SGD.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -197,7 +198,9 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 
 //    cout << "backprop now" <<endl;
     net->print();
-    net->backward( expectedOutput );
+    SGD *sgd = SGD::instance( cl, learningRate, 0.0f );
+    sgd->train( net, inputData, expectedOutput );
+//    net->backward( expectedOutput );
 //    net->getLayer(1)->print();
     net->forward( inputData );
     net->print();
@@ -231,6 +234,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    delete[] weights1;
 //    delete[] errors;
 //    delete[] output;
+    delete sgd;
     delete[] inputData;
     delete cl;
 }

@@ -17,6 +17,7 @@
 #include "NeuralNetMould.h"
 #include "ConvolutionalLayer.h"
 #include "InputLayer.h"
+#include "SGD.h"
 
 #include "gtest/gtest.h"
 
@@ -512,6 +513,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weights, weightsSize2, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weightsWrapper->copyToDevice();
 
+    SGD *sgd = SGD::instance( cl, learningRate, 0.0f );
     for( int it = 0; it < its; it++ ) {
         float *weightsBefore1 = new float[weightsSize1];
         float *currentWeights = net->getLayer(1)->getWeights();
@@ -528,7 +530,8 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     //    net->print();
         float loss = net->calcLoss(expectedOutput);
         dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
-        net->backward( expectedOutput );
+//        net->backward( expectedOutput );
+        sgd->train( net, inputData, expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
