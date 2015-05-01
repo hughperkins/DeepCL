@@ -4,13 +4,16 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <iostream>
+#include <string>
+
 #include "StatefulTimer.h"
 #include "Timer.h"
 #include "BatchLearner.h"
 #include "NeuralNet.h"
 #include "Trainable.h"
 #include "NetAction.h"
-
+#include "stringhelper.h"
 #include "NetLearner.h"
 
 using namespace std;

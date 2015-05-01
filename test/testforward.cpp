@@ -8,6 +8,10 @@
 #include "NeuralNet.h"
 #include "Forward.h"
 #include "ActivationFunction.h"
+#include "Layer.h"
+#include "LayerMakers.h"
+#include "StatefulTimer.h"
+#include "NeuralNetMould.h"
 
 #include "test/myasserts.h"
 #include "test/WeightRandomizer.h"

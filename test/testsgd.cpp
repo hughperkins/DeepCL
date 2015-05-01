@@ -14,6 +14,8 @@
 #include "LossLayer.h"
 #include "ForceBackpropLayerMaker.h"
 #include "ActivationMaker.h"
+#include "LayerMakers.h"
+#include "InputLayer.h"
 
 #include "gtest/gtest.h"
 

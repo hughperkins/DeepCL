@@ -9,7 +9,7 @@
 
 #include "FileHelper.h"
 #include "NeuralNet.h"
-
+#include "Layer.h"
 #include "WeightsPersister.h"
 
 using namespace std;

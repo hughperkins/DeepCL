@@ -12,6 +12,8 @@
 #include "DeepCLDllExport.h"
 #include "LayerMaker.h"
 
+class Layer;
+
 /// \brief Use to create an InputLayer, which can be added to a NeuralNet
 ///
 /// This is the first layer in any network, and can receive one batch of data,

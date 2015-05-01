@@ -5,24 +5,29 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 
-#include <iostream>
-#include <algorithm>
+//#include <iostream>
+//#include <algorithm>
 
-#include "GenericLoader.h"
-#include "Timer.h"
-#include "NeuralNet.h"
-#include "stringhelper.h"
-#include "FileHelper.h"
-#include "StatefulTimer.h"
-#include "WeightsPersister.h"
-#include "NormalizationHelper.h"
-//#include "BatchLearner.h"
-#include "NetdefToNet.h"
-#include "NetLearner.h"
-#include "MultiNet.h"
-#include "BatchProcess.h"
-#include "NetLearnerOnDemand.h"
-#include "SGD.h"
+#include "DeepCL.h"
+
+//#include "OpenCLHelper.h"
+//#include "InputLayerMaker.h"
+//#include "NormalizationLayerMaker.h"
+//#include "GenericLoader.h"
+//#include "Timer.h"
+//#include "NeuralNet.h"
+//#include "stringhelper.h"
+//#include "FileHelper.h"
+//#include "StatefulTimer.h"
+//#include "WeightsPersister.h"
+//#include "NormalizationHelper.h"
+////#include "BatchLearner.h"
+//#include "NetdefToNet.h"
+//#include "NetLearner.h"
+//#include "MultiNet.h"
+//#include "BatchProcess.h"
+//#include "NetLearnerOnDemand.h"
+//#include "SGD.h"
 //#include "SGDState.h"
 //#include "SGDStateMaker.h"
 

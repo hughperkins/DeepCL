@@ -15,6 +15,7 @@
 #include "DeepCLDllExport.h"
 
 class NeuralNet;
+class Trainer;
 
 class Experience {
 public:
@@ -27,14 +28,16 @@ public:
 
 class DeepCL_EXPORT QLearner {
 public:
+    Trainer *trainer;
+
     // following 4 parameters are user-configurable:
     float lambda; // means: how far into the future do we look? (any number from 0.0 to 1.0 is possible)
     int maxSamples;  // how many samples from history do we revise after each action? (default: 32)
     float epsilon; // probability of exploring, instead of exploiting, 0.0 to 1.0 ok
-    float learningRate; // learning rate for the neuralnet; depends on what is appropriate for your particular
-                        // network design
+//    float learningRate; // learning rate for the neuralnet; depends on what is appropriate for your particular
+//                        // network design
 
-    QLearner( Scenario *scenario, NeuralNet *net );
+    QLearner( Trainer *trainer, Scenario *scenario, NeuralNet *net );
     // do one frame:
     int step( float lastReward, bool wasReset, float *perception );
     void run();  // main entry point
@@ -45,7 +48,7 @@ public:
     void setLambda( float lambda ) { this->lambda = lambda; }
     void setMaxSamples( int maxSamples ) { this->maxSamples = maxSamples; }
     void setEpsilon( float epsilon ) { this->epsilon = epsilon; }
-    void setLearningRate( float learningRate ) { this->learningRate = learningRate; }
+//    void setLearningRate( float learningRate ) { this->learningRate = learningRate; }
 
 protected:
     int size;

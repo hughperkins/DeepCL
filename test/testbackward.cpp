@@ -13,7 +13,10 @@
 #include "ActivationFunction.h"
 #include "LossLayer.h"
 #include "ForceBackpropLayerMaker.h"
-#include "ActivationMaker.h"
+#include "LayerMakers.h"
+#include "NeuralNetMould.h"
+#include "ConvolutionalLayer.h"
+#include "InputLayer.h"
 
 #include "gtest/gtest.h"
 

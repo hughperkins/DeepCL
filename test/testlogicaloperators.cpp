@@ -10,8 +10,14 @@ using namespace std;
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "LogicalDataCreator.h"
-#include "test/myasserts.h"
 #include "SGD.h"
+#include "NeuralNetMould.h"
+#include "LayerMaker.h"
+#include "OpenCLHelper.h"
+#include "EpochMaker.h"
+#include "LayerMakers.h"
+
+#include "test/myasserts.h"
 
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;

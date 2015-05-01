@@ -9,22 +9,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "Layer.h"
-#include "EpochMaker.h"
-#include "ConvolutionalLayer.h"
-#include "InputLayer.h"
 #include "Trainable.h"
-#include "NeuralNetMould.h"
-#include "InputLayerMaker.h"
-#include "ConvolutionalMaker.h"
-#include "RandomTranslationsMaker.h"
-#include "RandomPatchesMaker.h"
-#include "NormalizationLayerMaker.h"
-#include "FullyConnectedMaker.h"
-#include "PoolingMaker.h"
-#include "LayerMaker.h"
-#include "ActivationMaker.h"
-#include "DropoutMaker.h"
 
 #include "DeepCLDllExport.h"
 
@@ -34,7 +19,11 @@ class LayerMaker;
 class RandomTranslatorMaker;
 class InputLayerMaker;
 class Trainer;
-//class NeuralNetMould;
+class NeuralNetMould;
+class LayerMaker2;
+class EpochMaker;
+class InputMaker;
+class InputLayer;
 
 #define VIRTUAL virtual
 #define STATIC static

@@ -9,6 +9,7 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "DropoutLayer.h"
+#include "DropoutMaker.h"
 #include "DropoutForward.h"
 #include "DropoutBackward.h"
 #include "RandomSingleton.h"

@@ -9,6 +9,7 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "RandomTranslations.h"
+#include "RandomTranslationsMaker.h"
 #include "RandomSingleton.h"
 #include "Translator.h"
 

@@ -4,16 +4,20 @@
 #include <iostream>
 #include <vector>
 
-#include "gtest/gtest.h"
-
 #include "Timer.h"
 #include "NeuralNet.h"
 #include "AccuracyHelper.h"
-#include "test/myasserts.h"
 #include "StatefulTimer.h"
 #include "BatchLearner.h"
 #include "NetLearner.h"
 #include "SGD.h"
+#include "OpenCLHelper.h"
+#include "NeuralNetMould.h"
+#include "LayerMakers.h"
+#include "EpochMaker.h"
+
+#include "gtest/gtest.h"
+#include "test/myasserts.h"
 
 using namespace std;
 

@@ -41,7 +41,7 @@ net->print();
 ## Create a net
 
 ```c++
-#include "NeuralNet.h"
+#include "DeepCL.h"
 OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
 NeuralNet *net = new NeuralNet( cl );
 ```

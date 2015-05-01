@@ -12,6 +12,12 @@
 #include "NeuralNet.h"
 #include "BackpropWeights.h"
 #include "BackpropWeightsNaive.h"
+#include "Layer.h"
+#include "ConvolutionalLayer.h"
+#include "ConvolutionalMaker.h"
+#include "NeuralNetMould.h"
+#include "InputLayer.h"
+#include "LayerMakers.h"
 
 #include "test/myasserts.h"
 #include "gtest/gtest.h"

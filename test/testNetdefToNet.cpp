@@ -13,6 +13,7 @@
 #include "FullyConnectedLayer.h"
 #include "ConvolutionalLayer.h"
 #include "SoftMaxLayer.h"
+#include "LayerMakers.h"
 
 TEST( testNetdefToNet, empty ) {
     OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();

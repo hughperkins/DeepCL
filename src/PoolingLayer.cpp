@@ -8,6 +8,7 @@
 
 #include "NeuralNet.h"
 #include "Layer.h"
+#include "PoolingMaker.h"
 #include "PoolingLayer.h"
 #include "PoolingForward.h"
 #include "PoolingBackward.h"

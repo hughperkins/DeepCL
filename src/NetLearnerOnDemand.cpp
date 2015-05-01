@@ -11,7 +11,7 @@
 #include "Trainable.h"
 #include "NetAction.h"
 #include "OnDemandBatcher.h"
-
+#include "stringhelper.h"
 #include "NetLearnerOnDemand.h"
 
 using namespace std;

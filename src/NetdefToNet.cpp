@@ -4,9 +4,14 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "NeuralNet.h"
+#include <iostream>
+#include <string>
 
+#include "NeuralNet.h"
+#include "LayerMakers.h"
+#include "stringhelper.h"
 #include "NetdefToNet.h"
+#include "ActivationFunction.h"
 
 using namespace std;
 

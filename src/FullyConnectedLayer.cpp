@@ -6,8 +6,9 @@
 
 #include "NeuralNet.h"
 #include "FullyConnectedMaker.h"
-
 #include "FullyConnectedLayer.h"
+#include "ConvolutionalLayer.h"
+#include "ConvolutionalMaker.h"
 
 using namespace std;
 

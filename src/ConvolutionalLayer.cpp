@@ -5,6 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ConvolutionalLayer.h"
+#include "ConvolutionalMaker.h"
 #include "NeuralNet.h"
 #include "stringhelper.h"
 #include "Forward.h"
@@ -16,6 +17,7 @@
 #include "SGDState.h"
 #include "GpuAdd.h"
 #include "CopyBuffer.h"
+#include "Layer.h"
 
 using namespace std;
 

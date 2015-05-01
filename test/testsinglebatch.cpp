@@ -7,6 +7,10 @@
 
 #include "NeuralNet.h"
 #include "WeightsPersister.h"
+#include "Layer.h"
+#include "ConvolutionalLayer.h"
+#include "NeuralNetMould.h"
+#include "LayerMakers.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"

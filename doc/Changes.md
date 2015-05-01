@@ -37,6 +37,7 @@ and fc layers
 * Have to create an OpenCLHelper object yourself, and pass it into NeuralNet constructor
   * not sure this increases the difficulty of usage too much?  and simplifies internal design quite a lot, since
 one can assume that there is one and only one cl, shared everywhere (cf, otherwise MultiNet complicates things, or have to start reference-counting and stuff)
+* main header changes from `NeuralNet.h` to `DeepCL.h`, to try to reduce the whole-world-rebuilds effect during dev compilations
 
 ## Deprecated, in next version, 4.x.x
 

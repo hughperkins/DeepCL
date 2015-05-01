@@ -9,6 +9,7 @@
 #include "NeuralNet.h"
 #include "Layer.h"
 #include "RandomPatches.h"
+#include "RandomPatchesMaker.h"
 #include "RandomSingleton.h"
 #include "PatchExtractor.h"
 

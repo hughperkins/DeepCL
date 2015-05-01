@@ -6,9 +6,8 @@
 
 #include <stdexcept>
 
-#include "InputLayer.h"
-
 #include "InputLayerMaker.h"
+#include "InputLayer.h"
 
 using namespace std;
 

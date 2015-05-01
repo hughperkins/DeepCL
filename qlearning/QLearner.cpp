@@ -6,18 +6,19 @@
 
 #include "NeuralNet.h"
 #include "array_helper.h"
-
+#include "Trainer.h"
 #include "QLearner.h"
 
 using namespace std;
 
-QLearner::QLearner( Scenario *scenario, NeuralNet *net ) :
+QLearner::QLearner( Trainer *trainer, Scenario *scenario, NeuralNet *net ) :
+        trainer( trainer ),
         scenario( scenario ),
         net( net ) {
     lambda = 0.9f;
     maxSamples = 32;
     epsilon = 0.1f;
-    learningRate = 0.1f;
+//    learningRate = 0.1f;
 
     size = scenario->getPerceptionSize();
     planes = scenario->getPerceptionPlanes();
@@ -92,7 +93,8 @@ void QLearner::learnFromPast() {
         }
     }
     // backprop...
-    throw runtime_error("need to implement this");
+//    throw runtime_error("need to implement this");
+    trainer->train( net, befores, expectedValues );
 //    net->backward( learningRate / batchSize, expectedValues );
     net->setBatchSize(1);
 

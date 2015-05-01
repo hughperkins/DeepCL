@@ -12,6 +12,11 @@
 #include "DeepCLDllExport.h"
 #include "ActivationFunction.h"
 
+//#include "Layer.h"
+//#include "InputLayerMaker.h"
+//#include "ConvolutionalMaker.h"
+//#include "ActivationMaker.h"
+
 class NeuralNet;
 class Layer;
 class OpenCLHelper;
