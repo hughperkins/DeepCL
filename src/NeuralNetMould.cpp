@@ -9,7 +9,7 @@
 #include "Layer.h"
 #include "NeuralNet.h"
 #include "InputLayerMaker.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "NeuralNetMould.h"
 

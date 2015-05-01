@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "NeuralNet.h"
 #include "Forward.h"
 #include "ActivationFunction.h"
@@ -89,7 +89,7 @@ TEST( testforward, imagesize2_nopadzeros ) {
     };
     cout << "expected number of output: " << resultSize << endl;
 //    int outputImageSize = 0;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
         Forward *forward = Forward::instanceSpecific( 99, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
@@ -148,7 +148,7 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
     };
     cout << "expected number of output: " << outputSize << endl;
 //    int outputImageSize = 0;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
         Forward *forward = Forward::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
@@ -233,7 +233,7 @@ TEST( testforward, imagesize2_padzeros ) {
 //    };
 
 //    int outputImageSize = 0;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
     float *output = forward->forward( batchSize, data, filter1, 0 );        
@@ -294,7 +294,7 @@ TEST( testforward, imagesize3 ) {
  };
 
 //    int outputImageSize = 0;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
     float *output = forward->forward( 
@@ -339,7 +339,7 @@ TEST( testforward, test2 ) {
                          0,0,0
  };
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     float *biases = 0;
 
@@ -372,7 +372,7 @@ TEST( testforward, test3 ) {
                      0.5f,0.7f};
 
 //    int outputImageSize = 0;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ) );
     float *output = forward->forward( 
@@ -401,7 +401,7 @@ TEST( testforward, test3 ) {
 
 void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
     cout << dim << endl;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int inputsSize = N * dim.inputCubeSize;
     int filtersSize = dim.filtersSize;
@@ -686,7 +686,7 @@ TEST( SLOW_testforward, compare_args ) {
 //}
 
 TEST( testforward, softmax ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->imageSize(1)->planes(4)->instance();
     net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
@@ -746,7 +746,7 @@ TEST( testforward, softmax ) {
 }
 
 TEST( testforward, softmax_byplane ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->imageSize(2)->planes(1)->instance();
     net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
@@ -827,7 +827,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim, Activati
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *p1 = Forward::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;

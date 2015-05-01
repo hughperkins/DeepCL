@@ -15,7 +15,7 @@
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
 #include "stringhelper.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #define VIRTUAL virtual
 

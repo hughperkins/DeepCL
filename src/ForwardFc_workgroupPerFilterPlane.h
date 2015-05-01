@@ -20,7 +20,7 @@ public:
     // generated, using cog:
     VIRTUAL ~ForwardFc_workgroupPerFilterPlane();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper );
-    ForwardFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim );
+    ForwardFc_workgroupPerFilterPlane( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

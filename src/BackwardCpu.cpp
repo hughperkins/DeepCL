@@ -18,7 +18,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackwardCpu::BackwardCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+BackwardCpu::BackwardCpu( EasyCL *cl, LayerDimensions dim ) :
         Backward( cl, dim )
             {
 }

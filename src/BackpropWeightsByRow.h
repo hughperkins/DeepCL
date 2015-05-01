@@ -21,7 +21,7 @@ public:
     // generated, using cog:
     VIRTUAL ~BackpropWeightsByRow();
     VIRTUAL void backpropWeights( int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper );
-    BackpropWeightsByRow( OpenCLHelper *cl, LayerDimensions dim );
+    BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

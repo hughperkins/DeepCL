@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "PoolingBackward.h"
 #include "StatefulTimer.h"
 
@@ -21,7 +21,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingBackwardCpu::PoolingBackwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingBackwardCpu::PoolingBackwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingBackward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
 VIRTUAL void PoolingBackwardCpu::backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput ) {

@@ -17,7 +17,7 @@ public:
     VIRTUAL ~ForwardByInputPlane();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper );
-    ForwardByInputPlane( OpenCLHelper *cl, LayerDimensions dim );
+    ForwardByInputPlane( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

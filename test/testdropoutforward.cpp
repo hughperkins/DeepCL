@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "DropoutForward.h"
 #include "ActivationFunction.h"
@@ -42,7 +42,7 @@ TEST( testdropoutforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
@@ -81,7 +81,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
@@ -131,7 +131,7 @@ TEST( testdropoutforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
@@ -240,7 +240,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int numPlanes = args._numPlanes;
     int imageSize = args._imageSize;
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     DropoutForward *dropoutForward0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
     DropoutForward *dropoutForward1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );

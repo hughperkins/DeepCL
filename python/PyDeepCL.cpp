@@ -10,7 +10,7 @@
                 1
             ], 
             [
-                "OpenCLHelper_EXPORTS", 
+                "EasyCL_EXPORTS", 
                 1
             ]
         ], 
@@ -21,13 +21,13 @@
             "mysrc/FullyConnectedMaker.h", 
             "CyWrappers.h", 
             "mysrc/GenericLoader.h", 
+            "mysrc/EasyCL.h", 
             "mysrc/NormalizationLayerMaker.h", 
             "CyScenario.h", 
             "mysrc/Layer.h", 
             "mysrc/SGD.h", 
             "mysrc/InputLayerMaker.h", 
             "mysrc/LayerMaker.h", 
-            "mysrc/OpenCLHelper.h", 
             "mysrc/NeuralNet.h", 
             "mysrc/ConvolutionalMaker.h", 
             "mysrc/NetdefToNet.h", 
@@ -300,7 +300,7 @@ class __Pyx_FakeReference {
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "LayerMaker.h"
 #include "InputLayerMaker.h"
 #include "DropoutMaker.h"
@@ -505,7 +505,7 @@ static const char *__pyx_f[] = {
   "LayerMaker.pyx",
   "NeuralNet.pyx",
   "PyDeepCL.pyx",
-  "OpenCLHelper.pyx",
+  "EasyCL.pyx",
   "SGD.pyx",
   "Layer.pyx",
   "GenericLoader.pyx",
@@ -614,7 +614,7 @@ typedef volatile __pyx_atomic_int_type __pyx_atomic_int;
 struct arrayobject;
 typedef struct arrayobject arrayobject;
 #endif
-struct __pyx_obj_8PyDeepCL_OpenCLHelper;
+struct __pyx_obj_8PyDeepCL_EasyCL;
 struct __pyx_obj_8PyDeepCL_SGD;
 struct __pyx_obj_8PyDeepCL_NeuralNet;
 struct __pyx_obj_8PyDeepCL_Layer;
@@ -639,14 +639,14 @@ struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
 
-/* "OpenCLHelper.pyx":1
- * cdef class OpenCLHelper:             # <<<<<<<<<<<<<<
- *     cdef cDeepCL.OpenCLHelper *thisptr
+/* "EasyCL.pyx":1
+ * cdef class EasyCL:             # <<<<<<<<<<<<<<
+ *     cdef cDeepCL.EasyCL *thisptr
  * 
  */
-struct __pyx_obj_8PyDeepCL_OpenCLHelper {
+struct __pyx_obj_8PyDeepCL_EasyCL {
   PyObject_HEAD
-  OpenCLHelper *thisptr;
+  EasyCL *thisptr;
 };
 
 struct __pyx_obj_8PyDeepCL_SGD {
@@ -1642,7 +1642,7 @@ static CYTHON_INLINE int __pyx_f_7cpython_5array_extend_buffer(arrayobject *, ch
 /* Module declarations from 'cDeepCL' */
 
 /* Module declarations from 'PyDeepCL' */
-static PyTypeObject *__pyx_ptype_8PyDeepCL_OpenCLHelper = 0;
+static PyTypeObject *__pyx_ptype_8PyDeepCL_EasyCL = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_SGD = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_NeuralNet = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_Layer = 0;
@@ -1733,13 +1733,13 @@ static PyObject *__pyx_builtin_Ellipsis;
 static PyObject *__pyx_builtin_TypeError;
 static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
-static int __pyx_pf_8PyDeepCL_12OpenCLHelper___cinit__(struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_12OpenCLHelper_2__dealloc(struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_self); /* proto */
-static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_cl); /* proto */
+static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self); /* proto */
+static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_2__dealloc(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_4setLearningRate(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_momentum); /* proto */
-static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size); /* proto */
+static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_2__dealloc(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_4asString(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_6setBatchSize(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, int __pyx_v_batchSize); /* proto */
@@ -1866,7 +1866,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
 static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22copy_fortran(struct __pyx_memoryview_obj *__pyx_v_self); /* proto */
 static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewslice___dealloc__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
-static PyObject *__pyx_tp_new_8PyDeepCL_OpenCLHelper(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8PyDeepCL_EasyCL(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_SGD(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_NeuralNet(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_Layer(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -2214,8 +2214,8 @@ static PyObject *__pyx_codeobj__41;
 static PyObject *__pyx_codeobj__43;
 static PyObject *__pyx_codeobj__45;
 
-/* "OpenCLHelper.pyx":4
- *     cdef cDeepCL.OpenCLHelper *thisptr
+/* "EasyCL.pyx":4
+ *     cdef cDeepCL.EasyCL *thisptr
  * 
  *     def __cinit__(self, gpuindex=None ):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
@@ -2223,8 +2223,8 @@ static PyObject *__pyx_codeobj__45;
  */
 
 /* Python wrapper */
-static int __pyx_pw_8PyDeepCL_12OpenCLHelper_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_8PyDeepCL_12OpenCLHelper_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_gpuindex = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -2268,18 +2268,18 @@ static int __pyx_pw_8PyDeepCL_12OpenCLHelper_1__cinit__(PyObject *__pyx_v_self, 
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[3]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("PyDeepCL.OpenCLHelper.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("PyDeepCL.EasyCL.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_12OpenCLHelper___cinit__(((struct __pyx_obj_8PyDeepCL_OpenCLHelper *)__pyx_v_self), __pyx_v_gpuindex);
+  __pyx_r = __pyx_pf_8PyDeepCL_6EasyCL___cinit__(((struct __pyx_obj_8PyDeepCL_EasyCL *)__pyx_v_self), __pyx_v_gpuindex);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_12OpenCLHelper___cinit__(struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_self, PyObject *__pyx_v_gpuindex) {
+static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self, PyObject *__pyx_v_gpuindex) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -2290,43 +2290,43 @@ static int __pyx_pf_8PyDeepCL_12OpenCLHelper___cinit__(struct __pyx_obj_8PyDeepC
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "OpenCLHelper.pyx":6
+  /* "EasyCL.pyx":6
  *     def __cinit__(self, gpuindex=None ):
  * #        print( '__cinit__(planes,size)')
  *         if gpuindex is None:             # <<<<<<<<<<<<<<
- *              self.thisptr = cDeepCL.OpenCLHelper.createForFirstGpuOtherwiseCpu()
+ *              self.thisptr = cDeepCL.EasyCL.createForFirstGpuOtherwiseCpu()
  *         else:
  */
   __pyx_t_1 = (__pyx_v_gpuindex == Py_None);
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "OpenCLHelper.pyx":7
+    /* "EasyCL.pyx":7
  * #        print( '__cinit__(planes,size)')
  *         if gpuindex is None:
- *              self.thisptr = cDeepCL.OpenCLHelper.createForFirstGpuOtherwiseCpu()             # <<<<<<<<<<<<<<
+ *              self.thisptr = cDeepCL.EasyCL.createForFirstGpuOtherwiseCpu()             # <<<<<<<<<<<<<<
  *         else:
- *             self.thisptr = cDeepCL.OpenCLHelper.createForIndexedGpu(gpuindex)
+ *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)
  */
-    __pyx_v_self->thisptr = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    __pyx_v_self->thisptr = EasyCL::createForFirstGpuOtherwiseCpu();
     goto __pyx_L3;
   }
   /*else*/ {
 
-    /* "OpenCLHelper.pyx":9
- *              self.thisptr = cDeepCL.OpenCLHelper.createForFirstGpuOtherwiseCpu()
+    /* "EasyCL.pyx":9
+ *              self.thisptr = cDeepCL.EasyCL.createForFirstGpuOtherwiseCpu()
  *         else:
- *             self.thisptr = cDeepCL.OpenCLHelper.createForIndexedGpu(gpuindex)             # <<<<<<<<<<<<<<
+ *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)             # <<<<<<<<<<<<<<
  * 
  *     def __dealloc(self):
  */
     __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_gpuindex); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_v_self->thisptr = OpenCLHelper::createForIndexedGpu(__pyx_t_3);
+    __pyx_v_self->thisptr = EasyCL::createForIndexedGpu(__pyx_t_3);
   }
   __pyx_L3:;
 
-  /* "OpenCLHelper.pyx":4
- *     cdef cDeepCL.OpenCLHelper *thisptr
+  /* "EasyCL.pyx":4
+ *     cdef cDeepCL.EasyCL *thisptr
  * 
  *     def __cinit__(self, gpuindex=None ):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
@@ -2337,15 +2337,15 @@ static int __pyx_pf_8PyDeepCL_12OpenCLHelper___cinit__(struct __pyx_obj_8PyDeepC
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.OpenCLHelper.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("PyDeepCL.EasyCL.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "OpenCLHelper.pyx":11
- *             self.thisptr = cDeepCL.OpenCLHelper.createForIndexedGpu(gpuindex)
+/* "EasyCL.pyx":11
+ *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)
  * 
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -2353,24 +2353,24 @@ static int __pyx_pf_8PyDeepCL_12OpenCLHelper___cinit__(struct __pyx_obj_8PyDeepC
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_12OpenCLHelper_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_12OpenCLHelper_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8PyDeepCL_6EasyCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6EasyCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_12OpenCLHelper_2__dealloc(((struct __pyx_obj_8PyDeepCL_OpenCLHelper *)__pyx_v_self));
+  __pyx_r = __pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(((struct __pyx_obj_8PyDeepCL_EasyCL *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_12OpenCLHelper_2__dealloc(struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_self) {
+static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc", 0);
 
-  /* "OpenCLHelper.pyx":12
+  /* "EasyCL.pyx":12
  * 
  *     def __dealloc(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -2378,8 +2378,8 @@ static PyObject *__pyx_pf_8PyDeepCL_12OpenCLHelper_2__dealloc(struct __pyx_obj_8
  */
   delete __pyx_v_self->thisptr;
 
-  /* "OpenCLHelper.pyx":11
- *             self.thisptr = cDeepCL.OpenCLHelper.createForIndexedGpu(gpuindex)
+  /* "EasyCL.pyx":11
+ *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)
  * 
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -2396,7 +2396,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12OpenCLHelper_2__dealloc(struct __pyx_obj_8
 /* "SGD.pyx":3
  * cdef class SGD:
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, OpenCLHelper cl ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, EasyCL cl ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *     def __dealloc(self):
  */
@@ -2404,7 +2404,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12OpenCLHelper_2__dealloc(struct __pyx_obj_8
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2436,7 +2436,7 @@ static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_OpenCLHelper *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
@@ -2446,7 +2446,7 @@ static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_OpenCLHelper, 1, "cl", 0))) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_3SGD___cinit__(((struct __pyx_obj_8PyDeepCL_SGD *)__pyx_v_self), __pyx_v_cl);
 
   /* function exit code */
@@ -2458,7 +2458,7 @@ static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_cl) {
+static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   SGD *__pyx_t_1;
@@ -2469,7 +2469,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
 
   /* "SGD.pyx":4
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, OpenCLHelper cl ):
+ *     def __cinit__( self, EasyCL cl ):
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)             # <<<<<<<<<<<<<<
  *     def __dealloc(self):
  *         del self.thisptr
@@ -2485,7 +2485,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
   /* "SGD.pyx":3
  * cdef class SGD:
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, OpenCLHelper cl ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, EasyCL cl ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *     def __dealloc(self):
  */
@@ -2502,7 +2502,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
 }
 
 /* "SGD.pyx":5
- *     def __cinit__( self, OpenCLHelper cl ):
+ *     def __cinit__( self, EasyCL cl ):
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -2537,7 +2537,7 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_2__dealloc(struct __pyx_obj_8PyDeepCL_S
   delete __pyx_v_self->thisptr;
 
   /* "SGD.pyx":5
- *     def __cinit__( self, OpenCLHelper cl ):
+ *     def __cinit__( self, EasyCL cl ):
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -2679,7 +2679,7 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL
 /* "NeuralNet.pyx":4
  *     cdef cDeepCL.NeuralNet *thisptr
  * 
- *     def __cinit__(self, OpenCLHelper cl, planes = None, size = None):             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, EasyCL cl, planes = None, size = None):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
  *         if planes == None and size == None:
  */
@@ -2687,7 +2687,7 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_planes = 0;
   PyObject *__pyx_v_size = 0;
   int __pyx_lineno = 0;
@@ -2739,7 +2739,7 @@ static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyOb
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_OpenCLHelper *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
     __pyx_v_planes = values[1];
     __pyx_v_size = values[2];
   }
@@ -2751,7 +2751,7 @@ static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyOb
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_OpenCLHelper, 1, "cl", 0))) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(((struct __pyx_obj_8PyDeepCL_NeuralNet *)__pyx_v_self), __pyx_v_cl, __pyx_v_planes, __pyx_v_size);
 
   /* function exit code */
@@ -2763,7 +2763,7 @@ static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyOb
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_OpenCLHelper *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size) {
+static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -2778,7 +2778,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "NeuralNet.pyx":6
- *     def __cinit__(self, OpenCLHelper cl, planes = None, size = None):
+ *     def __cinit__(self, EasyCL cl, planes = None, size = None):
  * #        print( '__cinit__(planes,size)')
  *         if planes == None and size == None:             # <<<<<<<<<<<<<<
  *              self.thisptr = new cDeepCL.NeuralNet(cl.thisptr)
@@ -2839,7 +2839,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
   /* "NeuralNet.pyx":4
  *     cdef cDeepCL.NeuralNet *thisptr
  * 
- *     def __cinit__(self, OpenCLHelper cl, planes = None, size = None):             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, EasyCL cl, planes = None, size = None):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
  *         if planes == None and size == None:
  */
@@ -22952,7 +22952,7 @@ static std::string __pyx_convert_string_from_py_std__in_string(PyObject *__pyx_v
   return __pyx_r;
 }
 
-static PyObject *__pyx_tp_new_8PyDeepCL_OpenCLHelper(PyTypeObject *t, PyObject *a, PyObject *k) {
+static PyObject *__pyx_tp_new_8PyDeepCL_EasyCL(PyTypeObject *t, PyObject *a, PyObject *k) {
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
     o = (*t->tp_alloc)(t, 0);
@@ -22960,13 +22960,13 @@ static PyObject *__pyx_tp_new_8PyDeepCL_OpenCLHelper(PyTypeObject *t, PyObject *
     o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
   }
   if (unlikely(!o)) return 0;
-  if (unlikely(__pyx_pw_8PyDeepCL_12OpenCLHelper_1__cinit__(o, a, k) < 0)) {
+  if (unlikely(__pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(o, a, k) < 0)) {
     Py_DECREF(o); o = 0;
   }
   return o;
 }
 
-static void __pyx_tp_dealloc_8PyDeepCL_OpenCLHelper(PyObject *o) {
+static void __pyx_tp_dealloc_8PyDeepCL_EasyCL(PyObject *o) {
   #if PY_VERSION_HEX >= 0x030400a1
   if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
@@ -22975,17 +22975,17 @@ static void __pyx_tp_dealloc_8PyDeepCL_OpenCLHelper(PyObject *o) {
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static PyMethodDef __pyx_methods_8PyDeepCL_OpenCLHelper[] = {
-  {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_12OpenCLHelper_3__dealloc, METH_NOARGS, 0},
+static PyMethodDef __pyx_methods_8PyDeepCL_EasyCL[] = {
+  {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_6EasyCL_3__dealloc, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_8PyDeepCL_OpenCLHelper = {
+static PyTypeObject __pyx_type_8PyDeepCL_EasyCL = {
   PyVarObject_HEAD_INIT(0, 0)
-  "PyDeepCL.OpenCLHelper", /*tp_name*/
-  sizeof(struct __pyx_obj_8PyDeepCL_OpenCLHelper), /*tp_basicsize*/
+  "PyDeepCL.EasyCL", /*tp_name*/
+  sizeof(struct __pyx_obj_8PyDeepCL_EasyCL), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_8PyDeepCL_OpenCLHelper, /*tp_dealloc*/
+  __pyx_tp_dealloc_8PyDeepCL_EasyCL, /*tp_dealloc*/
   0, /*tp_print*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -23012,7 +23012,7 @@ static PyTypeObject __pyx_type_8PyDeepCL_OpenCLHelper = {
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_8PyDeepCL_OpenCLHelper, /*tp_methods*/
+  __pyx_methods_8PyDeepCL_EasyCL, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
   0, /*tp_base*/
@@ -23022,7 +23022,7 @@ static PyTypeObject __pyx_type_8PyDeepCL_OpenCLHelper = {
   0, /*tp_dictoffset*/
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_8PyDeepCL_OpenCLHelper, /*tp_new*/
+  __pyx_tp_new_8PyDeepCL_EasyCL, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -25967,10 +25967,10 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_OpenCLHelper) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_8PyDeepCL_OpenCLHelper.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "OpenCLHelper", (PyObject *)&__pyx_type_8PyDeepCL_OpenCLHelper) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_8PyDeepCL_OpenCLHelper = &__pyx_type_8PyDeepCL_OpenCLHelper;
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_EasyCL) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_type_8PyDeepCL_EasyCL.tp_print = 0;
+  if (PyObject_SetAttrString(__pyx_m, "EasyCL", (PyObject *)&__pyx_type_8PyDeepCL_EasyCL) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_8PyDeepCL_EasyCL = &__pyx_type_8PyDeepCL_EasyCL;
   if (PyType_Ready(&__pyx_type_8PyDeepCL_SGD) < 0) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_8PyDeepCL_SGD.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "SGD", (PyObject *)&__pyx_type_8PyDeepCL_SGD) < 0) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}

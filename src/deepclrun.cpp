@@ -10,7 +10,7 @@
 
 #include "DeepCL.h"
 
-//#include "OpenCLHelper.h"
+//#include "EasyCL.h"
 //#include "InputLayerMaker.h"
 //#include "NormalizationLayerMaker.h"
 //#include "GenericLoader.h"
@@ -251,11 +251,11 @@ void go(Config config) {
 //    const int numToTrain = Ntrain;
 //    const int batchSize = config.batchSize;
 
-    OpenCLHelper *cl = 0;
+    EasyCL *cl = 0;
     if( config.gpuIndex >= 0 ) {
-        cl = OpenCLHelper::createForIndexedGpu( config.gpuIndex );
+        cl = EasyCL::createForIndexedGpu( config.gpuIndex );
     } else {
-        cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+        cl = EasyCL::createForFirstGpuOtherwiseCpu();
     }
 
     NeuralNet *net;

@@ -25,8 +25,8 @@ unset(LUA51_AVAILABLE CACHE)
 include_directories( . )
 include_directories( src )
 include_directories( qlearning )
-include_directories( OpenCLHelper )
-include_directories( OpenCLHelper/clew/include )
+include_directories( EasyCL )
+include_directories( EasyCL/clew/include )
 
 if( ON_LINUX )
 link_libraries(dl)
@@ -73,14 +73,14 @@ foreach(source ${DeepCL_sources})
     set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
 endforeach()
 
-set( OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
-    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
-    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c )
-add_library( OpenCLHelper SHARED ${OpenCLHelper_sources} )
-link_libraries( OpenCLHelper )
+set( EasyCL_sources EasyCL/EasyCL.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
+add_library( EasyCL SHARED ${EasyCL_sources} )
+link_libraries( EasyCL )
 
-add_executable( gpuinfo OpenCLHelper/gpuinfo.cpp OpenCLHelper/thirdparty/clew/src/clew.c 
-    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp )
+add_executable( gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp )
 if( ON_LINUX )
 target_link_libraries( gpuinfo dl )
 endif()
@@ -97,10 +97,10 @@ endif()
 
 if( GIT_FOUND )
 add_custom_command( 
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/OpenCLHelper.cpp ${CMAKE_CURRENT_SOURCE_DIR}/OpenCLHelper/CLKernel.cpp
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp
     COMMAND git submodule update --init --force --recursive
 )
-add_custom_target( git_submodules_update DEPENDS OpenCLHelper/thirdparty/clew/src/clew.c )
+add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
 add_dependencies( DeepCL git_submodules_update )
 endif()
 

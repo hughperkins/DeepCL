@@ -12,12 +12,12 @@
 #define STATIC static
 
 class ActivationFunction;
-class OpenCLHelper;
+class EasyCL;
 class CLWrapper;
 
 class DeepCL_EXPORT ActivationForward {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
 
     const int numPlanes;
     const int inputImageSize;
@@ -45,10 +45,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    ActivationForward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    STATIC ActivationForward *instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    STATIC ActivationForward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    STATIC ActivationForward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, float *input, float *output );
     VIRTUAL int getInputSize( int batchSize );

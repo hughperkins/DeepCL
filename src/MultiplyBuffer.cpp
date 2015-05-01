@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "StatefulTimer.h"
 #include "MultiplyBuffer.h"
 #include "stringhelper.h"
@@ -47,7 +47,7 @@ VIRTUAL std::string MultiplyBuffer::floatToFloatString( float value ) {
     return floatString;
 }
 
-MultiplyBuffer::MultiplyBuffer( OpenCLHelper *cl, float multiplier ) :
+MultiplyBuffer::MultiplyBuffer( EasyCL *cl, float multiplier ) :
         cl( cl ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";

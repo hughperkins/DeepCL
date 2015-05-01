@@ -56,7 +56,7 @@ VIRTUAL void ForwardFc_workgroupPerFilterPlane::forward( int batchSize, CLWrappe
     delete[] output1;
     StatefulTimer::timeCheck("ForwardFc_workgroupPerFilterPlane::forward end");
 }
-ForwardFc_workgroupPerFilterPlane::ForwardFc_workgroupPerFilterPlane( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardFc_workgroupPerFilterPlane::ForwardFc_workgroupPerFilterPlane( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
 

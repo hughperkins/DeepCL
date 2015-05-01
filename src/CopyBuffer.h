@@ -11,7 +11,7 @@
 #include <iostream>
 #include <algorithm>
 
-class OpenCLHelper;
+class EasyCL;
 class CLKernel;
 class CLWrapper;
 
@@ -22,7 +22,7 @@ class CLWrapper;
 // nothing complicated :-)
 class CopyBuffer {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
     CLKernel *kernel;
 
     // [[[cog
@@ -32,7 +32,7 @@ public:
     // generated, using cog:
     VIRTUAL void copy( int N, CLWrapper *in, CLWrapper *out );
     VIRTUAL ~CopyBuffer();
-    CopyBuffer( OpenCLHelper *cl );
+    CopyBuffer( EasyCL *cl );
 
     // [[[end]]]
 };

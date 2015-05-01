@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "test/PrintBuffer.h"
 #include "test/CopyBuffer.h"
@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void PrintBuffer::printFloats( OpenCLHelper *cl, CLWrapper *buffer, int rows, int cols ) {
+void PrintBuffer::printFloats( EasyCL *cl, CLWrapper *buffer, int rows, int cols ) {
     // first we will copy it to another buffer, so we can copy it out
 
     float *copiedBuffer = new float[ buffer->size() ];
@@ -32,7 +32,7 @@ void PrintBuffer::printFloats( OpenCLHelper *cl, CLWrapper *buffer, int rows, in
     delete[] copiedBuffer;
 }
 
-void PrintBuffer::printInts( OpenCLHelper *cl, CLWrapper *buffer, int rows, int cols ) {
+void PrintBuffer::printInts( EasyCL *cl, CLWrapper *buffer, int rows, int cols ) {
     // first we will copy it to another buffer, so we can copy it out
 
     int *copiedBuffer = new int[ buffer->size() ];

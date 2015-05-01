@@ -6,12 +6,12 @@
 
 #pragma once
 
-class OpenCLHelper;
+class EasyCL;
 class CLWrapper;
 
 class CopyBuffer {
 public:
-    static void copy( OpenCLHelper *cl, CLWrapper *sourceWrapper, float *target );
-    static void copy( OpenCLHelper *cl, CLWrapper *sourceWrapper, int *target );
+    static void copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target );
+    static void copy( EasyCL *cl, CLWrapper *sourceWrapper, int *target );
 };
 

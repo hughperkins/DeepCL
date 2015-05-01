@@ -24,7 +24,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutLayer::DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker *maker ) :
+DropoutLayer::DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputImageSize( previousLayer->getOutputImageSize() ),

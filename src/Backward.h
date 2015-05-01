@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "ActivationFunction.h"
 #include "LayerDimensions.h"
 
@@ -20,7 +20,7 @@
 
 class DeepCL_EXPORT Backward {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
     LayerDimensions dim;
 //    ActivationFunction const *upstreamFn;
 
@@ -34,10 +34,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC Backward *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC Backward *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC Backward *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    Backward( OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Backward *instance(EasyCL *cl, LayerDimensions dim );
+    STATIC Backward *instanceForTest(EasyCL *cl, LayerDimensions layerDimensions );
+    STATIC Backward *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
+    Backward( EasyCL *cl, LayerDimensions layerDimensions );
     VIRTUAL float * backward( int batchSize, float *input, float *gradOutput, float *filters );
 
     // [[[end]]]

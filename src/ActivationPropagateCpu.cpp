@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "StatefulTimer.h"
 #include "ActivationFunction.h"
 
@@ -20,7 +20,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationForwardCpu::ActivationForwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+ActivationForwardCpu::ActivationForwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         ActivationForward( cl, numPlanes, inputImageSize, fn ) {
 }
 VIRTUAL void ActivationForwardCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {

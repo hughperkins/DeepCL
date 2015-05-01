@@ -27,7 +27,7 @@ public:
     CLWrapper *maskWrapper,
     CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
-    DropoutBackwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio );
+    DropoutBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
 
     // [[[end]]]
 };

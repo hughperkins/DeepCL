@@ -16,7 +16,7 @@ public:
     VIRTUAL ~Forward3();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper );
-    Forward3( OpenCLHelper *cl, LayerDimensions dim );
+    Forward3( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "ActivationBackward.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -48,7 +48,7 @@ VIRTUAL void ActivationBackwardGpuNaive::backward( int batchSize, CLWrapper *inp
 
     StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward end" );
 }
-ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         ActivationBackward( cl, numPlanes, inputImageSize, fn ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";

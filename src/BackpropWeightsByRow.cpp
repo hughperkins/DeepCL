@@ -135,7 +135,7 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
 
     StatefulTimer::instance()->timeCheck("BackpropWeightsByRow end" );
 }
-BackpropWeightsByRow::BackpropWeightsByRow( OpenCLHelper *cl, LayerDimensions dim ) :
+BackpropWeightsByRow::BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim ) :
         BackpropWeights( cl, dim )
             {
     workgroupSize = std::max( 32, dim.filterSize ); // no point in wasting cores...

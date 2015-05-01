@@ -59,7 +59,7 @@ function test_basic()
     print('images',images)
     print('labels',labels)
 
-    local cl = deepcl.OpenCLHelper()
+    local cl = deepcl.EasyCL()
     local net = deepcl.NeuralNet(cl, 1,28)
     local sgd = deepcl.SGD_instance(cl, 0.002, 0)
     print(net:asString())
@@ -82,7 +82,7 @@ function test_lowlevel()
     local batchSize = 128
     local numEpochs = 30
 
-    local cl = deepcl.OpenCLHelper()
+    local cl = deepcl.EasyCL()
     local net = deepcl.NeuralNet(cl)
 
     net:addLayer( deepcl.InputLayerMaker():numPlanes(1):imageSize(28) )

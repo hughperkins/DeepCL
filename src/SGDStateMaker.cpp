@@ -31,7 +31,7 @@ SGDStateMaker::SGDStateMaker() {
 //    this->momentum = momentum;
 //}
 
-TrainerState *SGDStateMaker::instance( OpenCLHelper *cl, int numWeights ) {
+TrainerState *SGDStateMaker::instance( EasyCL *cl, int numWeights ) {
     SGDState *sgd = new SGDState( cl, numWeights );
 //    sgd->learningRate = learningRate;
 //    sgd->momentum = momentum;

@@ -11,7 +11,7 @@
 #include <iostream>
 #include <algorithm>
 
-class OpenCLHelper;
+class EasyCL;
 class NeuralNet;
 class Trainable;
 
@@ -27,7 +27,7 @@ class Trainable;
 // create new ones
 class Trainer{
 public:
-    OpenCLHelper *cl; // NOT delete
+    EasyCL *cl; // NOT delete
 //    NeuralNet *net;
 
     float learningRate;
@@ -40,7 +40,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Trainer( OpenCLHelper *cl );
+    Trainer( EasyCL *cl );
     VIRTUAL ~Trainer();
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL std::string asString();

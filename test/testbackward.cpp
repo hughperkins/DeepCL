@@ -35,7 +35,7 @@ TEST( testbackward, squareloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );
@@ -112,7 +112,7 @@ TEST( testbackward, crossentropyloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
@@ -204,7 +204,7 @@ TEST( testbackward, softmaxloss ) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
@@ -388,7 +388,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 }
 
 TEST( testbackward, squareloss2 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );
@@ -403,7 +403,7 @@ TEST( testbackward, squareloss2 ) {
 }
 
 TEST( testbackward, crossentropy2 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
@@ -418,7 +418,7 @@ TEST( testbackward, crossentropy2 ) {
 }
 
 TEST( testbackward, softmax2 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
@@ -433,7 +433,7 @@ TEST( testbackward, softmax2 ) {
 }
 
 TEST( testbackward, conv1 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
@@ -450,7 +450,7 @@ TEST( testbackward, conv1 ) {
 }
 
 TEST( testbackward, fc1 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( FullyConnectedMaker::instance()->numPlanes(4)->imageSize(1)->biased(0) );
@@ -467,7 +467,7 @@ TEST( testbackward, fc1 ) {
 }
 
 TEST( testbackward, act1 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 1, 2 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ActivationMaker::instance()->relu() );
@@ -486,7 +486,7 @@ TEST( testbackward, act1 ) {
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
     net->addLayer( ActivationMaker::instance()->fn(fn) );
@@ -601,7 +601,7 @@ TEST( testbackward, checknumerically_imagesize5_filter3_relu ) {
 }
 
 void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
@@ -661,7 +661,7 @@ TEST( SLOW_testbackward, perf_kgsgo_32c5 ) {
 }
 
 void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
@@ -807,7 +807,7 @@ float *test( int imageSize ) {
     WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
     WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
-    OpenCLHelper cl;
+    EasyCL cl;
     Backward *backwardImpl = Backward::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
     float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
@@ -869,7 +869,7 @@ float *test( int imageSize ) {
 //    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
-//    OpenCLHelper cl;
+//    EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
 //    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
@@ -904,7 +904,7 @@ float *test( int imageSize ) {
 //    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
-//    OpenCLHelper cl;
+//    EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
 //    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
@@ -977,7 +977,7 @@ TEST( testbackward, comparespecific ) {
 //    errors[4] = 8;
 //    errors[5] = 6;
 
-    OpenCLHelper cl;
+    EasyCL cl;
     Backward *backwardImpl1 = Backward::instanceSpecific( 0, &cl, dim, new ReluActivation() );
     float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, bias, errors );
     Backward *backwardImpl2 = Backward::instanceSpecific( 1, &cl, dim, new ReluActivation() );

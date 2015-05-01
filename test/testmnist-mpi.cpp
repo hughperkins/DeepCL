@@ -1,4 +1,4 @@
-//#include "OpenCLHelper.h"
+//#include "EasyCL.h"
 //#include "ClConvolve.h"
 
 #include <iostream>

@@ -27,7 +27,7 @@ public:
 
     const int outputImageSize;
 
-    OpenCLHelper *const cl; // NOT owned by us
+    EasyCL *const cl; // NOT owned by us
     PoolingForward *poolingForwardImpl;
     PoolingBackward *poolingBackpropImpl;
 
@@ -50,7 +50,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker *maker );
+    PoolingLayer( EasyCL *cl, Layer *previousLayer, PoolingMaker *maker );
     VIRTUAL ~PoolingLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );

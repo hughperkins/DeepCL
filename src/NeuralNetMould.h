@@ -7,16 +7,16 @@
 #pragma once
 
 class NeuralNet;
-class OpenCLHelper;
+class EasyCL;
 
 #include "DeepCLDllExport.h"
 
 class DeepCL_EXPORT NeuralNetMould {
 public:
-    OpenCLHelper *cl; // NOT delete
+    EasyCL *cl; // NOT delete
     int _numPlanes;
     int _imageSize;
-    NeuralNetMould( OpenCLHelper *cl ) :
+    NeuralNetMould( EasyCL *cl ) :
             cl( cl ) {
         _numPlanes = 0;
         _imageSize = 0;

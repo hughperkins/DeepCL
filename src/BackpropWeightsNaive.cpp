@@ -44,7 +44,7 @@ VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gr
 
     StatefulTimer::instance()->timeCheck("BackpropWeightsNaive end" );
 }
-BackpropWeightsNaive::BackpropWeightsNaive( OpenCLHelper *cl, LayerDimensions dim ) :
+BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
         BackpropWeights( cl, dim )
             {
     std::string options = dim.buildOptionsString();

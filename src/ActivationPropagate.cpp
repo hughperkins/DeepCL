@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "stringhelper.h"
 #include "ActivationForwardCpu.h"
 #include "ActivationForwardGpuNaive.h"
@@ -20,21 +20,21 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationForward::ActivationForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+ActivationForward::ActivationForward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),
         outputImageSize( inputImageSize ),
         fn(fn) {
 }
-STATIC ActivationForward *ActivationForward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+STATIC ActivationForward *ActivationForward::instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
     return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 //    return new ActivationForwardCpu( cl, numPlanes, inputImageSize );
 }
-STATIC ActivationForward *ActivationForward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+STATIC ActivationForward *ActivationForward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
     return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
-STATIC ActivationForward *ActivationForward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+STATIC ActivationForward *ActivationForward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
     if( idx == 0 ) {
         return new ActivationForwardCpu( cl, numPlanes, inputImageSize, fn );
     }

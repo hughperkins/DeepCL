@@ -43,8 +43,8 @@ for arg in sys.argv:
 if docopy:
     if not os.path.isdir('mysrc'):
         os.makedirs('mysrc')
-    for thisdir in ['../src','../OpenCLHelper','../qlearning',
-            '../OpenCLHelper/thirdparty/clew/src']: # copy everything..
+    for thisdir in ['../src','../EasyCL','../qlearning',
+            '../EasyCL/thirdparty/clew/src']: # copy everything..
         for thisfile in os.listdir(thisdir):
             #print(thisfile)
             thisfilepath = thisdir +'/' + thisfile
@@ -169,11 +169,11 @@ deepcl_sources = []
 for source in deepcl_sources_all:
     deepcl_sources.append(source)
 
-openclhelpersources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [ 'OpenCLHelper/OpenCLHelper.cpp',
-        'OpenCLHelper/deviceinfo_helper.cpp', 'OpenCLHelper/platforminfo_helper.cpp',
-        'OpenCLHelper/CLKernel.cpp', 'OpenCLHelper/thirdparty/clew/src/clew.c' ] ))
-print(openclhelpersources)
-print(isinstance( openclhelpersources, list) )
+easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [ 'EasyCL/EasyCL.cpp',
+        'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
+        'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
+print(easyclsources)
+print(isinstance( easyclsources, list) )
 
 compile_options = []
 osfamily = platform.uname()[0]
@@ -200,11 +200,11 @@ else:
     my_cythonize = no_cythonize
 
 #libraries = [
-#    ("OpenCLHelper", {
-#        'sources': openclhelpersources + ['dummy_openclhelper.cpp'],
-#        'include_dirs': ['DeepCL/OpenCLHelper'],
+#    ("EasyCL", {
+#        'sources': easyclsources + ['dummy_easycl.cpp'],
+#        'include_dirs': ['DeepCL/EasyCL'],
 #        'extra_compile_args': compile_options,
-##        define_macros = [('OpenCLHelper_EXPORTS',1)],
+##        define_macros = [('EasyCL_EXPORTS',1)],
 ##        libraries = []
 ##        language='c++'
 #        }
@@ -212,35 +212,35 @@ else:
 #]
 
 ext_modules = [
-#    Extension("_OpenCLHelper",
-#        sources = openclhelpersources + ['dummy_openclhelper.cpp'],
-#        include_dirs = ['DeepCL/OpenCLHelper'],
+#    Extension("_EasyCL",
+#        sources = easyclsources + ['dummy_easycl.cpp'],
+#        include_dirs = ['DeepCL/EasyCL'],
 #        extra_compile_args=compile_options,
-#        define_macros = [('OpenCLHelper_EXPORTS',1),('MS_WIN32',1)],
+#        define_macros = [('EasyCL_EXPORTS',1),('MS_WIN32',1)],
 ##        libraries = []
 ##        language='c++'
 #    )
 #    Extension("libDeepCL",
 #        list(map( lambda name : 'DeepCL/src/' + name, deepcl_sources)), # +
 ##            glob.glob('DeepCL/src/*.h'),
-#        include_dirs = ['DeepCL/src','DeepCL/OpenCLHelper'],
+#        include_dirs = ['DeepCL/src','DeepCL/EasyCL'],
 #        extra_compile_args = compile_options,
 #        library_dirs = [ lib_build_dir() ],
-#        libraries = [ "OpenCLHelper" + get_so_suffix() ],
+#        libraries = [ "EasyCL" + get_so_suffix() ],
 #        define_macros = [('DeepCL_EXPORTS',1)],
 #        runtime_library_dirs=runtime_library_dirs
 ##        language='c++'
 #    ),
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
-                + openclhelpersources
+                + easyclsources
                 + list(map( lambda name : 'mysrc/' + name, deepcl_sources))
                 + ['mysrc/QLearner.cpp','mysrc/array_helper.cpp'], 
-#                glob.glob('DeepCL/OpenCLHelper/*.h'),
+#                glob.glob('DeepCL/EasyCL/*.h'),
               include_dirs = ['mysrc'],
               libraries= libraries,
               extra_compile_args=compile_options,
-        define_macros = [('DeepCL_EXPORTS',1),('OpenCLHelper_EXPORTS',1)],
+        define_macros = [('DeepCL_EXPORTS',1),('EasyCL_EXPORTS',1)],
 #              extra_objects=['cDeepCL.pxd'],
 #              library_dirs = [lib_build_dir()],
               runtime_library_dirs=runtime_library_dirs,

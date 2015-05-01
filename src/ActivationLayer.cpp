@@ -19,7 +19,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationLayer::ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, ActivationMaker *maker ) :
+ActivationLayer::ActivationLayer( EasyCL *cl, Layer *previousLayer, ActivationMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes ( previousLayer->getOutputPlanes() ),
         inputImageSize( previousLayer->getOutputImageSize() ),

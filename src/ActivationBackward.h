@@ -11,13 +11,13 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class OpenCLHelper;
+class EasyCL;
 class CLWrapper;
 class ActivationFunction;
 
 class DeepCL_EXPORT ActivationBackward {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
 
     const int numPlanes;
     const int inputImageSize;
@@ -44,10 +44,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC ActivationBackward *instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    STATIC ActivationBackward *instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn);
-    STATIC ActivationBackward *instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    ActivationBackward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    STATIC ActivationBackward *instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    STATIC ActivationBackward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    ActivationBackward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     VIRTUAL int getInputSize( int batchSize );
     VIRTUAL int getOutputSize(int batchSize);
     VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );

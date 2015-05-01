@@ -52,7 +52,7 @@ VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights( int batchSize, CLWrap
 
     StatefulTimer::instance()->timeCheck("BackpropWeightsScratchLarge end" );
 }
-BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( OpenCLHelper *cl, LayerDimensions dim ) :
+BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimensions dim ) :
         BackpropWeights( cl, dim )
             {
     // [[[cog
@@ -73,7 +73,7 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( OpenCLHelper *cl, Laye
     numStripes = ( localMemoryRequirementsFullImage + localWeCanUse - 1 ) / localWeCanUse;
 //    cout << "numStripes: " << numStripes << endl;
     // make it a power of 2
-    numStripes = OpenCLHelper::getNextPower2( numStripes );
+    numStripes = EasyCL::getNextPower2( numStripes );
 //    cout << "numStripes: " << numStripes << endl;
 
     int inputStripeMarginRows = dim.filterSize - 1;

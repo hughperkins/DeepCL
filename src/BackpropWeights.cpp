@@ -24,12 +24,12 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropWeights::BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
+BackpropWeights::BackpropWeights( EasyCL *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
         dim( layerDimensions ),
         debug( false ) {
 }
-STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+STATIC BackpropWeights *BackpropWeights::instance(EasyCL *cl, LayerDimensions dim ) {
     if( dim.inputImageSize - dim.filterSize < 4 ) {
         return new BackpropWeightsNaive( cl, dim );
     }
@@ -42,10 +42,10 @@ STATIC BackpropWeights *BackpropWeights::instance(OpenCLHelper *cl, LayerDimensi
         return new BackpropWeightsNaive( cl, dim );
     }
 }
-STATIC BackpropWeights *BackpropWeights::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC BackpropWeights *BackpropWeights::instanceForTest(EasyCL *cl, LayerDimensions layerDimensions ) {
     return new BackpropWeightsScratchLarge( cl, layerDimensions );
 }
-STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
         return new BackpropWeightsCpu( cl, layerDimensions );
     }

@@ -24,7 +24,7 @@ public:
     VIRTUAL ~PoolingBackwardGpuNaive();
     VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *gradInputWrapper );
-    PoolingBackwardGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
 
     // [[[end]]]
 };

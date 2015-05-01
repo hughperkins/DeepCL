@@ -28,7 +28,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker *maker );
+    FullyConnectedLayer( EasyCL *cl, Layer *previousLayer, FullyConnectedMaker *maker );
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );

@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingForwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingForwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
     VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
 

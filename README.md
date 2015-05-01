@@ -85,7 +85,7 @@ For linux, please [build from source](doc/Build.md), (though you could try the b
 
 * Check if you have an OpenCL-enabled device on your system
   * ideally a GPU, or accelerator, since there is no attempt to optimize DeepCL for CPUs (at least, not currently, could change, feel free to submit a pull request :-) )
-* Try running `gpuinfo` (from [OpenCLHelper](https://github.com/hughperkins/OpenCLHelper), but built as part of this project too, for ease of use )
+* Try running `gpuinfo` (from [EasyCL](https://github.com/hughperkins/EasyCL), but built as part of this project too, for ease of use )
   * it should output at least one OpenCL-enabled device
   * if it doesn't, then you need to make sure you have an OpenCL-enabled device, and that appropriate drivers are installed, and that the ICD is configured appropriately (registry in Windows, and `/etc/OpenCL/vendors` in linux)
 
@@ -112,7 +112,7 @@ cmake configuration, then a lot of manual editing will no longer be necessary :-
 Third-party libraries
 =====================
 
-* [OpenCLHelper](https://github.com/hughperkins/OpenCLHelper)
+* [EasyCL](https://github.com/hughperkins/EasyCL)
 * [clew](https://github.com/martijnberger/clew)
 * [libpng++](http://www.nongnu.org/pngpp/doc/0.2.1/)
 

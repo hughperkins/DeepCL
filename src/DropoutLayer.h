@@ -29,7 +29,7 @@ public:
 
     RandomSingleton *random;
 
-    OpenCLHelper *const cl; // NOT owned by us
+    EasyCL *const cl; // NOT owned by us
     DropoutForward *dropoutForwardImpl;
     DropoutBackward *dropoutBackwardImpl;
     MultiplyBuffer *multiplyBuffer; // for skipping dropout...
@@ -53,7 +53,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutLayer( OpenCLHelper *cl, Layer *previousLayer, DropoutMaker *maker );
+    DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *maker );
     VIRTUAL ~DropoutLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void fortesting_setRandomSingleton( RandomSingleton *random );

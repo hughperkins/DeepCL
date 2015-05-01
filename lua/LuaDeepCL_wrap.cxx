@@ -1866,15 +1866,15 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_ConvolutionalMaker swig_types[1]
 #define SWIGTYPE_p_CrossEntropyLossMaker swig_types[2]
 #define SWIGTYPE_p_DropoutMaker swig_types[3]
-#define SWIGTYPE_p_FullyConnectedMaker swig_types[4]
-#define SWIGTYPE_p_GenericLoader swig_types[5]
-#define SWIGTYPE_p_InputLayerMaker swig_types[6]
-#define SWIGTYPE_p_LayerMaker2 swig_types[7]
-#define SWIGTYPE_p_NetLearner swig_types[8]
-#define SWIGTYPE_p_NetdefToNet swig_types[9]
-#define SWIGTYPE_p_NeuralNet swig_types[10]
-#define SWIGTYPE_p_NormalizationLayerMaker swig_types[11]
-#define SWIGTYPE_p_OpenCLHelper swig_types[12]
+#define SWIGTYPE_p_EasyCL swig_types[4]
+#define SWIGTYPE_p_FullyConnectedMaker swig_types[5]
+#define SWIGTYPE_p_GenericLoader swig_types[6]
+#define SWIGTYPE_p_InputLayerMaker swig_types[7]
+#define SWIGTYPE_p_LayerMaker2 swig_types[8]
+#define SWIGTYPE_p_NetLearner swig_types[9]
+#define SWIGTYPE_p_NetdefToNet swig_types[10]
+#define SWIGTYPE_p_NeuralNet swig_types[11]
+#define SWIGTYPE_p_NormalizationLayerMaker swig_types[12]
 #define SWIGTYPE_p_PoolingMaker swig_types[13]
 #define SWIGTYPE_p_QLearner2 swig_types[14]
 #define SWIGTYPE_p_SGD swig_types[15]
@@ -2076,17 +2076,8 @@ SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
 }
 
 
-#include "GenericLoader.h" // start with this first, since, if no data, kind of 
-                           // hard to test things...
-#include "NeuralNet.h"
-#include "NetdefToNet.h"
-#include "NetLearner.h"
-#include "NormalizationLayerMaker.h"
-#include "LayerMaker.h"
-#include "OpenCLHelper.h"
-#include "SGD.h"
-#include "InputLayerMaker.h"
-//#include "LuaWrappers.h"
+#include "DeepCL.h"
+#include "EasyCL.h"
 #include "QLearner2.h"
 
 
@@ -2535,13 +2526,13 @@ fail:
 }
 
 
-static int _wrap_OpenCLHelper_createForFirstGpu(lua_State* L) {
+static int _wrap_EasyCL_createForFirstGpu(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *result = 0 ;
+  EasyCL *result = 0 ;
   
-  SWIG_check_num_args("OpenCLHelper::createForFirstGpu",0,0)
-  result = (OpenCLHelper *)OpenCLHelper::createForFirstGpu();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OpenCLHelper,0); SWIG_arg++; 
+  SWIG_check_num_args("EasyCL::createForFirstGpu",0,0)
+  result = (EasyCL *)EasyCL::createForFirstGpu();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_EasyCL,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2552,13 +2543,13 @@ fail:
 }
 
 
-static int _wrap_OpenCLHelper_createForFirstGpuOtherwiseCpu(lua_State* L) {
+static int _wrap_EasyCL_createForFirstGpuOtherwiseCpu(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *result = 0 ;
+  EasyCL *result = 0 ;
   
-  SWIG_check_num_args("OpenCLHelper::createForFirstGpuOtherwiseCpu",0,0)
-  result = (OpenCLHelper *)OpenCLHelper::createForFirstGpuOtherwiseCpu();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OpenCLHelper,0); SWIG_arg++; 
+  SWIG_check_num_args("EasyCL::createForFirstGpuOtherwiseCpu",0,0)
+  result = (EasyCL *)EasyCL::createForFirstGpuOtherwiseCpu();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_EasyCL,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2569,16 +2560,16 @@ fail:
 }
 
 
-static int _wrap_OpenCLHelper_createForIndexedGpu(lua_State* L) {
+static int _wrap_EasyCL_createForIndexedGpu(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
-  OpenCLHelper *result = 0 ;
+  EasyCL *result = 0 ;
   
-  SWIG_check_num_args("OpenCLHelper::createForIndexedGpu",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("OpenCLHelper::createForIndexedGpu",1,"int");
+  SWIG_check_num_args("EasyCL::createForIndexedGpu",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("EasyCL::createForIndexedGpu",1,"int");
   arg1 = (int)lua_tonumber(L, 1);
-  result = (OpenCLHelper *)OpenCLHelper::createForIndexedGpu(arg1);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OpenCLHelper,0); SWIG_arg++; 
+  result = (EasyCL *)EasyCL::createForIndexedGpu(arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_EasyCL,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2589,19 +2580,19 @@ fail:
 }
 
 
-static int _wrap_OpenCLHelper_createForPlatformDeviceIndexes(lua_State* L) {
+static int _wrap_EasyCL_createForPlatformDeviceIndexes(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
   int arg2 ;
-  OpenCLHelper *result = 0 ;
+  EasyCL *result = 0 ;
   
-  SWIG_check_num_args("OpenCLHelper::createForPlatformDeviceIndexes",2,2)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("OpenCLHelper::createForPlatformDeviceIndexes",1,"int");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("OpenCLHelper::createForPlatformDeviceIndexes",2,"int");
+  SWIG_check_num_args("EasyCL::createForPlatformDeviceIndexes",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("EasyCL::createForPlatformDeviceIndexes",1,"int");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("EasyCL::createForPlatformDeviceIndexes",2,"int");
   arg1 = (int)lua_tonumber(L, 1);
   arg2 = (int)lua_tonumber(L, 2);
-  result = (OpenCLHelper *)OpenCLHelper::createForPlatformDeviceIndexes(arg1,arg2);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OpenCLHelper,0); SWIG_arg++; 
+  result = (EasyCL *)EasyCL::createForPlatformDeviceIndexes(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_EasyCL,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2612,31 +2603,31 @@ fail:
 }
 
 
-static int _wrap_OpenCLHelper_createForPlatformDeviceIds(lua_State* L) {
+static int _wrap_EasyCL_createForPlatformDeviceIds(lua_State* L) {
   int SWIG_arg = 0;
   cl_platform_id arg1 ;
   cl_device_id arg2 ;
   cl_platform_id *argp1 ;
   cl_device_id *argp2 ;
-  OpenCLHelper *result = 0 ;
+  EasyCL *result = 0 ;
   
-  SWIG_check_num_args("OpenCLHelper::createForPlatformDeviceIds",2,2)
-  if(!lua_isuserdata(L,1)) SWIG_fail_arg("OpenCLHelper::createForPlatformDeviceIds",1,"cl_platform_id");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("OpenCLHelper::createForPlatformDeviceIds",2,"cl_device_id");
+  SWIG_check_num_args("EasyCL::createForPlatformDeviceIds",2,2)
+  if(!lua_isuserdata(L,1)) SWIG_fail_arg("EasyCL::createForPlatformDeviceIds",1,"cl_platform_id");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("EasyCL::createForPlatformDeviceIds",2,"cl_device_id");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&argp1,SWIGTYPE_p_cl_platform_id,0))){
-    SWIG_fail_ptr("OpenCLHelper_createForPlatformDeviceIds",1,SWIGTYPE_p_cl_platform_id);
+    SWIG_fail_ptr("EasyCL_createForPlatformDeviceIds",1,SWIGTYPE_p_cl_platform_id);
   }
   arg1 = *argp1;
   
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_cl_device_id,0))){
-    SWIG_fail_ptr("OpenCLHelper_createForPlatformDeviceIds",2,SWIGTYPE_p_cl_device_id);
+    SWIG_fail_ptr("EasyCL_createForPlatformDeviceIds",2,SWIGTYPE_p_cl_device_id);
   }
   arg2 = *argp2;
   
-  result = (OpenCLHelper *)OpenCLHelper::createForPlatformDeviceIds(arg1,arg2);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OpenCLHelper,0); SWIG_arg++; 
+  result = (EasyCL *)EasyCL::createForPlatformDeviceIds(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_EasyCL,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2647,13 +2638,13 @@ fail:
 }
 
 
-static int _wrap_new_OpenCLHelper(lua_State* L) {
+static int _wrap_new_EasyCL(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *result = 0 ;
+  EasyCL *result = 0 ;
   
-  SWIG_check_num_args("OpenCLHelper::OpenCLHelper",0,0)
-  result = (OpenCLHelper *)new OpenCLHelper();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_OpenCLHelper,1); SWIG_arg++; 
+  SWIG_check_num_args("EasyCL::EasyCL",0,0)
+  result = (EasyCL *)new EasyCL();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_EasyCL,1); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -2664,33 +2655,33 @@ fail:
 }
 
 
-static void swig_delete_OpenCLHelper(void *obj) {
-OpenCLHelper *arg1 = (OpenCLHelper *) obj;
+static void swig_delete_EasyCL(void *obj) {
+EasyCL *arg1 = (EasyCL *) obj;
 delete arg1;
 }
-static swig_lua_method swig_OpenCLHelper_methods[] = {
+static swig_lua_method swig_EasyCL_methods[] = {
     {0,0}
 };
-static swig_lua_attribute swig_OpenCLHelper_attributes[] = {
+static swig_lua_attribute swig_EasyCL_attributes[] = {
     {0,0,0}
 };
-static swig_lua_attribute swig_OpenCLHelper_cls_attributes[] = {
+static swig_lua_attribute swig_EasyCL_cls_attributes[] = {
     {0,0,0}
 };
-static swig_lua_method swig_OpenCLHelper_cls_methods[] = {
-    {"createForFirstGpu", _wrap_OpenCLHelper_createForFirstGpu}, 
-    {"createForFirstGpuOtherwiseCpu", _wrap_OpenCLHelper_createForFirstGpuOtherwiseCpu}, 
-    {"createForIndexedGpu", _wrap_OpenCLHelper_createForIndexedGpu}, 
-    {"createForPlatformDeviceIndexes", _wrap_OpenCLHelper_createForPlatformDeviceIndexes}, 
-    {"createForPlatformDeviceIds", _wrap_OpenCLHelper_createForPlatformDeviceIds}, 
+static swig_lua_method swig_EasyCL_cls_methods[] = {
+    {"createForFirstGpu", _wrap_EasyCL_createForFirstGpu}, 
+    {"createForFirstGpuOtherwiseCpu", _wrap_EasyCL_createForFirstGpuOtherwiseCpu}, 
+    {"createForIndexedGpu", _wrap_EasyCL_createForIndexedGpu}, 
+    {"createForPlatformDeviceIndexes", _wrap_EasyCL_createForPlatformDeviceIndexes}, 
+    {"createForPlatformDeviceIds", _wrap_EasyCL_createForPlatformDeviceIds}, 
     {0,0}
 };
-static swig_lua_const_info swig_OpenCLHelper_cls_constants[] = {
+static swig_lua_const_info swig_EasyCL_cls_constants[] = {
     {0,0,0,0,0,0}
 };
-static swig_lua_class *swig_OpenCLHelper_bases[] = {0};
-static const char *swig_OpenCLHelper_base_names[] = {0};
-static swig_lua_class _wrap_class_OpenCLHelper = { "OpenCLHelper", &SWIGTYPE_p_OpenCLHelper,_wrap_new_OpenCLHelper, swig_delete_OpenCLHelper, swig_OpenCLHelper_methods, swig_OpenCLHelper_attributes, { "OpenCLHelper", swig_OpenCLHelper_cls_methods, swig_OpenCLHelper_cls_attributes, swig_OpenCLHelper_cls_constants }, swig_OpenCLHelper_bases, swig_OpenCLHelper_base_names };
+static swig_lua_class *swig_EasyCL_bases[] = {0};
+static const char *swig_EasyCL_base_names[] = {0};
+static swig_lua_class _wrap_class_EasyCL = { "EasyCL", &SWIGTYPE_p_EasyCL,_wrap_new_EasyCL, swig_delete_EasyCL, swig_EasyCL_methods, swig_EasyCL_attributes, { "EasyCL", swig_EasyCL_cls_methods, swig_EasyCL_cls_attributes, swig_EasyCL_cls_constants }, swig_EasyCL_bases, swig_EasyCL_base_names };
 
 static int _wrap_Trainer_train(lua_State* L) {
   int SWIG_arg = 0;
@@ -2807,16 +2798,16 @@ static swig_lua_class _wrap_class_Trainer = { "Trainer", &SWIGTYPE_p_Trainer,0, 
 
 static int _wrap_SGD_instance__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  EasyCL *arg1 = (EasyCL *) 0 ;
   float arg2 ;
   SGD *result = 0 ;
   
   SWIG_check_num_args("SGD::instance",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::instance",1,"OpenCLHelper *");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::instance",1,"EasyCL *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("SGD::instance",2,"float");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
-    SWIG_fail_ptr("SGD_instance",1,SWIGTYPE_p_OpenCLHelper);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("SGD_instance",1,SWIGTYPE_p_EasyCL);
   }
   
   arg2 = (float)lua_tonumber(L, 2);
@@ -2834,18 +2825,18 @@ fail:
 
 static int _wrap_SGD_instance__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  EasyCL *arg1 = (EasyCL *) 0 ;
   float arg2 ;
   float arg3 ;
   SGD *result = 0 ;
   
   SWIG_check_num_args("SGD::instance",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::instance",1,"OpenCLHelper *");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::instance",1,"EasyCL *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("SGD::instance",2,"float");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("SGD::instance",3,"float");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
-    SWIG_fail_ptr("SGD_instance",1,SWIGTYPE_p_OpenCLHelper);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("SGD_instance",1,SWIGTYPE_p_EasyCL);
   }
   
   arg2 = (float)lua_tonumber(L, 2);
@@ -2873,7 +2864,7 @@ static int _wrap_SGD_instance(lua_State* L) {
     int _v;
     {
       void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OpenCLHelper, 0)) {
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_EasyCL, 0)) {
         _v = 0;
       } else {
         _v = 1;
@@ -2892,7 +2883,7 @@ static int _wrap_SGD_instance(lua_State* L) {
     int _v;
     {
       void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OpenCLHelper, 0)) {
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_EasyCL, 0)) {
         _v = 0;
       } else {
         _v = 1;
@@ -2915,8 +2906,8 @@ static int _wrap_SGD_instance(lua_State* L) {
   
   SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'SGD_instance'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    SGD::instance(OpenCLHelper *,float)\n"
-    "    SGD::instance(OpenCLHelper *,float,float)\n");
+    "    SGD::instance(EasyCL *,float)\n"
+    "    SGD::instance(EasyCL *,float,float)\n");
   lua_error(L);return 0;
 }
 
@@ -3061,14 +3052,14 @@ fail:
 
 static int _wrap_new_SGD(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  EasyCL *arg1 = (EasyCL *) 0 ;
   SGD *result = 0 ;
   
   SWIG_check_num_args("SGD::SGD",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::SGD",1,"OpenCLHelper *");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::SGD",1,"EasyCL *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
-    SWIG_fail_ptr("new_SGD",1,SWIGTYPE_p_OpenCLHelper);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("new_SGD",1,SWIGTYPE_p_EasyCL);
   }
   
   result = (SGD *)new SGD(arg1);
@@ -3113,14 +3104,14 @@ static swig_lua_class _wrap_class_SGD = { "SGD", &SWIGTYPE_p_SGD,_wrap_new_SGD, 
 
 static int _wrap_new_NeuralNet__SWIG_0(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  EasyCL *arg1 = (EasyCL *) 0 ;
   NeuralNet *result = 0 ;
   
   SWIG_check_num_args("NeuralNet::NeuralNet",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::NeuralNet",1,"OpenCLHelper *");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::NeuralNet",1,"EasyCL *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
-    SWIG_fail_ptr("new_NeuralNet",1,SWIGTYPE_p_OpenCLHelper);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("new_NeuralNet",1,SWIGTYPE_p_EasyCL);
   }
   
   result = (NeuralNet *)new NeuralNet(arg1);
@@ -3137,18 +3128,18 @@ fail:
 
 static int _wrap_new_NeuralNet__SWIG_1(lua_State* L) {
   int SWIG_arg = 0;
-  OpenCLHelper *arg1 = (OpenCLHelper *) 0 ;
+  EasyCL *arg1 = (EasyCL *) 0 ;
   int arg2 ;
   int arg3 ;
   NeuralNet *result = 0 ;
   
   SWIG_check_num_args("NeuralNet::NeuralNet",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::NeuralNet",1,"OpenCLHelper *");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("NeuralNet::NeuralNet",1,"EasyCL *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("NeuralNet::NeuralNet",2,"int");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("NeuralNet::NeuralNet",3,"int");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_OpenCLHelper,0))){
-    SWIG_fail_ptr("new_NeuralNet",1,SWIGTYPE_p_OpenCLHelper);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("new_NeuralNet",1,SWIGTYPE_p_EasyCL);
   }
   
   arg2 = (int)lua_tonumber(L, 2);
@@ -3176,7 +3167,7 @@ static int _wrap_new_NeuralNet(lua_State* L) {
     int _v;
     {
       void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OpenCLHelper, 0)) {
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_EasyCL, 0)) {
         _v = 0;
       } else {
         _v = 1;
@@ -3190,7 +3181,7 @@ static int _wrap_new_NeuralNet(lua_State* L) {
     int _v;
     {
       void *ptr;
-      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_OpenCLHelper, 0)) {
+      if (SWIG_isptrtype(L,argv[0])==0 || SWIG_ConvertPtr(L,argv[0], (void **) &ptr, SWIGTYPE_p_EasyCL, 0)) {
         _v = 0;
       } else {
         _v = 1;
@@ -3213,8 +3204,8 @@ static int _wrap_new_NeuralNet(lua_State* L) {
   
   SWIG_Lua_pusherrstring(L,"Wrong arguments for overloaded function 'new_NeuralNet'\n"
     "  Possible C/C++ prototypes are:\n"
-    "    NeuralNet::NeuralNet(OpenCLHelper *)\n"
-    "    NeuralNet::NeuralNet(OpenCLHelper *,int,int)\n");
+    "    NeuralNet::NeuralNet(EasyCL *)\n"
+    "    NeuralNet::NeuralNet(EasyCL *,int,int)\n");
   lua_error(L);return 0;
 }
 
@@ -6131,11 +6122,11 @@ static swig_lua_class _wrap_class_intSlice = { "intSlice", &SWIGTYPE_p_intSlice,
 static const struct luaL_Reg swig_commands[] = {
     { "GenericLoader_getDimensions", _wrap_GenericLoader_getDimensions},
     { "GenericLoader_load", _wrap_GenericLoader_load},
-    { "OpenCLHelper_createForFirstGpu", _wrap_OpenCLHelper_createForFirstGpu},
-    { "OpenCLHelper_createForFirstGpuOtherwiseCpu", _wrap_OpenCLHelper_createForFirstGpuOtherwiseCpu},
-    { "OpenCLHelper_createForIndexedGpu", _wrap_OpenCLHelper_createForIndexedGpu},
-    { "OpenCLHelper_createForPlatformDeviceIndexes", _wrap_OpenCLHelper_createForPlatformDeviceIndexes},
-    { "OpenCLHelper_createForPlatformDeviceIds", _wrap_OpenCLHelper_createForPlatformDeviceIds},
+    { "EasyCL_createForFirstGpu", _wrap_EasyCL_createForFirstGpu},
+    { "EasyCL_createForFirstGpuOtherwiseCpu", _wrap_EasyCL_createForFirstGpuOtherwiseCpu},
+    { "EasyCL_createForIndexedGpu", _wrap_EasyCL_createForIndexedGpu},
+    { "EasyCL_createForPlatformDeviceIndexes", _wrap_EasyCL_createForPlatformDeviceIndexes},
+    { "EasyCL_createForPlatformDeviceIds", _wrap_EasyCL_createForPlatformDeviceIds},
     { "SGD_instance",_wrap_SGD_instance},
     { "NetdefToNet_createNetFromNetdef", _wrap_NetdefToNet_createNetFromNetdef},
     { "floatArray_frompointer", _wrap_floatArray_frompointer},
@@ -6202,6 +6193,7 @@ static swig_type_info _swigt__p_ActivationMaker = {"_p_ActivationMaker", "Activa
 static swig_type_info _swigt__p_ConvolutionalMaker = {"_p_ConvolutionalMaker", "ConvolutionalMaker *", 0, 0, (void*)&_wrap_class_ConvolutionalMaker, 0};
 static swig_type_info _swigt__p_CrossEntropyLossMaker = {"_p_CrossEntropyLossMaker", "CrossEntropyLossMaker *", 0, 0, (void*)&_wrap_class_CrossEntropyLossMaker, 0};
 static swig_type_info _swigt__p_DropoutMaker = {"_p_DropoutMaker", "DropoutMaker *", 0, 0, (void*)&_wrap_class_DropoutMaker, 0};
+static swig_type_info _swigt__p_EasyCL = {"_p_EasyCL", "EasyCL *", 0, 0, (void*)&_wrap_class_EasyCL, 0};
 static swig_type_info _swigt__p_FullyConnectedMaker = {"_p_FullyConnectedMaker", "FullyConnectedMaker *", 0, 0, (void*)&_wrap_class_FullyConnectedMaker, 0};
 static swig_type_info _swigt__p_GenericLoader = {"_p_GenericLoader", "GenericLoader *", 0, 0, (void*)&_wrap_class_GenericLoader, 0};
 static swig_type_info _swigt__p_InputLayerMaker = {"_p_InputLayerMaker", "InputLayerMaker *", 0, 0, (void*)&_wrap_class_InputLayerMaker, 0};
@@ -6210,7 +6202,6 @@ static swig_type_info _swigt__p_NetLearner = {"_p_NetLearner", "NetLearner *", 0
 static swig_type_info _swigt__p_NetdefToNet = {"_p_NetdefToNet", "NetdefToNet *", 0, 0, (void*)&_wrap_class_NetdefToNet, 0};
 static swig_type_info _swigt__p_NeuralNet = {"_p_NeuralNet", "NeuralNet *", 0, 0, (void*)&_wrap_class_NeuralNet, 0};
 static swig_type_info _swigt__p_NormalizationLayerMaker = {"_p_NormalizationLayerMaker", "NormalizationLayerMaker *", 0, 0, (void*)&_wrap_class_NormalizationLayerMaker, 0};
-static swig_type_info _swigt__p_OpenCLHelper = {"_p_OpenCLHelper", "OpenCLHelper *", 0, 0, (void*)&_wrap_class_OpenCLHelper, 0};
 static swig_type_info _swigt__p_PoolingMaker = {"_p_PoolingMaker", "PoolingMaker *", 0, 0, (void*)&_wrap_class_PoolingMaker, 0};
 static swig_type_info _swigt__p_QLearner2 = {"_p_QLearner2", "QLearner2 *", 0, 0, (void*)&_wrap_class_QLearner2, 0};
 static swig_type_info _swigt__p_SGD = {"_p_SGD", "SGD *", 0, 0, (void*)&_wrap_class_SGD, 0};
@@ -6232,6 +6223,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_ConvolutionalMaker,
   &_swigt__p_CrossEntropyLossMaker,
   &_swigt__p_DropoutMaker,
+  &_swigt__p_EasyCL,
   &_swigt__p_FullyConnectedMaker,
   &_swigt__p_GenericLoader,
   &_swigt__p_InputLayerMaker,
@@ -6240,7 +6232,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_NetdefToNet,
   &_swigt__p_NeuralNet,
   &_swigt__p_NormalizationLayerMaker,
-  &_swigt__p_OpenCLHelper,
   &_swigt__p_PoolingMaker,
   &_swigt__p_QLearner2,
   &_swigt__p_SGD,
@@ -6262,6 +6253,7 @@ static swig_cast_info _swigc__p_ActivationMaker[] = {  {&_swigt__p_ActivationMak
 static swig_cast_info _swigc__p_ConvolutionalMaker[] = {  {&_swigt__p_ConvolutionalMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CrossEntropyLossMaker[] = {  {&_swigt__p_CrossEntropyLossMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_DropoutMaker[] = {  {&_swigt__p_DropoutMaker, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_EasyCL[] = {  {&_swigt__p_EasyCL, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_FullyConnectedMaker[] = {  {&_swigt__p_FullyConnectedMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GenericLoader[] = {  {&_swigt__p_GenericLoader, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_InputLayerMaker[] = {  {&_swigt__p_InputLayerMaker, 0, 0, 0},{0, 0, 0, 0}};
@@ -6270,7 +6262,6 @@ static swig_cast_info _swigc__p_NetLearner[] = {  {&_swigt__p_NetLearner, 0, 0, 
 static swig_cast_info _swigc__p_NetdefToNet[] = {  {&_swigt__p_NetdefToNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NeuralNet[] = {  {&_swigt__p_NeuralNet, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_NormalizationLayerMaker[] = {  {&_swigt__p_NormalizationLayerMaker, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_OpenCLHelper[] = {  {&_swigt__p_OpenCLHelper, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_PoolingMaker[] = {  {&_swigt__p_PoolingMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QLearner2[] = {  {&_swigt__p_QLearner2, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SGD[] = {  {&_swigt__p_SGD, 0, 0, 0},{0, 0, 0, 0}};
@@ -6292,6 +6283,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_ConvolutionalMaker,
   _swigc__p_CrossEntropyLossMaker,
   _swigc__p_DropoutMaker,
+  _swigc__p_EasyCL,
   _swigc__p_FullyConnectedMaker,
   _swigc__p_GenericLoader,
   _swigc__p_InputLayerMaker,
@@ -6300,7 +6292,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_NetdefToNet,
   _swigc__p_NeuralNet,
   _swigc__p_NormalizationLayerMaker,
-  _swigc__p_OpenCLHelper,
   _swigc__p_PoolingMaker,
   _swigc__p_QLearner2,
   _swigc__p_SGD,

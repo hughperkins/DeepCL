@@ -19,7 +19,7 @@
 
 class NeuralNet;
 class Layer;
-class OpenCLHelper;
+class EasyCL;
 
 class SquareLossLayer;
 class CrossEntropyLayer;
@@ -32,12 +32,12 @@ class SoftMaxLayer;
 
 class DeepCL_EXPORT LayerMaker2 {
 public:
-    OpenCLHelper *cl; // NOT owned by us
+    EasyCL *cl; // NOT owned by us
     LayerMaker2() :
         cl(0) {
     }
     virtual ~LayerMaker2() {}
-    void setCl( OpenCLHelper *cl ) {
+    void setCl( EasyCL *cl ) {
         this->cl = cl;
     }
     virtual Layer *createLayer( Layer *previousLayer ) = 0;

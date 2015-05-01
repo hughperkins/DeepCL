@@ -1,6 +1,6 @@
 cdef class SGD: 
     cdef cDeepCL.SGD *thisptr
-    def __cinit__( self, OpenCLHelper cl ):
+    def __cinit__( self, EasyCL cl ):
         self.thisptr = new cDeepCL.SGD(cl.thisptr)
     def __dealloc(self):
         del self.thisptr

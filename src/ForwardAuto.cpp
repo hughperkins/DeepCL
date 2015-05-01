@@ -29,7 +29,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-ForwardAuto::ForwardAuto( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardAuto::ForwardAuto( EasyCL *cl, LayerDimensions dim ) :
 //        dim( layerDimensions ),
 //        cl( cl ),
 //        fn( fn ),

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "ActivationFunction.h"
 #include "LayerDimensions.h"
 #include "DeepCLDllExport.h"
@@ -26,7 +26,7 @@ using namespace std;
 
 class DeepCL_EXPORT Forward {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
     LayerDimensions dim;
 
     virtual ~Forward() {}
@@ -39,13 +39,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Forward( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC Forward *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC Forward *instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
+    Forward( EasyCL *cl, LayerDimensions layerDimensions );
+    STATIC Forward *instance(EasyCL *cl, LayerDimensions dim );
+    STATIC Forward *instanceTest(EasyCL *cl, LayerDimensions layerDimensions );
     STATIC int getNumImplementations();
     STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim );
-    STATIC Forward *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC Forward *instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    STATIC Forward *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
+    STATIC Forward *instanceSpecific( std::string name, EasyCL *cl, LayerDimensions layerDimensions );
     VIRTUAL float * forward( int batchSize, float *inputData, float *filters, float *biases );
     VIRTUAL void forward( int batchSize, float *inputData, float *filters, float *biases, float *output );
 

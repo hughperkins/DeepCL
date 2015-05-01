@@ -13,7 +13,7 @@ from libcpp cimport bool
 
 cimport cDeepCL
 
-include "OpenCLHelper.pyx"
+include "EasyCL.pyx"
 include "SGD.pyx"
 include "NeuralNet.pyx"
 include "Layer.pyx"

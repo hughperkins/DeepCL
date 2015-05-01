@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "test/CopyBuffer.h"
 #include "test/PrintBuffer.h"
 
@@ -14,7 +14,7 @@
 using namespace std;
 
 TEST( testCopyBuffer, floats ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     const int N = 10;
     float *a = new float[N];
@@ -51,7 +51,7 @@ TEST( testCopyBuffer, floats ) {
 }
 
 TEST( testCopyBuffer, nits ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     const int N = 10;
     int *a = new int[N];

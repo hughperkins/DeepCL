@@ -66,7 +66,7 @@ VIRTUAL void BackwardGpuCached::backward( int batchSize,
     
     StatefulTimer::instance()->timeCheck("BackwardGpuCached end" );
 }
-BackwardGpuCached::BackwardGpuCached( OpenCLHelper *cl, LayerDimensions dim ) :
+BackwardGpuCached::BackwardGpuCached( EasyCL *cl, LayerDimensions dim ) :
         Backward( cl, dim )
             {
     std::string options = dim.buildOptionsString();

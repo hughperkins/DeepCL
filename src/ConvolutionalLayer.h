@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Layer.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 //#include "ClConvolve2.h"
 #include "ActivationFunction.h"
 #include "LayerMaker.h"
@@ -29,7 +29,7 @@ class CopyBuffer;
 
 class ConvolutionalLayer : public Layer {
 public:
-    OpenCLHelper *const cl; // NOT owned by us
+    EasyCL *const cl; // NOT owned by us
     TrainerState *trainerState; // OWNED by us, we should delete (if non-zero)
     TrainerState *biasTrainerState; // OWNED by us, we should delete (if non-zero)
 
@@ -110,7 +110,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ConvolutionalLayer( OpenCLHelper *cl, Layer *previousLayer, ConvolutionalMaker *maker );
+    ConvolutionalLayer( EasyCL *cl, Layer *previousLayer, ConvolutionalMaker *maker );
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getGradInput();

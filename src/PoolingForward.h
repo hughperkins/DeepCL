@@ -11,12 +11,12 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class OpenCLHelper;
+class EasyCL;
 class CLWrapper;
 
 class DeepCL_EXPORT PoolingForward {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
 
     const bool padZeros;
     const int numPlanes;
@@ -44,10 +44,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingForward( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingForward *instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingForward *instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingForward *instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingForward *instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingForward *instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    STATIC PoolingForward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
     VIRTUAL int getInputSize( int batchSize );

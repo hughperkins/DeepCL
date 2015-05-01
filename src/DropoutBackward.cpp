@@ -7,7 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -23,13 +23,13 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC DropoutBackward *DropoutBackward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutBackward *DropoutBackward::instance( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     return new DropoutBackwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
 }
-STATIC DropoutBackward *DropoutBackward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio) {
+STATIC DropoutBackward *DropoutBackward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio) {
     return new DropoutBackwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
 }
-STATIC DropoutBackward *DropoutBackward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutBackward *DropoutBackward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     if( idx == 0 ) {
         return new DropoutBackwardCpu( cl, numPlanes, inputImageSize, dropRatio );
     }
@@ -38,7 +38,7 @@ STATIC DropoutBackward *DropoutBackward::instanceSpecific( int idx, OpenCLHelper
     }
     throw runtime_error("DropoutBackward::instanceSpecific, idx not known: " + toString( idx ) );
 }
-DropoutBackward::DropoutBackward( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutBackward::DropoutBackward( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),

@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "PoolingForward.h"
 
@@ -21,7 +21,7 @@ TEST( testpoolingforward, basic ) {
     int numPlanes = 1;
     int imageSize = 4;
     int poolingSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
@@ -55,7 +55,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int poolingSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
@@ -96,7 +96,7 @@ TEST( testpoolingforward, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     int poolingSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     PoolingForward *poolingForward = PoolingForward::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
@@ -208,7 +208,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int imageSize = args._imageSize;
     int poolingSize = args._poolingSize;
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     PoolingForward *poolingForward0 = PoolingForward::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
     PoolingForward *poolingForward1 = PoolingForward::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );

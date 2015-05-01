@@ -7,7 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -23,13 +23,13 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC PoolingBackward *PoolingBackward::instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingBackward *PoolingBackward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
     return new PoolingBackwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
-STATIC PoolingBackward *PoolingBackward::instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize) {
+STATIC PoolingBackward *PoolingBackward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize) {
     return new PoolingBackwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
-STATIC PoolingBackward *PoolingBackward::instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingBackward *PoolingBackward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
     if( idx == 0 ) {
         return new PoolingBackwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
     }
@@ -38,7 +38,7 @@ STATIC PoolingBackward *PoolingBackward::instanceSpecific( int idx, OpenCLHelper
     }
     throw runtime_error("PoolingBackward::instanceSpecific, idx not known: " + toString( idx ) );
 }
-PoolingBackward::PoolingBackward( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingBackward::PoolingBackward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         cl( cl ),
         padZeros( padZeros ),
         numPlanes( numPlanes ),

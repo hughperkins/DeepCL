@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "stringhelper.h"
 #include "DropoutForwardCpu.h"
 #include "DropoutForwardGpuNaive.h"
@@ -20,7 +20,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutForward::DropoutForward( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutForward::DropoutForward( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),
@@ -30,14 +30,14 @@ DropoutForward::DropoutForward( OpenCLHelper *cl, int numPlanes, int inputImageS
 //        throw runtime_error("inputImageSize should be an exact multiple of dropoutsize: " + toString( inputImageSize ) + " " + toString(dropoutSize ) );
 //    }
 }
-STATIC DropoutForward *DropoutForward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutForward *DropoutForward::instance( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     return new DropoutForwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
 //    return new DropoutForwardCpu( cl, padZeros, numPlanes, inputImageSize, dropoutSize );
 }
-STATIC DropoutForward *DropoutForward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutForward *DropoutForward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     return new DropoutForwardCpu( cl, numPlanes, inputImageSize, dropRatio );
 }
-STATIC DropoutForward *DropoutForward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutForward *DropoutForward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
     if( idx == 0 ) {
         return new DropoutForwardCpu( cl, numPlanes, inputImageSize, dropRatio );
     }

@@ -42,7 +42,7 @@ VIRTUAL void ForwardExperimental::forward( int batchSize, CLWrapper *dataWrapper
 
     StatefulTimer::timeCheck("ForwardExperimental::forward after call forward");
 }
-ForwardExperimental::ForwardExperimental( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardExperimental::ForwardExperimental( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
     std::string options = ""; // "-D " + fn->getDefineName();

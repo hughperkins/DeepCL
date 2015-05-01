@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "StatefulTimer.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "GpuAdd.h"
 
 using namespace std;
@@ -33,7 +33,7 @@ VIRTUAL void GpuAdd::add( int N, CLWrapper*destinationWrapper, CLWrapper *deltaW
 }
 VIRTUAL GpuAdd::~GpuAdd() {
 }
-GpuAdd::GpuAdd( OpenCLHelper *cl ) :
+GpuAdd::GpuAdd( EasyCL *cl ) :
         cl( cl ) {
     static CLKernel *kernel = 0;
     if( kernel != 0 ) {

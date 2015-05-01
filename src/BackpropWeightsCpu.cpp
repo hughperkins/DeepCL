@@ -16,7 +16,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-BackpropWeightsCpu::BackpropWeightsCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+BackpropWeightsCpu::BackpropWeightsCpu( EasyCL *cl, LayerDimensions dim ) :
         BackpropWeights( cl, dim )
             {
 }

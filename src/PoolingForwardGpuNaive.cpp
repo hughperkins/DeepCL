@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -43,7 +43,7 @@ VIRTUAL void PoolingForwardGpuNaive::forward( int batchSize, CLWrapper *inputWra
 
     StatefulTimer::instance()->timeCheck("PoolingForwardGpuNaive::forward end" );
 }
-PoolingForwardGpuNaive::PoolingForwardGpuNaive( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingForwardGpuNaive::PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );

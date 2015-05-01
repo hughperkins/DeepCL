@@ -13,7 +13,7 @@
 
 #include "TrainerState.h"
 
-class OpenCLHelper;
+class EasyCL;
 class CLKernel;
 
 #include "DeepCLDllExport.h"
@@ -32,7 +32,7 @@ class CLKernel;
 // Maybe a 'Maker' for trainers?
 class DeepCL_EXPORT SGDState : public TrainerState {
 public:
-//    OpenCLHelper *cl;
+//    EasyCL *cl;
 //    CLKernel *kernel;
 
     const int numWeights;
@@ -51,7 +51,7 @@ public:
     // generated, using cog:
     VIRTUAL ~SGDState();
     VIRTUAL void updateWeights(CLWrapper *gradientsWrapper, CLWrapper *weightsWrapper );
-    SGDState( OpenCLHelper *cl, int numWeights );
+    SGDState( EasyCL *cl, int numWeights );
 
     // [[[end]]]
 };

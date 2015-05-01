@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "StatefulTimer.h"
 
@@ -20,7 +20,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutForwardCpu::DropoutForwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutForwardCpu::DropoutForwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutForward( cl, numPlanes, inputImageSize, dropRatio ) {
 }
 VIRTUAL void DropoutForwardCpu::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {

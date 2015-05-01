@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Backward.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #define STATIC static
 #define VIRTUAL virtual
@@ -20,7 +20,7 @@ public:
     VIRTUAL void backward( int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );
-    BackwardGpuCached( OpenCLHelper *cl, LayerDimensions dim );
+    BackwardGpuCached( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "ActivationFunction.h"
 #include "LayerDimensions.h"
 #include "DeepCLDllExport.h"
@@ -19,7 +19,7 @@
 
 class DeepCL_EXPORT BackpropWeights {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
     LayerDimensions dim;
     bool debug; // = false;
 
@@ -31,10 +31,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropWeights( OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC BackpropWeights *instance(OpenCLHelper *cl, LayerDimensions dim );
-    STATIC BackpropWeights *instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions );
-    STATIC BackpropWeights *instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions );
+    BackpropWeights( EasyCL *cl, LayerDimensions layerDimensions );
+    STATIC BackpropWeights *instance(EasyCL *cl, LayerDimensions dim );
+    STATIC BackpropWeights *instanceForTest(EasyCL *cl, LayerDimensions layerDimensions );
+    STATIC BackpropWeights *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
     VIRTUAL void calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBias );
     float learningRateToMultiplier( int batchSize );
 

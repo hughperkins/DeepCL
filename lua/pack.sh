@@ -59,7 +59,7 @@ mkdir -p dist/${package}-${version}/pkgsrc
 
 rsync -av ../src/ dist/${package}-${version}/pkgsrc/src/
 rsync -av ../qlearning/ dist/${package}-${version}/pkgsrc/qlearning/
-rsync -av ../OpenCLHelper/ dist/${package}-${version}/pkgsrc/OpenCLHelper/
+rsync -av ../EasyCL/ dist/${package}-${version}/pkgsrc/EasyCL/
 
 cp *.lua *.i CMakeLists.txt *.cxx dist/${package}-${version}/
 rsync -av thirdparty/ dist/${package}-${version}/thirdparty/

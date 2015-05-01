@@ -11,17 +11,17 @@
 #include <string>
 #include <algorithm>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 using namespace std;
 
 namespace testCopyBlock{
 
-CLKernel *makeTestPosKernel( OpenCLHelper *cl );
-CLKernel *makeBasicKernel( OpenCLHelper *cl );
+CLKernel *makeTestPosKernel( EasyCL *cl );
+CLKernel *makeBasicKernel( EasyCL *cl );
 
 TEST( testCopyBlock, testPos ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     float in[12];
     float res[12];
@@ -60,7 +60,7 @@ TEST( testCopyBlock, testPos ) {
 //}
 
 TEST( testCopyBlock, basic ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     float a[] = { 1,2,3,4,
                   5,6,7,8,
@@ -117,7 +117,7 @@ TEST( testCopyBlock, basic ) {
     delete cl;
 }
 
-CLKernel *makeTestPosKernel( OpenCLHelper *cl ) {
+CLKernel *makeTestPosKernel( EasyCL *cl ) {
     CLKernel *kernel = 0;
     // [[[cog
     // import stringify
@@ -242,7 +242,7 @@ CLKernel *makeTestPosKernel( OpenCLHelper *cl ) {
     return kernel;
 }
 
-CLKernel *makeBasicKernel( OpenCLHelper *cl ) {
+CLKernel *makeBasicKernel( EasyCL *cl ) {
     CLKernel *kernel = 0;
     // [[[cog
     // import stringify

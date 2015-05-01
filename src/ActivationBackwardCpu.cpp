@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "ActivationBackward.h"
 #include "StatefulTimer.h"
 #include "ActivationFunction.h"
@@ -22,7 +22,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationBackwardCpu::ActivationBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
+ActivationBackwardCpu::ActivationBackwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
         ActivationBackward( cl, numPlanes, inputImageSize, fn ) {
 }
 VIRTUAL void ActivationBackwardCpu::backward( int batchSize, float *outputs, float *gradOutput, float *gradInput ) {

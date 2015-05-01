@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "NeuralNet.h"
 #include "stringhelper.h"
 #include "Trainer.h"
@@ -20,7 +20,7 @@ using namespace std;
 #define VIRTUAL
 
 
-Trainer::Trainer( OpenCLHelper *cl ) :
+Trainer::Trainer( EasyCL *cl ) :
     cl( cl ),
     learningRate( 0 ) {
 }

@@ -36,13 +36,13 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-NeuralNet::NeuralNet( OpenCLHelper *cl ) :
+NeuralNet::NeuralNet( EasyCL *cl ) :
         cl( cl ) {
     trainer = 0;
     isTraining = true;
 }
 /// Constructor
-PUBLICAPI NeuralNet::NeuralNet(  OpenCLHelper *cl, int numPlanes, int imageSize ) :
+PUBLICAPI NeuralNet::NeuralNet(  EasyCL *cl, int numPlanes, int imageSize ) :
         cl( cl ) {
     addLayer( InputLayerMaker::instance()->numPlanes( numPlanes )->imageSize( imageSize ) );
     trainer = 0;
@@ -52,7 +52,7 @@ NeuralNet::~NeuralNet() {
         delete layers[i];
     }
 }
-STATIC NeuralNetMould *NeuralNet::maker( OpenCLHelper *cl ) {
+STATIC NeuralNetMould *NeuralNet::maker( EasyCL *cl ) {
     return new NeuralNetMould( cl );
 }
 NeuralNet *NeuralNet::clone() {
@@ -67,7 +67,7 @@ NeuralNet *NeuralNet::clone() {
     cout << "outputimagesize: " << copy->getOutputImageSize() << endl;
     return copy;
 }
-OpenCLHelper *NeuralNet::getCl() {
+EasyCL *NeuralNet::getCl() {
     return cl;
 }
 /// Add a network layer, using a LayerMaker2 object

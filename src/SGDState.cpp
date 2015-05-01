@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "StatefulTimer.h"
 #include "SGDState.h"
 
@@ -57,7 +57,7 @@ VIRTUAL void SGDState::updateWeights(CLWrapper *gradientsWrapper, CLWrapper *wei
 //    StatefulTimer::instance()->timeCheck("SGDState::updateWeights end" );
 }
 
-SGDState::SGDState( OpenCLHelper *cl, int numWeights ) :
+SGDState::SGDState( EasyCL *cl, int numWeights ) :
 //        cl( cl ),
 //        kernel( 0 ),
         numWeights( numWeights )

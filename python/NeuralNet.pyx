@@ -1,7 +1,7 @@
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
 
-    def __cinit__(self, OpenCLHelper cl, planes = None, size = None):
+    def __cinit__(self, EasyCL cl, planes = None, size = None):
 #        print( '__cinit__(planes,size)')
         if planes == None and size == None:
              self.thisptr = new cDeepCL.NeuralNet(cl.thisptr)

@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "ForwardCpu.h"
 
@@ -15,7 +15,7 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-ForwardCpu::ForwardCpu( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardCpu::ForwardCpu( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
     {
 }

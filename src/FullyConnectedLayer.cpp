@@ -15,7 +15,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-FullyConnectedLayer::FullyConnectedLayer( OpenCLHelper *cl, Layer *previousLayer, FullyConnectedMaker *maker ) :
+FullyConnectedLayer::FullyConnectedLayer( EasyCL *cl, Layer *previousLayer, FullyConnectedMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes( maker->_numPlanes ),
         imageSize( maker->_imageSize ),

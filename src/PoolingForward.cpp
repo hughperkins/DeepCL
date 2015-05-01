@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "stringhelper.h"
 #include "PoolingForwardCpu.h"
 #include "PoolingForwardGpuNaive.h"
@@ -20,7 +20,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingForward::PoolingForward( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingForward::PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         cl( cl ),
         padZeros( padZeros ),
         numPlanes( numPlanes ),
@@ -31,14 +31,14 @@ PoolingForward::PoolingForward( OpenCLHelper *cl, bool padZeros, int numPlanes, 
 //        throw runtime_error("inputImageSize should be an exact multiple of poolingsize: " + toString( inputImageSize ) + " " + toString(poolingSize ) );
 //    }
 }
-STATIC PoolingForward *PoolingForward::instance( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingForward *PoolingForward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
     return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 //    return new PoolingForwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
-STATIC PoolingForward *PoolingForward::instanceForTest( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingForward *PoolingForward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
     return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
 }
-STATIC PoolingForward *PoolingForward::instanceSpecific( int idx, OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingForward *PoolingForward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
     if( idx == 0 ) {
         return new PoolingForwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
     }

@@ -8,7 +8,7 @@
 
 #include "SGDMaker.h"
 #include "SGD.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 using namespace std;
 
@@ -17,7 +17,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL Trainer *SGDMaker::instance( OpenCLHelper *cl ) {
+VIRTUAL Trainer *SGDMaker::instance( EasyCL *cl ) {
     return new SGD( cl );
 }
 

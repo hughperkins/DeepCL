@@ -99,7 +99,7 @@ VIRTUAL void ForwardByInputPlane::forward( int batchSize, CLWrapper *dataWrapper
 
     StatefulTimer::timeCheck("ForwardByInputPlane::forward after call forward");
 }
-ForwardByInputPlane::ForwardByInputPlane( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardByInputPlane::ForwardByInputPlane( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
 

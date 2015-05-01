@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationForwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    ActivationForwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
     VIRTUAL void forward( int batchSize, float *input, float *output );
 

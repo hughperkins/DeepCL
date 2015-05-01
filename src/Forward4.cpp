@@ -41,7 +41,7 @@ VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     cl->finish();
     StatefulTimer::timeCheck("Forward4::forward after call forward");
 }
-Forward4::Forward4( OpenCLHelper *cl, LayerDimensions dim ) :
+Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
     workgroupSize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....

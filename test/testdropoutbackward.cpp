@@ -4,7 +4,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "DropoutBackward.h"
 #include "DropoutForward.h"
@@ -21,7 +21,7 @@ TEST( testdropoutbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     DropoutBackward *dropoutBackprop = DropoutBackward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     uchar mask[] = {
         1,1,0,
@@ -63,7 +63,7 @@ TEST( testdropoutbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     DropoutBackward *dropoutBackprop = DropoutBackward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     uchar mask[] = {
         1,
@@ -116,7 +116,7 @@ TEST( testdropoutbackward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     DropoutBackward *p0 = DropoutBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, dropRatio );
     DropoutBackward *p1 = DropoutBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, dropRatio );
     int outputImageSize = p1->outputImageSize;
@@ -185,7 +185,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int dropoutSize = 2;
-    OpenCLHelper cl;
+    EasyCL cl;
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, dropoutSize );
     float data[] = { 1, 2, 
                     5, 3,

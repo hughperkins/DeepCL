@@ -62,21 +62,21 @@ set( lua_DeepCL_sources
      ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
  )
 
-set(lua_OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
-    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
-    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c)
+set(lua_EasyCL_sources EasyCL/EasyCL.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c)
 
 foreach(source ${lua_DeepCL_sources})
     set( lua_DeepCL_sources_prefixed ${lua_DeepCL_sources_prefixed} ${SRCTREE}/src/${source})
 endforeach()
 
-foreach(source ${lua_OpenCLHelper_sources})
-    set( lua_OpenCLHelper_sources_prefixed ${lua_OpenCLHelper_sources_prefixed} ${SRCTREE}/${source})
+foreach(source ${lua_EasyCL_sources})
+    set( lua_EasyCL_sources_prefixed ${lua_EasyCL_sources_prefixed} ${SRCTREE}/${source})
 endforeach()
 
-add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${lua_DeepCL_sources_prefixed} ${lua_OpenCLHelper_sources_prefixed} )
+add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${lua_DeepCL_sources_prefixed} ${lua_EasyCL_sources_prefixed} )
 target_include_directories( LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
-target_include_directories( LuaDeepCL PRIVATE ${SRCTREE}/src ${SRCTREE}/qlearning ${SRCTREE}/OpenCLHelper )
+target_include_directories( LuaDeepCL PRIVATE ${SRCTREE}/src ${SRCTREE}/qlearning ${SRCTREE}/EasyCL )
 SET_TARGET_PROPERTIES( LuaDeepCL PROPERTIES PREFIX "") 
 
 if(DEV_RUN_SWIG)
@@ -96,8 +96,8 @@ endif()
 #SET_SOURCE_FILES_PROPERTIES(LuaDeepCL.i PROPERTIES CPLUSPLUS ON)
 ##SET_SOURCE_FILES_PROPERTIES(LuaTest.i PROPERTIES SWIG_FLAGS "-lua")
 
-#SWIG_ADD_MODULE(LuaDeepCL lua LuaDeepCL.i ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed})
-#target_include_directories(LuaDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
+#SWIG_ADD_MODULE(LuaDeepCL lua LuaDeepCL.i ${DeepCL_sources_prefixed} ${EasyCL_sources_prefixed})
+#target_include_directories(LuaDeepCL PRIVATE ../src ../qlearning ../EasyCL )
 #target_include_directories(LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
 
 #SET_TARGET_PROPERTIES(LuaDeepCL PROPERTIES PREFIX "") 

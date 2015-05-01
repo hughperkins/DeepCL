@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "DropoutBackward.h"
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -57,7 +57,7 @@ VIRTUAL void DropoutBackwardGpuNaive::backward(
 
     StatefulTimer::instance()->timeCheck("DropoutBackwardGpuNaive::backward end" );
 }
-DropoutBackwardGpuNaive::DropoutBackwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutBackwardGpuNaive::DropoutBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutBackward( cl, numPlanes, inputImageSize, dropRatio ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";

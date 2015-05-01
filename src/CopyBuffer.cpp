@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "StatefulTimer.h"
 #include "CopyBuffer.h"
 
@@ -37,7 +37,7 @@ VIRTUAL CopyBuffer::~CopyBuffer() {
 //    delete kernel;
 }
 
-CopyBuffer::CopyBuffer( OpenCLHelper *cl ) :
+CopyBuffer::CopyBuffer( EasyCL *cl ) :
         cl( cl ) {
     static CLKernel *kernel = 0;
     if( kernel != 0 ) {

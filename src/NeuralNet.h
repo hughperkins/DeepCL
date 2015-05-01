@@ -13,7 +13,7 @@
 
 #include "DeepCLDllExport.h"
 
-class OpenCLHelper;
+class EasyCL;
 class ConvolutionalMaker;
 class LayerMaker;
 class RandomTranslatorMaker;
@@ -39,7 +39,7 @@ protected:
 #ifdef _WIN32
 #pragma warning( default: 4251 )
 #endif
-    OpenCLHelper *cl; // NOT owned by us, dont delete
+    EasyCL *cl; // NOT owned by us, dont delete
     Trainer *trainer; // NOT owned by us, dont delete
 
 public:
@@ -50,12 +50,12 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NeuralNet( OpenCLHelper *cl );
-    PUBLICAPI NeuralNet(  OpenCLHelper *cl, int numPlanes, int imageSize );
+    NeuralNet( EasyCL *cl );
+    PUBLICAPI NeuralNet(  EasyCL *cl, int numPlanes, int imageSize );
     ~NeuralNet();
-    STATIC NeuralNetMould *maker( OpenCLHelper *cl );
+    STATIC NeuralNetMould *maker( EasyCL *cl );
     NeuralNet *clone();
-    OpenCLHelper *getCl();
+    EasyCL *getCl();
     PUBLICAPI void addLayer( LayerMaker2 *maker );
     PUBLICAPI void initWeights( int layerIndex, float *weights, float *bias );
     PUBLICAPI void initWeights( int layerIndex, float *weights );

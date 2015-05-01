@@ -23,17 +23,17 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-STATIC Backward *Backward::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+STATIC Backward *Backward::instance(EasyCL *cl, LayerDimensions dim ) {
     if( ( dim.inputImageSize - dim.filterSize > 6 ) && square( dim.inputImageSize ) <= cl->getMaxWorkgroupSize() ) {
         return new BackwardGpuCached( cl, dim );
     } else {
         return new BackwardGpuNaive( cl, dim );
     }
 }
-STATIC Backward *Backward::instanceForTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC Backward *Backward::instanceForTest(EasyCL *cl, LayerDimensions layerDimensions ) {
     return new BackwardGpuNaive( cl, layerDimensions );
 }
-STATIC Backward *Backward::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC Backward *Backward::instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
         return new BackwardCpu( cl, layerDimensions );
     }
@@ -45,7 +45,7 @@ STATIC Backward *Backward::instanceSpecific( int idx, OpenCLHelper *cl, LayerDim
     }
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
-Backward::Backward( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
+Backward::Backward( EasyCL *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
         dim( layerDimensions ) {
 }

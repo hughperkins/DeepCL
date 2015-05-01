@@ -7,7 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "stringhelper.h"
 #include "StatefulTimer.h"
 
@@ -23,13 +23,13 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC ActivationBackward *ActivationBackward::instance( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
+STATIC ActivationBackward *ActivationBackward::instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
     return new ActivationBackwardGpuNaive( cl, numPlanes, inputImageSize, fn );
 }
-STATIC ActivationBackward *ActivationBackward::instanceForTest( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn) {
+STATIC ActivationBackward *ActivationBackward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn) {
     return new ActivationBackwardCpu( cl, numPlanes, inputImageSize, fn );
 }
-STATIC ActivationBackward *ActivationBackward::instanceSpecific( int idx, OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
+STATIC ActivationBackward *ActivationBackward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
     if( idx == 0 ) {
         return new ActivationBackwardCpu( cl, numPlanes, inputImageSize, fn );
     }
@@ -38,7 +38,7 @@ STATIC ActivationBackward *ActivationBackward::instanceSpecific( int idx, OpenCL
     }
     throw runtime_error("ActivationBackward::instanceSpecific, idx not known: " + toString( idx ) );
 }
-ActivationBackward::ActivationBackward( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
+ActivationBackward::ActivationBackward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
         cl( cl ),
         numPlanes( numPlanes ),
         inputImageSize( inputImageSize ),

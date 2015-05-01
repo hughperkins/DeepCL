@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -47,7 +47,7 @@ VIRTUAL void ActivationForwardGpuNaive::forward( int batchSize, CLWrapper *input
 
     StatefulTimer::instance()->timeCheck("ActivationForwardGpuNaive::forward end" );
 }
-ActivationForwardGpuNaive::ActivationForwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+ActivationForwardGpuNaive::ActivationForwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
         ActivationForward( cl, numPlanes, inputImageSize, fn ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );

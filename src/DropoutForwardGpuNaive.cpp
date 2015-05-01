@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "StatefulTimer.h"
 #include "stringhelper.h"
@@ -46,7 +46,7 @@ VIRTUAL void DropoutForwardGpuNaive::forward( int batchSize, CLWrapper *masksWra
 
     StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward end" );
 }
-DropoutForwardGpuNaive::DropoutForwardGpuNaive( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutForward( cl, numPlanes, inputImageSize, dropRatio ) {
     string options = "";
     options += " -DgOutputImageSize=" + toString( outputImageSize );

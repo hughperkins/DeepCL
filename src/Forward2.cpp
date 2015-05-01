@@ -40,7 +40,7 @@ VIRTUAL void Forward2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     cl->finish();
     StatefulTimer::timeCheck("Forward2::forward after call forward");
 }
-Forward2::Forward2( OpenCLHelper *cl, LayerDimensions dim ) :
+Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {

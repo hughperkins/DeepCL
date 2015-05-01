@@ -5,7 +5,7 @@
 
 #include "NeuralNet.h"
 #include "SGD.h"
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "Trainer.h"
 #include "Layer.h"
 #include "EpochMaker.h"

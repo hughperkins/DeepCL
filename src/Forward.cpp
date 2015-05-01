@@ -28,11 +28,11 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-Forward::Forward( OpenCLHelper *cl, LayerDimensions layerDimensions ) :
+Forward::Forward( EasyCL *cl, LayerDimensions layerDimensions ) :
         cl( cl ),
         dim( layerDimensions ) {
 }
-STATIC Forward *Forward::instance(OpenCLHelper *cl, LayerDimensions dim ) {
+STATIC Forward *Forward::instance(EasyCL *cl, LayerDimensions dim ) {
     return new ForwardAuto( cl, dim );
 //    return new ForwardByInputPlane( cl, dim );
 
@@ -50,7 +50,7 @@ STATIC Forward *Forward::instance(OpenCLHelper *cl, LayerDimensions dim ) {
 //        return new Forward3( cl, dim );
 //    }
 }
-STATIC Forward *Forward::instanceTest(OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC Forward *Forward::instanceTest(EasyCL *cl, LayerDimensions layerDimensions ) {
     return new Forward1( cl, layerDimensions );
 }
 STATIC int Forward::getNumImplementations() {
@@ -65,7 +65,7 @@ STATIC bool Forward::plausiblyOptimal( int index, int batchSize, LayerDimensions
     }
     return true;
 }
-STATIC Forward *Forward::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC Forward *Forward::instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions ) {
     if( idx == 0 ) {
         return new ForwardCpu( cl, layerDimensions );
     } else if( idx == -1 ) {
@@ -91,7 +91,7 @@ STATIC Forward *Forward::instanceSpecific( int idx, OpenCLHelper *cl, LayerDimen
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Forward::instanceSpecific: no instance defined for index " + toString(idx) );
     }
 }
-STATIC Forward *Forward::instanceSpecific( std::string name, OpenCLHelper *cl, LayerDimensions layerDimensions ) {
+STATIC Forward *Forward::instanceSpecific( std::string name, EasyCL *cl, LayerDimensions layerDimensions ) {
     if( name == "cpu" ) {
         return new ForwardCpu( cl, layerDimensions );
     } else if( name == "prop1" ) {

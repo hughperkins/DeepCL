@@ -123,18 +123,18 @@ VIRTUAL void SGD::bindState( NeuralNet *net ) {
     }
 //    net->setTrainer( this );
 }
-STATIC SGD *SGD::instance( OpenCLHelper *cl, float learningRate ) {
+STATIC SGD *SGD::instance( EasyCL *cl, float learningRate ) {
     SGD *sgd = new SGD( cl );
     sgd->setLearningRate( learningRate );
     return sgd;
 }
-STATIC SGD *SGD::instance( OpenCLHelper *cl, float learningRate, float momentum ) {
+STATIC SGD *SGD::instance( EasyCL *cl, float learningRate, float momentum ) {
     SGD *sgd = new SGD( cl );
     sgd->setLearningRate( learningRate );
     sgd->setMomentum( momentum );
     return sgd;
 }
-SGD::SGD( OpenCLHelper *cl ) :
+SGD::SGD( EasyCL *cl ) :
         Trainer( cl ),
         kernel( 0 ),
         momentum( 0.0f ) {

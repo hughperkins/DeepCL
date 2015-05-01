@@ -57,7 +57,7 @@ VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *
 
     StatefulTimer::instance()->timeCheck("BackpropWeightsScratch end" );
 }
-BackpropWeightsScratch::BackpropWeightsScratch( OpenCLHelper *cl, LayerDimensions dim ) :
+BackpropWeightsScratch::BackpropWeightsScratch( EasyCL *cl, LayerDimensions dim ) :
         BackpropWeights( cl, dim )
             {
     std::string options = dim.buildOptionsString();

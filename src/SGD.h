@@ -15,7 +15,7 @@
 
 class SGDState;
 class CLWrapper;
-class OpenCLHelper;
+class EasyCL;
 class CLKernel;
 
 #define VIRTUAL virtual
@@ -40,9 +40,9 @@ public:
     VIRTUAL void train( NeuralNet *net, float const*input, float const*expectedOutput );
     VIRTUAL void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
     VIRTUAL void bindState( NeuralNet *net );
-    STATIC SGD *instance( OpenCLHelper *cl, float learningRate );
-    STATIC SGD *instance( OpenCLHelper *cl, float learningRate, float momentum );
-    SGD( OpenCLHelper *cl );
+    STATIC SGD *instance( EasyCL *cl, float learningRate );
+    STATIC SGD *instance( EasyCL *cl, float learningRate, float momentum );
+    SGD( EasyCL *cl );
 
     // [[[end]]]
 };

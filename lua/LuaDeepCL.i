@@ -17,17 +17,8 @@
 %include "std_string.i"
 
 %{
-#include "GenericLoader.h" // start with this first, since, if no data, kind of 
-                           // hard to test things...
-#include "NeuralNet.h"
-#include "NetdefToNet.h"
-#include "NetLearner.h"
-#include "NormalizationLayerMaker.h"
-#include "LayerMaker.h"
-#include "OpenCLHelper.h"
-#include "SGD.h"
-#include "InputLayerMaker.h"
-//#include "LuaWrappers.h"
+#include "DeepCL.h"
+#include "EasyCL.h"
 #include "QLearner2.h"
 %}
 
@@ -62,13 +53,13 @@ void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, in
 
 // class LayerMaker2;
 
-class OpenCLHelper {
+class EasyCL {
 public:
-    static OpenCLHelper *createForFirstGpu();
-    static OpenCLHelper *createForFirstGpuOtherwiseCpu();
-    static OpenCLHelper *createForIndexedGpu( int gpu );
-    static OpenCLHelper *createForPlatformDeviceIndexes(int platformIndex, int deviceIndex);
-    static OpenCLHelper *createForPlatformDeviceIds(cl_platform_id platformId, cl_device_id deviceId);
+    static EasyCL *createForFirstGpu();
+    static EasyCL *createForFirstGpuOtherwiseCpu();
+    static EasyCL *createForIndexedGpu( int gpu );
+    static EasyCL *createForPlatformDeviceIndexes(int platformIndex, int deviceIndex);
+    static EasyCL *createForPlatformDeviceIds(cl_platform_id platformId, cl_device_id deviceId);
 };
 
 class Trainer {
@@ -79,19 +70,19 @@ public:
 
 class SGD : public Trainer {
 public:
-    static SGD *instance( OpenCLHelper *cl, float learningRate );
-    static SGD *instance( OpenCLHelper *cl, float learningRate, float momentum );
+    static SGD *instance( EasyCL *cl, float learningRate );
+    static SGD *instance( EasyCL *cl, float learningRate, float momentum );
     virtual void setMomentum( float momentum );
     virtual std::string asString();
     virtual void train( NeuralNet *net, float const*input, float const*expectedOutput );
     virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
-    SGD( OpenCLHelper *cl );
+    SGD( EasyCL *cl );
 };
 
 class NeuralNet {
 public:
-    NeuralNet( OpenCLHelper *cl );
-    NeuralNet( OpenCLHelper *cl, int numPlanes, int imageSize );
+    NeuralNet( EasyCL *cl );
+    NeuralNet( EasyCL *cl, int numPlanes, int imageSize );
     void addLayer( LayerMaker2 *maker );
     void setBatchSize( int batchSize );
     void forward( float const*images);

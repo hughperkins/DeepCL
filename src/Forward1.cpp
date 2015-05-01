@@ -38,7 +38,7 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     cl->finish();
     StatefulTimer::timeCheck("Forward1::forward after call forward");
 }
-Forward1::Forward1( OpenCLHelper *cl, LayerDimensions dim ) :
+Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
 

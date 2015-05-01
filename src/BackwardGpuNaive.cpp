@@ -41,7 +41,7 @@ VIRTUAL void BackwardGpuNaive::backward( int batchSize,
     
     StatefulTimer::instance()->timeCheck("BackwardGpuNaive end" );
 }
-BackwardGpuNaive::BackwardGpuNaive( OpenCLHelper *cl, LayerDimensions dim ) :
+BackwardGpuNaive::BackwardGpuNaive( EasyCL *cl, LayerDimensions dim ) :
         Backward( cl, dim )
             {
     std::string options = dim.buildOptionsString();

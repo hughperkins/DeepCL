@@ -11,7 +11,7 @@
 #include <iostream>
 #include <algorithm>
 
-class OpenCLHelper;
+class EasyCL;
 class CLWrapper;
 class CLKernel;
 
@@ -22,7 +22,7 @@ class CLKernel;
 // not thread-safe
 class GpuAdd {
 public:
-    OpenCLHelper *cl; // NOT belong to us, dont delete
+    EasyCL *cl; // NOT belong to us, dont delete
     CLKernel *kernel;
 
     // [[[cog
@@ -32,7 +32,7 @@ public:
     // generated, using cog:
     VIRTUAL void add( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper );
     VIRTUAL ~GpuAdd();
-    GpuAdd( OpenCLHelper *cl );
+    GpuAdd( EasyCL *cl );
 
     // [[[end]]]
 };

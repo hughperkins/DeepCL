@@ -22,7 +22,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingLayer::PoolingLayer( OpenCLHelper *cl, Layer *previousLayer, PoolingMaker *maker ) :
+PoolingLayer::PoolingLayer( EasyCL *cl, Layer *previousLayer, PoolingMaker *maker ) :
         Layer( previousLayer, maker ),
         padZeros( maker->_padZeros ),
         numPlanes ( previousLayer->getOutputPlanes() ),

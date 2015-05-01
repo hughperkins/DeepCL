@@ -22,7 +22,7 @@ public:
     // generated, using cog:
     VIRTUAL ~BackpropWeightsNaive();
     VIRTUAL void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper );
-    BackpropWeightsNaive( OpenCLHelper *cl, LayerDimensions dim );
+    BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

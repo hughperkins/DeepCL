@@ -29,7 +29,7 @@ public:
 
     ActivationFunction const *fn;
 
-    OpenCLHelper *const cl; // NOT owned by us
+    EasyCL *const cl; // NOT owned by us
     ActivationForward *activationForwardImpl;
     ActivationBackward *activationBackpropImpl;
 
@@ -52,7 +52,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationLayer( OpenCLHelper *cl, Layer *previousLayer, ActivationMaker *maker );
+    ActivationLayer( EasyCL *cl, Layer *previousLayer, ActivationMaker *maker );
     VIRTUAL ~ActivationLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float getOutput( int n, int plane, int row, int col );

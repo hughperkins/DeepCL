@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 #include "StatefulTimer.h"
 
@@ -20,7 +20,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingForwardCpu::PoolingForwardCpu( OpenCLHelper *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingForwardCpu::PoolingForwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
         PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
 VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {

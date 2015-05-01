@@ -102,7 +102,7 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     delete[] output1;
     StatefulTimer::timeCheck("ForwardFc::forward end");
 }
-ForwardFc::ForwardFc( OpenCLHelper *cl, LayerDimensions dim ) :
+ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
 

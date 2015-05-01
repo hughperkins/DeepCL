@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <cstring>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "DropoutBackward.h"
 #include "StatefulTimer.h"
 
@@ -21,7 +21,7 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutBackwardCpu::DropoutBackwardCpu( OpenCLHelper *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutBackwardCpu::DropoutBackwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
         DropoutBackward( cl, numPlanes, inputImageSize, dropRatio ) {
 }
 VIRTUAL void DropoutBackwardCpu::backward( int batchSize, uchar *mask,  float *gradOutput, float *gradInput ) {

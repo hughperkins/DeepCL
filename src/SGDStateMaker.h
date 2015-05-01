@@ -27,7 +27,7 @@ public:
     // ]]]
     // generated, using cog:
     SGDStateMaker();
-    TrainerState *instance( OpenCLHelper *cl, int numWeights );
+    TrainerState *instance( EasyCL *cl, int numWeights );
 
     // [[[end]]]
 };

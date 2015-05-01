@@ -6,12 +6,12 @@
 
 #pragma once
 
-class OpenCLHelper;
+class EasyCL;
 class CLWrapper;
 
 class PrintBuffer {
 public:
-    static void printFloats( OpenCLHelper *cl, CLWrapper *buffer, int rows, int cols );
-    static void printInts( OpenCLHelper *cl, CLWrapper *buffer, int rows, int cols );
+    static void printFloats( EasyCL *cl, CLWrapper *buffer, int rows, int cols );
+    static void printInts( EasyCL *cl, CLWrapper *buffer, int rows, int cols );
 };
 

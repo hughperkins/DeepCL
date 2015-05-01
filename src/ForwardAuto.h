@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "ActivationFunction.h"
 #include "Forward.h"
 #include "LayerDimensions.h"
@@ -27,7 +27,7 @@ using namespace std;
 
 class DeepCL_EXPORT ForwardAuto : public Forward {
 public:
-//    OpenCLHelper *cl;
+//    EasyCL *cl;
 //    LayerDimensions dim;
 //    ActivationFunction const*fn;
 
@@ -43,7 +43,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ForwardAuto( OpenCLHelper *cl, LayerDimensions dim );
+    ForwardAuto( EasyCL *cl, LayerDimensions dim );
     VIRTUAL ~ForwardAuto();
     VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
     CLWrapper *biasWrapper, CLWrapper *outputWrapper );

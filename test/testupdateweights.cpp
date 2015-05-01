@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <algorithm>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 #include "NeuralNet.h"
 #include "BackpropWeights.h"
 #include "BackpropWeightsNaive.h"
@@ -119,7 +119,7 @@ void checkWeightsUpdate( NeuralNet *net, int targetLayerIndex ) {
 }
 
 TEST( testupdateweights, conv1 ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 2, 5 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
@@ -133,7 +133,7 @@ TEST( testupdateweights, conv1 ) {
 }
 
 TEST( testupdateweights, conv1z ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = new NeuralNet( cl, 2, 3 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(1) );
     net->addLayer( SquareLossMaker::instance() );
@@ -151,7 +151,7 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    const int batchSize = 1;
 //    const int imageSize = 1;
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0) );
@@ -306,7 +306,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
     memset( weights, 0, sizeof( float ) * max( dim.filtersSize, 20 ) );
     memset( bias, 0, sizeof(float) * 10 );
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest( cl, dim );
     backpropWeightsImpl->calcGradWeights( batchSize, errors, data, weights, bias );
     delete backpropWeightsImpl;
@@ -532,7 +532,7 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     int batchSize = 1;
 //    const float learningRate = 1;
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int outputSize = batchSize * dim.outputCubeSize;
     int inputSize = batchSize * dim.inputCubeSize;
@@ -766,7 +766,7 @@ void compareSpecific( bool debug, float learningRate, int its, int batchSize, La
 //    WeightRandomizer::randomizeInts( errors, outputAllocated, 0, 99 );
 //    WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     
     int instances[2];
     instances[0] = instance0;
@@ -964,7 +964,7 @@ void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
     WeightRandomizer::randomizeInts( gradOutput, outputAllocated, 0, 99 );
     WeightRandomizer::randomizeInts( inputData, inputAllocated, 0, 99 );
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceSpecific( instance, cl, dim );
     Timer timer;

@@ -19,7 +19,7 @@ public:
     // generated, using cog:
     VIRTUAL ~BackpropWeightsScratchLarge();
     VIRTUAL void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper );
-    BackpropWeightsScratchLarge( OpenCLHelper *cl, LayerDimensions dim );
+    BackpropWeightsScratchLarge( EasyCL *cl, LayerDimensions dim );
 
     // [[[end]]]
 };

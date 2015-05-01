@@ -184,7 +184,7 @@ function go()
     local numActions = scenario:getNumActions()
     print('size',size,'planes',planes,'numActions',numActions)
 
-    local cl = deepcl.OpenCLHelper()
+    local cl = deepcl.EasyCL()
     local net = deepcl.NeuralNet(cl)
     net:addLayer( deepcl.InputLayerMaker():numPlanes(planes):imageSize(size) )
     net:addLayer( deepcl.ConvolutionalMaker():numFilters(8):filterSize(5):padZeros():biased() )

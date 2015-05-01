@@ -11,7 +11,7 @@
 #include <iostream>
 #include <algorithm>
 
-class OpenCLHelper;
+class EasyCL;
 class CLKernel;
 class CLWrapper;
 
@@ -22,7 +22,7 @@ class CLWrapper;
 // nothing complicated :-)
 class MultiplyBuffer {
 public:
-    OpenCLHelper *cl;
+    EasyCL *cl;
     CLKernel *kernel;
 
     // [[[cog
@@ -33,7 +33,7 @@ public:
     VIRTUAL void multiply( int N, CLWrapper *in, CLWrapper *out );
     VIRTUAL ~MultiplyBuffer();
     VIRTUAL std::string floatToFloatString( float value );
-    MultiplyBuffer( OpenCLHelper *cl, float multiplier );
+    MultiplyBuffer( EasyCL *cl, float multiplier );
 
     // [[[end]]]
 };
