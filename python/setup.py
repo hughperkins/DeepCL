@@ -161,7 +161,7 @@ deepcl_sourcestring = """
     DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
     DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
     DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp
+    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp
     TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
     Trainer.cpp SGD.cpp
 """ 
