@@ -21,13 +21,13 @@ cdef class NetLearner:
         self.thisptr.setDumpTimings( dumpTimings )
 #    def setBatchSize( self, batchSize ):
 #        self.thisptr.setBatchSize( batchSize )
-#    def _learn( self, float learningRate ):
-#        with nogil:
-#            self.thisptr.learn( learningRate )
-#    def learn( self, float learningRate ):
-#        interruptableCall( self._learn, [ learningRate ] ) 
+    def _run(self):
+        with nogil:
+           self.thisptr.run()
+    def run(self):
+        interruptableCall( self._run, [] ) 
 ##        with nogil:
 ##            thisptr._learn( learningRate )
-#        checkException()
+        checkException()
 
 

@@ -59,7 +59,8 @@ def writeResults( resultsLine ):
 
 def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filterSize ):
     print('building network...')
-    net = PyDeepCL.NeuralNet( inputPlanes, inputSize )
+    cl = PyDeepCL.EasyCL()
+    net = PyDeepCL.NeuralNet(cl, inputPlanes, inputSize )
 #    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(inputPlanes)
 #        .filterSize(1).padZeros().biased().linear() ) # this is just to make sure that gradient needs to be 
 #                                                      # backwarded through next layer
@@ -90,7 +91,7 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
         now = time.time()
         print('  warm up forward all-layer time', now - last )
         last = now
-    net.backwardFromLabels( 0.001, labels )
+    net.backwardFromLabels(labels)
     now = time.time()
     print('   warm up backward all-layer time', now - last )
     last = now
@@ -105,14 +106,14 @@ def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filt
     writeResults( layer.asString() + ', forward: ' + str( ( now - last ) / float(numEpochs) * 1000 ) + 'ms' )
 
     print('warm up backward again')
-    layer.backward(0.001)
-    layer.backward(0.001)
+    layer.backward()
+    layer.backward()
     print('warm up backward done. start timings:')
 
     now = time.time()
     last = now
     for i in range(numEpochs):
-        layer.backward(0.001)
+        layer.backward()
     now = time.time()
     print('backward layer total time', now - last )
     print('backward layer average time', ( now - last ) / float(numEpochs) )

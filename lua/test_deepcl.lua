@@ -114,6 +114,7 @@ function test_lowlevel()
     print('got data')
 
     local sgd = deepcl.SGD_instance(cl, 0.002, 0)
+    sgd:setWeightDecay(0.0001)
     net:setBatchSize(batchSize)
     for epoch = 0,numEpochs-1 do
         print('epoch', epoch)

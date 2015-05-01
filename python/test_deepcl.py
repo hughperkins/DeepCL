@@ -14,7 +14,8 @@ if len(sys.argv) != 2:
 
 mnistFilePath = sys.argv[1] + '/t10k-images-idx3-ubyte' 
 
-net = PyDeepCL.NeuralNet(1,28)
+cl = PyDeepCL.EasyCL()
+net = PyDeepCL.NeuralNet(cl, 1,28)
 print('created net')
 print( net.asString() )
 print('printed net')
@@ -31,11 +32,14 @@ images = array.array( 'f', [0] * (N*planes*size*size) )
 labels = array.array('i',[0] * N )
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N )
 
-netLearner = PyDeepCL.NetLearner( net,
+sgd = PyDeepCL.SGD(cl, 0.002, 0.0 )
+sgd.setWeightDecay(0.0001)
+netLearner = PyDeepCL.NetLearner(
+    sgd, net,
     N, images, labels,
     N, images, labels,
     128 )
 netLearner.setSchedule( 12 )
-netLearner.learn( 0.002 )
+netLearner.run()
  
 
