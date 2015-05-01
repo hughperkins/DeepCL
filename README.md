@@ -25,10 +25,10 @@ OpenCL library to train deep convolutional networks
 - Q-learning
 
 APIs:
-* Python
-* Lua
-* c++
-* command-line
+* [Python](python/README.md)
+* [Lua](lua/README.md)
+* [c++](doc/NeuralNetAPI.md)
+* [command-line](doc/Commandline.md)
 
 Layer types:
 * convolutional
