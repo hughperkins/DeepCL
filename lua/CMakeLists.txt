@@ -56,7 +56,7 @@ set( lua_DeepCL_sources
     DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
     DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
     DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp
+    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp MultiplyInPlace.cpp
     TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
     Trainer.cpp SGD.cpp
      ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
