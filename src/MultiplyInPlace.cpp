@@ -8,7 +8,8 @@
 
 #include "EasyCL.h"
 #include "StatefulTimer.h"
-#include "CopyBuffer.h"
+#include "MultiplyInPlace.h"
+#include "stringhelper.h"
 
 using namespace std;
 
@@ -17,12 +18,12 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
-        StatefulTimer::instance()->timeCheck("CopyBuffer::copy start" );
+VIRTUAL void MultiplyInPlace::multiply( int N, float multiplier, CLWrapper *data ) {
+        StatefulTimer::instance()->timeCheck("MultiplyInPlace::multiply start" );
 
     kernel  ->in( N )
-            ->in( in )
-            ->out( out );
+            ->in( multiplier )
+            ->inout( data );
 
     int globalSize = N;
     int workgroupSize = 64;
@@ -30,27 +31,24 @@ VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("CopyBuffer::copy end" );
+    StatefulTimer::instance()->timeCheck("MultiplyInPlace::multiply end" );
 }
-
-VIRTUAL CopyBuffer::~CopyBuffer() {
+VIRTUAL MultiplyInPlace::~MultiplyInPlace() {
 //    delete kernel;
 }
-
-CopyBuffer::CopyBuffer( EasyCL *cl ) :
+MultiplyInPlace::MultiplyInPlace( EasyCL *cl ) :
         cl( cl ) {
+    string options = "";
+
     static CLKernel *kernel = 0;
     if( kernel != 0 ) {
         this->kernel = kernel;
         return;
     }
 
-//    std::string options = "-D " + fn->getDefineName();
-    string options = "";
-
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/copy.cl", "multiplyInplace", 'options' )
     // ]]]
     // generated using cog, from cl/copy.cl:
     const char * kernelSource =  
@@ -98,8 +96,25 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "multiplyInplace", options, "cl/copy.cl" );
     // [[[end]]]
     this->kernel = kernel;
 }
+// Copyright Hugh Perkins 2015 hughperkins at gmail
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License, 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
+
+#include <iostream>
+
+#include "MultiplyInPlace.h"
+
+using namespace std;
+
+#undef STATIC
+#undef VIRTUAL
+#define STATIC
+#define VIRTUAL
+
 

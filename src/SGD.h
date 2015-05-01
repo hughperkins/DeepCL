@@ -17,6 +17,7 @@ class SGDState;
 class CLWrapper;
 class EasyCL;
 class CLKernel;
+class MultiplyInPlace;
 
 #include "DeepCLDllExport.h"
 
@@ -26,8 +27,10 @@ class CLKernel;
 class DeepCL_EXPORT SGD : public Trainer{
 public:
     CLKernel *kernel;
+    MultiplyInPlace *multiplyInPlace;
 
     float momentum;
+    float weightDecay;
 
     // [[[cog
     // import cog_addheaders
@@ -36,6 +39,7 @@ public:
     // generated, using cog:
     VIRTUAL ~SGD();
     VIRTUAL void setMomentum( float momentum );
+    VIRTUAL void setWeightDecay( float weightDecay );
     VIRTUAL std::string asString();
     VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
     SGDState *trainerState );

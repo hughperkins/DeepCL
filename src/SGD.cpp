@@ -14,6 +14,7 @@
 #include "SGDState.h"
 #include "SGD.h"
 #include "IAcceptsLabels.h"
+#include "MultiplyInPlace.h"
 
 using namespace std;
 
@@ -25,9 +26,13 @@ using namespace std;
 
 VIRTUAL SGD::~SGD() {
     delete kernel;
+    delete multiplyInPlace;
 }
 VIRTUAL void SGD::setMomentum( float momentum ) {
     this->momentum = momentum;
+}
+VIRTUAL void SGD::setWeightDecay( float weightDecay ) {
+    this->weightDecay = weightDecay;
 }
 VIRTUAL std::string SGD::asString() {
     return "SGD{ learningRate=" + toString( learningRate ) + ", momentum=" + 
@@ -48,6 +53,13 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
+
+    if( weightDecay > 0 ) {
+        // apply weight decay, by multiplying the weights by (1.0f - weightDecay)
+        // so weightDecay == 0 means no decay; and weightDecay == 1.0f means
+        // weights go immediately to zero
+        multiplyInPlace->multiply( numWeights, 1.0f - weightDecay, weightsWrapper );
+    }
 }
 VIRTUAL void SGD::train( NeuralNet *net, float const*input, float const*expectedOutput ) {
 //VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one batch, including updating weights
@@ -137,8 +149,10 @@ STATIC SGD *SGD::instance( EasyCL *cl, float learningRate, float momentum ) {
 SGD::SGD( EasyCL *cl ) :
         Trainer( cl ),
         kernel( 0 ),
-        momentum( 0.0f ) {
+        momentum( 0.0f ),
+        weightDecay( 0.0f ) {
     string options = "";
+    multiplyInPlace = new MultiplyInPlace( cl );
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/SGD.cl", "updateWeights", 'options' )

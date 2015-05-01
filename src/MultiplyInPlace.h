@@ -20,7 +20,7 @@ class CLWrapper;
 
 // simply going to copy from one buffer to another
 // nothing complicated :-)
-class MultiplyBuffer {
+class MultiplyInPlace {
 public:
     EasyCL *cl;
     CLKernel *kernel;
@@ -30,9 +30,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void multiply( int N, float multiplier, CLWrapper *in, CLWrapper *out );
-    VIRTUAL ~MultiplyBuffer();
-    MultiplyBuffer( EasyCL *cl );
+    VIRTUAL void multiply( int N, float multiplier, CLWrapper *data );
+    VIRTUAL ~MultiplyInPlace();
+    MultiplyInPlace( EasyCL *cl );
 
     // [[[end]]]
 };

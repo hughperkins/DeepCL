@@ -18,10 +18,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL void MultiplyBuffer::multiply( int N, CLWrapper *in, CLWrapper *out ) {
+VIRTUAL void MultiplyBuffer::multiply( int N, float multiplier, CLWrapper *in, CLWrapper *out ) {
         StatefulTimer::instance()->timeCheck("MultiplyBuffer::multiply start" );
 
     kernel  ->in( N )
+            ->in( multiplier )
             ->in( in )
             ->out( out );
 
@@ -35,25 +36,30 @@ VIRTUAL void MultiplyBuffer::multiply( int N, CLWrapper *in, CLWrapper *out ) {
 }
 
 VIRTUAL MultiplyBuffer::~MultiplyBuffer() {
-    delete kernel;
+//    delete kernel;
 }
 
-VIRTUAL std::string MultiplyBuffer::floatToFloatString( float value ) {
-    string floatString = toString( value );
-    if( floatString.find( "." ) == string::npos ) {
-        floatString += ".0";
-    }
-    floatString += "f";
-    return floatString;
-}
+//VIRTUAL std::string MultiplyBuffer::floatToFloatString( float value ) {
+//    string floatString = toString( value );
+//    if( floatString.find( "." ) == string::npos ) {
+//        floatString += ".0";
+//    }
+//    floatString += "f";
+//    return floatString;
+//}
 
-MultiplyBuffer::MultiplyBuffer( EasyCL *cl, float multiplier ) :
+MultiplyBuffer::MultiplyBuffer( EasyCL *cl ) :
         cl( cl ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
 //    options += " -DgN=" + toString( N );
-    options += " -DgMultiplier=" + floatToFloatString( multiplier );
+//    options += " -DgMultiplier=" + floatToFloatString( multiplier );
 
+    static CLKernel *kernel = 0;
+    if( kernel != 0 ) {
+        this->kernel = kernel;
+        return;
+    }
 
     // [[[cog
     // import stringify
@@ -81,21 +87,32 @@ MultiplyBuffer::MultiplyBuffer( EasyCL *cl, float multiplier ) :
     "    out[globalId] = in[globalId];\n" 
     "}\n" 
     "\n" 
-    "#ifdef gMultiplier\n" 
     "kernel void multiplyConstant(\n" 
     "        const int N,\n" 
+    "        const float multiplier,\n" 
     "        global const float *in,\n" 
     "        global float *out ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    out[globalId] = gMultiplier * in[globalId];\n" 
+    "    out[globalId] = multiplier * in[globalId];\n" 
     "}\n" 
-    "#endif\n" 
+    "\n" 
+    "kernel void multiplyInplace(\n" 
+    "        const int N,\n" 
+    "        const float multiplier,\n" 
+    "        global float *data ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    data[globalId] *= multiplier;\n" 
+    "}\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "multiplyConstant", options, "cl/copy.cl" );
     // [[[end]]]
+    this->kernel = kernel;
 }
 

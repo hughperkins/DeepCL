@@ -52,7 +52,7 @@ DropoutLayer::DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *make
     }
     dropoutForwardImpl = DropoutForward::instance( cl, numPlanes, inputImageSize, dropRatio );
     dropoutBackwardImpl = DropoutBackward::instance( cl, numPlanes, inputImageSize, dropRatio );
-    multiplyBuffer = new MultiplyBuffer( cl, dropRatio );
+    multiplyBuffer = new MultiplyBuffer( cl );
 }
 VIRTUAL DropoutLayer::~DropoutLayer() {
     delete multiplyBuffer;
@@ -211,7 +211,7 @@ VIRTUAL void DropoutLayer::forward() {
         dropoutForwardImpl->forward( batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper );
     } else {
         // if not training, then simply skip the dropout bit, copy the buffers directly
-        multiplyBuffer->multiply( getOutputSize(), upstreamOutputWrapper, outputWrapper );
+        multiplyBuffer->multiply( getOutputSize(), dropRatio, upstreamOutputWrapper, outputWrapper );
     }
     if( !previousLayer->hasOutputWrapper() ) {
         delete upstreamOutputWrapper;

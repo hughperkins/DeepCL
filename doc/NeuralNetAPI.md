@@ -194,6 +194,16 @@ For non-categorical data, you can provide expected output values as a contiguous
 // create a Trainer object, currently SGD,
 // passing in learning rate, and momentum:
 Trainer *trainer = SGD::instance( cl, 0.02f, 0.0f );
+```
+
+Can set weightdecay, momentum, learningrate:
+
+```c++
+SGD *sgd = SGD::instance( cl );
+sgd->setLearningRate( 0.002f );
+sgd->setMomentum( 0.1f );
+sgd->setWeightDecay( 0.001f );
+```
 
 ## Train
 

@@ -10,27 +10,6 @@
 
 #include "DeepCL.h"
 
-//#include "EasyCL.h"
-//#include "InputLayerMaker.h"
-//#include "NormalizationLayerMaker.h"
-//#include "GenericLoader.h"
-//#include "Timer.h"
-//#include "NeuralNet.h"
-//#include "stringhelper.h"
-//#include "FileHelper.h"
-//#include "StatefulTimer.h"
-//#include "WeightsPersister.h"
-//#include "NormalizationHelper.h"
-////#include "BatchLearner.h"
-//#include "NetdefToNet.h"
-//#include "NetLearner.h"
-//#include "MultiNet.h"
-//#include "BatchProcess.h"
-//#include "NetLearnerOnDemand.h"
-//#include "SGD.h"
-//#include "SGDState.h"
-//#include "SGDStateMaker.h"
-
 using namespace std;
 
 /* [[[cog
@@ -61,7 +40,8 @@ using namespace std;
         ('trainer', 'string', 'which trainer, currently must be sgd, no other options', 'sgd', False ),
         ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
         ('momentum', 'float', 'momentum', 0.0, True),
-        ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, False)
+        ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay', 0.0, True)
+        # ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, False)
     ]
 *///]]]
 // [[[end]]]
@@ -97,7 +77,7 @@ public:
     string trainer;
     float learningRate;
     float momentum;
-    float annealLearningRate;
+    float weightDecay;
     // [[[end]]]
 
     Config() {
@@ -140,7 +120,7 @@ public:
         trainer = "sgd";
         learningRate = 0.002f;
         momentum = 0.0f;
-        annealLearningRate = 1.0f;
+        weightDecay = 0.0f;
         // [[[end]]]
 
     }
@@ -273,6 +253,7 @@ void go(Config config) {
         SGD *sgd = new SGD( cl );
         sgd->setLearningRate( config.learningRate );
         sgd->setMomentum( config.momentum );
+        sgd->setWeightDecay( config.weightDecay );
         trainer = sgd;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
@@ -429,6 +410,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
     cout << "    momentum=[momentum] (" << config.momentum << ")" << endl;
+    cout << "    weightdecay=[weight decay, 0 means no decay; 1 means full decay] (" << config.weightDecay << ")" << endl;
     // [[[end]]]
 }
 
@@ -506,8 +488,8 @@ int main( int argc, char *argv[] ) {
                 config.learningRate = atof(value);
             } else if( key == "momentum" ) {
                 config.momentum = atof(value);
-            } else if( key == "anneallearningrate" ) {
-                config.annealLearningRate = atof(value);
+            } else if( key == "weightdecay" ) {
+                config.weightDecay = atof(value);
             // [[[end]]]
             } else {
                 cout << endl;

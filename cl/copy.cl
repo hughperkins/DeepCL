@@ -18,16 +18,26 @@ kernel void copy(
     out[globalId] = in[globalId];
 }
 
-#ifdef gMultiplier
 kernel void multiplyConstant(
         const int N,
+        const float multiplier,
         global const float *in,
         global float *out ) {
     const int globalId = get_global_id(0);
     if( globalId >= N ) {
         return;
     }
-    out[globalId] = gMultiplier * in[globalId];
+    out[globalId] = multiplier * in[globalId];
 }
-#endif
+
+kernel void multiplyInplace(
+        const int N,
+        const float multiplier,
+        global float *data ) {
+    const int globalId = get_global_id(0);
+    if( globalId >= N ) {
+        return;
+    }
+    data[globalId] *= multiplier;
+}
 
