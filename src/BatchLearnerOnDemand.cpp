@@ -6,7 +6,7 @@
 
 #include "NormalizationHelper.h"
 #include "NeuralNet.h"
-#include "AccuracyHelper.h"
+//#include "AccuracyHelper.h"
 #include "Trainable.h"
 #include "GenericLoader.h"
 #include "BatchLearner.h"

@@ -11,6 +11,7 @@
 #include "BatchLearner.h"
 #include "NetLearner.h"
 #include "SGD.h"
+#include "Layer.h"
 #include "EasyCL.h"
 #include "NeuralNetMould.h"
 #include "LayerMakers.h"
@@ -159,7 +160,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( ActivationMaker::instance()->tanh() );
     net->addLayer( SquareLossMaker::instance() );;
     float weights1[] = {-0.171115f, 0.28369f, 0.201354f, -0.496124f, 0.391512f, 0.120458f, 0.396952f, -0.1356f, -0.319595f, 0.251043f, 0.318859f, 0.220892f, -0.480651f, -0.51708f, 0.2173f, 0.365935f, 0.304687f, -0.712624f};
     float bias1[] = {0.375101f, 0.00130748f};
@@ -192,7 +193,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     delete cl;
 }
 
-TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
+TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1 ) {
     Timer timer;
     float *data = new float[2];
     data[0] = 0.5f;
@@ -206,18 +207,18 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1_relu ) {
     expectedOutput[2] = 0;
     expectedOutput[3] = 1;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    NeuralNet *net = NeuralNet::maker(cl)->instance();
+    NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( SquareLossMaker::instance() );;
+//    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
     float weights1[] = {-0.380177f, -1.5738f};
     float bias1[] = {0.5f, 0.0606055f};
     net->initWeights( 1, weights1, bias1 );
     BatchLearner batchLearner( net );
-    SGD *sgd = SGD::instance( cl, 1.2f, 0 );
-    for( int epoch = 0; epoch < 5; epoch++ ) {
+    SGD *sgd = SGD::instance( cl, 0.2f, 0 );
+    for( int epoch = 0; epoch < 40; epoch++ ) {
         batchLearner.runEpochFromExpected( sgd, 2, 2, data, expectedOutput );
         if( epoch % 5 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
@@ -284,16 +285,16 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( SquareLossMaker::instance() );;
+    net->addLayer( SquareLossMaker::instance() );
     float const*output = 0;
     double _weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
     vector<float> __weights1( _weights1, _weights1 + sizeof( _weights1 ) / sizeof(double) );
     float *weights1 = &__weights1[0];
     float bias1[] = {0.0418723f, 0.158733f};
-    net->initWeights( 1, weights1, bias1 );
+    net->getLayer(1)->setWeights( weights1, bias1 );
     BatchLearner batchLearner( net );
-    SGD *sgd = SGD::instance( cl, 0.4f, 0 );
-    for( int epoch = 0; epoch < 20; epoch++ ) {
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
+    for( int epoch = 0; epoch < 50; epoch++ ) {
         net->epochMaker(sgd)
             ->batchSize(4)
             ->numExamples(4)
@@ -416,20 +417,20 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
-    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
+//    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
-    SGD *sgd = SGD::instance( cl, 1, 0 );
-    for( int epoch = 0; epoch < 30; epoch++ ) {
+    SGD *sgd = SGD::instance( cl, 0.1f, 0.0f );
+    for( int epoch = 0; epoch < 80; epoch++ ) {
         net->epochMaker(sgd)
             ->batchSize(2)
             ->numExamples(2)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
             ->run();
-//        cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
+        cout << "epoch " << epoch << " loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
 //        float const*output = net->getOutput();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, output );
@@ -472,7 +473,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
+//    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
 float weights1[] = {1.12739f, 1.21476f};
 float weights2[] = {-0.352846f, 0.534554f, -1.13343f, -0.191175f};
@@ -480,7 +481,7 @@ float bias1[] = {0.971267f, 1.42629f};
 float bias2[] = {-0.071288f, 0.443919f};
     net->initWeights(1, weights1, bias1 );
     net->initWeights(3, weights2, bias2 );
-    SGD *sgd = SGD::instance( cl, 0.4f, 0 );
+    SGD *sgd = SGD::instance( cl, 0.2f, 0 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
         net->epochMaker(sgd)
             ->batchSize(2)
@@ -563,10 +564,10 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(4)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( SquareLossMaker::instance() );;
+//    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
 //    net->print();
-    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
+    SGD *sgd = SGD::instance( cl, 0.01f, 0 );
     for( int epoch = 0; epoch < 1000; epoch++ ) {
         net->epochMaker(sgd)
             ->batchSize(N)
@@ -660,8 +661,8 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(4)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( SquareLossMaker::instance() );;
+//    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
 //    net->print();
 double _weights1[] = {-0.69664, 0.58017, 0.140447, -0.205859, 0.0198638, 0.0110593, -0.388923, -0.844424, -0.472903, 0.453888, -0.616155, -0.454998};
 double _weights2[] = {0.207138, -0.106497, -0.1228, -0.162173, 0.1822, -0.100027, 0.0447708, 0.165723, -0.0147989, 0.109204, -0.0334504, 0.00452646, 0.198443, -0.23725, 0.105671, 0.192242, -0.0268933, 0.150674, 0.160054, -0.116846, 0.222009, 
@@ -778,8 +779,8 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( SquareLossMaker::instance() );;
+//    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
 //    net->print();
 double _weights1[] = {-0.171255, 0.374466, -0.224289, -0.196481, 0.162787, 0.418841, 0.230909, 0.23731, -0.244594, -0.469993, 0.221895, -0.0145731, 0.163359, 0.276707, -0.533498, -0.376532, 0.275129, -0.298299, -0.162541, -0.497442, 0.0331104, 
 0.140816, 0.339377, -0.466528, -0.260578, -0.373026, -0.0151962};
@@ -969,8 +970,8 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(3)->biased() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( SquareLossMaker::instance() );;
+//    net->addLayer( ActivationMaker::instance()->relu() );
+    net->addLayer( SquareLossMaker::instance() );
 //    net->print();
     SGD *sgd = SGD::instance( cl, 0.02f, 0 );
     for( int epoch = 0; epoch < 3000; epoch++ ) {

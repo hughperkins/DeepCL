@@ -13,7 +13,7 @@
 #include "NeuralNetMould.h"
 #include "ActivationFunction.h"
 #include "StatefulTimer.h"
-#include "AccuracyHelper.h"
+//#include "AccuracyHelper.h"
 #include "Layer.h"
 #include "InputLayer.h"
 #include "FullyConnectedLayer.h"

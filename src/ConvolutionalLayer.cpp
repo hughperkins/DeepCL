@@ -367,7 +367,7 @@ VIRTUAL void ConvolutionalLayer::unpersistFromArray(float const*array) {
 VIRTUAL void ConvolutionalLayer::initBias( float const*bias ) {
     int biasSize = dim.numFilters;
     memcpy( this->bias, bias, sizeof(float) * biasSize );
-//    biasWrapper->copyToDevice();
+    biasWrapper->copyToDevice();
 }
 VIRTUAL int ConvolutionalLayer::getWeightsSize() const {
     return dim.numFilters * dim.inputPlanes * dim.filterSize * dim.filterSize;
