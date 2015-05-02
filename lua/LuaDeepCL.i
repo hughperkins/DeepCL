@@ -62,10 +62,15 @@ public:
     static EasyCL *createForPlatformDeviceIds(cl_platform_id platformId, cl_device_id deviceId);
 };
 
+class TrainingContext {
+public:
+    TrainingContext( int epoch );
+};
+
 class Trainer {
 public:
-    virtual void train( NeuralNet *net, float const*input, float const*expectedOutput ) = 0;
-    virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels ) = 0;
+    virtual void train( NeuralNet *net, TrainingContext *context, float const*input, float const*expectedOutput ) = 0;
+    virtual void trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels ) = 0;
 };
 
 class SGD : public Trainer {
@@ -75,8 +80,8 @@ public:
     virtual void setMomentum( float momentum );
     virtual void setWeightDecay( float weightDecay );
     virtual std::string asString();
-    virtual void train( NeuralNet *net, float const*input, float const*expectedOutput );
-    virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
+    virtual void train( NeuralNet *net, TrainingContext *context, float const*input, float const*expectedOutput );
+    virtual void trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels );
     SGD( EasyCL *cl );
 };
 

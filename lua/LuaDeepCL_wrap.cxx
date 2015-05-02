@@ -1881,17 +1881,18 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 #define SWIGTYPE_p_SoftMaxMaker swig_types[16]
 #define SWIGTYPE_p_SquareLossMaker swig_types[17]
 #define SWIGTYPE_p_Trainer swig_types[18]
-#define SWIGTYPE_p_cl_device_id swig_types[19]
-#define SWIGTYPE_p_cl_platform_id swig_types[20]
-#define SWIGTYPE_p_float swig_types[21]
-#define SWIGTYPE_p_floatArray swig_types[22]
-#define SWIGTYPE_p_floatSlice swig_types[23]
-#define SWIGTYPE_p_int swig_types[24]
-#define SWIGTYPE_p_intArray swig_types[25]
-#define SWIGTYPE_p_intSlice swig_types[26]
-#define SWIGTYPE_p_std__string swig_types[27]
-static swig_type_info *swig_types[29];
-static swig_module_info swig_module = {swig_types, 28, 0, 0, 0, 0};
+#define SWIGTYPE_p_TrainingContext swig_types[19]
+#define SWIGTYPE_p_cl_device_id swig_types[20]
+#define SWIGTYPE_p_cl_platform_id swig_types[21]
+#define SWIGTYPE_p_float swig_types[22]
+#define SWIGTYPE_p_floatArray swig_types[23]
+#define SWIGTYPE_p_floatSlice swig_types[24]
+#define SWIGTYPE_p_int swig_types[25]
+#define SWIGTYPE_p_intArray swig_types[26]
+#define SWIGTYPE_p_intSlice swig_types[27]
+#define SWIGTYPE_p_std__string swig_types[28]
+static swig_type_info *swig_types[30];
+static swig_module_info swig_module = {swig_types, 29, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2683,18 +2684,63 @@ static swig_lua_class *swig_EasyCL_bases[] = {0};
 static const char *swig_EasyCL_base_names[] = {0};
 static swig_lua_class _wrap_class_EasyCL = { "EasyCL", &SWIGTYPE_p_EasyCL,_wrap_new_EasyCL, swig_delete_EasyCL, swig_EasyCL_methods, swig_EasyCL_attributes, { "EasyCL", swig_EasyCL_cls_methods, swig_EasyCL_cls_attributes, swig_EasyCL_cls_constants }, swig_EasyCL_bases, swig_EasyCL_base_names };
 
+static int _wrap_new_TrainingContext(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  TrainingContext *result = 0 ;
+  
+  SWIG_check_num_args("TrainingContext::TrainingContext",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("TrainingContext::TrainingContext",1,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  result = (TrainingContext *)new TrainingContext(arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_TrainingContext,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_TrainingContext(void *obj) {
+TrainingContext *arg1 = (TrainingContext *) obj;
+delete arg1;
+}
+static swig_lua_method swig_TrainingContext_methods[] = {
+    {0,0}
+};
+static swig_lua_attribute swig_TrainingContext_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_attribute swig_TrainingContext_cls_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_method swig_TrainingContext_cls_methods[] = {
+    {0,0}
+};
+static swig_lua_const_info swig_TrainingContext_cls_constants[] = {
+    {0,0,0,0,0,0}
+};
+static swig_lua_class *swig_TrainingContext_bases[] = {0};
+static const char *swig_TrainingContext_base_names[] = {0};
+static swig_lua_class _wrap_class_TrainingContext = { "TrainingContext", &SWIGTYPE_p_TrainingContext,_wrap_new_TrainingContext, swig_delete_TrainingContext, swig_TrainingContext_methods, swig_TrainingContext_attributes, { "TrainingContext", swig_TrainingContext_cls_methods, swig_TrainingContext_cls_attributes, swig_TrainingContext_cls_constants }, swig_TrainingContext_bases, swig_TrainingContext_base_names };
+
 static int _wrap_Trainer_train(lua_State* L) {
   int SWIG_arg = 0;
   Trainer *arg1 = (Trainer *) 0 ;
   NeuralNet *arg2 = (NeuralNet *) 0 ;
-  float *arg3 = (float *) 0 ;
+  TrainingContext *arg3 = (TrainingContext *) 0 ;
   float *arg4 = (float *) 0 ;
+  float *arg5 = (float *) 0 ;
   
-  SWIG_check_num_args("Trainer::train",4,4)
+  SWIG_check_num_args("Trainer::train",5,5)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Trainer::train",1,"Trainer *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("Trainer::train",2,"NeuralNet *");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("Trainer::train",3,"float const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("Trainer::train",3,"TrainingContext *");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("Trainer::train",4,"float const *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("Trainer::train",5,"float const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Trainer,0))){
     SWIG_fail_ptr("Trainer_train",1,SWIGTYPE_p_Trainer);
@@ -2706,8 +2752,8 @@ static int _wrap_Trainer_train(lua_State* L) {
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("Trainer_train",3,SWIGTYPE_p_float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_TrainingContext,0))){
+    SWIG_fail_ptr("Trainer_train",3,SWIGTYPE_p_TrainingContext);
   }
   
   
@@ -2715,7 +2761,12 @@ static int _wrap_Trainer_train(lua_State* L) {
     SWIG_fail_ptr("Trainer_train",4,SWIGTYPE_p_float);
   }
   
-  (arg1)->train(arg2,(float const *)arg3,(float const *)arg4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("Trainer_train",5,SWIGTYPE_p_float);
+  }
+  
+  (arg1)->train(arg2,arg3,(float const *)arg4,(float const *)arg5);
   
   return SWIG_arg;
   
@@ -2731,14 +2782,16 @@ static int _wrap_Trainer_trainFromLabels(lua_State* L) {
   int SWIG_arg = 0;
   Trainer *arg1 = (Trainer *) 0 ;
   NeuralNet *arg2 = (NeuralNet *) 0 ;
-  float *arg3 = (float *) 0 ;
-  int *arg4 = (int *) 0 ;
+  TrainingContext *arg3 = (TrainingContext *) 0 ;
+  float *arg4 = (float *) 0 ;
+  int *arg5 = (int *) 0 ;
   
-  SWIG_check_num_args("Trainer::trainFromLabels",4,4)
+  SWIG_check_num_args("Trainer::trainFromLabels",5,5)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Trainer::trainFromLabels",1,"Trainer *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("Trainer::trainFromLabels",2,"NeuralNet *");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("Trainer::trainFromLabels",3,"float const *");
-  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("Trainer::trainFromLabels",4,"int const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("Trainer::trainFromLabels",3,"TrainingContext *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("Trainer::trainFromLabels",4,"float const *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("Trainer::trainFromLabels",5,"int const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Trainer,0))){
     SWIG_fail_ptr("Trainer_trainFromLabels",1,SWIGTYPE_p_Trainer);
@@ -2750,16 +2803,21 @@ static int _wrap_Trainer_trainFromLabels(lua_State* L) {
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("Trainer_trainFromLabels",3,SWIGTYPE_p_float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_TrainingContext,0))){
+    SWIG_fail_ptr("Trainer_trainFromLabels",3,SWIGTYPE_p_TrainingContext);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_int,0))){
-    SWIG_fail_ptr("Trainer_trainFromLabels",4,SWIGTYPE_p_int);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("Trainer_trainFromLabels",4,SWIGTYPE_p_float);
   }
   
-  (arg1)->trainFromLabels(arg2,(float const *)arg3,(int const *)arg4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("Trainer_trainFromLabels",5,SWIGTYPE_p_int);
+  }
+  
+  (arg1)->trainFromLabels(arg2,arg3,(float const *)arg4,(int const *)arg5);
   
   return SWIG_arg;
   
@@ -2992,14 +3050,16 @@ static int _wrap_SGD_train(lua_State* L) {
   int SWIG_arg = 0;
   SGD *arg1 = (SGD *) 0 ;
   NeuralNet *arg2 = (NeuralNet *) 0 ;
-  float *arg3 = (float *) 0 ;
+  TrainingContext *arg3 = (TrainingContext *) 0 ;
   float *arg4 = (float *) 0 ;
+  float *arg5 = (float *) 0 ;
   
-  SWIG_check_num_args("SGD::train",4,4)
+  SWIG_check_num_args("SGD::train",5,5)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::train",1,"SGD *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SGD::train",2,"NeuralNet *");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("SGD::train",3,"float const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("SGD::train",3,"TrainingContext *");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("SGD::train",4,"float const *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("SGD::train",5,"float const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SGD,0))){
     SWIG_fail_ptr("SGD_train",1,SWIGTYPE_p_SGD);
@@ -3011,8 +3071,8 @@ static int _wrap_SGD_train(lua_State* L) {
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("SGD_train",3,SWIGTYPE_p_float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_TrainingContext,0))){
+    SWIG_fail_ptr("SGD_train",3,SWIGTYPE_p_TrainingContext);
   }
   
   
@@ -3020,7 +3080,12 @@ static int _wrap_SGD_train(lua_State* L) {
     SWIG_fail_ptr("SGD_train",4,SWIGTYPE_p_float);
   }
   
-  (arg1)->train(arg2,(float const *)arg3,(float const *)arg4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("SGD_train",5,SWIGTYPE_p_float);
+  }
+  
+  (arg1)->train(arg2,arg3,(float const *)arg4,(float const *)arg5);
   
   return SWIG_arg;
   
@@ -3036,14 +3101,16 @@ static int _wrap_SGD_trainFromLabels(lua_State* L) {
   int SWIG_arg = 0;
   SGD *arg1 = (SGD *) 0 ;
   NeuralNet *arg2 = (NeuralNet *) 0 ;
-  float *arg3 = (float *) 0 ;
-  int *arg4 = (int *) 0 ;
+  TrainingContext *arg3 = (TrainingContext *) 0 ;
+  float *arg4 = (float *) 0 ;
+  int *arg5 = (int *) 0 ;
   
-  SWIG_check_num_args("SGD::trainFromLabels",4,4)
+  SWIG_check_num_args("SGD::trainFromLabels",5,5)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("SGD::trainFromLabels",1,"SGD *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("SGD::trainFromLabels",2,"NeuralNet *");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("SGD::trainFromLabels",3,"float const *");
-  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("SGD::trainFromLabels",4,"int const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("SGD::trainFromLabels",3,"TrainingContext *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("SGD::trainFromLabels",4,"float const *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("SGD::trainFromLabels",5,"int const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SGD,0))){
     SWIG_fail_ptr("SGD_trainFromLabels",1,SWIGTYPE_p_SGD);
@@ -3055,16 +3122,21 @@ static int _wrap_SGD_trainFromLabels(lua_State* L) {
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("SGD_trainFromLabels",3,SWIGTYPE_p_float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_TrainingContext,0))){
+    SWIG_fail_ptr("SGD_trainFromLabels",3,SWIGTYPE_p_TrainingContext);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_int,0))){
-    SWIG_fail_ptr("SGD_trainFromLabels",4,SWIGTYPE_p_int);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("SGD_trainFromLabels",4,SWIGTYPE_p_float);
   }
   
-  (arg1)->trainFromLabels(arg2,(float const *)arg3,(int const *)arg4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("SGD_trainFromLabels",5,SWIGTYPE_p_int);
+  }
+  
+  (arg1)->trainFromLabels(arg2,arg3,(float const *)arg4,(int const *)arg5);
   
   return SWIG_arg;
   
@@ -6215,6 +6287,7 @@ static swig_type_info _swigt__p_SGD = {"_p_SGD", "SGD *", 0, 0, (void*)&_wrap_cl
 static swig_type_info _swigt__p_SoftMaxMaker = {"_p_SoftMaxMaker", "SoftMaxMaker *", 0, 0, (void*)&_wrap_class_SoftMaxMaker, 0};
 static swig_type_info _swigt__p_SquareLossMaker = {"_p_SquareLossMaker", "SquareLossMaker *", 0, 0, (void*)&_wrap_class_SquareLossMaker, 0};
 static swig_type_info _swigt__p_Trainer = {"_p_Trainer", "Trainer *", 0, 0, (void*)&_wrap_class_Trainer, 0};
+static swig_type_info _swigt__p_TrainingContext = {"_p_TrainingContext", "TrainingContext *", 0, 0, (void*)&_wrap_class_TrainingContext, 0};
 static swig_type_info _swigt__p_cl_device_id = {"_p_cl_device_id", "cl_device_id *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_cl_platform_id = {"_p_cl_platform_id", "cl_platform_id *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
@@ -6245,6 +6318,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_SoftMaxMaker,
   &_swigt__p_SquareLossMaker,
   &_swigt__p_Trainer,
+  &_swigt__p_TrainingContext,
   &_swigt__p_cl_device_id,
   &_swigt__p_cl_platform_id,
   &_swigt__p_float,
@@ -6275,6 +6349,7 @@ static swig_cast_info _swigc__p_SGD[] = {  {&_swigt__p_SGD, 0, 0, 0},{0, 0, 0, 0
 static swig_cast_info _swigc__p_SoftMaxMaker[] = {  {&_swigt__p_SoftMaxMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SquareLossMaker[] = {  {&_swigt__p_SquareLossMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Trainer[] = {  {&_swigt__p_Trainer, 0, 0, 0},  {&_swigt__p_SGD, _p_SGDTo_p_Trainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_TrainingContext[] = {  {&_swigt__p_TrainingContext, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_cl_device_id[] = {  {&_swigt__p_cl_device_id, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_cl_platform_id[] = {  {&_swigt__p_cl_platform_id, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},  {&_swigt__p_floatArray, _p_floatArrayTo_p_float, 0, 0},  {&_swigt__p_floatSlice, _p_floatSliceTo_p_float, 0, 0},{0, 0, 0, 0}};
@@ -6305,6 +6380,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_SoftMaxMaker,
   _swigc__p_SquareLossMaker,
   _swigc__p_Trainer,
+  _swigc__p_TrainingContext,
   _swigc__p_cl_device_id,
   _swigc__p_cl_platform_id,
   _swigc__p_float,

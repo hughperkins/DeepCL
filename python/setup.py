@@ -146,8 +146,12 @@ def lib_build_dir():
 deepcl_sources = []
 for srcdir in srcdirs:
     filespath = 'mysrc/' + srcdir + '/files.txt'
+    fileslist = []
     with open( filespath, 'r' ) as f:
-        fileslist = map(lambda x: 'mysrc/' + srcdir + '/' + x.strip(), f.readlines())
+        lines = f.readlines()
+        for line in lines:
+            if line.strip() != "":
+                fileslist.append( 'mysrc/' + srcdir + '/' + line.strip() )
 #    print('fileslist: ', fileslist)
     deepcl_sources = deepcl_sources + fileslist
 print('deeplcl_sources', deepcl_sources)
@@ -220,8 +224,7 @@ ext_modules = [
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
                 + easyclsources
-                + deepcl_sources
-                + ['mysrc/QLearner.cpp','mysrc/array_helper.cpp'], 
+                + deepcl_sources, 
 #                glob.glob('DeepCL/EasyCL/*.h'),
               include_dirs = ['mysrc'],
               libraries= libraries,

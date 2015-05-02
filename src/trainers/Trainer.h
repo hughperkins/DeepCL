@@ -35,6 +35,12 @@ public:
         this->loss = loss;
         this->numRight = numRight;
     }
+    float getLoss() {
+        return loss;
+    }
+    int getNumRight() {
+        return numRight;
+    }
 };
 
 // responsible for handling one batch of learning for the passed in network
