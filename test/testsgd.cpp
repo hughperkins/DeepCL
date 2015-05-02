@@ -16,6 +16,7 @@
 #include "activate/ActivationMaker.h"
 #include "layer/LayerMakers.h"
 #include "input/InputLayer.h"
+#include "trainers/TrainingContext.h"
 
 #include "gtest/gtest.h"
 
@@ -58,7 +59,8 @@ TEST( testsgd, basic ) {
     sgd->setMomentum( 0.1f );
 
 //    net->forward( input );
-    sgd->train( net, input, expectedOutput );
+    TrainingContext context( 0 );    
+    sgd->train( net, &context, input, expectedOutput );
 
     delete sgd;
     delete net;

@@ -16,6 +16,7 @@
 #include "net/NeuralNetMould.h"
 #include "layer/LayerMakers.h"
 #include "batch/EpochMaker.h"
+#include "batch/Batcher2.h"
 
 #include "gtest/gtest.h"
 
@@ -45,10 +46,15 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     float weights1[] = {0.382147f, -1.77522f};
     net->initWeights(1, weights1);
 
-    BatchLearner batchLearner( net );
+//    BatchLearner batchLearner( net );
     SGD *sgd = SGD::instance( cl, learningRate, 0 );
+    InputData inputData( net->getInputCubeSize(), data );
+    ExpectedData expectedData( net->getOutputCubeSize(), expectedOutput );
+    LearnBatcher2 learnBatcher( net, sgd, batchSize, batchSize,
+            &inputData, &expectedData );
     for( int epoch = 0; epoch < 50; epoch++ ) {
-        batchLearner.runEpochFromExpected( sgd, batchSize, batchSize, data, expectedOutput );
+        learnBatcher.run( epoch );
+//        batchLearner.runEpochFromExpected( sgd, batchSize, batchSize, data, expectedOutput );
         if( epoch % 10 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
             float const*output = net->getOutput();
@@ -97,10 +103,19 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     net->initWeights(1, weights1);
     net->initBias(1, bias1);
 
-    BatchLearner batchLearner( net );
+
     SGD *sgd = SGD::instance( cl, learningRate, 0 );
+    InputData inputData( net->getInputCubeSize(), data );
+    ExpectedData expectedData( net->getOutputCubeSize(), expectedOutput );
+    LearnBatcher2 learnBatcher( net, sgd, batchSize, batchSize,
+            &inputData, &expectedData );
+//    for( int epoch = 0; epoch < 50; epoch++ ) {
+//        learnBatcher.run( epoch );
+//    BatchLearner batchLearner( net );
+//    SGD *sgd = SGD::instance( cl, learningRate, 0 );
     for( int epoch = 0; epoch < 30; epoch++ ) {
-        batchLearner.runEpochFromExpected( sgd, batchSize, batchSize, data, expectedOutput );
+        learnBatcher.run( epoch );
+//        batchLearner.runEpochFromExpected( sgd, batchSize, batchSize, data, expectedOutput );
         if( epoch % 10 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
             float const*output = net->getOutput();
@@ -167,10 +182,14 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     net->initWeights(1, weights1);
     net->initBias(1, bias1 );
     float const*output = 0;
-    BatchLearner batchLearner( net );
+
     SGD *sgd = SGD::instance( cl, 0.4f, 0 );
+    InputData inputData( net->getInputCubeSize(), data );
+    ExpectedData expectedData( net->getOutputCubeSize(), expectedOutput );
+    LearnBatcher2 learnBatcher( net, sgd, 4, 4, &inputData, &expectedData );
     for( int epoch = 0; epoch < 15; epoch++ ) {
-        batchLearner.runEpochFromExpected( sgd, 4, 4, data, expectedOutput );
+        learnBatcher.run( epoch );
+//        batchLearner.runEpochFromExpected( sgd, 4, 4, data, expectedOutput );
 //        net->printWeightsAsCode();
 //        net->printBiasAsCode();
         if( epoch % 5 == 0 ) {
@@ -216,10 +235,17 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1 ) {
     float weights1[] = {-0.380177f, -1.5738f};
     float bias1[] = {0.5f, 0.0606055f};
     net->initWeights( 1, weights1, bias1 );
-    BatchLearner batchLearner( net );
+
     SGD *sgd = SGD::instance( cl, 0.2f, 0 );
+    InputData inputData( net->getInputCubeSize(), data );
+    ExpectedData expectedData( net->getOutputCubeSize(), expectedOutput );
+    LearnBatcher2 learnBatcher( net, sgd, 2, 2, &inputData, &expectedData );
     for( int epoch = 0; epoch < 40; epoch++ ) {
-        batchLearner.runEpochFromExpected( sgd, 2, 2, data, expectedOutput );
+        learnBatcher.run( epoch );
+//    BatchLearner batchLearner( net );
+//    SGD *sgd = SGD::instance( cl, 0.2f, 0 );
+//    for( int epoch = 0; epoch < 40; epoch++ ) {
+//        batchLearner.runEpochFromExpected( sgd, 2, 2, data, expectedOutput );
         if( epoch % 5 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //            net->print();
@@ -292,7 +318,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     float *weights1 = &__weights1[0];
     float bias1[] = {0.0418723f, 0.158733f};
     net->getLayer(1)->setWeights( weights1, bias1 );
-    BatchLearner batchLearner( net );
+//    BatchLearner batchLearner( net );
     SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 50; epoch++ ) {
         net->epochMaker(sgd)
@@ -300,7 +326,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
             ->numExamples(4)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         if( epoch % 5 == 0 ) {
             output = net->getOutput();
     //        net->printWeightsAsCode();
@@ -375,7 +401,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
             ->numExamples(4)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
 //        net->printWeightsAsCode();
 //        net->printBiasAsCode();
         if( epoch % 5 == 0 ) {
@@ -429,7 +455,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
             ->numExamples(2)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         cout << "epoch " << epoch << " loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
 //        float const*output = net->getOutput();
@@ -488,7 +514,7 @@ float bias2[] = {-0.071288f, 0.443919f};
             ->numExamples(2)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         if( epoch % 5 == 0 ) {
 //           net->printWeightsAsCode();
 //            net->printBiasAsCode();
@@ -574,7 +600,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
             ->numExamples(N)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         if( epoch % 100 == 0 ) cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
 //        float const*output = net->getOutput();
@@ -688,7 +714,7 @@ float bias2[] = {0.232961f, 0.141537f, 0.159074f};
             ->numExamples(N)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         if( epoch % 100 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
@@ -804,7 +830,7 @@ float bias2[] = {-0.0863176f, -0.227985f, -0.147554f};
             ->numExamples(N)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         if( epoch % 100 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();
@@ -980,7 +1006,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
             ->numExamples(N)
             ->inputData(data)
             ->expectedOutputs(expectedOutput)
-            ->run();
+            ->run(epoch);
         if( epoch % 100 == 0 ) {
             cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
 //        net->print();

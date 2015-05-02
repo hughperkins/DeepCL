@@ -130,7 +130,7 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     SGD *sgd = SGD::instance( cl, 4.0f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedOutput)->run();
+           ->expectedOutputs(ldc.expectedOutput)->run(epoch);
         cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
     }
@@ -154,7 +154,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedOutput)->run();
+           ->expectedOutputs(ldc.expectedOutput)->run( epoch );
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
     }
@@ -183,7 +183,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
         net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedOutput)->run();
+           ->expectedOutputs(ldc.expectedOutput)->run( epoch );
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 //        net->printWeights();
@@ -273,7 +273,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 200; epoch++ ) {
         net->epochMaker(sgd)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
-           ->expectedOutputs(expectedOutput)->run();
+           ->expectedOutputs(expectedOutput)->run( epoch );
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(expectedOutput) << endl;
     }
     net->print();

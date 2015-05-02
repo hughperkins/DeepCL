@@ -199,7 +199,8 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
 //    cout << "backprop now" <<endl;
     net->print();
     SGD *sgd = SGD::instance( cl, learningRate, 0.0f );
-    sgd->train( net, inputData, expectedOutput );
+    TrainingContext context(0);
+    sgd->train( net, &context, inputData, expectedOutput );
 //    net->backward( expectedOutput );
 //    net->getLayer(1)->print();
     net->forward( inputData );

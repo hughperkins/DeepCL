@@ -531,7 +531,8 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
         float loss = net->calcLoss(expectedOutput);
         dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
 //        net->backward( expectedOutput );
-        sgd->train( net, inputData, expectedOutput );
+        TrainingContext context(0);
+        sgd->train( net, &context, inputData, expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {

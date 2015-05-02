@@ -19,7 +19,7 @@ class DeepCL_EXPORT EpochMaker {
     float *_expectedOutputs;
     int const*_labels;
 public:
-    EpochMaker( NeuralNet *net, Trainer *trainerh ) {
+    EpochMaker( NeuralNet *net, Trainer *trainer ) {
         memset( this, 0, sizeof(EpochMaker) );
         _expectedOutputs = 0;
         _labels = 0;

@@ -6,6 +6,8 @@
 
 #pragma once
 
+class Trainable;
+
 class OutputData {
 public:
     OutputData() {
@@ -26,6 +28,7 @@ public:
     LabeledData( int *labels ) {
         this->labels = labels;
     }
+    static LabeledData *instance( int *labels );
     LabeledData *slice( int start ) {
         LabeledData *child = new LabeledData( labels + start );
         return child;
@@ -39,6 +42,7 @@ public:
         this->outputCubeSize = outputCubeSize;
         this->expected = expected;
     }
+    static ExpectedData *instance( Trainable *net, float *expectedOutputs );
     ExpectedData *slice( int start ) {
         ExpectedData *child = new ExpectedData( outputCubeSize, expected + start * outputCubeSize );
         return child;
@@ -52,6 +56,7 @@ public:
         this->inputCubeSize = inputCubeSize;
         this->inputs = inputs;
     }
+    static InputData *instance( Trainable *net, float *inputs );
     InputData *slice( int start ) {
         InputData *child = new InputData( inputCubeSize, inputs + start * inputCubeSize );
         return child;
