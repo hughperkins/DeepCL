@@ -14,7 +14,8 @@
 
 ### New:
 
-* Added `anneal` trainer, and 'anneal=' commandline option
+* Added Annealer trainer, and 'anneal=' commandline option
+  * python and lua wrappers can also create Annealer trainer, as well as the existing SGD trainer
 
 ### Changes:
 
