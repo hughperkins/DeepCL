@@ -109,7 +109,7 @@ bool Batcher2::tick( int epoch ) {
 }
 
 VIRTUAL void Batcher2::internalTick( int epoch, InputData *inputData, OutputData *outputData ) {
-     action->run( net, epoch, inputData, outputData );
+     action->run( net, epoch, nextBatch, inputData, outputData );
 }
 
 /// \brief runs batch once, for currently loaded data

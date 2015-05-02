@@ -1753,7 +1753,7 @@ static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
 static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self); /* proto */
-static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self, int __pyx_v_epoch); /* proto */
+static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self, int __pyx_v_epoch, int __pyx_v_batch); /* proto */
 static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self); /* proto */
 static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_2__dealloc(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self); /* proto */
@@ -1943,6 +1943,7 @@ static char __pyx_k_test[] = "__test__";
 static char __pyx_k_utf8[] = "utf8";
 static char __pyx_k_Ntest[] = "Ntest";
 static char __pyx_k_array[] = "array";
+static char __pyx_k_batch[] = "batch";
 static char __pyx_k_class[] = "__class__";
 static char __pyx_k_epoch[] = "epoch";
 static char __pyx_k_error[] = "error";
@@ -2095,6 +2096,7 @@ static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_array;
 static PyObject *__pyx_n_s_base;
+static PyObject *__pyx_n_s_batch;
 static PyObject *__pyx_n_s_batchSize;
 static PyObject *__pyx_n_s_c;
 static PyObject *__pyx_n_u_c;
@@ -2434,8 +2436,8 @@ static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepC
 /* "SGD.pyx":3
  * cdef class TrainingContext:
  *     cdef cDeepCL.TrainingContext *thisptr
- *     def __cinit__(self, int epoch):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cDeepCL.TrainingContext(epoch)
+ *     def __cinit__(self, int epoch, int batch):             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.TrainingContext(epoch, batch)
  *     def __dealloc__(self):
  */
 
@@ -2443,6 +2445,7 @@ static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepC
 static int __pyx_pw_8PyDeepCL_15TrainingContext_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_15TrainingContext_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   int __pyx_v_epoch;
+  int __pyx_v_batch;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2450,12 +2453,13 @@ static int __pyx_pw_8PyDeepCL_15TrainingContext_1__cinit__(PyObject *__pyx_v_sel
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_epoch,0};
-    PyObject* values[1] = {0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_epoch,&__pyx_n_s_batch,0};
+    PyObject* values[2] = {0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
         case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
@@ -2465,51 +2469,58 @@ static int __pyx_pw_8PyDeepCL_15TrainingContext_1__cinit__(PyObject *__pyx_v_sel
         case  0:
         if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_epoch)) != 0)) kw_args--;
         else goto __pyx_L5_argtuple_error;
+        case  1:
+        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_batch)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
     __pyx_v_epoch = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_epoch == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+    __pyx_v_batch = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_batch == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[4]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("PyDeepCL.TrainingContext.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(((struct __pyx_obj_8PyDeepCL_TrainingContext *)__pyx_v_self), __pyx_v_epoch);
+  __pyx_r = __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(((struct __pyx_obj_8PyDeepCL_TrainingContext *)__pyx_v_self), __pyx_v_epoch, __pyx_v_batch);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self, int __pyx_v_epoch) {
+static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self, int __pyx_v_epoch, int __pyx_v_batch) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "SGD.pyx":4
  *     cdef cDeepCL.TrainingContext *thisptr
- *     def __cinit__(self, int epoch):
- *         self.thisptr = new cDeepCL.TrainingContext(epoch)             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, int epoch, int batch):
+ *         self.thisptr = new cDeepCL.TrainingContext(epoch, batch)             # <<<<<<<<<<<<<<
  *     def __dealloc__(self):
  *         del self.thisptr
  */
-  __pyx_v_self->thisptr = new TrainingContext(__pyx_v_epoch);
+  __pyx_v_self->thisptr = new TrainingContext(__pyx_v_epoch, __pyx_v_batch);
 
   /* "SGD.pyx":3
  * cdef class TrainingContext:
  *     cdef cDeepCL.TrainingContext *thisptr
- *     def __cinit__(self, int epoch):             # <<<<<<<<<<<<<<
- *         self.thisptr = new cDeepCL.TrainingContext(epoch)
+ *     def __cinit__(self, int epoch, int batch):             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.TrainingContext(epoch, batch)
  *     def __dealloc__(self):
  */
 
@@ -2520,8 +2531,8 @@ static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDe
 }
 
 /* "SGD.pyx":5
- *     def __cinit__(self, int epoch):
- *         self.thisptr = new cDeepCL.TrainingContext(epoch)
+ *     def __cinit__(self, int epoch, int batch):
+ *         self.thisptr = new cDeepCL.TrainingContext(epoch, batch)
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
  * 
@@ -2543,7 +2554,7 @@ static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
   /* "SGD.pyx":6
- *         self.thisptr = new cDeepCL.TrainingContext(epoch)
+ *         self.thisptr = new cDeepCL.TrainingContext(epoch, batch)
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
  * 
@@ -2552,8 +2563,8 @@ static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8
   delete __pyx_v_self->thisptr;
 
   /* "SGD.pyx":5
- *     def __cinit__(self, int epoch):
- *         self.thisptr = new cDeepCL.TrainingContext(epoch)
+ *     def __cinit__(self, int epoch, int batch):
+ *         self.thisptr = new cDeepCL.TrainingContext(epoch, batch)
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
  * 
@@ -26180,6 +26191,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
   {&__pyx_n_s_array, __pyx_k_array, sizeof(__pyx_k_array), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
+  {&__pyx_n_s_batch, __pyx_k_batch, sizeof(__pyx_k_batch), 0, 0, 1, 1},
   {&__pyx_n_s_batchSize, __pyx_k_batchSize, sizeof(__pyx_k_batchSize), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
   {&__pyx_n_u_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 1, 0, 1},

@@ -1,7 +1,7 @@
 cdef class TrainingContext:
     cdef cDeepCL.TrainingContext *thisptr
-    def __cinit__(self, int epoch):
-        self.thisptr = new cDeepCL.TrainingContext(epoch)
+    def __cinit__(self, int epoch, int batch):
+        self.thisptr = new cDeepCL.TrainingContext(epoch, batch)
     def __dealloc__(self):
         del self.thisptr
 

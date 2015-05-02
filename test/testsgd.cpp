@@ -59,7 +59,7 @@ TEST( testsgd, basic ) {
     sgd->setMomentum( 0.1f );
 
 //    net->forward( input );
-    TrainingContext context( 0 );    
+    TrainingContext context( 0, 0 );    
     sgd->train( net, &context, input, expectedOutput );
 
     delete sgd;

@@ -28,7 +28,7 @@ public:
 class DeepCL_EXPORT NetAction {
 public:
     virtual ~NetAction() {}
-    virtual void run( Trainable *net, int epoch, float const*const batchData, int const*const batchLabels ) = 0;
+    virtual void run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels ) = 0;
 };
 
 
@@ -42,7 +42,7 @@ public:
     NetLearnLabeledAction( Trainer *trainer ) :
         trainer( trainer ) {
     }   
-    virtual void run( Trainable *net, int epoch, float const*const batchData, int const*const batchLabels );
+    virtual void run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels );
 };
 
 
@@ -50,7 +50,7 @@ class DeepCL_EXPORT NetForwardAction : public NetAction {
 public:
     NetForwardAction() {
     }
-    virtual void run( Trainable *net, int epoch, float const*const batchData, int const*const batchLabels );
+    virtual void run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels );
 };
 
 

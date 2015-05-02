@@ -18,9 +18,9 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-void NetLearnAction2::run( Trainable *net, int epoch, InputData *inputData, OutputData *outputData ) {
+void NetLearnAction2::run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData ) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
-    TrainingContext context( epoch );
+    TrainingContext context( epoch, batch );
     ExpectedData *expected = dynamic_cast< ExpectedData * >( outputData );
     LabeledData *labeled = dynamic_cast< LabeledData * >( outputData );
     BatchResult batchResult;
@@ -33,7 +33,7 @@ void NetLearnAction2::run( Trainable *net, int epoch, InputData *inputData, Outp
     epochNumRight += batchResult.numRight;
 }
 
-void NetForwardAction2::run( Trainable *net, int epoch, InputData *inputData, OutputData *outputData ) {
+void NetForwardAction2::run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData ) {
 //    cout << "NetForwardBatch" << endl;
     net->forward( inputData->inputs );
 //    trainer->train( net, batchData, batchLabels );

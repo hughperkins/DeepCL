@@ -26,7 +26,7 @@ class Trainer;
 class DeepCL_EXPORT NetAction2 {
 public:
     virtual ~NetAction2() {}
-    virtual void run( Trainable *net, int epoch, InputData *inputData, OutputData *outputData ) = 0;
+    virtual void run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData ) = 0;
 };
 
 class DeepCL_EXPORT NetLearnAction2 : public NetAction2 {
@@ -39,7 +39,7 @@ public:
         epochLoss = 0;
         epochNumRight = 0;
     }   
-    virtual void run( Trainable *net, int epoch, InputData *inputData, OutputData *outputData );
+    virtual void run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData );
     float getEpochLoss() {
         return epochLoss;
     }
@@ -52,6 +52,6 @@ class DeepCL_EXPORT NetForwardAction2 : public NetAction2 {
 public:
     NetForwardAction2() {
     }
-    virtual void run( Trainable *net, int epoch, InputData *inputData, OutputData *outputData );
+    virtual void run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData );
 };
 

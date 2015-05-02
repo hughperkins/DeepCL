@@ -76,7 +76,9 @@ VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
     // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
 //    cout << " epoch=" << epoch << " learningrate=" << learningRate << " anneal=" << anneal << endl;
     float annealedLearningRate = learningRate * pow( anneal, context->epoch );
-    cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
+    if( context->batch == 0 ) {
+        cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
+    }
 
     bindState( net );
     net->forward( input );
@@ -104,7 +106,9 @@ VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
 VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels ) {
     float annealedLearningRate = learningRate * pow( anneal, context->epoch );
-    cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
+    if( context->batch == 0 ) {
+        cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
+    }
 
     bindState( net );
     net->forward( input );

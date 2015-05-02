@@ -5,7 +5,7 @@ cdef extern from "trainers/Trainer.h":
 
 cdef extern from "trainers/TrainingContext.h":
     cdef cppclass TrainingContext:
-        TrainingContext( int epoch )
+        TrainingContext( int epoch, int batch )
 
 cdef extern from "trainers/SGD.h":
     cdef cppclass SGD:

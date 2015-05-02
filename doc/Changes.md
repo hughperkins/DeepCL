@@ -10,14 +10,21 @@
   * things you might consider working on yourself, or
   * to add things you want others (eg me :-) ) to work on
 
-## 5.0.0 changes, compared to 4.x.x:
+## 5.x.x changes, compared to 4.x.x:
+
+### New:
+
+* Added `anneal` trainer, and 'anneal=' commandline option
 
 ### Changes:
 
-* XXXBatcher.tick: added parameter 'epoch' to 'tick' and 'run' methods
-* OnDemandBatcher constructor takes in a Batcher* object
+* bunch of changes to many of the classes now in `src/batch` directory, ie xxxBatcher classes, xxxNetAction type classes, and NetLearnerxxx classes, hence bumped major version to `5`, eg
+  * XXXBatcher.tick: added parameter 'epoch' to 'tick' and 'run' methods
+  * OnDemandBatcher constructor takes in a Batcher* object
+  * created new Batcher2, and NetAction2 classes
+  * removed BatchLearner class
 
-## 4.0.0 changes, compared to 3.x.x:
+## 4.x.x changes, compared to 3.x.x:
 
 ## New
 

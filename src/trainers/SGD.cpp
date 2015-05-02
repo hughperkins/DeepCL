@@ -101,6 +101,7 @@ VIRTUAL BatchResult SGD::trainFromLabels( NeuralNet *net, TrainingContext *conte
                                   // doesnt have to think about running multiple batches,
                                   // or loading data, or anything like that
     // net->calcGrad();
+//    cout << "SGD::train() istraining=" << net->isTraining << endl;
     bindState( net );
     net->forward( input );
     float loss = net->calcLossFromLabels( labels );

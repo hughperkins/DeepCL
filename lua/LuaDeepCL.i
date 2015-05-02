@@ -64,7 +64,7 @@ public:
 
 class TrainingContext {
 public:
-    TrainingContext( int epoch );
+    TrainingContext( int epoch, int batch );
 };
 
 class Trainer {

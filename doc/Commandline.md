@@ -129,9 +129,11 @@
 | numtrain=1000 | only uses the first 1000 training samples |
 | numtest=1000 | only uses the first 1000 testing samples |
 | netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
-| learningrate=0.0001 | specify learning rate |
-| momentum=0.1 | specify momentum (default: 0) |
-| weightdecay=0.001 | weight decay, 0 means no decay, 1 means complete decay (default:0) |
+| trainer=sgd | choose trainer.  valid choices are sgd or anneal.  (default: sgd) |
+| learningrate=0.0001 | specify learning rate. works with any trainer |
+| momentum=0.1 | specify momentum (default: 0). works with sgd trainer |
+| weightdecay=0.001 | weight decay, 0 means no decay, 1 means complete decay (default:0). works with sgd trainer |
+| anneal=0.95 | anneal learning.  1 means no annealing. 0 means learningrate is 0 (default:1). works with anneal trainer |
 | numepochs=20 | train for this many epochs |
 | batchsize=128 | size of each mini-batch.  Too big, and the learning rate will need to be reduced.  Too small, and performance will decrease.  128 might be a reasonable compromise |
 | normalization=maxmin | can choose maxmin or stddev.  Default is stddev |

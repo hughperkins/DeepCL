@@ -18,6 +18,7 @@
 class TrainingContext {
 public:
     const int epoch; // zero-based
+    const int batch;
     // could add in other things here, like batch number etc...
 
     // [[[cog
@@ -25,8 +26,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    TrainingContext( int epoch );
+    TrainingContext( int epoch, int batch );
     int getEpoch();
+    int getBatch();
 
     // [[[end]]]
 };

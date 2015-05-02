@@ -2687,12 +2687,15 @@ static swig_lua_class _wrap_class_EasyCL = { "EasyCL", &SWIGTYPE_p_EasyCL,_wrap_
 static int _wrap_new_TrainingContext(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
+  int arg2 ;
   TrainingContext *result = 0 ;
   
-  SWIG_check_num_args("TrainingContext::TrainingContext",1,1)
+  SWIG_check_num_args("TrainingContext::TrainingContext",2,2)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("TrainingContext::TrainingContext",1,"int");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("TrainingContext::TrainingContext",2,"int");
   arg1 = (int)lua_tonumber(L, 1);
-  result = (TrainingContext *)new TrainingContext(arg1);
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (TrainingContext *)new TrainingContext(arg1,arg2);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_TrainingContext,1); SWIG_arg++; 
   return SWIG_arg;
   

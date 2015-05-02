@@ -46,7 +46,7 @@ PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N )
 net.setBatchSize(batchSize)
 for epoch in range(numEpochs): 
     numRight = 0
-    context = PyDeepCL.TrainingContext(epoch)
+    context = PyDeepCL.TrainingContext(epoch, 0)
     for batch in range( N // batchSize ):
         sgd.trainFromLabels( net, context, images[batch * batchSize * planes * size * size:], labels[batch * batchSize:] )
 #        net.forward( images[batch * batchSize * planes * size * size:] )

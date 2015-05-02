@@ -139,7 +139,7 @@ LearnBatcher::LearnBatcher( Trainer *trainer, Trainable *net,
 VIRTUAL void LearnBatcher::internalTick( int epoch, float const*batchData, int const*batchLabels) {
 //    cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
 //        " batchLabels=" << batchLabels << endl;
-    TrainingContext context( epoch );
+    TrainingContext context( epoch, nextBatch );
     trainer->trainFromLabels( net, &context, batchData, batchLabels );
 }
 NetActionBatcher::NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction *netAction) :
@@ -147,7 +147,7 @@ NetActionBatcher::NetActionBatcher(Trainable *net, int batchSize, int N, float *
     netAction( netAction ) {
 }
 void NetActionBatcher::internalTick( int epoch, float const*batchData, int const*batchLabels ) {
-    netAction->run( this->net, epoch, batchData, batchLabels );
+    netAction->run( this->net, epoch, nextBatch, batchData, batchLabels );
 }
 ForwardBatcher::ForwardBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
     Batcher( net, batchSize, N, data, labels ) {

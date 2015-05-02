@@ -95,7 +95,7 @@ void QLearner::learnFromPast() {
     }
     // backprop...
 //    throw runtime_error("need to implement this");
-    TrainingContext context( epoch );
+    TrainingContext context( epoch, 0 );
     trainer->train( net, &context, befores, expectedValues );
 //    net->backward( learningRate / batchSize, expectedValues );
     net->setBatchSize(1);

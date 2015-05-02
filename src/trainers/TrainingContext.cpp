@@ -15,10 +15,14 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainingContext::TrainingContext( int epoch ) :
-        epoch( epoch ) {
+TrainingContext::TrainingContext( int epoch, int batch ) :
+        epoch( epoch ),
+        batch( batch ) {
 }
 int TrainingContext::getEpoch() {
     return epoch;
+}
+int TrainingContext::getBatch() {
+    return batch;
 }
 
