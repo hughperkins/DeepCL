@@ -2,6 +2,7 @@
 
 #include <cstring>
 class Trainer;
+#include "trainers/TrainingContext.h"
 
 #include "DeepCLDllExport.h"
 
@@ -10,6 +11,7 @@ class NeuralNet;
 class DeepCL_EXPORT EpochMaker {
     NeuralNet *net;
     Trainer *trainer;
+//    TrainingContext *context;
 //    float _learningRate;
     int _batchSize;
     int _numExamples;
@@ -17,12 +19,13 @@ class DeepCL_EXPORT EpochMaker {
     float *_expectedOutputs;
     int const*_labels;
 public:
-    EpochMaker( NeuralNet *net, Trainer *trainer ) {
+    EpochMaker( NeuralNet *net, Trainer *trainerh ) {
         memset( this, 0, sizeof(EpochMaker) );
         _expectedOutputs = 0;
         _labels = 0;
         this->net = net;
         this->trainer = trainer;
+//        this->context = context;
     }
 //    EpochMaker *learningRate(float learningRate){
 //        this->_learningRate = learningRate;
@@ -48,8 +51,8 @@ public:
         this->_labels = labels;
         return this;
     }
-    float run();
-    float runWithCalcTrainingAccuracy( int *p_numRight);
-    float runFromLabels( int *p_numRight);
+    float run( int epoch );
+    float runWithCalcTrainingAccuracy( int epoch, int *p_numRight);
+    float runFromLabels( int epoch, int *p_numRight);
 };
 

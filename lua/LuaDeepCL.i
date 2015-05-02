@@ -19,7 +19,7 @@
 %{
 #include "DeepCL.h"
 #include "EasyCL.h"
-#include "QLearner2.h"
+#include "qlearning/QLearner2.h"
 %}
 
 //%include "LuaWrappers.h"

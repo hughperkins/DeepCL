@@ -9,7 +9,7 @@
 #include <vector>
 #include <random>
 
-#include "Scenario.h"
+#include "qlearning/Scenario.h"
 #include "util/mt19937defs.h"
 #include "trainers/Trainer.h"
 
@@ -27,6 +27,7 @@ public:
 };
 
 class DeepCL_EXPORT QLearner {
+    int epoch;
 public:
     Trainer *trainer;
 

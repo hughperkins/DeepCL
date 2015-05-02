@@ -7,6 +7,7 @@
 #include "net/Trainable.h"
 #include "NetAction.h"
 #include "trainers/Trainer.h"
+#include "trainers/TrainingContext.h"
 
 using namespace std;
 
@@ -15,12 +16,13 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-void NetLearnLabeledAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
+void NetLearnLabeledAction::run( Trainable *net, int epoch, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
-    trainer->trainFromLabels( net, batchData, batchLabels );
+    TrainingContext context( epoch );
+    trainer->trainFromLabels( net, &context, batchData, batchLabels );
 }
 
-void NetForwardAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
+void NetForwardAction::run( Trainable *net, int epoch, float const*const batchData, int const*const batchLabels ) {
 //    cout << "NetForwardBatch" << endl;
     net->forward( batchData );
 //    trainer->train( net, batchData, batchLabels );

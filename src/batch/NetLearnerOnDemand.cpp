@@ -6,13 +6,13 @@
 
 #include "util/StatefulTimer.h"
 #include "util/Timer.h"
-#include "BatchLearnerOnDemand.h"
+#include "batch/BatchLearnerOnDemand.h"
 #include "net/NeuralNet.h"
 #include "net/Trainable.h"
-#include "NetAction.h"
-#include "OnDemandBatcher.h"
+#include "batch/NetAction.h"
+#include "batch/OnDemandBatcher.h"
 #include "util/stringhelper.h"
-#include "NetLearnerOnDemand.h"
+#include "batch/NetLearnerOnDemand.h"
 
 using namespace std;
 
@@ -106,7 +106,7 @@ VIRTUAL void NetLearnerOnDemand::postEpochTesting() {
 //    cout << "annealed learning rate: " << learnAction->getLearningRate()
     cout << " training loss: " << learnBatcher->getLoss() << endl;
     cout << " train accuracy: " << learnBatcher->getNumRight() << "/" << learnBatcher->getN() << " " << (learnBatcher->getNumRight() * 100.0f/ learnBatcher->getN()) << "%" << std::endl;
-    testBatcher->run();
+    testBatcher->run( nextEpoch );
 //    int testNumRight = batchLearnerOnDemand.test( testFilepath, fileReadBatches, batchSize, Ntest );
     cout << "test accuracy: " << testBatcher->getNumRight() << "/" << testBatcher->getN() << " " << (testBatcher->getNumRight() * 100.0f / testBatcher->getN() ) << "%" << endl;
     timer.timeCheck("after tests");
@@ -115,7 +115,7 @@ PUBLICAPI VIRTUAL bool NetLearnerOnDemand::tickBatch() { // means: filebatch, no
                                                // probalby good enough for now?    
 //    int epoch = nextEpoch;
 //    learnAction->learningRate = learningRate * pow( annealLearningRate, epoch );
-    learnBatcher->tick();       // returns false once all learning done (all epochs)
+    learnBatcher->tick( nextEpoch );       // returns false once all learning done (all epochs)
     if( learnBatcher->getEpochDone() ) {
         postEpochTesting();
         nextEpoch++;

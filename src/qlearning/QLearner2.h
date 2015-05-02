@@ -13,7 +13,7 @@
 #include <iostream>
 #include <string>
 
-#include "QLearner.h"
+#include "qlearning/QLearner.h"
 #include "trainers/Trainer.h"
 
 class ScenarioProxy : public Scenario {

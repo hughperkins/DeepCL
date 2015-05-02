@@ -38,7 +38,7 @@ link_libraries(winmm) # needed for timeGetTime
 endif()
 
 set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
-   loss net netdef normalize patches pooling trainers util weights ../qlearning)
+   loss net netdef normalize patches pooling trainers util weights qlearning)
 foreach(dir ${dirs})
     file( STRINGS src/${dir}/files.txt ${dir}_src)
 #    message("${dir}_src ${${dir}_src}")
@@ -47,42 +47,6 @@ foreach(dir ${dirs})
     endforeach()
 endforeach()
 #message("deepcl_sources ${deepcl_sources}")
-
-#set( DeepCL_sources LayerMaker.cpp NeuralNetMould.cpp
-#     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-#    ActivationFunction.cpp 
-#    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
-#    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
-#    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
-#    Forward4.cpp 
-#    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
-#    BackpropWeights.cpp BackpropWeightsCpu.cpp BackpropWeightsNaive.cpp 
-#    BackpropWeightsScratch.cpp BackpropWeightsScratchLarge.cpp
-#    FullyConnectedLayer.cpp  EpochMaker.cpp
-#    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
-#    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
-#    BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
-#    RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
-#    Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
-#    RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
-#    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
-#    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-#    ForwardFc.cpp ForwardByInputPlane.cpp
-#    PoolingBackwardGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
-#    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
-#    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-#    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
-#    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
-#    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
-#    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
-#    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-#    CopyBuffer.cpp MultiplyBuffer.cpp GpuAdd.cpp MultiplyInPlace.cpp
-#    TrainerState.cpp SGDState.cpp TrainerStateMaker.cpp SGDStateMaker.cpp
-#    Trainer.cpp SGD.cpp
-# )
-#foreach(source ${DeepCL_sources})
-#    set( DeepCL_sources_prefixed ${DeepCL_sources_prefixed} src/${source})
-#endforeach()
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp

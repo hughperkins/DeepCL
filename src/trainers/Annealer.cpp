@@ -29,6 +29,7 @@ STATIC Annealer *Annealer::instance( EasyCL *cl, float learningRate, float annea
 Annealer::Annealer( EasyCL *cl ) :
     Trainer( cl ) {
     anneal = 1.0f;
+//    epoch = -1;
 }
 VIRTUAL std::string Annealer::asString() {
     return "Annealer{ learningRate=" + toString( learningRate ) + ", anneal=" + 
@@ -63,7 +64,8 @@ VIRTUAL void Annealer::updateWeights( CLWrapper *weightsWrapper, CLWrapper *grad
 //        multiplyInPlace->multiply( numWeights, 1.0f - weightDecay, weightsWrapper );
 //    }
 }
-VIRTUAL void Annealer::train( NeuralNet *net, float const*input, float const*expectedOutput ) {
+VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput ) {
 //    bindState( net );
 //    net->forward( input );
 //    int numLayers = net->getNumLayers();
@@ -85,8 +87,10 @@ VIRTUAL void Annealer::train( NeuralNet *net, float const*input, float const*exp
 //            }
 //        }
 //    }
+    return BatchResult(0,0);
 }
-VIRTUAL void Annealer::trainFromLabels( NeuralNet *net, float const*input, int const*labels ) {
+VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels ) {
 //    bindState( net );
 //    net->forward( input );
 //    int numLayers = net->getNumLayers();
@@ -108,6 +112,7 @@ VIRTUAL void Annealer::trainFromLabels( NeuralNet *net, float const*input, int c
 //            }
 //        }
 //    }
+    return BatchResult(0,0);
 }
 VIRTUAL void Annealer::bindState( NeuralNet *net ) {
     // since we have no state, all we will do is strip any existing state,
@@ -123,11 +128,11 @@ VIRTUAL void Annealer::bindState( NeuralNet *net ) {
         }
     }
 }
-VIRTUAL bool Annealer::needEpoch() {
-    return true;
-}
-VIRTUAL void Annealer::setEpoch( int epoch ) {
-    this->epoch = epoch;
-}
+//VIRTUAL bool Annealer::needEpoch() {
+//    return true;
+//}
+//VIRTUAL void Annealer::setEpoch( int epoch ) {
+//    this->epoch = epoch;
+//}
 
 

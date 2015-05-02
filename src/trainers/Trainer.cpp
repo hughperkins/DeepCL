@@ -11,6 +11,7 @@
 #include "util/stringhelper.h"
 #include "trainers/Trainer.h"
 #include "net/MultiNet.h"
+#include "batch/NetAction.h"
 
 using namespace std;
 
@@ -32,34 +33,46 @@ VIRTUAL void Trainer::setLearningRate( float learningRate ) {
 VIRTUAL std::string Trainer::asString() {
     return "Trainer{ learningRate=" + toString( learningRate ) + " }";
 }
-VIRTUAL void Trainer::train( Trainable *trainable, float const*input, float const*expectedOutput ) {
+VIRTUAL BatchResult Trainer::train( Trainable *trainable, 
+        TrainingContext *context,
+        float const*input, float const*expectedOutput ) {
     MultiNet *multiNet = dynamic_cast< MultiNet *>( trainable );
+    float loss = 0;
     if( multiNet != 0 ) {
         for( int i = 0; i < multiNet->getNumNets(); i++ ) {
             Trainable *child = multiNet->getNet( i );
-            this->train( child, input, expectedOutput );
+            BatchResult result = this->train( child, context, input, expectedOutput );
+            loss += result.loss;
         }
     } else {
         NeuralNet *net = dynamic_cast< NeuralNet * > ( trainable );
-        this->train( net, input, expectedOutput );
+        return this->train( net, context, input, expectedOutput );
     }
+    return BatchResult( loss, 0 );
 }
-VIRTUAL void Trainer::trainFromLabels( Trainable *trainable, float const*input, int const*labels ) {
+VIRTUAL BatchResult Trainer::trainFromLabels( Trainable *trainable,
+    TrainingContext *context,
+    float const*input, int const*labels ) {
     MultiNet *multiNet = dynamic_cast< MultiNet *>( trainable );
+    float loss = 0;
+    int numRight = 0;
     if( multiNet != 0 ) {
         for( int i = 0; i < multiNet->getNumNets(); i++ ) {
             Trainable *child = multiNet->getNet( i );
-            this->trainFromLabels( child, input, labels );
+            BatchResult result = this->trainFromLabels( child, context, input, labels );
+            loss += result.loss;
+            numRight += result.numRight;
         }
     } else {
         NeuralNet *net = dynamic_cast< NeuralNet * > ( trainable );
-        this->trainFromLabels( net, input, labels );
+        return this->trainFromLabels( net, context, input, labels );
     }
+    return BatchResult( loss, numRight );
 }
-VIRTUAL bool Trainer::needEpoch() {
-    return false;
-}
-VIRTUAL void Trainer::setEpoch( int epoch ) {
-    throw runtime_error("setEpoch not implemented for " + this->asString() );
-}
+//VIRTUAL bool Trainer::needEpoch() {
+//    return false;
+//}
+//VIRTUAL void Trainer::setEpoch( int epoch ) {
+//    throw runtime_error("setEpoch not implemented for " + this->asString() );
+//}
 

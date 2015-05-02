@@ -14,11 +14,28 @@
 class EasyCL;
 class NeuralNet;
 class Trainable;
+class EpochResult;
+
+#include "trainers/TrainingContext.h"
 
 #include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual
 #define STATIC static
+
+class BatchResult {
+public:
+    float loss;
+    int numRight;
+    BatchResult() {
+        loss = 0;
+        numRight = 0;
+    }
+    BatchResult( float loss, int numRight ) {
+        this->loss = loss;
+        this->numRight = numRight;
+    }
+};
 
 // responsible for handling one batch of learning for the passed in network
 // TODO: ponder NeuralNet vs Trainable
@@ -34,8 +51,12 @@ public:
 
     float learningRate;
 
-    virtual void train( NeuralNet *net, float const*input, float const*expectedOutput ) = 0;
-    virtual void trainFromLabels( NeuralNet *net, float const*input, int const*labels ) = 0;
+    virtual BatchResult train( NeuralNet *net, 
+        TrainingContext *context,
+        float const*input, float const*expectedOutput ) = 0;
+    virtual BatchResult trainFromLabels( NeuralNet *net, 
+        TrainingContext *context,
+        float const*input, int const*labels ) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -46,10 +67,12 @@ public:
     VIRTUAL ~Trainer();
     VIRTUAL void setLearningRate( float learningRate );
     VIRTUAL std::string asString();
-    VIRTUAL void train( Trainable *trainable, float const*input, float const*expectedOutput );
-    VIRTUAL void trainFromLabels( Trainable *trainable, float const*input, int const*labels );
-    VIRTUAL bool needEpoch();
-    VIRTUAL void setEpoch( int epoch );
+    VIRTUAL BatchResult train( Trainable *trainable,
+    TrainingContext *context,
+    float const*input, float const*expectedOutput );
+    VIRTUAL BatchResult trainFromLabels( Trainable *trainable,
+    TrainingContext *context,
+    float const*input, int const*labels );
 
     // [[[end]]]
 };

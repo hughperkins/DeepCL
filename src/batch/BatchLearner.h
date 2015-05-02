@@ -18,6 +18,7 @@ class Trainable;
 class EpochResult;
 class NetAction;
 class Trainer;
+#include "trainers/TrainingContext.h"
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -28,23 +29,16 @@ class Trainer;
 // data into batches, which are then sent to the NeuralNet for forward and backward
 // propagation.
 
-class DeepCL_EXPORT BatchLearner {
-public:
-    Trainable *net; // NOT owned by us, dont delete
+//class DeepCL_EXPORT BatchLearner {
+//public:
+//    Trainable *net; // NOT owned by us, dont delete
 
-    // [[[cog
-    // import cog_addheaders
-    // cog_addheaders.add()
-    // ]]]
-    // generated, using cog:
-    BatchLearner( Trainable *net );
-    EpochResult batchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
-    EpochResult runBatchedNetAction( int batchSize, int N, float *data, int const*labels, NetAction *netAction );
-    int test( int batchSize, int N, float *testData, int const*testLabels );
-    int forwardForTrain( int batchSize, int N, float *data, int const*labels );
-    EpochResult runEpochFromLabels( Trainer *trainer, int batchSize, int Ntrain, float *trainData, int const*trainLabels );
-    float runEpochFromExpected( Trainer *trainer, int batchSize, int N, float *data, float *expectedOutput );
+//    // [[[cog
+//    // import cog_addheaders
+//    // cog_addheaders.add()
+//    // ]]]
+// generated, using cog:
 
-    // [[[end]]]
-};
+//    // [[[end]]]
+//};
 

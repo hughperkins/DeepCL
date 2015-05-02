@@ -7,10 +7,10 @@
 #include <iostream>
 #include <string>
 
-#include "NetAction.h"
+#include "batch/NetAction.h"
 #include "trainers/Trainer.h"
 
-#include "Batcher.h"
+#include "batch/Batcher.h"
 
 using namespace std;
 
@@ -31,19 +31,10 @@ PUBLICAPI Batcher::Batcher(Trainable *net, int batchSize, int N, float *data, in
             {
     inputCubeSize = net->getInputCubeSize();
     numBatches = ( N + batchSize - 1 ) / batchSize;
-//    updateVars();
     reset();
 }
 VIRTUAL Batcher::~Batcher() {
 }
-
-//void Batcher::updateVars() {
-//    cout << "updateVars()" << endl;
-//    if( batchSize != 0 ) {
-//        numBatches = ( N + batchSize - 1 ) / batchSize;
-//    }
-//}
-
 /// \brief reset to the first batch, and set epochDone to false
 PUBLICAPI void Batcher::reset() {
     nextBatch = 0;
@@ -84,18 +75,13 @@ VIRTUAL void Batcher::setN( int N ) {
     this->N = N;
     this->numBatches = (N + batchSize - 1 ) / batchSize;
 }
-
-//
-//void Batcher::_tick( float const*batchData, int const*batchLabels ) {
-//}
-
 /// \brief processes one single batch of data
 ///
 /// could be learning for one batch, or prediction/testing for one batch
 ///
 /// if most recent epoch has finished, then resets, and starts a new
 /// set of learning
-PUBLICAPI bool Batcher::tick() {
+PUBLICAPI bool Batcher::tick( int epoch ) {
 //    cout << "Batcher::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
 //    updateVars();
     if( epochDone ) {
@@ -112,7 +98,7 @@ PUBLICAPI bool Batcher::tick() {
 //            " batchStart=" << batchStart << " data=" << (void *)data << " labels=" << labels << 
 //            std::endl;
     net->setBatchSize( thisBatchSize );
-    internalTick(  &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
+    internalTick( epoch, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
 //        netAction->run( net, &(data[ batchStart * inputCubeSize ]), &(labels[batchStart]) );
     float thisLoss = net->calcLossFromLabels( &(labels[batchStart]) );
     int thisNumRight = net->calcNumRight( &(labels[batchStart]) );
@@ -125,12 +111,11 @@ PUBLICAPI bool Batcher::tick() {
     }
     return !epochDone;
 }
-
 /// \brief runs batch once, for currently loaded data
 ///
 /// could be one batch of learning, or one batch of forward propagation
 /// (for test/prediction), for example
-PUBLICAPI EpochResult Batcher::run() {
+PUBLICAPI EpochResult Batcher::run( int epoch ) {
     if( data == 0 ) {
         throw runtime_error("Batcher: no data set");
     }
@@ -141,55 +126,33 @@ PUBLICAPI EpochResult Batcher::run() {
         reset();
     }
     while( !epochDone ) {
-        tick();
+        tick( epoch );
     }
     EpochResult epochResult( loss, numRight );
     return epochResult;
 }
-
-//VIRTUAL void Batcher::setData( float *data, int const*labels ) {
-//    this->data = data;
-//    this->labels = labels;
-//}
-
-//VIRTUAL void Batcher::setN( int N ) {
-//    if( N != this->N  ) {
-//        this->N = N;
-//        updateVars();
-//    }
-//}
-
-LearnBatcher::LearnBatcher( Trainer *trainer, Trainable *net, int batchSize, int N, float *data, int const*labels ) :
+LearnBatcher::LearnBatcher( Trainer *trainer, Trainable *net,
+        int batchSize, int N, float *data, int const*labels ) :
     Batcher( net, batchSize, N, data, labels ),
     trainer( trainer ) {
 }
-
-VIRTUAL void LearnBatcher::internalTick( float const*batchData, int const*batchLabels) {
+VIRTUAL void LearnBatcher::internalTick( int epoch, float const*batchData, int const*batchLabels) {
 //    cout << "LearnBatcher learningRate=" << learningRate << " batchdata=" << (void *)batchData << 
 //        " batchLabels=" << batchLabels << endl;
-    trainer->trainFromLabels( net, batchData, batchLabels );
+    TrainingContext context( epoch );
+    trainer->trainFromLabels( net, &context, batchData, batchLabels );
 }
- 
-
 NetActionBatcher::NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction *netAction) :
     Batcher( net, batchSize, N, data, labels ),
     netAction( netAction ) {
 }
-
-
-void NetActionBatcher::internalTick( float const*batchData, int const*batchLabels ) {
-    netAction->run( this->net, batchData, batchLabels );
+void NetActionBatcher::internalTick( int epoch, float const*batchData, int const*batchLabels ) {
+    netAction->run( this->net, epoch, batchData, batchLabels );
 }
-
-
 ForwardBatcher::ForwardBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels ) :
     Batcher( net, batchSize, N, data, labels ) {
 }
-
-
-void ForwardBatcher::internalTick( float const*batchData, int const*batchLabels) {
+void ForwardBatcher::internalTick( int epoch, float const*batchData, int const*batchLabels) {
     this->net->forward( batchData );
 }
-
-
 

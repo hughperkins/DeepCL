@@ -13,6 +13,7 @@
 class EpochResult;
 class NetAction;
 class Trainer;
+#include "trainers/TrainingContext.h"
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -43,7 +44,7 @@ protected:
     float loss;
 
 public:
-    virtual void internalTick( float const*batchData, int const*batchLabels) = 0;
+    virtual void internalTick( int epoch, float const*batchData, int const*batchLabels) = 0;
 
     // [[[cog
     // import cog_addheaders
@@ -60,48 +61,44 @@ public:
     PUBLICAPI VIRTUAL bool getEpochDone();
     VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
     VIRTUAL void setN( int N );
-    PUBLICAPI bool tick();
-    PUBLICAPI EpochResult run();
+    PUBLICAPI bool tick( int epoch );
+    PUBLICAPI EpochResult run( int epoch );
 
     // [[[end]]]
-//    Batcher(Trainable *net, int batchSize, int N, float *data, int const*labels );
-//    virtual ~Batcher(){}
-//    void updateVars();
-//    void reset();
-//    virtual void internalTick( float const*batchData, int const*batchLabels ) = 0;
-//    virtual bool tick();
-//    EpochResult run();
-//    int getNextBatch();
 };
-
 
 class DeepCL_EXPORT LearnBatcher : public Batcher {
 public:
     Trainer *trainer; // NOT delete
+    TrainingContext *context; // NOT delete
 
-//    float learningRate;
-//    virtual void setLearningRate( float learningRate ) {
-//        this->learningRate = learningRate;
-//    }
-    LearnBatcher( Trainer *trainer, Trainable *net, int batchSize, int N, float *data, int const*labels );
-    virtual void internalTick( float const*batchData, int const*batchLabels);
-//    float getLearningRate() {
-//        return learningRate;
-//    }
+    LearnBatcher( Trainer *trainer, 
+        Trainable *net, int batchSize, int N, float *data, int const*labels );
+    virtual void internalTick( int epoch, float const*batchData, int const*batchLabels);
+};
+
+class DeepCL_EXPORT LearnFromExpectedBatcher : public Batcher {
+public:
+    Trainer *trainer; // NOT delete
+    TrainingContext *context; // NOT delete
+
+    LearnFromExpectedBatcher( Trainer *trainer, 
+        Trainable *net, int batchSize, int N, float *data, float *expectedOutputs );
+    virtual void internalTick( int epoch, float const*batchData, float *expectedOutputs );
 };
 
 class DeepCL_EXPORT NetActionBatcher : public Batcher {
 public:
     NetAction * netAction;
     NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction * netAction);
-    virtual void internalTick( float const*batchData, int const*batchLabels );
+    virtual void internalTick( int epoch, float const*batchData, int const*batchLabels );
 };
 
 
 class DeepCL_EXPORT ForwardBatcher : public Batcher {
 public:
     ForwardBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels);
-    virtual void internalTick( float const*batchData, int const*batchLabels);
+    virtual void internalTick( int epoch, float const*batchData, int const*batchLabels);
 };
 
 

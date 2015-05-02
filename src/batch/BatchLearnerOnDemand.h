@@ -13,7 +13,7 @@
 class NeuralNet;
 class Trainable;
 
-#include "BatchLearner.h"
+#include "batch/BatchLearner.h"
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -23,20 +23,16 @@ class Trainable;
 // this handles learning one single epoch, breaking up the incoming training or testing
 // data into batches, which are then sent to the NeuralNet for forward and backward
 // propagation.
-class DeepCL_EXPORT BatchLearnerOnDemand {
-public:
-    Trainable *net; // NOT owned by us, dont delete
+//class DeepCL_EXPORT BatchLearnerOnDemand {
+//public:
+//    Trainable *net; // NOT owned by us, dont delete
 
-    // [[[cog
-    // import cog_addheaders
-    // cog_addheaders.add()
-    // ]]]
-    // generated, using cog:
-    BatchLearnerOnDemand( Trainable *net );
-    EpochResult runBatchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction *netAction );
-    int test( std::string filepath, int fileReadBatches, int batchSize, int Ntest );
-    EpochResult runEpochFromLabels( Trainer *trainer, std::string filepath, int fileReadBatches, int batchSize, int Ntrain );
+//    // [[[cog
+//    // import cog_addheaders
+//    // cog_addheaders.add()
+//    // ]]]
+// generated, using cog:
 
-    // [[[end]]]
-};
+//    // [[[end]]]
+//};
 

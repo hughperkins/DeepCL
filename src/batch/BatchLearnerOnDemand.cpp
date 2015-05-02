@@ -9,10 +9,10 @@
 //#include "AccuracyHelper.h"
 #include "net/Trainable.h"
 #include "loaders/GenericLoader.h"
-#include "BatchLearner.h"
-#include "OnDemandBatcher.h"
-#include "BatchLearnerOnDemand.h"
-#include "NetAction.h"
+#include "batch/BatchLearner.h"
+#include "batch/OnDemandBatcher.h"
+#include "batch/BatchLearnerOnDemand.h"
+#include "batch/NetAction.h"
 
 using namespace std;
 
@@ -21,29 +21,30 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-BatchLearnerOnDemand::BatchLearnerOnDemand( Trainable *net ) :
-    net( net ) {
-}
+//BatchLearnerOnDemand::BatchLearnerOnDemand( Trainable *net ) :
+//    net( net ) {
+//}
 
-EpochResult BatchLearnerOnDemand::runBatchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction *netAction ) {
-    OnDemandBatcher onDemandBatcher(net, netAction, filepath, N, fileReadBatches, batchSize );
-    return onDemandBatcher.run();
-}
+//EpochResult BatchLearnerOnDemand::runBatchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction *netAction ) {
+//    OnDemandBatcher onDemandBatcher(net, netAction, filepath, N, fileReadBatches, batchSize );
+//    return onDemandBatcher.run();
+//}
 
-int BatchLearnerOnDemand::test( std::string filepath, int fileReadBatches, int batchSize, int Ntest ) {
-    net->setTraining( false );
-    NetAction *action = new NetForwardAction();
-    int numRight = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntest, action ).numRight;
-    delete action;
-    return numRight;
-}
+//int BatchLearnerOnDemand::test( std::string filepath, int fileReadBatches, int batchSize, int Ntest ) {
+//    net->setTraining( false );
+//    NetAction *action = new NetForwardAction();
+//    int numRight = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntest, action ).numRight;
+//    delete action;
+//    return numRight;
+//}
 
-EpochResult BatchLearnerOnDemand::runEpochFromLabels( Trainer *trainer, std::string filepath, int fileReadBatches, int batchSize, int Ntrain ) {
-    net->setTraining( true );
-    NetAction *action = new NetLearnLabeledAction( trainer );
-    EpochResult epochResult = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntrain, action );
-    delete action;
-    return epochResult;
-}
+//EpochResult BatchLearnerOnDemand::runEpochFromLabels( Trainer *trainer, TrainingContext *context,
+//         std::string filepath, int fileReadBatches, int batchSize, int Ntrain ) {
+//    net->setTraining( true );
+//    NetAction *action = new NetLearnLabeledAction( trainer, context );
+//    EpochResult epochResult = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntrain, action );
+//    delete action;
+//    return epochResult;
+//}
 
 

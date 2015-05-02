@@ -26,7 +26,7 @@ class NeuralNet;
 class Annealer : public Trainer {
 public:
     float anneal;
-    int epoch;
+//    int epoch;
 
     // [[[cog
     // import cog_addheaders
@@ -38,11 +38,11 @@ public:
     VIRTUAL std::string asString();
     VIRTUAL void setAnneal( float anneal );
     VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper );
-    VIRTUAL void train( NeuralNet *net, float const*input, float const*expectedOutput );
-    VIRTUAL void trainFromLabels( NeuralNet *net, float const*input, int const*labels );
+    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput );
+    VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels );
     VIRTUAL void bindState( NeuralNet *net );
-    VIRTUAL bool needEpoch();
-    VIRTUAL void setEpoch( int epoch );
 
     // [[[end]]]
 };

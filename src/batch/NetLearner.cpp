@@ -72,7 +72,7 @@ VIRTUAL void NetLearner::postEpochTesting() {
     cout << " training loss: " << trainBatcher->getLoss() << endl;
     cout << " train accuracy: " << trainBatcher->getNumRight() << "/" << trainBatcher->getN() << " " << (trainBatcher->getNumRight() * 100.0f/ trainBatcher->getN()) << "%" << std::endl;
     net->setTraining( false );
-    testBatcher->run();
+    testBatcher->run(nextEpoch);
     cout << "test accuracy: " << testBatcher->getNumRight() << "/" << testBatcher->getN() << " " << 
         (testBatcher->getNumRight() * 100.0f / testBatcher->getN() ) << "%" << endl;
     timer.timeCheck("after tests");
@@ -81,7 +81,7 @@ PUBLICAPI VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, o
 //    int epoch = nextEpoch;
 //    trainBatcher->setLearningRate( learningRate * pow( annealLearningRate, epoch ) );
     net->setTraining( true );
-    trainBatcher->tick();       // returns false once all learning done (all epochs)
+    trainBatcher->tick(nextEpoch);       // returns false once all learning done (all epochs)
     if( trainBatcher->getEpochDone() ) {
         postEpochTesting();
         nextEpoch++;

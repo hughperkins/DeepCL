@@ -8,21 +8,28 @@
 
 #include "layer/Layer.h"
 #include "net/NeuralNet.h"
-#include "BatchLearner.h"
-#include "NetAction.h"
-#include "EpochMaker.h"
+#include "batch/BatchLearner.h"
+#include "batch/Batcher2.h"
+#include "batch/NetAction.h"
+#include "batch/EpochMaker.h"
+#include "batch/BatchData.h"
 
 using namespace std;
 
-float EpochMaker::run() {
+float EpochMaker::run( int epoch ) {
     if( _labels != 0 ) {
         throw runtime_error("should not provide labels if using Epoch::run");
     }
     if( _expectedOutputs == 0 ) {
         throw runtime_error("must provide expectedOutputs if using runWithCalcTrainingAccuracy");
     }
-    BatchLearner batchLearner( net );
-    return batchLearner.runEpochFromExpected( trainer, _batchSize, _numExamples, _inputData, _expectedOutputs );
+    
+    InputData input( net->getInputCubeSize(), _inputData );
+    ExpectedData output( net->getOutputCubeSize(), _expectedOutputs );
+    LearnBatcher2 learnBatcher( net, trainer, _batchSize, _numExamples,
+        &input, &output );
+    learnBatcher.run( epoch );
+    return learnBatcher.getEpochLoss();
 }
 
 //float EpochMaker::runWithCalcTrainingAccuracy( int *p_numRight ) {

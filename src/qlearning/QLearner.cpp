@@ -5,9 +5,9 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "net/NeuralNet.h"
-#include "array_helper.h"
+#include "qlearning/array_helper.h"
 #include "trainers/Trainer.h"
-#include "QLearner.h"
+#include "qlearning/QLearner.h"
 
 using namespace std;
 
@@ -15,6 +15,7 @@ QLearner::QLearner( Trainer *trainer, Scenario *scenario, NeuralNet *net ) :
         trainer( trainer ),
         scenario( scenario ),
         net( net ) {
+    epoch = 0;
     lambda = 0.9f;
     maxSamples = 32;
     epsilon = 0.1f;
@@ -94,9 +95,12 @@ void QLearner::learnFromPast() {
     }
     // backprop...
 //    throw runtime_error("need to implement this");
-    trainer->train( net, befores, expectedValues );
+    TrainingContext context( epoch );
+    trainer->train( net, &context, befores, expectedValues );
 //    net->backward( learningRate / batchSize, expectedValues );
     net->setBatchSize(1);
+
+    epoch++;
 
     delete[] expectedValues;
     delete[] bestQ;

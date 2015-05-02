@@ -42,12 +42,12 @@ for arg in sys.argv:
 
 srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
     'input','layer','loaders','loss','net','netdef','normalize','patches',
-    'pooling','trainers','util','weights']
+    'pooling','trainers','util','weights', 'qlearning']
 
 if docopy:
     if not os.path.isdir('mysrc'):
         os.makedirs('mysrc')
-    for thisdir in ['../src','../EasyCL','../qlearning',
+    for thisdir in ['../src','../EasyCL',
             '../EasyCL/thirdparty/clew/src']: # copy everything..
         for thisfile in os.listdir(thisdir):
             #print(thisfile)

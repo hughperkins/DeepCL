@@ -2078,7 +2078,7 @@ SWIGINTERN int SWIG_lua_isnilstring(lua_State *L, int idx) {
 
 #include "DeepCL.h"
 #include "EasyCL.h"
-#include "QLearner2.h"
+#include "qlearning/QLearner2.h"
 
 
 void GenericLoader_load( std::string trainFilepath, float *images, int *labels, int startN, int numExamples ) {

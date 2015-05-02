@@ -69,8 +69,8 @@ public:
     PUBLICAPI VIRTUAL bool getEpochDone();
     PUBLICAPI VIRTUAL int getN();
     PUBLICAPI void reset();
-    PUBLICAPI bool tick();
-    PUBLICAPI EpochResult run();
+    PUBLICAPI bool tick(int epoch);
+    PUBLICAPI EpochResult run( int epoch );
 
     // [[[end]]]
 };

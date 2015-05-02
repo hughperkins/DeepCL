@@ -10,7 +10,16 @@
   * things you might consider working on yourself, or
   * to add things you want others (eg me :-) ) to work on
 
-## New, in next version, 4.x.x
+## 5.0.0 changes, compared to 4.x.x:
+
+### Changes:
+
+* XXXBatcher.tick: added parameter 'epoch' to 'tick' and 'run' methods
+* OnDemandBatcher constructor takes in a Batcher* object
+
+## 4.0.0 changes, compared to 3.x.x:
+
+## New
 
 * lua wrappers created, using swig
 * added new ActivationLayer layer type, to implement relu, sigmoid etc in a separate layer from the convolutional,
@@ -22,7 +31,7 @@ and fc layers
 * added momentum, via new [SGD](src/SGD.h) object, which can be passed to anywhere that accepts a [Trainer](src/Trainer.h) object.
 * added new commandline parameter `gpuindex`, to choose which gpu device to target (thank-you Josef Moudrik for this addition)
 
-## Changes, in next version, 4.x.x
+### Changes
 
 * lua module changes name from 'luaDeepCL' to 'LuaDeepCL'
 * lua build method changes from build.sh to cmake
@@ -48,7 +57,7 @@ one can assume that there is one and only one cl, shared everywhere (cf, otherwi
 * renamed OpenCLHelper project from OpenCLHelper to EasyCL, since easier to type, and remember
 * prototyping build options have moved to `advanced` section in CMake options
 
-## Deprecated, in next version, 4.x.x
+### Deprecated
 
 * templates removed; everything is `float` now, no `unsigned char`, or `T`
   * basically, templates are not very
@@ -59,15 +68,4 @@ one can assume that there is one and only one cl, shared everywhere (cf, otherwi
 * idx-to-mat removed, since GenericLoader can directly handle reading mnist format now
 * clconvolve1 executable removed (replaced by deeplclrun)
 * activation layers within convolutional and fc layers removed
-
-## Recent changes, to 4.x.x branch
-
-* 29th April: move python_swig to branch, since not production ready, and I dont have time to make it production-ready
-* 28th April: removed internal activation layer from conv and fc layers, so we will use the explicit ActivationLayer for activation now
-* 26th April: added dropout :-)
-* 25th April: added independent activation layers, and changed default for convolutional and fc layers to linear
-* 25th April: cleaned up the benchmarks a lot, added them to jenkins, added a couple more, created an Angular/Bootstrap page to display them [DeepCL benchmarks](http://hughperkins.github.io/DeepCL/benchmarking/)
-* 21st April: Added lua wrappers to luarocks repository
-* 18th April: with `loadweights=1`, will load old weights file format too, not just refuse to load
-* 18th April: with `loadweights=1`, if the file doesnt match current options, you can now override if you want, at the risk of crashing, or loading inappropriate weights
 

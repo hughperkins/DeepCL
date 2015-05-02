@@ -15,6 +15,7 @@
 #include "trainers/SGD.h"
 #include "loss/IAcceptsLabels.h"
 #include "clmath/MultiplyInPlace.h"
+#include "batch/NetAction.h"
 
 using namespace std;
 
@@ -61,13 +62,15 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
         multiplyInPlace->multiply( numWeights, 1.0f - weightDecay, weightsWrapper );
     }
 }
-VIRTUAL void SGD::train( NeuralNet *net, float const*input, float const*expectedOutput ) {
+VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput ) {
 //VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one batch, including updating weights
                                   // doesnt have to think about running multiple batches,
                                   // or loading data, or anything like that
     // net->calcGrad();
     bindState( net );
     net->forward( input );
+    float loss = net->calcLoss( expectedOutput );
     int numLayers = net->getNumLayers();
     LossLayer *lossLayer = dynamic_cast< LossLayer * >( net->getLastLayer() );
     if( lossLayer == 0 ) {
@@ -89,14 +92,18 @@ VIRTUAL void SGD::train( NeuralNet *net, float const*input, float const*expected
             }
         }
     }
+    return BatchResult( loss, 0 );
 }
-VIRTUAL void SGD::trainFromLabels( NeuralNet *net, float const*input, int const*labels ) {
+VIRTUAL BatchResult SGD::trainFromLabels( NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels ) {
 //VIRTUAL void SGD::learn( float *input, float *expectedOutput ) { // learns one batch, including updating weights
                                   // doesnt have to think about running multiple batches,
                                   // or loading data, or anything like that
     // net->calcGrad();
     bindState( net );
     net->forward( input );
+    float loss = net->calcLossFromLabels( labels );
+    int numRight = net->calcNumRight( labels );
     int numLayers = net->getNumLayers();
     IAcceptsLabels *lossLayer = dynamic_cast< IAcceptsLabels * >( net->getLastLayer() );
     if( lossLayer == 0 ) {
@@ -118,6 +125,7 @@ VIRTUAL void SGD::trainFromLabels( NeuralNet *net, float const*input, int const*
             }
         }
     }
+    return BatchResult( loss, numRight );
 }
 VIRTUAL void SGD::bindState( NeuralNet *net ) {
     SGDStateMaker stateMaker;
