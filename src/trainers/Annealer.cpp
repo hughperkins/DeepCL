@@ -12,6 +12,11 @@
 #include "util/stringhelper.h"
 #include "net/NeuralNet.h"
 #include "layer/Layer.h"
+#include "clmath/CopyBuffer.h"
+#include "clmath/GpuAdd.h"
+#include "clmath/MultiplyInPlace.h"
+#include "loss/LossLayer.h"
+#include "loss/IAcceptsLabels.h"
 
 using namespace std;
 
@@ -30,6 +35,14 @@ Annealer::Annealer( EasyCL *cl ) :
     Trainer( cl ) {
     anneal = 1.0f;
 //    epoch = -1;
+    copyBuffer = new CopyBuffer( cl );
+    gpuAdd = new GpuAdd( cl );
+    multiplyInPlace = new MultiplyInPlace( cl );
+}
+VIRTUAL Annealer::~Annealer() {
+    delete copyBuffer;
+    delete gpuAdd;
+    delete multiplyInPlace;
 }
 VIRTUAL std::string Annealer::asString() {
     return "Annealer{ learningRate=" + toString( learningRate ) + ", anneal=" + 
@@ -38,80 +51,82 @@ VIRTUAL std::string Annealer::asString() {
 VIRTUAL void Annealer::setAnneal( float anneal ) {
     this->anneal = anneal;
 }
-VIRTUAL void Annealer::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper ) {
-//    int numWeights = trainerState->numWeights;
-//    // hmmmm, so all we need to do is calculate:
-//    // annealedLearningRate = learningRate * pow( anneal, epoch )
-//    // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
-//    float annealedLearningRate = learningRate * pow( anneal, epoch );
-//    CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
-//    kernel  ->in( numWeights )
-//            ->in( learningRate )
-//            ->in( momentum )
-//            ->inout( lastUpdateWrapper )
-//            ->in( gradWeightsWrapper )
-//            ->inout( weightsWrapper );
-//    int globalSize = numWeights;
-//    int workgroupSize = 64;
-//    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-//    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
-//    cl->finish();
+VIRTUAL void Annealer::updateWeights( float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper ) {
+    // hmmmm, so all we need to do is calculate:
+    // annealedLearningRate = learningRate * pow( anneal, epoch )
+    // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
 
-//    if( weightDecay > 0 ) {
-//        // apply weight decay, by multiplying the weights by (1.0f - weightDecay)
-//        // so weightDecay == 0 means no decay; and weightDecay == 1.0f means
-//        // weights go immediately to zero
-//        multiplyInPlace->multiply( numWeights, 1.0f - weightDecay, weightsWrapper );
-//    }
+    int numWeights = weightsWrapper->size();
+
+    float *gradWeightsCopy = new float[ numWeights ];
+    CLWrapper *gradWeightsCopyWrapper = cl->wrap( numWeights, gradWeightsCopy );
+    gradWeightsCopyWrapper->createOnDevice();
+
+    copyBuffer->copy( numWeights, gradWeightsWrapper, gradWeightsCopyWrapper );
+    multiplyInPlace->multiply( numWeights, - annealedLearningRate, gradWeightsCopyWrapper );
+    gpuAdd->add( numWeights, weightsWrapper, gradWeightsCopyWrapper );
+
+    delete gradWeightsCopyWrapper;
+    delete[] gradWeightsCopy;
 }
 VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput ) {
-//    bindState( net );
-//    net->forward( input );
-//    int numLayers = net->getNumLayers();
-//    LossLayer *lossLayer = dynamic_cast< LossLayer * >( net->getLastLayer() );
-//    if( lossLayer == 0 ) {
-//        throw runtime_error( "last layer of net should be a LossLayer class" );
-//    }
-//    lossLayer->calcGradInput( expectedOutput );
-//    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-//        Layer *layer = net->getLayer( layerIdx );
-//        if( !layer->needsBackProp() ) {
-//            break;
-//        }
-//        layer->backward();
-//        if( layer->needsTrainerState() ) {
-//            updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper() );
-//            if( layer->biased() ) {
-//                updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper() );
-//            }
-//        }
-//    }
+    // hmmmm, so all we need to do is calculate:
+    // annealedLearningRate = learningRate * pow( anneal, epoch )
+    // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
+//    cout << " epoch=" << epoch << " learningrate=" << learningRate << " anneal=" << anneal << endl;
+    float annealedLearningRate = learningRate * pow( anneal, context->epoch );
+    cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
+
+    bindState( net );
+    net->forward( input );
+    int numLayers = net->getNumLayers();
+    LossLayer *lossLayer = dynamic_cast< LossLayer * >( net->getLastLayer() );
+    if( lossLayer == 0 ) {
+        throw runtime_error( "last layer of net should be a LossLayer class" );
+    }
+    lossLayer->calcGradInput( expectedOutput );
+    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
+        Layer *layer = net->getLayer( layerIdx );
+        if( !layer->needsBackProp() ) {
+            break;
+        }
+        layer->backward();
+        if( layer->needsTrainerState() ) {
+            updateWeights( annealedLearningRate, layer->getWeightsWrapper(), layer->getGradWeightsWrapper() );
+            if( layer->biased() ) {
+                updateWeights( annealedLearningRate, layer->getBiasWrapper(), layer->getGradBiasWrapper() );
+            }
+        }
+    }
     return BatchResult(0,0);
 }
 VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels ) {
-//    bindState( net );
-//    net->forward( input );
-//    int numLayers = net->getNumLayers();
-//    IAcceptsLabels *lossLayer = dynamic_cast< IAcceptsLabels * >( net->getLastLayer() );
-//    if( lossLayer == 0 ) {
-//        throw runtime_error( "last layer of net should be a LossLayer class" );
-//    }
-//    lossLayer->calcGradInputFromLabels( labels );
-//    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-//        Layer *layer = net->getLayer( layerIdx );
-//        if( !layer->needsBackProp() ) {
-//            break;
-//        }
-//        layer->backward();
-//        if( layer->needsTrainerState() ) {
-//            updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper() );
-//            if( layer->biased() ) {
-//                updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper() );
-//            }
-//        }
-//    }
+    float annealedLearningRate = learningRate * pow( anneal, context->epoch );
+    cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
+
+    bindState( net );
+    net->forward( input );
+    int numLayers = net->getNumLayers();
+    IAcceptsLabels *lossLayer = dynamic_cast< IAcceptsLabels * >( net->getLastLayer() );
+    if( lossLayer == 0 ) {
+        throw runtime_error( "last layer of net should be a LossLayer class" );
+    }
+    lossLayer->calcGradInputFromLabels( labels );
+    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
+        Layer *layer = net->getLayer( layerIdx );
+        if( !layer->needsBackProp() ) {
+            break;
+        }
+        layer->backward();
+        if( layer->needsTrainerState() ) {
+            updateWeights( annealedLearningRate, layer->getWeightsWrapper(), layer->getGradWeightsWrapper() );
+            if( layer->biased() ) {
+                updateWeights( annealedLearningRate, layer->getBiasWrapper(), layer->getGradBiasWrapper() );
+            }
+        }
+    }
     return BatchResult(0,0);
 }
 VIRTUAL void Annealer::bindState( NeuralNet *net ) {
@@ -128,11 +143,5 @@ VIRTUAL void Annealer::bindState( NeuralNet *net ) {
         }
     }
 }
-//VIRTUAL bool Annealer::needEpoch() {
-//    return true;
-//}
-//VIRTUAL void Annealer::setEpoch( int epoch ) {
-//    this->epoch = epoch;
-//}
 
 

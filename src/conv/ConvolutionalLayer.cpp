@@ -328,12 +328,14 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     }
 }
 VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *bias ) {
+//    cout << "setweights" << endl;
     initWeights( weights );
     if( dim.biased ) {
         initBias( bias );
     }
 }
 VIRTUAL void ConvolutionalLayer::initWeights( float const*weights ) {
+//    cout << "initweights()" << endl;
     int weightsSize = dim.filtersSize;
     memcpy( this->weights, weights, sizeof(float) * weightsSize );
     weightsWrapper->copyToDevice();
@@ -449,24 +451,24 @@ VIRTUAL void ConvolutionalLayer::backward() {
         delete gradOutputWrapper;
     }
 }
-VIRTUAL void ConvolutionalLayer::setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper ) {
-    copyBuffer->copy( getWeightsSize(), weightWrapper, this->weightsWrapper );
-    if( dim.biased ) {
-        copyBuffer->copy( getBiasSize(), biasWrapper, this->biasWrapper );
-    }
-    weightsCopiedToHost = false;
-    biasCopiedToHost = false;
-    StatefulTimer::instance()->timeCheck("ConvolutionalLayer::setWeights(): set weights, layer " + ::toString( layerIndex ) );
-}
-VIRTUAL void ConvolutionalLayer::updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper ) {
-    gpuAdd->add( getWeightsSize(), weightsWrapper, weightChangesWrapper );
-    if( dim.biased ) {
-        gpuAdd->add( getBiasSize(), biasWrapper, biasChangesWrapper );
-    }
-    weightsCopiedToHost = false;
-    biasCopiedToHost = false;
-    StatefulTimer::instance()->timeCheck("ConvolutionalLayer::updateWeights(): updated weights, layer " + ::toString( layerIndex ) );
-}
+//VIRTUAL void ConvolutionalLayer::setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper ) {
+//    copyBuffer->copy( getWeightsSize(), weightWrapper, this->weightsWrapper );
+//    if( dim.biased ) {
+//        copyBuffer->copy( getBiasSize(), biasWrapper, this->biasWrapper );
+//    }
+//    weightsCopiedToHost = false;
+//    biasCopiedToHost = false;
+//    StatefulTimer::instance()->timeCheck("ConvolutionalLayer::setWeights(): set weights, layer " + ::toString( layerIndex ) );
+//}
+//VIRTUAL void ConvolutionalLayer::updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper ) {
+//    gpuAdd->add( getWeightsSize(), weightsWrapper, weightChangesWrapper );
+//    if( dim.biased ) {
+//        gpuAdd->add( getBiasSize(), biasWrapper, biasChangesWrapper );
+//    }
+//    weightsCopiedToHost = false;
+//    biasCopiedToHost = false;
+//    StatefulTimer::instance()->timeCheck("ConvolutionalLayer::updateWeights(): updated weights, layer " + ::toString( layerIndex ) );
+//}
 VIRTUAL std::string ConvolutionalLayer::asString() const {
     return "ConvolutionalLayer{ " + toString( dim ) + " }";
 }

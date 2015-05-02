@@ -148,8 +148,6 @@ public:
     VIRTUAL float * getOutput();
     VIRTUAL void forward();
     VIRTUAL void backward();
-    VIRTUAL void setWeights( CLWrapper *weightWrapper, CLWrapper *biasWrapper );
-    VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
     VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainerState() const;
     VIRTUAL bool biased();

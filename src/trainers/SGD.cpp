@@ -42,6 +42,22 @@ VIRTUAL std::string SGD::asString() {
 VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
         SGDState *trainerState ) {
     int numWeights = trainerState->numWeights;
+    cout << "numWeights=" << numWeights << " " << weightsWrapper->size() << endl;
+
+/// debugging
+    weightsWrapper->copyToHost();
+    float *weights = (float *)weightsWrapper->getHostArray();
+//    RandomSingleton *random = RandomSingleton::instance();
+    MT19937 random;
+    random.seed(0);
+    int sampleIdxs[5];
+    for( int sample = 0; sample < 5; sample++ ) {
+        int sampleIdx = random() % ( numWeights - 1 );
+        sampleIdxs[sample] = sampleIdx;
+        cout << "sgd.updateweights samples weights[" << sampleIdx << "]=" << weights[sampleIdx] << endl;
+    }
+///////
+
     CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
     kernel  ->in( numWeights )
             ->in( learningRate )

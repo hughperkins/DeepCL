@@ -37,11 +37,11 @@ using namespace std;
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50, True),
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
-        ('trainer', 'string', 'which trainer, currently must be sgd, no other options', 'sgd', False ),
+        ('trainer', 'string', 'which trainer, sgd or anneal, default sgd', 'sgd', False ),
         ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
         ('momentum', 'float', 'momentum', 0.0, True),
-        ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay', 0.0, True)
-        # ('annealLearningRate', 'float', 'multiply learning rate by this, each epoch',1, False)
+        ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay', 0.0, True),
+        ('anneal', 'float', 'multiply learningrate by this amount each epoch, default 1.0', 1.0, False)
     ]
 *///]]]
 // [[[end]]]
@@ -78,6 +78,7 @@ public:
     float learningRate;
     float momentum;
     float weightDecay;
+    float anneal;
     // [[[end]]]
 
     Config() {
@@ -121,6 +122,7 @@ public:
         learningRate = 0.002f;
         momentum = 0.0f;
         weightDecay = 0.0f;
+        anneal = 1.0f;
         // [[[end]]]
 
     }
@@ -255,10 +257,16 @@ void go(Config config) {
         sgd->setMomentum( config.momentum );
         sgd->setWeightDecay( config.weightDecay );
         trainer = sgd;
+    } else if( toLower( config.trainer ) == "anneal" ) {
+        Annealer *annealer = new Annealer( cl );
+        annealer->setLearningRate( config.learningRate );
+        annealer->setAnneal( config.anneal );
+        trainer = annealer;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
     }
+    cout << "Using trainer " << trainer->asString() << endl;
 //    trainer->bindTo( net );
 //    net->setTrainer( trainer );
     net->setBatchSize( config.batchSize );
@@ -490,6 +498,8 @@ int main( int argc, char *argv[] ) {
                 config.momentum = atof(value);
             } else if( key == "weightdecay" ) {
                 config.weightDecay = atof(value);
+            } else if( key == "anneal" ) {
+                config.anneal = atof(value);
             // [[[end]]]
             } else {
                 cout << endl;

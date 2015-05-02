@@ -16,6 +16,9 @@
 class CLWrapper;
 class EasyCL;
 class NeuralNet;
+class CopyBuffer;
+class GpuAdd;
+class MultiplyInPlace;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -25,6 +28,10 @@ class NeuralNet;
 //    (for zero-based epoch number)
 class Annealer : public Trainer {
 public:
+    CopyBuffer *copyBuffer;
+    GpuAdd *gpuAdd;
+    MultiplyInPlace *multiplyInPlace;
+
     float anneal;
 //    int epoch;
 
@@ -35,9 +42,10 @@ public:
     // generated, using cog:
     STATIC Annealer *instance( EasyCL *cl, float learningRate, float anneal );
     Annealer( EasyCL *cl );
+    VIRTUAL ~Annealer();
     VIRTUAL std::string asString();
     VIRTUAL void setAnneal( float anneal );
-    VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper );
+    VIRTUAL void updateWeights( float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper );
     VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
     float const*input, float const*expectedOutput );
     VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,

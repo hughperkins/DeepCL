@@ -18,6 +18,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
+/// \brief calculates data *= multiplier
 VIRTUAL void MultiplyInPlace::multiply( int N, float multiplier, CLWrapper *data ) {
         StatefulTimer::instance()->timeCheck("MultiplyInPlace::multiply start" );
 

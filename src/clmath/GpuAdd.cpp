@@ -17,11 +17,12 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
+/// \brief calculates destinationWrapper += deltaWrapper
 VIRTUAL void GpuAdd::add( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper ) {
     StatefulTimer::instance()->timeCheck("GpuAdd::add start" );
 
     kernel->in( N );
-    kernel->in( destinationWrapper );
+    kernel->inout( destinationWrapper );
     kernel->in( deltaWrapper );
     int globalSize = N;
     int workgroupSize = 64;

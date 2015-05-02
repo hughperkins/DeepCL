@@ -92,7 +92,7 @@ link_libraries(DeepCL)
 OPTION(DEV_RUN_COG "DeepCL developers should turn this on." OFF)
 
 if(DEV_RUN_COG)
-    foreach( dir ${dirs})
+    foreach( dir ${dirs} main)
         set(cog_dirs ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/src/${dir}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/${dir}/*.h)
     endforeach()
     add_custom_target(

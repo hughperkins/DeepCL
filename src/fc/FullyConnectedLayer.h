@@ -39,6 +39,7 @@ public:
     VIRTUAL void persistToArray(float *array);
     VIRTUAL void unpersistFromArray(float const*array);
     VIRTUAL void setWeights( float *weights, float *bias );
+    VIRTUAL float * getWeights();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
     VIRTUAL int getOutputSize() const;

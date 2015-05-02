@@ -69,10 +69,4 @@ VIRTUAL BatchResult Trainer::trainFromLabels( Trainable *trainable,
     }
     return BatchResult( loss, numRight );
 }
-//VIRTUAL bool Trainer::needEpoch() {
-//    return false;
-//}
-//VIRTUAL void Trainer::setEpoch( int epoch ) {
-//    throw runtime_error("setEpoch not implemented for " + this->asString() );
-//}
 

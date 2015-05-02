@@ -272,6 +272,8 @@ VIRTUAL void NeuralNet::setTrainer( Trainer *trainer ) {
 void NeuralNet::printParamStats() {
     int sum = 0;
     int skip = 0;
+    int precision = std::cout.precision();
+//    cout << "precision: " << precision << endl;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
         int size = (*it)->getPersistSize();
         sum += size;
@@ -280,7 +282,6 @@ void NeuralNet::printParamStats() {
         }
     }
     std::cout << "Parameters overview: (skipping " << skip << " layers with 0 params)" << std::endl;
-
     int i = 0;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++, i++ ) {
         int size = (*it)->getPersistSize();
@@ -293,6 +294,10 @@ void NeuralNet::printParamStats() {
     if( i ){
         std::cout << "TOTAL  : params=" << sum << std::endl;
     }
+    // reset the cout properties, so that I dont spend 2 hours figuring out why my weights
+    // all changed to 0.0 and 0.1 :-P
+    std::cout << setprecision(precision);
+    std::cout.unsetf(ios_base::floatfield);
 }
 PUBLICAPI std::string NeuralNet::asString() {
     std::string result = "";
