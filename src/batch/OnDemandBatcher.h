@@ -13,6 +13,8 @@ class NetActionBatcher;
 class Trainable;
 class NetAction;
 
+#include "batch/NetAction.h"
+
 #include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual

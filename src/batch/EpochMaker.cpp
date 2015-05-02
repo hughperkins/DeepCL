@@ -8,7 +8,6 @@
 
 #include "layer/Layer.h"
 #include "net/NeuralNet.h"
-#include "batch/BatchLearner.h"
 #include "batch/Batcher2.h"
 #include "batch/NetAction.h"
 #include "batch/EpochMaker.h"

@@ -1,7 +1,6 @@
 Batcher2.cpp
 NetAction2.cpp
 Batcher.cpp
-BatchLearner.cpp
 BatchLearnerOnDemand.cpp
 BatchProcess.cpp
 EpochMaker.cpp

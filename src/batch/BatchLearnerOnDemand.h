@@ -13,8 +13,6 @@
 class NeuralNet;
 class Trainable;
 
-#include "batch/BatchLearner.h"
-
 #define VIRTUAL virtual
 #define STATIC static
 

@@ -9,7 +9,6 @@
 
 #include "util/StatefulTimer.h"
 #include "util/Timer.h"
-#include "BatchLearner.h"
 #include "net/NeuralNet.h"
 #include "net/Trainable.h"
 #include "NetAction.h"

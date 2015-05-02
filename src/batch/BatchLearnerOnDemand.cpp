@@ -9,7 +9,6 @@
 //#include "AccuracyHelper.h"
 #include "net/Trainable.h"
 #include "loaders/GenericLoader.h"
-#include "batch/BatchLearner.h"
 #include "batch/OnDemandBatcher.h"
 #include "batch/BatchLearnerOnDemand.h"
 #include "batch/NetAction.h"

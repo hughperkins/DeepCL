@@ -8,7 +8,6 @@
 #include "net/NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "util/StatefulTimer.h"
-#include "batch/BatchLearner.h"
 #include "batch/NetLearner.h"
 #include "trainers/SGD.h"
 #include "layer/Layer.h"

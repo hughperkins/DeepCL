@@ -8,11 +8,10 @@
 
 #include <vector>
 
-#include "BatchLearner.h"
-#include "NetLearnerBase.h"
+#include "batch/NetLearnerBase.h"
 #include "net/Trainable.h"
 #include "util/Timer.h"
-#include "Batcher.h"
+#include "batch/Batcher.h"
 
 #define VIRTUAL virtual
 #define STATIC static
