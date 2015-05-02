@@ -73,6 +73,13 @@ public:
     virtual void trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels ) = 0;
 };
 
+class BatchResult {
+public:
+    BatchResult( float loss, int numRight );
+    float getLoss();
+    float getNumRight();
+};
+
 class SGD : public Trainer {
 public:
     static SGD *instance( EasyCL *cl, float learningRate );
@@ -80,9 +87,21 @@ public:
     virtual void setMomentum( float momentum );
     virtual void setWeightDecay( float weightDecay );
     virtual std::string asString();
-    virtual void train( NeuralNet *net, TrainingContext *context, float const*input, float const*expectedOutput );
-    virtual void trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels );
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context, float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels );
     SGD( EasyCL *cl );
+};
+
+class Annealer : public Trainer {
+public:
+    static Annealer *instance( EasyCL *cl, float learningRate, float anneal );
+    Annealer( EasyCL *cl );
+    virtual std::string asString();
+    virtual void setAnneal( float anneal );
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels );
 };
 
 class NeuralNet {
