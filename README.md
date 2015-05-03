@@ -86,7 +86,11 @@ Pre-built binaries are available for Windows.  In order to use them you need:
 
 ### linux
 
-For linux, please [build from source](doc/Build.md)
+Pre-build binaries are available for linux.  In order to use them you need:
+* An OpenCL driver for your GPU
+* A recent release with linux binaries is [v5.5.0](https://github.com/hughperkins/DeepCL/releases/tag/v5.5.0) 
+
+If the binaries dont work on your distribution, please [build from source](doc/Build.md)
 
 ## What if it doesn't run?
 
