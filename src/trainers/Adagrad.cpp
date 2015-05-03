@@ -50,26 +50,16 @@ VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradW
     CLMathWrapper clSumSquares( trainerState->sumSquaresWrapper );
     CLMathWrapper clWorking( workingWrapper );
 
-    Sampler::sampleFloatWrapper( "gradWeights", gradWeightsWrapper );
     clWorking = clGradWeights;
-    Sampler::sampleFloatWrapper( "working", workingWrapper );
     clWorking.squared();
-    Sampler::sampleFloatWrapper( "workingsquared", workingWrapper );
-    Sampler::sampleFloatWrapper( "sumsquared1", trainerState->sumSquaresWrapper );
     clSumSquares += clWorking;
-    Sampler::sampleFloatWrapper( "sumsquared2", trainerState->sumSquaresWrapper );
 
     clWorking = clSumSquares;
-    Sampler::sampleFloatWrapper( "sumsquares in working", workingWrapper );
     clWorking.sqrt();
-    Sampler::sampleFloatWrapper( "sumsquares sqrt", workingWrapper );
+    clWorking.inv();
     clWorking *= clGradWeights;
-    Sampler::sampleFloatWrapper( "times gradweights", workingWrapper );
     clWorking *= - learningRate;
-    Sampler::sampleFloatWrapper( "times learningrate", workingWrapper );
-    Sampler::sampleFloatWrapper( "weights", weightsWrapper );
     clWeights += clWorking;
-    Sampler::sampleFloatWrapper( "weights", weightsWrapper );
 
     delete workingWrapper;
     delete[] working;
