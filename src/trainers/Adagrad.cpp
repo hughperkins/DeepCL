@@ -18,6 +18,8 @@
 #include "clmath/CLMathWrapper.h"
 #include "batch/BatchData.h"
 
+#include "test/Sampler.h"
+
 using namespace std;
 
 #undef STATIC
@@ -41,21 +43,33 @@ VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradW
     int numWeights = trainerState->numWeights;
     float *working = new float[ numWeights ];
     CLWrapper *workingWrapper = cl->wrap( numWeights, working );
+    workingWrapper->createOnDevice();
 
     CLMathWrapper clWeights( weightsWrapper );
     CLMathWrapper clGradWeights( gradWeightsWrapper );
     CLMathWrapper clSumSquares( trainerState->sumSquaresWrapper );
     CLMathWrapper clWorking( workingWrapper );
 
+    Sampler::sampleFloatWrapper( "gradWeights", gradWeightsWrapper );
     clWorking = clGradWeights;
+    Sampler::sampleFloatWrapper( "working", workingWrapper );
     clWorking.squared();
+    Sampler::sampleFloatWrapper( "workingsquared", workingWrapper );
+    Sampler::sampleFloatWrapper( "sumsquared1", trainerState->sumSquaresWrapper );
     clSumSquares += clWorking;
+    Sampler::sampleFloatWrapper( "sumsquared2", trainerState->sumSquaresWrapper );
 
     clWorking = clSumSquares;
+    Sampler::sampleFloatWrapper( "sumsquares in working", workingWrapper );
     clWorking.sqrt();
+    Sampler::sampleFloatWrapper( "sumsquares sqrt", workingWrapper );
+    clWorking *= clGradWeights;
+    Sampler::sampleFloatWrapper( "times gradweights", workingWrapper );
     clWorking *= - learningRate;
-//    clWorking *= clGradWeights;
+    Sampler::sampleFloatWrapper( "times learningrate", workingWrapper );
+    Sampler::sampleFloatWrapper( "weights", weightsWrapper );
     clWeights += clWorking;
+    Sampler::sampleFloatWrapper( "weights", weightsWrapper );
 
     delete workingWrapper;
     delete[] working;
@@ -102,7 +116,7 @@ VIRTUAL BatchResult Adagrad::trainFromLabels( NeuralNet *net, TrainingContext *c
 // maybe can shift this into Trainer class somehow?
 // maybe put the dynamic_cast into the TrainerStateMaker class?
 VIRTUAL void Adagrad::bindState( NeuralNet *net ) {
-    AdagradStateMaker stateMaker;
+    AdagradStateMaker stateMaker( fudgeFactor );
     this->_bindState( net, &stateMaker );
 }
 STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate ) {
@@ -112,6 +126,6 @@ STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate ) {
 }
 Adagrad::Adagrad( EasyCL *cl ) :
         Trainer( cl ),
-        fudgeFactor( 0.000001f ) {
+        fudgeFactor( 0.0001f ) {
 }
 

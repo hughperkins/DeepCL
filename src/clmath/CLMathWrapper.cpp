@@ -31,6 +31,12 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const float scalar ) {
     multiplyInPlace->multiply( N, scalar, wrapper );
     return *this;    
 }
+VIRTUAL CLMathWrapper &CLMathWrapper::operator+=( const float scalar ) {
+//    cout << "CLMathWrapper.operator*=(scalar)" << endl;
+    kernelAddScalar->in( N )->in( scalar )->inout( wrapper );
+    runKernel( kernelAddScalar );
+    return *this;    
+}
 VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const CLMathWrapper &two ) {
 //    cout << "CLMathWrapper.operator*=(scalar)" << endl;
     if( two.N != N ) {
@@ -93,6 +99,45 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     buildSqrt();
     buildSquared();
     buildPerElementMultInPlace();
+    buildAddScalar();
+}
+void CLMathWrapper::buildAddScalar() {
+    std::string kernelName = "kernelAddScalar";
+    if( cl->kernelExists( kernelName ) ) {
+        this->kernelAddScalar = cl->getKernel( kernelName );
+        return;
+    }
+    cout << "kernelAddScalar: building kernel" << endl;
+
+    string options = "";
+    // [[[cog
+    // import stringify
+    // stringify.write_kernel2( "kernelAddScalar", "cl/addscalar.cl",
+    //                          "add_scalar", 'options' )
+    // ]]]
+    // generated using cog, from cl/addscalar.cl:
+    const char * kernelAddScalarSource =  
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
+    "kernel void add_scalar(\n" 
+    "        const int N,\n" 
+    "        const float scalar,\n" 
+    "        global float *data ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    data[globalId] += scalar;\n" 
+    "}\n" 
+    "\n" 
+    "";
+    kernelAddScalar = cl->buildKernelFromString( kernelAddScalarSource, "add_scalar", options, "cl/addscalar.cl" );
+    // [[[end]]]
+    cl->storeKernel( kernelName, kernelAddScalar );
 }
 void CLMathWrapper::buildPerElementMultInPlace() {
     std::string kernelName = "PerElementMultInPlace";
@@ -100,7 +145,7 @@ void CLMathWrapper::buildPerElementMultInPlace() {
         this->kernelPerElementMultInPlace = cl->getKernel( kernelName );
         return;
     }
-    cout << "sqrt: building kernel" << endl;
+    cout << "PerElementMultInPlace: building kernel" << endl;
 
     string options = "";
     // [[[cog

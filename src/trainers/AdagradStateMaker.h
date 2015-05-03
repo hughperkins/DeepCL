@@ -18,11 +18,14 @@
 
 class AdagradStateMaker : public TrainerStateMaker {
 public:
+    float fudgeFactor;
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    AdagradStateMaker( float fudgeFactor );
     TrainerState *instance( EasyCL *cl, int numWeights );
     VIRTUAL bool created( TrainerState *state );
 

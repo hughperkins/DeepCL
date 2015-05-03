@@ -14,6 +14,7 @@
 #include "trainers/SGD.h"
 #include "trainers/Annealer.h"
 #include "trainers/Nesterov.h"
+#include "trainers/Adagrad.h"
 
 #include "normalize/NormalizationHelper.h"
 #include "layer/Layer.h"

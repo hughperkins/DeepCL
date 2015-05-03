@@ -98,6 +98,27 @@ TEST( testCLMathWrapper, multiplyinplace ) {
     delete cl;
 }
 
+TEST( testCLMathWrapper, addscalar ) {
+    EasyCL *cl = new EasyCL();
+    float adat[] = { 1,3,9,12.5f,2.5f };
+    CLWrapper *a_ = cl->wrap( 5,adat );
+    a_->copyToDevice();
+
+    CLMathWrapper a( a_ );
+    a += 1.5f;
+    a_->copyToHost();
+
+    for( int i = 0; i < 5; i++ ) {
+        cout << "a[" << i << "]=" << adat[i] << endl;
+    }
+    EXPECT_FLOAT_NEAR( 2.5f, adat[0] );
+    EXPECT_FLOAT_NEAR( 4.5f, adat[1] );
+    EXPECT_FLOAT_NEAR( 4.0f, adat[4] );
+
+    delete a_;
+    delete cl;
+}
+
 TEST( testCLMathWrapper, sqrt ) {
     EasyCL *cl = new EasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };

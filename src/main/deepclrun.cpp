@@ -267,6 +267,10 @@ void go(Config config) {
         nesterov->setLearningRate( config.learningRate );
         nesterov->setMomentum( config.momentum );
         trainer = nesterov;
+    } else if( toLower( config.trainer ) == "adagrad" ) {
+        Adagrad *adagrad = new Adagrad( cl );
+        adagrad->setLearningRate( config.learningRate );
+        trainer = adagrad;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;

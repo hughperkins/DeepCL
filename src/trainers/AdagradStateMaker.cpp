@@ -16,8 +16,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
+AdagradStateMaker::AdagradStateMaker( float fudgeFactor ) {
+    this->fudgeFactor = fudgeFactor;
+}
 TrainerState *AdagradStateMaker::instance( EasyCL *cl, int numWeights ) {
-    AdagradState *state = new AdagradState( cl, numWeights );
+    AdagradState *state = new AdagradState( cl, numWeights, fudgeFactor );
     return state;
 }
 VIRTUAL bool AdagradStateMaker::created( TrainerState *state ) {

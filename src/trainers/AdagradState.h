@@ -43,7 +43,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~AdagradState();
-    AdagradState( EasyCL *cl, int numWeights );
+    AdagradState( EasyCL *cl, int numWeights, float fudgeFactor );
 
     // [[[end]]]
 };
