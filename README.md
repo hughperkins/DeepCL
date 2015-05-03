@@ -77,7 +77,7 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 
 Pre-built binaries are available for Windows.  In order to use them you need:
 * An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v4.0.0](https://github.com/hughperkins/DeepCL/releases/tag/v4.0.0) 
+* A recent release with Windows binaries is [v5.5.0](https://github.com/hughperkins/DeepCL/releases/tag/v5.5.0) 
 
 ### linux
 
