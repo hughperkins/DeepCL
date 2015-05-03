@@ -39,11 +39,14 @@ VIRTUAL CopyBuffer::~CopyBuffer() {
 
 CopyBuffer::CopyBuffer( EasyCL *cl ) :
         cl( cl ) {
-    static CLKernel *kernel = 0;
-    if( kernel != 0 ) {
-        this->kernel = kernel;
+
+    std::string kernelName = "copy.copy";
+    if( cl->kernelExists( kernelName ) ) {
+        this->kernel = cl->getKernel( kernelName );
+        cout << "CopyBuffer kernel already built => reusing" << endl;
         return;
     }
+    cout << "CopyBuffer: building kernel" << endl;
 
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
@@ -100,6 +103,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
     // [[[end]]]
+    cl->storeKernel( kernelName, kernel );
     this->kernel = kernel;
 }
 

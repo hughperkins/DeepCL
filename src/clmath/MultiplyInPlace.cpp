@@ -41,11 +41,13 @@ MultiplyInPlace::MultiplyInPlace( EasyCL *cl ) :
         cl( cl ) {
     string options = "";
 
-    static CLKernel *kernel = 0;
-    if( kernel != 0 ) {
-        this->kernel = kernel;
+    std::string kernelName = "copy.multiplyInplace";
+    if( cl->kernelExists( kernelName ) ) {
+        this->kernel = cl->getKernel( kernelName );
+        cout << "MultiplyInPlace kernel already built => reusing" << endl;
         return;
     }
+    cout << "MultiplyInPlace: building kernel" << endl;
 
     // [[[cog
     // import stringify
@@ -99,6 +101,7 @@ MultiplyInPlace::MultiplyInPlace( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "multiplyInplace", options, "cl/copy.cl" );
     // [[[end]]]
+    cl->storeKernel( kernelName, kernel );
     this->kernel = kernel;
 }
 // Copyright Hugh Perkins 2015 hughperkins at gmail

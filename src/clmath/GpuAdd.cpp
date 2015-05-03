@@ -36,11 +36,14 @@ VIRTUAL GpuAdd::~GpuAdd() {
 }
 GpuAdd::GpuAdd( EasyCL *cl ) :
         cl( cl ) {
-    static CLKernel *kernel = 0;
-    if( kernel != 0 ) {
-        this->kernel = kernel;
+    std::string kernelName = "per_element_add.per_element_add";
+    if( cl->kernelExists( kernelName ) ) {
+        this->kernel = cl->getKernel( kernelName );
+        cout << "GpuAdd kernel already built => reusing" << endl;
         return;
     }
+    cout << "GpuAdd: building kernel" << endl;
+
     string options = "";
 
     // [[[cog
@@ -84,6 +87,7 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "per_element_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
+    cl->storeKernel( kernelName, kernel );
     this->kernel = kernel;
 }
 

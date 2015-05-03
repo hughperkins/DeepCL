@@ -16,7 +16,7 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class SGDStateMaker : public TrainerStateMaker {
+class NesterovStateMaker : public TrainerStateMaker {
 public:
     // [[[cog
     // import cog_addheaders

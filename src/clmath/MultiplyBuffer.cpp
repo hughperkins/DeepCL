@@ -55,9 +55,9 @@ MultiplyBuffer::MultiplyBuffer( EasyCL *cl ) :
 //    options += " -DgN=" + toString( N );
 //    options += " -DgMultiplier=" + floatToFloatString( multiplier );
 
-    static CLKernel *kernel = 0;
-    if( kernel != 0 ) {
-        this->kernel = kernel;
+    std::string kernelName = "multiplyConstant";
+    if( cl->kernelExists( kernelName ) ) {
+        this->kernel = cl->getKernel( kernelName );
         return;
     }
 
@@ -113,6 +113,7 @@ MultiplyBuffer::MultiplyBuffer( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "multiplyConstant", options, "cl/copy.cl" );
     // [[[end]]]
+    cl->storeKernel( kernelName, kernel );
     this->kernel = kernel;
 }
 

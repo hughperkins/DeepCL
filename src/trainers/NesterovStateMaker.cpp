@@ -6,8 +6,8 @@
 
 #include <iostream>
 
-#include "trainers/SGDStateMaker.h"
-#include "trainers/SGDState.h"
+#include "trainers/NesterovStateMaker.h"
+#include "trainers/NesterovState.h"
 
 using namespace std;
 
@@ -16,8 +16,8 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainerState *SGDStateMaker::instance( EasyCL *cl, int numWeights ) {
-    SGDState *sgd = new SGDState( cl, numWeights );
+TrainerState *NesterovStateMaker::instance( EasyCL *cl, int numWeights ) {
+    NesterovState *sgd = new NesterovState( cl, numWeights );
     return sgd;
 }
 

@@ -30,7 +30,7 @@ class CLKernel;
 // we could always make like a 'prototype' or 'factory'
 // object that then gets passed to each weightful layer
 // Maybe a 'Maker' for trainers?
-class DeepCL_EXPORT SGDState : public TrainerState {
+class DeepCL_EXPORT NesterovState : public TrainerState {
 public:
     const int numWeights;
 
@@ -43,8 +43,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~SGDState();
-    SGDState( EasyCL *cl, int numWeights );
+    VIRTUAL ~NesterovState();
+    NesterovState( EasyCL *cl, int numWeights );
 
     // [[[end]]]
 };
