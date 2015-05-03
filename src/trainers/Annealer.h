@@ -20,13 +20,15 @@ class NeuralNet;
 //class GpuAdd;
 //class MultiplyInPlace;
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
 // anneals learning, so actual learning rate =
 //    learning rate * pow( anneal, epoch )
 //    (for zero-based epoch number)
-class Annealer : public Trainer {
+class DeepCL_EXPORT Annealer : public Trainer {
 public:
 //    CopyBuffer *copyBuffer;
 //    GpuAdd *gpuAdd;

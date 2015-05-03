@@ -64,12 +64,12 @@ public:
     // [[[end]]]
 };
 
-class LearnBatcher2 : public Batcher2 {
+class DeepCL_EXPORT LearnBatcher2 : public Batcher2 {
 public:
     NetLearnAction2 action;
 
     float epochLoss;
-    float epochNumRight;
+    int epochNumRight;
 
     LearnBatcher2(Trainable *net, Trainer *trainer, int batchSize, int N,
             InputData *inputData, OutputData *outputData) :
