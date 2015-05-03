@@ -104,8 +104,6 @@ VIRTUAL BatchResult Adagrad::trainFromLabels( NeuralNet *net, TrainingContext *c
     LabeledData labeledData( net, labels );
     return this->train( net, context, input, &labeledData );
 }
-// maybe can shift this into Trainer class somehow?
-// maybe put the dynamic_cast into the TrainerStateMaker class?
 VIRTUAL void Adagrad::bindState( NeuralNet *net ) {
     AdagradStateMaker stateMaker( fudgeFactor );
     this->_bindState( net, &stateMaker );

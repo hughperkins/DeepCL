@@ -8,22 +8,11 @@
 
 class OutputData;
 
-// this was originally an interface
-// but now its... not :-P
-// should probably fold it into LossLayer.h now
 class IAcceptsLabels {
 public:
-//    virtual float calcLoss( OutputData *outputData );
-//    virtual float calcLoss( float const*expected ) = 0;
     virtual float calcLossFromLabels( int const*labels ) = 0;
-
     virtual void calcGradInputFromLabels( int const*labels ) = 0;
-//    virtual void calcGradInput( float const*expected ) = 0;
-//    virtual void calcGradInput( OutputData *outputData );
-
-//    virtual int calcNumRight( OutputData *outputData );
     virtual int calcNumRight( int const*labels ) = 0;
-
     virtual int getNumLabelsPerExample() = 0;
 };
 
