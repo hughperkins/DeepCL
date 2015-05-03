@@ -99,9 +99,21 @@ public:
     virtual std::string asString();
     virtual void setAnneal( float anneal );
     virtual BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, float const*expectedOutput );
+        float const*input, float const*expectedOutput );
     virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
-    float const*input, int const*labels );
+        float const*input, int const*labels );
+};
+
+class Nesterov : public Trainer {
+public:
+    static Nesterov *instance( EasyCL *cl, float learningRate, float momentum );
+    Nesterov( EasyCL *cl );
+    virtual std::string asString();
+    virtual void setMomentum( float momentum );
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
 };
 
 class NeuralNet {

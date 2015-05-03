@@ -95,7 +95,7 @@ VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
             }
         }
     }
-    return BatchResult( loss, 0 );
+    return BatchResult( loss, numRight );
 }
 VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput ) {
