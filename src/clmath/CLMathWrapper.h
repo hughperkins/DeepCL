@@ -20,11 +20,13 @@ class MultiplyInPlace;
 class CLFloatBuffer;
 class EasyCL;
 
+#include "DeepCLDllExport.h"
+
 // wraps a CLFloatWrapper, so we can do maths on it
 // like per-element add, inplace scalar multiply etc
 // a bit basic for now.  can extend gradually :-)
 // something to consider: pros/cons of using eg clBLAS instead?
-class CLMathWrapper {
+class DeepCL_EXPORT CLMathWrapper {
     EasyCL *cl; // dont delete
     CopyBuffer *copyBuffer;
     GpuAdd *gpuAdd;

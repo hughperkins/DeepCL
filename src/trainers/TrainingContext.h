@@ -11,11 +11,13 @@
 #include <iostream>
 #include <algorithm>
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
 // passed to trainers, for each training batch
-class TrainingContext {
+class DeepCL_EXPORT TrainingContext {
 public:
     const int epoch; // zero-based
     const int batch;
