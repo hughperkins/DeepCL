@@ -50,6 +50,7 @@ VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradW
     CLMathWrapper clSumSquares( trainerState->sumSquaresWrapper );
     CLMathWrapper clWorking( workingWrapper );
 
+    // following all happens on gpu, via clmathwrapper:
     clWorking = clGradWeights;
     clWorking.squared();
     clSumSquares += clWorking;
