@@ -205,12 +205,26 @@ sgd->setMomentum( 0.1f );
 sgd->setWeightDecay( 0.001f );
 ```
 
+Other trainers:
+```c++
+Adagrad *adagrad = new Adagrad( cl );
+adagrad->setLearningRate( 0.002f );
+
+Nesterov *nesterov = new Nesterov( cl );
+nesterov->setLearningRate( 0.002f );
+nesterov->setMomentum( 0.1f );
+
+Annealer *annealer = new Annealer( cl );
+annealer->setLearningRate( 0.002f );
+annealer->setAnneal( 0.97f );
+```
+
 ## Train
 
 eg:
 ```c++
 NetLearner netLearner(
-    sgd, net,
+    trainer, net,
     Ntrain, trainData, trainLabels,
     Ntest, testData, testLabels );
 netLearner.setSchedule( numEpochs );

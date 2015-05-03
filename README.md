@@ -49,6 +49,7 @@ Trainers:
 * SGD
 * Anneal (New!)
 * Nesterov (New!)
+* Adagrad (New!)
 
 Activations:
 * tanh
