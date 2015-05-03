@@ -10,6 +10,8 @@
 
 #include "layer/LayerMaker.h"
 #include "activate/ActivationFunction.h"
+#include "weights/OriginalInitializer.h"
+
 #include "DeepCLDllExport.h"
 
 /// \brief Use to create a fully-connected layer
@@ -19,11 +21,18 @@ public:
     int _numPlanes;
     int _imageSize;
     bool _biased;
-//    ActivationFunction const*_activationFunction;
+    WeightsInitializer *_weightsInitializer;
+
     PUBLICAPI FullyConnectedMaker() :
         _numPlanes(0),
-        _imageSize(0){
+        _imageSize(0),
+        _biased(true),
+        _weightsInitializer( new OriginalInitializer() ) {
     }
+    FullyConnectedMaker *weightsInitializer(WeightsInitializer *weightsInitializer) {
+        this->_weightsInitializer = weightsInitializer;
+        return this;
+    }    
     PUBLICAPI FullyConnectedMaker *numPlanes(int numPlanes) {
         this->_numPlanes = numPlanes;
         return this;

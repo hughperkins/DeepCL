@@ -24,7 +24,8 @@ FullyConnectedLayer::FullyConnectedLayer( EasyCL *cl, Layer *previousLayer, Full
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * imageSize * imageSize )
                       ->filterSize( previousLayer->getOutputImageSize() )
-                        ->biased( maker->_biased );
+                        ->biased( maker->_biased )
+                        ->weightsInitializer( maker->_weightsInitializer );
     convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
 //    delete convolutionalMaker;
 }

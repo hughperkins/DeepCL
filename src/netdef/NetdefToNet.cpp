@@ -10,8 +10,9 @@
 #include "net/NeuralNet.h"
 #include "layer/LayerMakers.h"
 #include "util/stringhelper.h"
-#include "NetdefToNet.h"
+#include "netdef/NetdefToNet.h"
 #include "activate/ActivationFunction.h"
+#include "weights/WeightsInitializer.h"
 
 using namespace std;
 
@@ -102,7 +103,7 @@ STATIC std::string expandMultipliers( std::string netdef ) {
     }    
 }
 
-STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, bool isLast ) {
+STATIC bool NetdefToNet::parseSubstring( WeightsInitializer *weightsInitializer, NeuralNet *net, std::string substring, bool isLast ) {
 //    cout << "substring [" << substring << "]" << endl;
     vector<string>splitLayerDef = split( substring, "{" );
     string baseLayerDef = splitLayerDef[0];
@@ -160,7 +161,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
                 return false;
             }
         }
-        net->addLayer( ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->padZeros( padZeros )->biased() );
+        net->addLayer( ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->padZeros( padZeros )->biased()->weightsInitializer( weightsInitializer ) );
         if( fn != 0 ) {
             net->addLayer( ActivationMaker::instance()->fn( fn ) );
         }
@@ -224,7 +225,7 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
             cout << "Last fullyconnectedlayer must be linear (because softmax is the 'activationlayer' for this layer)" << endl;
             return false;
         }
-        net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->biased(biased) );
+        net->addLayer( FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->biased(biased)->weightsInitializer( weightsInitializer ) );
         if( fn != 0 ) {
             net->addLayer( ActivationMaker::instance()->fn( fn ) );
         }
@@ -236,6 +237,11 @@ STATIC bool NetdefToNet::parseSubstring( NeuralNet *net, std::string substring, 
 }
 
 PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef ) {
+    OriginalInitializer originalInitializer;
+    return createNetFromNetdef( net, netdef, &originalInitializer );
+}
+
+STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer ) {
     string netDefLower = toLower( netdef );
     cout << "netDefLower [" << netDefLower << "]" << endl;
     try {
@@ -250,7 +256,7 @@ PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::str
         for( int i = 0; i < (int)splitNetDef.size(); i++ ) {
             string thisLayerDef = splitNetDef[i];
 //            cout << "thisLayerDef [" << thisLayerDef << "]" << endl;
-            if( !parseSubstring( net, thisLayerDef, i == (int)splitNetDef.size() - 1 ) ) {
+            if( !parseSubstring( weightsInitializer, net, thisLayerDef, i == (int)splitNetDef.size() - 1 ) ) {
                 return false;
             }
         }

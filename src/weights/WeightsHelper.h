@@ -8,11 +8,11 @@
 
 class WeightsHelper {
 public:
-    static inline float generateWeight( int fanin ) {
-        float rangesize = sqrt(12.0f / (float)fanin) ;
+    static inline float generateWeight( float rangesize ) {
+//        float rangesize = sqrt(12.0f / (float)fanin) ;
     //        float uniformrand = random() / (float)random.max();     
-        float uniformrand = RandomSingleton::uniform();   
-        float result = rangesize * ( uniformrand - 0.5f );
+        float signeduniformrand = RandomSingleton::uniform() * 2.0f - 1.0f;
+        float result = rangesize * signeduniformrand;
 //        cout << "generateWeight result=" << result << endl;
         return result;
     }

@@ -59,6 +59,11 @@ Activations:
 * sigmoid
 * relu
 
+Weight initializers:
+* original
+* uniform
+* more possible...
+
 Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 
 # To install

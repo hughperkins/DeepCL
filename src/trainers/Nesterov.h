@@ -42,9 +42,11 @@ public:
     VIRTUAL ~Nesterov();
     VIRTUAL void setMomentum( float momentum );
     VIRTUAL std::string asString();
-    VIRTUAL void loadFutureWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    VIRTUAL void loadFutureWeights(
+    CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState );
-    VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    VIRTUAL void updateWeights( CLWrapper *weightsWrapper,
+    CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState );
     VIRTUAL BatchResult train(
     NeuralNet *net, TrainingContext *context,

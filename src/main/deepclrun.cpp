@@ -37,6 +37,8 @@ using namespace std;
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50, True),
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
+        ('weightsInitializer', 'string', 'initializer for weights, choices: original, uniform (default: original)', 'original', True ),
+        ('initialWeights', 'float', 'for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)', 1.0, False ),
         ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, or rmsprop (default: sgd)', 'sgd', True ),
         ('learningRate', 'float', 'learning rate, a float value, used by all trainers', 0.002, True),
         ('momentum', 'float', 'momentum, used by sgd and nesterov trainers', 0.0, True),
@@ -74,6 +76,8 @@ public:
     int loadOnDemand;
     int fileReadBatches;
     int normalizationExamples;
+    string weightsInitializer;
+    float initialWeights;
     string trainer;
     float learningRate;
     float momentum;
@@ -118,6 +122,8 @@ public:
         loadOnDemand = 0;
         fileReadBatches = 50;
         normalizationExamples = 10000;
+        weightsInitializer = "original";
+        initialWeights = 1.0f;
         trainer = "sgd";
         learningRate = 0.002f;
         momentum = 0.0f;
@@ -243,10 +249,20 @@ void go(Config config) {
     NeuralNet *net;
     net = new NeuralNet(cl);
 
+    WeightsInitializer *weightsInitializer = 0;
+    if( toLower( config.weightsInitializer ) == "original" ) {
+        weightsInitializer = new OriginalInitializer();
+    } else if( toLower( config.weightsInitializer ) == "uniform" ) {
+        weightsInitializer = new UniformInitializer( config.initialWeights );
+    } else {
+        cout << "Unknown weights initializer " << config.weightsInitializer << endl;
+        return;
+    }
+
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
-    if( !NetdefToNet::createNetFromNetdef( net, config.netDef ) ) {
+    if( !NetdefToNet::createNetFromNetdef( net, config.netDef, weightsInitializer ) ) {
         return;
     }
     // apply the trainer
@@ -377,6 +393,7 @@ void go(Config config) {
         }
     }
 
+    delete weightsInitializer;
     delete trainer;
     delete netLearner;
     if( multiNet != 0 ) {
@@ -404,11 +421,18 @@ void printUsage( char *argv[], Config config ) {
     cout << "Possible key=value pairs:" << endl;
     /* [[[cog
         cog.outl('// generated using cog:')
+        cog.outl('cout << "public api, shouldnt change within major version:" << endl;')
         for (name,type,description,_, is_public_api) in options:
             if is_public_api:
                 cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
+        cog.outl('cout << "" << endl; ')
+        cog.outl('cout << "unstable, might change within major version:" << endl; ')
+        for (name,type,description,_, is_public_api) in options:
+            if not is_public_api:
+                cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
     *///]]]
     // generated using cog:
+    cout << "public api, shouldnt change within major version:" << endl;
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
     cout << "    datadir=[directory to search for train and validate files] (" << config.dataDir << ")" << endl;
     cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
@@ -429,10 +453,15 @@ void printUsage( char *argv[], Config config ) {
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
+    cout << "    weightsinitializer=[initializer for weights, choices: original, uniform (default: original)] (" << config.weightsInitializer << ")" << endl;
     cout << "    trainer=[which trainer, sgd, anneal, nesterov, adagrad, or rmsprop (default: sgd)] (" << config.trainer << ")" << endl;
     cout << "    learningrate=[learning rate, a float value, used by all trainers] (" << config.learningRate << ")" << endl;
     cout << "    momentum=[momentum, used by sgd and nesterov trainers] (" << config.momentum << ")" << endl;
     cout << "    weightdecay=[weight decay, 0 means no decay; 1 means full decay, used by sgd trainer] (" << config.weightDecay << ")" << endl;
+    cout << "" << endl; 
+    cout << "unstable, might change within major version:" << endl; 
+    cout << "    initialweights=[for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)] (" << config.initialWeights << ")" << endl;
+    cout << "    anneal=[multiply learningrate by this amount each epoch, used by anneal trainer, default 1.0] (" << config.anneal << ")" << endl;
     // [[[end]]]
 }
 
@@ -504,6 +533,10 @@ int main( int argc, char *argv[] ) {
                 config.fileReadBatches = atoi(value);
             } else if( key == "normalizationexamples" ) {
                 config.normalizationExamples = atoi(value);
+            } else if( key == "weightsinitializer" ) {
+                config.weightsInitializer = (value);
+            } else if( key == "initialweights" ) {
+                config.initialWeights = atof(value);
             } else if( key == "trainer" ) {
                 config.trainer = (value);
             } else if( key == "learningrate" ) {

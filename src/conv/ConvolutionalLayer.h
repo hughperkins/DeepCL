@@ -26,6 +26,7 @@ class BackpropWeights;
 class ConvolutionalMaker;
 class GpuAdd;
 class CopyBuffer;
+class WeightsInitializer;
 
 class ConvolutionalLayer : public Layer {
 public:
@@ -131,7 +132,7 @@ public:
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
-    void randomizeWeights();
+    void randomizeWeights( WeightsInitializer *weightsInitializer );
     VIRTUAL void print();
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();

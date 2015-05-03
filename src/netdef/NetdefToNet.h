@@ -11,6 +11,7 @@
 #include "DeepCLDllExport.h"
 
 class NeuralNet;
+class WeightsInitializer;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -30,8 +31,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC bool parseSubstring( NeuralNet *net, std::string substring, bool isLast );
+    STATIC bool parseSubstring( WeightsInitializer *weightsInitializer, NeuralNet *net, std::string substring, bool isLast );
     PUBLICAPI STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef );
+    STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer );
 
     // [[[end]]]
 };

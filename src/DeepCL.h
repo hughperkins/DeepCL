@@ -17,6 +17,9 @@
 #include "trainers/Adagrad.h"
 #include "trainers/Rmsprop.h"
 
+#include "weights/UniformInitializer.h"
+#include "weights/OriginalInitializer.h"
+
 #include "normalize/NormalizationHelper.h"
 #include "layer/Layer.h"
 #include "conv/ConvolutionalLayer.h"

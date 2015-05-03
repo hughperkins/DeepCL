@@ -9,9 +9,10 @@
 #include <cstring>
 
 #include "activate/ActivationFunction.h"
-#include "DeepCLDllExport.h"
-
 #include "layer/LayerMaker.h"
+#include "weights/OriginalInitializer.h"
+
+#include "DeepCLDllExport.h"
 
 /// Use to create a convolutional layer
 PUBLICAPI
@@ -21,14 +22,21 @@ public:
     int _filterSize;
     bool _padZeros;
     bool _biased;
-//    ActivationFunction const *_activationFunction;
+    WeightsInitializer *_weightsInitializer;
+
     PUBLICAPI ConvolutionalMaker() :
             _numFilters(0),
             _filterSize(0),
-            _padZeros(false) {
+            _padZeros(false),
+            _biased(true),
+            _weightsInitializer(new OriginalInitializer()) { // will leak slightly, but hopefully not much
     }
     PUBLICAPI static ConvolutionalMaker *instance() {
         return new ConvolutionalMaker();
+    }
+    ConvolutionalMaker *weightsInitializer(WeightsInitializer *weightsInitializer) {
+        this->_weightsInitializer = weightsInitializer;
+        return this;
     }    
     PUBLICAPI ConvolutionalMaker *numFilters(int numFilters) {
         this->_numFilters = numFilters;
@@ -54,30 +62,6 @@ public:
         this->_biased = _biased;
         return this;
     }    
-//    PUBLICAPI ConvolutionalMaker *tanh() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new TanhActivation();
-//        return this;
-//    }
-//    PUBLICAPI ConvolutionalMaker *relu() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new ReluActivation();
-//        return this;
-//    }
-//    PUBLICAPI ConvolutionalMaker *sigmoid() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new SigmoidActivation();
-//        return this;
-//    }
-//    PUBLICAPI ConvolutionalMaker *linear() {
-//        delete this->_activationFunction;
-//        this->_activationFunction = new LinearActivation();
-//        return this;
-//    }
-//    PUBLICAPI ConvolutionalMaker *fn(ActivationFunction const*_fn) {
-//        this->_activationFunction = _fn;
-//        return this;
-//    }
     virtual ConvolutionalMaker *clone() const {
         ConvolutionalMaker *thisClone = new ConvolutionalMaker();
         memcpy( thisClone, this, sizeof( ConvolutionalMaker ) ); // this will copy the activationfunction pointer too

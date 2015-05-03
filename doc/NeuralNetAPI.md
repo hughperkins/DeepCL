@@ -251,6 +251,13 @@ BatchLearner batchLearner( net );
 int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
 
+## Weight initialization
+
+* By default an `OriginalInitializer` object is used to initialize weights (a bit hacky, but changing this would need a major version bump)
+* You can create an instance of `UniformInitializer`, and assign this to the ConvolutionalMaker by doing for example `->setWeightInitializer( new UniformInitializer(1.0f) )`, to use a uniform initializer
+  * uniform initializer assigns weights sampled uniformally from the range +/- ( initialWeights divided by fanin)
+* possible to create other WeightsInitializers if we ant
+
 ## More details
 
 You can find more details in the Doxygen-generated docs at [doxy docs for 4.x.x](http://hughperkins.github.io/DeepCL/4.x.x/html/annotated.html)

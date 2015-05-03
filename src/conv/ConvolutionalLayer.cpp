@@ -88,7 +88,7 @@ ConvolutionalLayer::ConvolutionalLayer( EasyCL *cl, Layer *previousLayer, Convol
     if( dim.biased ) {
         bias = new float[ getBiasSize() ];
     }
-    randomizeWeights();
+    randomizeWeights( maker->_weightsInitializer );
 
     weightsWrapper = cl->wrap( getWeightsSize(), weights );
     weightsWrapper->copyToDevice();
@@ -226,17 +226,16 @@ VIRTUAL int ConvolutionalLayer::getOutputImageSize() const {
     return dim.outputImageSize;
 }
 // filters are organized like [filterid][plane][row][col]
-void ConvolutionalLayer::randomizeWeights() {
+void ConvolutionalLayer::randomizeWeights( WeightsInitializer *weightsInitializer ) {
 //        std::cout << "convolutional layer randomzing weights" << std::endl;
     int fanin = dim.inputPlanes * dim.filterSize * dim.filterSize;
-    const int numThisLayerWeights = getWeightsSize();
-    for( int i = 0; i < numThisLayerWeights; i++ ) {
-        weights[i] = WeightsHelper::generateWeight( fanin );
-    }
     if( dim.biased ) {
-        for( int i = 0; i < dim.numFilters; i++ ) {
-            bias[i] = WeightsHelper::generateWeight( fanin );
-        }
+        fanin++;
+    }
+    const int numThisLayerWeights = getWeightsSize();
+    weightsInitializer->initializeWeights( numThisLayerWeights, weights, fanin );
+    if( dim.biased ) {
+        weightsInitializer->initializeWeights( dim.numFilters, bias, fanin );
     }
 }
 VIRTUAL void ConvolutionalLayer::print() {
