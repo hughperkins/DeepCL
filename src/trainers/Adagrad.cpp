@@ -18,7 +18,7 @@
 #include "clmath/CLMathWrapper.h"
 #include "batch/BatchData.h"
 
-#include "test/Sampler.h"
+//#include "test/Sampler.h"
 
 using namespace std;
 

@@ -104,6 +104,17 @@ public:
         float const*input, int const*labels );
 };
 
+class Adagrad : public Trainer {
+public:
+    static Adagrad *instance( EasyCL *cl, float learningRate );
+    Adagrad( EasyCL *cl );
+    virtual std::string asString();
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
+};
+
 class Nesterov : public Trainer {
 public:
     static Nesterov *instance( EasyCL *cl, float learningRate, float momentum );

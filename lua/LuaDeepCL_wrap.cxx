@@ -1863,39 +1863,40 @@ SWIG_Lua_dostring(lua_State *L, const char* str) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_ActivationMaker swig_types[0]
-#define SWIGTYPE_p_Annealer swig_types[1]
-#define SWIGTYPE_p_BatchResult swig_types[2]
-#define SWIGTYPE_p_ConvolutionalMaker swig_types[3]
-#define SWIGTYPE_p_CrossEntropyLossMaker swig_types[4]
-#define SWIGTYPE_p_DropoutMaker swig_types[5]
-#define SWIGTYPE_p_EasyCL swig_types[6]
-#define SWIGTYPE_p_FullyConnectedMaker swig_types[7]
-#define SWIGTYPE_p_GenericLoader swig_types[8]
-#define SWIGTYPE_p_InputLayerMaker swig_types[9]
-#define SWIGTYPE_p_LayerMaker2 swig_types[10]
-#define SWIGTYPE_p_Nesterov swig_types[11]
-#define SWIGTYPE_p_NetLearner swig_types[12]
-#define SWIGTYPE_p_NetdefToNet swig_types[13]
-#define SWIGTYPE_p_NeuralNet swig_types[14]
-#define SWIGTYPE_p_NormalizationLayerMaker swig_types[15]
-#define SWIGTYPE_p_PoolingMaker swig_types[16]
-#define SWIGTYPE_p_QLearner2 swig_types[17]
-#define SWIGTYPE_p_SGD swig_types[18]
-#define SWIGTYPE_p_SoftMaxMaker swig_types[19]
-#define SWIGTYPE_p_SquareLossMaker swig_types[20]
-#define SWIGTYPE_p_Trainer swig_types[21]
-#define SWIGTYPE_p_TrainingContext swig_types[22]
-#define SWIGTYPE_p_cl_device_id swig_types[23]
-#define SWIGTYPE_p_cl_platform_id swig_types[24]
-#define SWIGTYPE_p_float swig_types[25]
-#define SWIGTYPE_p_floatArray swig_types[26]
-#define SWIGTYPE_p_floatSlice swig_types[27]
-#define SWIGTYPE_p_int swig_types[28]
-#define SWIGTYPE_p_intArray swig_types[29]
-#define SWIGTYPE_p_intSlice swig_types[30]
-#define SWIGTYPE_p_std__string swig_types[31]
-static swig_type_info *swig_types[33];
-static swig_module_info swig_module = {swig_types, 32, 0, 0, 0, 0};
+#define SWIGTYPE_p_Adagrad swig_types[1]
+#define SWIGTYPE_p_Annealer swig_types[2]
+#define SWIGTYPE_p_BatchResult swig_types[3]
+#define SWIGTYPE_p_ConvolutionalMaker swig_types[4]
+#define SWIGTYPE_p_CrossEntropyLossMaker swig_types[5]
+#define SWIGTYPE_p_DropoutMaker swig_types[6]
+#define SWIGTYPE_p_EasyCL swig_types[7]
+#define SWIGTYPE_p_FullyConnectedMaker swig_types[8]
+#define SWIGTYPE_p_GenericLoader swig_types[9]
+#define SWIGTYPE_p_InputLayerMaker swig_types[10]
+#define SWIGTYPE_p_LayerMaker2 swig_types[11]
+#define SWIGTYPE_p_Nesterov swig_types[12]
+#define SWIGTYPE_p_NetLearner swig_types[13]
+#define SWIGTYPE_p_NetdefToNet swig_types[14]
+#define SWIGTYPE_p_NeuralNet swig_types[15]
+#define SWIGTYPE_p_NormalizationLayerMaker swig_types[16]
+#define SWIGTYPE_p_PoolingMaker swig_types[17]
+#define SWIGTYPE_p_QLearner2 swig_types[18]
+#define SWIGTYPE_p_SGD swig_types[19]
+#define SWIGTYPE_p_SoftMaxMaker swig_types[20]
+#define SWIGTYPE_p_SquareLossMaker swig_types[21]
+#define SWIGTYPE_p_Trainer swig_types[22]
+#define SWIGTYPE_p_TrainingContext swig_types[23]
+#define SWIGTYPE_p_cl_device_id swig_types[24]
+#define SWIGTYPE_p_cl_platform_id swig_types[25]
+#define SWIGTYPE_p_float swig_types[26]
+#define SWIGTYPE_p_floatArray swig_types[27]
+#define SWIGTYPE_p_floatSlice swig_types[28]
+#define SWIGTYPE_p_int swig_types[29]
+#define SWIGTYPE_p_intArray swig_types[30]
+#define SWIGTYPE_p_intSlice swig_types[31]
+#define SWIGTYPE_p_std__string swig_types[32]
+static swig_type_info *swig_types[34];
+static swig_module_info swig_module = {swig_types, 33, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3552,6 +3553,218 @@ static swig_lua_const_info swig_Annealer_cls_constants[] = {
 static swig_lua_class *swig_Annealer_bases[] = {0,0};
 static const char *swig_Annealer_base_names[] = {"Trainer *",0};
 static swig_lua_class _wrap_class_Annealer = { "Annealer", &SWIGTYPE_p_Annealer,_wrap_new_Annealer, swig_delete_Annealer, swig_Annealer_methods, swig_Annealer_attributes, { "Annealer", swig_Annealer_cls_methods, swig_Annealer_cls_attributes, swig_Annealer_cls_constants }, swig_Annealer_bases, swig_Annealer_base_names };
+
+static int _wrap_Adagrad_instance(lua_State* L) {
+  int SWIG_arg = 0;
+  EasyCL *arg1 = (EasyCL *) 0 ;
+  float arg2 ;
+  Adagrad *result = 0 ;
+  
+  SWIG_check_num_args("Adagrad::instance",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Adagrad::instance",1,"EasyCL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("Adagrad::instance",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("Adagrad_instance",1,SWIGTYPE_p_EasyCL);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  result = (Adagrad *)Adagrad::instance(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Adagrad,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_Adagrad(lua_State* L) {
+  int SWIG_arg = 0;
+  EasyCL *arg1 = (EasyCL *) 0 ;
+  Adagrad *result = 0 ;
+  
+  SWIG_check_num_args("Adagrad::Adagrad",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Adagrad::Adagrad",1,"EasyCL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_EasyCL,0))){
+    SWIG_fail_ptr("new_Adagrad",1,SWIGTYPE_p_EasyCL);
+  }
+  
+  result = (Adagrad *)new Adagrad(arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_Adagrad,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Adagrad_asString(lua_State* L) {
+  int SWIG_arg = 0;
+  Adagrad *arg1 = (Adagrad *) 0 ;
+  std::string result;
+  
+  SWIG_check_num_args("Adagrad::asString",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Adagrad::asString",1,"Adagrad *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Adagrad,0))){
+    SWIG_fail_ptr("Adagrad_asString",1,SWIGTYPE_p_Adagrad);
+  }
+  
+  result = (arg1)->asString();
+  lua_pushlstring(L,(&result)->data(),(&result)->size()); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Adagrad_train(lua_State* L) {
+  int SWIG_arg = 0;
+  Adagrad *arg1 = (Adagrad *) 0 ;
+  NeuralNet *arg2 = (NeuralNet *) 0 ;
+  TrainingContext *arg3 = (TrainingContext *) 0 ;
+  float *arg4 = (float *) 0 ;
+  float *arg5 = (float *) 0 ;
+  SwigValueWrapper< BatchResult > result;
+  
+  SWIG_check_num_args("Adagrad::train",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Adagrad::train",1,"Adagrad *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("Adagrad::train",2,"NeuralNet *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("Adagrad::train",3,"TrainingContext *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("Adagrad::train",4,"float const *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("Adagrad::train",5,"float const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Adagrad,0))){
+    SWIG_fail_ptr("Adagrad_train",1,SWIGTYPE_p_Adagrad);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("Adagrad_train",2,SWIGTYPE_p_NeuralNet);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_TrainingContext,0))){
+    SWIG_fail_ptr("Adagrad_train",3,SWIGTYPE_p_TrainingContext);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("Adagrad_train",4,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("Adagrad_train",5,SWIGTYPE_p_float);
+  }
+  
+  result = (arg1)->train(arg2,arg3,(float const *)arg4,(float const *)arg5);
+  {
+    BatchResult * resultptr = new BatchResult((const BatchResult &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_BatchResult,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_Adagrad_trainFromLabels(lua_State* L) {
+  int SWIG_arg = 0;
+  Adagrad *arg1 = (Adagrad *) 0 ;
+  NeuralNet *arg2 = (NeuralNet *) 0 ;
+  TrainingContext *arg3 = (TrainingContext *) 0 ;
+  float *arg4 = (float *) 0 ;
+  int *arg5 = (int *) 0 ;
+  SwigValueWrapper< BatchResult > result;
+  
+  SWIG_check_num_args("Adagrad::trainFromLabels",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("Adagrad::trainFromLabels",1,"Adagrad *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("Adagrad::trainFromLabels",2,"NeuralNet *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("Adagrad::trainFromLabels",3,"TrainingContext *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("Adagrad::trainFromLabels",4,"float const *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("Adagrad::trainFromLabels",5,"int const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_Adagrad,0))){
+    SWIG_fail_ptr("Adagrad_trainFromLabels",1,SWIGTYPE_p_Adagrad);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_NeuralNet,0))){
+    SWIG_fail_ptr("Adagrad_trainFromLabels",2,SWIGTYPE_p_NeuralNet);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_TrainingContext,0))){
+    SWIG_fail_ptr("Adagrad_trainFromLabels",3,SWIGTYPE_p_TrainingContext);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("Adagrad_trainFromLabels",4,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("Adagrad_trainFromLabels",5,SWIGTYPE_p_int);
+  }
+  
+  result = (arg1)->trainFromLabels(arg2,arg3,(float const *)arg4,(int const *)arg5);
+  {
+    BatchResult * resultptr = new BatchResult((const BatchResult &) result);
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_BatchResult,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_Adagrad(void *obj) {
+Adagrad *arg1 = (Adagrad *) obj;
+delete arg1;
+}
+static swig_lua_method swig_Adagrad_methods[] = {
+    {"asString", _wrap_Adagrad_asString}, 
+    {"train", _wrap_Adagrad_train}, 
+    {"trainFromLabels", _wrap_Adagrad_trainFromLabels}, 
+    {0,0}
+};
+static swig_lua_attribute swig_Adagrad_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_attribute swig_Adagrad_cls_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_method swig_Adagrad_cls_methods[] = {
+    {"instance", _wrap_Adagrad_instance}, 
+    {0,0}
+};
+static swig_lua_const_info swig_Adagrad_cls_constants[] = {
+    {0,0,0,0,0,0}
+};
+static swig_lua_class *swig_Adagrad_bases[] = {0,0};
+static const char *swig_Adagrad_base_names[] = {"Trainer *",0};
+static swig_lua_class _wrap_class_Adagrad = { "Adagrad", &SWIGTYPE_p_Adagrad,_wrap_new_Adagrad, swig_delete_Adagrad, swig_Adagrad_methods, swig_Adagrad_attributes, { "Adagrad", swig_Adagrad_cls_methods, swig_Adagrad_cls_attributes, swig_Adagrad_cls_constants }, swig_Adagrad_bases, swig_Adagrad_base_names };
 
 static int _wrap_Nesterov_instance(lua_State* L) {
   int SWIG_arg = 0;
@@ -6802,6 +7015,7 @@ static const struct luaL_Reg swig_commands[] = {
     { "EasyCL_createForPlatformDeviceIds", _wrap_EasyCL_createForPlatformDeviceIds},
     { "SGD_instance",_wrap_SGD_instance},
     { "Annealer_instance", _wrap_Annealer_instance},
+    { "Adagrad_instance", _wrap_Adagrad_instance},
     { "Nesterov_instance", _wrap_Nesterov_instance},
     { "NetdefToNet_createNetFromNetdef", _wrap_NetdefToNet_createNetFromNetdef},
     { "floatArray_frompointer", _wrap_floatArray_frompointer},
@@ -6840,6 +7054,9 @@ static void *_p_NesterovTo_p_Trainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
 static void *_p_AnnealerTo_p_Trainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((Trainer *)  ((Annealer *) x));
 }
+static void *_p_AdagradTo_p_Trainer(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((Trainer *)  ((Adagrad *) x));
+}
 static void *_p_DropoutMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((LayerMaker2 *)  ((DropoutMaker *) x));
 }
@@ -6871,6 +7088,7 @@ static void *_p_CrossEntropyLossMakerTo_p_LayerMaker2(void *x, int *SWIGUNUSEDPA
     return (void *)((LayerMaker2 *)  ((CrossEntropyLossMaker *) x));
 }
 static swig_type_info _swigt__p_ActivationMaker = {"_p_ActivationMaker", "ActivationMaker *", 0, 0, (void*)&_wrap_class_ActivationMaker, 0};
+static swig_type_info _swigt__p_Adagrad = {"_p_Adagrad", "Adagrad *", 0, 0, (void*)&_wrap_class_Adagrad, 0};
 static swig_type_info _swigt__p_Annealer = {"_p_Annealer", "Annealer *", 0, 0, (void*)&_wrap_class_Annealer, 0};
 static swig_type_info _swigt__p_BatchResult = {"_p_BatchResult", "BatchResult *", 0, 0, (void*)&_wrap_class_BatchResult, 0};
 static swig_type_info _swigt__p_ConvolutionalMaker = {"_p_ConvolutionalMaker", "ConvolutionalMaker *", 0, 0, (void*)&_wrap_class_ConvolutionalMaker, 0};
@@ -6905,6 +7123,7 @@ static swig_type_info _swigt__p_std__string = {"_p_std__string", "std::string *"
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_ActivationMaker,
+  &_swigt__p_Adagrad,
   &_swigt__p_Annealer,
   &_swigt__p_BatchResult,
   &_swigt__p_ConvolutionalMaker,
@@ -6939,6 +7158,7 @@ static swig_type_info *swig_type_initial[] = {
 };
 
 static swig_cast_info _swigc__p_ActivationMaker[] = {  {&_swigt__p_ActivationMaker, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_Adagrad[] = {  {&_swigt__p_Adagrad, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Annealer[] = {  {&_swigt__p_Annealer, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_BatchResult[] = {  {&_swigt__p_BatchResult, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ConvolutionalMaker[] = {  {&_swigt__p_ConvolutionalMaker, 0, 0, 0},{0, 0, 0, 0}};
@@ -6959,7 +7179,7 @@ static swig_cast_info _swigc__p_QLearner2[] = {  {&_swigt__p_QLearner2, 0, 0, 0}
 static swig_cast_info _swigc__p_SGD[] = {  {&_swigt__p_SGD, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SoftMaxMaker[] = {  {&_swigt__p_SoftMaxMaker, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SquareLossMaker[] = {  {&_swigt__p_SquareLossMaker, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_Trainer[] = {  {&_swigt__p_Nesterov, _p_NesterovTo_p_Trainer, 0, 0},  {&_swigt__p_Trainer, 0, 0, 0},  {&_swigt__p_SGD, _p_SGDTo_p_Trainer, 0, 0},  {&_swigt__p_Annealer, _p_AnnealerTo_p_Trainer, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_Trainer[] = {  {&_swigt__p_Nesterov, _p_NesterovTo_p_Trainer, 0, 0},  {&_swigt__p_Trainer, 0, 0, 0},  {&_swigt__p_SGD, _p_SGDTo_p_Trainer, 0, 0},  {&_swigt__p_Annealer, _p_AnnealerTo_p_Trainer, 0, 0},  {&_swigt__p_Adagrad, _p_AdagradTo_p_Trainer, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TrainingContext[] = {  {&_swigt__p_TrainingContext, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_cl_device_id[] = {  {&_swigt__p_cl_device_id, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_cl_platform_id[] = {  {&_swigt__p_cl_platform_id, 0, 0, 0},{0, 0, 0, 0}};
@@ -6973,6 +7193,7 @@ static swig_cast_info _swigc__p_std__string[] = {  {&_swigt__p_std__string, 0, 0
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_ActivationMaker,
+  _swigc__p_Adagrad,
   _swigc__p_Annealer,
   _swigc__p_BatchResult,
   _swigc__p_ConvolutionalMaker,
