@@ -48,8 +48,14 @@ VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradW
     CLMathWrapper clWorking( workingWrapper );
 
     clWorking = clGradWeights;
-//    clWorking *= clWorking; // not sure if such aliasing is kind of ok :-P
+    clWorking.squared();
     clSumSquares += clWorking;
+
+    clWorking = clSumSquares;
+    clWorking.sqrt();
+    clWorking *= - learningRate;
+//    clWorking *= clGradWeights;
+    clWeights += clWorking;
 
     delete workingWrapper;
     delete[] working;

@@ -142,3 +142,31 @@ TEST( testCLMathWrapper, squared ) {
     delete cl;
 }
 
+TEST( testCLMathWrapper, perelementmult ) {
+    EasyCL *cl = new EasyCL();
+    float adat[] = { 1,3,9,12.5f,2.5f };
+    float bdat[] = { 4,2.1f, 5,3,9.2f };
+    CLWrapper *a_ = cl->wrap( 5,adat );
+    CLWrapper *b_ = cl->wrap( 5,bdat );
+    a_->copyToDevice();
+    b_->copyToDevice();
+
+    CLMathWrapper a( a_ );
+    CLMathWrapper b( b_ );
+    a *= b;
+    a_->copyToHost();
+
+    for( int i = 0; i < 5; i++ ) {
+        cout << "a[" << i << "]=" << adat[i] << endl;
+    }
+    EXPECT_FLOAT_NEAR( 4.0f, adat[0] );
+    EXPECT_FLOAT_NEAR( 6.3f, adat[1] );
+    EXPECT_FLOAT_NEAR( 2.5f * 9.2f, adat[4] );
+
+//    delete a;
+//    delete b;
+    delete a_;
+    delete b_;
+    delete cl;
+}
+

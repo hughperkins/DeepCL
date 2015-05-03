@@ -35,6 +35,7 @@ class DeepCL_EXPORT CLMathWrapper {
 
     CLKernel *kernelSquared;
     CLKernel *kernelSqrt;
+    CLKernel *kernelPerElementMultInPlace;
 
     int N;
     CLFloatWrapper *wrapper; // dont delete
@@ -48,12 +49,14 @@ public:
     // generated, using cog:
     VIRTUAL ~CLMathWrapper();
     VIRTUAL CLMathWrapper &operator*=( const float scalar );
+    VIRTUAL CLMathWrapper &operator*=( const CLMathWrapper &two );
     VIRTUAL CLMathWrapper &operator+=( const CLMathWrapper &two );
     VIRTUAL CLMathWrapper &operator=( const CLMathWrapper &rhs );
     VIRTUAL CLMathWrapper &sqrt();
     VIRTUAL CLMathWrapper &squared();
     VIRTUAL void runKernel( CLKernel *kernel );
     CLMathWrapper( CLWrapper *wrapper );
+    void buildPerElementMultInPlace();
     void buildSqrt();
     void buildSquared();
 
