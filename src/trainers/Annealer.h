@@ -16,9 +16,9 @@
 class CLWrapper;
 class EasyCL;
 class NeuralNet;
-class CopyBuffer;
-class GpuAdd;
-class MultiplyInPlace;
+//class CopyBuffer;
+//class GpuAdd;
+//class MultiplyInPlace;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -28,9 +28,9 @@ class MultiplyInPlace;
 //    (for zero-based epoch number)
 class Annealer : public Trainer {
 public:
-    CopyBuffer *copyBuffer;
-    GpuAdd *gpuAdd;
-    MultiplyInPlace *multiplyInPlace;
+//    CopyBuffer *copyBuffer;
+//    GpuAdd *gpuAdd;
+//    MultiplyInPlace *multiplyInPlace;
 
     float anneal;
 //    int epoch;
