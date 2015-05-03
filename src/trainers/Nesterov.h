@@ -13,6 +13,8 @@
 
 #include "trainers/Trainer.h"
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -26,7 +28,7 @@
 //      => calc dweights[t+1]
 //      => calc weights[t+1]
 //
-class Nesterov : public Trainer {
+class DeepCL_EXPORT Nesterov : public Trainer {
 public:
     float momentum;
 
