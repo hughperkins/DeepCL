@@ -15,6 +15,8 @@ class EasyCL;
 class NeuralNet;
 class Trainable;
 class EpochResult;
+class TrainerStateMaker;
+class BatchResult;
 
 #include "trainers/TrainingContext.h"
 
@@ -79,6 +81,7 @@ public:
     VIRTUAL BatchResult trainFromLabels( Trainable *trainable,
     TrainingContext *context,
     float const*input, int const*labels );
+    VIRTUAL void _bindState( NeuralNet *net, TrainerStateMaker *stateMaker );
 
     // [[[end]]]
 };

@@ -5,6 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <iostream>
+#include <stdexcept>
 
 #include "trainers/TrainerStateMaker.h"
 
@@ -15,4 +16,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
+VIRTUAL bool TrainerStateMaker::created( TrainerState *state ) {
+    throw runtime_error("TrainerStateMaker::created not implemented for .. this class");
+}
 

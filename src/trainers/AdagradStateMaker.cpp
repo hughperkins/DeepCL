@@ -6,7 +6,8 @@
 
 #include <iostream>
 
-#include "trainers/TrainerState.h"
+#include "trainers/AdagradStateMaker.h"
+#include "trainers/AdagradState.h"
 
 using namespace std;
 
@@ -15,8 +16,8 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainerState::TrainerState() {
-}
-VIRTUAL TrainerState::~TrainerState() {
+TrainerState *AdagradStateMaker::instance( EasyCL *cl, int numWeights ) {
+    AdagradState *sgd = new AdagradState( cl, numWeights );
+    return sgd;
 }
 

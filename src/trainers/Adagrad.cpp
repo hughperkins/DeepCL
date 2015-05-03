@@ -10,9 +10,9 @@
 #include "net/NeuralNet.h"
 #include "layer/Layer.h"
 #include "loss/LossLayer.h"
-#include "trainers/SGDStateMaker.h"
-#include "trainers/SGDState.h"
-#include "trainers/SGD.h"
+#include "trainers/AdagradStateMaker.h"
+#include "trainers/AdagradState.h"
+#include "trainers/Adagrad.h"
 #include "loss/IAcceptsLabels.h"
 #include "batch/NetAction.h"
 #include "clmath/CLMathWrapper.h"
@@ -26,20 +26,17 @@ using namespace std;
 #define VIRTUAL
 
 
-VIRTUAL SGD::~SGD() {
+VIRTUAL Adagrad::~Adagrad() {
 }
-VIRTUAL void SGD::setMomentum( float momentum ) {
-    this->momentum = momentum;
+VIRTUAL void Adagrad::setFudgeFactor( float fudgeFactor ) {
+    this->fudgeFactor = fudgeFactor;
 }
-VIRTUAL void SGD::setWeightDecay( float weightDecay ) {
-    this->weightDecay = weightDecay;
+VIRTUAL std::string Adagrad::asString() {
+    return "Adagrad{ learningRate=" + toString( learningRate ) + ", fudgeFactor=" + 
+        toString( fudgeFactor ) + " }"; // if you have a better name, let me know :-)
 }
-VIRTUAL std::string SGD::asString() {
-    return "SGD{ learningRate=" + toString( learningRate ) + ", momentum=" + 
-        toString( momentum ) + " }";
-}
-VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-        SGDState *trainerState ) {
+VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+        AdagradState *trainerState ) {
     int numWeights = trainerState->numWeights;
     CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
     float *gradWeightsCopy = new float[ numWeights ];
@@ -68,7 +65,7 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
     delete gradWeightsCopyWrapper;
     delete[] gradWeightsCopy;
 }
-VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adagrad::train( NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData ) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
@@ -88,41 +85,53 @@ VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
         }
         if( layer->needsTrainerState() ) {
             updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
-                dynamic_cast< SGDState * >( layer->getTrainerState() ) );
+                dynamic_cast< AdagradState * >( layer->getTrainerState() ) );
             if( layer->biased() ) {
                 updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
-                    dynamic_cast< SGDState * >( layer->getBiasTrainerState() ) );
+                    dynamic_cast< AdagradState * >( layer->getBiasTrainerState() ) );
             }
         }
     }
     return BatchResult( loss, numRight );
 }
-VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adagrad::train( NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput ) {
     ExpectedData expectedData( net, expectedOutput );
     return this->train( net, context, input, &expectedData );
 }
-VIRTUAL BatchResult SGD::trainFromLabels( NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adagrad::trainFromLabels( NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels ) {
     LabeledData labeledData( net, labels );
     return this->train( net, context, input, &labeledData );
 }
-VIRTUAL void SGD::bindState( NeuralNet *net ) {
-    SGDStateMaker stateMaker;
-    this->_bindState( net, &stateMaker );
+// maybe can shift this into Trainer class somehow?
+// maybe put the dynamic_cast into the TrainerStateMaker class?
+VIRTUAL void Adagrad::bindState( NeuralNet *net ) {
+    AdagradStateMaker stateMaker;
+    // go through network layers, and assign Adagrad objects (should probably rename these sometime somehow)
+    for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
+        Layer *layer = net->getLayer( layerIdx );
+        if( layer->needsTrainerState() ) {
+            TrainerState *state = layer->getTrainerState();
+            AdagradState *sgdState = dynamic_cast< AdagradState *>( state );
+            if( sgdState == 0 ) {
+                layer->setTrainerState( &stateMaker );
+            }
+        }
+    }
 }
-STATIC SGD *SGD::instance( EasyCL *cl, float learningRate ) {
-    SGD *sgd = new SGD( cl );
+STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate ) {
+    Adagrad *sgd = new Adagrad( cl );
     sgd->setLearningRate( learningRate );
     return sgd;
 }
-STATIC SGD *SGD::instance( EasyCL *cl, float learningRate, float momentum ) {
-    SGD *sgd = new SGD( cl );
+STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate, float momentum ) {
+    Adagrad *sgd = new Adagrad( cl );
     sgd->setLearningRate( learningRate );
     sgd->setMomentum( momentum );
     return sgd;
 }
-SGD::SGD( EasyCL *cl ) :
+Adagrad::Adagrad( EasyCL *cl ) :
         Trainer( cl ),
         momentum( 0.0f ),
         weightDecay( 0.0f ) {

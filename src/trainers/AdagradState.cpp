@@ -8,7 +8,7 @@
 
 #include "EasyCL.h"
 #include "util/StatefulTimer.h"
-#include "trainers/SGDState.h"
+#include "trainers/AdagradState.h"
 
 using namespace std;
 
@@ -17,12 +17,12 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL SGDState::~SGDState() {
+VIRTUAL AdagradState::~AdagradState() {
     delete lastUpdateWrapper;
     delete[] lastUpdate;
 }
 
-SGDState::SGDState( EasyCL *cl, int numWeights ) :
+AdagradState::AdagradState( EasyCL *cl, int numWeights ) :
         numWeights( numWeights )
     { // should we handle bias separately?  maybe... not?
       // or each layer could have one trainer for biases, and one for the
@@ -37,4 +37,5 @@ SGDState::SGDState( EasyCL *cl, int numWeights ) :
     lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
     lastUpdateWrapper->copyToDevice();
 }
+
 

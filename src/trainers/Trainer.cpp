@@ -12,6 +12,9 @@
 #include "trainers/Trainer.h"
 #include "net/MultiNet.h"
 #include "batch/NetAction.h"
+#include "trainers/TrainerStateMaker.h"
+#include "trainers/TrainerState.h"
+#include "layer/Layer.h"
 
 using namespace std;
 
@@ -68,5 +71,17 @@ VIRTUAL BatchResult Trainer::trainFromLabels( Trainable *trainable,
         return this->trainFromLabels( net, context, input, labels );
     }
     return BatchResult( loss, numRight );
+}
+VIRTUAL void Trainer::_bindState( NeuralNet *net, TrainerStateMaker *stateMaker ) {
+    // go through network layers, and assign TrainerState objects
+    for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
+        Layer *layer = net->getLayer( layerIdx );
+        if( layer->needsTrainerState() ) {
+            TrainerState *state = layer->getTrainerState();
+            if( !stateMaker->created( state ) ) {
+                layer->setTrainerState( stateMaker );
+            }
+        }
+    }
 }
 

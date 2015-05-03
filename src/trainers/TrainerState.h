@@ -12,6 +12,7 @@
 #include <algorithm>
 
 class CLWrapper;
+class TrainerStateMaker;
 
 #include "DeepCLDllExport.h"
 

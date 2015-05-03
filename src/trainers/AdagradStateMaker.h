@@ -11,22 +11,19 @@
 #include <iostream>
 #include <algorithm>
 
+#include "trainers/TrainerStateMaker.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
-class TrainerState;
-class EasyCL;
-
-class TrainerStateMaker {
+class AdagradStateMaker : public TrainerStateMaker {
 public:
-    virtual TrainerState *instance( EasyCL *cl, int numWeights ) = 0;
-
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL bool created( TrainerState *state );
+    TrainerState *instance( EasyCL *cl, int numWeights );
 
     // [[[end]]]
 };

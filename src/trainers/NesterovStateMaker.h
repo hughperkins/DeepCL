@@ -24,6 +24,7 @@ public:
     // ]]]
     // generated, using cog:
     TrainerState *instance( EasyCL *cl, int numWeights );
+    VIRTUAL bool created( TrainerState *state );
 
     // [[[end]]]
 };

@@ -149,17 +149,7 @@ VIRTUAL BatchResult Nesterov::trainFromLabels( NeuralNet *net, TrainingContext *
 }
 VIRTUAL void Nesterov::bindState( NeuralNet *net ) {
     NesterovStateMaker stateMaker;
-    // go through network layers, and assign Nesterov objects (should probably rename these sometime somehow)
-    for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( layer->needsTrainerState() ) {
-            TrainerState *state = layer->getTrainerState();
-            NesterovState *sgdState = dynamic_cast< NesterovState *>( state );
-            if( sgdState == 0 ) {
-                layer->setTrainerState( &stateMaker );
-            }
-        }
-    }
+    this->_bindState( net, &stateMaker );
 }
 STATIC Nesterov *Nesterov::instance( EasyCL *cl, float learningRate ) {
     Nesterov *sgd = new Nesterov( cl );

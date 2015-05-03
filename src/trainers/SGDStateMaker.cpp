@@ -20,4 +20,7 @@ TrainerState *SGDStateMaker::instance( EasyCL *cl, int numWeights ) {
     SGDState *sgd = new SGDState( cl, numWeights );
     return sgd;
 }
+VIRTUAL bool SGDStateMaker::created( TrainerState *state ) {
+    return dynamic_cast< SGDState * >(state) != 0;
+}
 

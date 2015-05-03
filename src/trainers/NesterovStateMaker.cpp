@@ -20,4 +20,7 @@ TrainerState *NesterovStateMaker::instance( EasyCL *cl, int numWeights ) {
     NesterovState *sgd = new NesterovState( cl, numWeights );
     return sgd;
 }
+VIRTUAL bool NesterovStateMaker::created( TrainerState *state ) {
+    return dynamic_cast< NesterovState * >(state) != 0;
+}
 
