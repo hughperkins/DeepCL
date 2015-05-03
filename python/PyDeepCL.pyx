@@ -16,6 +16,7 @@ cimport cDeepCL
 include "EasyCL.pyx"
 include "SGD.pyx"
 include "Annealer.pyx"
+include "Nesterov.pyx"
 include "NeuralNet.pyx"
 include "Layer.pyx"
 include "LayerMaker.pyx"
