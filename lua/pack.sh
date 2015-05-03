@@ -37,7 +37,8 @@ if [[ x$1 == xupload ]]; then {
 
 export package=LuaDeepCL
 export packagelower=luadeepcl
-export pagesurl=http:\\/\\/hughperkins\\.github\\.io\\/DeepCL\\/Downloads\\/lua
+# export pagesurl=http:\\/\\/hughperkins\\.github\\.io\\/DeepCL\\/Downloads\\/lua
+export pagesurl=http:\\/\\/deepcl\\/hughperkins\\.com
 export version=$(head -n 1 version.txt)-1
 echo package=${package} version=${version}
 
@@ -68,13 +69,14 @@ touch dist/${package}-${version}/inpkg.flag
 (cd dist; tar czvpf ${package}-${version}.tar.gz ${package}-${version}/)
 
 if [[ $upload == 1  ]]; then {
-    cp dist/${package}-${version}.tar.gz ../../DeepCL-ghpages/Downloads/lua
-    (
-        cd ../../DeepCL-ghpages
-        git add Downloads/lua/${package}-${version}.tar.gz;
-        git commit -m "lua rock upload"
-        git push
-    )
+    echo now scp dist/${package}-${version}.tar.gz to your server
+    # cp dist/${package}-${version}.tar.gz ../../DeepCL-ghpages/Downloads/lua
+    # (
+    #     cd ../../DeepCL-ghpages
+    #     git add Downloads/lua/${package}-${version}.tar.gz;
+    #     git commit -m "lua rock upload"
+     #    git push
+    # )
 } else  {
     cd dist
     luarocks pack ${packagelower}-${version}.rockspec 
