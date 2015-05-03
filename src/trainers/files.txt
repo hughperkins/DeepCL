@@ -1,3 +1,6 @@
+Rmsprop.cpp
+RmspropState.cpp
+RmspropStateMaker.cpp
 Adagrad.cpp
 AdagradState.cpp
 AdagradStateMaker.cpp

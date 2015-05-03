@@ -50,6 +50,7 @@ Trainers:
 * Anneal (New!)
 * Nesterov (New!)
 * Adagrad (New!)
+* Rmsprop (New!)
 
 Activations:
 * tanh

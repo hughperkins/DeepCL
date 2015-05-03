@@ -10,9 +10,9 @@
 #include "net/NeuralNet.h"
 #include "layer/Layer.h"
 #include "loss/LossLayer.h"
-#include "trainers/AdagradStateMaker.h"
-#include "trainers/AdagradState.h"
-#include "trainers/Adagrad.h"
+#include "trainers/RmspropStateMaker.h"
+#include "trainers/RmspropState.h"
+#include "trainers/Rmsprop.h"
 #include "loss/IAcceptsLabels.h"
 #include "batch/NetAction.h"
 #include "clmath/CLMathWrapper.h"
@@ -28,17 +28,13 @@ using namespace std;
 #define VIRTUAL
 
 
-VIRTUAL Adagrad::~Adagrad() {
+VIRTUAL Rmsprop::~Rmsprop() {
 }
-VIRTUAL void Adagrad::setFudgeFactor( float fudgeFactor ) {
-    this->fudgeFactor = fudgeFactor;
+VIRTUAL std::string Rmsprop::asString() {
+    return "Rmsprop{ learningRate=" + toString( learningRate ) + " }";
 }
-VIRTUAL std::string Adagrad::asString() {
-    return "Adagrad{ learningRate=" + toString( learningRate ) + ", fudgeFactor=" + 
-        toString( fudgeFactor ) + " }"; // if you have a better name, let me know :-)
-}
-VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-        AdagradState *trainerState ) {
+VIRTUAL void Rmsprop::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+        RmspropState *trainerState ) {
 
     int numWeights = trainerState->numWeights;
     float *working = new float[ numWeights ];
@@ -47,15 +43,17 @@ VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradW
 
     CLMathWrapper clWeights( weightsWrapper );
     CLMathWrapper clGradWeights( gradWeightsWrapper );
-    CLMathWrapper clSumSquares( trainerState->sumSquaresWrapper );
+    CLMathWrapper clMeanSquares( trainerState->meanSquareWrapper );
     CLMathWrapper clWorking( workingWrapper );
 
     // following all happens on gpu, via clmathwrapper:
     clWorking = clGradWeights;
     clWorking.squared();
-    clSumSquares += clWorking;
+    clWorking *= 0.1f; // I guess this should be a hyper-parameter?
+    clMeanSquares *= 0.9f;
+    clMeanSquares += clWorking;
 
-    clWorking = clSumSquares;
+    clWorking = clMeanSquares;
     clWorking.sqrt();
     clWorking.inv();
     clWorking *= clGradWeights;
@@ -65,7 +63,7 @@ VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradW
     delete workingWrapper;
     delete[] working;
 }
-VIRTUAL BatchResult Adagrad::train( NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Rmsprop::train( NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData ) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
@@ -85,36 +83,35 @@ VIRTUAL BatchResult Adagrad::train( NeuralNet *net, TrainingContext *context,
         }
         if( layer->needsTrainerState() ) {
             updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
-                dynamic_cast< AdagradState * >( layer->getTrainerState() ) );
+                dynamic_cast< RmspropState * >( layer->getTrainerState() ) );
             if( layer->biased() ) {
                 updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
-                    dynamic_cast< AdagradState * >( layer->getBiasTrainerState() ) );
+                    dynamic_cast< RmspropState * >( layer->getBiasTrainerState() ) );
             }
         }
     }
     return BatchResult( loss, numRight );
 }
-VIRTUAL BatchResult Adagrad::train( NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Rmsprop::train( NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput ) {
     ExpectedData expectedData( net, expectedOutput );
     return this->train( net, context, input, &expectedData );
 }
-VIRTUAL BatchResult Adagrad::trainFromLabels( NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Rmsprop::trainFromLabels( NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels ) {
     LabeledData labeledData( net, labels );
     return this->train( net, context, input, &labeledData );
 }
-VIRTUAL void Adagrad::bindState( NeuralNet *net ) {
-    AdagradStateMaker stateMaker( fudgeFactor );
+VIRTUAL void Rmsprop::bindState( NeuralNet *net ) {
+    RmspropStateMaker stateMaker;
     this->_bindState( net, &stateMaker );
 }
-STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate ) {
-    Adagrad *sgd = new Adagrad( cl );
+STATIC Rmsprop *Rmsprop::instance( EasyCL *cl, float learningRate ) {
+    Rmsprop *sgd = new Rmsprop( cl );
     sgd->setLearningRate( learningRate );
     return sgd;
 }
-Adagrad::Adagrad( EasyCL *cl ) :
-        Trainer( cl ),
-        fudgeFactor( 0.000001f ) {
+Rmsprop::Rmsprop( EasyCL *cl ) :
+        Trainer( cl ) {
 }
 

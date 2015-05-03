@@ -129,7 +129,7 @@
 | numtrain=1000 | only uses the first 1000 training samples |
 | numtest=1000 | only uses the first 1000 testing samples |
 | netdef=100c5-10n | provide the network definition, as documented in [Commandline usage](#commandline-usage]) above |
-| trainer=sgd | choose trainer.  valid choices are sgd, anneal, nesterov, or adagrad.  (default: sgd) |
+| trainer=sgd | choose trainer.  valid choices are sgd, anneal, nesterov, adagrad, or rmsprop.  (default: sgd) |
 | learningrate=0.0001 | specify learning rate. works with any trainer |
 | momentum=0.1 | specify momentum (default: 0). works with sgd and nesterov trainers |
 | weightdecay=0.001 | weight decay, 0 means no decay, 1 means complete decay (default:0). works with sgd trainer |

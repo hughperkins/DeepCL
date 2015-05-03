@@ -209,14 +209,21 @@ Other trainers:
 ```c++
 Adagrad *adagrad = new Adagrad( cl );
 adagrad->setLearningRate( 0.002f );
+Trainer *trainer = adagrad;
+
+Rmsprop *rmsprop = new Rmsprop( cl );
+rmsprop->setLearningRate( 0.002f );
+Trainer *trainer = rmsprop;
 
 Nesterov *nesterov = new Nesterov( cl );
 nesterov->setLearningRate( 0.002f );
 nesterov->setMomentum( 0.1f );
+Trainer *trainer = nesterov;
 
 Annealer *annealer = new Annealer( cl );
 annealer->setLearningRate( 0.002f );
 annealer->setAnneal( 0.97f );
+Trainer *trainer = annealer;
 ```
 
 ## Train
