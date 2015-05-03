@@ -35,7 +35,8 @@ VIRTUAL std::string Nesterov::asString() {
     return "Nesterov{ learningRate=" + toString( learningRate ) + ", momentum=" + 
         toString( momentum ) + " }";
 }
-VIRTUAL void Nesterov::loadFutureWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+VIRTUAL void Nesterov::loadFutureWeights(
+        CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
         NesterovState *trainerState ) {
     // this will save the old weights, into the trainerState,
     // and then add mom * dweights to them
@@ -51,13 +52,15 @@ VIRTUAL void Nesterov::loadFutureWeights( CLWrapper *weightsWrapper, CLWrapper *
     clWeights *= momentum;
     clWeights += clOldWeights;
 }
-VIRTUAL void Nesterov::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+VIRTUAL void Nesterov::updateWeights( CLWrapper *weightsWrapper,
+        CLWrapper *gradWeightsWrapper,
         NesterovState *trainerState ) {
     // we have: gradWeights = gradient( weights[t] + mom * dweights[t] )
     //          trainerState->oldWeights = weights[t]
     //          trainerState->lastUpdate = dweights[t]
     // and so we can calculate
-    //      dweights[t+1] = mom * dweights[t] - learningrate * gradient( weights[t] + mom * dweights[t] )
+    //      dweights[t+1] = mom * dweights[t] - learningrate * gradient( 
+    //                          weights[t] + mom * dweights[t] )
     //      weights[t+1] = weights[t] + dweights[t+1]
 
     // create CLMathWrapper objects, so we can do per-element maths on the gpu:
@@ -81,7 +84,8 @@ VIRTUAL BatchResult Nesterov::train(
     // doesnt have to think about running multiple batches,
     // or loading data, or anything like that
 
-    //      dweights[t+1] = mom * dweights[t] - learningrate * gradient( weights[t] + mom * dweights[t] )
+    //      dweights[t+1] = mom * dweights[t] - learningrate * gradient(
+    //                      weights[t] + mom * dweights[t] )
     //      weights[t+1] = weights[t] + dweights[t+1]
     //
     // given weights[t], dweights[t]:
