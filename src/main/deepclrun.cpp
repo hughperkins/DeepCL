@@ -37,11 +37,11 @@ using namespace std;
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50, True),
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
-        ('trainer', 'string', 'which trainer, sgd or anneal, default sgd', 'sgd', False ),
-        ('learningRate', 'float', 'learning rate, a float value', 0.002, True),
-        ('momentum', 'float', 'momentum', 0.0, True),
-        ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay', 0.0, True),
-        ('anneal', 'float', 'multiply learningrate by this amount each epoch, default 1.0', 1.0, False)
+        ('trainer', 'string', 'which trainer, sgd, anneal, or nesterov, (default: sgd)', 'sgd', True ),
+        ('learningRate', 'float', 'learning rate, a float value, used by all trainers', 0.002, True),
+        ('momentum', 'float', 'momentum, used by sgd and nesterov trainers', 0.0, True),
+        ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay, used by sgd trainer', 0.0, True),
+        ('anneal', 'float', 'multiply learningrate by this amount each epoch, used by anneal trainer, default 1.0', 1.0, False)
     ]
 *///]]]
 // [[[end]]]
@@ -262,6 +262,11 @@ void go(Config config) {
         annealer->setLearningRate( config.learningRate );
         annealer->setAnneal( config.anneal );
         trainer = annealer;
+    } else if( toLower( config.trainer ) == "nesterov" ) {
+        Nesterov *nesterov = new Nesterov( cl );
+        nesterov->setLearningRate( config.learningRate );
+        nesterov->setMomentum( config.momentum );
+        trainer = nesterov;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
@@ -416,9 +421,10 @@ void printUsage( char *argv[], Config config ) {
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
-    cout << "    learningrate=[learning rate, a float value] (" << config.learningRate << ")" << endl;
-    cout << "    momentum=[momentum] (" << config.momentum << ")" << endl;
-    cout << "    weightdecay=[weight decay, 0 means no decay; 1 means full decay] (" << config.weightDecay << ")" << endl;
+    cout << "    trainer=[which trainer, sgd, anneal, or nesterov, (default: sgd)] (" << config.trainer << ")" << endl;
+    cout << "    learningrate=[learning rate, a float value, used by all trainers] (" << config.learningRate << ")" << endl;
+    cout << "    momentum=[momentum, used by sgd and nesterov trainers] (" << config.momentum << ")" << endl;
+    cout << "    weightdecay=[weight decay, 0 means no decay; 1 means full decay, used by sgd trainer] (" << config.weightDecay << ")" << endl;
     // [[[end]]]
 }
 

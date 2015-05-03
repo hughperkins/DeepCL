@@ -34,9 +34,11 @@ class DeepCL_EXPORT NesterovState : public TrainerState {
 public:
     const int numWeights;
 
-    // should store last weights
     float *lastUpdate;
     CLWrapper *lastUpdateWrapper;
+
+    float *oldWeights;
+    CLWrapper *oldWeightsWrapper;
 
     // [[[cog
     // import cog_addheaders

@@ -13,6 +13,7 @@
 #include "trainers/Trainer.h"
 #include "trainers/SGD.h"
 #include "trainers/Annealer.h"
+#include "trainers/Nesterov.h"
 
 #include "normalize/NormalizationHelper.h"
 #include "layer/Layer.h"

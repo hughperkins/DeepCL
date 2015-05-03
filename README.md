@@ -44,11 +44,11 @@ Loss layer types:
 * softmax
 * cross-entropy (synonymous with multinomial logistic, etc)
 * square loss
-* easy to add others, on request
 
 Trainers:
 * SGD
-* easy to add others, on request
+* Anneal (New!)
+* Nesterov (New!)
 
 Activations:
 * tanh
@@ -56,7 +56,6 @@ Activations:
 * linear
 * sigmoid
 * relu
-* easy to add others, on request
 
 Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 

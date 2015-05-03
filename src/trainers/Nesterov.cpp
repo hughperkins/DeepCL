@@ -35,11 +35,44 @@ VIRTUAL std::string Nesterov::asString() {
     return "Nesterov{ learningRate=" + toString( learningRate ) + ", momentum=" + 
         toString( momentum ) + " }";
 }
+VIRTUAL void Nesterov::loadFutureWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+        NesterovState *trainerState ) {
+    // this will save the old weights, into the trainerState,
+    // and then add mom * dweights to them
+
+    // create CLMathWrapper objects, so we can do per-element maths on the gpu:
+    CLMathWrapper clOldWeights( trainerState->oldWeightsWrapper );
+    CLMathWrapper clWeights( weightsWrapper );
+    CLMathWrapper clGradWeights( gradWeightsWrapper );
+
+    // following happens on the gpu:
+    clOldWeights = clWeights;
+    clWeights = clGradWeights;
+    clWeights *= momentum;
+    clWeights += clOldWeights;
+}
 VIRTUAL void Nesterov::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
         NesterovState *trainerState ) {
-    int numWeights = trainerState->numWeights;
+    // we have: gradWeights = gradient( weights[t] + mom * dweights[t] )
+    //          trainerState->oldWeights = weights[t]
+    //          trainerState->lastUpdate = dweights[t]
+    // and so we can calculate
+    //      dweights[t+1] = mom * dweights[t] - learningrate * gradient( weights[t] + mom * dweights[t] )
+    //      weights[t+1] = weights[t] + dweights[t+1]
 
+    // create CLMathWrapper objects, so we can do per-element maths on the gpu:
+    CLMathWrapper clLastUpdate( trainerState->lastUpdateWrapper );
+    CLMathWrapper clOldWeights( trainerState->oldWeightsWrapper );
+    CLMathWrapper clGradWeights( gradWeightsWrapper );
+    CLMathWrapper clWeights( weightsWrapper );
 
+    // following happens on the gpu, via CLMathWrapper:
+
+    clGradWeights *= - learningRate;
+    clLastUpdate *= momentum;
+    clLastUpdate += clGradWeights;
+    clWeights = clOldWeights;
+    clWeights += clLastUpdate;
 }
 VIRTUAL BatchResult Nesterov::train( 
     NeuralNet *net, TrainingContext *context,
@@ -57,12 +90,34 @@ VIRTUAL BatchResult Nesterov::train(
     //      => calc weights[t+1]
     bindState( net );
 
+    // first, substitute weights + mom * dweights into the weights
+    // calculate them first
+    // save old weights first I suppose?
+
+    int numLayers = net->getNumLayers();
+    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
+        Layer *layer = net->getLayer( layerIdx );
+        if( !layer->needsBackProp() ) {
+            break;
+        }
+        if( layer->needsTrainerState() ) {
+            loadFutureWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
+                dynamic_cast< NesterovState * >( layer->getTrainerState() ) );
+            if( layer->biased() ) {
+                loadFutureWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
+                    dynamic_cast< NesterovState * >( layer->getBiasTrainerState() ) );
+            }
+        }
+    }
+
+    // now, we have loaded in weigths + mom * dweights into the weights
+    // do forward/backward:
     net->forward( input );
     int numRight = net->calcNumRight( outputData );
     float loss = net->calcLoss( outputData );
     net->backward( outputData );
 
-    int numLayers = net->getNumLayers();
+    // now, calculate the new weights
     for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
         Layer *layer = net->getLayer( layerIdx );
         if( !layer->needsBackProp() ) {
@@ -77,15 +132,18 @@ VIRTUAL BatchResult Nesterov::train(
             }
         }
     }
+
     return BatchResult( loss, numRight );
 }
 VIRTUAL BatchResult Nesterov::train( NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput ) {
+
     ExpectedData expectedData( net, expectedOutput );
     return this->train( net, context, input, &expectedData );
 }
 VIRTUAL BatchResult Nesterov::trainFromLabels( NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels ) {
+
     LabeledData labeledData( net, labels );
     return this->train( net, context, input, &labeledData );
 }

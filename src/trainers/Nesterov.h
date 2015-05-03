@@ -15,6 +15,8 @@
 
 #include "DeepCLDllExport.h"
 
+class NesterovState;
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -40,6 +42,8 @@ public:
     VIRTUAL ~Nesterov();
     VIRTUAL void setMomentum( float momentum );
     VIRTUAL std::string asString();
+    VIRTUAL void loadFutureWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    NesterovState *trainerState );
     VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState );
     VIRTUAL BatchResult train(

@@ -20,6 +20,8 @@ using namespace std;
 VIRTUAL NesterovState::~NesterovState() {
     delete lastUpdateWrapper;
     delete[] lastUpdate;
+    delete oldWeights;
+    delete[] oldWeightsWrapper;
 }
 
 NesterovState::NesterovState( EasyCL *cl, int numWeights ) :
@@ -36,6 +38,10 @@ NesterovState::NesterovState( EasyCL *cl, int numWeights ) :
     }
     lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
     lastUpdateWrapper->copyToDevice();
+
+    oldWeights = new float[numWeights];
+    oldWeightsWrapper = cl->wrap( numWeights, oldWeights );
+    oldWeightsWrapper->createOnDevice();
 }
 
 
