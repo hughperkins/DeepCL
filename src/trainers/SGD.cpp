@@ -15,9 +15,7 @@
 #include "trainers/SGD.h"
 #include "loss/IAcceptsLabels.h"
 #include "batch/NetAction.h"
-#include "clmath/MultiplyInPlace.h"
-#include "clmath/CopyBuffer.h"
-#include "clmath/GpuAdd.h"
+#include "clmath/CLMathWrapper.h"
 
 using namespace std;
 
@@ -28,10 +26,6 @@ using namespace std;
 
 
 VIRTUAL SGD::~SGD() {
-//    delete kernel;
-    delete multiplyInPlace;
-    delete copyBuffer;
-    delete gpuAdd;
 }
 VIRTUAL void SGD::setMomentum( float momentum ) {
     this->momentum = momentum;
@@ -51,43 +45,27 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
     CLWrapper *gradWeightsCopyWrapper = cl->wrap( numWeights, gradWeightsCopy );
     gradWeightsCopyWrapper->createOnDevice();
 
-    // we should probably either write a wrapper class for doing maths,
-    // or else use clBLAS etc
-    // dweights <= mom * dweights
-    multiplyInPlace->multiply( numWeights, momentum, lastUpdateWrapper );
+    CLMathWrapper lastUpdates_( lastUpdateWrapper );
+    CLMathWrapper gradWeights_( gradWeightsWrapper );
+    CLMathWrapper gradWeightsCopy_( gradWeightsCopyWrapper );
+    CLMathWrapper weights_( weightsWrapper );
 
-    // gradweightscopy <= - learningRate * gradWeights
-    copyBuffer->copy( numWeights, gradWeightsWrapper, gradWeightsCopyWrapper );
-    multiplyInPlace->multiply( numWeights, - learningRate, gradWeightsCopyWrapper );
-
-    // dweights <= mom * dweights - learningRate * gradWeights
-    gpuAdd->add( numWeights, lastUpdateWrapper, gradWeightsCopyWrapper );
-
-    // weights <= weights + dweights
-    gpuAdd->add( numWeights, weightsWrapper, lastUpdateWrapper );
-
-    delete gradWeightsCopyWrapper;
-    delete[] gradWeightsCopy;
-
-//    CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
-//    kernel  ->in( numWeights )
-//            ->in( learningRate )
-//            ->in( momentum )
-//            ->inout( lastUpdateWrapper )
-//            ->in( gradWeightsWrapper )
-//            ->inout( weightsWrapper );
-//    int globalSize = numWeights;
-//    int workgroupSize = 64;
-//    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-//    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
-//    cl->finish();
+    // following all happens on gpu, via clmathwrapper:
+    lastUpdates_ *= momentum;
+    gradWeightsCopy_ = gradWeights_;
+    gradWeightsCopy_ *= - learningRate;
+    lastUpdates_ += gradWeightsCopy_;
+    weights_ += lastUpdates_;
 
     if( weightDecay > 0 ) {
         // apply weight decay, by multiplying the weights by (1.0f - weightDecay)
         // so weightDecay == 0 means no decay; and weightDecay == 1.0f means
         // weights go immediately to zero
-        multiplyInPlace->multiply( numWeights, 1.0f - weightDecay, weightsWrapper );
+        weights_ *= 1.0f - weightDecay;
     }
+
+    delete gradWeightsCopyWrapper;
+    delete[] gradWeightsCopy;
 }
 VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
     float const*input, float const*expectedOutput ) {
@@ -174,18 +152,7 @@ STATIC SGD *SGD::instance( EasyCL *cl, float learningRate, float momentum ) {
 }
 SGD::SGD( EasyCL *cl ) :
         Trainer( cl ),
-//        kernel( 0 ),
         momentum( 0.0f ),
         weightDecay( 0.0f ) {
-    string options = "";
-    multiplyInPlace = new MultiplyInPlace( cl );
-    gpuAdd = new GpuAdd( cl );
-    copyBuffer = new CopyBuffer( cl );
-
-    // [[[cog
-    // # import stringify
-    // # stringify.write_kernel2( "kernel", "cl/SGD.cl", "updateWeights", 'options' )
-    // ]]]
-    // [[[end]]]
 }
 

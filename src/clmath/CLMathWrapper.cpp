@@ -31,13 +31,20 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     this->N = floatWrapper->size();
     this->copyBuffer = new CopyBuffer( cl );
     this->gpuAdd = new GpuAdd( cl );
+    this->multiplyInPlace = new MultiplyInPlace( cl );
 }
 VIRTUAL CLMathWrapper::~CLMathWrapper() {
     delete copyBuffer;
     delete gpuAdd;
+    delete multiplyInPlace;
+}
+VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const float scalar ) {
+//    cout << "CLMathWrapper.operator*=(scalar)" << endl;
+    multiplyInPlace->multiply( N, scalar, wrapper );
+    return *this;    
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator+=( const CLMathWrapper &two ) {
-    cout << "CLMathWrapper.operator+=()" << endl;
+//    cout << "CLMathWrapper.operator+=()" << endl;
     if( two.N != N ) {
         throw runtime_error("CLMathWrapper::operator+, array size mismatch, cannot assign " + toString( two.N ) + 
             " vs " + toString( N ) );
@@ -46,7 +53,7 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator+=( const CLMathWrapper &two ) {
     return *this;    
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const CLMathWrapper &rhs ) {
-    cout << "CLMathWrapper.operator=()" << endl;
+//    cout << "CLMathWrapper.operator=()" << endl;
     if( rhs.N != N ) {
         throw runtime_error("CLMathWrapper::operator= array size mismatch, cannot assign " + toString( rhs.N ) + 
             " vs " + toString( N ) );

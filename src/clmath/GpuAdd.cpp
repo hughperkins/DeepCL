@@ -39,7 +39,7 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
     std::string kernelName = "per_element_add.per_element_add";
     if( cl->kernelExists( kernelName ) ) {
         this->kernel = cl->getKernel( kernelName );
-        cout << "GpuAdd kernel already built => reusing" << endl;
+//        cout << "GpuAdd kernel already built => reusing" << endl;
         return;
     }
     cout << "GpuAdd: building kernel" << endl;

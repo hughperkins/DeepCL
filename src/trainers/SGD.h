@@ -16,10 +16,10 @@
 class SGDState;
 class CLWrapper;
 class EasyCL;
-class CLKernel;
-class MultiplyInPlace;
-class GpuAdd;
-class CopyBuffer;
+//class CLKernel;
+//class MultiplyInPlace;
+//class GpuAdd;
+//class CopyBuffer;
 
 #include "DeepCLDllExport.h"
 
@@ -41,9 +41,9 @@ class CopyBuffer;
 class DeepCL_EXPORT SGD : public Trainer{
 public:
 //    CLKernel *kernel;
-    MultiplyInPlace *multiplyInPlace;
-    CopyBuffer *copyBuffer;
-    GpuAdd *gpuAdd;
+//    MultiplyInPlace *multiplyInPlace;
+//    CopyBuffer *copyBuffer;
+//    GpuAdd *gpuAdd;
 
     float momentum;
     float weightDecay;

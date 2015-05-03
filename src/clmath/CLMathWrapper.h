@@ -22,10 +22,13 @@ class EasyCL;
 
 // wraps a CLFloatWrapper, so we can do maths on it
 // like per-element add, inplace scalar multiply etc
+// a bit basic for now.  can extend gradually :-)
+// something to consider: pros/cons of using eg clBLAS instead?
 class CLMathWrapper {
     EasyCL *cl; // dont delete
     CopyBuffer *copyBuffer;
     GpuAdd *gpuAdd;
+    MultiplyInPlace *multiplyInPlace;
 
     int N;
     CLFloatWrapper *wrapper; // dont delete
@@ -39,6 +42,7 @@ public:
     // generated, using cog:
     CLMathWrapper( CLWrapper *wrapper );
     VIRTUAL ~CLMathWrapper();
+    VIRTUAL CLMathWrapper &operator*=( const float scalar );
     VIRTUAL CLMathWrapper &operator+=( const CLMathWrapper &two );
     VIRTUAL CLMathWrapper &operator=( const CLMathWrapper &rhs );
 
