@@ -46,7 +46,7 @@ Loss layer types:
 * square loss
 
 Trainers:
-* SGD
+* SGD (including momentum)
 * Anneal (New!)
 * Nesterov (New!)
 * Adagrad (New!)
