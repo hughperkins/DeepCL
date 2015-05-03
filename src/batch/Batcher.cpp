@@ -142,6 +142,7 @@ VIRTUAL void LearnBatcher::internalTick( int epoch, float const*batchData, int c
     TrainingContext context( epoch, nextBatch );
     trainer->trainFromLabels( net, &context, batchData, batchLabels );
 }
+
 NetActionBatcher::NetActionBatcher(Trainable *net, int batchSize, int N, float *data, int const*labels, NetAction *netAction) :
     Batcher( net, batchSize, N, data, labels ),
     netAction( netAction ) {

@@ -77,15 +77,15 @@ public:
     virtual void internalTick( int epoch, float const*batchData, int const*batchLabels);
 };
 
-class DeepCL_EXPORT LearnFromExpectedBatcher : public Batcher {
-public:
-    Trainer *trainer; // NOT delete
-    TrainingContext *context; // NOT delete
+//class DeepCL_EXPORT LearnFromExpectedBatcher : public Batcher {
+//public:
+//    Trainer *trainer; // NOT delete
+//    TrainingContext *context; // NOT delete
 
-    LearnFromExpectedBatcher( Trainer *trainer, 
-        Trainable *net, int batchSize, int N, float *data, float *expectedOutputs );
-    virtual void internalTick( int epoch, float const*batchData, float *expectedOutputs );
-};
+//    LearnFromExpectedBatcher( Trainer *trainer, 
+//        Trainable *net, int batchSize, int N, float *data, float *expectedOutputs );
+//    virtual void internalTick( int epoch, float const*batchData, float *expectedOutputs );
+//};
 
 class DeepCL_EXPORT NetActionBatcher : public Batcher {
 public:
