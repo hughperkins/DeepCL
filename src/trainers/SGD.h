@@ -37,11 +37,6 @@ class OutputData;
 //
 class DeepCL_EXPORT SGD : public Trainer{
 public:
-//    CLKernel *kernel;
-//    MultiplyInPlace *multiplyInPlace;
-//    CopyBuffer *copyBuffer;
-//    GpuAdd *gpuAdd;
-
     float momentum;
     float weightDecay;
 

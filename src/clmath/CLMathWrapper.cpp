@@ -21,18 +21,6 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
-    CLFloatWrapper *floatWrapper = dynamic_cast< CLFloatWrapper * >( wrapper );
-    if( floatWrapper == 0 ) {
-        throw runtime_error( "CLMathWrapper only works on CLFloatWrapper objects");
-    }
-    this->cl = floatWrapper->getCl();
-    this->wrapper = floatWrapper;
-    this->N = floatWrapper->size();
-    this->copyBuffer = new CopyBuffer( cl );
-    this->gpuAdd = new GpuAdd( cl );
-    this->multiplyInPlace = new MultiplyInPlace( cl );
-}
 VIRTUAL CLMathWrapper::~CLMathWrapper() {
     delete copyBuffer;
     delete gpuAdd;
@@ -60,5 +48,110 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const CLMathWrapper &rhs ) {
     }
     copyBuffer->copy( N, ((CLMathWrapper &)rhs).wrapper, wrapper );
     return *this;
+}
+VIRTUAL CLMathWrapper &CLMathWrapper::sqrt() {
+    kernelSqrt->in( N )->inout( wrapper );
+    runKernel( kernelSqrt );
+    return *this;
+}
+VIRTUAL CLMathWrapper &CLMathWrapper::squared() {
+    kernelSquared->in( N )->inout( wrapper );
+    runKernel( kernelSquared );
+    return *this;
+}
+VIRTUAL void CLMathWrapper::runKernel( CLKernel *kernel ) {   
+    int globalSize = N;
+    int workgroupSize = 64;
+    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
+    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    cl->finish();
+}
+CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
+    CLFloatWrapper *floatWrapper = dynamic_cast< CLFloatWrapper * >( wrapper );
+    if( floatWrapper == 0 ) {
+        throw runtime_error( "CLMathWrapper only works on CLFloatWrapper objects");
+    }
+    this->cl = floatWrapper->getCl();
+    this->wrapper = floatWrapper;
+    this->N = floatWrapper->size();
+    this->copyBuffer = new CopyBuffer( cl );
+    this->gpuAdd = new GpuAdd( cl );
+    this->multiplyInPlace = new MultiplyInPlace( cl );
+
+    buildSqrt();
+    buildSquared();
+}
+void CLMathWrapper::buildSqrt() {
+    std::string sqrtKernelName = "sqrt";
+    if( cl->kernelExists( sqrtKernelName ) ) {
+        this->kernelSqrt = cl->getKernel( sqrtKernelName );
+        return;
+    }
+    cout << "sqrt: building kernel" << endl;
+
+    string options = "";
+    // [[[cog
+    // import stringify
+    // stringify.write_kernel2( "kernelSqrt", "cl/sqrt.cl", "array_sqrt", 'options' )
+    // ]]]
+    // generated using cog, from cl/sqrt.cl:
+    const char * kernelSqrtSource =  
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
+    "kernel void array_sqrt(\n" 
+    "        const int N,\n" 
+    "        global float *data ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    data[globalId] = native_sqrt( data[globalId] );\n" 
+    "}\n" 
+    "\n" 
+    "";
+    kernelSqrt = cl->buildKernelFromString( kernelSqrtSource, "array_sqrt", options, "cl/sqrt.cl" );
+    // [[[end]]]
+    cl->storeKernel( sqrtKernelName, kernelSqrt );
+}
+
+void CLMathWrapper::buildSquared() {
+    std::string kernelName = "squared";
+    if( cl->kernelExists( kernelName ) ) {
+        this->kernelSquared = cl->getKernel( kernelName );
+        return;
+    }
+    cout << "squared: building kernel" << endl;
+
+    string options = "";
+    // [[[cog
+    // import stringify
+    // stringify.write_kernel2( "kernelSquared", "cl/squared.cl", "array_squared", 'options' )
+    // ]]]
+    // generated using cog, from cl/squared.cl:
+    const char * kernelSquaredSource =  
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
+    "//\n" 
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
+    "\n" 
+    "kernel void array_squared(\n" 
+    "        const int N,\n" 
+    "        global float *data ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    data[globalId] = data[globalId] * data[globalId];\n" 
+    "}\n" 
+    "\n" 
+    "";
+    kernelSquared = cl->buildKernelFromString( kernelSquaredSource, "array_squared", options, "cl/squared.cl" );
+    // [[[end]]]
+    cl->storeKernel( kernelName, kernelSquared );
 }
 

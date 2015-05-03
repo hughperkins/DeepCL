@@ -37,33 +37,22 @@ VIRTUAL std::string Adagrad::asString() {
 }
 VIRTUAL void Adagrad::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
         AdagradState *trainerState ) {
+
     int numWeights = trainerState->numWeights;
-    CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
-    float *gradWeightsCopy = new float[ numWeights ];
-    CLWrapper *gradWeightsCopyWrapper = cl->wrap( numWeights, gradWeightsCopy );
-    gradWeightsCopyWrapper->createOnDevice();
+    float *working = new float[ numWeights ];
+    CLWrapper *workingWrapper = cl->wrap( numWeights, working );
 
-    CLMathWrapper lastUpdates_( lastUpdateWrapper );
-    CLMathWrapper gradWeights_( gradWeightsWrapper );
-    CLMathWrapper gradWeightsCopy_( gradWeightsCopyWrapper );
-    CLMathWrapper weights_( weightsWrapper );
+    CLMathWrapper clWeights( weightsWrapper );
+    CLMathWrapper clGradWeights( gradWeightsWrapper );
+    CLMathWrapper clSumSquares( trainerState->sumSquaresWrapper );
+    CLMathWrapper clWorking( workingWrapper );
 
-    // following all happens on gpu, via clmathwrapper:
-    lastUpdates_ *= momentum;
-    gradWeightsCopy_ = gradWeights_;
-    gradWeightsCopy_ *= - learningRate;
-    lastUpdates_ += gradWeightsCopy_;
-    weights_ += lastUpdates_;
+    clWorking = clGradWeights;
+//    clWorking *= clWorking; // not sure if such aliasing is kind of ok :-P
+    clSumSquares += clWorking;
 
-    if( weightDecay > 0 ) {
-        // apply weight decay, by multiplying the weights by (1.0f - weightDecay)
-        // so weightDecay == 0 means no decay; and weightDecay == 1.0f means
-        // weights go immediately to zero
-        weights_ *= 1.0f - weightDecay;
-    }
-
-    delete gradWeightsCopyWrapper;
-    delete[] gradWeightsCopy;
+    delete workingWrapper;
+    delete[] working;
 }
 VIRTUAL BatchResult Adagrad::train( NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData ) {
@@ -108,32 +97,15 @@ VIRTUAL BatchResult Adagrad::trainFromLabels( NeuralNet *net, TrainingContext *c
 // maybe put the dynamic_cast into the TrainerStateMaker class?
 VIRTUAL void Adagrad::bindState( NeuralNet *net ) {
     AdagradStateMaker stateMaker;
-    // go through network layers, and assign Adagrad objects (should probably rename these sometime somehow)
-    for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( layer->needsTrainerState() ) {
-            TrainerState *state = layer->getTrainerState();
-            AdagradState *sgdState = dynamic_cast< AdagradState *>( state );
-            if( sgdState == 0 ) {
-                layer->setTrainerState( &stateMaker );
-            }
-        }
-    }
+    this->_bindState( net, &stateMaker );
 }
 STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate ) {
     Adagrad *sgd = new Adagrad( cl );
     sgd->setLearningRate( learningRate );
     return sgd;
 }
-STATIC Adagrad *Adagrad::instance( EasyCL *cl, float learningRate, float momentum ) {
-    Adagrad *sgd = new Adagrad( cl );
-    sgd->setLearningRate( learningRate );
-    sgd->setMomentum( momentum );
-    return sgd;
-}
 Adagrad::Adagrad( EasyCL *cl ) :
         Trainer( cl ),
-        momentum( 0.0f ),
-        weightDecay( 0.0f ) {
+        fudgeFactor( 0.000001f ) {
 }
 

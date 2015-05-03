@@ -17,7 +17,10 @@ using namespace std;
 #define VIRTUAL
 
 TrainerState *AdagradStateMaker::instance( EasyCL *cl, int numWeights ) {
-    AdagradState *sgd = new AdagradState( cl, numWeights );
-    return sgd;
+    AdagradState *state = new AdagradState( cl, numWeights );
+    return state;
+}
+VIRTUAL bool AdagradStateMaker::created( TrainerState *state ) {
+    return dynamic_cast< AdagradState * >(state) != 0;
 }
 

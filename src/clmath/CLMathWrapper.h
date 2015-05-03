@@ -19,6 +19,7 @@ class GpuAdd;
 class MultiplyInPlace;
 class CLFloatBuffer;
 class EasyCL;
+class CLKernel;
 
 #include "DeepCLDllExport.h"
 
@@ -32,6 +33,9 @@ class DeepCL_EXPORT CLMathWrapper {
     GpuAdd *gpuAdd;
     MultiplyInPlace *multiplyInPlace;
 
+    CLKernel *kernelSquared;
+    CLKernel *kernelSqrt;
+
     int N;
     CLFloatWrapper *wrapper; // dont delete
 
@@ -42,11 +46,16 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    CLMathWrapper( CLWrapper *wrapper );
     VIRTUAL ~CLMathWrapper();
     VIRTUAL CLMathWrapper &operator*=( const float scalar );
     VIRTUAL CLMathWrapper &operator+=( const CLMathWrapper &two );
     VIRTUAL CLMathWrapper &operator=( const CLMathWrapper &rhs );
+    VIRTUAL CLMathWrapper &sqrt();
+    VIRTUAL CLMathWrapper &squared();
+    VIRTUAL void runKernel( CLKernel *kernel );
+    CLMathWrapper( CLWrapper *wrapper );
+    void buildSqrt();
+    void buildSquared();
 
     // [[[end]]]
 };

@@ -47,7 +47,6 @@ public:
     float const*input, int const*labels );
     VIRTUAL void bindState( NeuralNet *net );
     STATIC Adagrad *instance( EasyCL *cl, float learningRate );
-    STATIC Adagrad *instance( EasyCL *cl, float learningRate, float momentum );
     Adagrad( EasyCL *cl );
 
     // [[[end]]]

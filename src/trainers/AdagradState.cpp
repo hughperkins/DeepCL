@@ -18,24 +18,18 @@ using namespace std;
 #define VIRTUAL
 
 VIRTUAL AdagradState::~AdagradState() {
-    delete lastUpdateWrapper;
-    delete[] lastUpdate;
+    delete sumSquaresWrapper;
+    delete[] sumSquares;
 }
 
 AdagradState::AdagradState( EasyCL *cl, int numWeights ) :
-        numWeights( numWeights )
-    { // should we handle bias separately?  maybe... not?
-      // or each layer could have one trainer for biases, and one for the
-      // non-biases?  Maybe kind of ok?
-
-    // lastUpdate buffer never needs to change size,
-    //  since number of weights is invariant with batchSize etc
-    lastUpdate = new float[numWeights];
+        numWeights( numWeights ) {
+    sumSquares = new float[numWeights];
     for( int i = 0; i < numWeights; i++ ) {
-        lastUpdate[i] = 0.0f;
+        sumSquares[i] = 0.0f;
     }
-    lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
-    lastUpdateWrapper->copyToDevice();
+    sumSquaresWrapper = cl->wrap( numWeights, sumSquares );
+    sumSquaresWrapper->copyToDevice();
 }
 
 

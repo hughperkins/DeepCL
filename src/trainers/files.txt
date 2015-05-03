@@ -1,3 +1,6 @@
+Adagrad.cpp
+AdagradState.cpp
+AdagradStateMaker.cpp
 Nesterov.cpp
 NesterovState.cpp
 NesterovStateMaker.cpp

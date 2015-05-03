@@ -34,9 +34,8 @@ class DeepCL_EXPORT AdagradState : public TrainerState {
 public:
     const int numWeights;
 
-    // should store last weights
-    float *lastUpdate;
-    CLWrapper *lastUpdateWrapper;
+    float *sumSquares;
+    CLWrapper *sumSquaresWrapper;
 
     // [[[cog
     // import cog_addheaders
