@@ -8,6 +8,8 @@
 
 #include "layer/Layer.h"
 
+class OutputData;
+
 class LossLayer : public Layer {
 public:
     virtual float calcLoss( float const*expectedValue ) = 0;
@@ -27,6 +29,9 @@ public:
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getWeightsSize() const;
+    VIRTUAL float calcLoss( OutputData *outputData );
+    VIRTUAL void calcGradInput( OutputData *outputData );
+    VIRTUAL int calcNumRight( OutputData *outputData );
 
     // [[[end]]]
 };

@@ -16,9 +16,7 @@
 class CLWrapper;
 class EasyCL;
 class NeuralNet;
-//class CopyBuffer;
-//class GpuAdd;
-//class MultiplyInPlace;
+class OutputData;
 
 #include "DeepCLDllExport.h"
 
@@ -48,6 +46,9 @@ public:
     VIRTUAL std::string asString();
     VIRTUAL void setAnneal( float anneal );
     VIRTUAL void updateWeights( float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper );
+    VIRTUAL BatchResult train(
+    NeuralNet *net, TrainingContext *context,
+    float const *input, OutputData *outputData );
     VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
     float const*input, float const*expectedOutput );
     VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,

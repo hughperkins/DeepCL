@@ -16,6 +16,7 @@
 #include "loss/IAcceptsLabels.h"
 #include "batch/NetAction.h"
 #include "clmath/CLMathWrapper.h"
+#include "batch/BatchData.h"
 
 using namespace std;
 
@@ -68,15 +69,16 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
     delete[] gradWeightsCopy;
 }
 VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
-    float const*input, float const*expectedOutput ) {
+    float const*input, OutputData *outputData ) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
     // or loading data, or anything like that
     bindState( net );
 
     net->forward( input );
-    float loss = net->calcLoss( expectedOutput );
-    net->backward( expectedOutput );
+    int numRight = net->calcNumRight( outputData );
+    float loss = net->calcLoss( outputData );
+    net->backward( outputData );
 
     int numLayers = net->getNumLayers();
     for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
@@ -95,35 +97,15 @@ VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
     }
     return BatchResult( loss, 0 );
 }
+VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput ) {
+    ExpectedData expectedData( net, expectedOutput );
+    return this->train( net, context, input, &expectedData );
+}
 VIRTUAL BatchResult SGD::trainFromLabels( NeuralNet *net, TrainingContext *context,
-    float const*input, int const*labels ) {
-    // learns one batch, including updating weights
-    // doesnt have to think about running multiple batches,
-    // or loading data, or anything like that
-
-    bindState( net );
-
-    net->forward( input );
-    int numRight = net->calcNumRight( labels );
-    float loss = net->calcLossFromLabels( labels );
-    net->backwardFromLabels( labels );
-
-    int numLayers = net->getNumLayers();
-    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( !layer->needsBackProp() ) {
-            break;
-        }
-        if( layer->needsTrainerState() ) {
-            updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
-                dynamic_cast< SGDState * >( layer->getTrainerState() ) );
-            if( layer->biased() ) {
-                updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
-                    dynamic_cast< SGDState * >( layer->getBiasTrainerState() ) );
-            }
-        }
-    }
-    return BatchResult( loss, numRight );
+        float const*input, int const*labels ) {
+    LabeledData labeledData( net, labels );
+    return this->train( net, context, input, &labeledData );
 }
 VIRTUAL void SGD::bindState( NeuralNet *net ) {
     SGDStateMaker stateMaker;

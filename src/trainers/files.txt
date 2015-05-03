@@ -1,3 +1,6 @@
+Nesterov.cpp
+NesterovState.cpp
+NesterovStateMaker.cpp
 TrainingContext.cpp
 Annealer.cpp
 SGD.cpp

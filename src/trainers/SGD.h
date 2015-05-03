@@ -16,10 +16,7 @@
 class SGDState;
 class CLWrapper;
 class EasyCL;
-//class CLKernel;
-//class MultiplyInPlace;
-//class GpuAdd;
-//class CopyBuffer;
+class OutputData;
 
 #include "DeepCLDllExport.h"
 
@@ -59,6 +56,8 @@ public:
     VIRTUAL std::string asString();
     VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
     SGDState *trainerState );
+    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
+    float const*input, OutputData *outputData );
     VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
     float const*input, float const*expectedOutput );
     VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,

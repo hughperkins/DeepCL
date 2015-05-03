@@ -28,6 +28,8 @@
 //
 class Nesterov : public Trainer {
 public:
+    float momentum;
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
@@ -35,10 +37,12 @@ public:
     // generated, using cog:
     VIRTUAL ~Nesterov();
     VIRTUAL void setMomentum( float momentum );
-    VIRTUAL void setWeightDecay( float weightDecay );
     VIRTUAL std::string asString();
     VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState );
+    VIRTUAL BatchResult train(
+    NeuralNet *net, TrainingContext *context,
+    float const *input, OutputData *outputData );
     VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
     float const*input, float const*expectedOutput );
     VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,

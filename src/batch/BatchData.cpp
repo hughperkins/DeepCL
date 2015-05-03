@@ -9,15 +9,26 @@
 
 using namespace std;
 
-InputData *InputData::instance( Trainable *net, float *inputs ) {
+InputData *InputData::instance( Trainable *net, float const*inputs ) {
     int inputCubeSize = net->getInputCubeSize();
     return new InputData( inputCubeSize, inputs );
 }
-ExpectedData *ExpectedData::instance( Trainable *net, float *expectedOutputs ) {
+
+ExpectedData *ExpectedData::instance( Trainable *net, float const*expectedOutputs ) {
     int outputCubeSize = net->getOutputCubeSize();
     return new ExpectedData( outputCubeSize, expectedOutputs );
 }
-LabeledData *LabeledData::instance( int *labels ) {
+LabeledData *LabeledData::instance( Trainable *net, int const*labels ) { // net not used
+    // but means dont have to keep remembering whether to add in parameters or not
     return new LabeledData( labels );
+}
+
+ExpectedData::ExpectedData( Trainable *net, float const*expected ) {
+    this->outputCubeSize = net->getOutputCubeSize();
+    this->expected = expected;
+}
+LabeledData::LabeledData( Trainable *net, int const*labels ) { // net not used
+    // but means dont have to keep remembering whether to add in parameters or not
+    this->labels = labels;
 }
 

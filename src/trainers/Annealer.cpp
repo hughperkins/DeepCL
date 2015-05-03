@@ -12,12 +12,10 @@
 #include "util/stringhelper.h"
 #include "net/NeuralNet.h"
 #include "layer/Layer.h"
-//#include "clmath/CopyBuffer.h"
-//#include "clmath/GpuAdd.h"
-//#include "clmath/MultiplyInPlace.h"
 #include "clmath/CLMathWrapper.h"
 #include "loss/LossLayer.h"
 #include "loss/IAcceptsLabels.h"
+#include "batch/BatchData.h"
 
 using namespace std;
 
@@ -75,12 +73,15 @@ VIRTUAL void Annealer::updateWeights( float annealedLearningRate, CLWrapper *wei
     delete gradWeightsCopyWrapper;
     delete[] gradWeightsCopy;
 }
-VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
-        float const*input, float const*expectedOutput ) {
+VIRTUAL BatchResult Annealer::train( 
+        NeuralNet *net, TrainingContext *context,
+        float const *input, OutputData *outputData ) {
+
     // hmmmm, so all we need to do is calculate:
     // annealedLearningRate = learningRate * pow( anneal, epoch )
     // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
 //    cout << " epoch=" << epoch << " learningrate=" << learningRate << " anneal=" << anneal << endl;
+
     float annealedLearningRate = learningRate * pow( anneal, context->epoch );
     if( context->batch == 0 ) {
         cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
@@ -89,37 +90,9 @@ VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
     bindState( net );
 
     net->forward( input );
-    float loss = net->calcLoss( expectedOutput );
-    net->backward( expectedOutput );
-
-    int numLayers = net->getNumLayers();
-    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( !layer->needsBackProp() ) {
-            break;
-        }
-        if( layer->needsTrainerState() ) {
-            updateWeights( annealedLearningRate, layer->getWeightsWrapper(), layer->getGradWeightsWrapper() );
-            if( layer->biased() ) {
-                updateWeights( annealedLearningRate, layer->getBiasWrapper(), layer->getGradBiasWrapper() );
-            }
-        }
-    }
-    return BatchResult( loss, 0 );
-}
-VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *context,
-        float const*input, int const*labels ) {
-    float annealedLearningRate = learningRate * pow( anneal, context->epoch );
-    if( context->batch == 0 ) {
-        cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
-    }
-
-    bindState( net );
-
-    net->forward( input );
-    int numRight = net->calcNumRight( labels );
-    float loss = net->calcLossFromLabels( labels );
-    net->backwardFromLabels( labels );
+    int numRight = net->calcNumRight( outputData );
+    float loss = net->calcLoss( outputData );
+    net->backward( outputData );
 
     int numLayers = net->getNumLayers();
     for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
@@ -135,6 +108,16 @@ VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *
         }
     }
     return BatchResult( loss, numRight );
+}
+VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput ) {
+    ExpectedData expectedData( net, expectedOutput );
+    return this->train( net, context, input, &expectedData );
+}
+VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels ) {
+    LabeledData labeledData( net, labels );
+    return this->train( net, context, input, &labeledData );
 }
 VIRTUAL void Annealer::bindState( NeuralNet *net ) {
     // since we have no state, all we will do is strip any existing state,

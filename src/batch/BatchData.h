@@ -24,11 +24,12 @@ public:
 };
 class LabeledData : public OutputData {
 public:
-    int *labels; // NOT owned by us, dont delete
-    LabeledData( int *labels ) {
+    int const*labels; // NOT owned by us, dont delete
+    LabeledData( int const*labels ) {
         this->labels = labels;
     }
-    static LabeledData *instance( int *labels );
+    LabeledData( Trainable *net, int const*labels );
+    static LabeledData *instance( Trainable *net, int const*labels );
     LabeledData *slice( int start ) {
         LabeledData *child = new LabeledData( labels + start );
         return child;
@@ -37,12 +38,14 @@ public:
 class ExpectedData : public OutputData {
 public:
     int outputCubeSize;
-    float *expected; // NOT owned by us, dont delete
-    ExpectedData( int outputCubeSize, float *expected ) {
+    float const*expected; // NOT owned by us, dont delete
+
+    ExpectedData( int outputCubeSize, float const*expected ) {
         this->outputCubeSize = outputCubeSize;
         this->expected = expected;
     }
-    static ExpectedData *instance( Trainable *net, float *expectedOutputs );
+    ExpectedData( Trainable *net, float const*expected );
+    static ExpectedData *instance( Trainable *net, float const*expected );
     ExpectedData *slice( int start ) {
         ExpectedData *child = new ExpectedData( outputCubeSize, expected + start * outputCubeSize );
         return child;
@@ -51,12 +54,12 @@ public:
 class InputData {
 public:
     int inputCubeSize;
-    float *inputs; // NOT owned by us, dont delete
-    InputData( int inputCubeSize, float *inputs ) {
+    float const*inputs; // NOT owned by us, dont delete
+    InputData( int inputCubeSize, float const*inputs ) {
         this->inputCubeSize = inputCubeSize;
         this->inputs = inputs;
     }
-    static InputData *instance( Trainable *net, float *inputs );
+    static InputData *instance( Trainable *net, float const*inputs );
     InputData *slice( int start ) {
         InputData *child = new InputData( inputCubeSize, inputs + start * inputCubeSize );
         return child;

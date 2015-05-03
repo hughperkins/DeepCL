@@ -25,6 +25,7 @@ class LayerMaker2;
 class EpochMaker;
 class InputMaker;
 class InputLayer;
+class OutputData;
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -65,6 +66,8 @@ public:
     void printBiasAsCode();
     PUBLICAPI float calcLoss(float const *expectedValues );
     PUBLICAPI float calcLossFromLabels(int const *labels );
+    float calcLoss( OutputData *outputData );
+    int calcNumRight( OutputData *outputData );
     EpochMaker *epochMaker( Trainer *trainer );
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
     PUBLICAPI InputLayer *getFirstLayer();
@@ -80,6 +83,7 @@ public:
     PUBLICAPI void forward( float const*images);
     PUBLICAPI void backwardFromLabels( int const *labels);
     PUBLICAPI void backward( float const *expectedOutput);
+    void backward( OutputData *outputData );
     PUBLICAPI int getNumLayers();
     PUBLICAPI float const *getOutput( int layer ) const;
     PUBLICAPI int getInputCubeSize() const;

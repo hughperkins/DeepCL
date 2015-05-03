@@ -110,6 +110,12 @@ PUBLICAPI float NeuralNet::calcLoss(float const *expectedValues ) {
 PUBLICAPI float NeuralNet::calcLossFromLabels(int const *labels ) {
     return dynamic_cast<IAcceptsLabels*>(getLastLayer())->calcLossFromLabels( labels );
 }
+float NeuralNet::calcLoss( OutputData *outputData ) {
+    return dynamic_cast<LossLayer*>(getLastLayer())->calcLoss( outputData );
+}
+int NeuralNet::calcNumRight( OutputData *outputData ) {
+    return dynamic_cast<LossLayer*>(getLastLayer())->calcNumRight( outputData );
+}
 EpochMaker *NeuralNet::epochMaker( Trainer *trainer ) {
      return new EpochMaker(this, trainer);
 }
@@ -156,16 +162,6 @@ PUBLICAPI VIRTUAL int NeuralNet::getOutputPlanes() const {
 PUBLICAPI VIRTUAL int NeuralNet::getOutputImageSize() const {
     return getLastLayer()->getOutputImageSize();
 }
-//Layer *NeuralNet::addLayer( LayerMaker *maker ) {
-////    Layer *previousLayer = 0;
-////    if( layers.size() > 0 ) {
-////        previousLayer = layers[ layers.size() - 1 ];
-////    }
-////    maker->setPreviousLayer( previousLayer );
-//    Layer *layer = maker->instance();
-//    layers.push_back( layer );
-//    return layer;
-//}
 PUBLICAPI void NeuralNet::setBatchSize( int batchSize ) {
     for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
         (*it)->setBatchSize( batchSize );
@@ -203,7 +199,6 @@ PUBLICAPI void NeuralNet::backwardFromLabels( int const *labels) {
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
         Layer *layer = layers[layerIdx];
         if( layer->needsBackProp() ) {
-            //throw std::runtime_error("NeuralNet::backwardFromLabels TODO");
             layer->backward();
         }
         StatefulTimer::setPrefix("" );
@@ -216,10 +211,22 @@ PUBLICAPI void NeuralNet::backward( float const *expectedOutput) {
         throw std::runtime_error("Must add a LossLayer as last layer of net");
     }
     lossLayer->calcGradInput( expectedOutput );
-    for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer :-P
+    for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer
         StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
-//        throw std::runtime_error("NeuralNet::backward TODO");
         layers[layerIdx]->backward();
+        StatefulTimer::setPrefix("" );
+    }
+}
+void NeuralNet::backward( OutputData *outputData ) {
+    LossLayer *lossLayer = dynamic_cast<LossLayer*>(getLastLayer());
+    lossLayer->calcGradInput( outputData );
+    for( int layerIdx = (int)layers.size() - 2; layerIdx >= 1; layerIdx-- ) { // no point in propagating to input layer
+        Layer *layer = getLayer( layerIdx );
+        if( !layer->needsBackProp() ) {
+            break;
+        }
+        StatefulTimer::setPrefix("layer" + toString(layerIdx) + " " );
+        layer->backward();
         StatefulTimer::setPrefix("" );
     }
 }
