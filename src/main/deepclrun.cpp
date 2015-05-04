@@ -39,8 +39,9 @@ using namespace std;
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
         ('weightsInitializer', 'string', 'initializer for weights, choices: original, uniform (default: original)', 'original', True ),
         ('initialWeights', 'float', 'for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)', 1.0, False ),
-        ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, or rmsprop (default: sgd)', 'sgd', True ),
+        ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, rmsprop, or adadelta (default: sgd)', 'sgd', True ),
         ('learningRate', 'float', 'learning rate, a float value, used by all trainers', 0.002, True),
+        ('rho', 'float', 'rho decay, in adadelta trainer. 1 is no decay. 0 is full decay (default 0.9)', 0.9, False),
         ('momentum', 'float', 'momentum, used by sgd and nesterov trainers', 0.0, True),
         ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay, used by sgd trainer', 0.0, True),
         ('anneal', 'float', 'multiply learningrate by this amount each epoch, used by anneal trainer, default 1.0', 1.0, False)
@@ -80,6 +81,7 @@ public:
     float initialWeights;
     string trainer;
     float learningRate;
+    float rho;
     float momentum;
     float weightDecay;
     float anneal;
@@ -126,6 +128,7 @@ public:
         initialWeights = 1.0f;
         trainer = "sgd";
         learningRate = 0.002f;
+        rho = 0.9f;
         momentum = 0.0f;
         weightDecay = 0.0f;
         anneal = 1.0f;
@@ -291,6 +294,9 @@ void go(Config config) {
         Rmsprop *rmsprop = new Rmsprop( cl );
         rmsprop->setLearningRate( config.learningRate );
         trainer = rmsprop;
+    } else if( toLower( config.trainer ) == "adadelta" ) {
+        Adadelta *adadelta = new Adadelta( cl, config.rho );
+        trainer = adadelta;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
@@ -454,13 +460,14 @@ void printUsage( char *argv[], Config config ) {
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    weightsinitializer=[initializer for weights, choices: original, uniform (default: original)] (" << config.weightsInitializer << ")" << endl;
-    cout << "    trainer=[which trainer, sgd, anneal, nesterov, adagrad, or rmsprop (default: sgd)] (" << config.trainer << ")" << endl;
+    cout << "    trainer=[which trainer, sgd, anneal, nesterov, adagrad, rmsprop, or adadelta (default: sgd)] (" << config.trainer << ")" << endl;
     cout << "    learningrate=[learning rate, a float value, used by all trainers] (" << config.learningRate << ")" << endl;
     cout << "    momentum=[momentum, used by sgd and nesterov trainers] (" << config.momentum << ")" << endl;
     cout << "    weightdecay=[weight decay, 0 means no decay; 1 means full decay, used by sgd trainer] (" << config.weightDecay << ")" << endl;
     cout << "" << endl; 
     cout << "unstable, might change within major version:" << endl; 
     cout << "    initialweights=[for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)] (" << config.initialWeights << ")" << endl;
+    cout << "    rho=[rho decay, in adadelta trainer. 1 is no decay. 0 is full decay (default 0.9)] (" << config.rho << ")" << endl;
     cout << "    anneal=[multiply learningrate by this amount each epoch, used by anneal trainer, default 1.0] (" << config.anneal << ")" << endl;
     // [[[end]]]
 }
@@ -541,6 +548,8 @@ int main( int argc, char *argv[] ) {
                 config.trainer = (value);
             } else if( key == "learningrate" ) {
                 config.learningRate = atof(value);
+            } else if( key == "rho" ) {
+                config.rho = atof(value);
             } else if( key == "momentum" ) {
                 config.momentum = atof(value);
             } else if( key == "weightdecay" ) {

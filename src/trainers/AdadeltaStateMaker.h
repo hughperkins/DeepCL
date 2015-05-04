@@ -11,30 +11,21 @@
 #include <iostream>
 #include <algorithm>
 
-#include "trainers/TrainerState.h"
-
-class EasyCL;
-class CLKernel;
-
-#include "DeepCLDllExport.h"
+#include "trainers/TrainerStateMaker.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class DeepCL_EXPORT RmspropState : public TrainerState {
+class AdadeltaStateMaker : public TrainerStateMaker {
 public:
-    const int numWeights;
-
-    float *meanSquare;
-    CLWrapper *meanSquareWrapper;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~RmspropState();
-    RmspropState( EasyCL *cl, int numWeights );
+    TrainerState *instance( EasyCL *cl, int numWeights );
+    VIRTUAL bool created( TrainerState *state );
 
     // [[[end]]]
 };

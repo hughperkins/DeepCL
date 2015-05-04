@@ -51,6 +51,7 @@ Trainers:
 * Nesterov (New!)
 * Adagrad (New!)
 * Rmsprop (New!)
+* Adadelta (New!)
 
 Activations:
 * tanh

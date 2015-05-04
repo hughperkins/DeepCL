@@ -100,11 +100,11 @@ def time_layer(num_epochs, label, batch_size, net_string):
         last = time.time()
         net.forward( images )
         now = time.time()
-        print('  warm up forward all-layer time', now - last )
+        print('  warm up forward all-layer time', ( now - last ) * 1000, 'ms' )
         last = now
     net.backwardFromLabels(labels)
     now = time.time()
-    print('   warm up backward all-layer time', now - last )
+    print('   warm up backward all-layer time', (now - last) * 1000, 'ms' )
     last = now
 
     layer = net.getLayer(2)
@@ -112,8 +112,8 @@ def time_layer(num_epochs, label, batch_size, net_string):
     for i in range(num_epochs):
         layer.forward()
     now = time.time()
-    print('forward layer total time', now - last )
-    print('forward layer average time', ( now - last ) / float(num_epochs) )
+    print('forward layer total time', ( now - last) * 1000, 'ms' )
+    print('forward layer average time', ( now - last ) * 1000 / float(num_epochs), 'ms' )
     # forward_time_per_layer_ms = ( now - last ) / float(num_epochs) * 1000
     # writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', forward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
     write_results( label=label, net_string=net_string, layer=layer, direction='forward',
@@ -129,8 +129,8 @@ def time_layer(num_epochs, label, batch_size, net_string):
     for i in range(num_epochs):
         layer.backward()
     now = time.time()
-    print('backwar layer total time', now - last )
-    print('backwar layer average time', ( now - last ) / float(num_epochs) )
+    print('backward layer total time', (now - last)*1000, 'ms' )
+    print('backward layer average time', ( now - last ) * 1000 / float(num_epochs), 'ms' )
     # writeResults( label + ', ' + net_string + ', ' + layer.asString() + ', backward=' + str( ( now - last ) / float(num_epochs) * 1000 ) + 'ms' )
     write_results( label=label, net_string=net_string, layer=layer, 
         direction='backward', benchmark_type='layer', time_ms=( now - last ) / float(num_epochs) * 1000 )

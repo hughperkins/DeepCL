@@ -1,3 +1,6 @@
+Adadelta.cpp
+AdadeltaState.cpp
+AdadeltaStateMaker.cpp
 Rmsprop.cpp
 RmspropState.cpp
 RmspropStateMaker.cpp
