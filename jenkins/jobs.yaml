@@ -4,7 +4,7 @@
     node: gpulinux
     scm:
     - git:
-        url: git@github.com:hughperkins/DeepCL.git
+        url: https://github.com/hughperkins/DeepCL.git
         branches:
             - benchmarking-jenkins
         submodule:
