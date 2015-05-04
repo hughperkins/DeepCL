@@ -25,7 +25,4 @@
 //  Up till now, most of the work has been going into go-board sized images, 19x19, and also
 //  a bit of work into mnist-sized, around 28x28 or 24x24
 //  Larger images probably need some kind of blocking structure most likely
-// forward_fc[something].cl 'convolutional' layer for fully-connected layers, which we are 
-//  handling as just another convolutional layer, where the filter size equals the input size,
-//  and then treating as a special case of a convolutional layer, using the forward_fc layers
 
