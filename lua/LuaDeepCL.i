@@ -126,6 +126,17 @@ public:
         float const*input, int const*labels );
 };
 
+class Adadelta : public Trainer {
+public:
+    static Adadelta *instance( EasyCL *cl, float rho );
+    Adadelta( EasyCL *cl, float rho );
+    virtual std::string asString();
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
+};
+
 class Nesterov : public Trainer {
 public:
     static Nesterov *instance( EasyCL *cl, float learningRate, float momentum );
