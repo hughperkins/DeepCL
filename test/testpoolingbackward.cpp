@@ -4,10 +4,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
-#include "PoolingBackward.h"
-#include "PoolingForward.h"
+#include "pooling/PoolingBackward.h"
+#include "pooling/PoolingForward.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -21,7 +21,7 @@ TEST( testpoolingbackward, basic ) {
     int numPlanes = 1;
     int imageSize = 4;
     int poolingSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     PoolingBackward *poolingBackprop = PoolingBackward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 5,
@@ -57,7 +57,7 @@ TEST( testpoolingbackward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int poolingSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     PoolingBackward *poolingBackprop = PoolingBackward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 
@@ -118,7 +118,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
 
     bool padZeros = true;
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
     PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputImageSize, poolingSize );
     int outputImageSize = p1->outputImageSize;
@@ -187,7 +187,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int poolingSize = 2;
-    OpenCLHelper cl;
+    EasyCL cl;
     PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,

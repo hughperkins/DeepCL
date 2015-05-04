@@ -17,16 +17,9 @@
 %include "std_string.i"
 
 %{
-#include "GenericLoader.h" // start with this first, since, if no data, kind of 
-                           // hard to test things...
-#include "NeuralNet.h"
-#include "NetdefToNet.h"
-#include "NetLearner.h"
-#include "NormalizationLayerMaker.h"
-#include "LayerMaker.h"
-#include "InputLayerMaker.h"
-//#include "LuaWrappers.h"
-#include "QLearner2.h"
+#include "DeepCL.h"
+#include "EasyCL.h"
+#include "qlearning/QLearner2.h"
 %}
 
 //%include "LuaWrappers.h"
@@ -60,15 +53,100 @@ void GenericLoader_load( std::string trainFilepath, float *INOUT, int *INOUT, in
 
 // class LayerMaker2;
 
+class EasyCL {
+public:
+    static EasyCL *createForFirstGpu();
+    static EasyCL *createForFirstGpuOtherwiseCpu();
+    static EasyCL *createForIndexedGpu( int gpu );
+    static EasyCL *createForPlatformDeviceIndexes(int platformIndex, int deviceIndex);
+    static EasyCL *createForPlatformDeviceIds(cl_platform_id platformId, cl_device_id deviceId);
+};
+
+class TrainingContext {
+public:
+    TrainingContext( int epoch, int batch );
+};
+
+class Trainer {
+public:
+    virtual void train( NeuralNet *net, TrainingContext *context, float const*input, float const*expectedOutput ) = 0;
+    virtual void trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels ) = 0;
+};
+
+class BatchResult {
+public:
+    BatchResult( float loss, int numRight );
+    float getLoss();
+    float getNumRight();
+};
+
+class SGD : public Trainer {
+public:
+    static SGD *instance( EasyCL *cl, float learningRate );
+    static SGD *instance( EasyCL *cl, float learningRate, float momentum );
+    virtual void setMomentum( float momentum );
+    virtual void setWeightDecay( float weightDecay );
+    virtual std::string asString();
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context, float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context, float const*input, int const*labels );
+    SGD( EasyCL *cl );
+};
+
+class Annealer : public Trainer {
+public:
+    static Annealer *instance( EasyCL *cl, float learningRate, float anneal );
+    Annealer( EasyCL *cl );
+    virtual std::string asString();
+    virtual void setAnneal( float anneal );
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
+};
+
+class Adagrad : public Trainer {
+public:
+    static Adagrad *instance( EasyCL *cl, float learningRate );
+    Adagrad( EasyCL *cl );
+    virtual std::string asString();
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
+};
+
+class Rmsprop : public Trainer {
+public:
+    static Rmsprop *instance( EasyCL *cl, float learningRate );
+    Rmsprop( EasyCL *cl );
+    virtual std::string asString();
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
+};
+
+class Nesterov : public Trainer {
+public:
+    static Nesterov *instance( EasyCL *cl, float learningRate, float momentum );
+    Nesterov( EasyCL *cl );
+    virtual std::string asString();
+    virtual void setMomentum( float momentum );
+    virtual BatchResult train( NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput );
+    virtual BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels );
+};
+
 class NeuralNet {
 public:
-    NeuralNet();
-    NeuralNet( int numPlanes, int imageSize );
+    NeuralNet( EasyCL *cl );
+    NeuralNet( EasyCL *cl, int numPlanes, int imageSize );
     void addLayer( LayerMaker2 *maker );
     void setBatchSize( int batchSize );
     void forward( float const*images);
-    void backwardFromLabels( float learningRate, int const *labels);
-    void backward( float learningRate, float const *expectedOutput);
+    void backwardFromLabels( int const *labels);
+    void backward( float const *expectedOutput);
     int calcNumRight( int const *labels );
 /*    int getOutputSize();*/
 /*    float *getOutput();*/
@@ -95,13 +173,25 @@ public:
 /*%rename (NetLearnerBase) NetLearner;*/
 class NetLearner {
 public:
-    NetLearner( NeuralNet *net,
+    NetLearner( Trainer *trainer, NeuralNet *net,
         int Ntrain, float *images, int *labels,
         int Ntest, float *images, int *labels,
         int batchSize );
-    void setSchedule( int numEpochs );
-/*    void setBatchSize( int batchSize );*/
-    void learn( float learningRate );
+    virtual void setSchedule( int numEpochs );
+    virtual void setDumpTimings( bool dumpTimings );
+    virtual void setSchedule( int numEpochs, int nextEpoch );
+    virtual void reset();
+    virtual bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
+    virtual bool getEpochDone();
+    virtual int getNextEpoch();
+    virtual int getNextBatch();
+    virtual int getNTrain();
+    virtual int getBatchNumRight();
+    virtual float getBatchLoss();
+    virtual void setBatchState( int nextBatch, int numRight, float loss );
+    virtual bool tickEpoch();
+    virtual void run();
+    virtual bool isLearningDone();
 };
 /*%rename(NetLearner) NetLearnerFloats;*/
 /*%template(NetLearner) NetLearner<float>;*/
@@ -194,7 +284,7 @@ public:
 
 class QLearner2 {
 public:
-    QLearner2( NeuralNet *net, int numActions, int planes, int size );
+    QLearner2( Trainer *trainer, NeuralNet *net, int numActions, int planes, int size );
     //QLearner2 *setPlanes( int planes );
     //QLearner2 *setSize( int size );
     //QLearner2 *setNumActions( int numActions );
@@ -202,7 +292,7 @@ public:
     void setLambda( float lambda );
     void setMaxSamples( int maxSamples );
     void setEpsilon( float epsilon );
-    void setLearningRate( float learningRate );
+    // void setLearningRate( float learningRate );
 };
 
 /*%inline %{

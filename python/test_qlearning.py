@@ -166,7 +166,9 @@ def go():
     #planes = 2
     print('size',size,'planes',planes,'numActions',numActions)
 
-    net = PyDeepCL.NeuralNet()
+    cl = PyDeepCL.EasyCL()
+    net = PyDeepCL.NeuralNet(cl)
+    sgd = PyDeepCL.SGD(cl, 0.1, 0.0)
     net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size) )
     net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased() )
     net.addLayer( PyDeepCL.ActivationMaker().relu() )
@@ -180,7 +182,7 @@ def go():
 
     scenario.setNet(net)
 
-    qlearner = PyDeepCL.QLearner( scenario, net )
+    qlearner = PyDeepCL.QLearner( sgd, scenario, net )
     # qlearner.setLambda(0.9) # sets decay of the eligibility trace decay rate
     # qlearner.setMaxSamples(32) # how many samples to learn from after each move
     # qlearner.setEpsilon(0.1) # probability of exploring, instead of exploiting

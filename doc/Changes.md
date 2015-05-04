@@ -10,7 +10,24 @@
   * things you might consider working on yourself, or
   * to add things you want others (eg me :-) ) to work on
 
-## New, in next version, 4.x.x
+## 5.x.x changes, compared to 4.x.x:
+
+### New:
+
+* Added Annealer trainer, and 'anneal=' commandline option
+  * python and lua wrappers can also create Annealer trainer, as well as the existing SGD trainer
+
+### Changes:
+
+* bunch of changes to many of the classes now in `src/batch` directory, ie xxxBatcher classes, xxxNetAction type classes, and NetLearnerxxx classes, hence bumped major version to `5`, eg
+  * XXXBatcher.tick: added parameter 'epoch' to 'tick' and 'run' methods
+  * OnDemandBatcher constructor takes in a Batcher* object
+  * created new Batcher2, and NetAction2 classes
+  * removed BatchLearner class
+
+## 4.x.x changes, compared to 3.x.x:
+
+## New
 
 * lua wrappers created, using swig
 * added new ActivationLayer layer type, to implement relu, sigmoid etc in a separate layer from the convolutional,
@@ -19,8 +36,10 @@ and fc layers
 * added dropout:
   * in commandline netdef, add `-drop`, eg like: `8c5z-drop-relu`
   * in C++, use a DropoutMaker, like `net->addLayer( DropoutMaker::instance()->dropRatio(0.5f) );`
+* added momentum, via new [SGD](src/SGD.h) object, which can be passed to anywhere that accepts a [Trainer](src/Trainer.h) object.
+* added new commandline parameter `gpuindex`, to choose which gpu device to target (thank-you Josef Moudrik for this addition)
 
-## Changes, in next version, 4.x.x
+### Changes
 
 * lua module changes name from 'luaDeepCL' to 'LuaDeepCL'
 * lua build method changes from build.sh to cmake
@@ -28,14 +47,25 @@ and fc layers
   * true for netdef syntax
   * true also for c++ Maker classes
   * will be true also for Python, Lua (not sure if it is true at the moment or not, would need to test)
-* internal C++ name changes, in line with torch nomenclature, which seems simple, concise, easy to understand:
+* internal C++ name changes, somewhat in line with torch nomenclature, which seems simple, concise, easy to understand:
   * errors -> gradOutput
   * errorsForUpstream -> gradInput
   * resultsFromUpstream -> input
   * results -> output
   * dLossDOutput -> gradOutput
+  * biasWeights -> bias
+  * errorWeights -> gradWeights
+* Have to create an OpenCLHelper object yourself, and pass it into NeuralNet constructor
+  * not sure this increases the difficulty of usage too much?  and simplifies internal design quite a lot, since
+one can assume that there is one and only one cl, shared everywhere (cf, otherwise MultiNet complicates things, or have to start reference-counting and stuff)
+  * also increases flexibility slightly, can choose different gpu devices etc
+* main header changes from [NeuralNet.h](NeuralNet.h) to [DeepCL.h](DeepCL.h), to try to reduce the whole-world-rebuilds effect during dev compilations
+* need to pass an [SGD](src/SGD.h) object into NetLearner, QLearner, et al, instead of a learning rate
+  * the SGD object holds the learningRate, and the (new) momentum parameter
+* renamed OpenCLHelper project from OpenCLHelper to EasyCL, since easier to type, and remember
+* prototyping build options have moved to `advanced` section in CMake options
 
-## Deprecated, in next version, 4.x.x
+### Deprecated
 
 * templates removed; everything is `float` now, no `unsigned char`, or `T`
   * basically, templates are not very
@@ -43,18 +73,7 @@ and fc layers
 * removed callbacks from BatchLearner, NetLearner, NetLearnerOnDemand, BatchLearnerOnDemand
   * replaced by simply calling `tickEpoch` or `tickBatch`, and doing what you want after each call, ie no longer actually need the callbacks
   * again, more compatible with writing wrappers for scripting languages, since inter-language callbacks tend to be hard work to implement
-* idx-to-mat removed; since GenericLoader can directly handle reading mnist format now
+* idx-to-mat removed, since GenericLoader can directly handle reading mnist format now
 * clconvolve1 executable removed (replaced by deeplclrun)
 * activation layers within convolutional and fc layers removed
-
-## Recent changes, to 4.x.x branch
-
-* 29th April: move python_swig to branch, since not production ready, and I dont have time to make it production-ready
-* 28th April: removed internal activation layer from conv and fc layers, so we will use the explicit ActivationLayer for activation now
-* 26th April: added dropout :-)
-* 25th April: added independent activation layers, and changed default for convolutional and fc layers to linear
-* 25th April: cleaned up the benchmarks a lot, added them to jenkins, added a couple more, created an Angular/Bootstrap page to display them [DeepCL benchmarks](http://hughperkins.github.io/DeepCL/benchmarking/)
-* 21st April: Added lua wrappers to luarocks repository
-* 18th April: with `loadweights=1`, will load old weights file format too, not just refuse to load
-* 18th April: with `loadweights=1`, if the file doesnt match current options, you can now override if you want, at the risk of crashing, or loading inappropriate weights
 

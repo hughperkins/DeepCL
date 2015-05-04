@@ -13,7 +13,10 @@ if len(sys.argv) != 2:
 
 mnistFilePath = sys.argv[1] + '/t10k-images-idx3-ubyte' 
 
-net = PyDeepCL.NeuralNet()
+cl = PyDeepCL.EasyCL()
+net = PyDeepCL.NeuralNet(cl)
+sgd = PyDeepCL.SGD( cl, 0.002, 0 )
+sgd.setMomentum( 0.0001 )
 net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(28) )
 net.addLayer( PyDeepCL.NormalizationLayerMaker().translate(-0.5).scale(1/255.0) )
 net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(8).filterSize(5).padZeros().biased() )
@@ -43,9 +46,12 @@ PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N )
 net.setBatchSize(batchSize)
 for epoch in range(numEpochs): 
     numRight = 0
+    context = PyDeepCL.TrainingContext(epoch, 0)
     for batch in range( N // batchSize ):
+        sgd.trainFromLabels( net, context, images[batch * batchSize * planes * size * size:], labels[batch * batchSize:] )
+#        net.forward( images[batch * batchSize * planes * size * size:] )
+#        net.backwardFromLabels( labels[batch * batchSize:] )
         net.forward( images[batch * batchSize * planes * size * size:] )
-        net.backwardFromLabels( 0.002, labels[batch * batchSize:] )
         numRight += net.calcNumRight( labels[batch * batchSize:] )
         # print( 'numright ' + str( net.calcNumRight( labels ) ) )
 #    print( 'loss ' + str( loss ) )

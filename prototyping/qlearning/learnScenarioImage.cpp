@@ -5,11 +5,8 @@
 #include <vector>
 
 #include "ScenarioImage.h"
-
-#include "NeuralNet.h"
-
+#include "DeepCL.h"
 #include "array_helper.h"
-
 #include "QLearner.h"
 
 using namespace std;
@@ -19,7 +16,9 @@ int main( int argc, char *argv[] ) {
 
     ScenarioImage *scenario = new ScenarioImage( 5, true);
 
-    NeuralNet *net = new NeuralNet();
+    EasyCL *cl = new EasyCL();
+    NeuralNet *net = new NeuralNet( cl );
+    SGD *sgd = SGD::instance( cl, 0.1f, 0.0f );
 
     const int size = scenario->getPerceptionSize();
     const int planes = scenario->getPerceptionPlanes();
@@ -37,14 +36,16 @@ int main( int argc, char *argv[] ) {
 
     scenario->setNet( net ); // used by the printQRepresentation method
 
-    QLearner qLearner( scenario, net );
+    QLearner qLearner( sgd, scenario, net );
     qLearner.run();
     
 //    delete[] expectedOutputs;
 //    delete[] lastPerception;
 //    delete[] perception;
+    delete sgd;
     delete net;
     delete scenario;
+    delete cl;
     
     return 0;
 }

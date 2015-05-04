@@ -4,11 +4,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
-#include "ActivationBackward.h"
-#include "ActivationForward.h"
-#include "ActivationFunction.h"
+#include "activate/ActivationBackward.h"
+#include "activate/ActivationForward.h"
+#include "activate/ActivationFunction.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -21,7 +21,7 @@ TEST( testactivationbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float outputs[] = {
         1, 0, 0.1f,
@@ -70,7 +70,7 @@ TEST( testactivationbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 1;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float outputs[] = {
         2,
@@ -123,7 +123,7 @@ TEST( SLOW_testactivationbackward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     int outputImageSize = p1->outputImageSize;
@@ -190,7 +190,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int activationSize = 2;
-    OpenCLHelper cl;
+    EasyCL cl;
     ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, activationSize );
     float data[] = { 1, 2, 
                     5, 3,

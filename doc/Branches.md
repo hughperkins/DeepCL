@@ -5,7 +5,6 @@
 * 3.x.x: previous version.  Just here so the old documentation is available really
 
 *Feature/story branches:*
-* momentum, momentumv2: my current feature/story branch for looking at implementing momentum.  You probably dont want to fork this
 
 *github pages:*
 * gh-pages: holds the website at http://hughperkins.github.io/DeepCL

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "stringhelper.h"
+#include "util/stringhelper.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"

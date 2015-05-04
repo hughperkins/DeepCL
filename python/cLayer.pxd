@@ -1,7 +1,7 @@
-cdef extern from "Layer.h":
+cdef extern from "layer/Layer.h":
     cdef cppclass Layer:
         void forward()
-        void backward( float learningRate )
+        void backward()
         bool needsBackProp()
         bool getBiased()
         int getOutputCubeSize()

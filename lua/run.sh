@@ -5,5 +5,5 @@ if [[ x$1 == x ]]; then {
     exit 1
 } fi
 
-LUA_CPATH=build/?.so LUA_PATH=thirdparty/luaunit/?.lua luajit $1
+LUA_CPATH=build/?.so LUA_PATH=thirdparty/luaunit/?.lua luajit $@
 

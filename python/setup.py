@@ -40,17 +40,28 @@ for arg in sys.argv:
     if arg in ('sdist','bdist','bdist_egg','build_ext'):
         docopy = True
 
+srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
+    'input','layer','loaders','loss','net','netdef','normalize','patches',
+    'pooling','trainers','util','weights', 'qlearning']
+
 if docopy:
     if not os.path.isdir('mysrc'):
         os.makedirs('mysrc')
-    for thisdir in ['../src','../OpenCLHelper','../qlearning',
-            '../OpenCLHelper/thirdparty/clew/src']: # copy everything..
+    for thisdir in ['../src','../EasyCL',
+            '../EasyCL/thirdparty/clew/src']: # copy everything..
         for thisfile in os.listdir(thisdir):
             #print(thisfile)
             thisfilepath = thisdir +'/' + thisfile
             if os.path.isfile(thisfilepath):
                 distutils.file_util.copy_file( thisfilepath, 'mysrc/' + thisfile )
     distutils.file_util.copy_file( '../jenkins/version.txt', 'version.txt' )
+    for srcdir in srcdirs:
+        if not os.path.isdir('mysrc/' + srcdir):
+            os.makedirs('mysrc/' + srcdir)
+        for thisfile in os.listdir('../src/' + srcdir):
+            thisfilepath = '../src/' + srcdir +'/' + thisfile
+            if os.path.isfile(thisfilepath):
+                distutils.file_util.copy_file( thisfilepath, 'mysrc/' + srcdir + '/' + thisfile )
 
 #        distutils.dir_util.copy_tree( thisdir, 'mysrc' )
 
@@ -132,48 +143,27 @@ def distutils_dir_name(dname):
 def lib_build_dir():
     return os.path.join('build', distutils_dir_name('lib'))
 
-deepcl_sourcestring = """
-    LayerMaker.cpp NeuralNetMould.cpp
-    ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-    ActivationFunction.cpp 
-    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
-    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
-    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
-    Forward4.cpp 
-    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
-    BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
-    BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
-    FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
-    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
-    BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
-    RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
-    Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
-    RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
-    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
-    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    ForwardFc.cpp ForwardByInputPlane.cpp
-    PoolingBackwardGpuNaive.cpp
-    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
-    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
-    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
-    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
-    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp
-    Trainer.cpp SGD.cpp
-""" 
-deepcl_sources_all = deepcl_sourcestring.split()
 deepcl_sources = []
-for source in deepcl_sources_all:
-    deepcl_sources.append(source)
+for srcdir in srcdirs:
+    filespath = 'mysrc/' + srcdir + '/files.txt'
+    fileslist = []
+    with open( filespath, 'r' ) as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.strip() != "":
+                fileslist.append( 'mysrc/' + srcdir + '/' + line.strip() )
+#    print('fileslist: ', fileslist)
+    deepcl_sources = deepcl_sources + fileslist
+print('deeplcl_sources', deepcl_sources)
+#for source in deepcl_sources_all:
+#    deepcl_sources.append(source)
 
-openclhelpersources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [ 'OpenCLHelper/OpenCLHelper.cpp',
-        'OpenCLHelper/deviceinfo_helper.cpp', 'OpenCLHelper/platforminfo_helper.cpp',
-        'OpenCLHelper/CLKernel.cpp', 'OpenCLHelper/thirdparty/clew/src/clew.c' ] ))
-print(openclhelpersources)
-print(isinstance( openclhelpersources, list) )
+easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
+        'EasyCL/EasyCL.cpp',
+        'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
+        'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
+print(easyclsources)
+print(isinstance( easyclsources, list) )
 
 compile_options = []
 osfamily = platform.uname()[0]
@@ -200,11 +190,11 @@ else:
     my_cythonize = no_cythonize
 
 #libraries = [
-#    ("OpenCLHelper", {
-#        'sources': openclhelpersources + ['dummy_openclhelper.cpp'],
-#        'include_dirs': ['DeepCL/OpenCLHelper'],
+#    ("EasyCL", {
+#        'sources': easyclsources + ['dummy_easycl.cpp'],
+#        'include_dirs': ['DeepCL/EasyCL'],
 #        'extra_compile_args': compile_options,
-##        define_macros = [('OpenCLHelper_EXPORTS',1)],
+##        define_macros = [('EasyCL_EXPORTS',1)],
 ##        libraries = []
 ##        language='c++'
 #        }
@@ -212,35 +202,34 @@ else:
 #]
 
 ext_modules = [
-#    Extension("_OpenCLHelper",
-#        sources = openclhelpersources + ['dummy_openclhelper.cpp'],
-#        include_dirs = ['DeepCL/OpenCLHelper'],
+#    Extension("_EasyCL",
+#        sources = easyclsources + ['dummy_easycl.cpp'],
+#        include_dirs = ['DeepCL/EasyCL'],
 #        extra_compile_args=compile_options,
-#        define_macros = [('OpenCLHelper_EXPORTS',1),('MS_WIN32',1)],
+#        define_macros = [('EasyCL_EXPORTS',1),('MS_WIN32',1)],
 ##        libraries = []
 ##        language='c++'
 #    )
 #    Extension("libDeepCL",
 #        list(map( lambda name : 'DeepCL/src/' + name, deepcl_sources)), # +
 ##            glob.glob('DeepCL/src/*.h'),
-#        include_dirs = ['DeepCL/src','DeepCL/OpenCLHelper'],
+#        include_dirs = ['DeepCL/src','DeepCL/EasyCL'],
 #        extra_compile_args = compile_options,
 #        library_dirs = [ lib_build_dir() ],
-#        libraries = [ "OpenCLHelper" + get_so_suffix() ],
+#        libraries = [ "EasyCL" + get_so_suffix() ],
 #        define_macros = [('DeepCL_EXPORTS',1)],
 #        runtime_library_dirs=runtime_library_dirs
 ##        language='c++'
 #    ),
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
-                + openclhelpersources
-                + list(map( lambda name : 'mysrc/' + name, deepcl_sources))
-                + ['mysrc/QLearner.cpp','mysrc/array_helper.cpp'], 
-#                glob.glob('DeepCL/OpenCLHelper/*.h'),
+                + easyclsources
+                + deepcl_sources, 
+#                glob.glob('DeepCL/EasyCL/*.h'),
               include_dirs = ['mysrc'],
               libraries= libraries,
               extra_compile_args=compile_options,
-        define_macros = [('DeepCL_EXPORTS',1),('OpenCLHelper_EXPORTS',1)],
+        define_macros = [('DeepCL_EXPORTS',1),('EasyCL_EXPORTS',1)],
 #              extra_objects=['cDeepCL.pxd'],
 #              library_dirs = [lib_build_dir()],
               runtime_library_dirs=runtime_library_dirs,

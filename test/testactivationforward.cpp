@@ -4,10 +4,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
-#include "ActivationForward.h"
-#include "ActivationFunction.h"
+#include "activate/ActivationForward.h"
+#include "activate/ActivationFunction.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -21,7 +21,7 @@ TEST( testactivationforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
@@ -51,7 +51,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 
                     5, 3,
@@ -87,7 +87,7 @@ TEST( testactivationforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     ActivationForward *activationForward = ActivationForward::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
@@ -193,7 +193,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int numPlanes = args._numPlanes;
     int imageSize = args._imageSize;
 
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     ActivationForward *activationForward0 = ActivationForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
     ActivationForward *activationForward1 = ActivationForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );

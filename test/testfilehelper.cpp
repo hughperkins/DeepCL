@@ -1,10 +1,11 @@
 #include <iostream>
 using namespace std;
 
-#include "gtest/gtest.h"
+#include "util/FileHelper.h"
 
-#include "FileHelper.h"
-#include "test/myasserts.h"
+#include "gtest/gtest.h"
+#include "test/gtest_supp.h"
+
 
 TEST( testfilehelper, testfilehelper ) {
     int N = 100000;
@@ -21,7 +22,7 @@ TEST( testfilehelper, testfilehelper ) {
     }
     delete[] dataread;
     for( int i = 0; i < N; i++ ) {
-        assertEquals( somefloats[i], newfloats[i], 0.0001 );
+        EXPECT_FLOAT_NEAR( somefloats[i], newfloats[i] );
     }  
     EXPECT_EQ( N * sizeof(float), FileHelper::getFilesize( "foo.dat" ) );
 }
@@ -40,7 +41,7 @@ TEST( testfilehelper, testreadchunk ) {
     }
     delete[] dataread;
     for( int i = 0; i < 100; i++ ) {
-        assertEquals( somefloats[ 10000 + i], newfloats[i], 0.0001 );
+        EXPECT_FLOAT_NEAR( somefloats[ 10000 + i], newfloats[i] );
     }  
 }
 

@@ -8,12 +8,16 @@
 #include <random>
 #include <algorithm>
 
-#include "NeuralNet.h"
-#include "Backward.h"
-#include "ActivationFunction.h"
-#include "LossLayer.h"
-#include "ForceBackpropLayerMaker.h"
-#include "ActivationMaker.h"
+#include "net/NeuralNet.h"
+#include "conv/Backward.h"
+#include "activate/ActivationFunction.h"
+#include "loss/LossLayer.h"
+#include "forcebackprop/ForceBackpropLayerMaker.h"
+#include "layer/LayerMakers.h"
+#include "net/NeuralNetMould.h"
+#include "conv/ConvolutionalLayer.h"
+#include "input/InputLayer.h"
+#include "trainers/SGD.h"
 
 #include "gtest/gtest.h"
 
@@ -27,12 +31,13 @@ TEST( testbackward, squareloss ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 3, 5 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
@@ -64,7 +69,7 @@ TEST( testbackward, squareloss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -96,18 +101,20 @@ TEST( testbackward, squareloss ) {
     delete[] input;
 
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, crossentropyloss ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 3, 5 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 3, 5 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
     cout << net->asString() << endl;
@@ -139,7 +146,7 @@ TEST( testbackward, crossentropyloss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -171,6 +178,7 @@ TEST( testbackward, crossentropyloss ) {
     delete[] input;
 
     delete net;
+    delete cl;
 }
 
 void normalizeAsProbabilityDistribution( int numPlanes, float *values, int N ) {
@@ -192,12 +200,13 @@ TEST( testbackward, softmaxloss ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
@@ -248,7 +257,7 @@ TEST( testbackward, softmaxloss ) {
     float lossBefore = net->calcLoss( expectedOutput );
 
     // calculate gradInput
-    net->backward( 1.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -280,13 +289,14 @@ TEST( testbackward, softmaxloss ) {
     delete[] input;
 
     delete net;
+    delete cl;
 }
 
 void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     // here's the plan:
     // generate some input, randomly
     // generate some expected output, randomly
-    // forward forward
+    // forward propagate
     // calculate loss
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
@@ -308,18 +318,22 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
     Layer *layer = net->getLayer(targetLayerIndex);
-    if( layer->getPersistSize() > 0 ) {
-        int weightsSize = layer->getWeightsSize();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        cout << "weightsize=" << weightsSize << " biasweightssize=" << biasWeightsSize << endl;
-        float *weights = new float[weightsSize];
-        float *biasWeights = new float[biasWeightsSize];
-        WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( 3, biasWeights, biasWeightsSize, -0.1f, 0.1f );
-        if( weightsSize > 0 || biasWeightsSize > 0 ) {
-            layer->setWeights( weights, biasWeights );
-        }
-    }
+    // in fact we dont really need to randomize the weights, since
+    // the weights are randomized anyway
+//    if( layer->getPersistSize() > 0 ) {
+//        int weightsSize = layer->getWeightsSize();
+//        int biasSize = layer->getBiasSize();
+//        cout << "weightsize=" << weightsSize << " biassize=" << biasSize << endl;
+//        float *weights = new float[weightsSize];
+//        float *bias = new float[biasSize];
+//        WeightRandomizer::randomize( 2, weights, weightsSize, -0.1f, 0.1f );
+//        WeightRandomizer::randomize( 3, bias, biasSize, -0.1f, 0.1f );
+//        if( weightsSize > 0 || biasSize > 0 ) {
+//            layer->setWeights( weights, bias );
+//        }
+//        delete[] weights;
+//        delete[] bias;
+//    }
 
     cout << "layer " << layer->asString() << endl;
     WeightRandomizer::randomize( 0, input, inputTotalSize, -1.0f, 1.0f );
@@ -342,7 +356,7 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
     // calculate gradInput
     // should be zero, so we dont modify the weights
     // otherwise the losses will be really strange :-)
-    net->backward( 0.0f, expectedOutput);
+    net->backward( expectedOutput);
 
     // modify input slightly
     mt19937 random;
@@ -375,7 +389,8 @@ void checkLayer( NeuralNet *net, int targetLayerIndex ) {
 }
 
 TEST( testbackward, squareloss2 ) {
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );
     cout << net->asString() << endl;
@@ -385,10 +400,12 @@ TEST( testbackward, squareloss2 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, crossentropy2 ) {
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( CrossEntropyLossMaker::instance() );
     cout << net->asString() << endl;
@@ -398,10 +415,12 @@ TEST( testbackward, crossentropy2 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, softmax2 ) {
-    NeuralNet *net = new NeuralNet( 5, 1 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 5, 1 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( SoftMaxMaker::instance() );
     cout << net->asString() << endl;
@@ -411,10 +430,12 @@ TEST( testbackward, softmax2 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, conv1 ) {
-    NeuralNet *net = new NeuralNet( 2, 4 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
@@ -426,10 +447,12 @@ TEST( testbackward, conv1 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, fc1 ) {
-    NeuralNet *net = new NeuralNet( 2, 4 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 2, 4 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( FullyConnectedMaker::instance()->numPlanes(4)->imageSize(1)->biased(0) );
     net->addLayer( SquareLossMaker::instance() );
@@ -441,10 +464,12 @@ TEST( testbackward, fc1 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 TEST( testbackward, act1 ) {
-    NeuralNet *net = new NeuralNet( 1, 2 );
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = new NeuralNet( cl, 1, 2 );
     net->addLayer( ForceBackpropLayerMaker::instance() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
@@ -456,12 +481,14 @@ TEST( testbackward, act1 ) {
 
     checkLayer( net, 2 );
     delete net;
+    delete cl;
 }
 
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically( float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20 ) {
-    NeuralNet *net = NeuralNet::maker()->planes(numPlanes)->imageSize(imageSize)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
     net->addLayer( ActivationMaker::instance()->fn(fn) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros) );
@@ -486,6 +513,7 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weights, weightsSize2, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weightsWrapper->copyToDevice();
 
+    SGD *sgd = SGD::instance( cl, learningRate, 0.0f );
     for( int it = 0; it < its; it++ ) {
         float *weightsBefore1 = new float[weightsSize1];
         float *currentWeights = net->getLayer(1)->getWeights();
@@ -502,7 +530,9 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     //    net->print();
         float loss = net->calcLoss(expectedOutput);
         dynamic_cast<LossLayer*>(net->getLayer(5))->calcLoss(expectedOutput);
-        net->backward( learningRate, expectedOutput );
+//        net->backward( expectedOutput );
+        TrainingContext context(0, 0);
+        sgd->train( net, &context, inputData, expectedOutput );
         dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToHost();
         // restore 2nd layer weights :-)
         for( int i = 0; i < weightsSize2; i++ ) {
@@ -547,6 +577,8 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
 //    delete[] errors;
 //    delete[] output;
     delete[] inputData;
+    delete net;
+    delete cl;
 }
 
 TEST( testbackward, checknumerically ) {
@@ -573,7 +605,7 @@ TEST( testbackward, checknumerically_imagesize5_filter3_relu ) {
 }
 
 void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
@@ -633,7 +665,7 @@ TEST( SLOW_testbackward, perf_kgsgo_32c5 ) {
 }
 
 void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int inputSize = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
@@ -768,21 +800,21 @@ float *test( int imageSize ) {
         .setBiased( true ).setPadZeros( true );
 
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+    int biasSize = dim.numFilters;
     int outputSize = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
-    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+    float *bias = new float[max( 10000, biasSize)];
     float *errors = new float[max(10000, outputSize )];
     float *output = new float[max(10000, outputSize )];
     WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
     WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
     WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
-    OpenCLHelper cl;
+    EasyCL cl;
     Backward *backwardImpl = Backward::instanceForTest( &cl, dim, new ReluActivation() );
     Timer timer;
-    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
     StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
@@ -792,7 +824,7 @@ float *test( int imageSize ) {
 
     delete[] errors;
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
 
     return errorsForUpstream;
 }
@@ -830,21 +862,21 @@ float *test( int imageSize ) {
 //        .setBiased( true ).setPadZeros( true );
 
 //    int weightsSize = dim.filtersSize;
-//    int biasWeightsSize = dim.numFilters;
+//    int biasSize = dim.numFilters;
 //    int outputSize = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
-//    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+//    float *bias = new float[max( 10000, biasSize)];
 //    float *errors = new float[max(10000, outputSize )];
 //    float *output = new float[max(10000, outputSize )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-//    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+//    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
 //    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
-//    OpenCLHelper cl;
+//    EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
+//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -861,25 +893,25 @@ float *test( int imageSize ) {
 //    delete[] errorsForUpstream;
 //    delete[] errors;
 //    delete[] weights;
-//    delete[] biasWeights;
+//    delete[] bias;
 
 
 //    int weightsSize = dim.filtersSize;
-//    int biasWeightsSize = dim.numFilters;
+//    int biasSize = dim.numFilters;
 //    int outputSize = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
-//    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+//    float *bias = new float[max( 10000, biasSize)];
 //    float *errors = new float[max(10000, outputSize )];
 //    float *output = new float[max(10000, outputSize )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-//    WeightRandomizer::randomize( biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+//    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
 //    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
 
-//    OpenCLHelper cl;
+//    EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
 //    Timer timer;
-//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, biasWeights, errors );
+//    float *errorsForUpstream = backwardImpl->backward( batchSize, output, weights, bias, errors );
 //    StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
@@ -896,7 +928,7 @@ float *test( int imageSize ) {
 //    delete[] errorsForUpstream;
 //    delete[] errors;
 //    delete[] weights;
-//    delete[] biasWeights;
+//    delete[] bias;
 //}
 
 /*
@@ -907,22 +939,22 @@ TEST( testbackward, comparespecific ) {
         .setBiased( true ).setPadZeros( false );
 
     int weightsSize = dim.filtersSize;
-    int biasWeightsSize = dim.numFilters;
+    int biasSize = dim.numFilters;
     int outputSize = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
-    float *biasWeights = new float[max( 10000, biasWeightsSize)];
+    float *bias = new float[max( 10000, biasSize)];
     float *errors = new float[max(10000, outputSize )];
     float *output = new float[max(10000, outputSize )];
     memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
-    memset( biasWeights, 0, sizeof(float) * max(10000, biasWeightsSize ) );
+    memset( bias, 0, sizeof(float) * max(10000, biasSize ) );
     memset( errors, 0, sizeof(float) * max(10000, outputSize ) );
     memset( output, 0, sizeof(float) * max(10000, outputSize ) );
     mt19937 random = WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
-    WeightRandomizer::randomize( random, biasWeights, max( 10000, biasWeightsSize), -1, 1 );
+    WeightRandomizer::randomize( random, bias, max( 10000, biasSize), -1, 1 );
     WeightRandomizer::randomize( random, errors, max(10000, outputSize ), -1, 1 );
     WeightRandomizer::randomize( random, output, max(10000, outputSize ), -1, 1 );
 //    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
-//    WeightRandomizer::randomizeInts( biasWeights, max( 10000, biasWeightsSize), 0, 3 );
+//    WeightRandomizer::randomizeInts( bias, max( 10000, biasSize), 0, 3 );
 //    WeightRandomizer::randomizeInts( errors, max(10000, outputSize ), 0, 3 );
 //    WeightRandomizer::randomizeInts( output, max(10000, outputSize ), 0, 3 );
 
@@ -949,11 +981,11 @@ TEST( testbackward, comparespecific ) {
 //    errors[4] = 8;
 //    errors[5] = 6;
 
-    OpenCLHelper cl;
+    EasyCL cl;
     Backward *backwardImpl1 = Backward::instanceSpecific( 0, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream1 = backwardImpl1->backward( batchSize, output, weights, bias, errors );
     Backward *backwardImpl2 = Backward::instanceSpecific( 1, &cl, dim, new ReluActivation() );
-    float *errorsForUpstream2 = backwardImpl2->backward( batchSize, output, weights, biasWeights, errors );
+    float *errorsForUpstream2 = backwardImpl2->backward( batchSize, output, weights, bias, errors );
 
     int errorsForUpstreamSize = batchSize * dim.inputCubeSize;
     cout << dim << endl;
@@ -998,7 +1030,7 @@ TEST( testbackward, comparespecific ) {
     delete[] errorsForUpstream2;
     delete[] errors;
     delete[] weights;
-    delete[] biasWeights;
+    delete[] bias;
 }
 */
 

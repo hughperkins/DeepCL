@@ -10,7 +10,7 @@
 
 #include "ClConvolve_typedefs.h"
 
-#include "mt19937defs.h"
+#include "util/mt19937defs.h"
 
 #define VIRTUAL virtual
 #define STATIC static

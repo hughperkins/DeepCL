@@ -5,13 +5,13 @@
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
-#include "Timer.h"
-#include "OpenCLHelper.h"
+#include "util/Timer.h"
+#include "EasyCL.h"
 
 using namespace std;
 
 TEST( testMemset, basic ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     CLKernel *kMemset = 0;
     // [[[cog

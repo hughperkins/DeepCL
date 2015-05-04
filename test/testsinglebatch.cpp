@@ -5,14 +5,18 @@
 #include <cstring>
 #include <cmath>
 
-#include "NeuralNet.h"
-#include "WeightsPersister.h"
+#include "net/NeuralNet.h"
+#include "weights/WeightsPersister.h"
+#include "layer/Layer.h"
+#include "conv/ConvolutionalLayer.h"
+#include "net/NeuralNetMould.h"
+#include "layer/LayerMakers.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 #include "test/Sampler.h"
 #include "test/TestArgsParser.h"
-#include "Timer.h"
+#include "util/Timer.h"
 
 //#if (_MSC_VER == 1500 || _MSC_VER == 1600  )
 #ifdef _MSC_VER // make consistent across all msvc versions, so dont have to retest on different msvc versions...
@@ -128,9 +132,9 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
             layer->weights[i] = random() / (float)random.max() * 0.2f - 0.1f;
         }
         layer->weightsWrapper->copyToDevice();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        for( int i = 0; i < biasWeightsSize; i++ ) {
-            layer->biasWeights[i] = random() / (float)random.max() * 0.2f - 0.1f;
+        int biasSize = layer->getBiasSize();
+        for( int i = 0; i < biasSize; i++ ) {
+            layer->bias[i] = random() / (float)random.max() * 0.2f - 0.1f;
         }
     }
 
@@ -145,7 +149,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
         net->forward( inputData );
-        net->backward( learningRate, expectedOutput );
+        net->backward( expectedOutput );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
@@ -201,7 +205,8 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 }
 
 void test( ActivationFunction *fn, TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased() );
         net->addLayer( ActivationMaker::instance()->fn(fn) );
@@ -220,6 +225,7 @@ void test( ActivationFunction *fn, TestArgs args ) {
     net->print();
     test( args.learningRate, args.numEpochs, args.batchSize, net );
     delete net;
+    delete cl;
 }
 
 TEST( testsinglebatch, imagesize5_filtersize3_batchsize2 ) {
@@ -289,7 +295,8 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
 }
 
 void testLabelled( TestArgs args ) {
-    NeuralNet *net = NeuralNet::maker()->planes(1)->imageSize(args.imageSize)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased()->padZeros() );
         net->addLayer( ActivationMaker::instance()->relu() );
@@ -324,9 +331,9 @@ void testLabelled( TestArgs args ) {
                 layer->weights[i] = random() / (float)random.max() * 0.2f - 0.1f;
             }
             layer->weightsWrapper->copyToDevice();
-            int biasWeightsSize = layer->getBiasWeightsSize();
-            for( int i = 0; i < biasWeightsSize; i++ ) {
-                layer->biasWeights[i] = random() / (float)random.max() * 0.2f - 0.1f;
+            int biasSize = layer->getBiasSize();
+            for( int i = 0; i < biasSize; i++ ) {
+                layer->bias[i] = random() / (float)random.max() * 0.2f - 0.1f;
             }
         }
     }
@@ -342,7 +349,7 @@ void testLabelled( TestArgs args ) {
     for( int i = 0; i < args.numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
         net->forward( inputData );
-        net->backwardFromLabels( args.learningRate, labels );
+        net->backwardFromLabels( labels );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
         for( int layer = 1; layer < (int)net->getNumLayers(); layer++ ) {
             checkErrorsForLayer( layer, lastloss, net, lastWeights, currentWeights, args.learningRate, inputData, labels );
@@ -399,6 +406,7 @@ void testLabelled( TestArgs args ) {
     delete[] labels;
     delete[] inputData;
     delete net;
+    delete cl;
 }
 
 TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_softmax ) {
@@ -456,11 +464,11 @@ TEST( testsinglebatch, detailedregression ) {
             layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
         layer->weightsWrapper->copyToDevice();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        for( int i = 0; i < biasWeightsSize; i++ ) {
-            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        int biasSize = layer->getBiasSize();
+        for( int i = 0; i < biasSize; i++ ) {
+            layer->bias[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
-//        layer->biasWeightsWrapper->copyToDevice();
+//        layer->biasWrapper->copyToDevice();
     }
 
     net->forward( inputData );
@@ -553,10 +561,10 @@ layer1->backward( learningRate );
         weightsSize = layer->getWeightsSize();
         cout << "layer " << layerIndex << endl;
         Sampler::printSamples( "weights", weightsSize, (float*)weights, 3 );        
-        float *biasWeights = layer->biasWeights;
-        int biasWeightsSize = layer->getBiasWeightsSize();
+        float *bias = layer->bias;
+        int biasSize = layer->getBiasSize();
         cout << "layer " << layerIndex << endl;
-        Sampler::printSamples( "biasWeights", biasWeightsSize, (float*)biasWeights, 3 );        
+        Sampler::printSamples( "bias", biasSize, (float*)bias, 3 );        
     }
 
 layer3->weightsWrapper->copyToHost();
@@ -564,28 +572,28 @@ weights = net->layers[3]->weights;
 EXPECT_FLOAT_NEAR( -0.0679266, weights[16044] );
 EXPECT_FLOAT_NEAR( 0.0284175, weights[72239] );
 EXPECT_FLOAT_NEAR( -0.0749269, weights[98933] );
-float *biasWeights = net->layers[3]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0605856, biasWeights[4] );
-EXPECT_FLOAT_NEAR( -0.0663593, biasWeights[9] );
-EXPECT_FLOAT_NEAR( -0.0573801, biasWeights[3] );
+float *bias = net->layers[3]->bias;
+EXPECT_FLOAT_NEAR( -0.0605856, bias[4] );
+EXPECT_FLOAT_NEAR( -0.0663593, bias[9] );
+EXPECT_FLOAT_NEAR( -0.0573801, bias[3] );
 layer2->weightsWrapper->copyToHost();
 weights = net->layers[2]->weights;
 EXPECT_FLOAT_NEAR( 0.0507008, weights[16044] );
 EXPECT_FLOAT_NEAR( 0.0982873, weights[21039] );
 EXPECT_FLOAT_NEAR( -0.094224, weights[22133] );
-biasWeights = net->layers[2]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0552651, biasWeights[12] );
-EXPECT_FLOAT_NEAR( -0.0571462, biasWeights[15] );
-EXPECT_FLOAT_NEAR( -0.0304532, biasWeights[21] );
+bias = net->layers[2]->bias;
+EXPECT_FLOAT_NEAR( -0.0552651, bias[12] );
+EXPECT_FLOAT_NEAR( -0.0571462, bias[15] );
+EXPECT_FLOAT_NEAR( -0.0304532, bias[21] );
 layer1->weightsWrapper->copyToHost();
 weights = net->layers[1]->weights;
 EXPECT_FLOAT_NEAR( -0.0223737, weights[44] );
 EXPECT_FLOAT_NEAR( -0.0658144, weights[239] );
 EXPECT_FLOAT_NEAR( -0.0419252, weights[533] );
-biasWeights = net->layers[1]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0563513, biasWeights[12] );
-EXPECT_FLOAT_NEAR( -0.0601025, biasWeights[15] );
-EXPECT_FLOAT_NEAR( 0.000941529, biasWeights[21] );
+bias = net->layers[1]->bias;
+EXPECT_FLOAT_NEAR( -0.0563513, bias[12] );
+EXPECT_FLOAT_NEAR( -0.0601025, bias[15] );
+EXPECT_FLOAT_NEAR( 0.000941529, bias[21] );
 
 output = (float*)(net->getOutput());
 Sampler::printSamples( "net->getOutput()", outputSize, (float*)output, 3 );
@@ -613,10 +621,10 @@ net->backward( learningRate, expectedOutput );
         weightsSize = layer->getWeightsSize();
         cout << "weights = net->layers[" << layerIndex << "]->weights;" << endl;
         Sampler::printSamples( "weights", weightsSize, (float*)weights, 3 );        
-        float *biasWeights = layer->biasWeights;
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        cout << "biasWeights = net->layers[" << layerIndex << "]->biasWeights;" << endl;
-        Sampler::printSamples( "biasWeights", biasWeightsSize, (float*)biasWeights, 3 );        
+        float *bias = layer->bias;
+        int biasSize = layer->getBiasSize();
+        cout << "bias = net->layers[" << layerIndex << "]->bias;" << endl;
+        Sampler::printSamples( "bias", biasSize, (float*)bias, 3 );        
     }
 
 layer3->weightsWrapper->copyToHost();
@@ -624,28 +632,28 @@ weights = net->layers[3]->weights;
 EXPECT_FLOAT_NEAR( -0.0681024, weights[16044] );
 EXPECT_FLOAT_NEAR( 0.0316504, weights[72239] );
 EXPECT_FLOAT_NEAR( -0.0741202, weights[98933] );
-biasWeights = net->layers[3]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0986968, biasWeights[4] );
-EXPECT_FLOAT_NEAR( -0.0531305, biasWeights[9] );
-EXPECT_FLOAT_NEAR( -0.0268224, biasWeights[3] );
+bias = net->layers[3]->bias;
+EXPECT_FLOAT_NEAR( -0.0986968, bias[4] );
+EXPECT_FLOAT_NEAR( -0.0531305, bias[9] );
+EXPECT_FLOAT_NEAR( -0.0268224, bias[3] );
 layer2->weightsWrapper->copyToHost();
 weights = net->layers[2]->weights;
 EXPECT_FLOAT_NEAR( 0.046951, weights[16044] );
 EXPECT_FLOAT_NEAR( 0.098209, weights[21039] );
 EXPECT_FLOAT_NEAR( -0.0942325, weights[22133] );
-biasWeights = net->layers[2]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0552651, biasWeights[12] );
-EXPECT_FLOAT_NEAR( -0.0575521, biasWeights[15] );
-EXPECT_FLOAT_NEAR( -0.0281381, biasWeights[21] );
+bias = net->layers[2]->bias;
+EXPECT_FLOAT_NEAR( -0.0552651, bias[12] );
+EXPECT_FLOAT_NEAR( -0.0575521, bias[15] );
+EXPECT_FLOAT_NEAR( -0.0281381, bias[21] );
 layer1->weightsWrapper->copyToHost();
 weights = net->layers[1]->weights;
 EXPECT_FLOAT_NEAR( -0.0222835, weights[44] );
 EXPECT_FLOAT_NEAR( -0.0658485, weights[239] );
 EXPECT_FLOAT_NEAR( -0.0419671, weights[533] );
-biasWeights = net->layers[1]->biasWeights;
-EXPECT_FLOAT_NEAR( -0.0563201, biasWeights[12] );
-EXPECT_FLOAT_NEAR( -0.0600976, biasWeights[15] );
-EXPECT_FLOAT_NEAR( 0.0122473, biasWeights[21] );
+bias = net->layers[1]->bias;
+EXPECT_FLOAT_NEAR( -0.0563201, bias[12] );
+EXPECT_FLOAT_NEAR( -0.0600976, bias[15] );
+EXPECT_FLOAT_NEAR( 0.0122473, bias[21] );
 
 
     Timer timer;
@@ -702,9 +710,9 @@ TEST( SLOW_testsinglebatch, perf ) {
             layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
         layer->weightsWrapper->copyToDevice();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        for( int i = 0; i < biasWeightsSize; i++ ) {
-            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        int biasSize = layer->getBiasSize();
+        for( int i = 0; i < biasSize; i++ ) {
+            layer->bias[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
     }
 
@@ -763,9 +771,9 @@ TEST( testsinglebatch, perf19 ) {
             layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
         layer->weightsWrapper->copyToDevice();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        for( int i = 0; i < biasWeightsSize; i++ ) {
-            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        int biasSize = layer->getBiasSize();
+        for( int i = 0; i < biasSize; i++ ) {
+            layer->bias[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
     }
 
@@ -825,9 +833,9 @@ TEST( SLOW_testsinglebatch, perf19_depth12 ) {
             layer->weights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
         layer->weightsWrapper->copyToDevice();
-        int biasWeightsSize = layer->getBiasWeightsSize();
-        for( int i = 0; i < biasWeightsSize; i++ ) {
-            layer->biasWeights[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
+        int biasSize = layer->getBiasSize();
+        for( int i = 0; i < biasSize; i++ ) {
+            layer->bias[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
         }
     }
 

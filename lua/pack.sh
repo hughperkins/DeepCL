@@ -37,7 +37,8 @@ if [[ x$1 == xupload ]]; then {
 
 export package=LuaDeepCL
 export packagelower=luadeepcl
-export pagesurl=http:\\/\\/hughperkins\\.github\\.io\\/DeepCL\\/Downloads\\/lua
+# export pagesurl=http:\\/\\/hughperkins\\.github\\.io\\/DeepCL\\/Downloads\\/lua
+export pagesurl=http:\\/\\/deepcl\\/hughperkins\\.com
 export version=$(head -n 1 version.txt)-1
 echo package=${package} version=${version}
 
@@ -59,7 +60,7 @@ mkdir -p dist/${package}-${version}/pkgsrc
 
 rsync -av ../src/ dist/${package}-${version}/pkgsrc/src/
 rsync -av ../qlearning/ dist/${package}-${version}/pkgsrc/qlearning/
-rsync -av ../OpenCLHelper/ dist/${package}-${version}/pkgsrc/OpenCLHelper/
+rsync -av ../EasyCL/ dist/${package}-${version}/pkgsrc/EasyCL/
 
 cp *.lua *.i CMakeLists.txt *.cxx dist/${package}-${version}/
 rsync -av thirdparty/ dist/${package}-${version}/thirdparty/
@@ -68,13 +69,14 @@ touch dist/${package}-${version}/inpkg.flag
 (cd dist; tar czvpf ${package}-${version}.tar.gz ${package}-${version}/)
 
 if [[ $upload == 1  ]]; then {
-    cp dist/${package}-${version}.tar.gz ../../DeepCL-ghpages/Downloads/lua
-    (
-        cd ../../DeepCL-ghpages
-        git add Downloads/lua/${package}-${version}.tar.gz;
-        git commit -m "lua rock upload"
-        git push
-    )
+    echo now scp dist/${package}-${version}.tar.gz to your server
+    # cp dist/${package}-${version}.tar.gz ../../DeepCL-ghpages/Downloads/lua
+    # (
+    #     cd ../../DeepCL-ghpages
+    #     git add Downloads/lua/${package}-${version}.tar.gz;
+    #     git commit -m "lua rock upload"
+     #    git push
+    # )
 } else  {
     cd dist
     luarocks pack ${packagelower}-${version}.rockspec 

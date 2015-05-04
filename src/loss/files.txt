@@ -1,0 +1,6 @@
+IAcceptsLabels.cpp
+CrossEntropyLoss.cpp
+LossLayer.cpp
+SoftMaxLayer.cpp
+SquareLossLayer.cpp
+

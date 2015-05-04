@@ -63,7 +63,8 @@ def time_layer(num_epochs, label, batch_size, net_string):
     print('building network...')
     input_string, layer_string = net_string.split('-')
     input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
-    net = PyDeepCL.NeuralNet( input_planes, input_size )
+    cl = PyDeepCL.EasyCL()
+    net = PyDeepCL.NeuralNet( cl, input_planes, input_size )
     net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backward gradients to
                           # this layer
     print( net.asString() )
@@ -101,7 +102,7 @@ def time_layer(num_epochs, label, batch_size, net_string):
         now = time.time()
         print('  warm up forward all-layer time', now - last )
         last = now
-    net.backwardFromLabels( 0.001, labels )
+    net.backwardFromLabels(labels)
     now = time.time()
     print('   warm up backward all-layer time', now - last )
     last = now
@@ -119,14 +120,14 @@ def time_layer(num_epochs, label, batch_size, net_string):
         benchmark_type='layer', time_ms=( now - last ) / float(num_epochs) * 1000 )
 
     print('warm up backwards again')
-    layer.backward(0.001)
-    layer.backward(0.001)
+    layer.backward()
+    layer.backward()
     print('warm up backwards done. start timings:')
 
     now = time.time()
     last = now
     for i in range(num_epochs):
-        layer.backward(0.001)
+        layer.backward()
     now = time.time()
     print('backwar layer total time', now - last )
     print('backwar layer average time', ( now - last ) / float(num_epochs) )
@@ -141,7 +142,8 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
     input_string = split_net_string[0]
     netdef = '-'.join(split_net_string[1:])
     input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
-    net = PyDeepCL.NeuralNet( input_planes, input_size )
+    cl = PyDeepCL.EasyCL()
+    net = PyDeepCL.NeuralNet(cl, input_planes, input_size )
     PyDeepCL.NetdefToNet.createNetFromNetdef(net, netdef)
     print( net.asString() )
 
@@ -167,11 +169,11 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
 
     print('warming up backward:')
     last = time.time()
-    net.backwardFromLabels( 0.001, labels )
+    net.backwardFromLabels(labels)
     now = time.time()
     print('   warm up backward time', (now - last) * 1000, 'ms' )
     last = now
-    net.backwardFromLabels( 0.001, labels )
+    net.backwardFromLabels(labels)
     now = time.time()
     print('   warm up backward time', (now - last) * 1000, 'ms' )
 
@@ -195,7 +197,7 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
 
         print('backward for real:')
         # last = time.time()
-        net.backwardFromLabels( 0.001, labels )
+        net.backwardFromLabels(labels)
         now = time.time()
         diff = now - last
         backward_ms = diff * 1000.0

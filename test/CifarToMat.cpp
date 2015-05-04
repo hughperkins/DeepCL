@@ -11,8 +11,8 @@
 #include <iostream>
 
 #include "test/CifarLoader.h"
-#include "stringhelper.h"
-#include "NorbLoader.h"
+#include "util/stringhelper.h"
+#include "loaders/NorbLoader.h"
 
 using namespace std;
 

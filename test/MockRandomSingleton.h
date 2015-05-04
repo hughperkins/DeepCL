@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "RandomSingleton.h"
+#include "util/RandomSingleton.h"
 
 class MockRandomSingletonUniforms : public RandomSingleton {
 public:

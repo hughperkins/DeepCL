@@ -102,7 +102,7 @@ libraries.append('DeepCL')
 ext_modules = [
     Extension("PyDeepCL",
               sources=["PyDeepCL.pyx", 'CyWrappers.cpp'], 
-              include_dirs = ['../src','../OpenCLHelper','../qlearning'],
+              include_dirs = ['../src','../EasyCL','../qlearning'],
               libraries= libraries,
               extra_compile_args=compile_options,
 #              extra_objects=['cDeepCL.pxd'],

@@ -23,7 +23,8 @@
 
 * You can create a network in C++ directly.  As an example, to create a `8C5-MP2-16C5-MP3-150N-10N` network, for MNIST, you could do:
 ```c++
-NeuralNet *net = new NeuralNet();
+EasyCL *cl = new EasyCL();
+NeuralNet *net = new NeuralNet(cl);
 net->addLayer( InputMaker::instance()->numPlanes(1)->imageSize(28) );
 net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
 net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
@@ -41,9 +42,9 @@ net->print();
 ## Create a net
 
 ```c++
-#include "NeuralNet.h"
-
-NeuralNet *net = new NeuralNet();
+#include "DeepCL.h"
+OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+NeuralNet *net = new NeuralNet( cl );
 ```
 
 ## Add an input layer
@@ -187,21 +188,57 @@ For non-categorical data, you can provide expected output values as a contiguous
 * output row
 * output column
 
+## Create a Trainer
+
+```c++
+// create a Trainer object, currently SGD,
+// passing in learning rate, and momentum:
+Trainer *trainer = SGD::instance( cl, 0.02f, 0.0f );
+```
+
+Can set weightdecay, momentum, learningrate:
+
+```c++
+SGD *sgd = SGD::instance( cl );
+sgd->setLearningRate( 0.002f );
+sgd->setMomentum( 0.1f );
+sgd->setWeightDecay( 0.001f );
+```
+
+Other trainers:
+```c++
+Adagrad *adagrad = new Adagrad( cl );
+adagrad->setLearningRate( 0.002f );
+Trainer *trainer = adagrad;
+
+Rmsprop *rmsprop = new Rmsprop( cl );
+rmsprop->setLearningRate( 0.002f );
+Trainer *trainer = rmsprop;
+
+Nesterov *nesterov = new Nesterov( cl );
+nesterov->setLearningRate( 0.002f );
+nesterov->setMomentum( 0.1f );
+Trainer *trainer = nesterov;
+
+Annealer *annealer = new Annealer( cl );
+annealer->setLearningRate( 0.002f );
+annealer->setAnneal( 0.97f );
+Trainer *trainer = annealer;
+```
+
 ## Train
 
 eg:
 ```c++
-// (create a net, as above)
-// train, eg:
-NetLearner netLearner( net );
-netLearner.setTrainingData( Ntrain, trainData, trainLabels );
-netLearner.setTestingData( Ntest, testData, testLabels );
+NetLearner netLearner(
+    trainer, net,
+    Ntrain, trainData, trainLabels,
+    Ntest, testData, testLabels );
 netLearner.setSchedule( numEpochs );
 netLearner.setBatchSize( batchSize );
-netLearner.learn( learningRate );
+netLearner.learn();
 // learning is now done :-)
 ```
-
 
 ## Test
 
@@ -213,6 +250,13 @@ eg
 BatchLearner batchLearner( net );
 int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 ```
+
+## Weight initialization
+
+* By default an `OriginalInitializer` object is used to initialize weights (a bit hacky, but changing this would need a major version bump)
+* You can create an instance of `UniformInitializer`, and assign this to the ConvolutionalMaker by doing for example `->setWeightInitializer( new UniformInitializer(1.0f) )`, to use a uniform initializer
+  * uniform initializer assigns weights sampled uniformally from the range +/- ( initialWeights divided by fanin)
+* possible to create other WeightsInitializers if we ant
 
 ## More details
 

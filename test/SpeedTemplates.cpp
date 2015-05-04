@@ -10,7 +10,7 @@
 #include <vector>
 #include <sstream>
 
-#include "stringhelper.h"
+#include "util/stringhelper.h"
 
 #include "SpeedTemplates.h"
 

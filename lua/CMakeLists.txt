@@ -27,55 +27,28 @@ find_package(SWIG QUIET)
 
 OPTION(DEV_RUN_SWIG "DeepCL developers should turn this on." OFF)
 
-set( lua_DeepCL_sources 
-    LayerMaker.cpp NeuralNetMould.cpp
-     ConvolutionalLayer.cpp NeuralNet.cpp Layer.cpp InputLayer.cpp
-    ActivationFunction.cpp 
-    SquareLossLayer.cpp LossLayer.cpp CrossEntropyLoss.cpp SoftMaxLayer.cpp 
-    Forward1.cpp Forward.cpp Forward2.cpp Forward3.cpp LayerDimensions.cpp
-    ForwardExperimental.cpp ForwardAuto.cpp ForwardCpu.cpp 
-    Forward4.cpp 
-    Backward.cpp BackwardCpu.cpp BackwardGpuNaive.cpp BackwardGpuCached.cpp 
-    BackpropWeights2.cpp BackpropWeights2Cpu.cpp BackpropWeights2Naive.cpp 
-    BackpropWeights2Scratch.cpp BackpropWeights2ScratchLarge.cpp
-    FullyConnectedLayer.cpp  EpochMaker.cpp
-    PoolingForward.cpp PoolingForwardCpu.cpp PoolingLayer.cpp PoolingBackward.cpp
-    PoolingBackwardCpu.cpp PoolingForwardGpuNaive.cpp
-    BatchLearner.cpp NetdefToNet.cpp NetLearner.cpp stringhelper.cpp NormalizationLayer.cpp
-    RandomPatches.cpp RandomTranslations.cpp NorbLoader.cpp MultiNet.cpp
-    Trainable.cpp InputLayerMaker.cpp ConvolutionalMaker.cpp RandomTranslationsMaker.cpp
-    RandomPatchesMaker.cpp NormalizationLayerMaker.cpp FullyConnectedMaker.cpp
-    PoolingMaker.cpp PatchExtractor.cpp Translator.cpp GenericLoader.cpp Kgsv2Loader.cpp
-    BatchLearnerOnDemand.cpp NetLearnerOnDemand.cpp BatchProcess.cpp WeightsPersister.cpp
-    ForwardFc.cpp ForwardByInputPlane.cpp
-    PoolingBackwardGpuNaive.cpp ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
-    ForceBackpropLayerMaker.cpp ForceBackpropLayer.cpp MnistLoader.cpp
-    OnDemandBatcher.cpp Batcher.cpp NetAction.cpp ActivationLayer.cpp ActivationMaker.cpp
-    ActivationForward.cpp ActivationForwardCpu.cpp ActivationForwardGpuNaive.cpp
-    ActivationBackward.cpp ActivationBackwardCpu.cpp ActivationBackwardGpuNaive.cpp
-    DropoutMaker.cpp DropoutLayer.cpp DropoutForward.cpp DropoutBackward.cpp
-    DropoutForwardCpu.cpp DropoutForwardGpuNaive.cpp
-    DropoutBackwardCpu.cpp DropoutBackwardGpuNaive.cpp
-    CopyBuffer.cpp MultiplyBuffer.cpp
-    Trainer.cpp SGD.cpp
-     ../qlearning/QLearner.cpp ../qlearning/array_helper.cpp
- )
+set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
+   loss net netdef normalize patches pooling trainers util weights qlearning)
+foreach(dir ${dirs})
+    file( STRINGS ${SRCTREE}/src/${dir}/files.txt ${dir}_src)
+#    message("${dir}_src ${${dir}_src}")
+    foreach(source ${${dir}_src})
+        set( lua_deepcl_sources ${lua_deepcl_sources} ${SRCTREE}/src/${dir}/${source})
+    endforeach()
+endforeach()
+#message("deepcl_sources ${lua_deepcl_sources}")
 
-set(lua_OpenCLHelper_sources OpenCLHelper/OpenCLHelper.cpp
-    OpenCLHelper/deviceinfo_helper.cpp OpenCLHelper/platforminfo_helper.cpp
-    OpenCLHelper/CLKernel.cpp OpenCLHelper/thirdparty/clew/src/clew.c)
+set(lua_EasyCL_sources EasyCL/EasyCL.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c)
 
-foreach(source ${lua_DeepCL_sources})
-    set( lua_DeepCL_sources_prefixed ${lua_DeepCL_sources_prefixed} ${SRCTREE}/src/${source})
+foreach(source ${lua_EasyCL_sources})
+    set( lua_EasyCL_sources_prefixed ${lua_EasyCL_sources_prefixed} ${SRCTREE}/${source})
 endforeach()
 
-foreach(source ${lua_OpenCLHelper_sources})
-    set( lua_OpenCLHelper_sources_prefixed ${lua_OpenCLHelper_sources_prefixed} ${SRCTREE}/${source})
-endforeach()
-
-add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${lua_DeepCL_sources_prefixed} ${lua_OpenCLHelper_sources_prefixed} )
+add_library( LuaDeepCL SHARED LuaDeepCL_wrap.cxx ${lua_deepcl_sources} ${lua_EasyCL_sources_prefixed} )
 target_include_directories( LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
-target_include_directories( LuaDeepCL PRIVATE ${SRCTREE}/src ${SRCTREE}/qlearning ${SRCTREE}/OpenCLHelper )
+target_include_directories( LuaDeepCL PRIVATE ${SRCTREE}/src ${SRCTREE}/qlearning ${SRCTREE}/EasyCL )
 SET_TARGET_PROPERTIES( LuaDeepCL PROPERTIES PREFIX "") 
 
 if(DEV_RUN_SWIG)
@@ -95,8 +68,8 @@ endif()
 #SET_SOURCE_FILES_PROPERTIES(LuaDeepCL.i PROPERTIES CPLUSPLUS ON)
 ##SET_SOURCE_FILES_PROPERTIES(LuaTest.i PROPERTIES SWIG_FLAGS "-lua")
 
-#SWIG_ADD_MODULE(LuaDeepCL lua LuaDeepCL.i ${DeepCL_sources_prefixed} ${OpenCLHelper_sources_prefixed})
-#target_include_directories(LuaDeepCL PRIVATE ../src ../qlearning ../OpenCLHelper )
+#SWIG_ADD_MODULE(LuaDeepCL lua LuaDeepCL.i ${DeepCL_sources_prefixed} ${EasyCL_sources_prefixed})
+#target_include_directories(LuaDeepCL PRIVATE ../src ../qlearning ../EasyCL )
 #target_include_directories(LuaDeepCL PRIVATE ${LUA_INCLUDE_DIR})
 
 #SET_TARGET_PROPERTIES(LuaDeepCL PROPERTIES PREFIX "") 

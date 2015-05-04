@@ -1,4 +1,4 @@
-//#include "OpenCLHelper.h"
+//#include "EasyCL.h"
 //#include "ClConvolve.h"
 
 #include <iostream>
@@ -6,11 +6,16 @@ using namespace std;
 
 #include "gtest/gtest.h"
 
-#include "Timer.h"
-#include "NeuralNet.h"
+#include "util/Timer.h"
+#include "net/NeuralNet.h"
 #include "AccuracyHelper.h"
 #include "LogicalDataCreator.h"
-#include "test/myasserts.h"
+#include "trainers/SGD.h"
+#include "net/NeuralNetMould.h"
+#include "layer/LayerMaker.h"
+#include "EasyCL.h"
+#include "batch/EpochMaker.h"
+#include "layer/LayerMakers.h"
 
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;
@@ -34,11 +39,11 @@ using namespace std;
 ////    net->print();
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.4, loss );
+//    EXPECT_GE( 0.4, loss );
 
 //    delete net;
 //}
@@ -62,11 +67,11 @@ using namespace std;
 
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.4, loss );
+//    EXPECT_GE( 0.4, loss );
 
 //    delete net;
 //}
@@ -81,14 +86,14 @@ using namespace std;
 //    net->fullyConnectedMaker()->planes(2)->imageSize(1)->biased()->insert();
 //    float weights1[] = {-1.04243, 0.251409, -0.806014, -0.0268563};
 //    float weights2[] = {0.107038, -0.144079, 0.1492, -0.395718};
-//    float biasWeights1[] = {-0.415169, 0.536681};
-//    float biasWeights2[] = {-0.0480136, 0.167825};
-//    net->initWeights( 1, weights1, biasWeights1 );
-//    net->initWeights( 2, weights2, biasWeights2 );
+//    float bias1[] = {-0.415169, 0.536681};
+//    float bias2[] = {-0.0480136, 0.167825};
+//    net->initWeights( 1, weights1, bias1 );
+//    net->initWeights( 2, weights2, bias2 );
 //    for( int epoch = 0; epoch < 200; epoch++ ) {
 //        net->doEpoch( 1, 4, 4, ldc.data, ldc.expectedOutput );
 ////        net->printWeightsAsCode();
-////        net->printBiasWeightsAsCode();
+////        net->printBiasAsCode();
 
 //        if( epoch % 50 == 0 ) {
 //            float loss = net->calcLoss(ldc.expectedOutput);
@@ -106,11 +111,11 @@ using namespace std;
 ////    if( numCorrect != ldc.N ) {
 ////        net->print();
 ////    }
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.00001, loss );
+//    EXPECT_GE( 0.00001, loss );
 
 //    delete net;
 //}
@@ -119,56 +124,66 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
+    SGD *sgd = SGD::instance( cl, 4.0f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(4)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedOutput)->run();
+        net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+           ->expectedOutputs(ldc.expectedOutput)->run(epoch);
         cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
     }
 //    net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
+    EXPECT_EQ( numCorrect, ldc.N );
+    delete sgd;
     delete net;
+    delete cl;
 }
 
 TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(0.1f)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedOutput)->run();
+        net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+           ->expectedOutputs(ldc.expectedOutput)->run( epoch );
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        net->printWeights();
     }
 //        net->print();
     int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
     cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-    assertEquals( numCorrect, ldc.N );
+    EXPECT_EQ( numCorrect, ldc.N );
 
     float loss = net->calcLoss(ldc.expectedOutput);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4f, loss );
+    EXPECT_GE( 0.4f, loss );
 
+    delete sgd;
     delete net;
+    delete cl;
 }
 
 TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 20; epoch++ ) {
-        net->epochMaker()->learningRate(0.1f)->batchSize(4)->numExamples(4)->inputData(ldc.data)
-           ->expectedOutputs(ldc.expectedOutput)->run();
+        net->epochMaker(sgd)->batchSize(4)->numExamples(4)->inputData(ldc.data)
+           ->expectedOutputs(ldc.expectedOutput)->run( epoch );
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(ldc.expectedOutput) << endl;
 //        AccuracyHelper::printAccuracy( ldc.N, 2, ldc.labels, net->getOutput() );
 //        net->printWeights();
@@ -178,9 +193,11 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
 
     float loss = net->calcLoss(ldc.expectedOutput);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.4f, loss );
+    EXPECT_GE( 0.4f, loss );
 
+    delete sgd;
     delete net;
+    delete cl;
 }
 
 //      n=0       n=1       n=2       n=3
@@ -239,7 +256,8 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
         0
     };
 
-    NeuralNet *net = NeuralNet::maker()->planes(2)->imageSize(1)->instance();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
@@ -252,9 +270,10 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    net->setBatchSize(4);
 //    net->forward( data );
 //    net->print();
+    SGD *sgd = SGD::instance( cl, 0.1f, 0 );
     for( int epoch = 0; epoch < 200; epoch++ ) {
-        net->epochMaker()->learningRate(0.1f)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
-           ->expectedOutputs(expectedOutput)->run();
+        net->epochMaker(sgd)->batchSize(numExamples)->numExamples(numExamples)->inputData(data)
+           ->expectedOutputs(expectedOutput)->run( epoch );
         if( epoch % 5 == 0 ) cout << "Loss L " << net->calcLoss(expectedOutput) << endl;
     }
     net->print();
@@ -262,9 +281,11 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 
     float loss = net->calcLoss(expectedOutput);
     cout << "loss, E, " << loss << endl;
-    assertLessThan( 0.0000001f, loss );
+    EXPECT_GE( 0.0000001f, loss );
 
+    delete sgd;
     delete net;
+    delete cl;
 }
 
 //TEST( testlogicaloperators, DISABLED_Convolve_1layer_relu_biased_And ) {
@@ -287,7 +308,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 //    net->print();
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 //    delete net;
 
 //}
@@ -313,11 +334,11 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
 ////    net->print();
 //    int numCorrect = AccuracyHelper::calcNumRight( ldc.N, 2, ldc.labels, net->getOutput() );
 //    cout << "accuracy: " << numCorrect << "/" << ldc.N << endl;
-//    assertEquals( numCorrect, ldc.N );
+//    EXPECT_EQ( numCorrect, ldc.N );
 
 //    float loss = net->calcLoss(ldc.expectedOutput);
 //    cout << "loss, E, " << loss << endl;
-//    assertLessThan( 0.4, loss );
+//    EXPECT_GE( 0.4, loss );
 
 //    delete net;
 //}

@@ -11,16 +11,16 @@
 #include <string>
 #include <algorithm>
 
-#include "OpenCLHelper.h"
+#include "EasyCL.h"
 
 using namespace std;
 
 namespace testCopyLocal{
 
-CLKernel *makeKernel( OpenCLHelper *cl );
+CLKernel *makeKernel( EasyCL *cl );
 
 TEST( testCopyLocal, basic ) {
-    OpenCLHelper *cl = OpenCLHelper::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     float a[] = { 1,2,3,4,
                   5,6,7,8,
@@ -51,7 +51,7 @@ TEST( testCopyLocal, basic ) {
     delete cl;
 }
 
-CLKernel *makeKernel( OpenCLHelper *cl ) {
+CLKernel *makeKernel( EasyCL *cl ) {
     CLKernel *kernel = 0;
     // [[[cog
     // import stringify

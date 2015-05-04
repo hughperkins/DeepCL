@@ -1,0 +1,4 @@
+MultiNet.cpp
+NeuralNet.cpp
+NeuralNetMould.cpp
+Trainable.cpp

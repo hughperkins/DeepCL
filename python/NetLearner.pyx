@@ -1,10 +1,11 @@
 cdef class NetLearner: 
     cdef cDeepCL.CyNetLearner *thisptr
-    def __cinit__( self, NeuralNet neuralnet,
+    def __cinit__( self, SGD sgd, NeuralNet neuralnet,
             Ntrain, float[:] trainData, int[:] trainLabels,
             Ntest, float[:] testData, int[:] testLabels,
             batchSize ):
-        self.thisptr = new cDeepCL.CyNetLearner( neuralnet.thisptr,
+        self.thisptr = new cDeepCL.CyNetLearner(
+            sgd.thisptr, neuralnet.thisptr,
             Ntrain, &trainData[0], &trainLabels[0],
             Ntest, &testData[0], &testLabels[0],
             batchSize )
@@ -20,13 +21,13 @@ cdef class NetLearner:
         self.thisptr.setDumpTimings( dumpTimings )
 #    def setBatchSize( self, batchSize ):
 #        self.thisptr.setBatchSize( batchSize )
-    def _learn( self, float learningRate ):
+    def _run(self):
         with nogil:
-            self.thisptr.learn( learningRate )
-    def learn( self, float learningRate ):
-        interruptableCall( self._learn, [ learningRate ] ) 
-#        with nogil:
-#            thisptr._learn( learningRate )
+           self.thisptr.run()
+    def run(self):
+        interruptableCall( self._run, [] ) 
+##        with nogil:
+##            thisptr._learn( learningRate )
         checkException()
 
 

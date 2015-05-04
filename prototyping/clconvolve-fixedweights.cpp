@@ -12,20 +12,7 @@
 #include <algorithm>
 #include <random>
 
-#include "GenericLoader.h"
-#include "Timer.h"
-#include "NeuralNet.h"
-#include "stringhelper.h"
-#include "FileHelper.h"
-#include "StatefulTimer.h"
-#include "WeightsPersister.h"
-#include "NormalizationHelper.h"
-//#include "BatchLearner.h"
-#include "NetdefToNet.h"
-#include "NetLearner.h"
-#include "MultiNet.h"
-#include "BatchProcess.h"
-#include "NetLearnerOnDemand.h"
+#include "DeepCL.h"
 #include "FullyConnectedLayer.h"
 #include "PoolingLayer.h"
 #include "SoftMaxLayer.h"
@@ -155,7 +142,7 @@ void sampleWeights( NeuralNet *net ) {
 
         cout << "layer " << layerId << endl;
         float const*weights = conv->getWeights();
-        conv->getBiasWeights();
+        conv->getBias();
         LayerDimensions &dim = conv->dim;
         int numFilters = dim.numFilters;
         int inputPlanes = dim.inputPlanes;
@@ -240,7 +227,8 @@ void go(Config config) {
 
 //    const int numToTrain = Ntrain;
 //    const int batchSize = config.batchSize;
-    NeuralNet *net = new NeuralNet();
+    EasyCL *cl = new EasyCL();
+    NeuralNet *net = new NeuralNet( cl );
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
@@ -273,7 +261,7 @@ void go(Config config) {
         }
         if( conv->dim.biased ) {
             initrand.seed(0);
-            int biasedSize = conv->getBiasWeightsSize();
+            int biasedSize = conv->getBiasSize();
             float *biasWeights = new float[biasedSize];
             for( int j = 0; j < biasedSize; j++ ) {
                 int thisrand = (int)initrand();
@@ -281,7 +269,7 @@ void go(Config config) {
                 biasWeights[j] = thisweight;
                 //biasWeights[j] = 0;
             }        
-            conv->initBiasWeights( biasWeights );
+            conv->initBias( biasWeights );
         }
     }
 
@@ -301,15 +289,17 @@ void go(Config config) {
     }
     StatefulTimer::timeCheck("START");
 
+    SGD *sgd = SGD::instance( cl, config.learningRate, 0.0f );
     Trainable *trainable = net;
-    NetLearner netLearner( trainable,
+    NetLearner netLearner( 
+        sgd, trainable,
         Ntrain, trainData, trainLabels,
         Ntest, testData, testLabels,
         config.batchSize );
     netLearner.setSchedule( config.numEpochs, afterRestart ? restartEpoch : 1 );
 //    netLearner.setBatchSize( config.batchSize );
     netLearner.setDumpTimings( config.dumpTimings );  
-    netLearner.learn( config.learningRate, 1.0f );
+//    netLearner.learn( config.learningRate, 1.0f );
 
     cout << "forward output" << endl;
     for( int layerId = 0; layerId < net->getNumLayers(); layerId++ ) {
@@ -375,7 +365,7 @@ void go(Config config) {
 
         cout << "layer " << layerId << endl;
         float const*weights = conv->getWeights();
-        float const*biases = conv->getBiasWeights();
+        float const*biases = conv->getBias();
         int weightsSize = conv->getWeightsSize() / conv->dim.numFilters;
         for( int i = 0; i < weightsSize; i++ ) {
             cout << " weight " << i << " " << weights[i] << endl;
@@ -386,7 +376,9 @@ void go(Config config) {
     }
     cout << "done" << endl;
 
+    delete sgd;
     delete net;
+    delete cl;
 
     if( trainData != 0 ) {
         delete[] trainData;

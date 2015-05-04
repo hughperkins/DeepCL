@@ -3,21 +3,21 @@ cdef class Layer:
 
     def __cinit__(self):
         pass
-    cdef set_thisptr( self, cDeepCL.Layer *thisptr):
+    cdef set_thisptr(self, cDeepCL.Layer *thisptr):
         self.thisptr = thisptr
     def forward(self):
         self.thisptr.forward()
-    def backward( self, float learningRate):
-        self.thisptr.backward( learningRate )
-    def needsBackProp( self ):
+    def backward(self):
+        self.thisptr.backward()
+    def needsBackProp(self):
         return self.thisptr.needsBackProp()
 #    def getBiased( self ):
 #        return self.thisptr.getBiased()
-    def getOutputCubeSize( self ):
+    def getOutputCubeSize(self):
         return self.thisptr.getOutputCubeSize()
-    def getOutputPlanes( self ):
+    def getOutputPlanes(self):
         return self.thisptr.getOutputPlanes()
-    def getOutputImageSize( self ):
+    def getOutputImageSize(self):
         return self.thisptr.getOutputImageSize()
     def getOutput(self):
         # the underlying c++ method returns a pointer

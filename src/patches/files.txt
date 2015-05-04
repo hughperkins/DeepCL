@@ -1,0 +1,6 @@
+PatchExtractor.cpp
+RandomPatches.cpp
+RandomPatchesMaker.cpp
+RandomTranslations.cpp
+RandomTranslationsMaker.cpp
+Translator.cpp
