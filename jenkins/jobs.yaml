@@ -19,15 +19,15 @@
             version=$(cat ../jenkins/version.txt)
             githash=$(git log -n 1 --format=%h)
             filename=${version}-${githash}.txt
-            git clone git@github.com:hughperkins/DeepCL.git -b gh-pages gh-pages
-            cp results.txt gh-pages/benchmarking/${filename}
-            sed -i -e '/^{filename}$/d' gh-pages/benchmarking/files.txt
-            echo ${filename}>>gh-pages/benchmarking/files.txt
-            cd gh-pages
-            git add benchmarking/files.txt
-            git add benchmarking/${filename}
-            git commit -m "results ${version} ${githash}"
-            git push
+            # git clone git@github.com:hughperkins/DeepCL.git -b gh-pages gh-pages
+            # cp results.txt gh-pages/benchmarking/${filename}
+            # sed -i -e '/^{filename}$/d' gh-pages/benchmarking/files.txt
+            # echo ${filename}>>gh-pages/benchmarking/files.txt
+            # cd gh-pages
+            # git add benchmarking/files.txt
+            # git add benchmarking/${filename}
+            # git commit -m "results ${version} ${githash}"
+            # git push
     publisher:
       - archive:
         artifacts: 'python/results.txt'
