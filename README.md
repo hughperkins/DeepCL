@@ -7,11 +7,8 @@
 - [C++ API](doc/NeuralNetAPI.md)
 - [Q-learning](doc/QLearning.md)
 - [To build](doc/Build.md)
-- [Stable API](doc/PublicApis.md)
 - [Development](doc/Development.md)
-- [Benchmarking](doc/Benchmarking.md)
 - [Changes](doc/Changes.md)
-- [Doc for old 3.x.x](https://github.com/hughperkins/DeepCL/blob/3.x.x/README.md)
 
 DeepCL
 ==========
@@ -67,6 +64,14 @@ Weight initializers:
 
 Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 
+# Example usages
+
+- obtained 37.2% test accuracy, on next move prediction task, using 33.6 million training examples from [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
+  - commandline used `./deepclrun dataset=kgsgoall netdef=12*(32c5z-relu)-500n-tanh-361n numepochs=15 learningrate=0.0001`
+  - 2 epochs, 2 days per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU (about half as powerful as a GTX780)
+- obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n numepochs=20 multinet=6 learningrate=0.002`
+   - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
+ 
 # To install
 
 ## Python
