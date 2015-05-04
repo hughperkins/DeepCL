@@ -95,39 +95,83 @@ STATIC bool WeightsPersister::loadWeights( std::string filepath, std::string tra
         int headerSize = 1024;
         long fileSize;
         char * data = FileHelper::readBinary( filepath, &fileSize );
+
+        if(! checkData(data, headerSize, fileSize)){
+            delete [] data;
+            return false;
+        }
         data[headerSize - 1] = 0; // null-terminate the string, if not already done
-        float *allWeightsArray = reinterpret_cast<float *>(data + headerSize);
-        std::cout << "read weights from file "  << (fileSize/1024) << "KB" << std::endl;
-        int expectedTotalWeightsSize = getTotalNumWeights( net );
-        int numFloatsRead = ( fileSize - headerSize ) / sizeof( float );
-        if( expectedTotalWeightsSize != numFloatsRead ) {
-            throw std::runtime_error("weights file contains " + toString(numFloatsRead) + " floats, but we expect to see: " + toString( expectedTotalWeightsSize ) + ".  So there is probably some mismatch between the weights file, and the settings, or network version, used." );
-        }
-        int *dataAsInts = reinterpret_cast<int *>(data);
-        float *dataAsFloats = reinterpret_cast<float *>(data);
-        if( data[0] != 'C' || data[1] != 'l' || data[2] != 'C' || data[3] != 'n' ) {
-            std::cout << "weights file not ClConvolve format" << std::endl;
-            return false;
-        }
-        if( dataAsInts[1] != 1 ) {
-            std::cout << "weights file version not known" << std::endl;
-            return false;
-        }
-        if( trainingConfigString != std::string( data + 7 * 4 ) ) {
+
+        if( trainingConfigString != std::string(data + 7 * 4) ) {
             std::cout << "training options dont match weights file" << std::endl;
             std::cout << "in file: [" + std::string( data + 7 * 4 ) + "]" << std::endl;
             std::cout << "current options: [" + trainingConfigString + "]" << std::endl;
+
+            delete [] data;
             return false;
         }
+        
+        std::cout << "read weights from file "  << (fileSize/1024) << "KB" << std::endl;
+        int expectedTotalWeightsSize = getTotalNumWeights( net );
+        int numFloatsRead = ( fileSize - headerSize ) / sizeof( float );
+
+        if( expectedTotalWeightsSize != numFloatsRead ) {
+            delete [] data;
+            throw std::runtime_error("weights file contains " + toString(numFloatsRead) + " floats, but we expect to see: " + toString( expectedTotalWeightsSize ) + ".  So there is probably some mismatch between the weights file, and the settings, or network version, used." );
+        }
+
+        int *dataAsInts = reinterpret_cast<int *>(data);
+        float *dataAsFloats = reinterpret_cast<float *>(data);
+        float *allWeightsArray = reinterpret_cast<float *>(data + headerSize);
+
         *p_epoch = dataAsInts[2];
         *p_batch = dataAsInts[3];
         *p_numRight = dataAsInts[4];
         *p_loss = dataAsFloats[5];
         *p_annealedLearningRate = dataAsFloats[6];
         copyArrayToNetWeights( allWeightsArray, net );
+
         delete [] data;
         return true;
     }
     return false;
 }
+STATIC bool WeightsPersister::checkData( const char * data, long headerSize, long fileSize) {
+    if( fileSize < headerSize ) {
+        std::cout << "weights file has invalid size" << std::endl;
+        return false;
+    }
 
+    if( data[0] != 'C' || data[1] != 'l' || data[2] != 'C' || data[3] != 'n' ) {
+        std::cout << "weights file not ClConvolve format" << std::endl;
+        return false;
+    }
+
+    const int *dataAsInts = reinterpret_cast<const int *>(data);
+    if( dataAsInts[1] != 1 ) {
+        std::cout << "weights file version not known" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+STATIC bool WeightsPersister::loadConfigString( std::string filepath, std::string & configString) {
+    if( FileHelper::exists( filepath ) ){
+        int headerSize = 1024;
+        long fileSize;
+        char * data = FileHelper::readBinary( filepath, &fileSize );
+
+        if(! checkData(data, headerSize, fileSize)){
+            delete [] data;
+            return false;
+        }
+
+        data[headerSize - 1] = 0; // null-terminate the string, if not already done
+
+        configString = std::string(data + 7 * 4);
+
+        delete [] data;
+        return true;
+    }
+    return false;
+}

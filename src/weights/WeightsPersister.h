@@ -36,6 +36,8 @@ public:
     STATIC int getArrayOffsetForLayer( NeuralNet *net, int layer );
     STATIC void persistWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int epoch, int batch, float annealedLearningRate, int numRight, float loss );
     STATIC bool loadWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss );
+    STATIC bool checkData( const char * data, long headerSize, long fileSize);
+    STATIC bool loadConfigString( std::string filepath, std::string & configString);
 
     // [[[end]]]
 };
