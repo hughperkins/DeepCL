@@ -31,4 +31,168 @@
     publisher:
       - archive:
         artifacts: 'python/results.txt'
+- job:
+    name: deepcl-trigger-2
+    project-type: freestyle
+    node: controller
+    skip-tag: true
+    shallow-clone: true
+    scm:
+    - git:
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - '*/tags/*'
+        refspec: +refs/tags/*:refs/remotes/origin/tags/*
+    triggers:
+    - pollscm: "0 */3 * * *"
+    builders:
+        - shell: |
+            TARGET_TAG=$(echo ${GIT_BRANCH} | cut -d/ -f 3)
+            echo "TARGET_TAG=${TARGET_TAG}"
+            echo "TARGET_TAG=${TARGET_TAG}" > ~build.properties
+        - trigger-builds:
+            - project: "start windows builder"
+              property-file: ~build.properties
+              block: true
+        - trigger-builds:
+            - project: "deepcl-linux64-cpp-2, deepcl-linux32-cpp-2, deepcl-win32-2, deepcl-win64-2"
+              property-file: ~build.properties
+              block: true
+        - trigger-builds:
+            - project: "shutdown windows builder"
+              property-file: ~build.properties
+              block: true
+            
+- job:
+    name: deepcl-linux32-cpp-2
+    project-type: freestyle
+    node: master
+    skip-tag: true
+    shallow-clone: true
+    logrotate:
+        numToKeep: 1
+        artifactNumToKeep: 1
+    parameters:
+    - string:
+        name: TARGET_TAG
+    scm:
+    - git:
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - '*/tags/${TARGET_TAG}'
+        refspec: +refs/tags/*:refs/remotes/origin/tags/*
+        submodule:
+            recursive: true
+    builders:
+        - shell: |
+            echo "TARGET_TAG=${TARGET_TAG}"
+            echo ${TARGET_TAG}>jenkins/version.txt
+            bash jenkins/linux32-cpp.sh
+    publishers:
+    - archive:
+          artifacts: build/*.tar.bz2
+    - scp:
+            site: 'deepcl.hughperkins.com'
+            files:
+                - target: 'Downloads'
+                  source: build/*.tar.bz2
+- job:
+    name: deepcl-linux64-cpp-2
+    project-type: freestyle
+    node: master
+    skip-tag: true
+    shallow-clone: true
+    logrotate:
+        numToKeep: 1
+        artifactNumToKeep: 1
+    parameters:
+    - string:
+        name: TARGET_TAG
+    scm:
+    - git:
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - '*/tags/${TARGET_TAG}'
+        refspec: +refs/tags/*:refs/remotes/origin/tags/*
+        submodule:
+            recursive: true
+    builders:
+        - shell: |
+            echo "TARGET_TAG=${TARGET_TAG}"
+            echo ${TARGET_TAG}>jenkins/version.txt
+            bash jenkins/linux64-cpp.sh
+    publishers:
+    - archive:
+          artifacts: 'build/*.tar.bz2'
+    - scp:
+            site: 'deepcl.hughperkins.com'
+            files:
+                - target: 'Downloads'
+                  source: build/*.tar.bz2    
+- job:
+    name: deepcl-win32-2
+    project-type: freestyle
+    node: master
+    skip-tag: true
+    shallow-clone: true
+    logrotate:
+        numToKeep: 1
+        artifactNumToKeep: 1
+    parameters:
+    - string:
+        name: TARGET_TAG
+    scm:
+    - git:
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - '*/tags/${TARGET_TAG}'
+        refspec: +refs/tags/*:refs/remotes/origin/tags/*
+        submodule:
+            recursive: true
+    builders:
+        - batch: |
+            echo "TARGET_TAG=%TARGET_TAG%"
+            echo %TARGET_TAG%>jenkins/version.txt
+            call jenkins\win32-cpp.bat
+    publishers:
+    - archive:
+          artifacts: build/Release/*.zip
+    - scp:
+            site: 'deepcl.hughperkins.com'
+            files:
+                - target: 'Downloads'
+                  source: build/Release/*.zip
+- job:
+    name: deepcl-win64-2
+    project-type: freestyle
+    node: master
+    skip-tag: true
+    shallow-clone: true
+    logrotate:
+        numToKeep: 1
+        artifactNumToKeep: 1
+    parameters:
+    - string:
+        name: TARGET_TAG
+    scm:
+    - git:
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - '*/tags/${TARGET_TAG}'
+        refspec: +refs/tags/*:refs/remotes/origin/tags/*
+        submodule:
+            recursive: true
+    builders:
+        - batch: |
+            echo "TARGET_TAG=%TARGET_TAG%"
+            echo %TARGET_TAG%>jenkins/version.txt
+            call jenkins\win64-cpp.bat
+    publishers:
+    - archive:
+          artifacts: build/Release/*.zip
+    - scp:
+            site: 'deepcl.hughperkins.com'
+            files:
+                - target: 'Downloads'
+                  source: build/Release/*.zip
 
