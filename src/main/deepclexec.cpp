@@ -255,11 +255,19 @@ void go(Config config) {
         if( !fin );
             break;
 
+        cout << "Read one input cube." << endl;
+
+        fout.write("Bleble\n", 7);
+        if( !fout );
+            break;
+
+            /*
         net->forward(inputData);
 
         fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize());
         if( !fout );
             break;
+            */
     }
 
     delete net;
