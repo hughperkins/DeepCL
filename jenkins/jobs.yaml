@@ -5,7 +5,7 @@
     scm:
     - git:
         skip-tag: true
-        shallow-clone: true
+        # shallow-clone: true
         url: https://github.com/hughperkins/DeepCL.git
         branches:
             - benchmarking-jenkins
@@ -40,7 +40,7 @@
     scm:
     - git:
         skip-tag: true
-        shallow-clone: true
+        wipe-workspace: false
         url: https://github.com/hughperkins/DeepCL.git
         branches:
             - '*/tags/*'
@@ -60,10 +60,10 @@
             - project: "deepcl-linux64-cpp-2, deepcl-linux32-cpp-2, deepcl-win32-2, deepcl-win64-2, deepcl-linux32-py27-2, deepcl-linux64-py27-2, deepcl-linux32-py34-2, deepcl-linux64-py34-2, deepcl-win32-py27-2, deepcl-win32-py34-2, deepcl-win64-py27-2, deepcl-win64-py34-2"
               property-file: ~build.properties
               block: true
-        - trigger-builds:
-            - project: "shutdown windows builder"
-              property-file: ~build.properties
-              block: true
+    publishers:
+      - trigger:
+          project: "shutdown windows builder"
+          threshold: FAILURE
 - job:
     name: deepcl-linux32-cpp-2
     project-type: freestyle
