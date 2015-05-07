@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 #message( "[${CMAKE_SYSTEM_NAME}]" )
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
@@ -133,12 +133,12 @@ target_link_libraries( gtest pthread)
 else()
 add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
-target_include_directories( gtest PRIVATE thirdparty/gtest )
+include_directories( thirdparty/gtest )
 
 add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
 target_link_libraries( unittests gtest )
-target_include_directories( unittests PRIVATE thirdparty/gtest )
+# target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
@@ -150,7 +150,7 @@ target_link_libraries( unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
-target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
+# target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 
