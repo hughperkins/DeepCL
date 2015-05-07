@@ -344,9 +344,9 @@ int main( int argc, char *argv[] ) {
                 config.loadOnDemand = atoi(value);
             } else if( key == "normalizationexamples" ) {
                 config.normalizationExamples = atoi(value);
-            } else if( key == "inputFile" ) {
+            } else if( key == "inputfile" ) {
                 config.inputFile = (value);
-            } else if( key == "outputFile" ) {
+            } else if( key == "outputfile" ) {
                 config.outputFile = (value);
             // [[[end]]]
             } else {
