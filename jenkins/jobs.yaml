@@ -1,4 +1,21 @@
 - job:
+    name: job-builder
+    project-type: freestyle
+    node: controller
+    triggers:
+    - pollscm: "0 */3 * * *"
+    scm:
+    - git:
+        skip-tag: true
+        shallow-clone: true
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+        - master
+    builders:
+    - shell: |
+          source /home/ubuntu/pyenv/bin/activate
+          jenkins-jobs update jenkins/jobs.yaml
+- job:
     name: benchmarks
     project-type: freestyle
     node: gpulinux
@@ -97,6 +114,10 @@
             files:
                 - target: 'Downloads'
                   source: build/*.tar.bz2
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-linux64-cpp-2
     project-type: freestyle
@@ -130,6 +151,10 @@
             files:
                 - target: 'Downloads'
                   source: build/*.tar.bz2
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-linux32-py27-2
     project-type: freestyle
@@ -163,6 +188,10 @@
             files:
                 - target: 'Downloads'
                   source: python/dist/*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-linux64-py27-2
     project-type: freestyle
@@ -196,6 +225,10 @@
             files:
                 - target: 'Downloads'
                   source: python/dist/*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-linux32-py34-2
     project-type: freestyle
@@ -229,6 +262,10 @@
             files:
                 - target: 'Downloads'
                   source: python/dist/*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-linux64-py34-2
     project-type: freestyle
@@ -262,6 +299,10 @@
             files:
                 - target: 'Downloads'
                   source: python/dist/*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-win32-2
     project-type: freestyle
@@ -295,6 +336,10 @@
             files:
                 - target: 'Downloads'
                   source: build/Release/*.zip
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-win64-2
     project-type: freestyle
@@ -328,6 +373,10 @@
             files:
                 - target: 'Downloads'
                   source: build/Release/*.zip
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-win32-py27-2
     project-type: freestyle
@@ -361,6 +410,10 @@
             files:
                 - target: 'Downloads'
                   source: python\dist\*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-win32-py34-2
     project-type: freestyle
@@ -394,6 +447,10 @@
             files:
                 - target: 'Downloads'
                   source: python\dist\*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-win64-py27-2
     project-type: freestyle
@@ -427,6 +484,10 @@
             files:
                 - target: 'Downloads'
                   source: python\dist\*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 - job:
     name: deepcl-win64-py34-2
     project-type: freestyle
@@ -460,4 +521,8 @@
             files:
                 - target: 'Downloads'
                   source: python\dist\*.egg
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 
