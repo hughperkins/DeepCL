@@ -418,7 +418,7 @@
         - batch: |
             echo "TARGET_TAG=%TARGET_TAG%"
             echo %TARGET_TAG%>jenkins/version.txt
-            call jenkins\win3264-py27.bat
+            call jenkins\win64-py27.bat
     publishers:
     - archive:
           artifacts: python\dist\*.egg
