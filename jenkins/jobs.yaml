@@ -13,7 +13,7 @@
         - master
     builders:
     - shell: |
-          source /home/ubuntu/pyenv/bin/activate
+          . /home/ubuntu/pyenv/bin/activate
           jenkins-jobs update jenkins/jobs.yaml
 - job:
     name: benchmarks
