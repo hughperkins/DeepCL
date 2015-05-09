@@ -10,7 +10,7 @@
         shallow-clone: true
         url: https://github.com/hughperkins/DeepCL.git
         branches:
-        - master
+        - jenkins-jobs
     builders:
     - shell: |
           . /home/ubuntu/pyenv/bin/activate
