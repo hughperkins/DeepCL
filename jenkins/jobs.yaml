@@ -19,6 +19,8 @@
     name: benchmarks
     project-type: freestyle
     node: gpulinux
+    triggers:
+    - pollscm: "0 */3 * * *"
     scm:
     - git:
         skip-tag: true
