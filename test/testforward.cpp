@@ -805,7 +805,7 @@ TEST( testforward, softmax_byplane ) {
     delete cl;
 }
 
-void testPerf( int instance, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
+void testPerf( int instance, int N, int batchSize, LayerDimensions dim ) {
     cout << dim.buildOptionsString() << endl;  
 
     int inputsSize = batchSize * dim.inputCubeSize;
@@ -847,7 +847,7 @@ TEST( SLOW_testforward, perf_kgsgo_fc500 ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 500 ).setFilterSize( 19 )
         .setPadZeros( false ).setBiased( true );  
-    testPerf( -1, 128, batchSize, dim, new TanhActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_firstconvlayer ) {
@@ -855,7 +855,7 @@ TEST( SLOW_testforward, perf_mnist_firstconvlayer ) {
     LayerDimensions dim;
     dim.setInputPlanes( 1 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_intlayers_128ex ) {
@@ -863,7 +863,7 @@ TEST( SLOW_testforward, perf_mnist_intlayers_128ex ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_intlayers_1024ex ) {
@@ -871,7 +871,7 @@ TEST( SLOW_testforward, perf_mnist_intlayers_1024ex ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_finallayer ) {
@@ -879,7 +879,7 @@ TEST( SLOW_testforward, perf_mnist_finallayer ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 10 ).setFilterSize( 28 )
         .setPadZeros( false ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
@@ -894,6 +894,14 @@ TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
     TestArgsParser::arg( "n", &N );
     TestArgsParser::arg( "batchsize", &batchSize );
     TestArgsParser::go();
-    testPerf( instance, N, batchSize, dim, new TanhActivation() );
+    testPerf( instance, N, batchSize, dim );
+}
+
+TEST( SLOW_testforward, soumith2 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    dim.setInputPlanes( 64 ).setInputImageSize( 64 ).setNumFilters( 128 ).setFilterSize( 9 )
+        .setPadZeros( false ).setBiased( true );  
+    testPerf( 3, 128, batchSize, dim );
 }
 

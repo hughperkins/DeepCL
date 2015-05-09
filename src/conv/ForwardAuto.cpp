@@ -10,14 +10,6 @@
 
 #include "ForwardAuto.h"
 #include "util/stringhelper.h"
-#include "ForwardCpu.h"
-#include "Forward1.h"
-#include "Forward2.h"
-#include "Forward3.h"
-#include "Forward4.h"
-#include "ForwardFc.h"
-#include "ForwardByInputPlane.h"
-#include "ForwardExperimental.h"
 #include "util/StatefulTimer.h"
 #include "util/Timer.h"
 
@@ -30,9 +22,6 @@ using namespace std;
 #define VIRTUAL 
 
 ForwardAuto::ForwardAuto( EasyCL *cl, LayerDimensions dim ) :
-//        dim( layerDimensions ),
-//        cl( cl ),
-//        fn( fn ),
         Forward( cl, dim ),
         milliseconds( 0 ),
         valid( 0 ),

@@ -19,8 +19,7 @@ using namespace std;
 
 VIRTUAL Forward3::~Forward3() {
     delete kernel;
-    delete repeatedAdd;
-//    delete activate;
+    delete addBias;
 }
 VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
@@ -31,53 +30,28 @@ VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-//    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
-//    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
 
     int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+
     StatefulTimer::timeCheck("Forward3::forward after kernel1");
 
-//    {
-//        outputWrapper->copyToHost();
-//        float const *output = reinterpret_cast< float const *>( outputWrapper->getHostArray() );
-//        for( int i = 0; i < min( 64, outputWrapper->size() ); i++ ) {
-//            cout << "output[" << i << "]=" << output[i] << endl;
-//        }
-//    }
-
     if( dim.biased ) {
-        repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-            ->in( dim.numFilters )
-            ->in( dim.outputImageSize * dim.outputImageSize )
-            ->inout( outputWrapper )->in( biasWrapper );
-        maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
-        numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-        repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-        cl->finish();
-        StatefulTimer::timeCheck("Forward3::forward after repeatedAdd");
+        addBias->forward( batchSize, dim.numFilters, dim.outputImageSize,
+                          outputWrapper, biasWrapper );
     }
-
-//    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-//        ->inout( outputWrapper );
-//    maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
-//    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-//    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-//    cl->finish();
-//    StatefulTimer::timeCheck("Forward3::forward after activate");
-
-    StatefulTimer::timeCheck("Forward3::forward after call forward");
 }
 Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
+
+    addBias = new AddBias( cl );
 
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("cannot use forward3, since outputimagesize * outputimagesize > maxworkgroupsize");
@@ -89,8 +63,7 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/forward3.cl", "forward_3_by_n_outplane", 'options' )
-    // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
-    // # stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
+    // # stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // ]]]
     // generated using cog, from cl/forward3.cl:
     const char * kernelSource =  

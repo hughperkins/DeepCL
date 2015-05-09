@@ -16,7 +16,6 @@
 #include "Forward4.h"
 #include "ForwardFc.h"
 #include "ForwardByInputPlane.h"
-#include "ForwardExperimental.h"
 #include "ForwardAuto.h"
 #include "util/StatefulTimer.h"
 
@@ -85,8 +84,6 @@ STATIC Forward *Forward::instanceSpecific( int idx, EasyCL *cl, LayerDimensions 
         return new ForwardFc( cl, layerDimensions );
     } else if( idx == 6 ) {
         return new ForwardByInputPlane( cl, layerDimensions );
-    } else if( idx == 99 ) {
-        return new ForwardExperimental( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Forward::instanceSpecific: no instance defined for index " + toString(idx) );
     }
@@ -104,8 +101,6 @@ STATIC Forward *Forward::instanceSpecific( std::string name, EasyCL *cl, LayerDi
         return new ForwardFc( cl, layerDimensions );
     } else if( name == "byinplane" ) {
         return new ForwardByInputPlane( cl, layerDimensions );
-    } else if( name == "exp" ) {
-        return new ForwardExperimental( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Forward::instanceSpecific: no instance defined for name " + name );
     }
