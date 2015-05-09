@@ -12,7 +12,7 @@
 
 #include "EasyCL.h"
 #include "activate/ActivationFunction.h"
-#include "Forward.h"
+#include "conv/Forward.h"
 #include "conv/LayerDimensions.h"
 #include "DeepCLDllExport.h"
 

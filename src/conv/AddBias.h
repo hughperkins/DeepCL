@@ -11,6 +11,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include "EasyCL.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
@@ -26,6 +28,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
+    VIRTUAL ~AddBias();
+    VIRTUAL void forward(
+    int batchSize, int numFilters, int outputImageSize,
+    CLWrapper *outputWrapper,
+    CLWrapper *biasWrapper
+    );
+    AddBias( EasyCL *cl );
 
     // [[[end]]]
 };

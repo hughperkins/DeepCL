@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "ForwardAuto.h"
+#include "conv/ForwardAuto.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
 #include "util/Timer.h"

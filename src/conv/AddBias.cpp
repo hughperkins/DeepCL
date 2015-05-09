@@ -6,7 +6,8 @@
 
 #include <iostream>
 
-#include "AddAddBias.h"
+#include "util/StatefulTimer.h"
+#include "conv/AddBias.h"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ VIRTUAL void AddBias::forward(
             ) {
     StatefulTimer::timeCheck("AddBias::forward begin");
 
-    repeatedAdd->in( batchSize * numFilters * outputImageSize * outputImageSize )
+    kernel->in( batchSize * numFilters * outputImageSize * outputImageSize )
         ->in( numFilters )
         ->in( outputImageSize * outputImageSize )
         ->inout( outputWrapper )->in( biasWrapper );
@@ -39,7 +40,7 @@ VIRTUAL void AddBias::forward(
 AddBias::AddBias( EasyCL *cl )
             {
     string kernelName = "AddBias.per_element_add";
-    if( cl->kernelExists( kernelName ) {
+    if( cl->kernelExists( kernelName ) ) {
         this->kernel = cl->getKernel( kernelName );
         return;
     }

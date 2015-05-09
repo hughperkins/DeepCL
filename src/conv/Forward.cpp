@@ -7,16 +7,16 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Forward.h"
+#include "conv/Forward.h"
 #include "util/stringhelper.h"
-#include "ForwardCpu.h"
-#include "Forward1.h"
-#include "Forward2.h"
-#include "Forward3.h"
-#include "Forward4.h"
-#include "ForwardFc.h"
-#include "ForwardByInputPlane.h"
-#include "ForwardAuto.h"
+#include "conv/ForwardCpu.h"
+#include "conv/Forward1.h"
+#include "conv/Forward2.h"
+#include "conv/Forward3.h"
+#include "conv/Forward4.h"
+#include "conv/ForwardFc.h"
+#include "conv/ForwardByInputPlane.h"
+#include "conv/ForwardAuto.h"
 #include "util/StatefulTimer.h"
 
 using namespace std;
