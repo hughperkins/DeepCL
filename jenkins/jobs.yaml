@@ -25,7 +25,7 @@
         # shallow-clone: true
         url: https://github.com/hughperkins/DeepCL.git
         branches:
-            - benchmarking-jenkins
+            - jenkins-perf
         submodule:
             recursive: true
     builders:
