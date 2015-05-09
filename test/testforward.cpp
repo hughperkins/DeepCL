@@ -605,6 +605,33 @@ TEST( testforward, compare_1_4_fcscenario ) { // only need to do nopad, since fc
     compareSpecific( false, N, batchSize, dim, 1, 4 );
 }
 
+/* [[[cog
+    for n in [1, 4]:
+        cog.outl(
+            'TEST( testforward, compare_break1_0_{n} ) {{\n'
+            '    LayerDimensions dim;\n'
+            '    dim.setInputPlanes( 1 ).setInputImageSize( 33 ).setNumFilters( 1 ).setFilterSize( 1 )\n'
+            '        .setPadZeros( false ).setBiased( false );\n'
+            '    compareSpecific( false, 1, 1, dim, 0, {n} );\n'
+            '}}\n'.format(
+                n=n))
+*///]]]
+TEST( testforward, compare_break1_0_1 ) {
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputImageSize( 33 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setPadZeros( false ).setBiased( false );
+    compareSpecific( false, 1, 1, dim, 0, 1 );
+}
+
+TEST( testforward, compare_break1_0_4 ) {
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputImageSize( 33 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setPadZeros( false ).setBiased( false );
+    compareSpecific( false, 1, 1, dim, 0, 4 );
+}
+
+// [[[end]]]
+
 //TEST( SLOW_testforward, comparespecific ) {
 //    LayerDimensions dim;
 //    dim.setInputPlanes( 2 ).setInputImageSize(5).setNumFilters( 1 ).setFilterSize( 5 )
