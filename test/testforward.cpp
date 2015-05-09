@@ -398,7 +398,7 @@ TEST( testforward, test3 ) {
     delete cl;
 }
 
-void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
+void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
@@ -530,9 +530,8 @@ TEST( testforward, compare_0_1_biased_nopad ) {
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
+        .setPadZeros( false ).setBiased( true );
+    compareSpecific( false, N, batchSize, dim, 0, 1 );
 }
 
 TEST( testforward, compare_0_1_biased_pad ) {
@@ -544,9 +543,8 @@ TEST( testforward, compare_0_1_biased_pad ) {
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
+        .setPadZeros( true ).setBiased( true );
+    compareSpecific( false, N, batchSize, dim, 0, 1 );
 }
 
 TEST( testforward, compare_1_n_biased_nopad ) {
@@ -558,34 +556,30 @@ TEST( testforward, compare_1_n_biased_nopad ) {
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+        .setPadZeros( false ).setBiased( true );
     for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
-        compareSpecific( false, N, batchSize, dim, fn, 1, instance );
+        compareSpecific( false, N, batchSize, dim, 1, instance );
     }
 }
 
 TEST( testforward, compare_1_n_biased_pad ) {
     LayerDimensions dim;
     int batchSize = 4;
-//    int instance0 = 1;
-//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+        .setPadZeros( true ).setBiased( true );
     for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
-        compareSpecific( false, N, batchSize, dim, fn, 1, instance );
+        compareSpecific( false, N, batchSize, dim, 1, instance );
     }
 }
 
@@ -595,24 +589,20 @@ TEST( testforward, compare_1_5_biased_nopad ) { // only need to do nopad, since 
 //    int instance0 = 1;
 //    int instance1 = 1;
     int N = 4;
-    string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 19 )
-        .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 1, 5 );
+        .setPadZeros( false ).setBiased( true );
+    compareSpecific( false, N, batchSize, dim, 1, 5 );
 }
 
 TEST( testforward, compare_1_4_fcscenario ) { // only need to do nopad, since fc wont work with pad
     LayerDimensions dim;
     int batchSize = 4;
     int N = 4;
-    string activationName = "tanh";
     dim.setInputPlanes( 10 ).setInputImageSize(24).setNumFilters( 10 )
         .setFilterSize( 24 )
         .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 1, 4 );
+    compareSpecific( false, N, batchSize, dim, 1, 4 );
 }
 
 //TEST( SLOW_testforward, comparespecific ) {
@@ -649,15 +639,10 @@ TEST( testforward, compare_1_4_fcscenario ) { // only need to do nopad, since fc
 TEST( SLOW_testforward, compare_args ) {
     LayerDimensions dim;
     int batchSize = 128;
-//    int imageSize = 19;
-//    int filterSize = 7;
-//    int inputPlanes = 64;
-//    int numFilters = 64;
     int instance0 = 1;
     int instance1 = 3;
     int N = 128;
     bool debug = false;
-    string activationName = "tanh";
     dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 )
         .setFilterSize( 7 )
         .setPadZeros( true ).setBiased( false );    
@@ -668,12 +653,10 @@ TEST( SLOW_testforward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::arg( "debug", &debug );
     TestArgsParser::arg( "batchsize", &batchSize );
-    TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::go();
     dim.deriveOthers();
 
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( debug, N, batchSize, dim, fn, instance0, instance1 );
+    compareSpecific( debug, N, batchSize, dim, instance0, instance1 );
 }
 
 //TEST( SLOW_testforward, comparespecific_kgsgo_64c7mini ) {
