@@ -58,7 +58,7 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
         workgroupSize = (workgroupSize + 1 ) >> 1;
         pixelsPerThread <<= 1;
     }
-    cout << "workgroupSize=" << workgroupSize << " pixelsPerThread=" << pixelsPerThread << endl;
+    //cout << "workgroupSize=" << workgroupSize << " pixelsPerThread=" << pixelsPerThread << endl;
 
     std::string options = ""; // "-D " + fn->getDefineName();
     options += " -D gWorkgroupSize=" + toString( workgroupSize );
