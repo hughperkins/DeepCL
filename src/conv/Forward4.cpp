@@ -4,9 +4,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Forward4.h"
+#include "conv/Forward4.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
+#include "conv/AddBias.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ using namespace std;
 
 VIRTUAL Forward4::~Forward4() {
     delete kernel;
+    delete addBias;
 }
 VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
@@ -24,26 +26,29 @@ VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
 
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
     int globalSize = workgroupSize * numWorkgroups;
-//    cout << "forward4 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << " threadsperpixel " << pixelsPerThread << endl;
 
     kernel->in(batchSize);
-//    kernel->in( pixelsPerThread );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
-//    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) );
-//    kernel->localFloats( pixelsPerThread * workgroupsize );
 
     kernel->run_1d( globalSize, workgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("Forward4::forward after call forward");
+
+    if( dim.biased ) {
+        addBias->forward(
+            batchSize, dim.numFilters, dim.outputImageSize,
+            outputWrapper, biasWrapper );
+    }
 }
 Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
+    addBias = new AddBias( cl );
+
     workgroupSize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     pixelsPerThread = 1;
@@ -68,9 +73,6 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "// expected defines:\n" 
-    "// BIASED (or not)\n" 
-    "\n" 
     "void copyLocal( local float *target, global float const *source, int N ) {\n" 
     "    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);\n" 
     "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
@@ -92,9 +94,6 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "// output are organized like [n][filterid][outrow][outcol]\n" 
     "void kernel forward_4_by_n_outplane_smallercache( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
-    "        #ifdef BIASED\n" 
-    "            global const float*biases,\n" 
-    "        #endif\n" 
     "    global float *output,\n" 
     "    local float *_upstreamImage, local float *_filterPlane ) {\n" 
     "    #define globalId ( get_global_id(0) )\n" 
@@ -143,16 +142,11 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "            }\n" 
     "        }\n" 
     "    }\n" 
-    "    #ifdef BIASED\n" 
-    "        sum += biases[outPlane];\n" 
-    "    #endif\n" 
     "    // output are organized like [imageid][filterid][row][col]\n" 
     "    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + effectiveLocalId )\n" 
     "    if( localId < gOutputImageSizeSquared ) {\n" 
     "        output[resultIndex ] = sum;\n" 
     "    }\n" 
-    "    // output[resultIndex ] = 123;\n" 
-    "    //if( globalId == 0 ) output[0] += 0.000001f + _perPixelSums[0];\n" 
     "}\n" 
     "#endif\n" 
     "\n" 

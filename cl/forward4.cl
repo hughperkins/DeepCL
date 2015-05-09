@@ -4,9 +4,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// expected defines:
-// BIASED (or not)
-
 void copyLocal( local float *target, global float const *source, int N ) {
     int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
     for( int loop = 0; loop < numLoops; loop++ ) {
@@ -28,9 +25,6 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // output are organized like [n][filterid][outrow][outcol]
 void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
       global const float *images, global const float *filters, 
-        #ifdef BIASED
-            global const float*biases, 
-        #endif
     global float *output,
     local float *_upstreamImage, local float *_filterPlane ) {
     #define globalId ( get_global_id(0) )
@@ -79,16 +73,11 @@ void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
             }
         }
     }
-    #ifdef BIASED
-        sum += biases[outPlane];
-    #endif
     // output are organized like [imageid][filterid][row][col]
     #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + effectiveLocalId )
     if( localId < gOutputImageSizeSquared ) {
         output[resultIndex ] = sum;
     }
-    // output[resultIndex ] = 123;
-    //if( globalId == 0 ) output[0] += 0.000001f + _perPixelSums[0];
 }
 #endif
 
