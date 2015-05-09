@@ -7,7 +7,7 @@
     scm:
     - git:
         skip-tag: true
-        shallow-clone: true
+        wipe-workspace: false
         url: https://github.com/hughperkins/DeepCL.git
         branches:
         - jenkins-jobs
