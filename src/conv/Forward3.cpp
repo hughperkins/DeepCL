@@ -25,8 +25,8 @@ VIRTUAL Forward3::~Forward3() {
 VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Forward3::forward begin");
-    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    int maxglobalId = 0;
+//    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+//    int maxglobalId = 0;
 
     kernel->in(batchSize);
     kernel->input( dataWrapper );

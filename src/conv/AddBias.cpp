@@ -37,7 +37,8 @@ VIRTUAL void AddBias::forward(
 
     StatefulTimer::timeCheck("AddBias::forward after repeatedAdd");
 }
-AddBias::AddBias( EasyCL *cl )
+AddBias::AddBias( EasyCL *cl ) :
+        cl( cl )
             {
     string kernelName = "AddBias.per_element_add";
     if( cl->kernelExists( kernelName ) ) {
