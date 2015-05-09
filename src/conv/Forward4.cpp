@@ -60,6 +60,7 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     std::string options = ""; // "-D " + fn->getDefineName();
     options += " -D gWorkgroupSize=" + toString( workgroupSize );
     options += " -D gPixelsPerThread=" + toString( pixelsPerThread );
+    cout << "options " << options << endl;
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify
@@ -95,7 +96,7 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "void kernel forward_4_by_n_outplane_smallercache( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "    global float *output,\n" 
-    "    local float *_upstreamImage, local float *_filterPlane ) {\n" 
+    "    local float *_inputPlane, local float *_filterPlane ) {\n" 
     "    #define globalId ( get_global_id(0) )\n" 
     "\n" 
     "    #define localId ( get_local_id(0) )\n" 
@@ -113,7 +114,7 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "    float sum = 0;\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _upstreamImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );\n" 
+    "        copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );\n" 
     "        copyLocal( _filterPlane, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "\n" 
@@ -136,7 +137,7 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "                    #endif\n" 
     "                    bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;\n" 
     "                    if( process ) {\n" 
-    "                            sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterPlane[ filterrowoffset + v ];\n" 
+    "                            sum += _inputPlane[ inputimagerowoffset + inputCol] * _filterPlane[ filterrowoffset + v ];\n" 
     "                    }\n" 
     "                }\n" 
     "            }\n" 

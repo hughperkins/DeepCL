@@ -26,7 +26,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
 void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
       global const float *images, global const float *filters, 
     global float *output,
-    local float *_upstreamImage, local float *_filterPlane ) {
+    local float *_inputPlane, local float *_filterPlane ) {
     #define globalId ( get_global_id(0) )
 
     #define localId ( get_local_id(0) )
@@ -44,7 +44,7 @@ void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _upstreamImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );
+        copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );
         copyLocal( _filterPlane, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -67,7 +67,7 @@ void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
                     #endif
                     bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;
                     if( process ) {
-                            sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterPlane[ filterrowoffset + v ];
+                            sum += _inputPlane[ inputimagerowoffset + inputCol] * _filterPlane[ filterrowoffset + v ];
                     }
                 }
             }
