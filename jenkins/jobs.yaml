@@ -19,13 +19,15 @@
     name: benchmarks
     project-type: freestyle
     node: gpulinux
+    triggers:
+    - pollscm: "0 */3 * * *"
     scm:
     - git:
         skip-tag: true
         # shallow-clone: true
         url: https://github.com/hughperkins/DeepCL.git
         branches:
-            - benchmarking-jenkins
+            - jenkins-perf
         submodule:
             recursive: true
     builders:
