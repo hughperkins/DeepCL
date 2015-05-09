@@ -525,4 +525,37 @@
         include:
         - '**'
         dirmatch: true
+- job:
+    name: deepcl-linux64-cpp-unittests-2
+    project-type: freestyle
+    node: gpulinux
+    logrotate:
+        numToKeep: 1
+        artifactNumToKeep: 1
+    scm:
+    - git:
+        skip-tag: true
+        shallow-clone: true
+        url: https://github.com/hughperkins/DeepCL.git
+        branches:
+            - '*/master'
+        submodule:
+            recursive: true
+    builders:
+        - shell: |
+            # bash jenkins/linux64-cpp-unittests.sh
+            rm -Rf build
+            mkdir -p build
+            cd build
+            cmake -D BUILD_PYSWIG_WRAPPERS:BOOL=OFF -D BUILD_LUA_WRAPPERS:BOOL=OFF ..
+            make -j 8 unittests
+            ./unittests --gtest_output="xml:testresults.xml"
+    publishers:
+    - junit:
+        results: build/testresults.xml
+        keep-long-stdio: true
+    - workspace-cleanup:
+        include:
+        - '**'
+        dirmatch: true
 
