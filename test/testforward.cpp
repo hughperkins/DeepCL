@@ -90,7 +90,7 @@ TEST( testforward, imagesize2_nopadzeros ) {
 //    int outputImageSize = 0;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
-        Forward *forward = Forward::instanceSpecific( 99, cl,
+        Forward *forward = Forward::instanceSpecific( 3, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ) );
         float *output = forward->forward( batchSize, data, filter1, 0 );  
