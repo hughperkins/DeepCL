@@ -910,8 +910,10 @@ TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
 TEST( SLOW_testforward, soumith2 ) {
     int batchSize = 128;
     LayerDimensions dim;
+    int instance = 4;
+    TestArgsParser::arg( "instance", &instance );
     dim.setInputPlanes( 64 ).setInputImageSize( 64 ).setNumFilters( 128 ).setFilterSize( 9 )
         .setPadZeros( false ).setBiased( true );  
-    testPerf( 3, 128, batchSize, dim );
+    testPerf( instance, 128, batchSize, dim );
 }
 
