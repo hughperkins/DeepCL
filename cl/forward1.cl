@@ -4,9 +4,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// expected defines:
-// BIASED (or not)
-
 // notes on non-odd filtersizes:
 // for odd, imagesize and filtersize 3, padZeros = 0:
 // output is a single square
@@ -67,9 +64,6 @@ void kernel convolve_imagecubes_float2( const int numExamples,
       const int numInputPlanes, const int numFilters, 
       const int inputImageSize, const int filterSize, const int padZeros,
       global const float *images, global const float *filters, 
-#ifdef BIASED
-global const float*biases, 
-#endif
     global float *output ) {
     int globalId = get_global_id(0);
 
@@ -123,9 +117,6 @@ global const float*biases,
     }
 
     if( exampleId < numExamples ) {
-    #ifdef BIASED
-        sum += biases[filterId];
-    #endif
         output[globalId] = sum;
     }
 }

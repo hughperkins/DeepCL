@@ -4,9 +4,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Forward1.h"
+#include "conv/Forward1.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
+#include "conv/AddBias.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ using namespace std;
 
 VIRTUAL Forward1::~Forward1() {
     delete kernel;
+    delete addBias;
 }
 VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
@@ -26,7 +28,6 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
        ->in( dim.padZeros ? 1 : 0 );
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 
     int globalSize = batchSize * dim.outputCubeSize;
@@ -37,15 +38,20 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
     StatefulTimer::timeCheck("Forward1::forward after call forward");
+
+    if( dim.biased ) {
+        addBias->forward(
+            batchSize, dim.numFilters, dim.outputImageSize,
+            outputWrapper, biasWrapper );
+    }
 }
 Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
-        Forward( cl, dim )
-            {
+            Forward( cl, dim )
+        {
+    addBias = new AddBias( cl );
 
-    std::string options = ""; // "-D " + fn->getDefineName();
-    if( dim.biased ) {
-         options += " -D BIASED";
-    }
+    std::string options = "";
+
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/forward1.cl", "convolve_imagecubes_float2", 'options' )
@@ -57,9 +63,6 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// expected defines:\n" 
-    "// BIASED (or not)\n" 
     "\n" 
     "// notes on non-odd filtersizes:\n" 
     "// for odd, imagesize and filtersize 3, padZeros = 0:\n" 
@@ -121,9 +124,6 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "      const int numInputPlanes, const int numFilters,\n" 
     "      const int inputImageSize, const int filterSize, const int padZeros,\n" 
     "      global const float *images, global const float *filters,\n" 
-    "#ifdef BIASED\n" 
-    "global const float*biases,\n" 
-    "#endif\n" 
     "    global float *output ) {\n" 
     "    int globalId = get_global_id(0);\n" 
     "\n" 
@@ -177,9 +177,6 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "    }\n" 
     "\n" 
     "    if( exampleId < numExamples ) {\n" 
-    "    #ifdef BIASED\n" 
-    "        sum += biases[filterId];\n" 
-    "    #endif\n" 
     "        output[globalId] = sum;\n" 
     "    }\n" 
     "}\n" 
