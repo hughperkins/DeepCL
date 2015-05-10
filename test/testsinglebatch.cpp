@@ -120,7 +120,7 @@ public:
 // for alternative approaches, look at:
 //    - testbackward.checkLayer(), or
 //    - testupdateweights.test()
-void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
+void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net, float tolerance = 1.3f ) {
     net->setBatchSize( batchSize );
     MT19937 random;
     random.seed(0); // so always gives same output
@@ -158,7 +158,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     float *lastWeights = new float[weightsTotalSize];
     float *currentWeights = new float[weightsTotalSize];
     WeightsPersister::copyNetWeightsToArray( net, lastWeights );
-    Sampler::sampleFloats( "lastWeights", weightsTotalSize, lastWeights );
+//    Sampler::sampleFloats( "lastWeights", weightsTotalSize, lastWeights );
 //    cout << "learningRate: " << args.learningRate << endl;
     float lastloss = 0;
     bool allOk = true;
@@ -170,7 +170,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 //        net->forward( inputData );
 //        net->backward( expectedOutput );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
-        Sampler::sampleFloats( "currentWeights", weightsTotalSize, currentWeights );
+//        Sampler::sampleFloats( "currentWeights", weightsTotalSize, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
             float thisdiff = currentWeights[j] - lastWeights[j];
@@ -192,14 +192,16 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
             allOk = false;
 //            EXPECT_TRUE( !isnan( lossChange ) );
         }
-        if( lossChange / lossChangeFromW > 1.3f ) {
+        if( lossChange / lossChangeFromW > tolerance ) {
+            cout << "tolerance " << tolerance << endl;
             cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
 //            cout << "loss: " << lastloss << " -> " << thisloss << endl;
 //            EXPECT_EQ( lossChange, lossChangeFromW );
             allOk = false;
-        } else if( lossChangeFromW / lossChange > 1.3f ) {
+        } else if( lossChangeFromW / lossChange > tolerance ) {
+            cout << "tolerance " << tolerance << endl;
             cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
@@ -210,7 +212,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
         lastloss =thisloss;
 //        memcpy( lastWeights1, currentWeights1, sizeof(float) * weights1Size );
         WeightsPersister::copyNetWeightsToArray( net, lastWeights );
-        Sampler::sampleFloats( "lastWeights", weightsTotalSize, lastWeights );
+//        Sampler::sampleFloats( "lastWeights", weightsTotalSize, lastWeights );
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
@@ -227,7 +229,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
     delete[] inputData;
 }
 
-void test( ActivationFunction *fn, TestArgs args ) {
+void test( ActivationFunction *fn, TestArgs args, float tolerance = 1.3f ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
@@ -246,7 +248,7 @@ void test( ActivationFunction *fn, TestArgs args ) {
         net->addLayer( SquareLossMaker::instance() );;
     }
     net->print();
-    test( args.learningRate, args.numEpochs, args.batchSize, net );
+    test( args.learningRate, args.numEpochs, args.batchSize, net, tolerance );
     delete net;
     delete cl;
 }
@@ -263,7 +265,7 @@ TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_10filters ) {
 
 TEST( testsinglebatch, imagesize28 ) {
     test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(28).NumLayers(1)
-            .FilterSize(3).NumFilters(10).NumEpochs(100) );
+            .FilterSize(3).NumFilters(10).NumEpochs(100), 2.0f );
 }
 
 TEST( testsinglebatch, imagesize28_filtersize5 ) {

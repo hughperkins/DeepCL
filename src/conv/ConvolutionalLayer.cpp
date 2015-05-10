@@ -135,21 +135,21 @@ VIRTUAL std::string ConvolutionalLayer::getClassName() const {
 //}
 VIRTUAL float *ConvolutionalLayer::getGradInput() {
     if( gradInputWrapper->isDeviceDirty() ) {
-        std::cout << "copying gradInput to host, from GPU" << std::endl;
+//        std::cout << "copying gradInput to host, from GPU" << std::endl;
         gradInputWrapper->copyToHost();
     }
     return gradInput;
 }
 VIRTUAL float *ConvolutionalLayer::getGradWeights() {
     if( gradWeightsWrapper->isDeviceDirty() ) {
-        std::cout << "copying gradWeights to host, from GPU" << std::endl;
+//        std::cout << "copying gradWeights to host, from GPU" << std::endl;
         gradWeightsWrapper->copyToHost();
     }
     return gradWeights;
 }
 VIRTUAL float *ConvolutionalLayer::getGradBias() {
     if( gradBiasWrapper->isDeviceDirty() ) {
-        std::cout << "copying gradBias to host, from GPU" << std::endl;
+//        std::cout << "copying gradBias to host, from GPU" << std::endl;
         gradBiasWrapper->copyToHost();
     }
     return gradBias;
@@ -353,7 +353,7 @@ VIRTUAL float const *ConvolutionalLayer::getWeights() const {
 }
 VIRTUAL float *ConvolutionalLayer::getWeights() {
     if( weightsWrapper->isDeviceDirty() ) {
-        cout << "copying weights to host" << endl;
+//        cout << "copying weights to host" << endl;
         cl->finish();
         weightsWrapper->copyToHost();
     }
@@ -361,7 +361,7 @@ VIRTUAL float *ConvolutionalLayer::getWeights() {
 }
 VIRTUAL float *ConvolutionalLayer::getBias() {
     if( biasWrapper->isDeviceDirty() ) {
-        cout << "copying bias to host" << endl;
+//        cout << "copying bias to host" << endl;
         cl->finish();
         biasWrapper->copyToHost();
     }
