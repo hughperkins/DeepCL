@@ -34,11 +34,8 @@ VIRTUAL void Forward2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
 //        cout << "square(outputImageSize) " << square( outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
-    int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
-    int numWorkgroups = dim.numFilters;
-    int globalSize = workgroupsize * numWorkgroups;
 //    cout << "forward2 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-    kernel->run_1d( globalSize, workgroupsize );
+    kernel->run_1d( globalSize, workgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("Forward2::forward after call forward");
 
@@ -58,8 +55,15 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
 
     addBias = new AddBias( cl );
 
+    this->workgroupSize = square( dim.outputImageSize );
+    // round up to nearest 32, so dont waste threads:
+    this->workgroupSize = ( ( workgroupSize + 32 - 1 ) / 32 ) * 32;
+    this->numWorkgroups = dim.numFilters;
+    this->globalSize = this->workgroupSize * this->numWorkgroups;
+
     std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
+    options += " -DgWorkgroupSize=" + toString( this->workgroupSize );
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/forward2.cl", "forward_2_by_outplane", 'options' )
@@ -72,10 +76,10 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "void copyLocal( local float *target, global float const *source, int N ) {\n" 
-    "    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);\n" 
+    "void copyLocal( local float *target, global float const *source, const int N ) {\n" 
+    "    int numLoops = ( N + gWorkgroupSize - 1 ) / gWorkgroupSize;\n" 
     "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
-    "        int offset = loop * get_local_size(0) + get_local_id(0);\n" 
+    "        int offset = loop * gWorkgroupSize + get_local_id(0);\n" 
     "        if( offset < N ) {\n" 
     "            target[offset] = source[offset];\n" 
     "        }\n" 
@@ -121,11 +125,12 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "        const int maxv = gHalfFilterSize - gEven;\n" 
     "    #endif\n" 
     "\n" 
-    "    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
-    "\n" 
-    "    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
-    "    const int filterCubeGlobalOffset = outPlane * filterCubeLength;\n" 
-    "    copyLocal( _filterCube, filters + filterCubeGlobalOffset, filterCubeLength );\n" 
+    "    {\n" 
+    "        const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
+    "        copyLocal( _filterCube,\n" 
+    "                filters + outPlane * filterCubeLength,\n" 
+    "                filterCubeLength );\n" 
+    "    }\n" 
     "    // dont need a barrier, since we'll just run behind the barrier from the upstream image download\n" 
     "\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 

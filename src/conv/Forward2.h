@@ -14,6 +14,9 @@ class Forward2 : public Forward {
 public:
     CLKernel *kernel;
     AddBias *addBias;
+    int workgroupSize;
+    int numWorkgroups;
+    int globalSize;
 
     // [[[cog
     // import cog_addheaders

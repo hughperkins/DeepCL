@@ -4,10 +4,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-void copyLocal( local float *target, global float const *source, int N ) {
-    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
+void copyLocal( local float *target, global float const *source, const int N ) {
+    int numLoops = ( N + gWorkgroupSize - 1 ) / gWorkgroupSize;
     for( int loop = 0; loop < numLoops; loop++ ) {
-        int offset = loop * get_local_size(0) + get_local_id(0);
+        int offset = loop * gWorkgroupSize + get_local_id(0);
         if( offset < N ) {
             target[offset] = source[offset];
         }
@@ -53,11 +53,12 @@ void kernel forward_2_by_outplane(
         const int maxv = gHalfFilterSize - gEven;
     #endif
 
-    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
-
-    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
-    const int filterCubeGlobalOffset = outPlane * filterCubeLength;
-    copyLocal( _filterCube, filters + filterCubeGlobalOffset, filterCubeLength );
+    {
+        const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
+        copyLocal( _filterCube, 
+                filters + outPlane * filterCubeLength,
+                filterCubeLength );
+    }
     // dont need a barrier, since we'll just run behind the barrier from the upstream image download
 
     for( int n = 0; n < batchSize; n++ ) {
