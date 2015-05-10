@@ -50,7 +50,7 @@ STATIC Forward *Forward::instance(EasyCL *cl, LayerDimensions dim ) {
 //    }
 }
 STATIC Forward *Forward::instanceTest(EasyCL *cl, LayerDimensions layerDimensions ) {
-    return new Forward4( cl, layerDimensions );
+    return new Forward2( cl, layerDimensions );
 }
 STATIC int Forward::getNumImplementations() {
     return 7;

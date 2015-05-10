@@ -4,9 +4,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// expected defines:
-// BIASED (or not)
-
 #ifdef gOutputImageSize // for previous tests that dont define it
 // workgroup id organized like: [outplane]
 // local id organized like: [outrow][outcol]
@@ -19,16 +16,12 @@
 // assumes filter is small, so filtersize * filterSize * inputPlanes * 4 < about 3KB
 //                            eg 5 * 5 * 32 * 4 = 3.2KB => ok :-)
 //                           but 28 * 28 * 32 * 4 = 100KB => less good :-P
-void kernel forward_2_by_outplane( const int batchSize,
-      global const float *images, global const float *filters, 
-        #ifdef BIASED
-            global const float*biases, 
-        #endif
-    global float *output,
-    local float *_upstreamImage, local float *_filterCube ) {
+void kernel forward_2_by_outplane(
+        const int batchSize,
+        global const float *images, global const float *filters, 
+        global float *output,
+        local float *_inputPlane, local float *_filterCube ) {
     const int globalId = get_global_id(0);
-
-//    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;
 
     const int workgroupId = get_group_id(0);
     const int workgroupSize = get_local_size(0);
@@ -71,7 +64,7 @@ void kernel forward_2_by_outplane( const int batchSize,
             for( int i = 0; i < numUpstreamsPerThread; i++ ) {
                 int thisOffset = workgroupSize * i + localId;
                 if( thisOffset < gInputImageSizeSquared ) {
-                    _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];
+                    _inputPlane[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];
                 }
             }
             barrier(CLK_LOCAL_MEM_FENCE);
@@ -89,14 +82,11 @@ void kernel forward_2_by_outplane( const int batchSize,
                         #if gPadZeros == 0
                              inputCol += gHalfFilterSize;
                         #endif
-                        sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
+                        sum += _inputPlane[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                     }
                 }
             }
         }
-        #ifdef BIASED
-            sum += biases[outPlane];
-        #endif
         // output are organized like [imageid][filterid][row][col]
         int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
         if( localId < gOutputImageSizeSquared ) {
