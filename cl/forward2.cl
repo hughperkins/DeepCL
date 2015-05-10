@@ -58,26 +58,13 @@ void kernel forward_2_by_outplane(
     const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
     const int filterCubeGlobalOffset = outPlane * filterCubeLength;
     copyLocal( _filterCube, filters + filterCubeGlobalOffset, filterCubeLength );
-//    const int numPixelsPerThread = ( filterCubeLength + workgroupSize - 1 ) / workgroupSize;
-//    for( int i = 0; i < numPixelsPerThread; i++ ) {
-//        int thisOffset = localId + i * workgroupSize;
-//        if( thisOffset < filterCubeLength ) {
-//            _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];
-//        }
-//    }
     // dont need a barrier, since we'll just run behind the barrier from the upstream image download
 
     for( int n = 0; n < batchSize; n++ ) {
         float sum = 0;
         for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
-            int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
             barrier(CLK_LOCAL_MEM_FENCE);
-            for( int i = 0; i < numUpstreamsPerThread; i++ ) {
-                int thisOffset = workgroupSize * i + localId;
-                if( thisOffset < gInputImageSizeSquared ) {
-                    _inputPlane[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];
-                }
-            }
+            copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
             barrier(CLK_LOCAL_MEM_FENCE);
             int filterImageOffset = upstreamPlane * gFilterSizeSquared;
             if( localId < gOutputImageSizeSquared ) {
