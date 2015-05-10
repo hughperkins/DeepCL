@@ -85,22 +85,22 @@ void kernel convolve_imagecubes_float2(
         for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
             // trying to reduce register pressure...
             #if gPadZeros == 1
-                #define inputRow ( outputRow + u )
+                #define inputRowIdx ( outputRow + u )
             #else
-                #define inputRow ( outputRow + u + gHalfFilterSize )
+                #define inputRowIdx ( outputRow + u + gHalfFilterSize )
             #endif
-            int inputimagerowoffset = inputRow * gInputImageSize;
-            int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-            bool rowOk = inputRow >= 0 && inputRow < gInputImageSize;
+            global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;
+            global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+            bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;
             for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
                 #if gPadZeros == 1
-                    #define inputCol ( outputCol + v )
+                    #define inputColIdx ( outputCol + v )
                 #else
-                    #define inputCol ( outputCol + v + gHalfFilterSize )
+                    #define inputColIdx ( outputCol + v + gHalfFilterSize )
                 #endif
-                bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;
+                bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputImageSize;
                 if( process ) {
-                        sum += inputPlane[ inputimagerowoffset + inputCol] * filterPlane[ filterrowoffset + v ];
+                        sum += inputRow[inputColIdx] * filterRow[v];
                 }
             }
         }
