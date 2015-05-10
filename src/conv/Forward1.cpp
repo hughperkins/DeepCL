@@ -22,6 +22,8 @@ VIRTUAL Forward1::~Forward1() {
 }
 VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
+    StatefulTimer::timeCheck("Forward1::forward START");
+
     kernel->in(batchSize)
         ->in( dim.inputPlanes )->in( dim.numFilters )
         ->in( dim.inputImageSize )->in( dim.filterSize )
@@ -44,6 +46,7 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
             batchSize, dim.numFilters, dim.outputImageSize,
             outputWrapper, biasWrapper );
     }
+    StatefulTimer::timeCheck("Forward1::forward END");
 }
 Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
             Forward( cl, dim )
