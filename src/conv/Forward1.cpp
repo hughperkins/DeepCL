@@ -153,6 +153,7 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "            global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;\n" 
     "            global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
     "            bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;\n" 
+    "            #pragma unroll\n" 
     "            for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {\n" 
     "                #if gPadZeros == 1\n" 
     "                    #define inputColIdx ( outputCol + v )\n" 
