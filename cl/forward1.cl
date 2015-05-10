@@ -60,60 +60,50 @@
 //     - loads a whole upstream cube
 //     - loads a whole filter cube
 //     - writes one output...
-void kernel convolve_imagecubes_float2( const int numExamples,
-      const int numInputPlanes, const int numFilters, 
-      const int inputImageSize, const int filterSize, const int padZeros,
-      global const float *images, global const float *filters, 
+void kernel convolve_imagecubes_float2(
+    const int numExamples,
+      global const float *inputs, global const float *filters, 
     global float *output ) {
     int globalId = get_global_id(0);
 
-    const int evenPadding = filterSize % 2 == 0 ? 1 : 0;
-
-    int inputImageSizeSquared = inputImageSize * inputImageSize;
-    int outputImageSize = padZeros ? inputImageSize + evenPadding : inputImageSize - filterSize + 1;
-    int outputImageSizeSquared = outputImageSize * outputImageSize;
-    int filterSizeSquared = filterSize * filterSize;
-
-    int outputImage2Id = globalId / outputImageSizeSquared;
-    int exampleId = outputImage2Id / numFilters;
-    int filterId = outputImage2Id % numFilters;
-
-    int inputCubeOffset = exampleId * numInputPlanes * inputImageSizeSquared;
-    int filterCubeOffset = filterId * numInputPlanes * filterSizeSquared;
+    int outputImage2Id = globalId / gOutputImageSizeSquared;
+    int exampleId = outputImage2Id / gNumFilters;
+    int filterId = outputImage2Id % gNumFilters;
 
     // intraimage coords
-    int localid = globalId % outputImageSizeSquared;
-    int outputRow = localid / outputImageSize;
-    int outputCol = localid % outputImageSize;
+    int localid = globalId % gOutputImageSizeSquared;
+    int outputRow = localid / gOutputImageSize;
+    int outputCol = localid % gOutputImageSize;
 
-    int halfFilterSize = filterSize >> 1;
+    global float const*inputCube = inputs + exampleId * gNumInputPlanes * gInputImageSizeSquared;
+    global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;
+
     float sum = 0;
-    //  imagesize = oldimagesize
-    int minm = padZeros ? max( -halfFilterSize, -outputRow ) : -halfFilterSize;
-    int maxm = padZeros ? min( halfFilterSize - evenPadding, outputImageSize - 1 - outputRow  - evenPadding) : halfFilterSize - evenPadding;
-    int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;
-    int maxn = padZeros ? min( halfFilterSize - evenPadding, outputImageSize - 1 - outputCol - evenPadding) : halfFilterSize - evenPadding;
-    int inputPlane = 0;
-//    float probe = 0;
-    while( inputPlane < numInputPlanes ) {
-        int inputImageOffset = inputCubeOffset + inputPlane * inputImageSizeSquared;
-        int filterImageOffset = filterCubeOffset + inputPlane * filterSizeSquared;
-        int m = minm;
-        while( m <= maxm ) {
-            int inputRow = outputRow + m + ( padZeros ? 0 : halfFilterSize );
-            int inputimagerowoffset = inputImageOffset + inputRow * inputImageSize;
-            int filterrowoffset = filterImageOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
-            int n = minn;
-            while( n <= maxn ) {
-                int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
-                if( exampleId < numExamples ) {
-                    sum += images[ inputimagerowoffset + inputCol] * filters[ filterrowoffset + n ];
+    for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {
+        global float const*inputPlane = inputCube + inputPlaneIdx * gInputImageSizeSquared;
+        global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;
+        for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
+            // trying to reduce register pressure...
+            #if gPadZeros == 1
+                #define inputRow ( outputRow + u )
+            #else
+                #define inputRow ( outputRow + u + gHalfFilterSize )
+            #endif
+            int inputimagerowoffset = inputRow * gInputImageSize;
+            int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+            bool rowOk = inputRow >= 0 && inputRow < gInputImageSize;
+            for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
+                #if gPadZeros == 1
+                    #define inputCol ( outputCol + v )
+                #else
+                    #define inputCol ( outputCol + v + gHalfFilterSize )
+                #endif
+                bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;
+                if( process ) {
+                        sum += inputPlane[ inputimagerowoffset + inputCol] * filterPlane[ filterrowoffset + v ];
                 }
-                n++;
             }
-            m++;
         }
-        inputPlane++;
     }
 
     if( exampleId < numExamples ) {
