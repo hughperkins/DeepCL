@@ -911,10 +911,12 @@ TEST( SLOW_testforward, soumith2 ) {
     int batchSize = 128;
     LayerDimensions dim;
     int instance = 4;
+    bool biased = true;
     TestArgsParser::arg( "instance", &instance );
+    TestArgsParser::arg( "biased", &biased );
     TestArgsParser::go();
     dim.setInputPlanes( 64 ).setInputImageSize( 64 ).setNumFilters( 128 ).setFilterSize( 9 )
-        .setPadZeros( false ).setBiased( true );  
+        .setPadZeros( false ).setBiased( biased );  
     testPerf( instance, 128, batchSize, dim );
 }
 
