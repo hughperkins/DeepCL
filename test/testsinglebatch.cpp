@@ -265,7 +265,7 @@ TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_10filters ) {
 
 TEST( testsinglebatch, imagesize28 ) {
     test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(28).NumLayers(1)
-            .FilterSize(3).NumFilters(10).NumEpochs(100), 2.0f );
+            .FilterSize(3).NumFilters(10).NumEpochs(100), 2.5f );
 }
 
 TEST( testsinglebatch, imagesize28_filtersize5 ) {

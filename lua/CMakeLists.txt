@@ -39,7 +39,7 @@ endforeach()
 #message("deepcl_sources ${lua_deepcl_sources}")
 
 set(lua_EasyCL_sources EasyCL/EasyCL.cpp
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c)
 
 foreach(source ${lua_EasyCL_sources})

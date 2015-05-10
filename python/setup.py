@@ -161,6 +161,7 @@ print('deeplcl_sources', deepcl_sources)
 easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
         'EasyCL/EasyCL.cpp',
         'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
+        'EasyCL/CLWrapper.cpp',
         'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
 print(easyclsources)
 print(isinstance( easyclsources, list) )
