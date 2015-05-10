@@ -1,3 +1,4 @@
+ReduceSegments.cpp
 AddBias.cpp
 BackpropWeights.cpp
 BackpropWeightsCpu.cpp

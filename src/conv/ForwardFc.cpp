@@ -10,6 +10,7 @@
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
 #include "conv/AddBias.h"
+#include "conv/ReduceSegments.h"
 
 using namespace std;
 
@@ -20,62 +21,46 @@ using namespace std;
 
 VIRTUAL ForwardFc::~ForwardFc() {
     delete kernel1;
-    delete kernel_reduce;
+//    delete kernel_reduce;
     delete addBias;
+    delete reduceSegments;
 }
 VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardFc::forward begin");
 
-    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+//    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
 
-    const int output1Size = batchSize * dim.numFilters * dim.numInputPlanes * dim.filterSize;
+    const int outputTotalSize = batchSize * dim.numFilters;
+    const int output2Size = outputTotalSize * dim.numInputPlanes; // need to reduce over each input plane
+    const int output1Size = output2Size * dim.filterSize; // need to reduce also over each row
+
+//    const int output1Size = batchSize * dim.numFilters * dim.numInputPlanes * dim.filterSize;
     float *output1 = new float[ output1Size ];
     CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
     output1Wrapper->createOnDevice();
 
-    const int output2Size = batchSize * dim.numFilters * dim.numInputPlanes;
+//    const int output2Size = batchSize * dim.numFilters * dim.numInputPlanes;
     float *output2 = new float[ output2Size ];
     CLWrapper *output2Wrapper = cl->wrap( output2Size, output2 );
     output2Wrapper->createOnDevice();
 
-    kernel1->in(batchSize);
+    kernel1->in( batchSize );
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
-//    if( dim.biased ) kernel1->input( biasWrapper );
     kernel1->output( output1Wrapper );
     kernel1->localFloats( dim.inputImageSize );
     kernel1->localFloats( dim.numFilters * dim.filterSize );
 
     int workgroupSize = dim.numFilters;
+    workgroupSize = ( ( workgroupSize + 32 - 1 ) / 32 ) * 32; // round up to nearest 32
     int numWorkgroups = dim.filterSize * dim.numInputPlanes;
 
-    int globalSize = workgroupSize * numWorkgroups;
-    kernel1->run_1d( globalSize, workgroupSize );
+    kernel1->run_1d( workgroupSize * numWorkgroups, workgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("ForwardFc::forward after first kernel");
 
-    // now reduce over rows 
-    kernel_reduce->in(batchSize * dim.numFilters * dim.numInputPlanes)
-        ->in( dim.filterSize )
-        ->in( output1Wrapper )->out( output2Wrapper );
-    int maxglobalId = batchSize * dim.numFilters * dim.numInputPlanes;
-//    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-//    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
-    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
-    cl->finish();
-    StatefulTimer::timeCheck("ForwardFc::forward after reduce1");
-
-    // reduce over input planes 
-    kernel_reduce->in(batchSize * dim.numFilters)->in( dim.numInputPlanes )
-        ->in( output2Wrapper )->out( outputWrapper );
-    maxglobalId = batchSize * dim.numFilters;
-    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-    kernel_reduce->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-//    numWorkgroups = ( maxglobalId + 64 - 1 ) / 64;
-//    kernel_reduce->run_1d( numWorkgroups * 64, 64 );
-    cl->finish();
-    StatefulTimer::timeCheck("ForwardFc::forward after reduce2");
+    reduceSegments->reduce( output1Size, dim.filterSize, output1Wrapper, output2Wrapper );
+    reduceSegments->reduce( output2Size, dim.numInputPlanes, output2Wrapper, outputWrapper );
 
     // add bias...
     if( dim.biased ) {
@@ -103,6 +88,7 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     }
 
     this->addBias = new AddBias( cl );
+    this->reduceSegments = new ReduceSegments( cl );
 
     std::string options = "";
     options += dim.buildOptionsString();
@@ -110,7 +96,7 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
-    // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
+    // # stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
     // ]]]
     // generated using cog, from cl/forward_fc_wgperrow.cl:
     const char * kernel1Source =  
@@ -219,70 +205,6 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "\n" 
     "";
     kernel1 = cl->buildKernelFromString( kernel1Source, "forward_fc_workgroup_perrow", options, "cl/forward_fc_wgperrow.cl" );
-    // generated using cog, from cl/reduce_segments.cl:
-    const char * kernel_reduceSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void reduce_segments( const int numSegments, const int segmentLength,\n" 
-    "        global float const *in, global float* out ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    const int segmentId = globalId;\n" 
-    "\n" 
-    "    if( segmentId >= numSegments ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "\n" 
-    "    float sum = 0;\n" 
-    "    global const float *segment = in + segmentId * segmentLength;\n" 
-    "    for( int i = 0; i < segmentLength; i++ ) {\n" 
-    "        sum += segment[i];\n" 
-    "    }\n" 
-    "    out[segmentId] = sum;\n" 
-    "}\n" 
-    "\n" 
-    "\n" 
-    "";
-    kernel_reduce = cl->buildKernelFromString( kernel_reduceSource, "reduce_segments", options, "cl/reduce_segments.cl" );
-    // generated using cog, from cl/per_element_add.cl:
-    const char * kPerElementTiledAddSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "// adds source to target\n" 
-    "// tiles source as necessary, according to tilingSize\n" 
-    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId % tilingSize];\n" 
-    "}\n" 
-    "\n" 
-    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kPerElementTiledAdd = cl->buildKernelFromString( kPerElementTiledAddSource, "per_element_tiled_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
 }
 

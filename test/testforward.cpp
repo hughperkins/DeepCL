@@ -405,30 +405,30 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
     int inputsSize = N * dim.inputCubeSize;
     int filtersSize = dim.filtersSize;
     int biasSize = dim.numFilters;
-    int inputsAllocated = std::max( inputsSize, 10000 );
-    int filtersAllocated = std::max( filtersSize, 10000 );
-    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    int inputsAllocated = std::max( inputsSize, 0000 );
+    int filtersAllocated = std::max( filtersSize, 0000 );
+    int biasFiltersAllocated = std::max( biasSize, 0000 );
     float *inputs = new float[ inputsAllocated ];
     float *filters = new float[ filtersAllocated ];
     float *biasFilters = new float[ biasFiltersAllocated ];
 
-    memset( inputs, 0, sizeof(float) * inputsAllocated );
-    memset( filters, 0, sizeof(float) * filtersAllocated );
-    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
+//    memset( inputs, 0, sizeof(float) * inputsAllocated );
+//    memset( filters, 0, sizeof(float) * filtersAllocated );
+//    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
 
-//    inputs[0] = 2.0f;
-//    inputs[1] = 4.0f;
-    inputs[4] = 4.0f;
-//    inputs[dim.inputB + 0] = 3.0f;
-    inputs[dim.inputCubeSize + 0] = 3.0f;
+////    inputs[0] = 2.0f;
+////    inputs[1] = 4.0f;
+//    inputs[4] = 4.0f;
+////    inputs[dim.inputB + 0] = 3.0f;
+//    inputs[dim.inputCubeSize + 0] = 3.0f;
 
-//    filters[0] = 3.0f;
-//    filters[1] = 5.0f;
-    filters[4] = 5.0f;
+////    filters[0] = 3.0f;
+////    filters[1] = 5.0f;
+//    filters[4] = 5.0f;
 
-    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 0, inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 1, filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 2, biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
     for( int i = 0; i < 8; i++ ) {
         if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
@@ -684,6 +684,29 @@ TEST( SLOW_testforward, compare_args ) {
     dim.deriveOthers();
 
     compareSpecific( debug, N, batchSize, dim, instance0, instance1 );
+}
+
+TEST( testforward, comparespecific_break2 ) { // this breaks on v5.7.0 for example
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 5;
+    int N = 4;
+    bool debug = false;
+    dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 )
+        .setFilterSize( 19 )
+        .setPadZeros( false ).setBiased( false );    
+
+    TestArgsParser::arg( "n", &N );
+    DimFromArgs::arg( &dim );
+    TestArgsParser::arg( "instance0", &instance0 );
+    TestArgsParser::arg( "instance1", &instance1 );
+    TestArgsParser::arg( "debug", &debug );
+    TestArgsParser::arg( "batchsize", &batchSize );
+    TestArgsParser::go();
+    dim.deriveOthers();
+
+    compareSpecific( debug, N, batchSize, dim, instance0, instance1 );    
 }
 
 //TEST( SLOW_testforward, comparespecific_kgsgo_64c7mini ) {

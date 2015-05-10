@@ -37,7 +37,6 @@ kernel void reduce_inputplanes( const int batchSize, global float const *output2
     for( int inputPlane = 0; inputPlane < gNumInputPlanes; inputPlane++ ) {
         sum += output2Col[inputPlane];
     }
-    // activate...
     output[globalId] = sum;
 }
 #endif
