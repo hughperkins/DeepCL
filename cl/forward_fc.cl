@@ -4,27 +4,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// expected defines:
-// one of: [ TANH | RELU | LINEAR ]
-// BIASED (or not)
-
-#ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
-#elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
-#elif SIGMOID
-    #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
-#elif defined RELU
-    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
-#elif defined LINEAR
-    #define ACTIVATION_FUNCTION(output) (output)
-#endif
-
-
 // each thread handles one filter, ie globalId as [n][inputplane][filterId]
 // output1: [n][inputplane][filter][filterrow]
 // output2: [n][inputplane][filter]
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 kernel void reduce_rows( const int batchSize, global float const *output1, global float*output2 ) {
     const int globalId = get_global_id(0);
     const int n = globalId / gNumInputPlanes / gNumFilters;
@@ -39,12 +21,10 @@ kernel void reduce_rows( const int batchSize, global float const *output1, globa
     }
     output2[globalId] = sum;
 }
-#endif
 
 // each thread handles one filter, ie globalId as [n][filterId]
 // output2: [n][inputplane][filter]
 // output: [n][filter]
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 kernel void reduce_inputplanes( const int batchSize, global float const *output2, global float*output ) {
     const int globalId = get_global_id(0);
     const int n = globalId / gNumFilters;
@@ -58,12 +38,11 @@ kernel void reduce_inputplanes( const int batchSize, global float const *output2
         sum += output2Col[inputPlane];
     }
     // activate...
-    output[globalId] = ACTIVATION_FUNCTION(sum);
+    output[globalId] = sum;
 }
 #endif
 
 #ifdef gOutImageSize // for previous tests that dont define it
-#ifdef ACTIVATION_FUNCTION // protect against not defined
 // workgroupid [n][outputplane]
 // localid: [filterrow][filtercol]
 //  each thread iterates over: [inplane]
@@ -123,17 +102,12 @@ void kernel forward_filter_matches_inimage( const int batchSize,
             }
         }
     }
-    #ifdef BIASED
-        sum += biases[outPlane];
-    #endif
     // output are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared + localId;
     if( localId < gOutImageSizeSquared ) {
-        output[resultIndex ] = ACTIVATION_FUNCTION(sum);
-//        output[resultIndex ] = 123;
+        output[resultIndex ] = sum;
     }
 }
-#endif
 #endif
 #endif
 

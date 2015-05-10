@@ -87,14 +87,6 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
         StatefulTimer::timeCheck("ForwardFc::forward after add bias");        
     }
 
-//    kernel_activate->in( batchSize * dim.numFilters )
-//        ->inout( outputWrapper );
-//    maxglobalId = batchSize * dim.numFilters;
-//    numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-//    kernel_activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-//    cl->finish();
-//    StatefulTimer::timeCheck("ForwardFc::forward after activate");
-
     delete output2Wrapper;
     delete[] output2;
 
@@ -113,15 +105,13 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
         throw runtime_error("For ForwardFc, padzeros must be disabled");
     }
 
-    std::string options = ""; // "-D " + fn->getDefineName();
+    std::string options = "";
     options += dim.buildOptionsString();
 
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
     // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
-    // # stringify.write_kernel2( "kernel_activate", "cl/activate.cl", "activate", 'options' )
-    // # stringify.write_kernel2( "kPerElementAdd", "cl/per_element_add.cl", "per_element_add", 'options' )
     // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
     // generated using cog, from cl/forward_fc_wgperrow.cl:
