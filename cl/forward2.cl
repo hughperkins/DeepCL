@@ -64,7 +64,9 @@ void kernel forward_2_by_outplane(
         float sum = 0;
         for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
             barrier(CLK_LOCAL_MEM_FENCE);
-            copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+            copyLocal( _inputPlane, 
+                       images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared,
+                       gInputImageSizeSquared );
             barrier(CLK_LOCAL_MEM_FENCE);
             int filterImageOffset = upstreamPlane * gFilterSizeSquared;
             if( localId < gOutputImageSizeSquared ) {
