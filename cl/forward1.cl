@@ -92,6 +92,7 @@ void kernel convolve_imagecubes_float2(
             global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;
             global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
             bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;
+            #pragma unroll
             for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
                 #if gPadZeros == 1
                     #define inputColIdx ( outputCol + v )
