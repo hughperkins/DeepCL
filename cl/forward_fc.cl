@@ -55,10 +55,7 @@ kernel void reduce_inputplanes( const int batchSize, global float const *output2
 //   inputimagesize around 19, not too small
 #if gFilterSize == gInputImageSize && gPadZeros == 0
 void kernel forward_filter_matches_inimage( const int batchSize,
-      global const float *images, global const float *filters, 
-        #ifdef BIASED
-            global const float*biases, 
-        #endif
+      global const float *images, global const float *filters,
     global float *output,
     local float *_upstreamImage, local float *_filterImage ) {
     const int globalId = get_global_id(0);

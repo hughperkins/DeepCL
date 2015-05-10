@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include "Forward.h"
+#include "conv/Forward.h"
+
+class AddBias;
 
 #define STATIC static
 #define VIRTUAL virtual
@@ -15,9 +17,7 @@ class ForwardFc : public Forward {
 public:
     CLKernel *kernel1;
     CLKernel *kernel_reduce;
-//    CLKernel *kernel_activate;
-//    CLKernel *kPerElementAdd;
-    CLKernel *kPerElementTiledAdd;
+    AddBias *addBias;
 
     // [[[cog
     // import cog_addheaders

@@ -6,9 +6,10 @@
 
 #include <algorithm>
 
-#include "ForwardFc.h"
+#include "conv/ForwardFc.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
+#include "conv/AddBias.h"
 
 using namespace std;
 
@@ -20,8 +21,7 @@ using namespace std;
 VIRTUAL ForwardFc::~ForwardFc() {
     delete kernel1;
     delete kernel_reduce;
-//    delete kernel_activate;
-    delete kPerElementTiledAdd;
+    delete addBias;
 }
 VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardFc::forward begin");
@@ -79,12 +79,9 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
 
     // add bias...
     if( dim.biased ) {
-        kPerElementTiledAdd->in( batchSize * dim.numFilters )->in( dim.numFilters )->inout( outputWrapper )->in( biasWrapper );
-        maxglobalId = batchSize * dim.numFilters;
-        numWorkgroups = ( batchSize * dim.numFilters + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-        kPerElementTiledAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-        cl->finish();
-        StatefulTimer::timeCheck("ForwardFc::forward after add bias");        
+        addBias->forward(
+            batchSize, dim.numFilters, dim.outputImageSize,
+            outputWrapper, biasWrapper );
     }
 
     delete output2Wrapper;
@@ -105,6 +102,8 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
         throw runtime_error("For ForwardFc, padzeros must be disabled");
     }
 
+    this->addBias = new AddBias( cl );
+
     std::string options = "";
     options += dim.buildOptionsString();
 
@@ -112,7 +111,6 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     // import stringify
     // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
     // stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
-    // stringify.write_kernel2( "kPerElementTiledAdd", "cl/per_element_add.cl", "per_element_tiled_add", 'options' )
     // ]]]
     // generated using cog, from cl/forward_fc_wgperrow.cl:
     const char * kernel1Source =  
