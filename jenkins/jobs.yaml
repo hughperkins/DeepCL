@@ -41,7 +41,7 @@
             githash=$(git log -n 1 --format=%h)
             filename=${version}-${githash}.txt
             cp results.txt ${filename}
-    publisher:
+    publishers:
     - archive:
         artifacts: 'python/results.txt'
     - scp:
