@@ -40,6 +40,7 @@
             version=$(cat ../jenkins/version.txt)
             githash=$(git log -n 1 --format=%h)
             filename=${version}-${githash}.txt
+            cp results.txt filename
             # git clone git@github.com:hughperkins/DeepCL.git -b gh-pages gh-pages
             # cp results.txt gh-pages/benchmarking/${filename}
             # sed -i -e '/^{filename}$/d' gh-pages/benchmarking/files.txt
@@ -50,8 +51,16 @@
             # git commit -m "results ${version} ${githash}"
             # git push
     publisher:
-      - archive:
+    - archive:
         artifacts: 'python/results.txt'
+    - scp:
+            site: 'deepcl.hughperkins.com'
+            files:
+                - target: 'Downloads'
+                  source: 'python/*-*.txt'
+    - postbuildscript:
+        builders:
+            - shell: 'curl http://deepcl.hughperkins.com/benchmarking/update_files.py'
 - job:
     name: deepcl-trigger-2
     project-type: freestyle
