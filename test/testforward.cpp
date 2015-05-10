@@ -912,6 +912,7 @@ TEST( SLOW_testforward, soumith2 ) {
     LayerDimensions dim;
     int instance = 4;
     TestArgsParser::arg( "instance", &instance );
+    TestArgsParser::go();
     dim.setInputPlanes( 64 ).setInputImageSize( 64 ).setNumFilters( 128 ).setFilterSize( 9 )
         .setPadZeros( false ).setBiased( true );  
     testPerf( instance, 128, batchSize, dim );
