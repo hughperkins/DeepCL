@@ -56,7 +56,7 @@
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
-                - target: 'Downloads'
+                - target: 'benchmarking'
                   source: 'python/*-*.txt'
     - postbuildscript:
         builders:
