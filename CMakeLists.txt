@@ -49,7 +49,7 @@ endforeach()
 #message("deepcl_sources ${deepcl_sources}")
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
@@ -72,7 +72,7 @@ endif()
 
 if( GIT_FOUND )
 add_custom_command( 
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
     COMMAND git submodule update --init --force --recursive
 )
 add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
