@@ -477,7 +477,7 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
     int numDiff = 0;
     for( int i = 0; i < max( 20, outputSize ); i++ ) {
         if( i < outputSize ) {
-            if( abs( output1[i] - output2[i] ) < 0.000001f || abs( output1[i] - output2[i] ) <= 0.001f * max( abs( output1[i] ), abs( output2[i] ) ) ) {
+            if( abs( output1[i] - output2[i] ) < 0.00001f || abs( output1[i] - output2[i] ) <= 0.001f * max( abs( output1[i] ), abs( output2[i] ) ) ) {
                 if( i < 20 ) {
                     if( debug ) cout << "output[" << i << "]=" << output1[i] << " " << output2[i];
                     if( debug ) cout << " SAME";
