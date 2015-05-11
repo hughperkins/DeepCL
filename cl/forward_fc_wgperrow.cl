@@ -67,8 +67,10 @@ void kernel forward_fc_workgroup_perrow( const int batchSize,
         + inputPlaneId * gFilterSizeSquared
         + filterRowId * gFilterSize;
     local float *_threadFilterRow = _filterRows + localId * gFilterSize;
-    for( int i = 0; i < gFilterSize; i++ ) {
-        _threadFilterRow[i] = filterRow[i];
+    if( localId < gNumFilters ) {
+        for( int i = 0; i < gFilterSize; i++ ) {
+            _threadFilterRow[i] = filterRow[i];
+        }
     }
     const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;
     // now loop over examples...
@@ -86,13 +88,13 @@ void kernel forward_fc_workgroup_perrow( const int batchSize,
             gInputImageSize );
         barrier(CLK_LOCAL_MEM_FENCE);
         // add up the values in our row...
-        float sum = 0;
-        for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
-            sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];
-        }
         // note: dont activate yet, since need to reduce again
         // output structured as: [n][filter][inputplane][filterrow], need to reduce again after
         if( localId < gNumFilters ) {
+            float sum = 0;
+            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
+                sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];
+            }
             output1[ n * gNumInputPlanes * gNumFilters * gFilterSize
                 + inputPlaneId * gFilterSize
                 + filterId * gNumInputPlanes * gFilterSize + filterRowId ] = sum;

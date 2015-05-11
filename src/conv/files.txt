@@ -20,5 +20,4 @@ ForwardByInputPlane.cpp
 Forward.cpp
 ForwardCpu.cpp
 ForwardFc.cpp
-ForwardFc_workgroupPerFilterPlane.cpp
 LayerDimensions.cpp
