@@ -49,7 +49,7 @@ void kernel forward_filter_matches_inimage( const int batchSize,
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( localId < gOutImageSizeSquared ) {
+        if( localId < gFilterSize ) {
             for( int u = minu; u <= maxu; u++ ) {
                 int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
                 int inputimagerowoffset = inputRow * gUpstreamImageSize;
