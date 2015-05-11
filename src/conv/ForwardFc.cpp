@@ -52,7 +52,8 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     kernel1->localFloats( dim.numFilters * dim.filterSize );
 
     int workgroupSize = dim.numFilters;
-    workgroupSize = ( ( workgroupSize + 32 - 1 ) / 32 ) * 32; // round up to nearest 32
+    // uncommenting next line causes out-of-bounds access currently:
+    // workgroupSize = ( ( workgroupSize + 32 - 1 ) / 32 ) * 32; // round up to nearest 32
     int numWorkgroups = dim.filterSize * dim.numInputPlanes;
 
     kernel1->run_1d( workgroupSize * numWorkgroups, workgroupSize );

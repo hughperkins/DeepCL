@@ -4,43 +4,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// each thread handles one filter, ie globalId as [n][inputplane][filterId]
-// output1: [n][inputplane][filter][filterrow]
-// output2: [n][inputplane][filter]
-kernel void reduce_rows( const int batchSize, global float const *output1, global float*output2 ) {
-    const int globalId = get_global_id(0);
-    const int n = globalId / gNumInputPlanes / gNumFilters;
-    if( n >= batchSize ) {
-        return;
-    }
-    const int filterId = globalId % gNumFilters;
-    float sum = 0;
-    global const float *output1Col = output1 + globalId * gFilterSize;
-    for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
-        sum += output1Col[filterRow];
-    }
-    output2[globalId] = sum;
-}
-
-// each thread handles one filter, ie globalId as [n][filterId]
-// output2: [n][inputplane][filter]
-// output: [n][filter]
-kernel void reduce_inputplanes( const int batchSize, global float const *output2, global float*output ) {
-    const int globalId = get_global_id(0);
-    const int n = globalId / gNumFilters;
-    if( n >= batchSize ) {
-        return;
-    }
-    const int filterId = globalId % gNumFilters;
-    float sum = 0;
-    global const float *output2Col = output2 + globalId * gNumInputPlanes;
-    for( int inputPlane = 0; inputPlane < gNumInputPlanes; inputPlane++ ) {
-        sum += output2Col[inputPlane];
-    }
-    output[globalId] = sum;
-}
-#endif
-
 #ifdef gOutImageSize // for previous tests that dont define it
 // workgroupid [n][outputplane]
 // localid: [filterrow][filtercol]
