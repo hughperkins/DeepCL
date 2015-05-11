@@ -48,8 +48,8 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
     kernel1->output( output1Wrapper );
-    kernel1->localFloats( dim.inputImageSizeSquared );
-    kernel1->localFloats( dim.numFilters * dim.filterSizeSquared );
+    kernel1->localFloats( dim.inputImageSize );
+    kernel1->localFloats( dim.numFilters * dim.filterSize  );
 
     int workgroupSize = dim.numFilters;
     // uncommenting next line causes out-of-bounds access currently:
