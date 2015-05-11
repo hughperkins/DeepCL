@@ -63,7 +63,7 @@ void kernel forward_filter_matches_inimage( const int batchSize,
     }
     // output are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared + localId;
-    if( localId < gOutImageSizeSquared ) {
+    if( localId < gFilterSize ) {
         output[resultIndex ] = sum;
     }
 }
