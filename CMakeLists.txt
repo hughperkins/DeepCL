@@ -112,7 +112,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
- test/testsgd.cpp test/testCLMathWrapper.cpp
+ test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  )
 
 add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
