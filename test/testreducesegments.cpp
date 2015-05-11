@@ -23,7 +23,7 @@ TEST( testreducesegments, basic ) {
     ReduceSegments *reduceSegments = new ReduceSegments( cl );
 
     int segmentLength = 17;
-    int numSegments = 21;
+    int numSegments = 210;
     int N = segmentLength * numSegments;
     float *data = new float[ N * 2 ];
 
