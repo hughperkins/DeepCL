@@ -49,7 +49,7 @@ void kernel forward_filter_matches_inimage( const int batchSize,
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( localId < gFilterSize ) {
+        if( localId < gNumFilters ) {
             for( int u = minu; u <= maxu; u++ ) {
                 int inputRow = outputRow + u + ( gPadZeros ? 0 : gHalfFilterSize );
                 int inputimagerowoffset = inputRow * gUpstreamImageSize;
@@ -63,7 +63,7 @@ void kernel forward_filter_matches_inimage( const int batchSize,
     }
     // output are organized like [imageid][filterid][row][col]
     int resultIndex = ( n * gNumOutPlanes + outPlane ) * gOutImageSizeSquared + localId;
-    if( localId < gFilterSize ) {
+    if( localId < gNumFilters ) {
         output[resultIndex ] = sum;
     }
 }
