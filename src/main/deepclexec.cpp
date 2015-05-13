@@ -217,7 +217,7 @@ void go(Config config) {
     int ignI;
     float ignF;
 
-    if( !WeightsPersister::loadWeights( config.weightsFile, netDef, net, &ignI, &ignI, &ignF, &ignI, &ignF ) ){
+    if( !WeightsPersister::loadWeights( config.weightsFile, string("netDef=")+netDef, net, &ignI, &ignI, &ignF, &ignI, &ignF ) ){
         cout << "Cannot load network weights from weightsFile." << endl;
         return;
     }
@@ -237,39 +237,47 @@ void go(Config config) {
     ofstream fout(config.outputFile, ios::out | ios::binary);
 
     if( ! fin ){
-        cout << "Cannot open input file." << endl;
+        cout << "Cannot open input file: '"<< config.inputFile <<"'" << endl;
         return;
     }
 
     if( ! fout ){
-        cout << "Cannot open output file." << endl;
+        cout << "Cannot open output file: '"<< config.outputFile <<"'" << endl;
         return;
     }
 
 
     cout << "Reading inputs from:  '" << config.inputFile << "'" << endl;
-    cout << "Writing outputs from: '" << config.outputFile << "'" << endl;
+    cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
+    cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
+    cout << "Output image size is: " << net->getOutputSize() * 4 << " B" << endl;
 
     while( true ){
-        fin.read( reinterpret_cast<char *>(inputData), inputCubeSize);
-        if( !fin );
+        fin.read( reinterpret_cast<char *>(inputData), inputCubeSize * 4);
+        if( !fin ){
             break;
+	}
 
         cout << "Read one input cube." << endl;
 
-        fout.write("Bleble\n", 7);
-        if( !fout );
-            break;
-
-            /*
         net->forward(inputData);
 
-        fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize());
+        fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4);
+        if( !fout ){
+            break;
+	}
+
+	fout.flush();
+        cout << "Written output image." << endl;
+
+            /*
+
         if( !fout );
             break;
             */
     }
 
+    cout << "Exiting." << endl;
     delete net;
     delete cl;
 }
