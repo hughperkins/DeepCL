@@ -168,7 +168,8 @@ STATIC bool WeightsPersister::loadConfigString( std::string filepath, std::strin
 
         data[headerSize - 1] = 0; // null-terminate the string, if not already done
 
-        configString = std::string(data + 7 * 4);
+        // + skip the 'netdef='
+        configString = std::string(data + 7 * 4 + 7);
 
         delete [] data;
         return true;
