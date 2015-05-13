@@ -256,25 +256,19 @@ void go(Config config) {
         fin.read( reinterpret_cast<char *>(inputData), inputCubeSize * 4);
         if( !fin ){
             break;
-	}
+        }
 
-        cout << "Read one input cube." << endl;
+	cout << "Read one input cube." << endl;
 
         net->forward(inputData);
 
         fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4);
         if( !fout ){
             break;
-	}
+        }
 
 	fout.flush();
         cout << "Written output image." << endl;
-
-            /*
-
-        if( !fout );
-            break;
-            */
     }
 
     cout << "Exiting." << endl;
