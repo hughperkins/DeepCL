@@ -11,6 +11,7 @@
 #include "Kgsv2Loader.h"
 #include "util/StatefulTimer.h"
 #include "MnistLoader.h"
+// #include "ManifestLoaderv1.h"
 
 #include "loaders/GenericLoader.h"
 
@@ -31,6 +32,9 @@ PUBLICAPI STATIC void GenericLoader::getDimensions( std::string trainFilepath, i
     strncpy( type, headerBytes, 4 );
     type[4] = 0;
     unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
+
+//    ManifestLoaderv1 manifestLoaderv1;
+
     if( string(type) == "mlv2" ) {
 //        cout << "Loading as a Kgsv2 file" << endl;
         Kgsv2Loader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
@@ -39,6 +43,8 @@ PUBLICAPI STATIC void GenericLoader::getDimensions( std::string trainFilepath, i
         NorbLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
     } else if( headerInts[0] == 0x03080000 ) {
         MnistLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
+//    } else if( manifestLoaderv1.isFormatFor( type ) {
+//        manifestLoaderv1.getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
     } else {
         cout << "headstring" << type << endl;
         throw runtime_error("Filetype of " + trainFilepath + " not recognised" );
@@ -70,6 +76,9 @@ STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *image
     strncpy( type, headerBytes, 4 );
     type[4] = 0;
     unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
+
+//    ManifestLoaderv1 manifestLoaderv1;
+
     if( string(type) == "mlv2" ) {
 //        cout << "Loading as a Kgsv2 file" << endl;
         Kgsv2Loader::load( trainFilepath, images, labels, startN, numExamples );
@@ -78,6 +87,8 @@ STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *image
         NorbLoader::load( trainFilepath, images, labels, startN, numExamples );
     } else if( headerInts[0] == 0x03080000 ) {
         MnistLoader::load( trainFilepath, images, labels, startN, numExamples );
+//    } else if( manifestLoaderv1.isFormatFor( type ) {
+//        manifestLoaderv1.load( trainFilepath,images, labels, startN, numExamples );
     } else {
         cout << "headstring" << type << endl;
         throw runtime_error("Filetype of " + trainFilepath + " not recognised" );
