@@ -294,6 +294,26 @@ VIRTUAL void SoftMaxLayer::forward() {
     }
     StatefulTimer::timeCheck("end SoftMaxLayer forward");
 }
+VIRTUAL void SoftMaxLayer::getLabels( int *labels ) { // need to allocate labels array first, and have called 'forward' first
+    if( perPlane ) {
+        throw std::runtime_error("getLabels doesnt work with 'perPlane' option currently, though it wouldnt be hard to add, so ask if you need");
+    }
+    if( imageSize != 1 ) {
+        throw std::runtime_error("perColumn only supported for imagesize 1 for now.  Sit tight :-)  (But please raise an issue to highlight your need)");
+    }
+    for( int n = 0; n < batchSize; n++ ) {
+        float *outputStack = output + n * numPlanes;
+        float highestProb = outputStack[0];
+        int bestPlane = 0;
+        for( int plane = 1; plane < numPlanes; plane++ ) {
+            if( outputStack[plane] > highestProb ) {
+                bestPlane = plane;
+                highestProb = outputStack[plane];
+            }
+        }
+        labels[n] = bestPlane;
+    }
+}
 // this seems to be handled by calcGradInput? So, just to a nop?
 // (cos this layer kind of combines loss layer and a 'normal' propagation layer )
 // certainly, we dont have any weights to update, and we already handled error
