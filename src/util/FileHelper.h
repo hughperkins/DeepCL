@@ -13,6 +13,12 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef _WIN32
+#include "windows.h"
+#else
+#include <sys/stat.h>
+#endif
+
 // give it filepaths with '/', and it will replace them with \\, if WIN32 is defined (ie, on Windows)
 class FileHelper {
 public:
@@ -120,6 +126,26 @@ public:
 #else
         return "/";
 #endif
+    }
+    static void createDirectory( std::string path ) {
+        #ifdef _WIN32
+            if( CreateDirectory( path.c_str() ) == 0 ) {
+                throw std::runtime_error( "Failed to create directory " + path );
+            }
+        #else
+            if( ::mkdir( path.c_str(), 0775 ) == -1  ) {
+                throw std::runtime_error( "Failed to create directory " + path );
+            }
+        #endif
+    }
+    static bool folderExists( std::string path ) {
+        #ifdef _WIN32
+            return GetFileAttributes(path.c_str())) == INVALID_FILE_ATTRIBUTES);
+        #else
+            struct stat status;
+            stat( path.c_str(), &status );
+            return S_ISDIR(status.st_mode);
+        #endif
     }
 };
 

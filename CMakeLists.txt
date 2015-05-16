@@ -115,12 +115,16 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  )
 
+find_package(JPEG REQUIRED)
+link_libraries(${JPEG_LIBRARY})
+
 add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
 add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
 
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp src/loaders/MnistLoader.cpp )
+add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp test/JpegHelper.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp src/loaders/MnistLoader.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
