@@ -11,30 +11,30 @@
 #include <iostream>
 #include <algorithm>
 
-#include "trainers/TrainerState.h"
-
-class EasyCL;
-class CLKernel;
-
-#include "DeepCLDllExport.h"
+#include "EasyCL.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class DeepCL_EXPORT RmspropState : public TrainerState {
+// adds bias, during forward propagation, after convolutional kernel has run
+// but before activation etc
+class AddBias {
 public:
-    const int numWeights;
-
-    float *meanSquare;
-    CLWrapper *meanSquareWrapper;
+    EasyCL *cl; // NOT delete
+    CLKernel *kernel; // NOT delete
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~RmspropState();
-    RmspropState( EasyCL *cl, int numWeights );
+    VIRTUAL ~AddBias();
+    VIRTUAL void forward(
+    int batchSize, int numFilters, int outputImageSize,
+    CLWrapper *outputWrapper,
+    CLWrapper *biasWrapper
+    );
+    AddBias( EasyCL *cl );
 
     // [[[end]]]
 };

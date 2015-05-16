@@ -21,20 +21,23 @@ class CLKernel;
 #define VIRTUAL virtual
 #define STATIC static
 
-class DeepCL_EXPORT RmspropState : public TrainerState {
+class DeepCL_EXPORT AdadeltaState : public TrainerState {
 public:
     const int numWeights;
 
-    float *meanSquare;
-    CLWrapper *meanSquareWrapper;
+    float *sumGradSquared;
+    float *sumUpdateSquared;
+
+    CLWrapper *sumGradSquaredWrapper;
+    CLWrapper *sumUpdateSquaredWrapper;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL ~RmspropState();
-    RmspropState( EasyCL *cl, int numWeights );
+    VIRTUAL ~AdadeltaState();
+    AdadeltaState( EasyCL *cl, int numWeights );
 
     // [[[end]]]
 };

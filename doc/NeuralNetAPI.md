@@ -260,5 +260,5 @@ int testNumRight = batchLearner.test( batchSize, Ntest, testData, testLabels );
 
 ## More details
 
-You can find more details in the Doxygen-generated docs at [doxy docs for 4.x.x](http://hughperkins.github.io/DeepCL/4.x.x/html/annotated.html)
+You can find more details in the Doxygen-generated docs at [doxy docs for 4.x.x](http://deepcl.hughperkins.com/4.x.x/html/annotated.html)
 

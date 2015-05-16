@@ -16,6 +16,7 @@
 #include "trainers/Nesterov.h"
 #include "trainers/Adagrad.h"
 #include "trainers/Rmsprop.h"
+#include "trainers/Adadelta.h"
 
 #include "weights/UniformInitializer.h"
 #include "weights/OriginalInitializer.h"

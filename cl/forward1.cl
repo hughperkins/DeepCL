@@ -4,9 +4,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// expected defines:
-// BIASED (or not)
-
 // notes on non-odd filtersizes:
 // for odd, imagesize and filtersize 3, padZeros = 0:
 // output is a single square
@@ -63,69 +60,54 @@
 //     - loads a whole upstream cube
 //     - loads a whole filter cube
 //     - writes one output...
-void kernel convolve_imagecubes_float2( const int numExamples,
-      const int numInputPlanes, const int numFilters, 
-      const int inputImageSize, const int filterSize, const int padZeros,
-      global const float *images, global const float *filters, 
-#ifdef BIASED
-global const float*biases, 
-#endif
+void kernel convolve_imagecubes_float2(
+    const int numExamples,
+      global const float *inputs, global const float *filters, 
     global float *output ) {
     int globalId = get_global_id(0);
 
-    const int evenPadding = filterSize % 2 == 0 ? 1 : 0;
-
-    int inputImageSizeSquared = inputImageSize * inputImageSize;
-    int outputImageSize = padZeros ? inputImageSize + evenPadding : inputImageSize - filterSize + 1;
-    int outputImageSizeSquared = outputImageSize * outputImageSize;
-    int filterSizeSquared = filterSize * filterSize;
-
-    int outputImage2Id = globalId / outputImageSizeSquared;
-    int exampleId = outputImage2Id / numFilters;
-    int filterId = outputImage2Id % numFilters;
-
-    int inputCubeOffset = exampleId * numInputPlanes * inputImageSizeSquared;
-    int filterCubeOffset = filterId * numInputPlanes * filterSizeSquared;
+    int outputImage2Id = globalId / gOutputImageSizeSquared;
+    int exampleId = outputImage2Id / gNumFilters;
+    int filterId = outputImage2Id % gNumFilters;
 
     // intraimage coords
-    int localid = globalId % outputImageSizeSquared;
-    int outputRow = localid / outputImageSize;
-    int outputCol = localid % outputImageSize;
+    int localid = globalId % gOutputImageSizeSquared;
+    int outputRow = localid / gOutputImageSize;
+    int outputCol = localid % gOutputImageSize;
 
-    int halfFilterSize = filterSize >> 1;
+    global float const*inputCube = inputs + exampleId * gNumInputPlanes * gInputImageSizeSquared;
+    global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;
+
     float sum = 0;
-    //  imagesize = oldimagesize
-    int minm = padZeros ? max( -halfFilterSize, -outputRow ) : -halfFilterSize;
-    int maxm = padZeros ? min( halfFilterSize - evenPadding, outputImageSize - 1 - outputRow  - evenPadding) : halfFilterSize - evenPadding;
-    int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;
-    int maxn = padZeros ? min( halfFilterSize - evenPadding, outputImageSize - 1 - outputCol - evenPadding) : halfFilterSize - evenPadding;
-    int inputPlane = 0;
-//    float probe = 0;
-    while( inputPlane < numInputPlanes ) {
-        int inputImageOffset = inputCubeOffset + inputPlane * inputImageSizeSquared;
-        int filterImageOffset = filterCubeOffset + inputPlane * filterSizeSquared;
-        int m = minm;
-        while( m <= maxm ) {
-            int inputRow = outputRow + m + ( padZeros ? 0 : halfFilterSize );
-            int inputimagerowoffset = inputImageOffset + inputRow * inputImageSize;
-            int filterrowoffset = filterImageOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
-            int n = minn;
-            while( n <= maxn ) {
-                int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );
-                if( exampleId < numExamples ) {
-                    sum += images[ inputimagerowoffset + inputCol] * filters[ filterrowoffset + n ];
+    for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {
+        global float const*inputPlane = inputCube + inputPlaneIdx * gInputImageSizeSquared;
+        global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;
+        for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
+            // trying to reduce register pressure...
+            #if gPadZeros == 1
+                #define inputRowIdx ( outputRow + u )
+            #else
+                #define inputRowIdx ( outputRow + u + gHalfFilterSize )
+            #endif
+            global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;
+            global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+            bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;
+            #pragma unroll
+            for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
+                #if gPadZeros == 1
+                    #define inputColIdx ( outputCol + v )
+                #else
+                    #define inputColIdx ( outputCol + v + gHalfFilterSize )
+                #endif
+                bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputImageSize;
+                if( process ) {
+                        sum += inputRow[inputColIdx] * filterRow[v];
                 }
-                n++;
             }
-            m++;
         }
-        inputPlane++;
     }
 
     if( exampleId < numExamples ) {
-    #ifdef BIASED
-        sum += biases[filterId];
-    #endif
         output[globalId] = sum;
     }
 }

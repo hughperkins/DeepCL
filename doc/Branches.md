@@ -7,7 +7,7 @@
 *Feature/story branches:*
 
 *github pages:*
-* gh-pages: holds the website at http://hughperkins.github.io/DeepCL
+* gh-pages: holds the website at http://hughperkins.github.io/DeepCL (migrating this to http://deepcl.hughperkins.com , to save filling up the git repository with binaries and stuff)
 
 *Jenkins:*
 * jenkins-target: my Jenkins server builds off this branch, so anything I want jenkins to build, I push to this branch, and then trigger a Jenkins build.  eg, for a release

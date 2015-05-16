@@ -90,7 +90,7 @@ TEST( testforward, imagesize2_nopadzeros ) {
 //    int outputImageSize = 0;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 4; i++ ) {
-        Forward *forward = Forward::instanceSpecific( 99, cl,
+        Forward *forward = Forward::instanceSpecific( 3, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ) );
         float *output = forward->forward( batchSize, data, filter1, 0 );  
@@ -398,37 +398,37 @@ TEST( testforward, test3 ) {
     delete cl;
 }
 
-void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn, int instance0, int instance1 ) {
+void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     int inputsSize = N * dim.inputCubeSize;
     int filtersSize = dim.filtersSize;
     int biasSize = dim.numFilters;
-    int inputsAllocated = std::max( inputsSize, 10000 );
-    int filtersAllocated = std::max( filtersSize, 10000 );
-    int biasFiltersAllocated = std::max( biasSize, 10000 );
+    int inputsAllocated = std::max( inputsSize, 0000 );
+    int filtersAllocated = std::max( filtersSize, 0000 );
+    int biasFiltersAllocated = std::max( biasSize, 0000 );
     float *inputs = new float[ inputsAllocated ];
     float *filters = new float[ filtersAllocated ];
     float *biasFilters = new float[ biasFiltersAllocated ];
 
-    memset( inputs, 0, sizeof(float) * inputsAllocated );
-    memset( filters, 0, sizeof(float) * filtersAllocated );
-    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
+//    memset( inputs, 0, sizeof(float) * inputsAllocated );
+//    memset( filters, 0, sizeof(float) * filtersAllocated );
+//    memset( biasFilters, 0, sizeof(float) * biasFiltersAllocated );
 
-//    inputs[0] = 2.0f;
-//    inputs[1] = 4.0f;
-    inputs[4] = 4.0f;
-//    inputs[dim.inputB + 0] = 3.0f;
-    inputs[dim.inputCubeSize + 0] = 3.0f;
+////    inputs[0] = 2.0f;
+////    inputs[1] = 4.0f;
+//    inputs[4] = 4.0f;
+////    inputs[dim.inputB + 0] = 3.0f;
+//    inputs[dim.inputCubeSize + 0] = 3.0f;
 
-//    filters[0] = 3.0f;
-//    filters[1] = 5.0f;
-    filters[4] = 5.0f;
+////    filters[0] = 3.0f;
+////    filters[1] = 5.0f;
+//    filters[4] = 5.0f;
 
-    WeightRandomizer::randomize( inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 0, inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 1, filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 2, biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
     for( int i = 0; i < 8; i++ ) {
         if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
@@ -477,7 +477,7 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, Act
     int numDiff = 0;
     for( int i = 0; i < max( 20, outputSize ); i++ ) {
         if( i < outputSize ) {
-            if( abs( output1[i] - output2[i] ) < 0.000001f || abs( output1[i] - output2[i] ) <= 0.001f * max( abs( output1[i] ), abs( output2[i] ) ) ) {
+            if( abs( output1[i] - output2[i] ) < 0.00001f || abs( output1[i] - output2[i] ) <= 0.001f * max( abs( output1[i] ), abs( output2[i] ) ) ) {
                 if( i < 20 ) {
                     if( debug ) cout << "output[" << i << "]=" << output1[i] << " " << output2[i];
                     if( debug ) cout << " SAME";
@@ -530,9 +530,8 @@ TEST( testforward, compare_0_1_biased_nopad ) {
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
+        .setPadZeros( false ).setBiased( true );
+    compareSpecific( false, N, batchSize, dim, 0, 1 );
 }
 
 TEST( testforward, compare_0_1_biased_pad ) {
@@ -544,9 +543,8 @@ TEST( testforward, compare_0_1_biased_pad ) {
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 0, 1 );
+        .setPadZeros( true ).setBiased( true );
+    compareSpecific( false, N, batchSize, dim, 0, 1 );
 }
 
 TEST( testforward, compare_1_n_biased_nopad ) {
@@ -558,34 +556,30 @@ TEST( testforward, compare_1_n_biased_nopad ) {
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+        .setPadZeros( false ).setBiased( true );
     for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
-        compareSpecific( false, N, batchSize, dim, fn, 1, instance );
+        compareSpecific( false, N, batchSize, dim, 1, instance );
     }
 }
 
 TEST( testforward, compare_1_n_biased_pad ) {
     LayerDimensions dim;
     int batchSize = 4;
-//    int instance0 = 1;
-//    int instance1 = 1;
     int N = 4;
     string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
-        .setPadZeros( true ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
+        .setPadZeros( true ).setBiased( true );
     for( int instance = 2; instance <= 6; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }
         cout << "instance: " << instance << endl;
-        compareSpecific( false, N, batchSize, dim, fn, 1, instance );
+        compareSpecific( false, N, batchSize, dim, 1, instance );
     }
 }
 
@@ -595,25 +589,48 @@ TEST( testforward, compare_1_5_biased_nopad ) { // only need to do nopad, since 
 //    int instance0 = 1;
 //    int instance1 = 1;
     int N = 4;
-    string activationName = "tanh";
     dim.setInputPlanes( 8 ).setInputImageSize(19).setNumFilters( 8 )
         .setFilterSize( 19 )
-        .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 1, 5 );
+        .setPadZeros( false ).setBiased( true );
+    compareSpecific( false, N, batchSize, dim, 1, 5 );
 }
 
 TEST( testforward, compare_1_4_fcscenario ) { // only need to do nopad, since fc wont work with pad
     LayerDimensions dim;
     int batchSize = 4;
     int N = 4;
-    string activationName = "tanh";
     dim.setInputPlanes( 10 ).setInputImageSize(24).setNumFilters( 10 )
         .setFilterSize( 24 )
         .setPadZeros( false ).setBiased( true );    
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( false, N, batchSize, dim, fn, 1, 4 );
+    compareSpecific( false, N, batchSize, dim, 1, 4 );
 }
+
+/* [[[cog
+    for n in [1, 4]:
+        cog.outl(
+            'TEST( testforward, compare_break1_0_{n} ) {{\n'
+            '    LayerDimensions dim;\n'
+            '    dim.setInputPlanes( 1 ).setInputImageSize( 33 ).setNumFilters( 1 ).setFilterSize( 1 )\n'
+            '        .setPadZeros( false ).setBiased( false );\n'
+            '    compareSpecific( false, 1, 1, dim, 0, {n} );\n'
+            '}}\n'.format(
+                n=n))
+*///]]]
+TEST( testforward, compare_break1_0_1 ) {
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputImageSize( 33 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setPadZeros( false ).setBiased( false );
+    compareSpecific( false, 1, 1, dim, 0, 1 );
+}
+
+TEST( testforward, compare_break1_0_4 ) {
+    LayerDimensions dim;
+    dim.setInputPlanes( 1 ).setInputImageSize( 33 ).setNumFilters( 1 ).setFilterSize( 1 )
+        .setPadZeros( false ).setBiased( false );
+    compareSpecific( false, 1, 1, dim, 0, 4 );
+}
+
+// [[[end]]]
 
 //TEST( SLOW_testforward, comparespecific ) {
 //    LayerDimensions dim;
@@ -649,15 +666,10 @@ TEST( testforward, compare_1_4_fcscenario ) { // only need to do nopad, since fc
 TEST( SLOW_testforward, compare_args ) {
     LayerDimensions dim;
     int batchSize = 128;
-//    int imageSize = 19;
-//    int filterSize = 7;
-//    int inputPlanes = 64;
-//    int numFilters = 64;
     int instance0 = 1;
     int instance1 = 3;
     int N = 128;
     bool debug = false;
-    string activationName = "tanh";
     dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 )
         .setFilterSize( 7 )
         .setPadZeros( true ).setBiased( false );    
@@ -668,12 +680,33 @@ TEST( SLOW_testforward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::arg( "debug", &debug );
     TestArgsParser::arg( "batchsize", &batchSize );
-    TestArgsParser::arg( "activation", &activationName );
     TestArgsParser::go();
     dim.deriveOthers();
 
-    ActivationFunction *fn = ActivationFunction::fromName( activationName );
-    compareSpecific( debug, N, batchSize, dim, fn, instance0, instance1 );
+    compareSpecific( debug, N, batchSize, dim, instance0, instance1 );
+}
+
+TEST( testforward, comparespecific_break2 ) { // this breaks on v5.7.0 for example
+    LayerDimensions dim;
+    int batchSize = 4;
+    int instance0 = 1;
+    int instance1 = 5;
+    int N = 4;
+    bool debug = false;
+    dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 )
+        .setFilterSize( 19 )
+        .setPadZeros( false ).setBiased( false );    
+
+    TestArgsParser::arg( "n", &N );
+    DimFromArgs::arg( &dim );
+    TestArgsParser::arg( "instance0", &instance0 );
+    TestArgsParser::arg( "instance1", &instance1 );
+    TestArgsParser::arg( "debug", &debug );
+    TestArgsParser::arg( "batchsize", &batchSize );
+    TestArgsParser::go();
+    dim.deriveOthers();
+
+    compareSpecific( debug, N, batchSize, dim, instance0, instance1 );    
 }
 
 //TEST( SLOW_testforward, comparespecific_kgsgo_64c7mini ) {
@@ -805,7 +838,7 @@ TEST( testforward, softmax_byplane ) {
     delete cl;
 }
 
-void testPerf( int instance, int N, int batchSize, LayerDimensions dim, ActivationFunction *fn ) {
+void testPerf( int instance, int N, int batchSize, LayerDimensions dim ) {
     cout << dim.buildOptionsString() << endl;  
 
     int inputsSize = batchSize * dim.inputCubeSize;
@@ -847,7 +880,7 @@ TEST( SLOW_testforward, perf_kgsgo_fc500 ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 500 ).setFilterSize( 19 )
         .setPadZeros( false ).setBiased( true );  
-    testPerf( -1, 128, batchSize, dim, new TanhActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_firstconvlayer ) {
@@ -855,7 +888,7 @@ TEST( SLOW_testforward, perf_mnist_firstconvlayer ) {
     LayerDimensions dim;
     dim.setInputPlanes( 1 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_intlayers_128ex ) {
@@ -863,7 +896,7 @@ TEST( SLOW_testforward, perf_mnist_intlayers_128ex ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_intlayers_1024ex ) {
@@ -871,7 +904,7 @@ TEST( SLOW_testforward, perf_mnist_intlayers_1024ex ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_mnist_finallayer ) {
@@ -879,7 +912,7 @@ TEST( SLOW_testforward, perf_mnist_finallayer ) {
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 10 ).setFilterSize( 28 )
         .setPadZeros( false ).setBiased( true );    
-    testPerf( -1, 128, batchSize, dim, new ReluActivation() );
+    testPerf( -1, 128, batchSize, dim );
 }
 
 TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
@@ -894,6 +927,19 @@ TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
     TestArgsParser::arg( "n", &N );
     TestArgsParser::arg( "batchsize", &batchSize );
     TestArgsParser::go();
-    testPerf( instance, N, batchSize, dim, new TanhActivation() );
+    testPerf( instance, N, batchSize, dim );
+}
+
+TEST( SLOW_testforward, soumith2 ) {
+    int batchSize = 128;
+    LayerDimensions dim;
+    int instance = 4;
+    bool biased = true;
+    TestArgsParser::arg( "instance", &instance );
+    TestArgsParser::arg( "biased", &biased );
+    TestArgsParser::go();
+    dim.setInputPlanes( 64 ).setInputImageSize( 64 ).setNumFilters( 128 ).setFilterSize( 9 )
+        .setPadZeros( false ).setBiased( biased );  
+    testPerf( instance, 128, batchSize, dim );
 }
 

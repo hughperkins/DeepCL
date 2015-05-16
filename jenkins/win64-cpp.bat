@@ -14,7 +14,7 @@ if errorlevel 1 exit /B 1
 
 rem copy down the redistributables (maybe they're on the server somewhere?)
 powershell Set-ExecutionPolicy unrestricted
-powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/vc2010redist.zip', 'vc2010redist.zip')
+powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
 if errorlevel 1 exit /B 1
 
 "c:\program files\7-Zip\7z.exe" x vc2010redist.zip

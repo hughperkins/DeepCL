@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 #message( "[${CMAKE_SYSTEM_NAME}]" )
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
@@ -49,7 +49,7 @@ endforeach()
 #message("deepcl_sources ${deepcl_sources}")
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
@@ -72,7 +72,7 @@ endif()
 
 if( GIT_FOUND )
 add_custom_command( 
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
     COMMAND git submodule update --init --force --recursive
 )
 add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
@@ -112,7 +112,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
- test/testsgd.cpp test/testCLMathWrapper.cpp
+ test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  )
 
 add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
@@ -135,12 +135,12 @@ target_link_libraries( gtest pthread)
 else()
 add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
-target_include_directories( gtest PRIVATE thirdparty/gtest )
+include_directories( thirdparty/gtest )
 
 add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
 target_link_libraries( unittests gtest )
-target_include_directories( unittests PRIVATE thirdparty/gtest )
+# target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
@@ -152,7 +152,7 @@ target_link_libraries( unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
-target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
+# target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 

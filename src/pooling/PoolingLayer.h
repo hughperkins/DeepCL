@@ -39,8 +39,8 @@ public:
     CLWrapper *selectorsWrapper;
     CLWrapper *gradInputWrapper;
 
-    bool outputCopiedToHost;
-    bool gradInputCopiedToHost;
+//    bool outputCopiedToHost;
+//    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;

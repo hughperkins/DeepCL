@@ -1,10 +1,14 @@
 #pragma once
 
-#include "Forward.h"
+#include "conv/Forward.h"
+
+class AddBias;
 
 class Forward4 : public Forward {
 public:
     CLKernel *kernel;
+    AddBias *addBias;
+
     int workgroupSize;
     int pixelsPerThread;
 

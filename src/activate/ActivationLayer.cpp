@@ -30,8 +30,8 @@ ActivationLayer::ActivationLayer( EasyCL *cl, Layer *previousLayer, ActivationMa
         gradInput(0),
         outputWrapper(0),
         gradInputWrapper(0),
-        outputCopiedToHost(false),
-        gradInputCopiedToHost(false),
+//        outputCopiedToHost(false),
+//        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
     if( inputImageSize == 0 ){
@@ -131,9 +131,9 @@ VIRTUAL int ActivationLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *ActivationLayer::getOutput() {
-    if( !outputCopiedToHost ) {
+    if( outputWrapper->isDeviceDirty() ) {
         outputWrapper->copyToHost();
-        outputCopiedToHost = true;
+//        outputCopiedToHost = true;
     }
 //    cout << "getOutput output[0] " << output[0] << " output[1] " << output[1] << endl;
     return output;
@@ -173,9 +173,9 @@ VIRTUAL int ActivationLayer::getBiasSize() const {
     return 0;
 }
 VIRTUAL float *ActivationLayer::getGradInput() {
-    if( !gradInputCopiedToHost ) {
+    if( gradInputWrapper->isDeviceDirty() ) {
         gradInputWrapper->copyToHost();
-        gradInputCopiedToHost = true;
+//        gradInputCopiedToHost = true;
     }
     return gradInput;
 }
@@ -192,7 +192,7 @@ VIRTUAL void ActivationLayer::forward() {
         inputWrapper->copyToDevice();
     }
     activationForwardImpl->forward( batchSize, inputWrapper, outputWrapper );
-    outputCopiedToHost = false;
+//    outputCopiedToHost = false;
     if( !previousLayer->hasOutputWrapper() ) {
         delete inputWrapper;
     }
@@ -219,7 +219,7 @@ VIRTUAL void ActivationLayer::backward() {
     }
 
     activationBackpropImpl->backward( batchSize, outputWrapper, gradOutputWrapper, gradInputWrapper );
-    gradInputCopiedToHost = false;
+//    gradInputCopiedToHost = false;
 
 //    if( !previousLayer->hasOutputWrapper() ) {
 //        delete imagesWrapper;

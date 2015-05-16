@@ -8,9 +8,12 @@
 
 #include "Forward.h"
 
+class AddBias;
+
 class Forward1 : public Forward {
 public:
     CLKernel *kernel;
+    AddBias *addBias;
 
     // [[[cog
     // import cog_addheaders

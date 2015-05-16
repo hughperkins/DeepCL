@@ -6,7 +6,8 @@
 
 #include <algorithm>
 
-#include "Forward3.h"
+#include "conv/Forward3.h"
+#include "conv/AddBias.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
 
@@ -19,65 +20,39 @@ using namespace std;
 
 VIRTUAL Forward3::~Forward3() {
     delete kernel;
-    delete repeatedAdd;
-//    delete activate;
+    delete addBias;
 }
 VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("Forward3::forward begin");
-    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
-    int maxglobalId = 0;
+//    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+//    int maxglobalId = 0;
 
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-//    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
-//    cout << "square(dim.outputImageSize) " << square( dim.outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
 
     int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
-//    cout << "forward3 numworkgroups " << numWorkgroups << " globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
+
     StatefulTimer::timeCheck("Forward3::forward after kernel1");
 
-//    {
-//        outputWrapper->copyToHost();
-//        float const *output = reinterpret_cast< float const *>( outputWrapper->getHostArray() );
-//        for( int i = 0; i < min( 64, outputWrapper->size() ); i++ ) {
-//            cout << "output[" << i << "]=" << output[i] << endl;
-//        }
-//    }
-
     if( dim.biased ) {
-        repeatedAdd->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-            ->in( dim.numFilters )
-            ->in( dim.outputImageSize * dim.outputImageSize )
-            ->inout( outputWrapper )->in( biasWrapper );
-        maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
-        numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-        repeatedAdd->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-        cl->finish();
-        StatefulTimer::timeCheck("Forward3::forward after repeatedAdd");
+        addBias->forward( batchSize, dim.numFilters, dim.outputImageSize,
+                          outputWrapper, biasWrapper );
     }
-
-//    activate->in( batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize )
-//        ->inout( outputWrapper );
-//    maxglobalId = batchSize * dim.numFilters * dim.outputImageSize * dim.outputImageSize;
-//    numWorkgroups = ( maxglobalId + maxWorkgroupSize - 1 ) / maxWorkgroupSize;
-//    activate->run_1d( numWorkgroups * maxWorkgroupSize, maxWorkgroupSize );
-//    cl->finish();
-//    StatefulTimer::timeCheck("Forward3::forward after activate");
-
-    StatefulTimer::timeCheck("Forward3::forward after call forward");
 }
 Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
+
+    addBias = new AddBias( cl );
 
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("cannot use forward3, since outputimagesize * outputimagesize > maxworkgroupsize");
@@ -89,8 +64,7 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/forward3.cl", "forward_3_by_n_outplane", 'options' )
-    // stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
-    // # stringify.write_kernel2( "activate", "cl/activate.cl", "activate", 'options' )
+    // # stringify.write_kernel2( "repeatedAdd", "cl/per_element_add.cl", "repeated_add", 'options' )
     // ]]]
     // generated using cog, from cl/forward3.cl:
     const char * kernelSource =  
@@ -184,42 +158,6 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "forward_3_by_n_outplane", options, "cl/forward3.cl" );
-    // generated using cog, from cl/per_element_add.cl:
-    const char * repeatedAddSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "// adds source to target\n" 
-    "// tiles source as necessary, according to tilingSize\n" 
-    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[globalId % tilingSize];\n" 
-    "}\n" 
-    "\n" 
-    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
-    "}\n" 
-    "\n" 
-    "";
-    repeatedAdd = cl->buildKernelFromString( repeatedAddSource, "repeated_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
 }
 
