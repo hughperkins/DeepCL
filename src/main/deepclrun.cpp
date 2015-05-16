@@ -9,7 +9,7 @@
 //#include <algorithm>
 
 #include "DeepCL.h"
-#include "test/Sampler.h"  // TODO: REMOVE THIS
+//#include "test/Sampler.h"  // TODO: REMOVE THIS
 
 using namespace std;
 
@@ -378,10 +378,10 @@ void go(Config config) {
                 WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0 );
                 weightsWriteTimer.lap();
             }
-            Sampler::sampleFloatWrapper( "conv weights", net->getLayer(6)->getWeightsWrapper() );
-            Sampler::sampleFloatWrapper( "fc weights", net->getLayer(11)->getWeightsWrapper() );
-            Sampler::sampleFloatWrapper( "conv bias", net->getLayer(6)->getBiasWrapper() );
-            Sampler::sampleFloatWrapper( "fc bias", net->getLayer(11)->getBiasWrapper() );
+//            Sampler::sampleFloatWrapper( "conv weights", net->getLayer(6)->getWeightsWrapper() );
+//            Sampler::sampleFloatWrapper( "fc weights", net->getLayer(11)->getWeightsWrapper() );
+//            Sampler::sampleFloatWrapper( "conv bias", net->getLayer(6)->getBiasWrapper() );
+//            Sampler::sampleFloatWrapper( "fc bias", net->getLayer(11)->getBiasWrapper() );
         } else {
             if( config.writeWeightsInterval > 0 ) {
 //                cout << "batch done" << endl;

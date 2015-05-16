@@ -10,7 +10,7 @@
 
 #include "DeepCL.h"
 #include "loss/SoftMaxLayer.h"
-#include "test/Sampler.h"
+//#include "test/Sampler.h"
 
 using namespace std;
 
@@ -217,8 +217,8 @@ void go(Config config) {
 
 //    float *weights = net->getWeights();
 //    float *bias = net->getBias();
-    Sampler::sampleFloatWrapper( "weights", net->getLayer(6)->getWeightsWrapper() );
-    Sampler::sampleFloatWrapper( "weights", net->getLayer(11)->getWeightsWrapper() );
+//    Sampler::sampleFloatWrapper( "weights", net->getLayer(6)->getWeightsWrapper() );
+//    Sampler::sampleFloatWrapper( "weights", net->getLayer(11)->getWeightsWrapper() );
 
     net->print();  // this output should match what you trained on  - Hugh
     net->setBatchSize(config.batchSize);  // 1? that cant be right?  changed to read from config  - Hugh
