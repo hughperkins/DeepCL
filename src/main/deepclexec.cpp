@@ -10,6 +10,7 @@
 
 #include "DeepCL.h"
 #include "loss/SoftMaxLayer.h"
+#include "test/Sampler.h"
 
 using namespace std;
 
@@ -131,11 +132,6 @@ void go(Config config) {
     // ## Init the normalizer
     //
 
-    // note: ideally, normalization should be defined during the training, not during testing
-    // ie, we should probably output this to the weights file or something
-    // anyway, will be good enough I'm sure, for most things, to use the testing file for normalization
-    // - Hugh
-    
     float translate;
     float scale;
     if( !config.loadOnDemand ) {
@@ -219,8 +215,14 @@ void go(Config config) {
         return;
     }
 
+//    float *weights = net->getWeights();
+//    float *bias = net->getBias();
+    Sampler::sampleFloatWrapper( "weights", net->getLayer(6)->getWeightsWrapper() );
+    Sampler::sampleFloatWrapper( "weights", net->getLayer(11)->getWeightsWrapper() );
+
     net->print();  // this output should match what you trained on  - Hugh
     net->setBatchSize(config.batchSize);  // 1? that cant be right?  changed to read from config  - Hugh
+    cout << "batchSize: " << config.batchSize << endl;
 
 
     //
@@ -254,7 +256,7 @@ void go(Config config) {
 
 
     cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
-    cout << "Output image size is: " << net->getOutputSize() * 4 << " B" << endl;
+    cout << "Output image size is: " << net->getOutputCubeSize() * 4 << " B" << endl;
 
     int *labels = new int[config.batchSize];
     int n = 0;
@@ -288,16 +290,16 @@ void go(Config config) {
             softMaxLayer->getLabels(labels);
 //            fout.write( reinterpret_cast<const char *>(labels), config.batchSize * 4);
             if( n == 0 ) {
-                for( int i = 0; i < config.batchSize; i++ ) {
+                for( int i = 0; i < config.batchSize / 4; i++ ) {
                     cout << "out[" << i << "]=" << labels[i] << endl;
                 }
             }
             FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(labels), n * 4, config.batchSize * 4);
-            n += config.batchSize;
-            if( n + config.batchSize > totalN ) {
-                cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
-                break;
-            }
+        }
+        n += config.batchSize;
+        if( ( n + config.batchSize > totalN ) && ( n != totalN ) ) {
+            cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
+            break;
         }
 //        if( !fout ){
 //            break;
