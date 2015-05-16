@@ -69,9 +69,22 @@ public:
 //        return data;
     }
 
-    static void writeBinary( std::string filepath, char*data, long filesize ) {
+    static void writeBinary( std::string filepath, char const*data, long filesize ) {
         std::string localPath = localizePath( filepath );
         std::ofstream file( localPath.c_str(), std::ios::out | std::ios::binary );
+        if(!file.is_open()) {
+             throw std::runtime_error("cannot open file " + localPath );
+        }
+        if( !file.write( (char *)data, filesize ) ) {
+            throw std::runtime_error("failed to write to " + localPath );
+        }
+        file.close();
+    }
+
+    static void writeBinaryChunk( std::string filepath, char const*data, long startPos, long filesize ) {
+        std::string localPath = localizePath( filepath );
+        std::ofstream file( localPath.c_str(), std::ios::out | std::ios::binary );
+        file.seekp( startPos, std::ios::beg );
         if(!file.is_open()) {
              throw std::runtime_error("cannot open file " + localPath );
         }

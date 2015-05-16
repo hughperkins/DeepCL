@@ -120,11 +120,12 @@ add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
 
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
+add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp src/loaders/MnistLoader.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
-    add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/PatchExtractor.cpp )
-    add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/Translator.cpp )
+    add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/patches/PatchExtractor.cpp )
+    add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/patches/Translator.cpp )
     add_executable( testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp )
 endif(LIBPNGPP_AVAILABLE)
 

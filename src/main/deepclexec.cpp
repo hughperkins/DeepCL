@@ -9,6 +9,7 @@
 //#include <algorithm>
 
 #include "DeepCL.h"
+#include "loss/SoftMaxLayer.h"
 
 using namespace std;
 
@@ -29,8 +30,9 @@ using namespace std;
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('batchSize', 'int', 'batch size', 128, True),
 
-        ('inputFile',  'string', 'file to read inputs from', '', True),
-        ('outputFile', 'string', 'file to write outputs to', '', True)
+        ('inputFile',  'string', 'file to read inputs from', 'input.dat', True),
+        ('outputFile', 'string', 'file to write outputs to', 'output.dat', True),
+        ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False)
     ]
 *///]]]
 // [[[end]]]
@@ -44,20 +46,19 @@ public:
     */// ]]]
     // generated using cog:
     int gpuIndex;
-    int batchSize;
     string dataDir;
     string trainFile;
     string dataset;
     string weightsFile;
     string normalization;
     float normalizationNumStds;
-    int loadOnDemand;
     int normalizationExamples;
+    int loadOnDemand;
+    int batchSize;
     string inputFile;
     string outputFile;
+    int writeIntLabels;
     // [[[end]]]
-
-    string netDef;
 
     Config() {
         /* [[[cog
@@ -83,14 +84,13 @@ public:
         weightsFile = "weights.dat";
         normalization = "stddev";
         normalizationNumStds = 2.0f;
-        loadOnDemand = 0;
         normalizationExamples = 10000;
+        loadOnDemand = 0;
         batchSize = 128;
-        inputFile = "";
-        outputFile = "";
+        inputFile = "input.dat";
+        outputFile = "output.dat";
+        writeIntLabels = 0;
         // [[[end]]]
-
-        netDef = "";
     }
 };
 
@@ -130,6 +130,11 @@ void go(Config config) {
     //
     // ## Init the normalizer
     //
+
+    // note: ideally, normalization should be defined during the training, not during testing
+    // ie, we should probably output this to the weights file or something
+    // anyway, will be good enough I'm sure, for most things, to use the testing file for normalization
+    // - Hugh
     
     float translate;
     float scale;
@@ -169,16 +174,6 @@ void go(Config config) {
     }
     cout << " image norm translate " << translate << " scale " << scale << endl;
 
-    // wont be necessary anymore
-    if( trainData != 0 ) {
-        delete[] trainData;
-        trainData = 0;
-    }
-    if( trainLabels != 0 ) {
-        delete[] trainLabels;
-        trainLabels = 0;
-    }
-    
     //
     // ## Set up the Network
     //
@@ -194,12 +189,14 @@ void go(Config config) {
     net = new NeuralNet(cl);
 
     // just use the default for net creation, weights are overriden from the weightsFile
+    // yes, thats fine - Hugh
     WeightsInitializer *weightsInitializer = new OriginalInitializer();
 
     if( config.weightsFile == "" ) {
         cout << "weightsFile not specified" << endl;
         return;
     }
+
     string netDef;
     if ( ! WeightsPersister::loadConfigString(config.weightsFile, netDef)){
         cout << "Cannot load network definition from weightsFile." << endl;
@@ -222,56 +219,99 @@ void go(Config config) {
         return;
     }
 
-    net->print();
-    net->setBatchSize(1);
+    net->print();  // this output should match what you trained on  - Hugh
+    net->setBatchSize(config.batchSize);  // 1? that cant be right?  changed to read from config  - Hugh
 
-    delete weightsInitializer;
 
     //
     // ## All is set up now
     // 
 
 
-    float * inputData = new float[ (long) inputCubeSize];
-    ifstream fin(config.inputFile, ios::in | ios::binary);
-    ofstream fout(config.outputFile, ios::out | ios::binary);
-
-    if( ! fin ){
-        cout << "Cannot open input file: '"<< config.inputFile <<"'" << endl;
-        return;
+    // ideally, this could go in GenericReader somehow I reckon, but putting it here is ok for now :-)   - Hugh
+    // I'm going to test with mnist, since it's small and gives nice results, and fast :-)   - Hugh
+    float * inputData = new float[ inputCubeSize * config.batchSize];
+    if( config.dataDir != "" ) {
+        config.inputFile = config.dataDir + "/" + config.inputFile;
+        config.outputFile = config.dataDir + "/" + config.outputFile;
     }
-
-    if( ! fout ){
-        cout << "Cannot open output file: '"<< config.outputFile <<"'" << endl;
-        return;
-    }
-
-
     cout << "Reading inputs from:  '" << config.inputFile << "'" << endl;
-    cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
     cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
+//    ifstream fin(config.inputFile, ios::in | ios::binary);
+//    ofstream fout(config.outputFile, ios::out | ios::binary);
+    // sorry I dont know how to use ifstream, so I'm going to use filehelper, cos I know it works :-)   - Hugh
+   // ( but re-wrtiing it back to use fstream is probably a good idea )
+
+//    if( ! fin ){
+//        cout << "Cannot open input file: '"<< config.inputFile <<"'" << endl;
+//        return;
+//    }
+
+//    if( ! fout ){
+//        cout << "Cannot open output file: '"<< config.outputFile <<"'" << endl;
+//        return;
+//    }
+
+
+    cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
     cout << "Output image size is: " << net->getOutputSize() * 4 << " B" << endl;
 
-    while( true ){
-        fin.read( reinterpret_cast<char *>(inputData), inputCubeSize * 4);
-        if( !fin ){
-            break;
+    int *labels = new int[config.batchSize];
+    int n = 0;
+    long fileSize = FileHelper::getFilesize( config.inputFile );
+    int totalN = fileSize / inputCubeSize / 4;
+    cout << "totalN: " << totalN << endl;
+    while( n < totalN ){
+//        fin.read( reinterpret_cast<char *>(inputData), config.batchSize * inputCubeSize * 4);
+        FileHelper::readBinaryChunk( reinterpret_cast<char *>(inputData), config.inputFile, (long)n * inputCubeSize * 4, (long)inputCubeSize * config.batchSize * 4 );
+//        if( !fin ){
+//            break;
+//        }
+
+    	cout << "Read " << config.batchSize << " input cubes." << endl;
+
+        net->forward(inputData);  // seems ok...   - Hugh
+
+        if( !config.writeIntLabels ) {
+            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(net->getOutput()), 
+                n * 4 * net->getOutputCubeSize(),
+                config.batchSize * 4 * net->getOutputCubeSize() );
+//            fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
+        } else {
+            // calculate the labels somehow...
+            // ... added 'getLabels' to SoftMaxLayer
+            SoftMaxLayer *softMaxLayer = dynamic_cast< SoftMaxLayer *>(net->getLastLayer() );
+            if( softMaxLayer == 0 ) {
+                cout << "must have softmaxlayer as last layer, if want to output labels" << endl;
+                return;
+            }
+            softMaxLayer->getLabels(labels);
+//            fout.write( reinterpret_cast<const char *>(labels), config.batchSize * 4);
+            if( n == 0 ) {
+                for( int i = 0; i < config.batchSize; i++ ) {
+                    cout << "out[" << i << "]=" << labels[i] << endl;
+                }
+            }
+            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(labels), n * 4, config.batchSize * 4);
+            n += config.batchSize;
+            if( n + config.batchSize > totalN ) {
+                cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
+                break;
+            }
         }
+//        if( !fout ){
+//            break;
+//        }
 
-	cout << "Read one input cube." << endl;
-
-        net->forward(inputData);
-
-        fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4);
-        if( !fout ){
-            break;
-        }
-
-	fout.flush();
-        cout << "Written output image." << endl;
+//	fout.flush();
+//        cout << "Written output image." << endl;
     }
 
     cout << "Exiting." << endl;
+
+    delete[] labels;
+    delete weightsInitializer; // I'm not entirely trusting of my delete sections, so let's put 
+                               // deletes at the end, here  :-P - Hugh
     delete net;
     delete cl;
 }
@@ -303,8 +343,12 @@ void printUsage( char *argv[], Config config ) {
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
-    cout << "    inputFile=[path to file with input data (e.g. a named pipe)] (" << config.inputFile << ")" << endl;
-    cout << "    outputFile=[path to file to write output data to (e.g. a named pipe)] (" << config.outputFile << ")" << endl;
+    cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
+    cout << "    inputfile=[file to read inputs from] (" << config.inputFile << ")" << endl;
+    cout << "    outputfile=[file to write outputs to] (" << config.outputFile << ")" << endl;
+    cout << "" << endl; 
+    cout << "unstable, might change within major version:" << endl; 
+    cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
     // [[[end]]]
 }
 
@@ -350,14 +394,18 @@ int main( int argc, char *argv[] ) {
                 config.normalization = (value);
             } else if( key == "normalizationnumstds" ) {
                 config.normalizationNumStds = atof(value);
-            } else if( key == "loadondemand" ) {
-                config.loadOnDemand = atoi(value);
             } else if( key == "normalizationexamples" ) {
                 config.normalizationExamples = atoi(value);
+            } else if( key == "loadondemand" ) {
+                config.loadOnDemand = atoi(value);
+            } else if( key == "batchsize" ) {
+                config.batchSize = atoi(value);
             } else if( key == "inputfile" ) {
                 config.inputFile = (value);
             } else if( key == "outputfile" ) {
                 config.outputFile = (value);
+            } else if( key == "writeintlabels" ) {
+                config.writeIntLabels = atoi(value);
             // [[[end]]]
             } else {
                 cout << endl;
