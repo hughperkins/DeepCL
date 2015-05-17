@@ -6,7 +6,7 @@ Cog is an excellent generator framework
   * the python to generate code is in the first section, up as far as `]]]`
   * ... and the generated code is in the section section, up to `[[[end]]]`
 * it's possible to import python modules, and call those
-  * currently, any python module in sub-directory `cog-batteries` are directly importable
+  * currently, any python module in sub-directory `cog-batteries` can be directly imported
 
 Then, a bunch of modules have been created , in `cog-batteries` directory, to reduce the amount of manual maintenance otherwise necessary.  This means I can do all my coding in gedit and xfce4-terminal, and not feel the need to install Kdevelop et al :-)
 
