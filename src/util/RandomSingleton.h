@@ -21,49 +21,33 @@
 #include <chrono>
 #endif
 
+#include "DeepCLDllExport.h"
+
+#define VIRTUAL virtual
+#define STATIC static
+
 // singleton version of mt19937, so we seed it once, based on current time
 // and then keep getting values out of it, even if used from different places
 // and classes
 // probably not threadsafe
 // constructor is public, so we can override it, for testing, if we want
-class RandomSingleton {
-public:
+class DeepCL_EXPORT RandomSingleton {
+    private:
     MT19937 myrandom;
-    RandomSingleton() {
-        int time = 0;
-        #ifdef NOCHRONO
-        {
-            time_t thistime;
-            ::time(&thistime);
-            time = (int)thistime;
-        }
-        #else
-        {
-            std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
-            time = static_cast<int>( std::chrono::duration_cast<std::chrono::milliseconds> ( thistime.time_since_epoch() ).count() );
-        }
-        #endif
-        srand(time);
-        unsigned long seed = ( rand() << 8 ) + rand();
-        myrandom.seed( seed );
-    }
-    static RandomSingleton *instance() {
-        static RandomSingleton *thisinstance = new RandomSingleton();
-        return thisinstance; // assume single-threaded, which... we are :-)
-    }
-//    void testingonly_setInstance( RandomSingleton *testInstance ) {
-//        _instance = testinstance;
-//    }
-    virtual float _uniform() {
-        return myrandom() / (float)myrandom.max();
-    }
-    static float uniform() {
-        return instance()->_uniform();
-    }
-    static int uniformInt( int minValueInclusive, int maxValueInclusive ) {
-        return ( instance()->myrandom() % 
-            ( maxValueInclusive - minValueInclusive + 1 ) )
-         + minValueInclusive;
-    }
+
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.addv2()
+    // ]]]
+    // generated, using cog:
+
+    public:
+    RandomSingleton();
+    STATIC RandomSingleton *instance();
+    VIRTUAL float _uniform();
+    STATIC float uniform();
+    STATIC int uniformInt( int minValueInclusive, int maxValueInclusive );
+
+    // [[[end]]]
 };
 

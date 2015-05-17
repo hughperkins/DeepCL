@@ -7,7 +7,6 @@
 #pragma once
 
 #include <cstdio>
-#include <stdexcept>
 #include <string>
 
 #define VIRTUAL virtual
@@ -16,7 +15,7 @@
 #include "DeepCLDllExport.h"
 
 // give it filepaths with '/', and it will replace them with \\, if WIN32 is defined (ie, on Windows)
-class FileHelper {
+class DeepCL_EXPORT FileHelper {
 
     // [[[cog
     // import cog_addheaders
