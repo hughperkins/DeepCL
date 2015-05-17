@@ -72,6 +72,7 @@ target_link_libraries( gpuinfo dl )
 endif()
 
 add_library( DeepCL SHARED ${deepcl_sources} )
+set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
 
 execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
@@ -127,8 +128,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  )
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
-    add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/JpegHelper.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp
-        src/loaders/MnistLoader.cpp )
+    add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/stringhelper.cpp src/loaders/MnistLoader.cpp )
 endif(LIBJPEG_AVAILABLE)
 
 add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
@@ -136,7 +136,7 @@ add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
 
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
-add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp src/loaders/MnistLoader.cpp )
+add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
