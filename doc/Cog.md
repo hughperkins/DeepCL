@@ -21,7 +21,7 @@ This is used to fill in the class declarations, in the header file, .h, based on
 ## cog_fluent.py
 
 * Used to construct bean-type classes, whose values can be changed in fluent style, like:
-```
+```c++
 MyConfig *config = new MyConfig()->setHeight(20)->setWidth(10)->setColor('red');
 ```
 
