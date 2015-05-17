@@ -13,12 +13,14 @@
 
 #include "EasyCL.h"
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
 // adds bias, during forward propagation, after convolutional kernel has run
 // but before activation etc
-class ReduceSegments {
+class DeepCL_EXPORT ReduceSegments {
 public:
     EasyCL *cl; // NOT delete
     CLKernel *kernel; // NOT delete

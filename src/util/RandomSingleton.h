@@ -7,8 +7,8 @@
 #pragma once
 
 #include <random>
-
-#include "mt19937defs.h"
+#include "DeepCLDllExport.h"
+#include "util/mt19937defs.h"
 
 #ifdef _MSC_VER // apply to all msvc versions, so dont have to retest on different msvc versions
 #define TR1RANDOM

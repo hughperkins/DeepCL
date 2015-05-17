@@ -12,7 +12,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLIC STATIC void JpegHelper::write( string filename, int planes, int width, int height, unsigned char *values ) {
+PUBLIC STATIC void JpegHelper::write( std::string filename, int planes, int width, int height, unsigned char *values ) {
     unsigned char *image_buffer = new unsigned char[width * height * planes];
 //    for( int i = 0 ; i < 28 *28 *3; i++ ) {
 //=        image_buffer[i] = i * 255 / 28 * 28 / 3;
@@ -74,7 +74,7 @@ PUBLIC STATIC void JpegHelper::write( string filename, int planes, int width, in
     delete[] image_buffer;
 }
 
-PUBLIC STATIC void JpegHelper::read( string filename, int planes, int width, int height, unsigned char *values ) {
+PUBLIC STATIC void JpegHelper::read( std::string filename, int planes, int width, int height, unsigned char *values ) {
     unsigned char *image_buffer = new unsigned char[width * height * planes];
 
     struct jpeg_decompress_struct cinfo;

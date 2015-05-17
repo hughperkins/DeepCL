@@ -1,15 +1,11 @@
-#include <iostream>
-#include <cstdio>
-#include <jpeglib.h>
-#include <stdexcept>
-using namespace std;
+#include <string>
 
 #include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual
 #define STATIC static
 
-class JpegHelper {
+class DeepCL_EXPORT JpegHelper {
 
     // [[[cog
     // import cog_addheaders

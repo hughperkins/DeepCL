@@ -11,7 +11,7 @@
 #include "Kgsv2Loader.h"
 #include "util/StatefulTimer.h"
 #include "loaders/MnistLoader.h"
-
+#include "DeepCLDllExport.h"
 #include "loaders/GenericLoader.h"
 
 #ifdef _WIN32

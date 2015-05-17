@@ -8,10 +8,12 @@
 
 #include <string>
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
-class Kgsv2Loader {
+class DeepCL_EXPORT Kgsv2Loader {
 public:
 
     // [[[cog
