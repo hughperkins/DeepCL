@@ -33,7 +33,14 @@
 // constructor is public, so we can override it, for testing, if we want
 class DeepCL_EXPORT RandomSingleton {
     private:
+    // as long as myrandom stays as private, should be ok to disable the wanrings I think?
+    #ifdef _WIN32
+    #pragma warning( disable: 4251 )
+    #endif
     MT19937 myrandom;
+    #ifdef _WIN32
+    #pragma warning( default: 4251 )
+    #endif
 
     // [[[cog
     // import cog_addheaders
