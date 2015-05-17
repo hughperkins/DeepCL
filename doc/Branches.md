@@ -2,18 +2,16 @@
 
 *Main branches:*
 * master: what you probably want to fork, if you want to do any changes
-* 3.x.x: previous version.  Just here so the old documentation is available really
 
 *Feature/story branches:*
 
-*github pages:*
-* gh-pages: holds the website at http://hughperkins.github.io/DeepCL (migrating this to http://deepcl.hughperkins.com , to save filling up the git repository with binaries and stuff)
-
 *Jenkins:*
-* jenkins-target: my Jenkins server builds off this branch, so anything I want jenkins to build, I push to this branch, and then trigger a Jenkins build.  eg, for a release
-* benchmarking-jenkins: my Jenkins server runs performance benchmarking tests from this branch
+* jenkins-target: many jenkins build jobs run from this branch (though recently, jenkins builds are triggered by creating a tag, and build the tag, instead)
+* jenkins-perf: my Jenkins server runs performance benchmarking tests from this branch
+* jenkins-jobs: any commit to the this branch triggers jenkins job builder to automatically update the jenkins jobs from [jenkins/jobs.yaml](../jenkins/jobs.yaml) file
 
 *On-hold feature branches:*
+* imagenet-py: partial implementation of python script to read imagenet and train on these
 * python_swig: python swig wrappers have been pushed out to a branch, and are no longer part of mainstream
   * note that this is different from the Cython wrappers, which are in the 'python' directory of 'master' branch for example, which are the production Python wrappers for DeepCL
 * numpy_i_experiment: a brief experiment on trying to add numpy.i to the python swig wrappers
