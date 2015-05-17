@@ -230,14 +230,14 @@ void go(Config config) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
             NormalizeGetStdDev normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
+            BatchProcessv2::run( &trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
             cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
             NormalizeGetMinMax normalizeGetMinMax( trainData, trainLabels );
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
+            BatchProcessv2::run( &trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
             normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
         } else {
             cout << "Error: Unknown normalization: " << config.normalization << endl;

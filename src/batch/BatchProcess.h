@@ -14,6 +14,8 @@
 
 #include "DeepCLDllExport.h"
 
+class GenericLoaderv2;
+
 class DeepCL_EXPORT BatchAction {
 public:
     float *data;
@@ -23,6 +25,11 @@ public:
         labels(labels) { // have to provide appropriate buffers for this
     }
     virtual void processBatch( int batchSize, int cubeSize ) = 0;
+};
+
+class DeepCL_EXPORT BatchProcessv2 {
+public:
+    static void run( GenericLoaderv2*loader, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction);
 };
 
 class DeepCL_EXPORT BatchProcess {

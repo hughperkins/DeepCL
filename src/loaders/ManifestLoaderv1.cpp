@@ -46,7 +46,7 @@ PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
     char lineChars[1024];
     infile.getline( lineChars, 1024 ); // skip first, header, line
     string firstLine = string( lineChars );
-    cout << "firstline: [" << firstLine << "]" << endl;
+//    cout << "firstline: [" << firstLine << "]" << endl;
     vector<string> splitLine = split( firstLine, " " );
     N = readIntValue( splitLine, "N" );
     planes = readIntValue( splitLine, "planes" );
@@ -79,7 +79,7 @@ PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
         }
         string jpegFile = splitLine[0];
         int label = atoi(splitLine[1]);
-        cout << "file " << jpegFile << " label=" << label << endl;
+//        cout << "file " << jpegFile << " label=" << label << endl;
         files[n] = jpegFile;
         labels[n] = label;
         n++;
@@ -116,6 +116,7 @@ int ManifestLoaderv1::readIntValue( std::vector< std::string > splitLine, std::s
 }
 PUBLIC VIRTUAL void ManifestLoaderv1::load( unsigned char *data, int *labels, int startRecord, int numRecords ) {
     int imageCubeSize = planes * size * size;
+//    cout << "ManifestLoaderv1, loading " << numRecords << " jpegs" << endl;
     for( int localN = 0; localN < numRecords; localN++ ) {
         int globalN = localN + startRecord;
         JpegHelper::read( files[globalN], planes, size, size, data + localN * imageCubeSize );
