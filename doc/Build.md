@@ -56,7 +56,10 @@ Note:
 - cmake
 - Visual Studio (current 'standard' build system is: Visual Studio 2010 Express, but should also work on Visual Studio 2008 for Python 2.7, and Visual Studio Express 2013)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
-- (new) libjpeg62, or compatible, eg [libjpeg-turbo](http://www.libjpeg-turbo.org/Documentation/OfficialBinaries), or I made a fresh build, of libjpeg-turbo 1.4.0 at [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64.zip)   (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
+- (new) libjpeg62, or compatible, eg [libjpeg-turbo](http://www.libjpeg-turbo.org/Documentation/OfficialBinaries)  (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
+  - if you want, I made a fresh build of libjpeg-turbo 1.4.0:
+    - dynamic library (doesnt work for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64.zip)
+    - static library (works ok for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32-static.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64-static.zip)
 
 ### Procedure
 
