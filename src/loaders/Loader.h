@@ -15,10 +15,13 @@
 #define STATIC static
 
 class Loader {
-public:
+    public:
     VIRTUAL std::string getType() = 0;
     VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords ) = 0;
     VIRTUAL int getImageCubeSize() = 0;
+    VIRTUAL int getN() = 0;
+    VIRTUAL int getPlanes() = 0;
+    VIRTUAL int getImageSize() = 0;
 
     // [[[cog
     // import cog_addheaders

@@ -23,10 +23,13 @@ using namespace std;
 #define VIRTUAL
 
 PUBLIC STATIC bool ManifestLoaderv1::isFormatFor( std::string imagesFilepath ) {
+    cout << "ManifestLoaderv1 checking format for " << imagesFilepath << endl;
     char *headerBytes = FileHelper::readBinaryChunk( imagesFilepath, 0, 1024 );
-    headerBytes[1024] = 0;
-    char const*header = "# format=deepcl-jpeg-list-v1 ";
-    return string( headerBytes ) == string( header );
+    string sigString = "# format=deepcl-jpeg-list-v1 ";
+    headerBytes[sigString.length()] = 0;
+    bool matched = string( headerBytes ) == sigString;
+    cout << "matched: " << matched << endl;
+    return matched;
 }
 PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
     this->imagesFilepath = imagesFilepath;
@@ -34,29 +37,70 @@ PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
     // number of planes is .... 1
     // imageSize is ...
 
-    char *headerBytes = FileHelper::readBinaryChunk( imagesFilepath, 0, 1024 );
-    headerBytes[1023] = 0;
-    string headerString = string( headerBytes );
-    vector<string> splitHeader = split( headerString, " " );
-    if( splitHeader[0] != "#" || splitHeader[1] != "format=deepcl-jpeg-list-v1" ) {
+    if( !isFormatFor( imagesFilepath ) ) {
         throw runtime_error( "file " + imagesFilepath + " is not a deepcl-jpeg-list-v1 manifest file" );
     }
-    string firstLine = split( headerBytes, "\n" )[0];
+
+    ifstream infile( imagesFilepath );
+    char lineChars[1024];
+    infile.getline( lineChars, 1024 ); // skip first, header, line
+    string firstLine = string( lineChars );
     cout << "firstline: [" << firstLine << "]" << endl;
     vector<string> splitLine = split( firstLine, " " );
     N = readIntValue( splitLine, "N" );
-    planes = readIntValue( splitLine, "numplanes" );
+    planes = readIntValue( splitLine, "planes" );
     size = readIntValue( splitLine, "width" );
     int imageSizeRepeated = readIntValue( splitLine, "height" );
     if( size != imageSizeRepeated ) {
         throw runtime_error( "file " + imagesFilepath + " contains non-square images.  Not handled for now." );
     }
+    // now we should load into memory, since the file is not fixed-size records, and cannot be loaded partially easily
+
+    files = new string[N];
+    labels = new int[N];
+
+    int n = 0;
+    while( infile ) {
+        infile.getline( lineChars, 1024 );
+        if( !infile ) {
+            break;
+        }
+        string line = string( lineChars );
+        if( line == "" ) {
+            continue;
+        }
+        vector<string> splitLine = split(line, " ");
+        if( (int)splitLine.size() == 0 ) {
+            continue;
+        }
+        if( (int)splitLine.size() != 2 ) { 
+            throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line );
+        }
+        string jpegFile = splitLine[0];
+        int label = atoi(splitLine[1]);
+        cout << "file " << jpegFile << " label=" << label << endl;
+        files[n] = jpegFile;
+        labels[n] = label;
+        n++;
+    }
+    infile.close();
+
+    cout << "manifest " << imagesFilepath << " read. N=" << N << " planes=" << planes << " size=" << size << endl;
 }
 PUBLIC VIRTUAL std::string ManifestLoaderv1::getType() {
     return "ManifestLoaderv1";
 }
 PUBLIC VIRTUAL int ManifestLoaderv1::getImageCubeSize() {
     return planes * size * size;
+}
+PUBLIC VIRTUAL int ManifestLoaderv1::getN() {
+    return N;
+}
+PUBLIC VIRTUAL int ManifestLoaderv1::getPlanes() {
+    return planes;
+}
+PUBLIC VIRTUAL int ManifestLoaderv1::getImageSize() {
+    return size;
 }
 int ManifestLoaderv1::readIntValue( std::vector< std::string > splitLine, std::string key ) {
     for( int i = 0; i < (int)splitLine.size(); i++ ) {

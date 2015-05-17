@@ -21,6 +21,7 @@
 // but for imagenet manifest, we dont really want to load the manifest every single
 // file read, so we make it stateful, hence GenericLoaderv2
 class GenericLoaderv1Wrapper : public Loader {
+    private:
     std::string imagesFilepath;
     int N;
     int planes;
@@ -34,6 +35,9 @@ class GenericLoaderv1Wrapper : public Loader {
 
     public:
     VIRTUAL std::string getType();
+    VIRTUAL int getN();
+    VIRTUAL int getPlanes();
+    VIRTUAL int getImageSize();
     GenericLoaderv1Wrapper( std::string imagesFilepath );
     VIRTUAL int getImageCubeSize();
     VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords );

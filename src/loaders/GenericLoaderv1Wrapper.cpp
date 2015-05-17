@@ -21,6 +21,15 @@ using namespace std;
 PUBLIC VIRTUAL std::string GenericLoaderv1Wrapper::getType() {
     return "GenericLoaderv1Wrapper";
 }
+PUBLIC VIRTUAL int GenericLoaderv1Wrapper::getN() {
+    return N;
+}
+PUBLIC VIRTUAL int GenericLoaderv1Wrapper::getPlanes() {
+    return planes;
+}
+PUBLIC VIRTUAL int GenericLoaderv1Wrapper::getImageSize() {
+    return size;
+}
 PUBLIC GenericLoaderv1Wrapper::GenericLoaderv1Wrapper( std::string imagesFilepath ) {
     this->imagesFilepath = imagesFilepath;
     GenericLoader::getDimensions( imagesFilepath, &N, &planes, &size );

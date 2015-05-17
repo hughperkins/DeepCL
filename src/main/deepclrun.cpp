@@ -168,7 +168,11 @@ void go(Config config) {
     int testAllocateN = 0;
 
 //    int totalLinearSize;
-    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &imageSize );
+    GenericLoaderv2 trainLoader( config.dataDir + "/" + config.trainFile );
+    Ntrain = trainLoader.getN();
+    numPlanes = trainLoader.getPlanes();
+    imageSize = trainLoader.getImageSize();
+    // GenericLoader::getDimensions( , &Ntrain, &numPlanes, &imageSize );
     Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
@@ -180,10 +184,13 @@ void go(Config config) {
     trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if( !config.loadOnDemand && Ntrain > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
+        trainLoader.load( trainData, trainLabels, 0, Ntrain );
     }
 
-    GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &imageSize );
+    GenericLoaderv2 testLoader( config.dataDir + "/" + config.validateFile );
+    Ntest = testLoader.getN();
+    numPlanes = testLoader.getPlanes();
+    imageSize = testLoader.getImageSize();
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
     if( config.loadOnDemand ) {
         testAllocateN = config.batchSize; // can improve this later
@@ -193,7 +200,7 @@ void go(Config config) {
     testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if( !config.loadOnDemand && Ntest > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
+        testLoader.load( testData, testLabels, 0, Ntest );
     }
     cout << "Ntest " << Ntest << " Ntest" << endl;
     

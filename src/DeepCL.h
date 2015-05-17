@@ -34,4 +34,5 @@
 #include "weights/WeightsPersister.h"
 #include "util/FileHelper.h"
 #include "loaders/GenericLoader.h"
+#include "loaders/GenericLoaderv2.h"
 

@@ -22,20 +22,23 @@ class Loader;
 // but for imagenet manifest, we dont really want to load the manifest every single
 // file read, so we make it stateful, hence GenericLoaderv2
 class DeepCL_EXPORT GenericLoaderv2 {
+    private:
     Loader *loader;
 
-public:
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.addv2()
     // ]]]
     // generated, using cog:
 
-    private:
+    public:
     GenericLoaderv2( std::string imagesFilepath );
-    void load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples );
-    void load( std::string trainFilepath, unsigned char *images, int *labels );
-    void load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples );
+    void load( float *images, int *labels, int startN, int numExamples );
+    int getN();
+    int getPlanes();
+    int getImageSize();
+    void load( unsigned char *images, int *labels );
+    void load( unsigned char *images, int *labels, int startN, int numExamples );
 
     // [[[end]]]
 };

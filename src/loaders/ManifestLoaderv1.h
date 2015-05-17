@@ -17,10 +17,14 @@
 #define STATIC static
 
 class ManifestLoaderv1 : public Loader {
+    private:
     std::string imagesFilepath;
     int N;
     int planes;
     int size;
+
+    std::string *files;
+    int *labels;
 
     // [[[cog
     // import cog_addheaders
@@ -33,6 +37,9 @@ class ManifestLoaderv1 : public Loader {
     ManifestLoaderv1( std::string imagesFilepath );
     VIRTUAL std::string getType();
     VIRTUAL int getImageCubeSize();
+    VIRTUAL int getN();
+    VIRTUAL int getPlanes();
+    VIRTUAL int getImageSize();
     VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords );
 
     private:

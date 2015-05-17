@@ -25,7 +25,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-GenericLoaderv2::GenericLoaderv2( std::string imagesFilepath ) {
+PUBLIC GenericLoaderv2::GenericLoaderv2( std::string imagesFilepath ) {
     if( ManifestLoaderv1::isFormatFor( imagesFilepath ) ) {
         loader = new ManifestLoaderv1( imagesFilepath );
     } else {
@@ -33,24 +33,31 @@ GenericLoaderv2::GenericLoaderv2( std::string imagesFilepath ) {
     }
 }
 
-void GenericLoaderv2::load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples ) {
-
-    unsigned char *ucImages = new unsigned char[ loader->getImageCubeSize() ];
-    load( imagesFilePath, ucImages, labels, startN, numExamples );
-
+PUBLIC void GenericLoaderv2::load( float *images, int *labels, int startN, int numExamples ) {
     int linearSize =  numExamples * loader->getImageCubeSize();
+    unsigned char *ucImages = new unsigned char[ linearSize ];
+
+    load( ucImages, labels, startN, numExamples );
 
     for( int i = 0; i < linearSize; i++ ) {
         images[i] = ucImages[i];
     }
     delete[] ucImages;
 }
-
-void GenericLoaderv2::load( std::string trainFilepath, unsigned char *images, int *labels ) {
-    load( trainFilepath, images, labels, 0, 0 );
+PUBLIC int GenericLoaderv2::getN() {
+    return loader->getN();
+}
+PUBLIC int GenericLoaderv2::getPlanes() {
+    return loader->getPlanes();
+}
+PUBLIC int GenericLoaderv2::getImageSize() {
+    return loader->getImageSize();
+}
+PUBLIC void GenericLoaderv2::load( unsigned char *images, int *labels ) {
+    load( images, labels, 0, 0 );
 }
 
-void GenericLoaderv2::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
+PUBLIC void GenericLoaderv2::load( unsigned char *images, int *labels, int startN, int numExamples ) {
     StatefulTimer::timeCheck("GenericLoaderv2::load start");
 
     loader->load( images, labels, startN, numExamples );
