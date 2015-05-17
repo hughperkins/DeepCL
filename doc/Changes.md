@@ -6,12 +6,18 @@ Recent changes can be viewed by looking at [Releases](https://github.com/hughper
 
 How to determine the current stable public API is documented at [Stable API](PublicApis.md)
 
-# Changes in next release
+# Next release
+
+## New in next release
 
 * Josef Moudrik has created `deepclexec`, to run prediction, on pre-trained weights, for new data samples
 * Added jpeg loader, so can load imagenet data now
 
-## Under the covers
+## Changes in next release
+
+* Added build dependency on libjpeg 6.2, or compatible (eg libjpeg-turbo), in order to add the jpeg loader
+
+## Changes under the covers, in next release
 
 * factorized applying bias into separate class for forward3 (it was already in a separate OpenCLKernel), and away from the convolutional forward opencl in forward4, and forward1
 * fixed a bug in forward4, where images larger than the square root of the maximum gpu workgroupsize sometimes has incorrect values for the last few pixels
