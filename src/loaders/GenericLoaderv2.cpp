@@ -8,11 +8,13 @@
 
 #include "util/FileHelper.h"
 #include "util/StatefulTimer.h"
-#include "loaders/ManifestLoaderv1.h"
 #include "loaders/Loader.h"
 #include "loaders/GenericLoaderv1Wrapper.h"
-
 #include "loaders/GenericLoaderv2.h"
+
+#ifdef LIBJPEG_FOUND
+#include "loaders/ManifestLoaderv1.h"
+#endif
 
 #ifdef _WIN32
 #define _CRT_SECURE_NO_WARNINGS
@@ -26,9 +28,13 @@ using namespace std;
 #define VIRTUAL
 
 PUBLIC GenericLoaderv2::GenericLoaderv2( std::string imagesFilepath ) {
+    loader = 0;
+    #ifdef LIBJPEG_FOUND
     if( ManifestLoaderv1::isFormatFor( imagesFilepath ) ) {
         loader = new ManifestLoaderv1( imagesFilepath );
-    } else {
+    }
+    #endif
+    if( loader == 0 ) {
         loader = new GenericLoaderv1Wrapper( imagesFilepath );
     }
 }

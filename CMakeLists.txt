@@ -13,8 +13,12 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
+OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file" ON)
+
 OPTION(PROTOTYPING "Only for devs." OFF)
 mark_as_advanced( FORCE PROTOTYPING )
+
+# remove old flags from the cache:
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
 unset(BUILD_PYTHON_WRAPPERS CACHE)
 unset(RUN_COG CACHE)
@@ -47,6 +51,13 @@ foreach(dir ${dirs})
     endforeach()
 endforeach()
 #message("deepcl_sources ${deepcl_sources}")
+
+if(LIBJPEG_AVAILABLE)
+find_package(JPEG REQUIRED)
+link_libraries(${JPEG_LIBRARY})
+include_directories( ${JPEG_INCLUDE_DIR} )
+set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
+endif(LIBJPEG_AVAILABLE)
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
@@ -112,11 +123,13 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
- test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp test/testjpeghelper.cpp
+ test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  )
-
-find_package(JPEG REQUIRED)
-link_libraries(${JPEG_LIBRARY})
+if(LIBJPEG_AVAILABLE)
+    set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
+    add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/JpegHelper.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp
+        src/loaders/MnistLoader.cpp )
+endif(LIBJPEG_AVAILABLE)
 
 add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
 add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
@@ -124,7 +137,6 @@ add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp src/loaders/MnistLoader.cpp )
-add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/JpegHelper.cpp src/util/stringhelper.cpp src/loaders/GenericLoader.cpp src/loaders/MnistLoader.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)

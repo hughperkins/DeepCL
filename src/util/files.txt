@@ -1,3 +1,2 @@
-JpegHelper.cpp
 stringhelper.cpp
 
