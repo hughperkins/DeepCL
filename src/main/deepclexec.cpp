@@ -1,4 +1,5 @@
-// Copyright Hugh Perkins 2015 hughperkins at gmail
+// Copyright Hugh Perkins, Josef Moudrik 2015
+// - hughperkins at gmail
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -185,7 +186,6 @@ void go(Config config) {
     net = new NeuralNet(cl);
 
     // just use the default for net creation, weights are overriden from the weightsFile
-    // yes, thats fine - Hugh
     WeightsInitializer *weightsInitializer = new OriginalInitializer();
 
     if( config.weightsFile == "" ) {
@@ -215,13 +215,8 @@ void go(Config config) {
         return;
     }
 
-//    float *weights = net->getWeights();
-//    float *bias = net->getBias();
-//    Sampler::sampleFloatWrapper( "weights", net->getLayer(6)->getWeightsWrapper() );
-//    Sampler::sampleFloatWrapper( "weights", net->getLayer(11)->getWeightsWrapper() );
-
-    net->print();  // this output should match what you trained on  - Hugh
-    net->setBatchSize(config.batchSize);  // 1? that cant be right?  changed to read from config  - Hugh
+    net->print();
+    net->setBatchSize(config.batchSize);
     cout << "batchSize: " << config.batchSize << endl;
 
 
@@ -231,7 +226,6 @@ void go(Config config) {
 
 
     // ideally, this could go in GenericReader somehow I reckon, but putting it here is ok for now :-)   - Hugh
-    // I'm going to test with mnist, since it's small and gives nice results, and fast :-)   - Hugh
     float * inputData = new float[ inputCubeSize * config.batchSize];
     if( config.dataDir != "" ) {
         config.inputFile = config.dataDir + "/" + config.inputFile;
@@ -241,8 +235,6 @@ void go(Config config) {
     cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
 //    ifstream fin(config.inputFile, ios::in | ios::binary);
 //    ofstream fout(config.outputFile, ios::out | ios::binary);
-    // sorry I dont know how to use ifstream, so I'm going to use filehelper, cos I know it works :-)   - Hugh
-   // ( but re-wrtiing it back to use fstream is probably a good idea )
 
 //    if( ! fin ){
 //        cout << "Cannot open input file: '"<< config.inputFile <<"'" << endl;
@@ -312,8 +304,7 @@ void go(Config config) {
     cout << "Exiting." << endl;
 
     delete[] labels;
-    delete weightsInitializer; // I'm not entirely trusting of my delete sections, so let's put 
-                               // deletes at the end, here  :-P - Hugh
+    delete weightsInitializer;
     delete net;
     delete cl;
 }
