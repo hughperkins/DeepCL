@@ -10,6 +10,7 @@ mkdir turbojpeg-win32
 cd turbojpeg-win32
 "c:\program files\7-Zip\7z.exe" x ..\turbojpeg-win32.zip
 if errorlevel 1 exit /B 1
+cd ..
 
 dir
 rmdir /s /q build
