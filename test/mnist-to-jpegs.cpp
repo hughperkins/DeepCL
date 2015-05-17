@@ -16,6 +16,7 @@
 // [relative file path]  [category number, zero-based]
 
 #include <iostream>
+#include <fstream>
 
 #include "loaders/GenericLoader.h"
 #include "util/FileHelper.h"
