@@ -11,21 +11,20 @@
 #include <iostream>
 #include <algorithm>
 
-#include "loaders/Loader.h"
-
 #define VIRTUAL virtual
 #define STATIC static
 
-class ManifestLoaderv1 : public Loader {
+class Loader {
 public:
+    VIRTUAL std::string getType() = 0;
+    VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords ) = 0;
+    VIRTUAL int getImageCubeSize() = 0;
+
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add()
+    // cog_addheaders.addv2()
     // ]]]
     // generated, using cog:
-    VIRTUAL bool isFormatFor( char *header1024 );
-    VIRTUAL void getDimensions( std::string filepath, int *p_N, int *p_numPlanes, int *p_imageSize );
-    VIRTUAL void load( std::string filepath, unsigned char *data, int *labels, int startRecord, int numRecords );
 
     // [[[end]]]
 };

@@ -14,5 +14,9 @@
 // our semantic versioning 'stable' api
 #define PUBLICAPI
 
+#define PUBLIC
+#define PROTECTED
+#define PRIVATE
+
 typedef unsigned char uchar;
 

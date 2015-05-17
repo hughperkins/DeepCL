@@ -24,12 +24,14 @@
 /// eg, a header, or based on the file extension
 PUBLICAPI
 class DeepCL_EXPORT GenericLoader {
-public:
+
     // [[[cog
     // import cog_addheaders
-    // cog_addheaders.add()
+    // cog_addheaders.addv2()
     // ]]]
     // generated, using cog:
+
+    public:
     PUBLICAPI STATIC void getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize );
     PUBLICAPI STATIC void load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples );
     STATIC void load( std::string trainFilepath, unsigned char *images, int *labels );

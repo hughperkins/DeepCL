@@ -5,8 +5,11 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <iostream>
+#include <stdexcept>
 
 #include "Loader.h"
+
+#include "DeepCLDllExport.h"
 
 using namespace std;
 

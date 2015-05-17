@@ -60,7 +60,7 @@ int main( int argc, char *argv[] ) {
     }
     // write the jpegs
     ofstream manifest(outDirectory + "/manifest.txt");
-    manifest << "# format=deepcl-jpeg-list-v1 planes=" << planes << " width=" << size << " height=" << size << " N=" << numExamples << endl;
+    manifest << "# format=deepcl-jpeg-list-v1 N=" << numExamples << " planes=" << planes << " width=" << size << " height=" << size << endl;
     for( int n = 0; n < numExamples; n++ ) {
         int label = labels[n];
         random.seed(label);

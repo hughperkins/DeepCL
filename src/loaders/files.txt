@@ -1,3 +1,7 @@
+Loader.cpp
+ManifestLoaderv1.cpp
+GenericLoaderv2.cpp
+GenericLoaderv1Wrapper.cpp
 GenericLoader.cpp
 Kgsv2Loader.cpp
 MnistLoader.cpp
