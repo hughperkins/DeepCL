@@ -30,6 +30,7 @@ Do you want to use DeepCL via python, or from the commandline, or from C++?
   - tested using beignet, which provides OpenCL 1.2; and on CUDA 6.5 driver
 - opencl-headers
 - make 
+- (new) libjpeg62 or compatible, eg `sudo apt-get install libjpeg-turbo8-dev`
 
 ### Procedure
 
@@ -55,6 +56,7 @@ Note:
 - cmake
 - Visual Studio (current 'standard' build system is: Visual Studio 2010 Express, but should also work on Visual Studio 2008 for Python 2.7, and Visual Studio Express 2013)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+- (new) libjpeg62, or compatible, eg [libjpeg-turbo](http://www.libjpeg-turbo.org/Documentation/OfficialBinaries)
 
 ### Procedure
 
