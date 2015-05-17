@@ -72,7 +72,9 @@ target_link_libraries( gpuinfo dl )
 endif()
 
 add_library( DeepCL SHARED ${deepcl_sources} )
+if(ON_WINDOWS)
 set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
+endif(ON_WINDOWS)
 
 execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
