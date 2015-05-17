@@ -44,7 +44,6 @@ class ManifestLoaderv1 : public Loader {
 
     private:
     int readIntValue( std::vector< std::string > splitLine, std::string key );
-    VIRTUAL void getDimensions();
 
     // [[[end]]]
 };

@@ -12,6 +12,7 @@
 #include "util/FileHelper.h"
 #include "util/stringhelper.h"
 #include "ManifestLoaderv1.h"
+#include "util/JpegHelper.h"
 
 #include "DeepCLDllExport.h"
 
@@ -113,12 +114,12 @@ int ManifestLoaderv1::readIntValue( std::vector< std::string > splitLine, std::s
     }
     throw runtime_error("Key " + key + " not found in file header" );
 }
-VIRTUAL void ManifestLoaderv1::getDimensions() {
-}
-
 PUBLIC VIRTUAL void ManifestLoaderv1::load( unsigned char *data, int *labels, int startRecord, int numRecords ) {
-    // we're going to have to read the names of the files from a file which doesnt have fixed-length fields
-    // probably we should cache this somehow, or perhaps write to a file that does have fixed-length fields
-
+    int imageCubeSize = planes * size * size;
+    for( int localN = 0; localN < numRecords; localN++ ) {
+        int globalN = localN + startRecord;
+        JpegHelper::read( files[globalN], planes, size, size, data + localN * imageCubeSize );
+        labels[localN] = this->labels[globalN];
+    }
 }
 
