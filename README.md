@@ -57,6 +57,12 @@ Activations:
 * sigmoid
 * relu
 
+[Loader formats](doc/Loaders.md):
+* jpegs
+* mnist
+* kgsv2
+* norb
+
 Weight initializers:
 * original
 * uniform

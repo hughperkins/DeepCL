@@ -101,11 +101,7 @@
 
 * Simply pass in the filename of the data file with the images in
 * Filetype will be detected automatically
-* Following filetypes are supported:
-  * Norb .mat format as specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
-  * MNIST format, as specified at [MNIST dataset](http://yann.lecun.com/exdb/mnist/) 
-  * kgs go v2 format, [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-* Other filetypes could be added, on request
+* See [Loaders](loaders.md) for information on available loaders
 
 ## Weight persistence
 
