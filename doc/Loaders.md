@@ -20,7 +20,7 @@ This page documents available file format loaders.
 
 ## jpegs
 
-(Note: this is new, in `master` branch, not yet part of any release binaries yet)
+(New, in 5.8.0!)
 
 * this format comprises:
   * jpeg images
