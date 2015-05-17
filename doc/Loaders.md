@@ -20,6 +20,8 @@ This page documents available file format loaders.
 
 ## jpegs
 
+(Note: this is new, in `master` branch, not yet part of any release binaries yet)
+
 * this format comprises:
   * jpeg images
   * and a single manifest text file
