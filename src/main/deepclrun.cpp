@@ -354,9 +354,9 @@ void go(Config config) {
     }
     NetLearnerBase *netLearner = 0;
     if( config.loadOnDemand ) {
-        netLearner = new NetLearnerOnDemand( trainer, trainable,
-            config.dataDir + "/" + config.trainFile, Ntrain,
-            config.dataDir + "/" + config.validateFile, Ntest,
+        netLearner = new NetLearnerOnDemandv2( trainer, trainable,
+            &trainLoader, Ntrain,
+            &testLoader, Ntest,
             config.fileReadBatches, config.batchSize
         );
     } else {

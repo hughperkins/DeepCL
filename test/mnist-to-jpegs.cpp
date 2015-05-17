@@ -21,7 +21,7 @@
 #include "util/FileHelper.h"
 #include "util/mt19937defs.h"
 #include "util/stringhelper.h"
-#include "test/JpegHelper.h"
+#include "util/JpegHelper.h"
 
 using namespace std;
 
@@ -71,7 +71,7 @@ int main( int argc, char *argv[] ) {
             ucharValues[j] = inputCube[j];
         }
         string filePath = folderPath + "/" + toString( n ) + ".JPEG";
-        JpegHelper::writeJpeg( filePath, planes, size, size, ucharValues );
+        JpegHelper::write( filePath, planes, size, size, ucharValues );
         manifest << filePath << " " << label << endl;
     }
     manifest.close();

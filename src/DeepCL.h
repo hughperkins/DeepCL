@@ -30,6 +30,7 @@
 #include "batch/BatchProcess.h"
 #include "batch/NetLearner.h"
 #include "batch/NetLearnerOnDemand.h"
+#include "batch/NetLearnerOnDemandv2.h"
 
 #include "weights/WeightsPersister.h"
 #include "util/FileHelper.h"
