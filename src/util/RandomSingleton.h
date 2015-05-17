@@ -28,7 +28,7 @@
 // constructor is public, so we can override it, for testing, if we want
 class RandomSingleton {
 public:
-    MT19937 random;
+    MT19937 myrandom;
     RandomSingleton() {
         int time = 0;
         #ifdef NOCHRONO
@@ -45,7 +45,7 @@ public:
         #endif
         srand(time);
         unsigned long seed = ( rand() << 8 ) + rand();
-        random.seed( seed );
+        myrandom.seed( seed );
     }
     static RandomSingleton *instance() {
         static RandomSingleton *thisinstance = new RandomSingleton();
@@ -55,13 +55,13 @@ public:
 //        _instance = testinstance;
 //    }
     virtual float _uniform() {
-        return random() / (float)random.max();
+        return myrandom() / (float)myrandom.max();
     }
     static float uniform() {
         return instance()->_uniform();
     }
     static int uniformInt( int minValueInclusive, int maxValueInclusive ) {
-        return ( instance()->random() % 
+        return ( instance()->myrandom() % 
             ( maxValueInclusive - minValueInclusive + 1 ) )
          + minValueInclusive;
     }

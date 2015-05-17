@@ -129,7 +129,7 @@ public:
     }
     static void createDirectory( std::string path ) {
         #ifdef _WIN32
-            if( CreateDirectory( path.c_str() ) == 0 ) {
+            if( CreateDirectory( path.c_str(), NULL ) == 0 ) {
                 throw std::runtime_error( "Failed to create directory " + path );
             }
         #else
@@ -140,7 +140,7 @@ public:
     }
     static bool folderExists( std::string path ) {
         #ifdef _WIN32
-            return GetFileAttributes(path.c_str())) == INVALID_FILE_ATTRIBUTES);
+            return GetFileAttributes(path.c_str()) == INVALID_FILE_ATTRIBUTES;
         #else
             struct stat status;
             stat( path.c_str(), &status );
