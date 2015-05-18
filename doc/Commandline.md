@@ -101,11 +101,7 @@
 
 * Simply pass in the filename of the data file with the images in
 * Filetype will be detected automatically
-* Following filetypes are supported:
-  * Norb .mat format as specified at [NORB-small dataset](http://www.cs.nyu.edu/~ylclab/data/norb-v1.0-small/)
-  * MNIST format, as specified at [MNIST dataset](http://yann.lecun.com/exdb/mnist/) 
-  * kgs go v2 format, [https://github.com/hughperkins/kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-* Other filetypes could be added, on request
+* See [Loaders](loaders.md) for information on available loaders
 
 ## Weight persistence
 
@@ -132,8 +128,9 @@
 | weightsinitializer=uniform | choose weight initializer.  valid choices: original, uniform (default: original) |
 | initialweights=10 | set size of initial weights, sampled uniformally from range +/- initialweights divided by fanin. used by uniform initializer (default: 1.0) |
 | trainer=sgd | choose trainer.  valid choices are sgd, anneal, nesterov, adagrad, or rmsprop.  (default: sgd) |
-| learningrate=0.0001 | specify learning rate. works with any trainer |
+| learningrate=0.0001 | specify learning rate. works with any trainer, except adadelta |
 | momentum=0.1 | specify momentum (default: 0). works with sgd and nesterov trainers |
+| rho=0.9 | rho decay, from equation 1 of adadelta paper, http://arxiv.org/pdf/1212.5701v1.pdf (default: 0.9) |
 | weightdecay=0.001 | weight decay, 0 means no decay, 1 means complete decay (default:0). works with sgd trainer |
 | anneal=0.95 | anneal learning.  1 means no annealing. 0 means learningrate is 0 (default:1). works with anneal trainer |
 | numepochs=20 | train for this many epochs |

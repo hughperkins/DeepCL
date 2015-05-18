@@ -1,4 +1,4 @@
-# Public APIs
+# Stable Public API definition
 
 ## Semantic versioning
 
@@ -16,7 +16,7 @@ release version  `PUBLICAPI` is a null macro within the C++ code, does nothing.
 * Any C++ methods marked as `PUBLICAPI` should not be removed, nor change their names, or approximate
 function, within a major release version.  This is a null macro, within the C++ code, does nothing
 * You can check which classes and methods have been tagged with `PUBLICAPI` by browsing the code, or
-looking at the Doxygen-generated documentation at [4.x.x doxy docs](http://hughperkins.github.io/DeepCL/4.x.x/html/annotated.html)
+looking at the Doxygen-generated documentation at [4.x.x doxy docs](http://deepcl.hughperkins.com/4.x.x/html/annotated.html)
   * their containing class should also not be removed or change name
 * Compiler standards should ideally be covered, to the extent that the ability to compile on linux
 using g++ with only `-std=c++0x`, and on Windows, using Visual Studio 2010 Express should not be removed without a major version change
@@ -29,8 +29,6 @@ but ideally these existing methods wont be modified, at least: not intentionally
 The following APIs are currently unstable, and can be modified in between major version changes:
 * Lua API
   * eg, might change to use Torch arrays for input, plausibly
-* Swig Python wrappers API
-  * eg, might change to use numpy arrays for input, plausibly
 * The C++ q-learning module and classes
 * NetLearnerOnDemand c++ class might be merged into NetLearner class plausibly
 * All other C++ classes and methods not stated explicitly in 'Stable APIs' section above
@@ -47,9 +45,4 @@ need something added to this document, please let me know, eg via email, raising
 the mailing list
 * Classes and methods can ideally only be removed from this document on a major version change
 
-## Recent changes to this document
-
-* 19th April: add PUBLICAPI to NetLearnerOnDemand methods
-* 19th April: add is_public_api marker to commandline options of deepclrun, and document that here
-* 18th April: First created
 

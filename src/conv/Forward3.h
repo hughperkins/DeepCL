@@ -2,11 +2,12 @@
 
 #include "Forward.h"
 
+class AddBias;
+
 class Forward3 : public Forward {
 public:
     CLKernel *kernel;
-    CLKernel *repeatedAdd;
-//    CLKernel *activate;
+    AddBias *addBias;
 
     // [[[cog
     // import cog_addheaders

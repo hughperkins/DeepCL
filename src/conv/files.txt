@@ -1,3 +1,5 @@
+ReduceSegments.cpp
+AddBias.cpp
 BackpropWeights.cpp
 BackpropWeightsCpu.cpp
 BackpropWeightsNaive.cpp
@@ -17,7 +19,5 @@ ForwardAuto.cpp
 ForwardByInputPlane.cpp
 Forward.cpp
 ForwardCpu.cpp
-ForwardExperimental.cpp
 ForwardFc.cpp
-ForwardFc_workgroupPerFilterPlane.cpp
 LayerDimensions.cpp

@@ -50,6 +50,7 @@ public:
     VIRTUAL int getPersistSize() const;
     VIRTUAL int calcNumRight( int const*labels );
     VIRTUAL void forward();
+    VIRTUAL void getLabels( int *labels );  // need to allocate labels array first, and have called 'forward' first
     VIRTUAL void backward( float learningRate );
     VIRTUAL std::string asString() const;
 

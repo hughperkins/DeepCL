@@ -279,7 +279,7 @@ VIRTUAL void NeuralNet::setTrainer( Trainer *trainer ) {
 void NeuralNet::printParamStats() {
     int sum = 0;
     int skip = 0;
-    int precision = std::cout.precision();
+    int precision = (int)std::cout.precision();
 //    cout << "precision: " << precision << endl;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
         int size = (*it)->getPersistSize();

@@ -9,6 +9,7 @@
 //#include <algorithm>
 
 #include "DeepCL.h"
+//#include "test/Sampler.h"  // TODO: REMOVE THIS
 
 using namespace std;
 
@@ -39,8 +40,9 @@ using namespace std;
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
         ('weightsInitializer', 'string', 'initializer for weights, choices: original, uniform (default: original)', 'original', True ),
         ('initialWeights', 'float', 'for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)', 1.0, False ),
-        ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, or rmsprop (default: sgd)', 'sgd', True ),
+        ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, rmsprop, or adadelta (default: sgd)', 'sgd', True ),
         ('learningRate', 'float', 'learning rate, a float value, used by all trainers', 0.002, True),
+        ('rho', 'float', 'rho decay, in adadelta trainer. 1 is no decay. 0 is full decay (default 0.9)', 0.9, False),
         ('momentum', 'float', 'momentum, used by sgd and nesterov trainers', 0.0, True),
         ('weightDecay', 'float', 'weight decay, 0 means no decay; 1 means full decay, used by sgd trainer', 0.0, True),
         ('anneal', 'float', 'multiply learningrate by this amount each epoch, used by anneal trainer, default 1.0', 1.0, False)
@@ -80,6 +82,7 @@ public:
     float initialWeights;
     string trainer;
     float learningRate;
+    float rho;
     float momentum;
     float weightDecay;
     float anneal;
@@ -126,6 +129,7 @@ public:
         initialWeights = 1.0f;
         trainer = "sgd";
         learningRate = 0.002f;
+        rho = 0.9f;
         momentum = 0.0f;
         weightDecay = 0.0f;
         anneal = 1.0f;
@@ -164,7 +168,11 @@ void go(Config config) {
     int testAllocateN = 0;
 
 //    int totalLinearSize;
-    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &imageSize );
+    GenericLoaderv2 trainLoader( config.dataDir + "/" + config.trainFile );
+    Ntrain = trainLoader.getN();
+    numPlanes = trainLoader.getPlanes();
+    imageSize = trainLoader.getImageSize();
+    // GenericLoader::getDimensions( , &Ntrain, &numPlanes, &imageSize );
     Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
@@ -176,10 +184,13 @@ void go(Config config) {
     trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if( !config.loadOnDemand && Ntrain > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
+        trainLoader.load( trainData, trainLabels, 0, Ntrain );
     }
 
-    GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &imageSize );
+    GenericLoaderv2 testLoader( config.dataDir + "/" + config.validateFile );
+    Ntest = testLoader.getN();
+    numPlanes = testLoader.getPlanes();
+    imageSize = testLoader.getImageSize();
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
     if( config.loadOnDemand ) {
         testAllocateN = config.batchSize; // can improve this later
@@ -189,7 +200,7 @@ void go(Config config) {
     testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if( !config.loadOnDemand && Ntest > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
+        testLoader.load( testData, testLabels, 0, Ntest );
     }
     cout << "Ntest " << Ntest << " Ntest" << endl;
     
@@ -219,14 +230,14 @@ void go(Config config) {
         if( config.normalization == "stddev" ) {
             float mean, stdDev;
             NormalizeGetStdDev normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
+            BatchProcessv2::run( &trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
             normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
             cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
         } else if( config.normalization == "maxmin" ) {
             NormalizeGetMinMax normalizeGetMinMax( trainData, trainLabels );
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
+            BatchProcessv2::run( &trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
             normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
         } else {
             cout << "Error: Unknown normalization: " << config.normalization << endl;
@@ -291,6 +302,9 @@ void go(Config config) {
         Rmsprop *rmsprop = new Rmsprop( cl );
         rmsprop->setLearningRate( config.learningRate );
         trainer = rmsprop;
+    } else if( toLower( config.trainer ) == "adadelta" ) {
+        Adadelta *adadelta = new Adadelta( cl, config.rho );
+        trainer = adadelta;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
@@ -340,9 +354,9 @@ void go(Config config) {
     }
     NetLearnerBase *netLearner = 0;
     if( config.loadOnDemand ) {
-        netLearner = new NetLearnerOnDemand( trainer, trainable,
-            config.dataDir + "/" + config.trainFile, Ntrain,
-            config.dataDir + "/" + config.validateFile, Ntest,
+        netLearner = new NetLearnerOnDemandv2( trainer, trainable,
+            &trainLoader, Ntrain,
+            &testLoader, Ntest,
             config.fileReadBatches, config.batchSize
         );
     } else {
@@ -371,6 +385,10 @@ void go(Config config) {
                 WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0 );
                 weightsWriteTimer.lap();
             }
+//            Sampler::sampleFloatWrapper( "conv weights", net->getLayer(6)->getWeightsWrapper() );
+//            Sampler::sampleFloatWrapper( "fc weights", net->getLayer(11)->getWeightsWrapper() );
+//            Sampler::sampleFloatWrapper( "conv bias", net->getLayer(6)->getBiasWrapper() );
+//            Sampler::sampleFloatWrapper( "fc bias", net->getLayer(11)->getBiasWrapper() );
         } else {
             if( config.writeWeightsInterval > 0 ) {
 //                cout << "batch done" << endl;
@@ -454,13 +472,14 @@ void printUsage( char *argv[], Config config ) {
     cout << "    filereadbatches=[how many batches to read from file each time? (for loadondemand=1)] (" << config.fileReadBatches << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    weightsinitializer=[initializer for weights, choices: original, uniform (default: original)] (" << config.weightsInitializer << ")" << endl;
-    cout << "    trainer=[which trainer, sgd, anneal, nesterov, adagrad, or rmsprop (default: sgd)] (" << config.trainer << ")" << endl;
+    cout << "    trainer=[which trainer, sgd, anneal, nesterov, adagrad, rmsprop, or adadelta (default: sgd)] (" << config.trainer << ")" << endl;
     cout << "    learningrate=[learning rate, a float value, used by all trainers] (" << config.learningRate << ")" << endl;
     cout << "    momentum=[momentum, used by sgd and nesterov trainers] (" << config.momentum << ")" << endl;
     cout << "    weightdecay=[weight decay, 0 means no decay; 1 means full decay, used by sgd trainer] (" << config.weightDecay << ")" << endl;
     cout << "" << endl; 
     cout << "unstable, might change within major version:" << endl; 
     cout << "    initialweights=[for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)] (" << config.initialWeights << ")" << endl;
+    cout << "    rho=[rho decay, in adadelta trainer. 1 is no decay. 0 is full decay (default 0.9)] (" << config.rho << ")" << endl;
     cout << "    anneal=[multiply learningrate by this amount each epoch, used by anneal trainer, default 1.0] (" << config.anneal << ")" << endl;
     // [[[end]]]
 }
@@ -541,6 +560,8 @@ int main( int argc, char *argv[] ) {
                 config.trainer = (value);
             } else if( key == "learningrate" ) {
                 config.learningRate = atof(value);
+            } else if( key == "rho" ) {
+                config.rho = atof(value);
             } else if( key == "momentum" ) {
                 config.momentum = atof(value);
             } else if( key == "weightdecay" ) {

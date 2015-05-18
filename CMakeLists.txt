@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.7)
 
 #message( "[${CMAKE_SYSTEM_NAME}]" )
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
@@ -13,8 +13,12 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
+OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file" ON)
+
 OPTION(PROTOTYPING "Only for devs." OFF)
 mark_as_advanced( FORCE PROTOTYPING )
+
+# remove old flags from the cache:
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
 unset(BUILD_PYTHON_WRAPPERS CACHE)
 unset(RUN_COG CACHE)
@@ -48,8 +52,15 @@ foreach(dir ${dirs})
 endforeach()
 #message("deepcl_sources ${deepcl_sources}")
 
+if(LIBJPEG_AVAILABLE)
+find_package(JPEG REQUIRED)
+link_libraries(${JPEG_LIBRARY})
+include_directories( ${JPEG_INCLUDE_DIR} )
+set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
+endif(LIBJPEG_AVAILABLE)
+
 set( EasyCL_sources EasyCL/EasyCL.cpp
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
@@ -61,6 +72,9 @@ target_link_libraries( gpuinfo dl )
 endif()
 
 add_library( DeepCL SHARED ${deepcl_sources} )
+if(ON_WINDOWS)
+set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
+endif(ON_WINDOWS)
 
 execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
@@ -72,7 +86,7 @@ endif()
 
 if( GIT_FOUND )
 add_custom_command( 
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp
+    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
     COMMAND git submodule update --init --force --recursive
 )
 add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
@@ -112,18 +126,24 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/SpeedTemplates.cpp test/testSpeedTemplates.cpp test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
- test/testsgd.cpp test/testCLMathWrapper.cpp
+ test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  )
+if(LIBJPEG_AVAILABLE)
+    set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
+    add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/stringhelper.cpp src/loaders/MnistLoader.cpp )
+endif(LIBJPEG_AVAILABLE)
 
 add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
+add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
 
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
+add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
-    add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/PatchExtractor.cpp )
-    add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/Translator.cpp )
+    add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/patches/PatchExtractor.cpp )
+    add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/patches/Translator.cpp )
     add_executable( testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp )
 endif(LIBPNGPP_AVAILABLE)
 
@@ -133,12 +153,12 @@ target_link_libraries( gtest pthread)
 else()
 add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
-target_include_directories( gtest PRIVATE thirdparty/gtest )
+include_directories( thirdparty/gtest )
 
 add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
 target_link_libraries( unittests gtest )
-target_include_directories( unittests PRIVATE thirdparty/gtest )
+# target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
@@ -150,7 +170,7 @@ target_link_libraries( unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
-target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
+# target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 

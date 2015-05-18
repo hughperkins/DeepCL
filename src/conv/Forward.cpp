@@ -7,17 +7,16 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Forward.h"
+#include "conv/Forward.h"
 #include "util/stringhelper.h"
-#include "ForwardCpu.h"
-#include "Forward1.h"
-#include "Forward2.h"
-#include "Forward3.h"
-#include "Forward4.h"
-#include "ForwardFc.h"
-#include "ForwardByInputPlane.h"
-#include "ForwardExperimental.h"
-#include "ForwardAuto.h"
+#include "conv/ForwardCpu.h"
+#include "conv/Forward1.h"
+#include "conv/Forward2.h"
+#include "conv/Forward3.h"
+#include "conv/Forward4.h"
+#include "conv/ForwardFc.h"
+#include "conv/ForwardByInputPlane.h"
+#include "conv/ForwardAuto.h"
 #include "util/StatefulTimer.h"
 
 using namespace std;
@@ -51,7 +50,7 @@ STATIC Forward *Forward::instance(EasyCL *cl, LayerDimensions dim ) {
 //    }
 }
 STATIC Forward *Forward::instanceTest(EasyCL *cl, LayerDimensions layerDimensions ) {
-    return new Forward1( cl, layerDimensions );
+    return new Forward2( cl, layerDimensions );
 }
 STATIC int Forward::getNumImplementations() {
     return 7;
@@ -85,8 +84,6 @@ STATIC Forward *Forward::instanceSpecific( int idx, EasyCL *cl, LayerDimensions 
         return new ForwardFc( cl, layerDimensions );
     } else if( idx == 6 ) {
         return new ForwardByInputPlane( cl, layerDimensions );
-    } else if( idx == 99 ) {
-        return new ForwardExperimental( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Forward::instanceSpecific: no instance defined for index " + toString(idx) );
     }
@@ -104,8 +101,6 @@ STATIC Forward *Forward::instanceSpecific( std::string name, EasyCL *cl, LayerDi
         return new ForwardFc( cl, layerDimensions );
     } else if( name == "byinplane" ) {
         return new ForwardByInputPlane( cl, layerDimensions );
-    } else if( name == "exp" ) {
-        return new ForwardExperimental( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Forward::instanceSpecific: no instance defined for name " + name );
     }

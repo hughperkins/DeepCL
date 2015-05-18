@@ -16,6 +16,7 @@
 #include "trainers/Nesterov.h"
 #include "trainers/Adagrad.h"
 #include "trainers/Rmsprop.h"
+#include "trainers/Adadelta.h"
 
 #include "weights/UniformInitializer.h"
 #include "weights/OriginalInitializer.h"
@@ -29,8 +30,10 @@
 #include "batch/BatchProcess.h"
 #include "batch/NetLearner.h"
 #include "batch/NetLearnerOnDemand.h"
+#include "batch/NetLearnerOnDemandv2.h"
 
 #include "weights/WeightsPersister.h"
 #include "util/FileHelper.h"
 #include "loaders/GenericLoader.h"
+#include "loaders/GenericLoaderv2.h"
 

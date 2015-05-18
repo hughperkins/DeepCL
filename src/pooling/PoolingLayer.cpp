@@ -36,8 +36,8 @@ PoolingLayer::PoolingLayer( EasyCL *cl, Layer *previousLayer, PoolingMaker *make
         outputWrapper(0),
         selectorsWrapper(0),
         gradInputWrapper(0),
-        outputCopiedToHost(false),
-        gradInputCopiedToHost(false),
+//        outputCopiedToHost(false),
+//        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0){
     if( inputImageSize == 0 ){
@@ -114,9 +114,9 @@ VIRTUAL int PoolingLayer::getOutputSize() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *PoolingLayer::getOutput() {
-    if( !outputCopiedToHost ) {
+    if( outputWrapper->isDeviceDirty() ) {
         outputWrapper->copyToHost();
-        outputCopiedToHost = true;
+//        outputCopiedToHost = true;
     }
     return output;
 }

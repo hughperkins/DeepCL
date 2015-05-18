@@ -1,3 +1,5 @@
+OnDemandBatcherv2.cpp
+NetLearnerOnDemandv2.cpp
 Batcher2.cpp
 NetAction2.cpp
 Batcher.cpp

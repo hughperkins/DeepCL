@@ -21,15 +21,6 @@ class CLKernel;
 #define VIRTUAL virtual
 #define STATIC static
 
-// Stochastic gradient descent
-// learning rate, momentum, maybe annealing
-// maybe each layer gets its own TrainerState object?
-// at least: any layer with weights
-// they could all be initialized with the same values
-// but still, they each get their own object
-// we could always make like a 'prototype' or 'factory'
-// object that then gets passed to each weightful layer
-// Maybe a 'Maker' for trainers?
 class DeepCL_EXPORT RmspropState : public TrainerState {
 public:
     const int numWeights;

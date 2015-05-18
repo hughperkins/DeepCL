@@ -41,8 +41,8 @@ public:
     CLWrapper *outputWrapper; // this is guaranteed to be up to date
     CLWrapper *gradInputWrapper; // this is guaranteed to be up to date
 
-    bool outputCopiedToHost;
-    bool gradInputCopiedToHost;
+//    bool outputCopiedToHost;
+//    bool gradInputCopiedToHost;
 
     int batchSize;
     int allocatedSize;

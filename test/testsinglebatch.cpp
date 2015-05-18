@@ -11,6 +11,7 @@
 #include "conv/ConvolutionalLayer.h"
 #include "net/NeuralNetMould.h"
 #include "layer/LayerMakers.h"
+#include "trainers/SGD.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -105,8 +106,21 @@ public:
     // [[[end]]]
 };
 
-//void test( int batchSize, float learningRate, int imageSize, int numLayers, int filterSize, int numFilters ) {
-void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
+// this tests whether the change in loss predicted by the change in weights
+// is approximately correct
+// the change in weights predicts the change in loss, because:
+// - the gradient of loss with respect to weights tells us how much
+//   the loss should change with respect ot a weights change
+// - the size of the weights change tells us the gradient of the loss 
+//   with respect to the weights :-)
+// therefore, the square of the change in weights should approximately
+// equal the change in loss
+// that's what this method checks
+// whether this is teh best way to do this is open to question
+// for alternative approaches, look at:
+//    - testbackward.checkLayer(), or
+//    - testupdateweights.test()
+void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net, float tolerance = 1.3f ) {
     net->setBatchSize( batchSize );
     MT19937 random;
     random.seed(0); // so always gives same output
@@ -140,23 +154,30 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 
     Timer timer;
     int weightsTotalSize = WeightsPersister::getTotalNumWeights(net);
+    cout << "weightsTotalSize=" << weightsTotalSize << endl;
     float *lastWeights = new float[weightsTotalSize];
     float *currentWeights = new float[weightsTotalSize];
     WeightsPersister::copyNetWeightsToArray( net, lastWeights );
+//    Sampler::sampleFloats( "lastWeights", weightsTotalSize, lastWeights );
 //    cout << "learningRate: " << args.learningRate << endl;
     float lastloss = 0;
     bool allOk = true;
+    SGD *sgd = SGD::instance( net->getCl(), learningRate, 0.0f );
     for( int i = 0; i < numEpochs; i++ ) {
 //        net->learnBatch( args.learningRate, inputData, expectedOutput );
-        net->forward( inputData );
-        net->backward( expectedOutput );
+        TrainingContext context(0, 0);
+        sgd->train( net, &context, inputData, expectedOutput );
+//        net->forward( inputData );
+//        net->backward( expectedOutput );
         WeightsPersister::copyNetWeightsToArray( net, currentWeights );
+//        Sampler::sampleFloats( "currentWeights", weightsTotalSize, currentWeights );
         float sumsquaredweightsdiff = 0;
         for( int j = 0; j < weightsTotalSize; j++ ) {
             float thisdiff = currentWeights[j] - lastWeights[j];
             sumsquaredweightsdiff += thisdiff * thisdiff;
         }
         float lossChangeFromW = (sumsquaredweightsdiff/learningRate);
+        net->forward( inputData );
         float thisloss = net->calcLoss( expectedOutput ) ;
         float lossChange = (lastloss - thisloss );
 //        cout << "i=" << i << endl;
@@ -171,14 +192,16 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
             allOk = false;
 //            EXPECT_TRUE( !isnan( lossChange ) );
         }
-        if( lossChange / lossChangeFromW > 1.3f ) {
+        if( lossChange / lossChangeFromW > tolerance ) {
+            cout << "tolerance " << tolerance << endl;
             cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
 //            cout << "loss: " << lastloss << " -> " << thisloss << endl;
 //            EXPECT_EQ( lossChange, lossChangeFromW );
             allOk = false;
-        } else if( lossChangeFromW / lossChange > 1.3f ) {
+        } else if( lossChangeFromW / lossChange > tolerance ) {
+            cout << "tolerance " << tolerance << endl;
             cout << "DIFF, epoch=" << i << " :" << endl;
             cout << "    losschangefromw " << lossChangeFromW << endl;
             cout << "    actual loss change " << lossChange << endl;
@@ -189,6 +212,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
         lastloss =thisloss;
 //        memcpy( lastWeights1, currentWeights1, sizeof(float) * weights1Size );
         WeightsPersister::copyNetWeightsToArray( net, lastWeights );
+//        Sampler::sampleFloats( "lastWeights", weightsTotalSize, lastWeights );
     }
     timer.timeCheck("batch time");
     StatefulTimer::dump(true);
@@ -198,13 +222,14 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net ) {
 //    float *output = (float*)(net->getOutput());
 //    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
 
+    delete sgd;
     delete[]currentWeights;
     delete[]lastWeights;
     delete[] expectedOutput;
     delete[] inputData;
 }
 
-void test( ActivationFunction *fn, TestArgs args ) {
+void test( ActivationFunction *fn, TestArgs args, float tolerance = 1.3f ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
@@ -223,7 +248,7 @@ void test( ActivationFunction *fn, TestArgs args ) {
         net->addLayer( SquareLossMaker::instance() );;
     }
     net->print();
-    test( args.learningRate, args.numEpochs, args.batchSize, net );
+    test( args.learningRate, args.numEpochs, args.batchSize, net, tolerance );
     delete net;
     delete cl;
 }
@@ -240,7 +265,7 @@ TEST( testsinglebatch, imagesize5_filtersize3_batchsize2_10filters ) {
 
 TEST( testsinglebatch, imagesize28 ) {
     test( new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(28).NumLayers(1)
-            .FilterSize(3).NumFilters(10).NumEpochs(100) );
+            .FilterSize(3).NumFilters(10).NumEpochs(100), 2.5f );
 }
 
 TEST( testsinglebatch, imagesize28_filtersize5 ) {

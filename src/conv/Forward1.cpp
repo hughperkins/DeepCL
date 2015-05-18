@@ -4,9 +4,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Forward1.h"
+#include "conv/Forward1.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
+#include "conv/AddBias.h"
 
 using namespace std;
 
@@ -17,16 +18,15 @@ using namespace std;
 
 VIRTUAL Forward1::~Forward1() {
     delete kernel;
+    delete addBias;
 }
 VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
-    kernel->in(batchSize)
-        ->in( dim.inputPlanes )->in( dim.numFilters )
-        ->in( dim.inputImageSize )->in( dim.filterSize )
-       ->in( dim.padZeros ? 1 : 0 );
+    StatefulTimer::timeCheck("Forward1::forward START");
+
+    kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 
     int globalSize = batchSize * dim.outputCubeSize;
@@ -37,15 +37,22 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     kernel->run_1d( globalSize, workgroupsize );
     cl->finish();
     StatefulTimer::timeCheck("Forward1::forward after call forward");
+
+    if( dim.biased ) {
+        addBias->forward(
+            batchSize, dim.numFilters, dim.outputImageSize,
+            outputWrapper, biasWrapper );
+    }
+    StatefulTimer::timeCheck("Forward1::forward END");
 }
 Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
-        Forward( cl, dim )
-            {
+            Forward( cl, dim )
+        {
+    addBias = new AddBias( cl );
 
-    std::string options = ""; // "-D " + fn->getDefineName();
-    if( dim.biased ) {
-         options += " -D BIASED";
-    }
+    std::string options = "";
+    options += dim.buildOptionsString();
+
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/forward1.cl", "convolve_imagecubes_float2", 'options' )
@@ -57,9 +64,6 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "// expected defines:\n" 
-    "// BIASED (or not)\n" 
     "\n" 
     "// notes on non-odd filtersizes:\n" 
     "// for odd, imagesize and filtersize 3, padZeros = 0:\n" 
@@ -117,69 +121,54 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "//     - loads a whole upstream cube\n" 
     "//     - loads a whole filter cube\n" 
     "//     - writes one output...\n" 
-    "void kernel convolve_imagecubes_float2( const int numExamples,\n" 
-    "      const int numInputPlanes, const int numFilters,\n" 
-    "      const int inputImageSize, const int filterSize, const int padZeros,\n" 
-    "      global const float *images, global const float *filters,\n" 
-    "#ifdef BIASED\n" 
-    "global const float*biases,\n" 
-    "#endif\n" 
+    "void kernel convolve_imagecubes_float2(\n" 
+    "    const int numExamples,\n" 
+    "      global const float *inputs, global const float *filters,\n" 
     "    global float *output ) {\n" 
     "    int globalId = get_global_id(0);\n" 
     "\n" 
-    "    const int evenPadding = filterSize % 2 == 0 ? 1 : 0;\n" 
-    "\n" 
-    "    int inputImageSizeSquared = inputImageSize * inputImageSize;\n" 
-    "    int outputImageSize = padZeros ? inputImageSize + evenPadding : inputImageSize - filterSize + 1;\n" 
-    "    int outputImageSizeSquared = outputImageSize * outputImageSize;\n" 
-    "    int filterSizeSquared = filterSize * filterSize;\n" 
-    "\n" 
-    "    int outputImage2Id = globalId / outputImageSizeSquared;\n" 
-    "    int exampleId = outputImage2Id / numFilters;\n" 
-    "    int filterId = outputImage2Id % numFilters;\n" 
-    "\n" 
-    "    int inputCubeOffset = exampleId * numInputPlanes * inputImageSizeSquared;\n" 
-    "    int filterCubeOffset = filterId * numInputPlanes * filterSizeSquared;\n" 
+    "    int outputImage2Id = globalId / gOutputImageSizeSquared;\n" 
+    "    int exampleId = outputImage2Id / gNumFilters;\n" 
+    "    int filterId = outputImage2Id % gNumFilters;\n" 
     "\n" 
     "    // intraimage coords\n" 
-    "    int localid = globalId % outputImageSizeSquared;\n" 
-    "    int outputRow = localid / outputImageSize;\n" 
-    "    int outputCol = localid % outputImageSize;\n" 
+    "    int localid = globalId % gOutputImageSizeSquared;\n" 
+    "    int outputRow = localid / gOutputImageSize;\n" 
+    "    int outputCol = localid % gOutputImageSize;\n" 
     "\n" 
-    "    int halfFilterSize = filterSize >> 1;\n" 
+    "    global float const*inputCube = inputs + exampleId * gNumInputPlanes * gInputImageSizeSquared;\n" 
+    "    global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;\n" 
+    "\n" 
     "    float sum = 0;\n" 
-    "    //  imagesize = oldimagesize\n" 
-    "    int minm = padZeros ? max( -halfFilterSize, -outputRow ) : -halfFilterSize;\n" 
-    "    int maxm = padZeros ? min( halfFilterSize - evenPadding, outputImageSize - 1 - outputRow  - evenPadding) : halfFilterSize - evenPadding;\n" 
-    "    int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;\n" 
-    "    int maxn = padZeros ? min( halfFilterSize - evenPadding, outputImageSize - 1 - outputCol - evenPadding) : halfFilterSize - evenPadding;\n" 
-    "    int inputPlane = 0;\n" 
-    "//    float probe = 0;\n" 
-    "    while( inputPlane < numInputPlanes ) {\n" 
-    "        int inputImageOffset = inputCubeOffset + inputPlane * inputImageSizeSquared;\n" 
-    "        int filterImageOffset = filterCubeOffset + inputPlane * filterSizeSquared;\n" 
-    "        int m = minm;\n" 
-    "        while( m <= maxm ) {\n" 
-    "            int inputRow = outputRow + m + ( padZeros ? 0 : halfFilterSize );\n" 
-    "            int inputimagerowoffset = inputImageOffset + inputRow * inputImageSize;\n" 
-    "            int filterrowoffset = filterImageOffset + (m+halfFilterSize) * filterSize + halfFilterSize;\n" 
-    "            int n = minn;\n" 
-    "            while( n <= maxn ) {\n" 
-    "                int inputCol = outputCol + n + ( padZeros ? 0 : halfFilterSize );\n" 
-    "                if( exampleId < numExamples ) {\n" 
-    "                    sum += images[ inputimagerowoffset + inputCol] * filters[ filterrowoffset + n ];\n" 
+    "    for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {\n" 
+    "        global float const*inputPlane = inputCube + inputPlaneIdx * gInputImageSizeSquared;\n" 
+    "        global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;\n" 
+    "        for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {\n" 
+    "            // trying to reduce register pressure...\n" 
+    "            #if gPadZeros == 1\n" 
+    "                #define inputRowIdx ( outputRow + u )\n" 
+    "            #else\n" 
+    "                #define inputRowIdx ( outputRow + u + gHalfFilterSize )\n" 
+    "            #endif\n" 
+    "            global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;\n" 
+    "            global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
+    "            bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;\n" 
+    "            #pragma unroll\n" 
+    "            for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {\n" 
+    "                #if gPadZeros == 1\n" 
+    "                    #define inputColIdx ( outputCol + v )\n" 
+    "                #else\n" 
+    "                    #define inputColIdx ( outputCol + v + gHalfFilterSize )\n" 
+    "                #endif\n" 
+    "                bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputImageSize;\n" 
+    "                if( process ) {\n" 
+    "                        sum += inputRow[inputColIdx] * filterRow[v];\n" 
     "                }\n" 
-    "                n++;\n" 
     "            }\n" 
-    "            m++;\n" 
     "        }\n" 
-    "        inputPlane++;\n" 
     "    }\n" 
     "\n" 
     "    if( exampleId < numExamples ) {\n" 
-    "    #ifdef BIASED\n" 
-    "        sum += biases[filterId];\n" 
-    "    #endif\n" 
     "        output[globalId] = sum;\n" 
     "    }\n" 
     "}\n" 

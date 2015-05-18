@@ -6,9 +6,10 @@
 
 #include <algorithm>
 
-#include "Forward2.h"
+#include "conv/Forward2.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
+#include "conv/AddBias.h"
 
 using namespace std;
 
@@ -19,36 +20,50 @@ using namespace std;
 
 VIRTUAL Forward2::~Forward2() {
     delete kernel;
+    delete addBias;
 }
 // only works for small filters
 // condition: square( dim.filterSize ) * dim.inputPlanes * 4 < 5000 (about 5KB)
 VIRTUAL void Forward2::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
+    StatefulTimer::timeCheck("Forward2::forward START");
     kernel->in(batchSize);
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
-    if( dim.biased ) kernel->input( biasWrapper );
     kernel->output( outputWrapper );
 //        cout << "square(outputImageSize) " << square( outputImageSize ) << endl;
     kernel->localFloats( square( dim.inputImageSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
-    int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
-    int numWorkgroups = dim.numFilters;
-    int globalSize = workgroupsize * numWorkgroups;
 //    cout << "forward2 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-    kernel->run_1d( globalSize, workgroupsize );
+    kernel->run_1d( globalSize, workgroupSize );
     cl->finish();
     StatefulTimer::timeCheck("Forward2::forward after call forward");
+
+    if( dim.biased ) {
+        addBias->forward(
+            batchSize, dim.numFilters, dim.outputImageSize,
+            outputWrapper, biasWrapper );
+    }
+    StatefulTimer::timeCheck("Forward2::forward END");
 }
 Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
-        Forward( cl, dim )
-            {
+            Forward( cl, dim )
+        {
     if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("cannot use forward2, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
+    addBias = new AddBias( cl );
+
+    this->workgroupSize = square( dim.outputImageSize );
+    // round up to nearest 32, so dont waste threads:
+    this->workgroupSize = ( ( workgroupSize + 32 - 1 ) / 32 ) * 32;
+    this->numWorkgroups = dim.numFilters;
+    this->globalSize = this->workgroupSize * this->numWorkgroups;
+
     std::string options = ""; // "-D " + fn->getDefineName();
     options += dim.buildOptionsString();
+    options += " -DgWorkgroupSize=" + toString( this->workgroupSize );
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "cl/forward2.cl", "forward_2_by_outplane", 'options' )
@@ -61,8 +76,15 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "// expected defines:\n" 
-    "// BIASED (or not)\n" 
+    "void copyLocal( local float *target, global float const *source, const int N ) {\n" 
+    "    int numLoops = ( N + gWorkgroupSize - 1 ) / gWorkgroupSize;\n" 
+    "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
+    "        int offset = loop * gWorkgroupSize + get_local_id(0);\n" 
+    "        if( offset < N ) {\n" 
+    "            target[offset] = source[offset];\n" 
+    "        }\n" 
+    "    }\n" 
+    "}\n" 
     "\n" 
     "#ifdef gOutputImageSize // for previous tests that dont define it\n" 
     "// workgroup id organized like: [outplane]\n" 
@@ -76,16 +98,12 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "// assumes filter is small, so filtersize * filterSize * inputPlanes * 4 < about 3KB\n" 
     "//                            eg 5 * 5 * 32 * 4 = 3.2KB => ok :-)\n" 
     "//                           but 28 * 28 * 32 * 4 = 100KB => less good :-P\n" 
-    "void kernel forward_2_by_outplane( const int batchSize,\n" 
-    "      global const float *images, global const float *filters,\n" 
-    "        #ifdef BIASED\n" 
-    "            global const float*biases,\n" 
-    "        #endif\n" 
-    "    global float *output,\n" 
-    "    local float *_upstreamImage, local float *_filterCube ) {\n" 
+    "void kernel forward_2_by_outplane(\n" 
+    "        const int batchSize,\n" 
+    "        global const float *images, global const float *filters,\n" 
+    "        global float *output,\n" 
+    "        local float *_inputPlane, local float *_filterCube ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "\n" 
-    "//    const int evenPadding = gFilterSize % 2 == 0 ? 1 : 0;\n" 
     "\n" 
     "    const int workgroupId = get_group_id(0);\n" 
     "    const int workgroupSize = get_local_size(0);\n" 
@@ -107,30 +125,21 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "        const int maxv = gHalfFilterSize - gEven;\n" 
     "    #endif\n" 
     "\n" 
-    "    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
-    "\n" 
-    "    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
-    "    const int filterCubeGlobalOffset = outPlane * filterCubeLength;\n" 
-    "    const int numPixelsPerThread = ( filterCubeLength + workgroupSize - 1 ) / workgroupSize;\n" 
-    "    for( int i = 0; i < numPixelsPerThread; i++ ) {\n" 
-    "        int thisOffset = localId + i * workgroupSize;\n" 
-    "        if( thisOffset < filterCubeLength ) {\n" 
-    "            _filterCube[thisOffset] = filters[filterCubeGlobalOffset + thisOffset];\n" 
-    "        }\n" 
+    "    {\n" 
+    "        const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
+    "        copyLocal( _filterCube,\n" 
+    "                filters + outPlane * filterCubeLength,\n" 
+    "                filterCubeLength );\n" 
     "    }\n" 
     "    // dont need a barrier, since we'll just run behind the barrier from the upstream image download\n" 
     "\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        float sum = 0;\n" 
     "        for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
-    "            int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "            for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
-    "                int thisOffset = workgroupSize * i + localId;\n" 
-    "                if( thisOffset < gInputImageSizeSquared ) {\n" 
-    "                    _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];\n" 
-    "                }\n" 
-    "            }\n" 
+    "            copyLocal( _inputPlane,\n" 
+    "                       images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared,\n" 
+    "                       gInputImageSizeSquared );\n" 
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "            int filterImageOffset = upstreamPlane * gFilterSizeSquared;\n" 
     "            if( localId < gOutputImageSizeSquared ) {\n" 
@@ -146,14 +155,11 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "                        #if gPadZeros == 0\n" 
     "                             inputCol += gHalfFilterSize;\n" 
     "                        #endif\n" 
-    "                        sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
+    "                        sum += _inputPlane[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
     "                    }\n" 
     "                }\n" 
     "            }\n" 
     "        }\n" 
-    "        #ifdef BIASED\n" 
-    "            sum += biases[outPlane];\n" 
-    "        #endif\n" 
     "        // output are organized like [imageid][filterid][row][col]\n" 
     "        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;\n" 
     "        if( localId < gOutputImageSizeSquared ) {\n" 
@@ -166,6 +172,5 @@ Forward2::Forward2( EasyCL *cl, LayerDimensions dim ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "forward_2_by_outplane", options, "cl/forward2.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "forward2.cl", "forward_2_by_outplane", options );
 }
 

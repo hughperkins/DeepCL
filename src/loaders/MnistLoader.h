@@ -13,6 +13,7 @@
 
 #include "DeepCLDllExport.h"
 
+#undef STATIC
 #define STATIC static
 
 class DeepCL_EXPORT MnistLoader {

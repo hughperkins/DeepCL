@@ -62,12 +62,12 @@ public:
     int batchSize;
     int allocatedSpaceNumExamples;
 
-    bool weightsCopiedToHost;
-    bool biasCopiedToHost;
-    bool outputCopiedToHost;
-    bool gradInputCopiedToHost;
-    bool gradWeightsCopiedToHost;
-    bool gradBiasCopiedToHost;
+//    bool weightsCopiedToHost;
+//    bool biasCopiedToHost;
+//    bool outputCopiedToHost;
+//    bool gradInputCopiedToHost;
+//    bool gradWeightsCopiedToHost;
+//    bool gradBiasCopiedToHost;
 
     GpuAdd *gpuAdd;
     CopyBuffer *copyBuffer;
@@ -126,9 +126,6 @@ public:
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
-    VIRTUAL float const *getWeights() const;
-    VIRTUAL float *getWeights();
-    VIRTUAL float *getBias();
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
@@ -138,14 +135,17 @@ public:
     VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void setWeights( float *weights, float *bias );
-    VIRTUAL void initWeights( float const*weights );
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getPersistSize() const;
     VIRTUAL void persistToArray(float *array);
     VIRTUAL void unpersistFromArray(float const*array);
+    VIRTUAL void initWeights( float const*weights );
     VIRTUAL void initBias( float const*bias );
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
+    VIRTUAL float const *getWeights() const;
+    VIRTUAL float *getWeights();
+    VIRTUAL float *getBias();
     VIRTUAL float * getOutput();
     VIRTUAL void forward();
     VIRTUAL void backward();
