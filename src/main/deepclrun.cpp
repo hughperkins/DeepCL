@@ -260,6 +260,7 @@ void go(Config config) {
     NeuralNet *net;
     net = new NeuralNet(cl);
 
+    cout << "1" << endl;
     WeightsInitializer *weightsInitializer = 0;
     if( toLower( config.weightsInitializer ) == "original" ) {
         weightsInitializer = new OriginalInitializer();
@@ -269,6 +270,7 @@ void go(Config config) {
         cout << "Unknown weights initializer " << config.weightsInitializer << endl;
         return;
     }
+    cout << "2" << endl;
 
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
@@ -278,6 +280,7 @@ void go(Config config) {
     }
     // apply the trainer
     Trainer *trainer = 0;
+    cout << "3" << endl;
     if( toLower( config.trainer ) == "sgd" ) {
         SGD *sgd = new SGD( cl );
         sgd->setLearningRate( config.learningRate );
@@ -309,11 +312,13 @@ void go(Config config) {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
     }
+    cout << "1" << endl;
     cout << "Using trainer " << trainer->asString() << endl;
 //    trainer->bindTo( net );
 //    net->setTrainer( trainer );
     net->setBatchSize( config.batchSize );
     net->print();
+    cout << "1" << endl;
 
     bool afterRestart = false;
     int restartEpoch = 0;
@@ -322,6 +327,7 @@ void go(Config config) {
     int restartNumRight = 0;
     float restartLoss = 0;
     if( config.loadWeights && config.weightsFile != "" ) {
+        cout << "loadingweights" << endl;
         afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
         if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
             // try old trainingstring
@@ -339,6 +345,7 @@ void go(Config config) {
         }
         cout << "reloaded epoch=" << restartEpoch << " batch=" << restartBatch << " numRight=" << restartNumRight << " loss=" << restartLoss << endl;
     }
+    cout << "1" << endl;
 
     timer.timeCheck("before learning start");
     if( config.dumpTimings ) {
@@ -352,6 +359,7 @@ void go(Config config) {
         multiNet = new MultiNet( config.multiNet, net );
         trainable = multiNet;
     }
+    cout << "1" << endl;
     NetLearnerBase *netLearner = 0;
     if( config.loadOnDemand ) {
         netLearner = new NetLearnerOnDemandv2( trainer, trainable,
@@ -367,16 +375,20 @@ void go(Config config) {
         );
     }
 //    netLearner->setTrainer( trainer );
+    cout << "1" << endl;
     netLearner->reset();
     netLearner->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
     if( afterRestart ) {
         netLearner->setBatchState( restartBatch, restartNumRight, restartLoss ); 
     }
+    cout << "1" << endl;
     netLearner->setDumpTimings( config.dumpTimings );
 //    netLearner->setLearningRate( config.learningRate, config.annealLearningRate );
     Timer weightsWriteTimer;
+    cout << "1" << endl;
     while( !netLearner->isLearningDone() ) {
 //        netLearnerBase->tickEpoch();
+        cout << "tick" << endl;
         netLearner->tickBatch();
         if( netLearner->getEpochDone() ) {
 //            cout << "epoch done" << endl;
