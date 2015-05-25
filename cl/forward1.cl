@@ -79,29 +79,31 @@ void kernel convolve_imagecubes_float2(
     global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;
 
     float sum = 0;
-    for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {
-        global float const*inputPlane = inputCube + inputPlaneIdx * gInputImageSizeSquared;
-        global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;
-        for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
-            // trying to reduce register pressure...
-            #if gPadZeros == 1
-                #define inputRowIdx ( outputRow + u )
-            #else
-                #define inputRowIdx ( outputRow + u + gHalfFilterSize )
-            #endif
-            global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;
-            global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-            bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;
-            #pragma unroll
-            for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
+    if( exampleId < numExamples ) {
+        for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {
+            global float const*inputPlane = inputCube + inputPlaneIdx * gInputImageSizeSquared;
+            global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;
+            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
+                // trying to reduce register pressure...
                 #if gPadZeros == 1
-                    #define inputColIdx ( outputCol + v )
+                    #define inputRowIdx ( outputRow + u )
                 #else
-                    #define inputColIdx ( outputCol + v + gHalfFilterSize )
+                    #define inputRowIdx ( outputRow + u + gHalfFilterSize )
                 #endif
-                bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputImageSize;
-                if( process ) {
-                        sum += inputRow[inputColIdx] * filterRow[v];
+                global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;
+                global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
+                bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;
+                #pragma unroll
+                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
+                    #if gPadZeros == 1
+                        #define inputColIdx ( outputCol + v )
+                    #else
+                        #define inputColIdx ( outputCol + v + gHalfFilterSize )
+                    #endif
+                    bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputImageSize;
+                    if( process ) {
+                            sum += inputRow[inputColIdx] * filterRow[v];
+                    }
                 }
             }
         }

@@ -921,7 +921,7 @@ TEST( testforward, crash_from_jm ) {
     int N = 64;
     LayerDimensions dim;
     dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 20 ).setFilterSize( 28 )
-        .setPadZeros( false ).setBiased( true );
+        .setPadZeros( false ).setBiased( false );
     DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance", &instance );
     TestArgsParser::arg( "n", &N );
