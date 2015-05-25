@@ -915,13 +915,28 @@ TEST( SLOW_testforward, perf_mnist_finallayer ) {
     testPerf( -1, 128, batchSize, dim );
 }
 
+TEST( testforward, crash_from_jm ) {
+    int instance = 1;
+    int batchSize = 64;
+    int N = 64;
+    LayerDimensions dim;
+    dim.setInputPlanes( 32 ).setInputImageSize(28).setNumFilters( 20 ).setFilterSize( 28 )
+        .setPadZeros( false ).setBiased( true );
+    DimFromArgs::arg( &dim );
+    TestArgsParser::arg( "instance", &instance );
+    TestArgsParser::arg( "n", &N );
+    TestArgsParser::arg( "batchsize", &batchSize );
+    TestArgsParser::go();
+    testPerf( instance, N, batchSize, dim );
+}
+
 TEST( SLOW_testforward, perf_kgsgo_64c7_args ) {
     int instance = 3;
     int batchSize = 128;
     int N = 1000;
     LayerDimensions dim;
     dim.setInputPlanes( 64 ).setInputImageSize(19).setNumFilters( 64 ).setFilterSize( 7 )
-        .setPadZeros( true ).setBiased( true );  
+        .setPadZeros( true ).setBiased( true );
     DimFromArgs::arg( &dim );
     TestArgsParser::arg( "instance", &instance );
     TestArgsParser::arg( "n", &N );
