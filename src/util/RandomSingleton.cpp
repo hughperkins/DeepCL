@@ -30,7 +30,7 @@ PUBLIC RandomSingleton::RandomSingleton() {
     myrandom.seed( seed );
 }
 PUBLIC STATIC RandomSingleton *RandomSingleton::instance() {
-    STATIC RandomSingleton *thisinstance = new RandomSingleton();
+    static RandomSingleton *thisinstance = new RandomSingleton();
     return thisinstance; // assume single-threaded, which... we are :-)
 }
 //    void testingonly_setInstance( RandomSingleton *testInstance ) {
