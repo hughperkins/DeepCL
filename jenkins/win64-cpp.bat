@@ -17,6 +17,9 @@ rmdir /s /q build
 mkdir build
 cd build
 dir
+set "VS100COMNTOOLS=c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\"
+set "VS110COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\"
+set "VS120COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\"
 "c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010 Win64" -D BUILD_PYSWIG_WRAPPERS:BOOL=OFF -D BUILD_LUA_WRAPPERS:BOOL=OFF -D JPEG_INCLUDE_DIR=%CD%\..\turbojpeg-win64 -D JPEG_LIBRARY=%CD%\..\turbojpeg-win64\turbojpeg-static.lib ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
