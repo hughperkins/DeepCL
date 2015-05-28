@@ -151,8 +151,6 @@ TEST( testupdateweights, conv1z ) {
 
 void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     float learningRate = 0.01f;
-//    const int batchSize = 1;
-//    const int imageSize = 1;
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     NeuralNet *net = NeuralNet::maker(cl)->instance();
@@ -170,17 +168,10 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     float *expectedOutput = new float[max(10000, outputSize )];
     memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
     memset( expectedOutput, 0, sizeof(float) * max(10000, outputSize ) );
-//    int seed = 0;
     std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, expectedOutput, max(10000, outputSize ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, net->getLayer(1)->getWeights(), weightsSize, -0.1f, 0.1f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
-//    for( int i = 0; i < inputSize; i++ ) {
-//        cout << "inputData[" << i << "]=" << inputData[i] << endl;
-//    }
-//    for( int i = 0; i < outputSize; i++ ) {
-//        cout << "expectedOutput[" << i << "]=" << expectedOutput[i] << endl;
-//    }
 
     float *weightsBefore = new float[weightsSize];
     float const*currentWeights = net->getLayer(1)->getWeights();
@@ -188,24 +179,15 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
         weightsBefore[i] = currentWeights[i];
     }
 
-//    net->print();
-//    cout << "forward" <<endl;
     net->forward( inputData );
-//    net->print();
     float loss = net->calcLoss(expectedOutput);
-//    float losslayer1 = dynamic_cast<LossLayer*>(net->getLayer(1))->calcLoss(expectedOutput);
-//    cout << "losslayer1 " << losslayer1 << endl;
 
-//    cout << "backprop now" <<endl;
     net->print();
     SGD *sgd = SGD::instance( cl, learningRate, 0.0f );
     TrainingContext context(0, 0);
     sgd->train( net, &context, inputData, expectedOutput );
-//    net->backward( expectedOutput );
-//    net->getLayer(1)->print();
     net->forward( inputData );
     net->print();
-//    net->getLayer(1)->print();
     float loss2 = net->calcLoss(expectedOutput);
     float lossChange = loss - loss2;
     cout << " loss " << loss << " loss2 " << loss2 << " change: " << lossChange << endl;
@@ -220,22 +202,18 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
         sumWeightDiffSquared += diff * diff;
     }
     cout << "sumweightsdiff " << sumWeightDiff << endl;
-//    cout << "sumweightsdiff / learningrate " << (sumWeightDiff / learningRate ) << endl;
-//    cout << "sum weightsdiffsquared " << (sumWeightDiffSquared/ learningRate / learningRate * imageSize ) << endl;
 
     float estimatedLossChangeFromW = sumWeightDiffSquared/ learningRate; // / filterSize;
 
     cout << " loss change              " << lossChange << endl;
     cout << " estimatedLossChangeFromW " << estimatedLossChangeFromW << endl;
-//    cout << abs(estimatedLossChangeFromW - lossChange ) / lossChange << endl;    
-//    cout << abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW << endl;    
     EXPECT_GT( 0.01f * imageSize * imageSize, abs(estimatedLossChangeFromW - lossChange ) / lossChange ); 
     EXPECT_GT( 0.01f * imageSize * imageSize, abs(estimatedLossChangeFromW - lossChange ) / estimatedLossChangeFromW ); 
 
-//    delete[] weights1;
-//    delete[] errors;
-//    delete[] output;
+    delete[] weightsBefore;
     delete sgd;
+    delete net;
+    delete[] expectedOutput;
     delete[] inputData;
     delete cl;
 }
@@ -566,40 +544,10 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     for( int i = 0 * dim.inputImageSize; i < dim.inputImageSize * dim.inputImageSize; i+= dim.inputImageSize * 4 ) {
         inputData[i] = 3;
     }
-//    inputData[ 86 * 96 ] = 3;
-
-//    inputData[ 0 ] = 3;
-
-//    inputData[47 * 96] = 9;
-//    inputData[48 * 96] = 3;
-
-//    inputData[71 * 96] = 17;
-//    inputData[72 * 96] = 13;
-
-//    inputData[82 * 96] = 16;
-//    inputData[83 * 96] = 18;
-//    inputData[84 * 96] = 100;
-//    inputData[85 * 96] = 42;
-//    inputData[95 * 96] = 7;
 
     for( int i = 0; i < dim.outputImageSize * dim.outputImageSize; i+= dim.outputImageSize ) {
         errors[i] = 2;
     }
-
-//    errors[0] = 4;
-
-//    errors[46 * 93] = 4;
-//    errors[47 * 93] = 6;
-
-//    errors[81 * 93] = 4;
-//    errors[82 * 93] = 15;
-//    errors[83 * 93] = 8;
-
-//    errors[84 * 93] = 3;
-//    errors[85 * 93] = 9;
-
-//    errors[92 * 93] = 5;
-
 
     errorsWrap->copyToDevice();
     inputWrap->copyToDevice();
@@ -661,6 +609,16 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
         }
         cout << endl;
     }
+    delete backpropWeightsImpl0;
+    delete backpropWeightsImpl1;
+    delete errorsWrap;
+    delete inputWrap;
+    delete weights0Wrap;
+    delete weights1Wrap;
+    delete[] errors;
+    delete[] inputData;
+    delete[] weights0;
+    delete[] weights1;
     delete cl;
 }
 
