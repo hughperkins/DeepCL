@@ -103,7 +103,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernel );
+    cl->storeKernel( kernelName, kernel, true );
     this->kernel = kernel;
 }
 

@@ -101,7 +101,7 @@ MultiplyInPlace::MultiplyInPlace( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "multiplyInplace", options, "cl/copy.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernel );
+    cl->storeKernel( kernelName, kernel, true );
     this->kernel = kernel;
 }
 // Copyright Hugh Perkins 2015 hughperkins at gmail

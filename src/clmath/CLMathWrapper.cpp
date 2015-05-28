@@ -145,7 +145,7 @@ void CLMathWrapper::buildInv() {
     "";
     kernelInv = cl->buildKernelFromString( kernelInvSource, "array_inv", options, "cl/inv.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernelInv );
+    cl->storeKernel( kernelName, kernelInv, true );
 }
 void CLMathWrapper::buildAddScalar() {
     std::string kernelName = "kernelAddScalar";
@@ -183,7 +183,7 @@ void CLMathWrapper::buildAddScalar() {
     "";
     kernelAddScalar = cl->buildKernelFromString( kernelAddScalarSource, "add_scalar", options, "cl/addscalar.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernelAddScalar );
+    cl->storeKernel( kernelName, kernelAddScalar, true );
 }
 void CLMathWrapper::buildPerElementMultInPlace() {
     std::string kernelName = "PerElementMultInPlace";
@@ -218,7 +218,7 @@ void CLMathWrapper::buildPerElementMultInPlace() {
     "";
     kernelPerElementMultInPlace = cl->buildKernelFromString( kernelPerElementMultInPlaceSource, "per_element_mult_inplace", options, "cl/per_element_mult.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernelPerElementMultInPlace );
+    cl->storeKernel( kernelName, kernelPerElementMultInPlace, true );
 }
 void CLMathWrapper::buildSqrt() {
     std::string sqrtKernelName = "sqrt";
@@ -254,7 +254,7 @@ void CLMathWrapper::buildSqrt() {
     "";
     kernelSqrt = cl->buildKernelFromString( kernelSqrtSource, "array_sqrt", options, "cl/sqrt.cl" );
     // [[[end]]]
-    cl->storeKernel( sqrtKernelName, kernelSqrt );
+    cl->storeKernel( sqrtKernelName, kernelSqrt, true );
 }
 
 void CLMathWrapper::buildSquared() {
@@ -291,6 +291,6 @@ void CLMathWrapper::buildSquared() {
     "";
     kernelSquared = cl->buildKernelFromString( kernelSquaredSource, "array_squared", options, "cl/squared.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernelSquared );
+    cl->storeKernel( kernelName, kernelSquared, true );
 }
 

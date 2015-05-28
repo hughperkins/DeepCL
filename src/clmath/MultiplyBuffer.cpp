@@ -113,7 +113,7 @@ MultiplyBuffer::MultiplyBuffer( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "multiplyConstant", options, "cl/copy.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernel );
+    cl->storeKernel( kernelName, kernel, true );
     this->kernel = kernel;
 }
 
