@@ -146,6 +146,7 @@ public:
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL float *getBias();
+    VIRTUAL float const*getBias() const;
     VIRTUAL float * getOutput();
     VIRTUAL void forward();
     VIRTUAL void backward();

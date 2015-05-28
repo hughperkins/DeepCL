@@ -361,9 +361,14 @@ VIRTUAL float *ConvolutionalLayer::getWeights() {
 }
 VIRTUAL float *ConvolutionalLayer::getBias() {
     if( biasWrapper->isDeviceDirty() ) {
-//        cout << "copying bias to host" << endl;
         cl->finish();
         biasWrapper->copyToHost();
+    }
+    return bias;
+}
+VIRTUAL float const*ConvolutionalLayer::getBias() const {
+    if( biasWrapper->isDeviceDirty() ) {
+        throw std::runtime_error("bias not copied to host, and htis is const object, so cannot copy");
     }
     return bias;
 }

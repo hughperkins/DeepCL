@@ -100,29 +100,8 @@ VIRTUAL void Layer::initBias( float const *bias ) {
 //        this->bias[i] = bias[i];
 //    }
 }
-VIRTUAL void Layer::printWeightsAsCode() const {
-    std::cout << "float weights" << layerIndex << "[] = {";
-    const int numWeights = getWeightsSize();
-    float const*weights = getWeights();
-    for( int i = 0; i < numWeights; i++ ) {
-        std::cout << weights[i];
-        if( i < numWeights - 1 ) std::cout << ", ";
-        if( i > 0 && i % 20 == 0 ) std::cout << std::endl;
-    }
-    std::cout << "};" << std::endl;
-//        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
-}
-VIRTUAL void Layer::printBiasAsCode() const {
-    std::cout << "float bias" << layerIndex << "[] = {";
-    const int numBias = getBiasSize();
-    float const*bias = getBias();
-    for( int i = 0; i < numBias; i++ ) {
-        std::cout << bias[i];
-        if( i < numBias - 1 ) std::cout << ", ";
-        if( i > 0 && i % 20 == 0 ) std::cout << std::endl;
-    }
-    std::cout << "};" << std::endl;
-//        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
+int Layer::getLayerIndex() {
+    return layerIndex;
 }
 VIRTUAL void Layer::printWeights() {
     throw std::runtime_error("printWeights not implemented for " + getClassName() );
@@ -166,8 +145,11 @@ VIRTUAL float const *Layer::getWeights() const {
 VIRTUAL float *Layer::getWeights() {
     throw std::runtime_error("getWeights not implemented for " + getClassName() );
 }
-VIRTUAL float const*Layer::getBias() const {
+VIRTUAL float *Layer::getBias() {
     throw std::runtime_error("getBias not implemented for " + getClassName() );
+}
+VIRTUAL float const*Layer::getBias() const {
+    throw std::runtime_error("getBias const not implemented for " + getClassName() );
 }
 /// \brief Get a string representation of the layer
 PUBLICAPI VIRTUAL std::string Layer::asString() const {

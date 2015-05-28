@@ -69,8 +69,7 @@ public:
     VIRTUAL void print();
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL void initBias( float const *bias );
-    VIRTUAL void printWeightsAsCode() const;
-    VIRTUAL void printBiasAsCode() const;
+    int getLayerIndex();
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
     PUBLICAPI VIRTUAL void backward();
@@ -84,6 +83,7 @@ public:
     VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
+    VIRTUAL float *getBias();
     VIRTUAL float const*getBias() const;
     PUBLICAPI VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainerState  () const;

@@ -87,16 +87,6 @@ PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights ) {
 PUBLICAPI void NeuralNet::initBias( int layerIndex, float *weights ) {
     layers[layerIndex]->initBias( weights );
 }
-void NeuralNet::printWeightsAsCode() {
-    for( int layer = 1; layer < (int)layers.size(); layer++ ) {
-        layers[layer]->printWeightsAsCode();
-    }
-}
-void NeuralNet::printBiasAsCode() {
-    for( int layer = 1; layer < (int)layers.size(); layer++ ) {
-        layers[layer]->printBiasAsCode();
-    }
-}
 /// \brief calculate the loss, based on the passed in expectedValues array
 ///
 /// \publicapi
