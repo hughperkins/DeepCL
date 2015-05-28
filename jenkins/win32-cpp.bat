@@ -21,8 +21,9 @@ set "VS100COMNTOOLS=c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\
 set "VS110COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\"
 set "VS120COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\"
 echo set(BUILD_LUA_WRAPPERS "OFF" CACHE BOOL "BUILD_LUA_WRAPPERS")>initcache.cmake
-echo set(JPEG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/turbojpeg-win32" CACHE PATH "JPEG_INCLUDE_DIR")>>initcache.cmake
-echo set(JPEG_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/turbojpeg-win32/turbojpeg-static.lib" CACHE PATH "JPEG_LIBRARY")>>initcache.cmake
+echo get_filename_component(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)>>initcache.cmake
+echo set(JPEG_INCLUDE_DIR "${SOURCE_DIR}/turbojpeg-win32" CACHE PATH "JPEG_INCLUDE_DIR")>>initcache.cmake
+echo set(JPEG_LIBRARY "${SOURCE_DIR}/turbojpeg-win32/turbojpeg-static.lib" CACHE PATH "JPEG_LIBRARY")>>initcache.cmake
 "c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010" -C initcache.cmake ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
