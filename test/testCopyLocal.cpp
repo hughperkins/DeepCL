@@ -43,7 +43,7 @@ TEST( testCopyLocal, basic ) {
     cout << endl;
     for( int i = 12; i < 16; i++ ) {
         cout << b[i] << " ";
-        EXPECT_EQ( 0, b[i] );
+        EXPECT_FLOAT_NEAR( 0, b[i] );
     }
     cout << endl;
 
