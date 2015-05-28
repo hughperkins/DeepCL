@@ -350,8 +350,8 @@ TEST( testforward, test2 ) {
     EXPECT_FLOAT_NEAR( 0.5f * 0.300809f +0.5f * 0.11011f, output[2] );
     EXPECT_FLOAT_NEAR( 0.5f * 0.0570846f -0.5f * 0.347077f, output[3] );
 
-    delete forward;
     delete[] output;
+    delete forward;
     delete cl;
 }
 
