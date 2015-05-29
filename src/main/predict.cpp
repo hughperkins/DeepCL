@@ -22,9 +22,6 @@ using namespace std;
         ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1, True),
 
         ('weightsFile', 'string', 'file to read weights from','weights.dat', True),
-        ('normalization', 'string', '[stddev|maxmin]', 'stddev', True),
-        ('normalizationNumStds', 'float', 'with stddev normalization, how many stddevs from mean is 1?', 2.0, True),
-        ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('batchSize', 'int', 'batch size', 128, True),
 
@@ -46,9 +43,6 @@ public:
     // generated using cog:
     int gpuIndex;
     string weightsFile;
-    string normalization;
-    float normalizationNumStds;
-    int normalizationExamples;
     int loadOnDemand;
     int batchSize;
     int writeIntLabels;
@@ -73,9 +67,6 @@ public:
         // generated using cog:
         gpuIndex = -1;
         weightsFile = "weights.dat";
-        normalization = "stddev";
-        normalizationNumStds = 2.0f;
-        normalizationExamples = 10000;
         loadOnDemand = 0;
         batchSize = 128;
         writeIntLabels = 0;
@@ -287,9 +278,6 @@ void printUsage( char *argv[], Config config ) {
     cout << "public api, shouldnt change within major version:" << endl;
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
     cout << "    weightsfile=[file to read weights from] (" << config.weightsFile << ")" << endl;
-    cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
-    cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
-    cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
@@ -330,12 +318,6 @@ int main( int argc, char *argv[] ) {
                 config.gpuIndex = atoi(value);
             } else if( key == "weightsfile" ) {
                 config.weightsFile = (value);
-            } else if( key == "normalization" ) {
-                config.normalization = (value);
-            } else if( key == "normalizationnumstds" ) {
-                config.normalizationNumStds = atof(value);
-            } else if( key == "normalizationexamples" ) {
-                config.normalizationExamples = atoi(value);
             } else if( key == "loadondemand" ) {
                 config.loadOnDemand = atoi(value);
             } else if( key == "batchsize" ) {
