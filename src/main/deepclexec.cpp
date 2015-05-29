@@ -227,10 +227,13 @@ void go(Config config) {
 
     // ideally, this could go in GenericReader somehow I reckon, but putting it here is ok for now :-)   - Hugh
     float * inputData = new float[ inputCubeSize * config.batchSize];
-    if( config.dataDir != "" ) {
-        config.inputFile = config.dataDir + "/" + config.inputFile;
-        config.outputFile = config.dataDir + "/" + config.outputFile;
-    }
+// jm: this makes it impossible to select iofiles outside the datadir,
+//     which we should be able to do
+//
+//    if( config.dataDir != "" ) {
+//        config.inputFile = config.dataDir + "/" + config.inputFile;
+//        config.outputFile = config.dataDir + "/" + config.outputFile;
+//    }
     cout << "Reading inputs from:  '" << config.inputFile << "'" << endl;
     cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
 //    ifstream fin(config.inputFile, ios::in | ios::binary);
