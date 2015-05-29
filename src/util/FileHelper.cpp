@@ -31,7 +31,7 @@ PUBLIC STATIC char *FileHelper::readBinary( std::string filepath, long *p_filesi
         throw std::runtime_error("couldnt open file " + localPath);
     }
     *p_filesize = static_cast<long>( file.tellg() );
-    std::cout << " filesize " << *p_filesize << std::endl;
+//    std::cout << " filesize " << *p_filesize << std::endl;
     char *data = new char[*p_filesize];
     file.seekg(0, std::ios::beg);
     if(!file.read( data, *p_filesize )) {

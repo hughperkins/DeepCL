@@ -46,7 +46,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
 //        cout << "CopyBuffer kernel already built => reusing" << endl;
         return;
     }
-    cout << "CopyBuffer: building kernel" << endl;
+//    cout << "CopyBuffer: building kernel" << endl;
 
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";

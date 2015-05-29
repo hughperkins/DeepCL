@@ -383,7 +383,7 @@ void go(Config config) {
 //            cout << "epoch done" << endl;
             if( config.weightsFile != "" ) {
                 cout << "record epoch=" << netLearner->getNextEpoch() << endl;
-                WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0 );
+                WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0, translate, scale );
                 weightsWriteTimer.lap();
             }
 //            Sampler::sampleFloatWrapper( "conv weights", net->getLayer(6)->getWeightsWrapper() );
@@ -405,7 +405,7 @@ void go(Config config) {
                         " numRight=" << batchNumRight << "(" << (batchNumRight * 100.0f / nextBatch / config.batchSize ) << "%)" <<
                         " loss=" << batchLoss << endl;
                     WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net,
-                        nextEpoch, nextBatch, 0, batchNumRight, batchLoss );
+                        nextEpoch, nextBatch, 0, batchNumRight, batchLoss, translate, scale );
                     weightsWriteTimer.lap();
                 }
             }

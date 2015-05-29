@@ -243,7 +243,7 @@ PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::str
 
 STATIC bool NetdefToNet::createNetFromNetdef( NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer ) {
     string netDefLower = toLower( netdef );
-    cout << "netDefLower [" << netDefLower << "]" << endl;
+//    cout << "netDefLower [" << netDefLower << "]" << endl;
     try {
         netDefLower = expandMultipliers( netDefLower );
     } catch( runtime_error &e ) {

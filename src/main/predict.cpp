@@ -1,5 +1,4 @@
-// Copyright Hugh Perkins, Josef Moudrik 2015
-// - hughperkins at gmail
+// Copyright Hugh Perkins (hughperkins at gmail), Josef Moudrik 2015
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License, 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -22,9 +21,6 @@ using namespace std;
     options = [
         ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1, True),
 
-        ('dataDir', 'string', 'directory to search for train and validate files', '../data/mnist', True),
-        ('trainFile', 'string', 'path to training data file',"train-images-idx3-ubyte", True),
-        ('dataset', 'string', 'choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]','', True),
         ('weightsFile', 'string', 'file to read weights from','weights.dat', True),
         ('normalization', 'string', '[stddev|maxmin]', 'stddev', True),
         ('normalizationNumStds', 'float', 'with stddev normalization, how many stddevs from mean is 1?', 2.0, True),
@@ -32,9 +28,10 @@ using namespace std;
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('batchSize', 'int', 'batch size', 128, True),
 
-        ('inputFile',  'string', 'file to read inputs from', 'input.dat', True),
-        ('outputFile', 'string', 'file to write outputs to', 'output.dat', True),
-        ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False)
+        # lets go with pipe for now, and then somehow shoehorn files in later?
+        # ('inputFile',  'string', 'file to read inputs from', 'input.dat', False),
+        # ('outputFile', 'string', 'file to write outputs to', 'output.dat', True),
+        ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, True)
     ]
 *///]]]
 // [[[end]]]
@@ -48,17 +45,12 @@ public:
     */// ]]]
     // generated using cog:
     int gpuIndex;
-    string dataDir;
-    string trainFile;
-    string dataset;
     string weightsFile;
     string normalization;
     float normalizationNumStds;
     int normalizationExamples;
     int loadOnDemand;
     int batchSize;
-    string inputFile;
-    string outputFile;
     int writeIntLabels;
     // [[[end]]]
 
@@ -80,96 +72,43 @@ public:
         */// ]]]
         // generated using cog:
         gpuIndex = -1;
-        dataDir = "../data/mnist";
-        trainFile = "train-images-idx3-ubyte";
-        dataset = "";
         weightsFile = "weights.dat";
         normalization = "stddev";
         normalizationNumStds = 2.0f;
         normalizationExamples = 10000;
         loadOnDemand = 0;
         batchSize = 128;
-        inputFile = "input.dat";
-        outputFile = "output.dat";
         writeIntLabels = 0;
         // [[[end]]]
     }
 };
 
 void go(Config config) {
-    int Ntrain;
+//    int N;
     int numPlanes;
     int imageSize;
+    int imageSizeCheck;
+    int dims[3];
+    cin.read( reinterpret_cast< char * >( dims ), 3 * 4l );
+    numPlanes = dims[0];
+    imageSize = dims[1];
+    imageSizeCheck = dims[2];
+//    cout << "planes " << numPlanes << " size " << imageSize << " sizecheck " << imageSizeCheck << endl;
+    if( imageSize != imageSizeCheck ) {
+        throw std::runtime_error( "imageSize doesnt match imageSizeCheck, image not square" );
+    }
 
-    float *trainData = 0;
-    int *trainLabels = 0;
-    int trainAllocateN = 0;
+//    float *data = 0;
+//    int allocateN = 0;
 
     //
     // ## Load training data (for initialization of normalizer)
     //
 
-    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &imageSize );
-
     // we need just the number of examples to compute the normalization params
-    Ntrain = config.normalizationExamples > Ntrain ? Ntrain : config.normalizationExamples;
-
-    cout << "normalizationExamples " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
-    if( config.loadOnDemand ) {
-        trainAllocateN = config.batchSize; // can improve this later
-    } else {
-        trainAllocateN = Ntrain;
-    }
+//    N = config.normalizationExamples > N ? N : config.normalizationExamples;
 
     const long inputCubeSize = numPlanes * imageSize * imageSize ;
-
-    trainData = new float[ (long)trainAllocateN * inputCubeSize];
-    trainLabels = new int[trainAllocateN];
-    if( !config.loadOnDemand && Ntrain > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
-    }
-
-    //
-    // ## Init the normalizer
-    //
-
-    float translate;
-    float scale;
-    if( !config.loadOnDemand ) {
-        if( config.normalization == "stddev" ) {
-            float mean, stdDev;
-            NormalizationHelper::getMeanAndStdDev( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
-            cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
-            translate = - mean;
-            scale = 1.0f / stdDev / config.normalizationNumStds;
-        } else if( config.normalization == "maxmin" ) {
-            float mean, stdDev;
-            NormalizationHelper::getMinMax( trainData, Ntrain * inputCubeSize, &mean, &stdDev );
-            translate = - mean;
-            scale = 1.0f / stdDev;
-        } else {
-            cout << "Error: Unknown normalization: " << config.normalization << endl;
-            return;
-        }
-    } else {
-        if( config.normalization == "stddev" ) {
-            float mean, stdDev;
-            NormalizeGetStdDev normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetStdDev );
-            normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
-            cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
-            translate = - mean;
-            scale = 1.0f / stdDev / config.normalizationNumStds;
-        } else if( config.normalization == "maxmin" ) {
-            NormalizeGetMinMax normalizeGetMinMax( trainData, trainLabels );
-            BatchProcess::run( config.dataDir + "/" + config.trainFile, 0, config.batchSize, Ntrain, inputCubeSize, &normalizeGetMinMax );
-            normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
-        } else {
-            cout << "Error: Unknown normalization: " << config.normalization << endl;
-            return;
-        }
-    }
-    cout << " image norm translate " << translate << " scale " << scale << endl;
 
     //
     // ## Set up the Network
@@ -177,9 +116,9 @@ void go(Config config) {
 
     EasyCL *cl = 0;
     if( config.gpuIndex >= 0 ) {
-        cl = EasyCL::createForIndexedGpu( config.gpuIndex );
+        cl = EasyCL::createForIndexedGpu( config.gpuIndex, false );
     } else {
-        cl = EasyCL::createForFirstGpuOtherwiseCpu();
+        cl = EasyCL::createForFirstGpuOtherwiseCpu(false);
     }
 
     NeuralNet *net;
@@ -194,10 +133,13 @@ void go(Config config) {
     }
 
     string netDef;
-    if ( ! WeightsPersister::loadConfigString(config.weightsFile, netDef)){
+    float translate;
+    float scale;
+    if ( !WeightsPersister::loadConfigString( config.weightsFile, netDef, &translate, &scale ) ){
         cout << "Cannot load network definition from weightsFile." << endl;
         return;
     }
+//    cout << "net def from weights file: " << netDef << endl;
 
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
@@ -215,9 +157,9 @@ void go(Config config) {
         return;
     }
 
-    net->print();
+    //net->print();
     net->setBatchSize(config.batchSize);
-    cout << "batchSize: " << config.batchSize << endl;
+//    cout << "batchSize: " << config.batchSize << endl;
 
 
     //
@@ -230,12 +172,13 @@ void go(Config config) {
 // jm: this makes it impossible to select iofiles outside the datadir,
 //     which we should be able to do
 //
+//
 //    if( config.dataDir != "" ) {
 //        config.inputFile = config.dataDir + "/" + config.inputFile;
 //        config.outputFile = config.dataDir + "/" + config.outputFile;
 //    }
-    cout << "Reading inputs from:  '" << config.inputFile << "'" << endl;
-    cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
+//    cout << "Reading inputs from:  '" << config.inputFile << "'" << endl;
+//    cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
 //    ifstream fin(config.inputFile, ios::in | ios::binary);
 //    ofstream fout(config.outputFile, ios::out | ios::binary);
 
@@ -250,30 +193,40 @@ void go(Config config) {
 //    }
 
 
-    cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
-    cout << "Output image size is: " << net->getOutputCubeSize() * 4 << " B" << endl;
+//    cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
+//    cout << "Output image size is: " << net->getOutputCubeSize() * 4 << " B" << endl;
 
     int *labels = new int[config.batchSize];
     int n = 0;
-    long fileSize = FileHelper::getFilesize( config.inputFile );
-    int totalN = fileSize / inputCubeSize / 4;
-    cout << "totalN: " << totalN << endl;
-    while( n < totalN ){
+//    long fileSize = FileHelper::getFilesize( config.inputFile );
+//    int totalN = fileSize / inputCubeSize / 4;
+//    cout << "totalN: " << totalN << endl;
+//    while( n < totalN ){
+    
+    #ifdef _WIN32
+    // refs:
+    // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
+    // http://www.cplusplus.com/forum/windows/77812/
+    _setmode( _fileno( stdout ), _O_BINARY ); 
+    #endif
+    cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
+    while( cin ) {
 //        fin.read( reinterpret_cast<char *>(inputData), config.batchSize * inputCubeSize * 4);
-        FileHelper::readBinaryChunk( reinterpret_cast<char *>(inputData), config.inputFile, (long)n * inputCubeSize * 4, (long)inputCubeSize * config.batchSize * 4 );
+//        FileHelper::readBinaryChunk( reinterpret_cast<char *>(inputData), config.inputFile, (long)n * inputCubeSize * 4, (long)inputCubeSize * config.batchSize * 4 );
 //        if( !fin ){
 //            break;
 //        }
 
-    	cout << "Read " << config.batchSize << " input cubes." << endl;
+//    	cout << "Read " << config.batchSize << " input cubes." << endl;
 
         net->forward(inputData);  // seems ok...   - Hugh
 
         if( !config.writeIntLabels ) {
-            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(net->getOutput()), 
-                n * 4 * net->getOutputCubeSize(),
-                config.batchSize * 4 * net->getOutputCubeSize() );
+//            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(net->getOutput()), 
+//                n * 4 * net->getOutputCubeSize(),
+//                config.batchSize * 4 * net->getOutputCubeSize() );
 //            fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
+            cout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
         } else {
             // calculate the labels somehow...
             // ... added 'getLabels' to SoftMaxLayer
@@ -284,27 +237,29 @@ void go(Config config) {
             }
             softMaxLayer->getLabels(labels);
 //            fout.write( reinterpret_cast<const char *>(labels), config.batchSize * 4);
-            if( n == 0 ) {
-                for( int i = 0; i < config.batchSize / 4; i++ ) {
-                    cout << "out[" << i << "]=" << labels[i] << endl;
-                }
-            }
-            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(labels), n * 4, config.batchSize * 4);
+//            if( n == 0 ) {
+//                for( int i = 0; i < config.batchSize / 4; i++ ) {
+//                    cout << "out[" << i << "]=" << labels[i] << endl;
+//                }
+//            }
+            cout.write( reinterpret_cast< char * >( labels ), config.batchSize * 4l );
+//            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(labels), n * 4, config.batchSize * 4);
         }
         n += config.batchSize;
-        if( ( n + config.batchSize > totalN ) && ( n != totalN ) ) {
-            cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
-            break;
-        }
+//        if( ( n + config.batchSize > totalN ) && ( n != totalN ) ) {
+//            cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
+//            break;
+//        }
 //        if( !fout ){
 //            break;
 //        }
 
 //	fout.flush();
 //        cout << "Written output image." << endl;
+        cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
     }
 
-    cout << "Exiting." << endl;
+//    cout << "Exiting." << endl;
 
     delete[] labels;
     delete weightsInitializer;
@@ -331,20 +286,15 @@ void printUsage( char *argv[], Config config ) {
     // generated using cog:
     cout << "public api, shouldnt change within major version:" << endl;
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
-    cout << "    datadir=[directory to search for train and validate files] (" << config.dataDir << ")" << endl;
-    cout << "    trainfile=[path to training data file] (" << config.trainFile << ")" << endl;
-    cout << "    dataset=[choose datadir,trainfile,and validatefile for certain datasets [mnist|norb|kgsgo|cifar10]] (" << config.dataset << ")" << endl;
     cout << "    weightsfile=[file to read weights from] (" << config.weightsFile << ")" << endl;
     cout << "    normalization=[[stddev|maxmin]] (" << config.normalization << ")" << endl;
     cout << "    normalizationnumstds=[with stddev normalization, how many stddevs from mean is 1?] (" << config.normalizationNumStds << ")" << endl;
     cout << "    normalizationexamples=[number of examples to read to determine normalization parameters] (" << config.normalizationExamples << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
-    cout << "    inputfile=[file to read inputs from] (" << config.inputFile << ")" << endl;
-    cout << "    outputfile=[file to write outputs to] (" << config.outputFile << ")" << endl;
+    cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
     cout << "" << endl; 
     cout << "unstable, might change within major version:" << endl; 
-    cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
     // [[[end]]]
 }
 
@@ -378,12 +328,6 @@ int main( int argc, char *argv[] ) {
             if( false ) {
             } else if( key == "gpuindex" ) {
                 config.gpuIndex = atoi(value);
-            } else if( key == "datadir" ) {
-                config.dataDir = (value);
-            } else if( key == "trainfile" ) {
-                config.trainFile = (value);
-            } else if( key == "dataset" ) {
-                config.dataset = (value);
             } else if( key == "weightsfile" ) {
                 config.weightsFile = (value);
             } else if( key == "normalization" ) {
@@ -396,10 +340,6 @@ int main( int argc, char *argv[] ) {
                 config.loadOnDemand = atoi(value);
             } else if( key == "batchsize" ) {
                 config.batchSize = atoi(value);
-            } else if( key == "inputfile" ) {
-                config.inputFile = (value);
-            } else if( key == "outputfile" ) {
-                config.outputFile = (value);
             } else if( key == "writeintlabels" ) {
                 config.writeIntLabels = atoi(value);
             // [[[end]]]
@@ -412,33 +352,6 @@ int main( int argc, char *argv[] ) {
                 return -1;
             }
         }
-    }
-    string dataset = toLower( config.dataset );
-    if( dataset != "" ) {
-        if( dataset == "mnist" ) {
-            config.dataDir = "../data/mnist";
-            config.trainFile = "train-images-idx3-ubyte";
-        } else if( dataset == "norb" ) {
-            config.dataDir = "../data/norb";
-            config.trainFile = "training-shuffled-dat.mat";
-        } else if( dataset == "cifar10" ) {
-            config.dataDir = "../data/cifar10";
-            config.trainFile = "train-dat.mat";
-        } else if( dataset == "kgsgo" ) {
-            config.dataDir = "../data/kgsgo";
-            config.trainFile = "kgsgo-train10k-v2.dat";
-            config.loadOnDemand = 1;
-        } else if( dataset == "kgsgoall" ) {
-            config.dataDir = "../data/kgsgo";
-            config.trainFile = "kgsgo-trainall-v2.dat";
-            config.loadOnDemand = 1;
-        } else {
-            cout << "dataset " << dataset << " not known.  please choose from: mnist, norb, cifar10, kgsgo" << endl;
-            return -1;
-        }
-        cout << "Using dataset " << dataset << ":" << endl;
-        cout << "   datadir: " << config.dataDir << ":" << endl;
-        cout << "   trainfile: " << config.trainFile << ":" << endl;
     }
     try {
         go( config );

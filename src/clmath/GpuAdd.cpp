@@ -42,7 +42,7 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
 //        cout << "GpuAdd kernel already built => reusing" << endl;
         return;
     }
-    cout << "GpuAdd: building kernel" << endl;
+//    cout << "GpuAdd: building kernel" << endl;
 
     string options = "";
 

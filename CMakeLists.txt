@@ -143,6 +143,7 @@ add_executable( predict src/main/predict.cpp src/util/stringhelper.cpp )
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
+add_executable( mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
