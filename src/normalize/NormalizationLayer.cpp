@@ -38,7 +38,16 @@ VIRTUAL ActivationFunction const *NormalizationLayer::getActivationFunction() {
     return new LinearActivation();
 }
 VIRTUAL int NormalizationLayer::getPersistSize() const {
-    return 0;
+    return 2    ;
+}
+VIRTUAL void NormalizationLayer::persistToArray(float *array) {
+    array[0] = translate;
+    array[1] = scale;
+}
+/// \brief initialize the current weights and biases from array
+VIRTUAL void NormalizationLayer::unpersistFromArray(float const*array) {
+    translate = array[0];
+    scale = array[1];
 }
 VIRTUAL bool NormalizationLayer::needsBackProp() {
     return previousLayer->needsBackProp();

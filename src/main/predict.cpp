@@ -124,16 +124,14 @@ void go(Config config) {
     }
 
     string netDef;
-    float translate;
-    float scale;
-    if ( !WeightsPersister::loadConfigString( config.weightsFile, netDef, &translate, &scale ) ){
+    if ( !WeightsPersister::loadConfigString( config.weightsFile, netDef ) ){
         cout << "Cannot load network definition from weightsFile." << endl;
         return;
     }
 //    cout << "net def from weights file: " << netDef << endl;
 
     net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
-    net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
+    net->addLayer( NormalizationLayerMaker::instance()->translate( 0.0f )->scale( 1.0f ) ); // This will be read from weights file
 
     if( !NetdefToNet::createNetFromNetdef( net, netDef, weightsInitializer ) ) {
         return;
@@ -143,6 +141,8 @@ void go(Config config) {
     int ignI;
     float ignF;
 
+    // weights file contains normalization layer parameters as 'weights' now.  We should probably rename weights to parameters
+    // sooner or later ,but anyway, tehcnically, works for onw
     if( !WeightsPersister::loadWeights( config.weightsFile, string("netDef=")+netDef, net, &ignI, &ignI, &ignF, &ignI, &ignF ) ){
         cout << "Cannot load network weights from weightsFile." << endl;
         return;
@@ -280,9 +280,9 @@ void printUsage( char *argv[], Config config ) {
     cout << "    weightsfile=[file to read weights from] (" << config.weightsFile << ")" << endl;
     cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
-    cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
     cout << "" << endl; 
     cout << "unstable, might change within major version:" << endl; 
+    cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
     // [[[end]]]
 }
 

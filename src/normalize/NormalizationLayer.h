@@ -16,8 +16,8 @@ class NormalizationLayerMaker;
 
 class NormalizationLayer : public Layer, IHasToString {
 public:
-    const float translate; // apply translate first
-    const float scale;  // then scale
+    float translate; // apply translate first
+    float scale;  // then scale
 
     const int outputPlanes;
     const int outputImageSize;
@@ -47,6 +47,8 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL int getPersistSize() const;
+    VIRTUAL void persistToArray(float *array);
+    VIRTUAL void unpersistFromArray(float const*array);
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;

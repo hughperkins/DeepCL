@@ -40,14 +40,11 @@ public:
     PUBLICAPI STATIC void copyNetWeightsToArray( NeuralNet *net, float *target );
     PUBLICAPI STATIC void copyArrayToNetWeights( float const*source, NeuralNet *net );
     STATIC int getArrayOffsetForLayer( NeuralNet *net, int layer );
-    STATIC void persistWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int epoch, int batch, float annealedLearningRate, int numRight, float loss, float normalizationTranslate, float normalizationScale );  // we should probably rename 'weights' to 'model' now that we are storing normalization data too?
+    STATIC void persistWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int epoch, int batch, float annealedLearningRate, int numRight, float loss );  // we should probably rename 'weights' to 'model' now that we are storing normalization data too?
     STATIC bool loadWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss );
-    STATIC bool loadWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss, float *p_translation, float *p_scale );
-    STATIC bool loadWeights( std::string filepath, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss, float *p_translation, float *p_scale, int minimumVersion );
     STATIC bool loadWeightsv1( char *data, long fileSize, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss );
-    STATIC bool loadWeightsv2( char *data, long fileSize, std::string trainingConfigString, NeuralNet *net, int *p_epoch, int *p_batch, float *p_annealedLearningRate, int *p_numRight, float *p_loss, float *p_translation, float *p_scale );
-    STATIC bool checkData( const char * data, long headerSize, long fileSize, int minimumVersion );
-    STATIC bool loadConfigString( std::string filepath, std::string & configString, float *p_translate, float *p_scale );
+    STATIC bool checkData( const char * data, long headerSize, long fileSize );
+    STATIC bool loadConfigString( std::string filepath, std::string & configString );
 
     // [[[end]]]
 };
