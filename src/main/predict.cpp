@@ -28,7 +28,7 @@ using namespace std;
         # lets go with pipe for now, and then somehow shoehorn files in later?
         # ('inputFile',  'string', 'file to read inputs from', 'input.dat', False),
         # ('outputFile', 'string', 'file to write outputs to', 'output.dat', True),
-        ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, True)
+        ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False)
     ]
 *///]]]
 // [[[end]]]
