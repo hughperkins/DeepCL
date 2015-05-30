@@ -5,12 +5,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 
-//#include <iostream>
-//#include <algorithm>
-
 #include "DeepCL.h"
 #include "loss/SoftMaxLayer.h"
-//#include "test/Sampler.h"
 
 using namespace std;
 
@@ -29,8 +25,8 @@ using namespace std;
         # lets go with pipe for now, and then somehow shoehorn files in later?
         ('inputFile',  'string', 'file to read inputs from, if empty, read stdin (default)', '', False),
         ('outputFile', 'string', 'file to write outputs to, if empty, write to stdout', '', False),
-        ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False)
-        # ('outputFormat', 'string', 'output format [binary|text]', 'text', False)
+        ('writeLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False),
+        ('outputFormat', 'string', 'output format [binary|text]', 'text', False)
     ]
 *///]]]
 // [[[end]]]
@@ -48,7 +44,8 @@ public:
     int batchSize;
     string inputFile;
     string outputFile;
-    int writeIntLabels;
+    int writeLabels;
+    string outputFormat;
     // [[[end]]]
 
     Config() {
@@ -73,7 +70,8 @@ public:
         batchSize = 128;
         inputFile = "";
         outputFile = "";
-        writeIntLabels = 0;
+        writeLabels = 0;
+        outputFormat = "text";
         // [[[end]]]
     }
 };
@@ -155,36 +153,7 @@ void go(Config config) {
     // ## All is set up now
     // 
 
-
-    // ideally, this could go in GenericReader somehow I reckon, but putting it here is ok for now :-)   - Hugh
     float *inputData = new float[ inputCubeSize * config.batchSize];
-
-// jm: this makes it impossible to select iofiles outside the datadir,
-//     which we should be able to do
-//
-//
-//    if( config.dataDir != "" ) {
-//        config.inputFile = config.dataDir + "/" + config.inputFile;
-//        config.outputFile = config.dataDir + "/" + config.outputFile;
-//    }
-//    cout << "Reading inputs from:  '" << config.inputFile << "'" << endl;
-//    cout << "Writing outputs to: '" << config.outputFile << "'" << endl;
-//    ifstream fin(config.inputFile, ios::in | ios::binary);
-//    ofstream fout(config.outputFile, ios::out | ios::binary);
-
-//    if( ! fin ){
-//        cout << "Cannot open input file: '"<< config.inputFile <<"'" << endl;
-//        return;
-//    }
-
-//    if( ! fout ){
-//        cout << "Cannot open output file: '"<< config.outputFile <<"'" << endl;
-//        return;
-//    }
-
-
-//    cout << "Input cube size is: " << inputCubeSize * 4 << " B" << endl;
-//    cout << "Output image size is: " << net->getOutputCubeSize() * 4 << " B" << endl;
 
     int *labels = new int[config.batchSize];
     int n = 0;
@@ -203,52 +172,52 @@ void go(Config config) {
         // now, after modifying GenericLoader to have this new behavior
         GenericLoader::load( config.inputFile, inputData, 0, n, config.batchSize );
     }
-    while( more ) {
-//        fin.read( reinterpret_cast<char *>(inputData), config.batchSize * inputCubeSize * 4);
-//        FileHelper::readBinaryChunk( reinterpret_cast<char *>(inputData), config.inputFile, (long)n * inputCubeSize * 4, (long)inputCubeSize * config.batchSize * 4 );
-//        if( !fin ){
-//            break;
-//        }
-
-//    	cout << "Read " << config.batchSize << " input cubes." << endl;
-
-        net->forward(inputData);  // seems ok...   - Hugh
-
-        if( !config.writeIntLabels ) {
-//            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(net->getOutput()), 
-//                n * 4 * net->getOutputCubeSize(),
-//                config.batchSize * 4 * net->getOutputCubeSize() );
-//            fout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
-            cout.write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
+    ostream *outFile = 0;
+    if( config.outputFile == "" ) {
+        outFile = &cout;
+    } else {
+        if( config.outputFormat == "text" ) {
+            outFile = new ofstream( config.outputFile, ios::out );
         } else {
-            // calculate the labels somehow...
-            // ... added 'getLabels' to SoftMaxLayer
+            outFile = new ofstream( config.outputFile, ios::out | std::ios::binary );
+        }
+    }
+    while( more ) {
+        net->forward(inputData);
+
+        if( !config.writeLabels ) {
+            if( config.outputFormat == "text" ) {
+                float const*output = net->getOutput();
+                const int numFields = net->getLastLayer()->getOutputCubeSize();
+                for( int i = 0; i < config.batchSize; i++ ) {
+                    for( int f = 0; f < numFields; f++ ) {
+                        if( f > 0 ) {
+                            *outFile << " ";
+                        }
+                        *outFile << output[ i * numFields + f ];
+                    }
+                }
+                *outFile << "\n";
+            } else {
+                outFile->write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
+            }
+        } else {
             SoftMaxLayer *softMaxLayer = dynamic_cast< SoftMaxLayer *>(net->getLastLayer() );
             if( softMaxLayer == 0 ) {
                 cout << "must have softmaxlayer as last layer, if want to output labels" << endl;
                 return;
             }
             softMaxLayer->getLabels(labels);
-//            fout.write( reinterpret_cast<const char *>(labels), config.batchSize * 4);
-//            if( n == 0 ) {
-//                for( int i = 0; i < config.batchSize / 4; i++ ) {
-//                    cout << "out[" << i << "]=" << labels[i] << endl;
-//                }
-//            }
-            cout.write( reinterpret_cast< char * >( labels ), config.batchSize * 4l );
-//            FileHelper::writeBinaryChunk( config.outputFile, reinterpret_cast<const char *>(labels), n * 4, config.batchSize * 4);
+            if( config.outputFormat == "text" ) {
+                for( int i = 0; i < config.batchSize; i++ ) {
+                    *outFile << labels[i] << "\n";
+                }
+            } else {
+                outFile->write( reinterpret_cast< char * >( labels ), config.batchSize * 4l );
+            }
+            outFile->flush();
         }
         n += config.batchSize;
-//        if( ( n + config.batchSize > totalN ) && ( n != totalN ) ) {
-//            cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
-//            break;
-//        }
-//        if( !fout ){
-//            break;
-//        }
-
-//	fout.flush();
-//        cout << "Written output image." << endl;
         n += config.batchSize;
         if( config.inputFile == "" ) {
             cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
@@ -264,8 +233,9 @@ void go(Config config) {
             }
         }
     }
-
-//    cout << "Exiting." << endl;
+    if( config.outputFile != "" ) {
+        delete outFile;
+    }
 
     delete[] inputData;
     delete[] labels;
@@ -299,7 +269,8 @@ void printUsage( char *argv[], Config config ) {
     cout << "unstable, might change within major version:" << endl; 
     cout << "    inputfile=[file to read inputs from, if empty, read stdin (default)] (" << config.inputFile << ")" << endl;
     cout << "    outputfile=[file to write outputs to, if empty, write to stdout] (" << config.outputFile << ")" << endl;
-    cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
+    cout << "    writelabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeLabels << ")" << endl;
+    cout << "    outputformat=[output format [binary|text]] (" << config.outputFormat << ")" << endl;
     // [[[end]]]
 }
 
@@ -341,8 +312,10 @@ int main( int argc, char *argv[] ) {
                 config.inputFile = (value);
             } else if( key == "outputfile" ) {
                 config.outputFile = (value);
-            } else if( key == "writeintlabels" ) {
-                config.writeIntLabels = atoi(value);
+            } else if( key == "writelabels" ) {
+                config.writeLabels = atoi(value);
+            } else if( key == "outputformat" ) {
+                config.outputFormat = (value);
             // [[[end]]]
             } else {
                 cout << endl;
