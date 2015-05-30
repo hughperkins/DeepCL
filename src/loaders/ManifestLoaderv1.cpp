@@ -34,12 +34,12 @@ PUBLIC STATIC bool ManifestLoaderv1::isFormatFor( std::string imagesFilepath ) {
     return matched;
 }
 PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
-    init( imagesFilePath, true );    
+    init( imagesFilepath, true );    
 }
 PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath, bool includeLabels ) {
-    init( imagesFilePath, includeLabels );
+    init( imagesFilepath, includeLabels );
 }
-PRIVATE ManifestLoaderv1::init( std::string imagesFilepath, bool includeLabels ) {
+PRIVATE void ManifestLoaderv1::init( std::string imagesFilepath, bool includeLabels ) {
     this->includeLabels = includeLabels;
     this->imagesFilepath = imagesFilepath;
     // by reading the number of lines in the manifest, we can get the number of examples, *p_N

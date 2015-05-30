@@ -45,7 +45,7 @@ class ManifestLoaderv1 : public Loader {
     VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords );
 
     private:
-    init( std::string imagesFilepath, bool includeLabels );
+    void init( std::string imagesFilepath, bool includeLabels );
     int readIntValue( std::vector< std::string > splitLine, std::string key );
 
     // [[[end]]]
