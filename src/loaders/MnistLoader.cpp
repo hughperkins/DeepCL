@@ -35,6 +35,7 @@ STATIC void MnistLoader::getDimensions( std::string imagesFilePath,
 // images and labels should already have been allocated, so we just need to read the data
 // in
 // oh, except the data is stored as unsigned char, not int, so need to convert
+// new: if labels is 0, then it wont read labels
 STATIC void MnistLoader::load( std::string imagesFilePath, unsigned char *images, int *labels, int startN, int numExamples ) {
     int N, numPlanes, imageSize;
     getDimensions( imagesFilePath, &N, &numPlanes, &imageSize );
@@ -47,6 +48,9 @@ STATIC void MnistLoader::load( std::string imagesFilePath, unsigned char *images
     FileHelper::readBinaryChunk( imagesAsCharArray, imagesFilePath, fileStartPos, fileReadLength );
 
     // now do labels...
+    if( labels == 0 ) {
+        return;
+    }
     string labelsFilePath = replace( imagesFilePath, "-images-idx3-ubyte", "-labels-idx1-ubyte" );
 //    cout << "labelsfilepath: " << labelsFilePath << endl;
     

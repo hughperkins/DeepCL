@@ -63,7 +63,7 @@ PUBLIC PUBLICAPI STATIC void GenericLoader::load( std::string imagesFilePath, fl
 PUBLIC STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *images, int *labels ) {
     load( trainFilepath, images, labels, 0, 0 );
 }
-
+// for now, if pass in 0 for labels, it wont read labels
 PUBLIC STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
     StatefulTimer::timeCheck("GenericLoader::load start");
     char *headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 1024 );

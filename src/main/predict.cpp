@@ -22,13 +22,15 @@ using namespace std;
         ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1, True),
 
         ('weightsFile', 'string', 'file to read weights from','weights.dat', True),
-        ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
+        # removing loadondemand for now, let's always load exactly one batch at a time for now
+        # ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('batchSize', 'int', 'batch size', 128, True),
 
         # lets go with pipe for now, and then somehow shoehorn files in later?
-        # ('inputFile',  'string', 'file to read inputs from', 'input.dat', False),
-        # ('outputFile', 'string', 'file to write outputs to', 'output.dat', True),
+        ('inputFile',  'string', 'file to read inputs from, if empty, read stdin (default)', '', False),
+        ('outputFile', 'string', 'file to write outputs to, if empty, write to stdout', '', False),
         ('writeIntLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False)
+        # ('outputFormat', 'string', 'output format [binary|text]', 'text', False)
     ]
 *///]]]
 // [[[end]]]
@@ -43,8 +45,9 @@ public:
     // generated using cog:
     int gpuIndex;
     string weightsFile;
-    int loadOnDemand;
     int batchSize;
+    string inputFile;
+    string outputFile;
     int writeIntLabels;
     // [[[end]]]
 
@@ -67,37 +70,32 @@ public:
         // generated using cog:
         gpuIndex = -1;
         weightsFile = "weights.dat";
-        loadOnDemand = 0;
         batchSize = 128;
+        inputFile = "";
+        outputFile = "";
         writeIntLabels = 0;
         // [[[end]]]
     }
 };
 
 void go(Config config) {
-//    int N;
+    int N = -1;
     int numPlanes;
     int imageSize;
     int imageSizeCheck;
-    int dims[3];
-    cin.read( reinterpret_cast< char * >( dims ), 3 * 4l );
-    numPlanes = dims[0];
-    imageSize = dims[1];
-    imageSizeCheck = dims[2];
-//    cout << "planes " << numPlanes << " size " << imageSize << " sizecheck " << imageSizeCheck << endl;
-    if( imageSize != imageSizeCheck ) {
-        throw std::runtime_error( "imageSize doesnt match imageSizeCheck, image not square" );
+    if( config.inputFile == "" ) {
+        int dims[3];
+        cin.read( reinterpret_cast< char * >( dims ), 3 * 4l );
+        numPlanes = dims[0];
+        imageSize = dims[1];
+        imageSizeCheck = dims[2];
+        if( imageSize != imageSizeCheck ) {
+            throw std::runtime_error( "imageSize doesnt match imageSizeCheck, image not square" );
+        }
+    } else {
+        GenericLoader::getDimensions( config.inputFile, &N, &numPlanes, &imageSize );
     }
-
-//    float *data = 0;
-//    int allocateN = 0;
-
-    //
-    // ## Load training data (for initialization of normalizer)
-    //
-
-    // we need just the number of examples to compute the normalization params
-//    N = config.normalizationExamples > N ? N : config.normalizationExamples;
+//    cout << "planes " << numPlanes << " size " << imageSize << " sizecheck " << imageSizeCheck << endl;
 
     const long inputCubeSize = numPlanes * imageSize * imageSize ;
 
@@ -159,7 +157,8 @@ void go(Config config) {
 
 
     // ideally, this could go in GenericReader somehow I reckon, but putting it here is ok for now :-)   - Hugh
-    float * inputData = new float[ inputCubeSize * config.batchSize];
+    float *inputData = new float[ inputCubeSize * config.batchSize];
+
 // jm: this makes it impossible to select iofiles outside the datadir,
 //     which we should be able to do
 //
@@ -189,19 +188,22 @@ void go(Config config) {
 
     int *labels = new int[config.batchSize];
     int n = 0;
-//    long fileSize = FileHelper::getFilesize( config.inputFile );
-//    int totalN = fileSize / inputCubeSize / 4;
-//    cout << "totalN: " << totalN << endl;
-//    while( n < totalN ){
-    
-    #ifdef _WIN32
-    // refs:
-    // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
-    // http://www.cplusplus.com/forum/windows/77812/
-    _setmode( _fileno( stdout ), _O_BINARY ); 
-    #endif
-    cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
-    while( cin ) {
+    bool more = true;
+    if( config.inputFile == "" ) {
+        #ifdef _WIN32
+        // refs:
+        // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
+        // http://www.cplusplus.com/forum/windows/77812/
+        _setmode( _fileno( stdout ), _O_BINARY ); 
+        #endif
+        cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
+        more = cin;
+    } else {
+        // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
+        // now, after modifying GenericLoader to have this new behavior
+        GenericLoader::load( config.inputFile, inputData, 0, n, config.batchSize );
+    }
+    while( more ) {
 //        fin.read( reinterpret_cast<char *>(inputData), config.batchSize * inputCubeSize * 4);
 //        FileHelper::readBinaryChunk( reinterpret_cast<char *>(inputData), config.inputFile, (long)n * inputCubeSize * 4, (long)inputCubeSize * config.batchSize * 4 );
 //        if( !fin ){
@@ -247,11 +249,25 @@ void go(Config config) {
 
 //	fout.flush();
 //        cout << "Written output image." << endl;
-        cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
+        n += config.batchSize;
+        if( config.inputFile == "" ) {
+            cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
+            more = cin;
+        } else {
+            if( n + config.batchSize < N ) {
+                GenericLoader::load( config.inputFile, inputData, 0, n, config.batchSize );
+            } else {
+                more = false;
+                if( n != N ) {
+                    cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
+                }
+            }
+        }
     }
 
 //    cout << "Exiting." << endl;
 
+    delete[] inputData;
     delete[] labels;
     delete weightsInitializer;
     delete net;
@@ -278,10 +294,11 @@ void printUsage( char *argv[], Config config ) {
     cout << "public api, shouldnt change within major version:" << endl;
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
     cout << "    weightsfile=[file to read weights from] (" << config.weightsFile << ")" << endl;
-    cout << "    loadondemand=[load data on demand [1|0]] (" << config.loadOnDemand << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
     cout << "" << endl; 
     cout << "unstable, might change within major version:" << endl; 
+    cout << "    inputfile=[file to read inputs from, if empty, read stdin (default)] (" << config.inputFile << ")" << endl;
+    cout << "    outputfile=[file to write outputs to, if empty, write to stdout] (" << config.outputFile << ")" << endl;
     cout << "    writeintlabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeIntLabels << ")" << endl;
     // [[[end]]]
 }
@@ -318,10 +335,12 @@ int main( int argc, char *argv[] ) {
                 config.gpuIndex = atoi(value);
             } else if( key == "weightsfile" ) {
                 config.weightsFile = (value);
-            } else if( key == "loadondemand" ) {
-                config.loadOnDemand = atoi(value);
             } else if( key == "batchsize" ) {
                 config.batchSize = atoi(value);
+            } else if( key == "inputfile" ) {
+                config.inputFile = (value);
+            } else if( key == "outputfile" ) {
+                config.outputFile = (value);
             } else if( key == "writeintlabels" ) {
                 config.writeIntLabels = atoi(value);
             // [[[end]]]
