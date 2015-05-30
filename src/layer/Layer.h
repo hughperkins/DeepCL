@@ -16,6 +16,7 @@
 #include "layer/LayerMaker.h"
 #include "util/stringhelper.h"
 #include "EasyCL.h"
+#include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual
 
@@ -24,7 +25,7 @@ class TrainerStateMaker;
 
 PUBLICAPI
 /// A single layer within the neural net
-class Layer {
+class DeepCL_EXPORT Layer {
 public:
     Layer *previousLayer;
     Layer *nextLayer;
