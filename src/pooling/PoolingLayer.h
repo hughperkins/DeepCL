@@ -60,7 +60,7 @@ public:
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;

@@ -196,7 +196,7 @@ VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
         return imageSizeSquared;
     }
 }
-VIRTUAL int SoftMaxLayer::getPersistSize() const {
+VIRTUAL int SoftMaxLayer::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL int SoftMaxLayer::calcNumRight( int const*labels ) {

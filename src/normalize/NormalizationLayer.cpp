@@ -37,15 +37,24 @@ VIRTUAL float *NormalizationLayer::getOutput() {
 VIRTUAL ActivationFunction const *NormalizationLayer::getActivationFunction() {
     return new LinearActivation();
 }
-VIRTUAL int NormalizationLayer::getPersistSize() const {
-    return 2    ;
+VIRTUAL int NormalizationLayer::getPersistSize( int version ) const {
+    if( version == 1 ) {
+        return 0;
+    }
+    return 2;
 }
-VIRTUAL void NormalizationLayer::persistToArray(float *array) {
+VIRTUAL void NormalizationLayer::persistToArray( int version, float *array ) {
+    if( version == 1 ) {
+        return;
+    }
     array[0] = translate;
     array[1] = scale;
 }
 /// \brief initialize the current weights and biases from array
-VIRTUAL void NormalizationLayer::unpersistFromArray(float const*array) {
+VIRTUAL void NormalizationLayer::unpersistFromArray( int version, float const*array ) {
+    if( version == 1 ) {
+        return;
+    }
     translate = array[0];
     scale = array[1];
 }

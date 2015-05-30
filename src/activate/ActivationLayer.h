@@ -76,7 +76,7 @@ public:
     VIRTUAL void forward();
     VIRTUAL void backward();
     VIRTUAL std::string asString() const;
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
 
     // [[[end]]]
 };

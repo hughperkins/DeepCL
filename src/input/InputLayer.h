@@ -45,7 +45,7 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL void printOutput();
     VIRTUAL void print();
     void in( float const*images );

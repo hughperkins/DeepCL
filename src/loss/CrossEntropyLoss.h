@@ -30,7 +30,7 @@ public:
     VIRTUAL ~CrossEntropyLoss();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float*getGradInput();
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void calcGradInput( float const*expectedOutput );

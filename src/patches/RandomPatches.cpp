@@ -79,7 +79,7 @@ VIRTUAL int RandomPatches::getOutputImageSize() const {
 VIRTUAL int RandomPatches::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int RandomPatches::getPersistSize() const {
+VIRTUAL int RandomPatches::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL bool RandomPatches::providesGradInputWrapper() const {

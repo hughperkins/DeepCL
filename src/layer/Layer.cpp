@@ -1,4 +1,5 @@
 #include "layer/Layer.h"
+#include "weights/WeightsPersister.h"
 
 using namespace std;
 
@@ -127,13 +128,22 @@ PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
 PUBLICAPI VIRTUAL int Layer::getBiasSize() const {
     throw std::runtime_error("getBiasSize not implemented for " + getClassName() );
 }
+PUBLICAPI VIRTUAL int Layer::getPersistSize() const {
+    return getPersistSize( WeightsPersister::latestVersion );
+}
+PUBLICAPI VIRTUAL void Layer::persistToArray( float *array ) {
+    persistToArray( WeightsPersister::latestVersion, array );
+}
 /// \brief store the current weights and biases to array
 /// Note that you need to allocate array first
-PUBLICAPI VIRTUAL void Layer::persistToArray(float *array) {
+PUBLICAPI VIRTUAL void Layer::persistToArray( int version, float *array ) {
     throw std::runtime_error("persistToArray not implemented for " + getClassName() );
 }
+PUBLICAPI VIRTUAL void Layer::unpersistFromArray( float const*array ) {
+    unpersistFromArray( WeightsPersister::latestVersion, array );
+}
 /// \brief initialize the current weights and biases from array
-PUBLICAPI VIRTUAL void Layer::unpersistFromArray(float const*array) {
+PUBLICAPI VIRTUAL void Layer::unpersistFromArray( int version, float const*array ) {
     throw std::runtime_error("unpersistFromArray not implemented for " + getClassName() );
 }
 VIRTUAL void Layer::setWeights(float *weights, float *bias) {

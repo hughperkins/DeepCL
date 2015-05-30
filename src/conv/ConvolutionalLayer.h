@@ -136,9 +136,9 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void setWeights( float *weights, float *bias );
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getPersistSize() const;
-    VIRTUAL void persistToArray(float *array);
-    VIRTUAL void unpersistFromArray(float const*array);
+    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL void persistToArray( int version, float *array );
+    VIRTUAL void unpersistFromArray( int version, float const*array );
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL void initBias( float const*bias );
     VIRTUAL int getWeightsSize() const;

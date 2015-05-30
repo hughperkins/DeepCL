@@ -30,7 +30,7 @@ VIRTUAL std::string CrossEntropyLoss::getClassName() const {
 VIRTUAL float*CrossEntropyLoss::getGradInput() {
     return gradInput;
 }
-VIRTUAL int CrossEntropyLoss::getPersistSize() const {
+VIRTUAL int CrossEntropyLoss::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
