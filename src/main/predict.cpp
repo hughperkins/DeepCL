@@ -7,6 +7,11 @@
 
 #include "DeepCL.h"
 #include "loss/SoftMaxLayer.h"
+#ifdef _WIN32
+#include <stdio.h>
+#include <fcntl.h>
+#include <io.h>
+#endif // _WIN32
 
 using namespace std;
 
