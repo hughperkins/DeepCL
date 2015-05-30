@@ -20,7 +20,7 @@
 
 ## Training
 
-Use `train` to run training.
+Use `train` to run training (`deepclrun` in v5.8.3 and below).
 
 * Syntax is based on that specified in Ciresan et al's [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf), section 3, first paragraph:
   * network is defined by a string like: `100C5-MP2-100C5-MP2-100C4-MP2-300N-100N-6N`
@@ -151,6 +151,6 @@ Use `train` to run training.
 
 ## Prediction
 
-Use `predict to run prediction
+Use `predict to run prediction  (`deepclexec` in v5.8.3 and below)
 
 
