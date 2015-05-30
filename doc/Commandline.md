@@ -18,6 +18,10 @@
 
 # Commandline usage
 
+## Training
+
+Use `train` to run training.
+
 * Syntax is based on that specified in Ciresan et al's [Multi-column Deep Neural Networks for Image Classification](http://arxiv.org/pdf/1202.2745.pdf), section 3, first paragraph:
   * network is defined by a string like: `100C5-MP2-100C5-MP2-100C4-MP2-300N-100N-6N`
   * `100c5` means: a convolutional layer, with 100 filters, each 5x5
@@ -28,82 +32,82 @@
   * `tanh` means a tanh layer
 * Thus, you can do, for example:
 ```bash
-./deepclrun netdef=8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n learningrate=0.002 dataset=mnist
+./train netdef=8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n learningrate=0.002 dataset=mnist
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./deepclrun netdef=8c5-relu-mp4-24c6-relu-mp3-80c6-relu-5n learningrate=0.0001 dataset=norb
+./train netdef=8c5-relu-mp4-24c6-relu-mp3-80c6-relu-5n learningrate=0.0001 dataset=norb
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./deepclrun netdef=MP3-300C6-RELU-MP2-500C4-RELU-MP4-500N-TANH-5N learningrate=0.0001 dataset=norb
+./train netdef=MP3-300C6-RELU-MP2-500C4-RELU-MP4-500N-TANH-5N learningrate=0.0001 dataset=norb
 ```
 
-## Convolutional
+### Convolutional
 
 * eg `-32c5` is a convolutional layer with 32 filters of 5x5
 * `-32c5z` is a convolutional layer with zero-padding, of 32 filters of 5x5
 
-## Fully-connected
+### Fully-connected
 
 * eg `-150n` is a fully connected layer, with 150 neurons.
 
-## Max-pooling
+### Max-pooling
 
 * Eg `-mp3` will add a max-pooling layer, over 3x3 non-overlapping regions.  The number is the size of the regions, and can be modified
 
-## Dropout layers
+### Dropout layers
 
 * Simply add `-drop` into the netdef string
   * this will use a dropout ratio of 0.5
 
-## Activation layers
+### Activation layers
 
 * Simply add any of the following into the netdef string:
   * `-tanh`
   * `-sigmoid`
   * `-relu`
 
-### Random patches
+#### Random patches
 
 * `RP24` means a random patch layer, which will cut a 24x24 patch from a random position in each incoming image, and send that to its output
 * during testing, the patch will be cut from the centre of each image
 
-### Random translations
+#### Random translations
 
 * `RT2` means a random translations layer, which will translate the image randomly during training, up to 2 pixels, in either direction, along both axes
 * Can specify any non-negative integer, less than the image size
 * During testing, no translation is done
 
-## Multi-column deep neural network "MultiNet"
+### Multi-column deep neural network "MultiNet"
 
 * You can train several neural networks at the same time, and predict using the average output across all of them using the `multinet` option
 * Simply add eg `multinet=3` in the commandline, to train across 3 nets in parallel, or put a number of your choice
 
-## Repeated layers
+### Repeated layers
 
 * simply prefix a layer with eg `3*` to repeat it.  `3*` will repeat the layer 3 times, and similar for other numbers, eg:
 ```
-./deepclrun netdef=6*(32c5z-relu)-500n-361n learningrate=0.0001 dataset=kgsgoall
+./train netdef=6*(32c5z-relu)-500n-361n learningrate=0.0001 dataset=kgsgoall
 ```
 ... will create 6 convolutional layers of 32 5x5 filters each.
 * you can also use parentheses `(...)` to repeat multiple layers, eg:
 ```
-./deepclrun netdef=3*(32c5z-relu-mp2)-150n-10n
+./train netdef=3*(32c5z-relu-mp2)-150n-10n
 ```
 ... will be expanded to:
 ```
-./deepclrun netdef=32c5z-relu-mp2-32c5z-relu-mp2-32c5z-relu-mp2-150n-10n
+./train netdef=32c5z-relu-mp2-32c5z-relu-mp2-32c5z-relu-mp2-150n-10n
 ```
 
-## File types
+### File types
 
 * Simply pass in the filename of the data file with the images in
 * Filetype will be detected automatically
 * See [Loaders](loaders.md) for information on available loaders
 
-## Weight persistence
+### Weight persistence
 
 * By default, weights will be written to `weights.dat`, after each epoch
   * You can add option `writeweightsinterval=5` to write weights every 5 minutes, even if the epoch hasnt finished yet.  Just replace `5` with the number of minutes between each write
@@ -113,7 +117,7 @@
 * Epoch number, batch number, batch loss, and batch numcorrect will all be loaded from where they left off, from the weights file, so you can freely stop and start training, without losing the training
   * be sure to use the `writeweightsinterval=5` option if you are going to stop/start often, with long epochs, to avoid losing hours/days of training!
 
-## Command-line options
+### Command-line options
 
 | Option | Description |
 |----|----|
@@ -145,5 +149,8 @@
 | writeweightsinterval=5 | write the weights to file every 5 minutes of training, even if epoch hasnt finished yet.  Default is 0, ie only write weights after each epoch |
 | loadweights=1 | load weights at start, from weightsfile.  Current training config, ie netdef and trainingfile, should match that used to create the weightsfile.  Note that epoch number will continue from file, so make sure to increase numepochs sufficiently |
 
+## Prediction
+
+Use `predict to run prediction
 
 
