@@ -181,7 +181,7 @@ void go(Config config) {
         _setmode( _fileno( stdout ), _O_BINARY ); 
         #endif
         cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
-        more = cin;
+        more = !cin.eof();
     } else {
         // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
         // now, after modifying GenericLoader to have this new behavior
@@ -204,7 +204,7 @@ void go(Config config) {
     }
     while( more ) {
         // no point in forwarding through all, so forward through each, one by one
-        if( config.outputLayer < 0 or config.outputLayer > net->getNumLayers() ) {
+        if( config.outputLayer < 0 || config.outputLayer > net->getNumLayers() ) {
             throw runtime_error( "outputLayer should be the layer number of one of the layers in the network" );    
         }
         dynamic_cast<InputLayer *>( net->getLayer(0) )->in( inputData );
@@ -249,7 +249,7 @@ void go(Config config) {
         n += config.batchSize;
         if( config.inputFile == "" ) {
             cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
-            more = cin;
+            more = !cin.eof();
         } else {
             if( n + config.batchSize < N ) {
                 GenericLoader::load( config.inputFile, inputData, 0, n, config.batchSize );
