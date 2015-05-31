@@ -245,11 +245,12 @@ def read_if_exists(filename):
     else:
         ""
 
-print('version: ', read_if_exists('version.txt') )
+version = read_if_exists('version.txt').strip().replace('v', '')
+print('version: ', version )
 
 setup(
   name = 'DeepCL',
-  version = read_if_exists('version.txt').strip(),
+  version = version,
 #  version = "3.4.0rc1",  # synchronize to deepcl main version
   author = "Hugh Perkins",
   author_email = "hughperkins@gmail.com",
