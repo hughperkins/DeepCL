@@ -17,21 +17,20 @@ using namespace std;
 
 /* [[[cog
     # These are used in the later cog sections in this file:
-    # format:
-    # ( name, type, description, default, ispublicapi )
     options = [
-        ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1, True),
+        {'name': 'gpuIndex', 'type': 'int', 'description': 'gpu device index; default value is gpu if present, cpu otw.', 'default': -1, 'ispublicapi': True},
 
-        ('weightsFile', 'string', 'file to read weights from','weights.dat', True),
+        {'name': 'weightsFile', 'type': 'string', 'description': 'file to read weights from', 'default': 'weights.dat', 'ispublicapi': True},
         # removing loadondemand for now, let's always load exactly one batch at a time for now
-        # ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
-        ('batchSize', 'int', 'batch size', 128, True),
+        # ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, [0,1], True},
+        {'name': 'batchSize', 'type': 'int', 'description': 'batch size', 'default': 128, 'ispublicapi': True},
 
         # lets go with pipe for now, and then somehow shoehorn files in later?
-        ('inputFile',  'string', 'file to read inputs from, if empty, read stdin (default)', '', False),
-        ('outputFile', 'string', 'file to write outputs to, if empty, write to stdout', '', False),
-        ('writeLabels', 'int', 'write integer labels, instead of probabilities etc (default 0)', 0, False),
-        ('outputFormat', 'string', 'output format [binary|text]', 'text', False)
+        {'name': 'inputFile',  'type': 'string', 'description': 'file to read inputs from, if empty, read stdin (default)', 'default': ''},
+        {'name': 'outputFile', 'type': 'string', 'description': 'file to write outputs to, if empty, write to stdout', 'default': ''},
+        {'name': 'outputLayer', 'type': 'int', 'description': 'layer to write output from, default -1 means: last layer', 'default': -1},
+        {'name': 'writeLabels', 'type': 'int', 'description': 'write integer labels, instead of probabilities etc (default 0)', 'default': 0},
+        {'name': 'outputFormat', 'type': 'string', 'description': 'output format [binary|text]', 'default': 'text'}
     ]
 *///]]]
 // [[[end]]]
@@ -40,8 +39,8 @@ class Config {
 public:
     /* [[[cog
         cog.outl('// generated using cog:')
-        for (name,type,description,default,_) in options:
-            cog.outl( type + ' ' + name + ';')
+        for option in options:
+            cog.outl( option['type'] + ' ' + option['name'] + ';')
     */// ]]]
     // generated using cog:
     int gpuIndex;
@@ -49,6 +48,7 @@ public:
     int batchSize;
     string inputFile;
     string outputFile;
+    int outputLayer;
     int writeLabels;
     string outputFormat;
     // [[[end]]]
@@ -56,8 +56,10 @@ public:
     Config() {
         /* [[[cog
             cog.outl('// generated using cog:')
-            for (name,type,description,default,_) in options:
+            for option in options:
                 defaultString = ''
+                default = option['default']
+                type = option['type']
                 if type == 'string':
                     defaultString = '"' + default + '"'
                 elif type == 'int':
@@ -67,7 +69,7 @@ public:
                     if '.' not in defaultString:
                         defaultString += '.0'
                     defaultString += 'f'
-                cog.outl( name + ' = ' + defaultString + ';')
+                cog.outl( option['name'] + ' = ' + defaultString + ';')
         */// ]]]
         // generated using cog:
         gpuIndex = -1;
@@ -75,6 +77,7 @@ public:
         batchSize = 128;
         inputFile = "";
         outputFile = "";
+        outputLayer = -1;
         writeLabels = 0;
         outputFormat = "text";
         // [[[end]]]
@@ -82,6 +85,11 @@ public:
 };
 
 void go(Config config) {
+    bool verbose = true;
+    if( config.outputFile == "" ) {
+        verbose = false;
+    }
+
     int N = -1;
     int numPlanes;
     int imageSize;
@@ -97,8 +105,8 @@ void go(Config config) {
         }
     } else {
         GenericLoader::getDimensions( config.inputFile, &N, &numPlanes, &imageSize );
+        if( verbose ) cout << "N " << N << " planes " << numPlanes << " size " << imageSize << endl;
     }
-//    cout << "planes " << numPlanes << " size " << imageSize << " sizecheck " << imageSizeCheck << endl;
 
     const long inputCubeSize = numPlanes * imageSize * imageSize ;
 
@@ -108,9 +116,9 @@ void go(Config config) {
 
     EasyCL *cl = 0;
     if( config.gpuIndex >= 0 ) {
-        cl = EasyCL::createForIndexedGpu( config.gpuIndex, false );
+        cl = EasyCL::createForIndexedGpu( config.gpuIndex, verbose );
     } else {
-        cl = EasyCL::createForFirstGpuOtherwiseCpu(false);
+        cl = EasyCL::createForFirstGpuOtherwiseCpu( verbose );
     }
 
     NeuralNet *net;
@@ -149,9 +157,11 @@ void go(Config config) {
         return;
     }
 
-    //net->print();
+    if( verbose ) {
+        net->print();
+    }
     net->setBatchSize(config.batchSize);
-//    cout << "batchSize: " << config.batchSize << endl;
+    if( verbose ) cout << "batchSize: " << config.batchSize << endl;
 
 
     //
@@ -183,17 +193,31 @@ void go(Config config) {
     } else {
         if( config.outputFormat == "text" ) {
             outFile = new ofstream( config.outputFile, ios::out );
-        } else {
+        } else if( config.outputFormat == "binary" ) {
             outFile = new ofstream( config.outputFile, ios::out | std::ios::binary );
+        } else {
+            throw runtime_error( "outputFormat " + config.outputFormat + " not recognized" );
         }
     }
+    if( config.outputLayer == -1 ) {
+        config.outputLayer = net->getNumLayers() - 1;
+    }
     while( more ) {
-        net->forward(inputData);
+        // no point in forwarding through all, so forward through each, one by one
+        if( config.outputLayer < 0 or config.outputLayer > net->getNumLayers() ) {
+            throw runtime_error( "outputLayer should be the layer number of one of the layers in the network" );    
+        }
+        dynamic_cast<InputLayer *>( net->getLayer(0) )->in( inputData );
+        for( int layerId = 0; layerId <= config.outputLayer; layerId++ ) {
+            StatefulTimer::setPrefix("layer" + toString(layerId) + " " );
+            net->getLayer( layerId )->forward();
+            StatefulTimer::setPrefix("" );
+        }
 
         if( !config.writeLabels ) {
             if( config.outputFormat == "text" ) {
-                float const*output = net->getOutput();
-                const int numFields = net->getLastLayer()->getOutputCubeSize();
+                float const*output = net->getLayer( config.outputLayer )->getOutput();
+                const int numFields = net->getLayer( config.outputLayer )->getOutputCubeSize();
                 for( int i = 0; i < config.batchSize; i++ ) {
                     for( int f = 0; f < numFields; f++ ) {
                         if( f > 0 ) {
@@ -201,15 +225,15 @@ void go(Config config) {
                         }
                         *outFile << output[ i * numFields + f ];
                     }
+                    *outFile << "\n";
                 }
-                *outFile << "\n";
             } else {
                 outFile->write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
             }
         } else {
-            SoftMaxLayer *softMaxLayer = dynamic_cast< SoftMaxLayer *>(net->getLastLayer() );
+            SoftMaxLayer *softMaxLayer = dynamic_cast< SoftMaxLayer *>(net->getLayer( config.outputLayer ) );
             if( softMaxLayer == 0 ) {
-                cout << "must have softmaxlayer as last layer, if want to output labels" << endl;
+                cout << "must choose softmaxlayer, if want to output labels" << endl;
                 return;
             }
             softMaxLayer->getLabels(labels);
@@ -222,7 +246,6 @@ void go(Config config) {
             }
             outFile->flush();
         }
-        n += config.batchSize;
         n += config.batchSize;
         if( config.inputFile == "" ) {
             cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
@@ -256,13 +279,17 @@ void printUsage( char *argv[], Config config ) {
     /* [[[cog
         cog.outl('// generated using cog:')
         cog.outl('cout << "public api, shouldnt change within major version:" << endl;')
-        for (name,type,description,_, is_public_api) in options:
-            if is_public_api:
+        for option in options:
+            name = option['name']
+            description = option['description']
+            if 'ispublicapi' in option and option['ispublicapi']:
                 cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
         cog.outl('cout << "" << endl; ')
         cog.outl('cout << "unstable, might change within major version:" << endl; ')
-        for (name,type,description,_, is_public_api) in options:
-            if not is_public_api:
+        for option in options:
+            if 'ispublicapi' not in option or not option['ispublicapi']:
+                name = option['name']
+                description = option['description']
                 cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
     *///]]]
     // generated using cog:
@@ -274,6 +301,7 @@ void printUsage( char *argv[], Config config ) {
     cout << "unstable, might change within major version:" << endl; 
     cout << "    inputfile=[file to read inputs from, if empty, read stdin (default)] (" << config.inputFile << ")" << endl;
     cout << "    outputfile=[file to write outputs to, if empty, write to stdout] (" << config.outputFile << ")" << endl;
+    cout << "    outputlayer=[layer to write output from, default -1 means: last layer] (" << config.outputLayer << ")" << endl;
     cout << "    writelabels=[write integer labels, instead of probabilities etc (default 0)] (" << config.writeLabels << ")" << endl;
     cout << "    outputformat=[output format [binary|text]] (" << config.outputFormat << ")" << endl;
     // [[[end]]]
@@ -296,7 +324,9 @@ int main( int argc, char *argv[] ) {
             /* [[[cog
                 cog.outl('// generated using cog:')
                 cog.outl('if( false ) {')
-                for (name,type,description,_,_) in options:
+                for option in options:
+                    name = option['name']
+                    type = option['type']
                     cog.outl( '} else if( key == "' + name.lower() + '" ) {')
                     converter = '';
                     if type == 'int':
@@ -317,6 +347,8 @@ int main( int argc, char *argv[] ) {
                 config.inputFile = (value);
             } else if( key == "outputfile" ) {
                 config.outputFile = (value);
+            } else if( key == "outputlayer" ) {
+                config.outputLayer = atoi(value);
             } else if( key == "writelabels" ) {
                 config.writeLabels = atoi(value);
             } else if( key == "outputformat" ) {
@@ -331,6 +363,12 @@ int main( int argc, char *argv[] ) {
                 return -1;
             }
         }
+    }
+    if( config.outputFormat != "text" && config.outputFormat != "binary" ) {
+        cout << endl;
+        cout << "outputformat must be 'text' or 'binary'" << endl;
+        cout << endl;
+        return -1;
     }
     try {
         go( config );

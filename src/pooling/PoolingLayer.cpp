@@ -130,6 +130,9 @@ VIRTUAL int PoolingLayer::getOutputSize() const {
 VIRTUAL int PoolingLayer::getOutputImageSize() const {
     return outputImageSize;
 }
+VIRTUAL int PoolingLayer::getOutputCubeSize() const {
+    return numPlanes * outputImageSize * outputImageSize;
+}
 VIRTUAL int PoolingLayer::getOutputPlanes() const {
     return numPlanes;
 }

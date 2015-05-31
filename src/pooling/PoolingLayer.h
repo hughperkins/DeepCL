@@ -59,6 +59,7 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL bool providesGradInputWrapper() const;
