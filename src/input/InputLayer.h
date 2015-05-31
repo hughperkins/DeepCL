@@ -10,11 +10,13 @@
 #include "activate/ActivationFunction.h"
 #include "util/stringhelper.h"
 
+#include "DeepCLDllExport.h"
+
 class InputLayerMaker;
 
 #define VIRTUAL virtual
 
-class InputLayer : public Layer, IHasToString {
+class DeepCL_EXPORT InputLayer : public Layer, IHasToString {
 public:
     int batchSize;
     int allocatedSize;
