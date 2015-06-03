@@ -62,8 +62,6 @@ public:
     PUBLICAPI void initWeights( int layerIndex, float *weights, float *bias );
     PUBLICAPI void initWeights( int layerIndex, float *weights );
     PUBLICAPI void initBias( int layerIndex, float *weights );
-    void printWeightsAsCode();
-    void printBiasAsCode();
     PUBLICAPI float calcLoss(float const *expectedValues );
     PUBLICAPI float calcLossFromLabels(int const *labels );
     float calcLoss( OutputData *outputData );

@@ -33,7 +33,7 @@ VIRTUAL float *InputLayer::getOutput() {
 VIRTUAL bool InputLayer::needsBackProp() {
     return false;
 }
-VIRTUAL int InputLayer::getPersistSize() const {
+VIRTUAL int InputLayer::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL void InputLayer::printOutput() {

@@ -57,6 +57,9 @@ STATIC void NorbLoader::load( std::string trainFilepath, unsigned char *images, 
     loadImages( images, trainFilepath, &N, &numPlanes, &imageSize, startN, numExamples );
 //    int totalLinearSize = numExamples  * numPlanes * imageSize * imageSize;
 //    memcpy( images, loadedImages + startN * numPlanes * imageSize * imageSize, numExamples * numPlanes * imageSize * imageSize * sizeof( unsigned char ) );
+    if( labels == 0 ) {
+        return;
+    }
     loadLabels( labels, replace( trainFilepath, "-dat.mat","-cat.mat"), startN, numExamples );
 //    memcpy( labels, loadedLabels + startN, sizeof( int ) * numExamples );
 //    delete []loadedImages;

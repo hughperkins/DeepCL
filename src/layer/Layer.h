@@ -16,6 +16,7 @@
 #include "layer/LayerMaker.h"
 #include "util/stringhelper.h"
 #include "EasyCL.h"
+#include "DeepCLDllExport.h"
 
 #define VIRTUAL virtual
 
@@ -24,7 +25,7 @@ class TrainerStateMaker;
 
 PUBLICAPI
 /// A single layer within the neural net
-class Layer {
+class DeepCL_EXPORT Layer {
 public:
     Layer *previousLayer;
     Layer *nextLayer;
@@ -37,7 +38,7 @@ public:
     PUBLICAPI virtual float * getOutput() = 0;
 //    virtual Layer *clone() = 0;
     /// \brief Get the size of array needed for persisting to/from an array
-    PUBLICAPI virtual int getPersistSize() const = 0;
+    PUBLICAPI virtual int getPersistSize( int version ) const = 0;
     /// \brief Get the size of the activated output from this layer
     PUBLICAPI virtual int getOutputSize() const = 0;
     virtual std::string getClassName() const = 0;
@@ -69,8 +70,7 @@ public:
     VIRTUAL void print();
     VIRTUAL void initWeights( float const*weights );
     VIRTUAL void initBias( float const *bias );
-    VIRTUAL void printWeightsAsCode() const;
-    VIRTUAL void printBiasAsCode() const;
+    int getLayerIndex();
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
     PUBLICAPI VIRTUAL void backward();
@@ -79,11 +79,15 @@ public:
     VIRTUAL bool biased();
     PUBLICAPI VIRTUAL int getWeightsSize() const;
     PUBLICAPI VIRTUAL int getBiasSize() const;
-    PUBLICAPI VIRTUAL void persistToArray(float *array);
-    PUBLICAPI VIRTUAL void unpersistFromArray(float const*array);
+    PUBLICAPI VIRTUAL int getPersistSize() const;
+    PUBLICAPI VIRTUAL void persistToArray( float *array );
+    PUBLICAPI VIRTUAL void persistToArray( int version, float *array );
+    PUBLICAPI VIRTUAL void unpersistFromArray( float const*array );
+    PUBLICAPI VIRTUAL void unpersistFromArray( int version, float const*array );
     VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
+    VIRTUAL float *getBias();
     VIRTUAL float const*getBias() const;
     PUBLICAPI VIRTUAL std::string asString() const;
     VIRTUAL bool needsTrainerState  () const;

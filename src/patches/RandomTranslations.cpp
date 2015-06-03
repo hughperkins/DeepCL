@@ -79,7 +79,7 @@ VIRTUAL int RandomTranslations::getOutputImageSize() const {
 VIRTUAL int RandomTranslations::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int RandomTranslations::getPersistSize() const {
+VIRTUAL int RandomTranslations::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL bool RandomTranslations::providesGradInputWrapper() const {

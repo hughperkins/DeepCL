@@ -301,14 +301,14 @@ VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *bias ) {
 VIRTUAL int ConvolutionalLayer::getOutputCubeSize() const {
     return dim.outputCubeSize;
 }
-VIRTUAL int ConvolutionalLayer::getPersistSize() const {
+VIRTUAL int ConvolutionalLayer::getPersistSize( int version ) const {
     if( dim.biased ) {
         return getWeightsSize() + getBiasSize();
     } else {
         return getWeightsSize();
     }
 }
-VIRTUAL void ConvolutionalLayer::persistToArray(float *array) {
+VIRTUAL void ConvolutionalLayer::persistToArray( int version, float *array ) {
     float const*weights = getWeights();
     memcpy( array, weights, sizeof(float) * getWeightsSize() );
     if( dim.biased ) {
@@ -316,7 +316,7 @@ VIRTUAL void ConvolutionalLayer::persistToArray(float *array) {
         memcpy( array + getWeightsSize(), bias, sizeof(float) * getBiasSize() );
     }
 }
-VIRTUAL void ConvolutionalLayer::unpersistFromArray(float const*array) {
+VIRTUAL void ConvolutionalLayer::unpersistFromArray( int version, float const*array ) {
     float const*newweights = array;
     initWeights( newweights );
     if( dim.biased ) {
@@ -361,9 +361,14 @@ VIRTUAL float *ConvolutionalLayer::getWeights() {
 }
 VIRTUAL float *ConvolutionalLayer::getBias() {
     if( biasWrapper->isDeviceDirty() ) {
-//        cout << "copying bias to host" << endl;
         cl->finish();
         biasWrapper->copyToHost();
+    }
+    return bias;
+}
+VIRTUAL float const*ConvolutionalLayer::getBias() const {
+    if( biasWrapper->isDeviceDirty() ) {
+        throw std::runtime_error("bias not copied to host, and htis is const object, so cannot copy");
     }
     return bias;
 }

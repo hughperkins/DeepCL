@@ -35,7 +35,7 @@ VIRTUAL void ForceBackpropLayer::backward( float learningRate ) {
 VIRTUAL float *ForceBackpropLayer::getOutput() {
     return output;
 }
-VIRTUAL int ForceBackpropLayer::getPersistSize() const {
+VIRTUAL int ForceBackpropLayer::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL bool ForceBackpropLayer::needsBackProp() {

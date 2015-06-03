@@ -24,6 +24,7 @@
 #include "input/InputLayerMaker.h"
 #include "trainers/Trainer.h"
 #include "trainers/TrainerMaker.h"
+#include "weights/WeightsPersister.h"
 
 #include "net/NeuralNet.h"
 
@@ -86,16 +87,6 @@ PUBLICAPI void NeuralNet::initWeights( int layerIndex, float *weights ) {
 }
 PUBLICAPI void NeuralNet::initBias( int layerIndex, float *weights ) {
     layers[layerIndex]->initBias( weights );
-}
-void NeuralNet::printWeightsAsCode() {
-    for( int layer = 1; layer < (int)layers.size(); layer++ ) {
-        layers[layer]->printWeightsAsCode();
-    }
-}
-void NeuralNet::printBiasAsCode() {
-    for( int layer = 1; layer < (int)layers.size(); layer++ ) {
-        layers[layer]->printBiasAsCode();
-    }
 }
 /// \brief calculate the loss, based on the passed in expectedValues array
 ///
@@ -282,7 +273,7 @@ void NeuralNet::printParamStats() {
     int precision = (int)std::cout.precision();
 //    cout << "precision: " << precision << endl;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++ ) {
-        int size = (*it)->getPersistSize();
+        int size = (*it)->getPersistSize( WeightsPersister::latestVersion );
         sum += size;
         if( ! size ){
             skip++;
@@ -291,7 +282,7 @@ void NeuralNet::printParamStats() {
     std::cout << "Parameters overview: (skipping " << skip << " layers with 0 params)" << std::endl;
     int i = 0;
     for( std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++, i++ ) {
-        int size = (*it)->getPersistSize();
+        int size = (*it)->getPersistSize( WeightsPersister::latestVersion );
         if( size ) {
             std::cout << "layer " << i << ": params=" << size << "\t";
             std::cout << std::fixed << std::setprecision(1) << ((float) 100 * size)/sum << "%";

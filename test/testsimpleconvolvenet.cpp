@@ -17,6 +17,8 @@
 #include "batch/EpochMaker.h"
 #include "batch/Batcher2.h"
 
+#include "test/NetTestHelper.h"
+
 #include "gtest/gtest.h"
 
 using namespace std;
@@ -447,8 +449,16 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
 //    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
+
+    float weights1[] = {-0.303866f, -1.66244f};
+    float weights3[] = {0.426358f, -0.841404f, -0.420361f, 0.841048f};
+    float bias1[] = {-0.324465f, 0.731219f};
+    float bias3[] = {0.600115f, -0.599876f};
+    net->initWeights( 1, weights1, bias1 );
+    net->initWeights( 3, weights3, bias3 );
+
     SGD *sgd = SGD::instance( cl, 0.1f, 0.0f );
-    for( int epoch = 0; epoch < 80; epoch++ ) {
+    for( int epoch = 0; epoch < 40; epoch++ ) {
         net->epochMaker(sgd)
             ->batchSize(2)
             ->numExamples(2)
@@ -460,7 +470,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
 //        float const*output = net->getOutput();
 //        AccuracyHelper::printAccuracy( 2, 2, labels, output );
     }
-//    net->print();
+    net->print();
     cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
     float const*output = net->getOutput();
     AccuracyHelper::printAccuracy( 2, 2, labels, output );
@@ -472,6 +482,13 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     float loss = net->calcLoss(expectedOutput);
     cout << "loss, E, " << loss << endl;
     EXPECT_GE( 0.0001f, loss );
+
+        cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
+    net->print();
+    net->getLayer(1)->getWeights();
+    net->getLayer(3)->getWeights();
+    NetTestHelper::printWeightsAsCode( net );
+    NetTestHelper::printBiasAsCode( net );
 
     delete sgd;
     delete net;

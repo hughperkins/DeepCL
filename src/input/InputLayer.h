@@ -10,11 +10,13 @@
 #include "activate/ActivationFunction.h"
 #include "util/stringhelper.h"
 
+#include "DeepCLDllExport.h"
+
 class InputLayerMaker;
 
 #define VIRTUAL virtual
 
-class InputLayer : public Layer, IHasToString {
+class DeepCL_EXPORT InputLayer : public Layer, IHasToString {
 public:
     int batchSize;
     int allocatedSize;
@@ -45,7 +47,7 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL void printOutput();
     VIRTUAL void print();
     void in( float const*images );

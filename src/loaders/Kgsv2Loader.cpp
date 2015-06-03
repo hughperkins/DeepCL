@@ -82,16 +82,13 @@ STATIC void Kgsv2Loader::load( std::string filepath, unsigned char *data, int *l
         if( record[ 1 ] != 'O' ) {
             throw std::runtime_error("alignment error, for record " + toString(n) );
         }
-        int *p_label = reinterpret_cast< int * >( record + 2 );
-        int label = p_label[0];
-        // temporary hack, until fix kgsgo dataset endianness :-)
-//        int label = record[5] + 256 * record[4];
-//        int label = record[2+4] + 256 * record[2+3];
-//        cout << "label bytes: " << (int)record[2] << " " << (int)record[3] << " " << (int)record[4] << " " << (int)record[5] << endl;
-//        cout << "label: " << label << endl;
-        labels[n] = label;
-        if( label < 0 ) {
-            throw runtime_error("Error: label " + toString(labels) + " is negative");
+        if( labels != 0 ) {
+            int *p_label = reinterpret_cast< int * >( record + 2 );
+            int label = p_label[0];
+            labels[n] = label;
+            if( label < 0 ) {
+                throw runtime_error("Error: label " + toString(labels) + " is negative");
+            }
         }
         unsigned char *recordImage = record + 6;
         int bitPos = 0;

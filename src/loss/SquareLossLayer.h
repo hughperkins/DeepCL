@@ -34,7 +34,7 @@ public:
     VIRTUAL float calcLoss( float const *expected );
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void calcGradInput( float const*expectedOutput );
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

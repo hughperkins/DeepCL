@@ -5,3 +5,4 @@ GenericLoader.cpp
 Kgsv2Loader.cpp
 MnistLoader.cpp
 NorbLoader.cpp
+

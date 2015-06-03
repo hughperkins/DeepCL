@@ -322,6 +322,7 @@ void go(Config config) {
     int restartNumRight = 0;
     float restartLoss = 0;
     if( config.loadWeights && config.weightsFile != "" ) {
+        cout << "loadingweights" << endl;
         afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
         if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
             // try old trainingstring

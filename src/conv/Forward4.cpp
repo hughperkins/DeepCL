@@ -68,7 +68,7 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     std::string options = ""; // "-D " + fn->getDefineName();
     options += " -D gWorkgroupSize=" + toString( workgroupSize );
     options += " -D gPixelsPerThread=" + toString( pixelsPerThread );
-    cout << "options " << options << endl;
+//    cout << "options " << options << endl;
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify

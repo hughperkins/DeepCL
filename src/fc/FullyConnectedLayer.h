@@ -35,9 +35,9 @@ public:
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getPersistSize() const;
-    VIRTUAL void persistToArray(float *array);
-    VIRTUAL void unpersistFromArray(float const*array);
+    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL void persistToArray( int version, float *array );
+    VIRTUAL void unpersistFromArray( int version, float const*array );
     VIRTUAL void setWeights( float *weights, float *bias );
     VIRTUAL float * getWeights();
     VIRTUAL int getWeightsSize() const;

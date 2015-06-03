@@ -65,8 +65,8 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
 
     int localMemoryRequirementsFullImage = dim.inputImageSize * dim.inputImageSize * 4 + dim.outputImageSize * dim.outputImageSize * 4;
     int availableLocal = cl->getLocalMemorySize();
-    cout << "localmemoryrequirementsfullimage: " << localMemoryRequirementsFullImage << endl;
-    cout << "availablelocal: " << availableLocal << endl;
+//    cout << "localmemoryrequirementsfullimage: " << localMemoryRequirementsFullImage << endl;
+//    cout << "availablelocal: " << availableLocal << endl;
     // make the local memory used about one quarter of what is available? half of what is available?
     // let's try one quarter :-)
     int localWeCanUse = availableLocal / 4;

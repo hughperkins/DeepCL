@@ -42,7 +42,7 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
 //        cout << "GpuAdd kernel already built => reusing" << endl;
         return;
     }
-    cout << "GpuAdd: building kernel" << endl;
+//    cout << "GpuAdd: building kernel" << endl;
 
     string options = "";
 
@@ -87,7 +87,7 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "per_element_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernel );
+    cl->storeKernel( kernelName, kernel, true );
     this->kernel = kernel;
 }
 

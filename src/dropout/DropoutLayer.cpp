@@ -142,7 +142,7 @@ VIRTUAL int DropoutLayer::getOutputImageSize() const {
 VIRTUAL int DropoutLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int DropoutLayer::getPersistSize() const {
+VIRTUAL int DropoutLayer::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL bool DropoutLayer::providesGradInputWrapper() const {

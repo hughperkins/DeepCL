@@ -39,6 +39,7 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target ) {
     targetWrapper->copyToHost();
 
     delete targetWrapper;
+    delete kernel;
 //    delete[] copiedBuffer;
 }
 
@@ -66,6 +67,7 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, int *target ) {
     targetWrapper->copyToHost();
 
     delete targetWrapper;
+    delete kernel;
 //    delete[] copiedBuffer;
 }
 

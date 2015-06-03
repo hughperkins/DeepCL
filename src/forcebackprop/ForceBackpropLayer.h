@@ -52,7 +52,7 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL void backward( float learningRate );
     VIRTUAL float *getOutput();
-    VIRTUAL int getPersistSize() const;
+    VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput();
     VIRTUAL void print();

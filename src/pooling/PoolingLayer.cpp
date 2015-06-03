@@ -130,10 +130,13 @@ VIRTUAL int PoolingLayer::getOutputSize() const {
 VIRTUAL int PoolingLayer::getOutputImageSize() const {
     return outputImageSize;
 }
+VIRTUAL int PoolingLayer::getOutputCubeSize() const {
+    return numPlanes * outputImageSize * outputImageSize;
+}
 VIRTUAL int PoolingLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int PoolingLayer::getPersistSize() const {
+VIRTUAL int PoolingLayer::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL bool PoolingLayer::providesGradInputWrapper() const {

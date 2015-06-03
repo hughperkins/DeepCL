@@ -51,14 +51,14 @@ VIRTUAL int FullyConnectedLayer::getOutputImageSize() const {
 VIRTUAL int FullyConnectedLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int FullyConnectedLayer::getPersistSize() const {
-    return convolutionalLayer->getPersistSize();
+VIRTUAL int FullyConnectedLayer::getPersistSize( int version ) const {
+    return convolutionalLayer->getPersistSize( version );
 }
-VIRTUAL void FullyConnectedLayer::persistToArray(float *array) {
-    convolutionalLayer->persistToArray( array );
+VIRTUAL void FullyConnectedLayer::persistToArray( int version, float *array ) {
+    convolutionalLayer->persistToArray( version, array );
 }
-VIRTUAL void FullyConnectedLayer::unpersistFromArray(float const*array) {
-    convolutionalLayer->unpersistFromArray( array );
+VIRTUAL void FullyConnectedLayer::unpersistFromArray( int version, float const*array ) {
+    convolutionalLayer->unpersistFromArray( version, array );
 }
 VIRTUAL void FullyConnectedLayer::setWeights( float *weights, float *bias ) {
     convolutionalLayer->initWeights( weights );

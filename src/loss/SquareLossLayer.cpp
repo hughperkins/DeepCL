@@ -68,7 +68,7 @@ VIRTUAL void SquareLossLayer::calcGradInput( float const*expectedOutput ) {
         gradInput[i] = input[i] - expectedOutput[i];
     }
 }
-VIRTUAL int SquareLossLayer::getPersistSize() const {
+VIRTUAL int SquareLossLayer::getPersistSize( int version ) const {
     return 0;
 }
 VIRTUAL std::string SquareLossLayer::asString() const {

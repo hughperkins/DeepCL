@@ -127,18 +127,23 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
+ test/NetTestHelper.cpp
  )
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
     add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/stringhelper.cpp src/loaders/MnistLoader.cpp )
 endif(LIBJPEG_AVAILABLE)
 
-add_executable( deepclrun src/main/deepclrun.cpp src/util/stringhelper.cpp )
-add_executable( deepclexec src/main/deepclexec.cpp src/util/stringhelper.cpp )
+add_executable( deepclrun src/main/train.cpp src/util/stringhelper.cpp )
+add_executable( deepclexec src/main/predict.cpp src/util/stringhelper.cpp )
+# create these 'aliases'.  In the future these might replace deepclrun and deepclexec
+add_executable( train src/main/train.cpp src/util/stringhelper.cpp )
+add_executable( predict src/main/predict.cpp src/util/stringhelper.cpp )
 
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
+add_executable( mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)

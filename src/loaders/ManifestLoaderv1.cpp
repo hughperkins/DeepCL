@@ -34,6 +34,13 @@ PUBLIC STATIC bool ManifestLoaderv1::isFormatFor( std::string imagesFilepath ) {
     return matched;
 }
 PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
+    init( imagesFilepath, true );    
+}
+PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath, bool includeLabels ) {
+    init( imagesFilepath, includeLabels );
+}
+PRIVATE void ManifestLoaderv1::init( std::string imagesFilepath, bool includeLabels ) {
+    this->includeLabels = includeLabels;
     this->imagesFilepath = imagesFilepath;
     // by reading the number of lines in the manifest, we can get the number of examples, *p_N
     // number of planes is .... 1
@@ -75,14 +82,16 @@ PUBLIC ManifestLoaderv1::ManifestLoaderv1( std::string imagesFilepath ) {
         if( (int)splitLine.size() == 0 ) {
             continue;
         }
-        if( (int)splitLine.size() != 2 ) { 
+        if( includeLabels && (int)splitLine.size() != 2 ) { 
             throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line );
         }
         string jpegFile = splitLine[0];
-        int label = atoi(splitLine[1]);
-//        cout << "file " << jpegFile << " label=" << label << endl;
         files[n] = jpegFile;
+        if( includeLabels ) {
+            int label = atoi(splitLine[1]);
         labels[n] = label;
+        }
+//        cout << "file " << jpegFile << " label=" << label << endl;
         n++;
     }
     infile.close();
@@ -121,7 +130,12 @@ PUBLIC VIRTUAL void ManifestLoaderv1::load( unsigned char *data, int *labels, in
     for( int localN = 0; localN < numRecords; localN++ ) {
         int globalN = localN + startRecord;
         JpegHelper::read( files[globalN], planes, size, size, data + localN * imageCubeSize );
-        labels[localN] = this->labels[globalN];
+        if( labels != 0 ) {
+            if( !includeLabels ) {
+                throw runtime_error( "ManifestLoaderv1: labels reqested in load() method, but not activated in constructor" );
+            }
+            labels[localN] = this->labels[globalN];
+        }
     }
 }
 

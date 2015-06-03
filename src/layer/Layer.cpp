@@ -1,4 +1,5 @@
 #include "layer/Layer.h"
+#include "weights/WeightsPersister.h"
 
 using namespace std;
 
@@ -100,29 +101,8 @@ VIRTUAL void Layer::initBias( float const *bias ) {
 //        this->bias[i] = bias[i];
 //    }
 }
-VIRTUAL void Layer::printWeightsAsCode() const {
-    std::cout << "float weights" << layerIndex << "[] = {";
-    const int numWeights = getWeightsSize();
-    float const*weights = getWeights();
-    for( int i = 0; i < numWeights; i++ ) {
-        std::cout << weights[i];
-        if( i < numWeights - 1 ) std::cout << ", ";
-        if( i > 0 && i % 20 == 0 ) std::cout << std::endl;
-    }
-    std::cout << "};" << std::endl;
-//        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
-}
-VIRTUAL void Layer::printBiasAsCode() const {
-    std::cout << "float bias" << layerIndex << "[] = {";
-    const int numBias = getBiasSize();
-    float const*bias = getBias();
-    for( int i = 0; i < numBias; i++ ) {
-        std::cout << bias[i];
-        if( i < numBias - 1 ) std::cout << ", ";
-        if( i > 0 && i % 20 == 0 ) std::cout << std::endl;
-    }
-    std::cout << "};" << std::endl;
-//        std::cout << netObjectName << "->layers[" << layerIndex << "]->weights[
+int Layer::getLayerIndex() {
+    return layerIndex;
 }
 VIRTUAL void Layer::printWeights() {
     throw std::runtime_error("printWeights not implemented for " + getClassName() );
@@ -148,13 +128,22 @@ PUBLICAPI VIRTUAL int Layer::getWeightsSize() const {
 PUBLICAPI VIRTUAL int Layer::getBiasSize() const {
     throw std::runtime_error("getBiasSize not implemented for " + getClassName() );
 }
+PUBLICAPI VIRTUAL int Layer::getPersistSize() const {
+    return getPersistSize( WeightsPersister::latestVersion );
+}
+PUBLICAPI VIRTUAL void Layer::persistToArray( float *array ) {
+    persistToArray( WeightsPersister::latestVersion, array );
+}
 /// \brief store the current weights and biases to array
 /// Note that you need to allocate array first
-PUBLICAPI VIRTUAL void Layer::persistToArray(float *array) {
+PUBLICAPI VIRTUAL void Layer::persistToArray( int version, float *array ) {
     throw std::runtime_error("persistToArray not implemented for " + getClassName() );
 }
+PUBLICAPI VIRTUAL void Layer::unpersistFromArray( float const*array ) {
+    unpersistFromArray( WeightsPersister::latestVersion, array );
+}
 /// \brief initialize the current weights and biases from array
-PUBLICAPI VIRTUAL void Layer::unpersistFromArray(float const*array) {
+PUBLICAPI VIRTUAL void Layer::unpersistFromArray( int version, float const*array ) {
     throw std::runtime_error("unpersistFromArray not implemented for " + getClassName() );
 }
 VIRTUAL void Layer::setWeights(float *weights, float *bias) {
@@ -166,8 +155,11 @@ VIRTUAL float const *Layer::getWeights() const {
 VIRTUAL float *Layer::getWeights() {
     throw std::runtime_error("getWeights not implemented for " + getClassName() );
 }
-VIRTUAL float const*Layer::getBias() const {
+VIRTUAL float *Layer::getBias() {
     throw std::runtime_error("getBias not implemented for " + getClassName() );
+}
+VIRTUAL float const*Layer::getBias() const {
+    throw std::runtime_error("getBias const not implemented for " + getClassName() );
 }
 /// \brief Get a string representation of the layer
 PUBLICAPI VIRTUAL std::string Layer::asString() const {
