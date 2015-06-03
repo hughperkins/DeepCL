@@ -174,6 +174,7 @@ void go(Config config) {
     int n = 0;
     bool more = true;
     ostream *outFile = 0;
+    if( verbose ) cout << "outputFile: '" << config.outputFile << "'"<< endl;
     if( config.outputFile == "" ) {
         outFile = &cout;
     } else {
@@ -188,6 +189,7 @@ void go(Config config) {
     if( config.outputLayer == -1 ) {
         config.outputLayer = net->getNumLayers() - 1;
     }
+    if( verbose ) cout << "inputFile: '" << config.inputFile << "'"<< endl;
     if( config.inputFile == "" ) {
         #ifdef _WIN32
         // refs:
