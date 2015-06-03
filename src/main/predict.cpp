@@ -173,20 +173,6 @@ void go(Config config) {
     int *labels = new int[config.batchSize];
     int n = 0;
     bool more = true;
-    if( config.inputFile == "" ) {
-        #ifdef _WIN32
-        // refs:
-        // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
-        // http://www.cplusplus.com/forum/windows/77812/
-        _setmode( _fileno( stdout ), _O_BINARY ); 
-        #endif
-        cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
-        more = !cin.eof();
-    } else {
-        // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
-        // now, after modifying GenericLoader to have this new behavior
-        GenericLoader::load( config.inputFile, inputData, 0, n, config.batchSize );
-    }
     ostream *outFile = 0;
     if( config.outputFile == "" ) {
         outFile = &cout;
@@ -201,6 +187,20 @@ void go(Config config) {
     }
     if( config.outputLayer == -1 ) {
         config.outputLayer = net->getNumLayers() - 1;
+    }
+    if( config.inputFile == "" ) {
+        #ifdef _WIN32
+        // refs:
+        // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
+        // http://www.cplusplus.com/forum/windows/77812/
+        _setmode( _fileno( stdout ), _O_BINARY ); 
+        #endif
+        cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
+        more = !cin.eof();
+    } else {
+        // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
+        // now, after modifying GenericLoader to have this new behavior
+        GenericLoader::load( config.inputFile, inputData, 0, n, config.batchSize );
     }
     while( more ) {
         // no point in forwarding through all, so forward through each, one by one
