@@ -176,6 +176,12 @@ void go(Config config) {
     ostream *outFile = 0;
     if( verbose ) cout << "outputFile: '" << config.outputFile << "'"<< endl;
     if( config.outputFile == "" ) {
+        #ifdef _WIN32
+        // refs:
+        // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
+        // http://www.cplusplus.com/forum/windows/77812/
+        _setmode( _fileno( stdout ), _O_BINARY ); 
+        #endif
         outFile = &cout;
     } else {
         if( config.outputFormat == "text" ) {
@@ -191,12 +197,6 @@ void go(Config config) {
     }
     if( verbose ) cout << "inputFile: '" << config.inputFile << "'"<< endl;
     if( config.inputFile == "" ) {
-        #ifdef _WIN32
-        // refs:
-        // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
-        // http://www.cplusplus.com/forum/windows/77812/
-        _setmode( _fileno( stdout ), _O_BINARY ); 
-        #endif
         cin.read( reinterpret_cast< char * >( inputData ), inputCubeSize * config.batchSize * 4l );
         more = !cin.eof();
     } else {
