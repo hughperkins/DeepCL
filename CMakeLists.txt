@@ -183,4 +183,7 @@ if( BUILD_LUA_WRAPPERS )
 add_subdirectory(lua)
 endif()
 
+INSTALL( TARGETS DeepCL
+    LIBRARY DESTINATION lib )
+
 
