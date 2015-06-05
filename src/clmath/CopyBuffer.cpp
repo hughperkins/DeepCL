@@ -18,11 +18,16 @@ using namespace std;
 #define VIRTUAL
 
 VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
+    copy( N, in, 0, out, 0 );
+}
+VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, int inoffset, CLWrapper *out, int outoffset ) {
         StatefulTimer::instance()->timeCheck("CopyBuffer::copy start" );
 
     kernel  ->in( N )
             ->in( in )
-            ->out( out );
+            ->in( inoffset )
+            ->out( out )
+            ->in( outoffset );
 
     int globalSize = N;
     int workgroupSize = 64;
@@ -40,7 +45,7 @@ VIRTUAL CopyBuffer::~CopyBuffer() {
 CopyBuffer::CopyBuffer( EasyCL *cl ) :
         cl( cl ) {
 
-    std::string kernelName = "copy.copy";
+    std::string kernelName = "copy.copy_with_offset";
     if( cl->kernelExists( kernelName ) ) {
         this->kernel = cl->getKernel( kernelName );
 //        cout << "CopyBuffer kernel already built => reusing" << endl;
@@ -48,12 +53,11 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     }
 //    cout << "CopyBuffer: building kernel" << endl;
 
-//    std::string options = "-D " + fn->getDefineName();
     string options = "";
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy_with_offset", 'options' )
     // ]]]
     // generated using cog, from cl/copy.cl:
     const char * kernelSource =  
@@ -75,6 +79,19 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "        return;\n" 
     "    }\n" 
     "    out[globalId] = in[globalId];\n" 
+    "}\n" 
+    "\n" 
+    "kernel void copy_with_offset(\n" 
+    "        const int N,\n" 
+    "        global const float *in,\n" 
+    "        const int inoffset,\n" 
+    "        global float *out,\n" 
+    "        const int outoffset ) {\n" 
+    "    const int globalId = get_global_id(0);\n" 
+    "    if( globalId >= N ) {\n" 
+    "        return;\n" 
+    "    }\n" 
+    "    out[globalId + outoffset] = in[globalId + inoffset];\n" 
     "}\n" 
     "\n" 
     "kernel void multiplyConstant(\n" 
@@ -101,7 +118,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "copy_with_offset", options, "cl/copy.cl" );
     // [[[end]]]
     cl->storeKernel( kernelName, kernel, true );
     this->kernel = kernel;

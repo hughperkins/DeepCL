@@ -18,6 +18,19 @@ kernel void copy(
     out[globalId] = in[globalId];
 }
 
+kernel void copy_with_offset(
+        const int N,
+        global const float *in,
+        const int inoffset,
+        global float *out,
+        const int outoffset ) {
+    const int globalId = get_global_id(0);
+    if( globalId >= N ) {
+        return;
+    }
+    out[globalId + outoffset] = in[globalId + inoffset];
+}
+
 kernel void multiplyConstant(
         const int N,
         const float multiplier,

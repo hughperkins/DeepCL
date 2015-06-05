@@ -31,6 +31,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL void copy( int N, CLWrapper *in, CLWrapper *out );
+    VIRTUAL void copy( int N, CLWrapper *in, int inoffset, CLWrapper *out, int outoffset );
     VIRTUAL ~CopyBuffer();
     CopyBuffer( EasyCL *cl );
 
