@@ -18,16 +18,11 @@ using namespace std;
 #define VIRTUAL
 
 VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
-    copy( N, in, 0, out, 0 );
-}
-VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, int inoffset, CLWrapper *out, int outoffset ) {
-        StatefulTimer::instance()->timeCheck("CopyBuffer::copy start" );
-
     kernel  ->in( N )
             ->in( in )
-            ->in( inoffset )
-            ->out( out )
-            ->in( outoffset );
+//            ->in( inoffset )
+            ->out( out );
+//            ->in( outoffset );
 
     int globalSize = N;
     int workgroupSize = 64;
@@ -45,7 +40,7 @@ VIRTUAL CopyBuffer::~CopyBuffer() {
 CopyBuffer::CopyBuffer( EasyCL *cl ) :
         cl( cl ) {
 
-    std::string kernelName = "copy.copy_with_offset";
+    std::string kernelName = "copy.copy";
     if( cl->kernelExists( kernelName ) ) {
         this->kernel = cl->getKernel( kernelName );
 //        cout << "CopyBuffer kernel already built => reusing" << endl;
@@ -57,7 +52,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy_with_offset", 'options' )
+    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy", 'options' )
     // ]]]
     // generated using cog, from cl/copy.cl:
     const char * kernelSource =  
@@ -118,7 +113,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "copy_with_offset", options, "cl/copy.cl" );
+    kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
     // [[[end]]]
     cl->storeKernel( kernelName, kernel, true );
     this->kernel = kernel;
