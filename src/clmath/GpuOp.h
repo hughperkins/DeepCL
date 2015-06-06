@@ -18,6 +18,18 @@ class CLKernel;
 #define VIRTUAL virtual
 #define STATIC static
 
+class Op1 {
+public:
+    virtual std::string getOperationString() = 0;
+    virtual std::string getName() = 0;
+};
+class Op1Inv : public Op1 {
+    std::string getOperationString() {
+        return "1.0f / val_one";
+    }
+    std::string getName(){ return "Inv"; }
+};
+
 class Op2 {
 public:
     virtual std::string getOperationString() = 0;
@@ -67,9 +79,12 @@ public:
     // generated, using cog:
     VIRTUAL void apply2_inplace( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op );
     VIRTUAL void apply2_outofplace( int N, CLWrapper*destinationWrapper, CLWrapper*one, CLWrapper *two, Op2 *op );
+    VIRTUAL void apply1_inplace( int N, CLWrapper*destinationWrapper, Op1 *op );
+    VIRTUAL void apply1_outofplace( int N, CLWrapper*destinationWrapper, CLWrapper*one, Op1 *op );
     VIRTUAL ~GpuOp();
     GpuOp( EasyCL *cl );
     void buildKernel( std::string name, Op2 *op, bool inPlace );
+    void buildKernel( std::string name, Op1 *op, bool inPlace );
 
     // [[[end]]]
 };
