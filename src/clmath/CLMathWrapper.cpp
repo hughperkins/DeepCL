@@ -67,8 +67,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const CLMathWrapper &rhs ) {
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::sqrt() {
-    kernelSqrt->in( N )->inout( wrapper );
-    runKernel( kernelSqrt );
+    Op1Sqrt op;
+    gpuOp->apply1_inplace( N, wrapper, &op );
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::inv() {
@@ -77,8 +77,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::inv() {
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::squared() {
-    kernelSquared->in( N )->inout( wrapper );
-    runKernel( kernelSquared );
+    Op1Squared op;
+    gpuOp->apply1_inplace( N, wrapper, &op );
     return *this;
 }
 VIRTUAL void CLMathWrapper::runKernel( CLKernel *kernel ) {   
@@ -100,8 +100,6 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     this->multiplyInPlace = new MultiplyInPlace( cl );
     this->gpuOp = new GpuOp( cl );
 
-    buildSqrt();
-    buildSquared();
     buildAddScalar();
 }
 void CLMathWrapper::buildAddScalar() {
@@ -141,78 +139,5 @@ void CLMathWrapper::buildAddScalar() {
     kernelAddScalar = cl->buildKernelFromString( kernelAddScalarSource, "add_scalar", options, "cl/addscalar.cl" );
     // [[[end]]]
     cl->storeKernel( kernelName, kernelAddScalar, true );
-}
-void CLMathWrapper::buildSqrt() {
-    std::string sqrtKernelName = "sqrt";
-    if( cl->kernelExists( sqrtKernelName ) ) {
-        this->kernelSqrt = cl->getKernel( sqrtKernelName );
-        return;
-    }
-    cout << "sqrt: building kernel" << endl;
-
-    string options = "";
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernelSqrt", "cl/sqrt.cl", "array_sqrt", 'options' )
-    // ]]]
-    // generated using cog, from cl/sqrt.cl:
-    const char * kernelSqrtSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void array_sqrt(\n" 
-    "        const int N,\n" 
-    "        global float *data ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    data[globalId] = native_sqrt( data[globalId] );\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernelSqrt = cl->buildKernelFromString( kernelSqrtSource, "array_sqrt", options, "cl/sqrt.cl" );
-    // [[[end]]]
-    cl->storeKernel( sqrtKernelName, kernelSqrt, true );
-}
-
-void CLMathWrapper::buildSquared() {
-    std::string kernelName = "squared";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernelSquared = cl->getKernel( kernelName );
-        return;
-    }
-    cout << "squared: building kernel" << endl;
-
-    string options = "";
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernelSquared", "cl/squared.cl", "array_squared", 'options' )
-    // ]]]
-    // generated using cog, from cl/squared.cl:
-    const char * kernelSquaredSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void array_squared(\n" 
-    "        const int N,\n" 
-    "        global float *data ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    data[globalId] = data[globalId] * data[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernelSquared = cl->buildKernelFromString( kernelSquaredSource, "array_squared", options, "cl/squared.cl" );
-    // [[[end]]]
-    cl->storeKernel( kernelName, kernelSquared, true );
 }
 

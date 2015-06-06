@@ -15,7 +15,6 @@
 #define STATIC static
 
 class CopyBuffer;
-// class GpuAdd;
 class GpuOp;
 class MultiplyInPlace;
 class CLFloatBuffer;
@@ -34,8 +33,6 @@ class DeepCL_EXPORT CLMathWrapper {
     MultiplyInPlace *multiplyInPlace;
     GpuOp *gpuOp;
 
-    CLKernel *kernelSquared;
-    CLKernel *kernelSqrt;
     CLKernel *kernelAddScalar;
 
     int N;
@@ -60,8 +57,6 @@ public:
     VIRTUAL void runKernel( CLKernel *kernel );
     CLMathWrapper( CLWrapper *wrapper );
     void buildAddScalar();
-    void buildSqrt();
-    void buildSquared();
 
     // [[[end]]]
 };

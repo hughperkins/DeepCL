@@ -27,7 +27,19 @@ class Op1Inv : public Op1 {
     std::string getOperationString() {
         return "1.0f / val_one";
     }
-    std::string getName(){ return "Inv"; }
+    std::string getName(){ return "Op1_Inv"; }
+};
+class Op1Sqrt : public Op1 {
+    std::string getOperationString() {
+        return "native_sqrt( val_one )";
+    }
+    std::string getName(){ return "Op1_Sqrt"; }
+};
+class Op1Squared : public Op1 {
+    std::string getOperationString() {
+        return "val_one * val_one";
+    }
+    std::string getName(){ return "Op1_Squared"; }
 };
 
 class Op2 {
@@ -40,28 +52,28 @@ public:
     std::string getOperationString() {
         return "val_one + val_two";
     }
-    std::string getName(){ return "Add"; }
+    std::string getName(){ return "Op2_Add"; }
 };
 class Op2Mul : public Op2 {
 public:
     std::string getOperationString() {
         return "val_one * val_two";
     }
-    std::string getName(){ return "Mul"; }
+    std::string getName(){ return "Op2_Mul"; }
 };
 class Op2Sub : public Op2 {
 public:
     std::string getOperationString() {
         return "val_one - val_two";
     }
-    std::string getName(){ return "Sub"; }
+    std::string getName(){ return "Op2_Sub"; }
 };
 class Op2Div : public Op2 {
 public:
     std::string getOperationString() {
         return "val_one / val_two";
     }
-    std::string getName(){ return "Div"; }
+    std::string getName(){ return "Op2_Div"; }
 };
 
 
