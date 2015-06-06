@@ -101,3 +101,25 @@ TEST( testGpuOp, inverse ) {
     delete cl;
 }
 
+TEST( testGpuOp, addscalarinplace ) {
+    EasyCL *cl = new EasyCL();
+    float adat[] = { 1,3,9,12.5f,2.5f };
+    CLWrapper *a = cl->wrap( 5,adat );
+    a->copyToDevice();
+
+    GpuOp gpuOp( cl );
+    gpuOp.apply2_inplace( 5, a, 4.2f, new Op2Add() );
+    a->copyToHost();
+
+    for( int i = 0; i < 5; i++ ) {
+        cout << "a[" << i << "]=" << adat[i] << endl;
+    }
+    EXPECT_FLOAT_NEAR( 5.2f, adat[0] );
+    EXPECT_FLOAT_NEAR( 7.2f, adat[1] );
+    EXPECT_FLOAT_NEAR( 2.5f + 4.2f, adat[4] );
+
+    delete a;
+    delete cl;
+}
+
+
