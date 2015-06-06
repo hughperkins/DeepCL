@@ -32,7 +32,28 @@ TEST( testSpeedTemplates, basicsubstitution ) {
 "        Today's weather is rain.\n"
 "    \n";
     EXPECT_EQ( expectedResult, result );
+    string result2 = mytemplate.render();
+    EXPECT_EQ( expectedResult, result2 );
 }
+//TEST( testSpeedTemplates, basicsubstitution_from_vec ) {
+//    string source = "\n"
+//"        This is my {{avalue}} template.  It's {{secondvalue}}...\n"
+//"        Today's weather is {{weather}}.\n"
+//"    \n";
+
+//    Template mytemplate( source );
+//    map< string, Value * > valueByName;
+//    valueByName.setValue( "avalue", 3 );
+//    valueByName.setValue( "secondvalue", 12.123f );
+//    valueByName.setValue( "weather", "rain" );
+//    string result = mytemplate.render();
+//    cout << result << endl;
+//    string expectedResult = "\n"
+//"        This is my 3 template.  It's 12.123...\n"
+//"        Today's weather is rain.\n"
+//"    \n";
+//    EXPECT_EQ( expectedResult, result );
+//}
 TEST( testSpeedTemplates, namemissing ) {
     string source = "\n"
 "        This is my {{avalue}} template.\n"
@@ -47,6 +68,26 @@ TEST( testSpeedTemplates, namemissing ) {
         threw = true;
     }
     EXPECT_EQ( true, threw );
+}
+TEST( testSpeedTemplates, startofsection ) {
+    string source = "{{avalue}} template";
+
+    Template mytemplate( source );
+    mytemplate.setValue( "avalue", 3 );
+    string result = mytemplate.render();
+    cout << result << endl;
+    string expectedResult = "3 template";
+    EXPECT_EQ( expectedResult, result );
+}
+TEST( testSpeedTemplates, endofsection ) {
+    string source = "template {{avalue}}";
+
+    Template mytemplate( source );
+    mytemplate.setValue( "avalue", 3 );
+    string result = mytemplate.render();
+    cout << result << endl;
+    string expectedResult = "template 3";
+    EXPECT_EQ( expectedResult, result );
 }
 TEST( testSpeedTemplates, loop ) {
     string source = "\n"
@@ -94,6 +135,28 @@ TEST( testSpeedTemplates, nestedloop ) {
 "b[1] = image[1];\n"
 "\n"
 "";
+    EXPECT_EQ( expectedResult, result );
+}
+
+TEST( testSpeedTemplates, foreachloop ) {
+    string source = "\n"
+        "{% for name in names %}{{name}}\n"
+        "{% endfor %}\n"
+        "";
+    Template mytemplate( source );
+//    cout << mytemplate << endl;
+    vector<string> values;
+    values.push_back("blue");
+    values.push_back("green");
+    values.push_back("red");
+    mytemplate.setValue( "names", values );
+    string result = mytemplate.render();
+    cout << "[" << result << "]" << endl;
+    string expectedResult = "\n"
+"blue\n"
+"green\n"
+"red\n"
+"\n";
     EXPECT_EQ( expectedResult, result );
 }
 

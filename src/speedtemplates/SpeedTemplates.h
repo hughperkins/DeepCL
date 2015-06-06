@@ -67,6 +67,17 @@ public:
         return value;
     }
 };
+class VectorStringValue : public Value {
+public:
+    std::vector< std::string > &values;
+    VectorStringValue( std::vector< std::string > &values ) :
+        values( values ) {
+    }
+    virtual std::string render() {
+        throw std::runtime_error("Not implemented");
+//        return value;
+    }
+};
 
 class Root;
 class ControlSection;
@@ -90,6 +101,7 @@ public:
     Template &setValue( std::string name, int value );
     Template &setValue( std::string name, float value );
     Template &setValue( std::string name, std::string value );
+    Template &setValue( std::string name, std::vector< std::string > &value );
     std::string render();
     void print(ControlSection *section);
     int eatSection( int pos, ControlSection *controlSection );
@@ -157,6 +169,43 @@ public:
     }
 };
 
+class ForEachSection : public ControlSection {
+public:
+    std::string varName;
+    std::string valuesVarName;
+    int startPos;
+    int endPos;
+    std::string render( std::map< std::string, Value *> &valueByName ) {
+        //std::cout << "foreachsection render" << std::endl;
+        std::string result = "";
+//        bool nameExistsBefore = false;
+        if( valueByName.find( varName ) != valueByName.end() ) {
+            throw render_error("variable " + varName + " already exists in this context" );
+        }
+        std::vector< std::string > values = dynamic_cast< VectorStringValue *>( valueByName[ valuesVarName ])->values;
+        for( int i = 0; i < (int)values.size(); i++ ) {
+            std::string thisValue = values[i];
+            std::cout << "i=" << i << " " << varName << "=" << thisValue << std::endl;
+            valueByName[varName] = new StringValue( thisValue );
+            for( int j = 0; j < (int)sections.size(); j++ ) {
+                sections[j]->print("   ");
+                result += sections[j]->render( valueByName );
+            }
+            delete valueByName[varName];
+            valueByName.erase( varName );
+        }
+        return result;
+    }
+    //Container *contents;
+    virtual void print( std::string prefix ) {
+        std::cout << prefix << "For ( " << varName << " in " << valuesVarName << " ) {" << std::endl;
+        for( int i = 0; i < (int)sections.size(); i++ ) {
+            sections[i]->print( prefix + "    " );
+        }
+        std::cout << prefix << "}" << std::endl;
+    }
+};
+
 class Code : public ControlSection {
 public:
 //    vector< ControlSection * >sections;
@@ -166,7 +215,7 @@ public:
 
     std::string render();
     virtual void print( std::string prefix ) {
-        std::cout << prefix << "Code ( " << startPos << ", " << endPos << " ) {" << std::endl;
+        //std::cout << prefix << "Code ( " << startPos << ", " << endPos << " ) {" << std::endl;
         for( int i = 0; i < (int)sections.size(); i++ ) {
             sections[i]->print( prefix + "    " );
         }
@@ -175,6 +224,11 @@ public:
     virtual std::string render( std::map< std::string, Value *> &valueByName ) {
 //        std::string templateString = sourceCode.substr( startPos, endPos - startPos );
 //        std::cout << "Code section, rendering [" << templateCode << "]" << std::endl;
+//        if( valueByName.find("name") != valueByName.end() ) {
+//            std::cout << "valueByName['name']=" << valueByName["name"] << std::endl;
+//        } else {
+//            std::cout << "valuebyname doesnt contain 'name''" << std::endl;
+//        }
         std::string processed = Template::doSubstitutions( templateCode, valueByName );
 //        std::cout << "Code section, after rendering: [" << processed << "]" << std::endl;
         return processed;

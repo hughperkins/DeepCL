@@ -43,7 +43,7 @@ endif()
 
 set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights qlearning
-   speedtemplates )
+   speedtemplates templated )
 foreach(dir ${dirs})
     file( STRINGS src/${dir}/files.txt ${dir}_src)
 #    message("${dir}_src ${${dir}_src}")
@@ -128,7 +128,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
- test/NetTestHelper.cpp test/testGpuOp.cpp
+ test/NetTestHelper.cpp test/testGpuOp.cpp test/testTemplatedKernel.cpp
  )
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
