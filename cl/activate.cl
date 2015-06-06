@@ -35,8 +35,7 @@ kernel void forwardNaive( const int N, global float *out, global const float *in
     if( globalId >= N ) {
         return;
     }
-    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...
+    out[globalId] = ACTIVATION_FUNCTION( in[globalId] );
 }
 #endif
-
 

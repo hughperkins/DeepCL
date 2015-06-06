@@ -12,7 +12,7 @@
 
 #include "util/stringhelper.h"
 
-#include "SpeedTemplates.h"
+#include "speedtemplates/SpeedTemplates.h"
 
 using namespace std;
 

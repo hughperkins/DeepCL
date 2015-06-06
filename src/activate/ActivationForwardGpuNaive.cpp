@@ -100,10 +100,9 @@ ActivationForwardGpuNaive::ActivationForwardGpuNaive( EasyCL *cl, int numPlanes,
     "    if( globalId >= N ) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] ); // probably not ideal...\n" 
+    "    out[globalId] = ACTIVATION_FUNCTION( in[globalId] );\n" 
     "}\n" 
     "#endif\n" 
-    "\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/activate.cl" );

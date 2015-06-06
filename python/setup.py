@@ -42,7 +42,7 @@ for arg in sys.argv:
 
 srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
     'input','layer','loaders','loss','net','netdef','normalize','patches',
-    'pooling','trainers','util','weights', 'qlearning']
+    'pooling','trainers','util','weights', 'qlearning', 'speedtemplates']
 
 if docopy:
     if not os.path.isdir('mysrc'):

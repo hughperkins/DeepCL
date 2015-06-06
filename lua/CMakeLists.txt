@@ -28,7 +28,8 @@ find_package(SWIG QUIET)
 OPTION(DEV_RUN_SWIG "DeepCL developers should turn this on." OFF)
 
 set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
-   loss net netdef normalize patches pooling trainers util weights qlearning)
+   loss net netdef normalize patches pooling trainers util weights qlearning
+   speedtemplates)
 foreach(dir ${dirs})
     file( STRINGS ${SRCTREE}/src/${dir}/files.txt ${dir}_src)
 #    message("${dir}_src ${${dir}_src}")

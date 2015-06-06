@@ -10,7 +10,7 @@
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 
-#include "SpeedTemplates.h"
+#include "speedtemplates/SpeedTemplates.h"
 
 using namespace std;
 using namespace SpeedTemplates;

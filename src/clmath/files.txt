@@ -1,3 +1,4 @@
+GpuOp.cpp
 CLMathWrapper.cpp
 CopyBuffer.cpp
 GpuAdd.cpp
