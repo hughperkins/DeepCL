@@ -31,7 +31,9 @@ TEST( testjpeghelper, writeread ) {
     int linearSize = planes * imageSize * imageSize;
     bool allOk = true;
     for( int i = 0; i < linearSize; i++ ) {
-        if( data[i] != data2[i] ) {
+        int diff = data[i] - data2[i];
+        int absdiff = diff > 0 ? diff : - diff;
+        if( absdiff > 50 ) {
             allOk = false;
             cout << "diff [" << i << "]: " << (int)data[i] << " " << (int)data2[i] << endl;
         }

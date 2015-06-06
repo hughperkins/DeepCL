@@ -42,8 +42,7 @@ for arg in sys.argv:
 
 srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
     'input','layer','loaders','loss','net','netdef','normalize','patches',
-    'pooling','trainers','util','weights', 'qlearning', 'speedtemplates',
-    'templated']
+    'pooling','trainers','util','weights', 'qlearning' ]
 
 if docopy:
     if not os.path.isdir('mysrc'):
@@ -162,6 +161,8 @@ print('deeplcl_sources', deepcl_sources)
 easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
         'EasyCL/EasyCL.cpp',
         'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
+        'EasyCL/util/easycl_stringhelper.cpp', 'EasyCL/templates/TemplatedKernel.cpp',
+        'EasyCL/speedtemplates/SpeedTemplates.cpp',
         'EasyCL/CLWrapper.cpp',
         'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
 print(easyclsources)

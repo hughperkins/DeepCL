@@ -29,7 +29,7 @@ OPTION(DEV_RUN_SWIG "DeepCL developers should turn this on." OFF)
 
 set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights qlearning
-   speedtemplates templated)
+   )
 foreach(dir ${dirs})
     file( STRINGS ${SRCTREE}/src/${dir}/files.txt ${dir}_src)
 #    message("${dir}_src ${${dir}_src}")
@@ -41,6 +41,8 @@ endforeach()
 
 set(lua_EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
+    EasyCL/util/easycl_stringhelper.cpp EasyCL/speedtemplates/SpeedTemplates.cpp
+    EasyCL/templates/TemplatedKernel.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c)
 
 foreach(source ${lua_EasyCL_sources})

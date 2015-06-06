@@ -43,7 +43,7 @@ endif()
 
 set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights qlearning
-   speedtemplates templated )
+   )
 foreach(dir ${dirs})
     file( STRINGS src/${dir}/files.txt ${dir}_src)
 #    message("${dir}_src ${${dir}_src}")
@@ -61,7 +61,8 @@ set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/Manife
 endif(LIBJPEG_AVAILABLE)
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp
+    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
+    EasyCL/templates/TemplatedKernel.cpp EasyCL/speedtemplates/SpeedTemplates.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
@@ -124,11 +125,11 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
  test/teststringhelper.cpp test/testGtestGlobals.cpp 
  src/util/stringhelper.cpp test/DimFromArgs.cpp test/testMemset.cpp test/WeightRandomizer.cpp
  test/testCopyBuffer.cpp test/CopyBuffer.cpp test/PrintBuffer.cpp test/testCopyBlock.cpp
- test/testSpeedTemplates.cpp test/testCopyLocal.cpp
+ test/testCopyLocal.cpp
  test/testNetdefToNet.cpp test/testactivationforward.cpp test/testactivationbackward.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
- test/NetTestHelper.cpp test/testGpuOp.cpp test/testTemplatedKernel.cpp
+ test/NetTestHelper.cpp test/testGpuOp.cpp
  )
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
