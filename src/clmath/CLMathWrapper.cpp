@@ -9,9 +9,7 @@
 #include "EasyCL.h"
 #include "CLFloatWrapper.h"
 #include "util/stringhelper.h"
-#include "clmath/CopyBuffer.h"
 #include "clmath/GpuOp.h"
-#include "clmath/MultiplyInPlace.h"
 #include "clmath/CLMathWrapper.h"
 
 using namespace std;
@@ -22,18 +20,18 @@ using namespace std;
 #define VIRTUAL
 
 VIRTUAL CLMathWrapper::~CLMathWrapper() {
-    delete multiplyInPlace;
     delete gpuOp;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const float scalar ) {
 //    cout << "CLMathWrapper.operator*=(scalar)" << endl;
-    multiplyInPlace->multiply( N, scalar, wrapper );
+    Op2Mul op;
+    gpuOp->apply2_inplace( N, wrapper, scalar, &op );
     return *this;    
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator+=( const float scalar ) {
 //    cout << "CLMathWrapper.operator*=(scalar)" << endl;
-    kernelAddScalar->in( N )->in( scalar )->inout( wrapper );
-    runKernel( kernelAddScalar );
+    Op2Add op;
+    gpuOp->apply2_inplace( N, wrapper, scalar, &op );
     return *this;    
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const CLMathWrapper &two ) {
@@ -96,47 +94,6 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     this->cl = floatWrapper->getCl();
     this->wrapper = floatWrapper;
     this->N = floatWrapper->size();
-    this->multiplyInPlace = new MultiplyInPlace( cl );
     this->gpuOp = new GpuOp( cl );
-
-    buildAddScalar();
-}
-void CLMathWrapper::buildAddScalar() {
-    std::string kernelName = "kernelAddScalar";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernelAddScalar = cl->getKernel( kernelName );
-        return;
-    }
-    cout << "kernelAddScalar: building kernel" << endl;
-
-    string options = "";
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernelAddScalar", "cl/addscalar.cl",
-    //                          "add_scalar", 'options' )
-    // ]]]
-    // generated using cog, from cl/addscalar.cl:
-    const char * kernelAddScalarSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void add_scalar(\n" 
-    "        const int N,\n" 
-    "        const float scalar,\n" 
-    "        global float *data ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    data[globalId] += scalar;\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernelAddScalar = cl->buildKernelFromString( kernelAddScalarSource, "add_scalar", options, "cl/addscalar.cl" );
-    // [[[end]]]
-    cl->storeKernel( kernelName, kernelAddScalar, true );
 }
 

@@ -15,7 +15,6 @@
 #define STATIC static
 
 class GpuOp;
-class MultiplyInPlace;
 class CLFloatBuffer;
 class EasyCL;
 class CLKernel;
@@ -28,10 +27,7 @@ class CLKernel;
 // something to consider: pros/cons of using eg clBLAS instead?
 class DeepCL_EXPORT CLMathWrapper {
     EasyCL *cl; // dont delete
-    MultiplyInPlace *multiplyInPlace;
     GpuOp *gpuOp;
-
-    CLKernel *kernelAddScalar;
 
     int N;
     CLFloatWrapper *wrapper; // dont delete
@@ -54,7 +50,6 @@ public:
     VIRTUAL CLMathWrapper &squared();
     VIRTUAL void runKernel( CLKernel *kernel );
     CLMathWrapper( CLWrapper *wrapper );
-    void buildAddScalar();
 
     // [[[end]]]
 };
