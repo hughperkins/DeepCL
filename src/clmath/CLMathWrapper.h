@@ -31,15 +31,12 @@ class CLKernel;
 class DeepCL_EXPORT CLMathWrapper {
     EasyCL *cl; // dont delete
     CopyBuffer *copyBuffer;
-    //GpuAdd *gpuAdd;
     MultiplyInPlace *multiplyInPlace;
     GpuOp *gpuOp;
 
     CLKernel *kernelSquared;
     CLKernel *kernelSqrt;
-    // CLKernel *kernelPerElementMultInPlace;
     CLKernel *kernelAddScalar;
-    CLKernel *kernelInv;
 
     int N;
     CLFloatWrapper *wrapper; // dont delete
@@ -62,7 +59,6 @@ public:
     VIRTUAL CLMathWrapper &squared();
     VIRTUAL void runKernel( CLKernel *kernel );
     CLMathWrapper( CLWrapper *wrapper );
-    void buildInv();
     void buildAddScalar();
     void buildSqrt();
     void buildSquared();

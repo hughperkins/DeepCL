@@ -72,8 +72,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::sqrt() {
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::inv() {
-    kernelInv->in( N )->inout( wrapper );
-    runKernel( kernelInv );
+    Op1Inv op;
+    gpuOp->apply1_inplace( N, wrapper, &op );
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::squared() {
@@ -103,47 +103,6 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     buildSqrt();
     buildSquared();
     buildAddScalar();
-    buildInv();
-}
-void CLMathWrapper::buildInv() {
-    std::string kernelName = "kernelInv";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernelInv = cl->getKernel( kernelName );
-        return;
-    }
-    cout << "kernelInv: building kernel" << endl;
-
-    string options = "";
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernelInv", "cl/inv.cl",
-    //                          "array_inv", 'options' )
-    // ]]]
-    // generated using cog, from cl/inv.cl:
-    const char * kernelInvSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "\n" 
-    "// one over the value\n" 
-    "\n" 
-    "kernel void array_inv(\n" 
-    "        const int N,\n" 
-    "        global float *data ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    data[globalId] = 1.0f / data[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernelInv = cl->buildKernelFromString( kernelInvSource, "array_inv", options, "cl/inv.cl" );
-    // [[[end]]]
-    cl->storeKernel( kernelName, kernelInv, true );
 }
 void CLMathWrapper::buildAddScalar() {
     std::string kernelName = "kernelAddScalar";
