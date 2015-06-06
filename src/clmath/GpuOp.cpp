@@ -19,7 +19,7 @@ using namespace std;
 #define VIRTUAL
 
 /// \brief calculates destinationWrapper += deltaWrapper
-VIRTUAL void GpuOp::apply( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op ) {
+VIRTUAL void GpuOp::apply2_inplace( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op ) {
     StatefulTimer::instance()->timeCheck("GpuOp::apply inplace start" );
 
     string kernelName = "GpuOp::" + op->getName() + "_inplace";
@@ -31,6 +31,27 @@ VIRTUAL void GpuOp::apply( int N, CLWrapper*destinationWrapper, CLWrapper *delta
     kernel->in( N );
     kernel->inout( destinationWrapper );
     kernel->in( deltaWrapper );
+    int globalSize = N;
+    int workgroupSize = 64;
+    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
+    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    cl->finish();
+
+    StatefulTimer::instance()->timeCheck("GpuOp::apply inplace end" );
+}
+VIRTUAL void GpuOp::apply2_outofplace( int N, CLWrapper*destinationWrapper, CLWrapper*one, CLWrapper *two, Op2 *op ) {
+    StatefulTimer::instance()->timeCheck("GpuOp::apply inplace start" );
+
+    string kernelName = "GpuOp::" + op->getName() + "_outofplace";
+    if( !cl->kernelExists( kernelName ) ) {
+        buildKernel( kernelName, op, false );
+    }
+    CLKernel *kernel = cl->getKernel( kernelName );
+
+    kernel->in( N );
+    kernel->inout( destinationWrapper );
+    kernel->in( one );
+    kernel->in( two );
     int globalSize = N;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;

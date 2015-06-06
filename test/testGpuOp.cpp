@@ -24,7 +24,7 @@ TEST( testGpuOp, addinplace ) {
     b->copyToDevice();
 
     GpuOp gpuOp( cl );
-    gpuOp.apply( 5, a, b, new Op2Add() );
+    gpuOp.apply2_inplace( 5, a, b, new Op2Add() );
     a->copyToHost();
 
     for( int i = 0; i < 5; i++ ) {
@@ -33,6 +33,44 @@ TEST( testGpuOp, addinplace ) {
     EXPECT_FLOAT_NEAR( 5.0f, adat[0] );
     EXPECT_FLOAT_NEAR( 5.1f, adat[1] );
     EXPECT_FLOAT_NEAR( 2.5f + 9.2f, adat[4] );
+
+//    delete a;
+//    delete b;
+    delete a;
+    delete b;
+    delete cl;
+}
+
+TEST( testGpuOp, addoutofplace ) {
+    EasyCL *cl = new EasyCL();
+    float adat[] = { 1,3,9,12.5f,2.5f };
+    float bdat[] = { 4,2.1f, 5,3,9.2f };
+    float cdat[5];
+    CLWrapper *a = cl->wrap( 5,adat );
+    CLWrapper *b = cl->wrap( 5,bdat );
+    CLWrapper *c = cl->wrap( 5,cdat );
+    a->copyToDevice();
+    b->copyToDevice();
+    c->copyToDevice();
+
+    GpuOp gpuOp( cl );
+    gpuOp.apply2_outofplace( 5, c, a, b, new Op2Add() );
+    a->copyToHost();
+    c->copyToHost();
+
+    for( int i = 0; i < 5; i++ ) {
+        cout << "a[" << i << "]=" << adat[i] << endl;
+    }
+    for( int i = 0; i < 5; i++ ) {
+        cout << "c[" << i << "]=" << cdat[i] << endl;
+    }
+    EXPECT_FLOAT_NEAR( 1.0f, adat[0] );
+    EXPECT_FLOAT_NEAR( 3.0f, adat[1] );
+    EXPECT_FLOAT_NEAR( 2.5f, adat[4] );
+
+    EXPECT_FLOAT_NEAR( 5.0f, cdat[0] );
+    EXPECT_FLOAT_NEAR( 5.1f, cdat[1] );
+    EXPECT_FLOAT_NEAR( 2.5f + 9.2f, cdat[4] );
 
 //    delete a;
 //    delete b;

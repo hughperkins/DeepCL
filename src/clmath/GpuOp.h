@@ -65,7 +65,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void apply( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op );
+    VIRTUAL void apply2_inplace( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op );
+    VIRTUAL void apply2_outofplace( int N, CLWrapper*destinationWrapper, CLWrapper*one, CLWrapper *two, Op2 *op );
     VIRTUAL ~GpuOp();
     GpuOp( EasyCL *cl );
     void buildKernel( std::string name, Op2 *op, bool inPlace );
