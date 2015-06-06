@@ -10,7 +10,7 @@
 #include "CLFloatWrapper.h"
 #include "util/stringhelper.h"
 #include "clmath/CopyBuffer.h"
-#include "clmath/GpuAdd.h"
+#include "clmath/GpuOp.h"
 #include "clmath/MultiplyInPlace.h"
 #include "clmath/CLMathWrapper.h"
 
@@ -23,8 +23,8 @@ using namespace std;
 
 VIRTUAL CLMathWrapper::~CLMathWrapper() {
     delete copyBuffer;
-    delete gpuAdd;
     delete multiplyInPlace;
+    delete gpuOp;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const float scalar ) {
 //    cout << "CLMathWrapper.operator*=(scalar)" << endl;
@@ -43,10 +43,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const CLMathWrapper &two ) {
         throw runtime_error("CLMathWrapper::operator+, array size mismatch, cannot assign " + toString( two.N ) + 
             " vs " + toString( N ) );
     }
-    kernelPerElementMultInPlace->in( N )
-            ->inout( wrapper )
-            ->in( ((CLWrapper *)two.wrapper) );
-    runKernel( kernelPerElementMultInPlace );
+    Op2Mul op;
+    gpuOp->apply2_inplace( N, wrapper, ((CLMathWrapper &)two).wrapper, &op );
     return *this;    
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator+=( const CLMathWrapper &two ) {
@@ -55,7 +53,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator+=( const CLMathWrapper &two ) {
         throw runtime_error("CLMathWrapper::operator+, array size mismatch, cannot assign " + toString( two.N ) + 
             " vs " + toString( N ) );
     }
-    gpuAdd->add( N, wrapper, ((CLMathWrapper &)two).wrapper );
+    Op2Add op;
+    gpuOp->apply2_inplace( N, wrapper, ((CLMathWrapper &)two).wrapper, &op );
     return *this;    
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const CLMathWrapper &rhs ) {
@@ -98,12 +97,11 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     this->wrapper = floatWrapper;
     this->N = floatWrapper->size();
     this->copyBuffer = new CopyBuffer( cl );
-    this->gpuAdd = new GpuAdd( cl );
     this->multiplyInPlace = new MultiplyInPlace( cl );
+    this->gpuOp = new GpuOp( cl );
 
     buildSqrt();
     buildSquared();
-    buildPerElementMultInPlace();
     buildAddScalar();
     buildInv();
 }
@@ -184,41 +182,6 @@ void CLMathWrapper::buildAddScalar() {
     kernelAddScalar = cl->buildKernelFromString( kernelAddScalarSource, "add_scalar", options, "cl/addscalar.cl" );
     // [[[end]]]
     cl->storeKernel( kernelName, kernelAddScalar, true );
-}
-void CLMathWrapper::buildPerElementMultInPlace() {
-    std::string kernelName = "PerElementMultInPlace";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernelPerElementMultInPlace = cl->getKernel( kernelName );
-        return;
-    }
-    cout << "PerElementMultInPlace: building kernel" << endl;
-
-    string options = "";
-    // [[[cog
-    // import stringify
-    // stringify.write_kernel2( "kernelPerElementMultInPlace", "cl/per_element_mult.cl",
-    //                          "per_element_mult_inplace", 'options' )
-    // ]]]
-    // generated using cog, from cl/per_element_mult.cl:
-    const char * kernelPerElementMultInPlaceSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void per_element_mult_inplace( const int N, global float *target, global const float *source ) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    target[globalId] *= source[globalId];\n" 
-    "}\n" 
-    "\n" 
-    "";
-    kernelPerElementMultInPlace = cl->buildKernelFromString( kernelPerElementMultInPlaceSource, "per_element_mult_inplace", options, "cl/per_element_mult.cl" );
-    // [[[end]]]
-    cl->storeKernel( kernelName, kernelPerElementMultInPlace, true );
 }
 void CLMathWrapper::buildSqrt() {
     std::string sqrtKernelName = "sqrt";
