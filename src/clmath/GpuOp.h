@@ -23,6 +23,12 @@ public:
     virtual std::string getOperationString() = 0;
     virtual std::string getName() = 0;
 };
+class Op1Equal : public Op1 {
+    std::string getOperationString() {
+        return "val_one";
+    }
+    std::string getName(){ return "Op1_Equal"; }
+};
 class Op1Inv : public Op1 {
     std::string getOperationString() {
         return "1.0f / val_one";

@@ -14,7 +14,6 @@
 #define VIRTUAL virtual
 #define STATIC static
 
-class CopyBuffer;
 class GpuOp;
 class MultiplyInPlace;
 class CLFloatBuffer;
@@ -29,7 +28,6 @@ class CLKernel;
 // something to consider: pros/cons of using eg clBLAS instead?
 class DeepCL_EXPORT CLMathWrapper {
     EasyCL *cl; // dont delete
-    CopyBuffer *copyBuffer;
     MultiplyInPlace *multiplyInPlace;
     GpuOp *gpuOp;
 

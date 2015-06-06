@@ -22,7 +22,6 @@ using namespace std;
 #define VIRTUAL
 
 VIRTUAL CLMathWrapper::~CLMathWrapper() {
-    delete copyBuffer;
     delete multiplyInPlace;
     delete gpuOp;
 }
@@ -63,7 +62,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const CLMathWrapper &rhs ) {
         throw runtime_error("CLMathWrapper::operator= array size mismatch, cannot assign " + toString( rhs.N ) + 
             " vs " + toString( N ) );
     }
-    copyBuffer->copy( N, ((CLMathWrapper &)rhs).wrapper, wrapper );
+    Op1Equal op;
+    gpuOp->apply1_outofplace( N, wrapper, ((CLMathWrapper &)rhs).wrapper, &op );
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::sqrt() {
@@ -96,7 +96,6 @@ CLMathWrapper::CLMathWrapper( CLWrapper *wrapper ) {
     this->cl = floatWrapper->getCl();
     this->wrapper = floatWrapper;
     this->N = floatWrapper->size();
-    this->copyBuffer = new CopyBuffer( cl );
     this->multiplyInPlace = new MultiplyInPlace( cl );
     this->gpuOp = new GpuOp( cl );
 
