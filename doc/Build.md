@@ -48,6 +48,8 @@ Note:
 * be sure to add `--recursive` when you clone, else when you build it will complain about OpenCLHelper missing (or clew missing)
   * if you do forget, you can experiment with running `git submodule init --recursive`, and then `git submodule update --recursive`
 * you might need to play around with commands such as `git submodule update --recursive` occasionally, to pull down new OpenCLHelper updates
+* note: recently, moved EasyCL/thirdparty/clew from submodule to simply copying in the files
+   * hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
 
 ## Windows
 
@@ -66,6 +68,8 @@ Note:
 ### Procedure
 
 - in git, do `git clone --recursive https://github.com/hughperkins/DeepCL.git`
+  - note: recently, moved EasyCL/thirdparty/clew from submodule to simply copying in the files
+  - hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
 - create a subdirectory `build` in the git cloned `DeepCL` directory
 - open cmake, point at the `DeepCL` directory, and set to build in the `build` subdirectory
   - `configure` then `generate`
