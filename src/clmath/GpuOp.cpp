@@ -9,7 +9,7 @@
 #include "util/StatefulTimer.h"
 #include "EasyCL.h"
 #include "clmath/GpuOp.h"
-#include "speedtemplates/SpeedTemplates.h"
+#include "templates/LuaTemplater.h"
 
 using namespace std;
 
@@ -160,9 +160,9 @@ void GpuOp::buildKernel( std::string name, Op2 *op, bool inPlace ) {
     "\n" 
     "";
     // [[[end]]]
-    SpeedTemplates::Template mytemplate( kernelSource );
-    mytemplate.setValue( "operation", op->getOperationString() );
-    string renderedKernel = mytemplate.render();
+    LuaTemplater templater;
+    templater.set( "operation", op->getOperationString() );
+    string renderedKernel = templater.render(kernelSource);
     // cout << "renderedKernel:" << endl;
     // cout << renderedKernel << endl;
 
@@ -209,9 +209,9 @@ void GpuOp::buildKernel( std::string name, Op1 *op, bool inPlace ) {
     "\n" 
     "";
     // [[[end]]]
-    SpeedTemplates::Template mytemplate( kernelSource );
-    mytemplate.setValue( "operation", op->getOperationString() );
-    string renderedKernel = mytemplate.render();
+    LuaTemplater templater;
+    templater.set( "operation", op->getOperationString() );
+    string renderedKernel = templater.render(kernelSource);
     // cout << "renderedKernel:" << endl;
     // cout << renderedKernel << endl;
 
@@ -258,9 +258,9 @@ void GpuOp::buildKernelScalar( std::string name, Op2 *op, bool inPlace ) {
     "\n" 
     "";
     // [[[end]]]
-    SpeedTemplates::Template mytemplate( kernelSource );
-    mytemplate.setValue( "operation", op->getOperationString() );
-    string renderedKernel = mytemplate.render();
+    LuaTemplater templater;
+    templater.set( "operation", op->getOperationString() );
+    string renderedKernel = templater.render(kernelSource);
     // cout << "renderedKernel:" << endl;
     // cout << renderedKernel << endl;
 

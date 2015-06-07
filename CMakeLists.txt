@@ -13,10 +13,13 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file" ON)
-
+OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file." ON)
+OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
+OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
 OPTION(PROTOTYPING "Only for devs." OFF)
-mark_as_advanced( FORCE PROTOTYPING )
+    mark_as_advanced( FORCE PROTOTYPING )
+OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+    mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
 
 # remove old flags from the cache:
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
@@ -60,9 +63,14 @@ include_directories( ${JPEG_INCLUDE_DIR} )
 set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
 endif(LIBJPEG_AVAILABLE)
 
+find_package(Lua51)
+include_directories(${LUA_INCLUDE_DIR})
+
+link_libraries(${LUA_LIBRARIES})
+
 set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
-    EasyCL/templates/TemplatedKernel.cpp EasyCL/speedtemplates/SpeedTemplates.cpp
+    EasyCL/templates/TemplatedKernel.cpp EasyCL/templates/LuaTemplater.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
@@ -95,17 +103,12 @@ add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew
 add_dependencies( DeepCL git_submodules_update )
 endif()
 
-OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
-mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
-
 if( LIBPNGPP_AVAILABLE)
 find_package(PNG REQUIRED)
 link_libraries(${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
 link_libraries(DeepCL)
-
-OPTION(DEV_RUN_COG "DeepCL developers should turn this on." OFF)
 
 if(DEV_RUN_COG)
     foreach( dir ${dirs} main)
@@ -178,8 +181,6 @@ target_link_libraries( unittests DeepCL )
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp gtest )
 # target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
-
-OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 
 if( BUILD_LUA_WRAPPERS )
 add_subdirectory(lua)
