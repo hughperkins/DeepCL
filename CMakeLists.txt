@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
 
-#message( "[${CMAKE_SYSTEM_NAME}]" )
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
   set( ON_LINUX 1 )
 endif()
@@ -36,12 +35,12 @@ include_directories( EasyCL )
 include_directories( EasyCL/clew/include )
 
 if( ON_LINUX )
-link_libraries(dl)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+    link_libraries(dl)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 
 if( ON_WINDOWS)
-link_libraries(winmm) # needed for timeGetTime
+    link_libraries(winmm) # needed for timeGetTime
 endif()
 
 set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
@@ -57,15 +56,14 @@ endforeach()
 #message("deepcl_sources ${deepcl_sources}")
 
 if(LIBJPEG_AVAILABLE)
-find_package(JPEG REQUIRED)
-link_libraries(${JPEG_LIBRARY})
-include_directories( ${JPEG_INCLUDE_DIR} )
-set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
+    find_package(JPEG REQUIRED)
+    link_libraries(${JPEG_LIBRARY})
+    include_directories( ${JPEG_INCLUDE_DIR} )
+    set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
 endif(LIBJPEG_AVAILABLE)
 
 find_package(Lua51)
 include_directories(${LUA_INCLUDE_DIR})
-
 link_libraries(${LUA_LIBRARIES})
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
@@ -74,38 +72,37 @@ set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
+target_link_libraries( EasyCL ${LUA_LIBRARIES} )
 
 add_executable( gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp )
 if( ON_LINUX )
-target_link_libraries( gpuinfo dl )
+    target_link_libraries( gpuinfo dl )
 endif()
 
 add_library( DeepCL SHARED ${deepcl_sources} )
 if(ON_WINDOWS)
-set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
+    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
 endif(ON_WINDOWS)
 
-execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
-if( ${git_test} EQUAL 0 )
-    set( GIT_FOUND 1 )
-endif()
-#if( GIT_FOUND )
-#message("git found")
-#endif()
-
-if( GIT_FOUND )
-    add_custom_command( 
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
-        COMMAND git submodule update --init --force --recursive
-    )
-    add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
-    add_dependencies( DeepCL git_submodules_update )
-endif()
+#if(ON_LINUX)
+#    execute_process( COMMAND git --version RESULT_VARIABLE git_test ERROR_QUIET )
+#    if( ${git_test} EQUAL 0 )
+#        set( GIT_FOUND 1 )
+#    endif()
+#    if( GIT_FOUND )
+#        add_custom_command( 
+#            OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
+#            COMMAND git submodule update --init --force --recursive
+#        )
+#        add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
+#        add_dependencies( DeepCL git_submodules_update )
+#    endif()
+#endif(ON_LINUX)
 
 if( LIBPNGPP_AVAILABLE)
-find_package(PNG REQUIRED)
-link_libraries(${PNG_LIBRARY})
+    find_package(PNG REQUIRED)
+    link_libraries(${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
 link_libraries(DeepCL)
@@ -151,6 +148,8 @@ add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp )
 
+target_link_libraries( cifar-to-mat ${LUA_LIBRARIES} )
+
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/patches/PatchExtractor.cpp )
@@ -159,10 +158,10 @@ if( LIBPNGPP_AVAILABLE)
 endif(LIBPNGPP_AVAILABLE)
 
 if( ON_LINUX )
-add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
-target_link_libraries( gtest pthread)
+    add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
+    target_link_libraries( gtest pthread)
 else()
-add_library( gtest thirdparty/gtest/gtest-all.cc )
+    add_library( gtest thirdparty/gtest/gtest-all.cc )
 endif()
 include_directories( thirdparty/gtest )
 
@@ -184,11 +183,10 @@ target_link_libraries( testgtestsupp gtest )
 # target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 if( BUILD_LUA_WRAPPERS )
-add_subdirectory(lua)
+    add_subdirectory(lua)
 endif()
 
 INSTALL( TARGETS DeepCL EasyCL train predict deepclrun deepclexec gpuinfo
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib )
-
 
