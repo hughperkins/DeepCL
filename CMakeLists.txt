@@ -90,17 +90,17 @@ execute_process( COMMAND gitx --version RESULT_VARIABLE git_test ERROR_QUIET )
 if( ${git_test} EQUAL 0 )
     set( GIT_FOUND 1 )
 endif()
-if( GIT_FOUND )
-message("git found")
-endif()
+#if( GIT_FOUND )
+#message("git found")
+#endif()
 
 if( GIT_FOUND )
-add_custom_command( 
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
-    COMMAND git submodule update --init --force --recursive
-)
-add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
-add_dependencies( DeepCL git_submodules_update )
+    add_custom_command( 
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
+        COMMAND git submodule update --init --force --recursive
+    )
+    add_custom_target( git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c )
+    add_dependencies( DeepCL git_submodules_update )
 endif()
 
 if( LIBPNGPP_AVAILABLE)
