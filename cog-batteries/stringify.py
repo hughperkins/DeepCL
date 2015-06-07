@@ -4,7 +4,7 @@ import cog
 def write_kernel( var_name, kernel_filename ):
     cog.outl( '// generated using cog, from ' + kernel_filename + ':' )
     cog.outl( 'const char * ' + var_name + 'Source =  ' )
-    write_file2( '../' + kernel_filename )
+    write_file2( kernel_filename )
     cog.outl( '"";')
 
 def write_file2( filepath ):
@@ -23,21 +23,21 @@ def process_includes( line ):
     targetpath = line.split('"')[1]
     line = ''
     cog.outl('"// including ' + targetpath + ':\\n"')
-    write_file2( '../' + targetpath )
+    write_file2( targetpath )
     return line
 
 def write_kernel2( kernelVarName, kernel_filename, kernelName, options ):
     # cog.outl( 'string kernelFilename = "'  + kernel_filename + '";' )
     cog.outl( '// generated using cog, from ' + kernel_filename + ':' )
     cog.outl( 'const char * ' + kernelVarName + 'Source =  ' )
-    write_file2( '../' + kernel_filename )
+    write_file2( kernel_filename )
     cog.outl( '"";')
     cog.outl( kernelVarName + ' = cl->buildKernelFromString( ' + kernelVarName + 'Source, "' + kernelName + '", ' + options + ', "' + kernel_filename + '" );' )
 
 def write_kernel3( kernelVarName, kernel_filename, kernelName, options ):
     # cog.outl( 'string kernelFilename = "'  + kernel_filename + '";' )
     cog.outl( '// generated using cog:' )
-    f = open( '../' + kernel_filename, 'r')
+    f = open( kernel_filename, 'r')
     line = f.readline()
     cog.outl( 'const char * ' + kernelVarName + 'Source =  R"DELIM(\n' )
     while( line != '' ):
