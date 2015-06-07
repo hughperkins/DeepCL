@@ -77,5 +77,5 @@ Note:
 
 If you want to use the DeepCL library from C++, you will need to link with the following libraries:
 - libDeepCL.so (or DeepCL.dll, on Windows)
-- libOpenCLHelper.so (or OpenCLHelper.dll, on Windows)
+- libEasyCL.so (or EasyCL.dll, on Windows)
 
