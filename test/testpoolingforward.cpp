@@ -7,6 +7,7 @@
 #include "EasyCL.h"
 
 #include "pooling/PoolingForward.h"
+#include "util/stringhelper.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
