@@ -39,6 +39,7 @@ build-win32/
 build-win64/
 build-*/
 build.old/
+install/
 
 node_modules/
 data/

@@ -187,7 +187,8 @@ if( BUILD_LUA_WRAPPERS )
 add_subdirectory(lua)
 endif()
 
-INSTALL( TARGETS DeepCL
+INSTALL( TARGETS DeepCL EasyCL train predict deepclrun deepclexec gpuinfo
+    RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib )
 
 
