@@ -117,7 +117,7 @@ if(DEV_RUN_COG)
     add_custom_target(
         cog
         python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR/src}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
