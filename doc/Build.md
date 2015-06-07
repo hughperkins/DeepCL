@@ -31,6 +31,7 @@ Do you want to use DeepCL via python, or from the commandline, or from C++?
 - opencl-headers
 - make 
 - (new) libjpeg62 or compatible, eg `sudo apt-get install libjpeg-turbo8-dev` (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
+- (new) lua5.1
 
 ### Procedure
 
@@ -60,6 +61,7 @@ Note:
   - if you want, I made a fresh build of libjpeg-turbo 1.4.0:
     - dynamic library (doesnt work for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64.zip)
     - static library (works ok for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32-static.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64-static.zip)
+- (new) lua5.1
 
 ### Procedure
 
