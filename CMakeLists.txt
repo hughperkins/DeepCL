@@ -137,11 +137,14 @@ if(LIBJPEG_AVAILABLE)
     add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/stringhelper.cpp src/loaders/MnistLoader.cpp )
 endif(LIBJPEG_AVAILABLE)
 
-add_executable( deepclrun src/main/train.cpp src/util/stringhelper.cpp )
-add_executable( deepclexec src/main/predict.cpp src/util/stringhelper.cpp )
-# create these 'aliases'.  In the future these might replace deepclrun and deepclexec
+add_executable( deepcl_train src/main/train.cpp src/util/stringhelper.cpp )
+add_executable( deepcl_predict src/main/predict.cpp src/util/stringhelper.cpp )
+
+# create 'aliases', for backwards compatibility
 add_executable( train src/main/train.cpp src/util/stringhelper.cpp )
 add_executable( predict src/main/predict.cpp src/util/stringhelper.cpp )
+add_executable( deepclrun src/main/train.cpp src/util/stringhelper.cpp )
+add_executable( deepclexec src/main/predict.cpp src/util/stringhelper.cpp )
 
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
@@ -158,16 +161,16 @@ if( LIBPNGPP_AVAILABLE)
 endif(LIBPNGPP_AVAILABLE)
 
 if( ON_LINUX )
-    add_library( gtest SHARED thirdparty/gtest/gtest-all.cc )
-    target_link_libraries( gtest pthread)
+    add_library( deepcl_gtest SHARED thirdparty/gtest/gtest-all.cc )
+    target_link_libraries( deepcl_gtest pthread)
 else()
-    add_library( gtest thirdparty/gtest/gtest-all.cc )
+    add_library( deepcl_gtest thirdparty/gtest/gtest-all.cc )
 endif()
 include_directories( thirdparty/gtest )
 
 add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
-target_link_libraries( unittests gtest )
+target_link_libraries( unittests deepcl_gtest )
 # target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
@@ -179,14 +182,14 @@ endif( PROTOTYPING )
 target_link_libraries( unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
-target_link_libraries( testgtestsupp gtest )
+target_link_libraries( testgtestsupp deepcl_gtest )
 # target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
 
 if( BUILD_LUA_WRAPPERS )
     add_subdirectory(lua)
 endif()
 
-INSTALL( TARGETS DeepCL EasyCL train predict deepclrun deepclexec gpuinfo
+INSTALL( TARGETS DeepCL EasyCL deepcl_train deepcl_predict gpuinfo
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib )
 
