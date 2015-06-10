@@ -189,6 +189,7 @@ if( BUILD_LUA_WRAPPERS )
     add_subdirectory(lua)
 endif()
 
+INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
 INSTALL( TARGETS DeepCL EasyCL deepcl_train deepcl_predict gpuinfo
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib )
