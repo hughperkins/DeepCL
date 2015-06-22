@@ -2,7 +2,6 @@
 ==========
 
 - [Python API](python/README.md)
-- [Lua API](lua/README.md)
 - [Command line API](doc/Commandline.md)
 - [C++ API](doc/NeuralNetAPI.md)
 - [Q-learning](doc/QLearning.md)
@@ -23,7 +22,6 @@ OpenCL library to train deep convolutional networks
 
 APIs:
 * [Python](python/README.md)
-* [Lua](lua/README.md)
 * [c++](doc/NeuralNetAPI.md)
 * [command-line](doc/Commandline.md)
 
@@ -83,10 +81,6 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 ## Python
 
 * For python, please use [Python API](python/README.md), or use [pip](https://pypi.python.org/pypi/DeepCL)
-
-## Lua
-
-* For Lua, please see [Lua API](lua/README.md), or use [luarocks](https://luarocks.org/modules/hughperkins/luadeepcl)
 
 ## Commandline tools, and c++ libraries
 
