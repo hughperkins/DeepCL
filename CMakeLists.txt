@@ -32,6 +32,13 @@ unset(SWIG_DIR CACHE)
 unset(SWIG_EXECUTABLE CACHE)
 unset(SWIG_VERSION CACHE)
 
+SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
+
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
+INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
+LINK_DIRECTORIES(${CLBLAS_LIBRARY_DIR})
+
 include_directories( . )
 include_directories( src )
 include_directories( qlearning )
@@ -122,6 +129,8 @@ if(DEV_RUN_COG)
     )
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
+
+ADD_DEPENDENCIES(DeepCL clBLAS)
 
 set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
