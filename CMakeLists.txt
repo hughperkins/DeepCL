@@ -13,7 +13,6 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file." ON)
-OPTION(BUILD_LUA_WRAPPERS "Builds Lua wrappers" OFF)
 OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
 OPTION(PROTOTYPING "Only for devs." OFF)
     mark_as_advanced( FORCE PROTOTYPING )
@@ -22,11 +21,16 @@ OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
 
 # remove old flags from the cache:
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
+unset(BUILD_LUA_WRAPPERS CACHE)
 unset(BUILD_PYTHON_WRAPPERS CACHE)
 unset(RUN_COG CACHE)
 unset(RUN_SWIG CACHE)
+unset(DEV_RUN_SWIG CACHE)
 unset(PYTHON_AVAILABLE CACHE)
 unset(LUA51_AVAILABLE CACHE)
+unset(SWIG_DIR CACHE)
+unset(SWIG_EXECUTABLE CACHE)
+unset(SWIG_VERSION CACHE)
 
 include_directories( . )
 include_directories( src )
@@ -171,7 +175,6 @@ include_directories( thirdparty/gtest )
 add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
 target_link_libraries( unittests deepcl_gtest )
-# target_include_directories( unittests PRIVATE thirdparty/gtest )
 
 if( PROTOTYPING )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
@@ -183,11 +186,6 @@ target_link_libraries( unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp deepcl_gtest )
-# target_include_directories( testgtestsupp PRIVATE thirdparty/gtest )
-
-if( BUILD_LUA_WRAPPERS )
-    add_subdirectory(lua)
-endif()
 
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
 INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )

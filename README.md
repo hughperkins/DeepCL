@@ -129,6 +129,8 @@ Third-party libraries
 * [EasyCL](https://github.com/hughperkins/EasyCL)
 * [clew](https://github.com/martijnberger/clew)
 * [libpng++](http://www.nongnu.org/pngpp/doc/0.2.1/)
+* lua
+* cogapp
 
 Related projects
 ================
@@ -144,6 +146,13 @@ License
 =======
 
 [Mozilla Public License 2.0](http://mozilla.org/MPL/2.0/)
+
+Recent changes
+==============
+
+* June 22nd:
+  * removed lua wrappers
+  * if you want to use lua with OpenCL, please consider using [cltorch](http://github.com/hughperkins/cltorch) and [clnn](http://github.com/hughperkins/clnn)
 
 To get in contact
 =================

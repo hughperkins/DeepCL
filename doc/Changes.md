@@ -10,10 +10,10 @@ How to determine the current stable public API is documented at [Stable API](Pub
 
 ## New in next release
 
-* `deepclrun` becomes `train`: handles training, and validation, using labelled data
-* `deepclexec` becomes `predict`: handles creating predictions from unlabelled data
-* `predict` can take input from a file, using GenericLoader, same formats as training, or from stdin
-* `predict` can output to a file, or to stdout, in text or binary format
+* `deepclrun` becomes `deepcl_train`: handles training, and validation, using labelled data
+* `deepclexec` becomes `deepcl_predict`: handles creating predictions from unlabelled data
+* `deepcl_predict` can take input from a file, using GenericLoader, same formats as training, or from stdin
+* `deepcl_predict` can output to a file, or to stdout, in text or binary format
 
 ## Changes in next release
 
