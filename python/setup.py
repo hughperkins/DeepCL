@@ -40,7 +40,7 @@ for arg in sys.argv:
     if arg in ('sdist','bdist','bdist_egg','build_ext'):
         docopy = True
 
-srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
+srcdirs = ['lua', 'activate','batch','clmath','conv','dropout','fc','forcebackprop',
     'input','layer','loaders','loss','net','netdef','normalize','patches',
     'pooling','trainers','util','weights', 'qlearning' ]
 
@@ -51,6 +51,8 @@ if docopy:
         os.makedirs('mysrc/util')
     if not os.path.isdir('mysrc/templates'):
         os.makedirs('mysrc/templates')
+    if not os.path.isdir('mysrc/lua'):
+        os.makedirs('mysrc/lua')
     for thisdir in ['../src','../EasyCL',
             '../EasyCL/thirdparty/clew/src']: # copy everything..
         for thisfile in os.listdir(thisdir):
@@ -64,6 +66,13 @@ if docopy:
             thisfilepath = thisdir +'/' + thisfile
             if os.path.isfile(thisfilepath):
                 distutils.file_util.copy_file( thisfilepath, 'mysrc/util/' + thisfile )
+    for thisdir in ['../EasyCL/thirdparty/lua-5.1.5/src']:
+        for thisfile in os.listdir(thisdir):
+            #print(thisfile)
+            thisfilepath = thisdir +'/' + thisfile
+            if os.path.isfile(thisfilepath):
+                distutils.file_util.copy_file( thisfilepath, 'mysrc/lua/' + thisfile )
+    distutils.file_util.copy_file('../EasyCL/thirdparty/lua-5.1.5/files.txt', 'mysrc/lua/files.txt')
     for thisdir in ['../EasyCL/templates']:
         for thisfile in os.listdir(thisdir):
             #print(thisfile)
@@ -72,6 +81,8 @@ if docopy:
                 distutils.file_util.copy_file( thisfilepath, 'mysrc/templates/' + thisfile )
     distutils.file_util.copy_file( '../jenkins/version.txt', 'version.txt' )
     for srcdir in srcdirs:
+        if srcdir == 'lua':
+            continue
         if not os.path.isdir('mysrc/' + srcdir):
             os.makedirs('mysrc/' + srcdir)
         for thisfile in os.listdir('../src/' + srcdir):
@@ -246,7 +257,7 @@ ext_modules = [
                 + easyclsources
                 + deepcl_sources, 
 #                glob.glob('DeepCL/EasyCL/*.h'),
-              include_dirs = ['mysrc'],
+              include_dirs = ['mysrc', 'mysrc/lua'],
               libraries= libraries,
               extra_compile_args=compile_options,
         define_macros = [('DeepCL_EXPORTS',1),('EasyCL_EXPORTS',1)],

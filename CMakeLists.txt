@@ -153,12 +153,6 @@ endif(LIBJPEG_AVAILABLE)
 add_executable( deepcl_train src/main/train.cpp src/util/stringhelper.cpp )
 add_executable( deepcl_predict src/main/predict.cpp src/util/stringhelper.cpp )
 
-# create 'aliases', for backwards compatibility
-add_executable( train src/main/train.cpp src/util/stringhelper.cpp )
-add_executable( predict src/main/predict.cpp src/util/stringhelper.cpp )
-add_executable( deepclrun src/main/train.cpp src/util/stringhelper.cpp )
-add_executable( deepclexec src/main/predict.cpp src/util/stringhelper.cpp )
-
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
@@ -181,9 +175,9 @@ else()
 endif()
 include_directories( thirdparty/gtest )
 
-add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
+add_executable( deepcl_unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
-target_link_libraries( unittests deepcl_gtest )
+target_link_libraries( deepcl_unittests deepcl_gtest )
 
 if( PROTOTYPING )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
@@ -191,7 +185,7 @@ if( PROTOTYPING )
         prototyping/qlearning/ScenarioImage.cpp )
 endif( PROTOTYPING )
 
-target_link_libraries( unittests DeepCL )
+target_link_libraries( deepcl_unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp deepcl_gtest )
