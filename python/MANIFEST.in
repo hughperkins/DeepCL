@@ -5,4 +5,5 @@ include mysrc/*
 include *.pxd
 include *.pyx
 include version.txt
+recursive-include mysrc *.txt
 
