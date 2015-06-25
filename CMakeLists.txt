@@ -66,17 +66,25 @@ if(LIBJPEG_AVAILABLE)
     set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
 endif(LIBJPEG_AVAILABLE)
 
-find_package(Lua51)
-include_directories(${LUA_INCLUDE_DIR})
-link_libraries(${LUA_LIBRARIES})
+#find_package(Lua51)
+#include_directories(${LUA_INCLUDE_DIR})
+#link_libraries(${LUA_LIBRARIES})
+
+include_directories(EasyCL/thirdparty/lua-5.1.5/src)
+
+file(STRINGS EasyCL/thirdparty/lua-5.1.5/files.txt lua_src1)
+foreach(source ${lua_src1})
+    set( lua_src ${lua_src} EasyCL/thirdparty/lua-5.1.5/src/${source})
+endforeach()
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
     EasyCL/templates/TemplatedKernel.cpp EasyCL/templates/LuaTemplater.cpp
-    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
+    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c
+    ${lua_src} )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
-target_link_libraries( EasyCL ${LUA_LIBRARIES} )
+#target_link_libraries( EasyCL ${LUA_LIBRARIES} )
 
 add_executable( gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp )
