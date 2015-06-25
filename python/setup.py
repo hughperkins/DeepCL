@@ -174,13 +174,13 @@ print('deeplcl_sources', deepcl_sources)
 #for source in deepcl_sources_all:
 #    deepcl_sources.append(source)
 
-easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
-        'EasyCL/EasyCL.cpp',
-        'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
-        'EasyCL/util/easycl_stringhelper.cpp', 'EasyCL/templates/TemplatedKernel.cpp',
+easyclsources = list(map( lambda name : 'mysrc/' + name, [
+        'EasyCL.cpp',
+        'deviceinfo_helper.cpp', 'platforminfo_helper.cpp',
+        'util/easycl_stringhelper.cpp', 'templates/TemplatedKernel.cpp',
 #        'EasyCL/speedtemplates/SpeedTemplates.cpp',
-        'EasyCL/CLWrapper.cpp',
-        'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
+        'CLWrapper.cpp',
+        'CLKernel.cpp', 'clew.c' ] ))
 print(easyclsources)
 print(isinstance( easyclsources, list) )
 
