@@ -177,6 +177,7 @@ print('deeplcl_sources', deepcl_sources)
 easyclsources = list(map( lambda name : 'mysrc/' + name, [
         'EasyCL.cpp',
         'deviceinfo_helper.cpp', 'platforminfo_helper.cpp',
+         'templates/LuaTemplater.cpp',
         'util/easycl_stringhelper.cpp', 'templates/TemplatedKernel.cpp',
 #        'EasyCL/speedtemplates/SpeedTemplates.cpp',
         'CLWrapper.cpp',
