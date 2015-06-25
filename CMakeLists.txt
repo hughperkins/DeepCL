@@ -31,6 +31,7 @@ unset(LUA51_AVAILABLE CACHE)
 unset(SWIG_DIR CACHE)
 unset(SWIG_EXECUTABLE CACHE)
 unset(SWIG_VERSION CACHE)
+unset(LUA_INCLUDE_DIR CACHE)
 
 include_directories( . )
 include_directories( src )
