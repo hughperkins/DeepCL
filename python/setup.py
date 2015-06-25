@@ -47,6 +47,10 @@ srcdirs = ['activate','batch','clmath','conv','dropout','fc','forcebackprop',
 if docopy:
     if not os.path.isdir('mysrc'):
         os.makedirs('mysrc')
+    if not os.path.isdir('mysrc/util'):
+        os.makedirs('mysrc/util')
+    if not os.path.isdir('mysrc/templates'):
+        os.makedirs('mysrc/templates')
     for thisdir in ['../src','../EasyCL',
             '../EasyCL/thirdparty/clew/src']: # copy everything..
         for thisfile in os.listdir(thisdir):
@@ -54,6 +58,18 @@ if docopy:
             thisfilepath = thisdir +'/' + thisfile
             if os.path.isfile(thisfilepath):
                 distutils.file_util.copy_file( thisfilepath, 'mysrc/' + thisfile )
+    for thisdir in ['../EasyCL/util']:
+        for thisfile in os.listdir(thisdir):
+            #print(thisfile)
+            thisfilepath = thisdir +'/' + thisfile
+            if os.path.isfile(thisfilepath):
+                distutils.file_util.copy_file( thisfilepath, 'mysrc/util/' + thisfile )
+    for thisdir in ['../EasyCL/templates']:
+        for thisfile in os.listdir(thisdir):
+            #print(thisfile)
+            thisfilepath = thisdir +'/' + thisfile
+            if os.path.isfile(thisfilepath):
+                distutils.file_util.copy_file( thisfilepath, 'mysrc/templates/' + thisfile )
     distutils.file_util.copy_file( '../jenkins/version.txt', 'version.txt' )
     for srcdir in srcdirs:
         if not os.path.isdir('mysrc/' + srcdir):
@@ -162,7 +178,7 @@ easyclsources = list(map( lambda name : 'mysrc/' + os.path.basename( name ), [
         'EasyCL/EasyCL.cpp',
         'EasyCL/deviceinfo_helper.cpp', 'EasyCL/platforminfo_helper.cpp',
         'EasyCL/util/easycl_stringhelper.cpp', 'EasyCL/templates/TemplatedKernel.cpp',
-        'EasyCL/speedtemplates/SpeedTemplates.cpp',
+#        'EasyCL/speedtemplates/SpeedTemplates.cpp',
         'EasyCL/CLWrapper.cpp',
         'EasyCL/CLKernel.cpp', 'EasyCL/thirdparty/clew/src/clew.c' ] ))
 print(easyclsources)
