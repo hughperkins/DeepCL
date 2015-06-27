@@ -138,12 +138,14 @@ VIRTUAL void Forward::forward( int batchSize, float *inputData, float *filters, 
 //    int allocatedOutputSize = outputDataSize;
 //    float *output = new float[allocatedOutputSize];
     CLWrapper *outputWrapper = cl->wrap( batchSize * dim.outputCubeSize, output );
+    outputWrapper->createOnDevice();
     cl->finish();
 
     StatefulTimer::timeCheck("Forward::forward after copied to device");
     forward( batchSize, dataWrapper, weightsWrapper, biasWrapper,
             outputWrapper );
     StatefulTimer::timeCheck("Forward::forward after call forward");
+    cl->finish();
     outputWrapper->copyToHost();
     StatefulTimer::timeCheck("Forward::forward after copytohost");
 //    for( int i = 0; i < 20; i++ ) {
