@@ -31,6 +31,7 @@ unset(LUA51_AVAILABLE CACHE)
 unset(SWIG_DIR CACHE)
 unset(SWIG_EXECUTABLE CACHE)
 unset(SWIG_VERSION CACHE)
+unset(LUA_INCLUDE_DIR CACHE)
 
 SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
 
@@ -73,17 +74,25 @@ if(LIBJPEG_AVAILABLE)
     set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
 endif(LIBJPEG_AVAILABLE)
 
-find_package(Lua51)
-include_directories(${LUA_INCLUDE_DIR})
-link_libraries(${LUA_LIBRARIES})
+#find_package(Lua51)
+#include_directories(${LUA_INCLUDE_DIR})
+#link_libraries(${LUA_LIBRARIES})
+
+include_directories(EasyCL/thirdparty/lua-5.1.5/src)
+
+file(STRINGS EasyCL/thirdparty/lua-5.1.5/files.txt lua_src1)
+foreach(source ${lua_src1})
+    set( lua_src ${lua_src} EasyCL/thirdparty/lua-5.1.5/src/${source})
+endforeach()
 
 set( EasyCL_sources EasyCL/EasyCL.cpp
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
     EasyCL/templates/TemplatedKernel.cpp EasyCL/templates/LuaTemplater.cpp
-    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c )
+    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c
+    ${lua_src} )
 add_library( EasyCL SHARED ${EasyCL_sources} )
 link_libraries( EasyCL )
-target_link_libraries( EasyCL ${LUA_LIBRARIES} )
+#target_link_libraries( EasyCL ${LUA_LIBRARIES} )
 
 add_executable( gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
     EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp )
@@ -153,12 +162,6 @@ endif(LIBJPEG_AVAILABLE)
 add_executable( deepcl_train src/main/train.cpp src/util/stringhelper.cpp )
 add_executable( deepcl_predict src/main/predict.cpp src/util/stringhelper.cpp )
 
-# create 'aliases', for backwards compatibility
-add_executable( train src/main/train.cpp src/util/stringhelper.cpp )
-add_executable( predict src/main/predict.cpp src/util/stringhelper.cpp )
-add_executable( deepclrun src/main/train.cpp src/util/stringhelper.cpp )
-add_executable( deepclexec src/main/predict.cpp src/util/stringhelper.cpp )
-
 add_executable( cifar-to-mat test/CifarToMat.cpp src/util/stringhelper.cpp test/CifarLoader.cpp )
 add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
@@ -181,9 +184,9 @@ else()
 endif()
 include_directories( thirdparty/gtest )
 
-add_executable( unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
+add_executable( deepcl_unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
     test/TestArgsParser.cpp )
-target_link_libraries( unittests deepcl_gtest )
+target_link_libraries( deepcl_unittests deepcl_gtest )
 
 if( PROTOTYPING )
     add_executable( clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp )
@@ -191,7 +194,7 @@ if( PROTOTYPING )
         prototyping/qlearning/ScenarioImage.cpp )
 endif( PROTOTYPING )
 
-target_link_libraries( unittests DeepCL )
+target_link_libraries( deepcl_unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp deepcl_gtest )

@@ -40,6 +40,10 @@ build-win64/
 build-*/
 build.old/
 install/
+build2/
+build3/
+build4/
+build5/
 
 node_modules/
 data/
