@@ -93,7 +93,8 @@ TEST( testforward, imagesize2_nopadzeros ) {
         Forward *forward = Forward::instanceSpecific( 3, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ) );
-        float *output = forward->forward( batchSize, data, filter1, 0 );  
+        float *output = new float[forward->getOutputTotalSize(batchSize)];
+        forward->forward( batchSize, data, filter1, 0, output );  
         for( int result = 0; result < resultSize; result++ ) {
             ASSERT_EQ( expectedOutput[result], output[result] );
         }
@@ -152,7 +153,8 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
         Forward *forward = Forward::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
             padZeros == 1, false ).setSkip(1) );
-        float *output = forward->forward( batchSize, data, filter1, 0 );  
+        float *output = new float[forward->getOutputTotalSize(batchSize)];
+        forward->forward( batchSize, data, filter1, 0, output );  
         for( int result = 0; result < outputSize; result++ ) {
             cout << "checking result " << result << endl;
             EXPECT_EQ( expectedOutput[result], output[result] );
@@ -235,7 +237,8 @@ TEST( testforward, imagesize2_padzeros ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
-    float *output = forward->forward( batchSize, data, filter1, 0 );        
+    float *output = new float[forward->getOutputTotalSize(batchSize)];
+    forward->forward( batchSize, data, filter1, 0, output );        
 
 //    ASSERT_EQ( -0.5f * 0.5f + 0.5f * 0.5f, output[0] );
 //    ASSERT_EQ( 0.7f * 0.5f -1.1f * 0.5f, output[1] );
@@ -296,8 +299,9 @@ TEST( testforward, imagesize3 ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
-    float *output = forward->forward( 
-        batchSize, data, filter1, 0 );        
+    float *output = new float[forward->getOutputTotalSize(batchSize)];
+    forward->forward( 
+        batchSize, data, filter1, 0, output );        
 
     EXPECT_EQ( 0, output[0] );
     EXPECT_EQ( 1.25f, output[1] );
@@ -343,7 +347,8 @@ TEST( testforward, test2 ) {
     float *biases = 0;
 
     Forward *forward = Forward::instanceSpecific( 1, cl, dim );
-    float *output = forward->forward( batchSize, data, filter1, biases );
+    float *output = new float[forward->getOutputTotalSize(batchSize)];
+    forward->forward( batchSize, data, filter1, biases, output );
 
     EXPECT_FLOAT_NEAR( -0.5f * 0.300809f -0.5f * 0.11011f, output[0] );
     EXPECT_FLOAT_NEAR( -0.5f * 0.0570846f +0.5f * 0.347077f, output[1] );
@@ -374,8 +379,9 @@ TEST( testforward, test3 ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ) );
-    float *output = forward->forward( 
-        batchSize, data, filter, 0 );        
+    float *output = new float[forward->getOutputTotalSize(batchSize)];
+    forward->forward( 
+        batchSize, data, filter, 0, output );        
 
     float expectedOutput[] = {0.2f*0.1f+0.3f*0.2f,
                                0.5f*0.1f+0.7f*0.2f,
@@ -394,6 +400,7 @@ TEST( testforward, test3 ) {
 //        cout << "output[" << i << "]=" << output[i] << endl;
       EXPECT_FLOAT_NEAR( expectedOutput[i], output[i] );
    }
+    delete[] output;
     delete forward;
     delete cl;
 }
@@ -863,7 +870,8 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim ) {
     Forward *p1 = Forward::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;
-        float *output1 = p1->forward( thisBatchSize, inputs, filters, biasFilters );
+        float *output1 = new float[p1->getOutputTotalSize(thisBatchSize)];
+        p1->forward( thisBatchSize, inputs, filters, biasFilters, output1 );
         delete[] output1;
     }
     StatefulTimer::dump(true);

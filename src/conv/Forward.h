@@ -46,7 +46,7 @@ public:
     STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim );
     STATIC Forward *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
     STATIC Forward *instanceSpecific( std::string name, EasyCL *cl, LayerDimensions layerDimensions );
-    VIRTUAL float * forward( int batchSize, float *inputData, float *filters, float *biases );
+    VIRTUAL int getOutputTotalSize(int batchSize);
     VIRTUAL void forward( int batchSize, float *inputData, float *filters, float *biases, float *output );
 
     // [[[end]]]
