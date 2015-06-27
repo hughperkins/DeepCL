@@ -106,10 +106,13 @@ STATIC Forward *Forward::instanceSpecific( std::string name, EasyCL *cl, LayerDi
     }
 }
 // you own the returned output array, and are responsible for deleting it
-VIRTUAL float * Forward::forward( int batchSize, float *inputData, float *filters, float *biases ) {
-    float *output = new float[batchSize * dim.outputCubeSize];
-    forward( batchSize, inputData, filters, biases, output );
-    return output;
+//VIRTUAL float * Forward::forward( int batchSize, float *inputData, float *filters, float *biases ) {
+//    float *output = new float[batchSize * dim.outputCubeSize];
+//    forward( batchSize, inputData, filters, biases, output );
+//    return output;
+//}
+VIRTUAL int Forward::getOutputTotalSize(int batchSize) {
+    return batchSize * dim.outputCubeSize;
 }
 // must allocate output yourself before the call
 VIRTUAL void Forward::forward( int batchSize, float *inputData, float *filters, float *biases, float *output ) {
