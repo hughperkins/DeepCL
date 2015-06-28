@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.7)
+project(DeepCL)
 
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" )
   set( ON_LINUX 1 )
@@ -33,7 +34,7 @@ unset(SWIG_EXECUTABLE CACHE)
 unset(SWIG_VERSION CACHE)
 unset(LUA_INCLUDE_DIR CACHE)
 
-SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
+# SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
@@ -48,7 +49,7 @@ include_directories( . )
 include_directories( src )
 include_directories( qlearning )
 include_directories( EasyCL )
-include_directories( EasyCL/clew/include )
+include_directories( EasyCL/thirdparty/clew/include )
 
 if( ON_LINUX )
     link_libraries(dl)
