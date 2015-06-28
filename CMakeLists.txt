@@ -40,6 +40,10 @@ INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
 INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
 LINK_DIRECTORIES(${CLBLAS_LIBRARY_DIR})
 
+INCLUDE("${CMAKE_MODULE_PATH}/build_EasyCL.cmake")
+INCLUDE_DIRECTORIES(${EASYCL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${EASYCL_LIBRARIES})
+
 include_directories( . )
 include_directories( src )
 include_directories( qlearning )
@@ -78,32 +82,35 @@ endif(LIBJPEG_AVAILABLE)
 #include_directories(${LUA_INCLUDE_DIR})
 #link_libraries(${LUA_LIBRARIES})
 
-include_directories(EasyCL/thirdparty/lua-5.1.5/src)
+#include_directories(EasyCL/thirdparty/lua-5.1.5/src)
 
-file(STRINGS EasyCL/thirdparty/lua-5.1.5/files.txt lua_src1)
-foreach(source ${lua_src1})
-    set( lua_src ${lua_src} EasyCL/thirdparty/lua-5.1.5/src/${source})
-endforeach()
+#file(STRINGS EasyCL/thirdparty/lua-5.1.5/files.txt lua_src1)
+#foreach(source ${lua_src1})
+#    set( lua_src ${lua_src} EasyCL/thirdparty/lua-5.1.5/src/${source})
+#endforeach()
 
-set( EasyCL_sources EasyCL/EasyCL.cpp
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
-    EasyCL/templates/TemplatedKernel.cpp EasyCL/templates/LuaTemplater.cpp
-    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c
-    ${lua_src} )
-add_library( EasyCL SHARED ${EasyCL_sources} )
-link_libraries( EasyCL )
+#set( EasyCL_sources EasyCL/EasyCL.cpp
+#    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
+#    EasyCL/templates/TemplatedKernel.cpp EasyCL/templates/LuaTemplater.cpp
+#    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c
+#    ${lua_src} )
+#add_library( EasyCL SHARED ${EasyCL_sources} )
+#link_libraries( EasyCL )
 #target_link_libraries( EasyCL ${LUA_LIBRARIES} )
 
-add_executable( gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
-    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp )
-if( ON_LINUX )
-    target_link_libraries( gpuinfo dl )
-endif()
+#add_executable( gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
+#    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp )
+#if( ON_LINUX )
+#    target_link_libraries( gpuinfo dl )
+#endif()
 
 add_library( DeepCL SHARED ${deepcl_sources} )
 if(ON_WINDOWS)
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
 endif(ON_WINDOWS)
+
+target_link_libraries(DeepCL EasyCL)
+target_link_libraries(DeepCL clBLAS)
 
 #if(ON_LINUX)
 #    execute_process( COMMAND git --version RESULT_VARIABLE git_test ERROR_QUIET )
@@ -200,8 +207,9 @@ add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main
 target_link_libraries( testgtestsupp deepcl_gtest )
 
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
-INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
-INSTALL( TARGETS DeepCL EasyCL deepcl_train deepcl_predict gpuinfo
+#INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
+INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests
     RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib )
 
