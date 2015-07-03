@@ -5,6 +5,7 @@ ExternalProject_Add(
     clBLAS-external
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/clMathLibraries/clBLAS/src
     PREFIX ${CMAKE_BINARY_DIR}/clBLAS
+    STAMP_DIR ${CMAKE_BINARY_DIR}/clBLAS/stamp
     CMAKE_CACHE_ARGS 
     -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
     -DBUILD_SHARED_LIBS:BOOL=ON
@@ -27,4 +28,12 @@ ADD_DEPENDENCIES(clBLAS clBLAS-external)
 SET(CLBLAS_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
 SET(CLBLAS_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}clBLAS${CMAKE_SHARED_LIBRARY_SUFFIX})
 SET(CLBLAS_FOUND ON)
+
+#add_custom_target(clblas_delete_stamp clBLAS-external EasyCL-external
+#  ${CMAKE_COMMAND} -E  remove_directory "${CMAKE_BINARY_DIR}/clBLAS/stamp"
+#)
+
+add_dependencies(clBLAS-external EasyCL-external)
+add_dependencies(clBLAS-external EasyCL)
+add_dependencies(clBLAS EasyCL)
 

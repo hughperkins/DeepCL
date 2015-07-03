@@ -37,22 +37,21 @@ unset(LUA_INCLUDE_DIR CACHE)
 # SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
-INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
-INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
-LINK_DIRECTORIES(${CLBLAS_LIBRARY_DIR})
 
 INCLUDE("${CMAKE_MODULE_PATH}/build_EasyCL.cmake")
 INCLUDE_DIRECTORIES(${EASYCL_INCLUDE_DIRS})
-LINK_DIRECTORIES(${EASYCL_LIBRARIES})
+#LINK_DIRECTORIES(${EASYCL_LIBRARIES})
+
+INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
+INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
+#LINK_DIRECTORIES(${CLBLAS_LIBRARY_DIR})
 
 include_directories( . )
 include_directories( src )
 include_directories( qlearning )
-include_directories( EasyCL )
-include_directories( EasyCL/thirdparty/clew/include )
 
 if( ON_LINUX )
-    link_libraries(dl)
+#    target_link_libraries(EasyCL dl)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 
@@ -71,13 +70,6 @@ foreach(dir ${dirs})
     endforeach()
 endforeach()
 #message("deepcl_sources ${deepcl_sources}")
-
-if(LIBJPEG_AVAILABLE)
-    find_package(JPEG REQUIRED)
-    link_libraries(${JPEG_LIBRARY})
-    include_directories( ${JPEG_INCLUDE_DIR} )
-    set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
-endif(LIBJPEG_AVAILABLE)
 
 #find_package(Lua51)
 #include_directories(${LUA_INCLUDE_DIR})
@@ -113,6 +105,14 @@ endif(ON_WINDOWS)
 target_link_libraries(DeepCL EasyCL)
 target_link_libraries(DeepCL clBLAS)
 
+if(LIBJPEG_AVAILABLE)
+    find_package(JPEG REQUIRED)
+    target_link_libraries(DeepCL ${JPEG_LIBRARY})
+    include_directories( ${JPEG_INCLUDE_DIR} )
+    set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
+endif(LIBJPEG_AVAILABLE)
+
+
 #if(ON_LINUX)
 #    execute_process( COMMAND git --version RESULT_VARIABLE git_test ERROR_QUIET )
 #    if( ${git_test} EQUAL 0 )
@@ -130,7 +130,7 @@ target_link_libraries(DeepCL clBLAS)
 
 if( LIBPNGPP_AVAILABLE)
     find_package(PNG REQUIRED)
-    link_libraries(${PNG_LIBRARY})
+    target_link_libraries(deepcl_unittests ${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
 link_libraries(DeepCL)
@@ -147,7 +147,7 @@ if(DEV_RUN_COG)
     add_dependencies( DeepCL cog )
 endif(DEV_RUN_COG)
 
-ADD_DEPENDENCIES(DeepCL clBLAS)
+#ADD_DEPENDENCIES(DeepCL clBLAS)
 
 set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
@@ -175,7 +175,7 @@ add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp )
 
-target_link_libraries( cifar-to-mat ${LUA_LIBRARIES} )
+#target_link_libraries( cifar-to-mat ${LUA_LIBRARIES} )
 
 if( LIBPNGPP_AVAILABLE)
     add_definitions(-DPNG_AVAILABLE)
