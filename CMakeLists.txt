@@ -103,6 +103,12 @@ endforeach()
 #    target_link_libraries( gpuinfo dl )
 #endif()
 
+if(LIBJPEG_AVAILABLE)
+    find_package(JPEG REQUIRED)
+    include_directories( ${JPEG_INCLUDE_DIR} )
+    set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
+endif(LIBJPEG_AVAILABLE)
+
 add_library( DeepCL SHARED ${deepcl_sources} )
 if(ON_WINDOWS)
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
@@ -110,12 +116,8 @@ endif(ON_WINDOWS)
 
 target_link_libraries(DeepCL EasyCL)
 target_link_libraries(DeepCL clBLAS)
-
 if(LIBJPEG_AVAILABLE)
-    find_package(JPEG REQUIRED)
     target_link_libraries(DeepCL ${JPEG_LIBRARY})
-    include_directories( ${JPEG_INCLUDE_DIR} )
-    set( deepcl_sources ${deepcl_sources} src/util/JpegHelper.cpp src/loaders/ManifestLoaderv1.cpp)
 endif(LIBJPEG_AVAILABLE)
 
 
