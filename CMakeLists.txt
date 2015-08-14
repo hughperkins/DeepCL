@@ -51,7 +51,6 @@ INCLUDE_DIRECTORIES(${EASYCL_INCLUDE_DIRS})
 INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
 INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
 # TARGET_link_LIBRARIES(clBLAS ${EASYCL_LIBRARIES})
-if(FALSE)
 
 include_directories( . )
 include_directories( src )
@@ -77,7 +76,6 @@ foreach(dir ${dirs})
     endforeach()
 endforeach()
 #message("deepcl_sources ${deepcl_sources}")
-endif(FALSE)
 
 #find_package(Lua51)
 #include_directories(${LUA_INCLUDE_DIR})
@@ -105,7 +103,6 @@ endif(FALSE)
 #    target_link_libraries( gpuinfo dl )
 #endif()
 
-if(FALSE)
 add_library( DeepCL SHARED ${deepcl_sources} )
 if(ON_WINDOWS)
     set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NODEFAULTLIB:LIBCMT" )
@@ -222,5 +219,4 @@ INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib )
-endif(FALSE)
 
