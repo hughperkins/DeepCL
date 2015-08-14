@@ -11,8 +11,8 @@ ExternalProject_Add(
     -DBUILD_SHARED_LIBS:BOOL=ON
     -DBUILD_CLIENT:BOOL=OFF
     -DBUILD_TEST:BOOL=OFF
-	-DOPENCL_INCLUDE_DIRS:PATH=${CMAKE_INSTALL_PREFIX}/include
-	-DOPENCL_LIBRARIES:PATH=${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}EasyCL${CMAKE_SHARED_LIBRARY_SUFFIX}
+    -DOPENCL_INCLUDE_DIRS:STRING=${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/include;${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/include/proxy-opencl
+	-DOPENCL_LIBRARIES:STRING=${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}clew${CMAKE_SHARED_LIBRARY_SUFFIX}
     -DBUILD_KTEST:BOOL=OFF
     -DSUFFIX_LIB:STRING=
     -DCORR_TEST_WITH_ACML:BOOL=OFF
@@ -33,7 +33,7 @@ SET(CLBLAS_FOUND ON)
 #  ${CMAKE_COMMAND} -E  remove_directory "${CMAKE_BINARY_DIR}/clBLAS/stamp"
 #)
 
-add_dependencies(clBLAS-external EasyCL-external)
-add_dependencies(clBLAS-external EasyCL)
-add_dependencies(clBLAS EasyCL)
+#add_dependencies(clBLAS-external EasyCL-external)
+#add_dependencies(clBLAS-external EasyCL)
+#add_dependencies(clBLAS EasyCL)
 

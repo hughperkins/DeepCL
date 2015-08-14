@@ -44,6 +44,8 @@ build2/
 build3/
 build4/
 build5/
+dist/
+dist2/
 
 node_modules/
 data/
