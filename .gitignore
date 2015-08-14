@@ -46,6 +46,7 @@ build4/
 build5/
 dist/
 dist2/
+temp/
 
 node_modules/
 data/
