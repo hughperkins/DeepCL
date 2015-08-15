@@ -10,24 +10,33 @@
 
 class AddBias;
 
+#define VIRTUAL virtual
+#define STATIC static
+
 class ForwardIm2Col : public Forward {
 private:
     CLKernel *kernelIm2Col;
-    CLKernel *kernelCol2Im;
+//    CLKernel *kernelCol2Im;
     AddBias *addBias;
 
     float *columns;
     CLWrapper *columnsWrapper;
+    int numKernels;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.addv2()
     // ]]]
     // generated, using cog:
+
+    public:
     VIRTUAL ~ForwardIm2Col();
-    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-    CLWrapper *outputWrapper );
-    ForwardIm2Col( EasyCL *cl, LayerDimensions dim );
+    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper);
+    ForwardIm2Col(EasyCL *cl, LayerDimensions dim);
+
+    private:
+    void im2col(CLWrapper* im, int imOffset, CLWrapper* columns);
+    STATIC std::string getKernelTemplate();
 
     // [[[end]]]
 };

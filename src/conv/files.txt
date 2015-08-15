@@ -1,3 +1,4 @@
+ForwardIm2Col.cpp
 ReduceSegments.cpp
 AddBias.cpp
 BackpropWeights.cpp
