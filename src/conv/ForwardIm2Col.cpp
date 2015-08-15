@@ -34,65 +34,51 @@ STATIC void ForwardIm2Col::im2col(
 
     k->run_1d(GET_BLOCKS(state, num_kernels), getNumThreads(state));
 }
-STATIC void ForwardIm2Col::col2im(
-        CLWrapper* col, THClTensor* im) {
-    int num_kernels = channels * height * width;
-    // To avoid involving atomic operations, we will launch one kernel per
-    // bottom dimension, and then in the kernel add up the top dimensions.
+//STATIC void ForwardIm2Col::col2im(
+//        CLWrapper* col, THClTensor* im) {
+//    int num_kernels = channels * height * width;
+//    // To avoid involving atomic operations, we will launch one kernel per
+//    // bottom dimension, and then in the kernel add up the top dimensions.
 
-    EasyCL *cl = im->storage->cl;
-    std::string uniqueName = "ForwardIm2Col::col2im";
-    CLKernel *kernel = 0;
-    if(cl->kernelExists(uniqueName)) {
-    kernel = cl->getKernel(uniqueName);
-    } else {
-    TemplatedKernel kernelBuilder(cl);
-    kernel = kernelBuilder.buildKernel(uniqueName, "ForwardIm2Col.cl",
-      ForwardIm2Col_getKernelTemplate(), "col2im_kernel");
-    }
+//    EasyCL *cl = im->storage->cl;
+//    std::string uniqueName = "ForwardIm2Col::col2im";
+//    CLKernel *kernel = 0;
+//    if(cl->kernelExists(uniqueName)) {
+//    kernel = cl->getKernel(uniqueName);
+//    } else {
+//    TemplatedKernel kernelBuilder(cl);
+//    kernel = kernelBuilder.buildKernel(uniqueName, "ForwardIm2Col.cl",
+//      ForwardIm2Col_getKernelTemplate(), "col2im_kernel");
+//    }
 
-    CLKernel *k = kernelCol2Im;
-    k->in(num_kernels);
-    k->in(col);
-    k->out(im);
+//    CLKernel *k = kernelCol2Im;
+//    k->in(num_kernels);
+//    k->in(col);
+//    k->out(im);
 
-    k->run_1d(GET_BLOCKS(state, num_kernels), getNumThreads(state));
-}
+//    k->run_1d(GET_BLOCKS(state, num_kernels), getNumThreads(state));
+//}
 PUBLIC VIRTUAL ForwardIm2Col::~ForwardIm2Col() {
     delete kernelIm2Col;
-    delete kernelCol2Im;
+//    delete kernelCol2Im;
     delete addBias;
-    delete columnsWrapper;
-    delete columns;
 }
 PUBLIC VIRTUAL void ForwardIm2Col::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardIm2Col::forward START");
 
+    int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputImageSizeSquared;
+    float *columns = new float[columnsSize];
+    CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
+
+    StatefulTimer::timeCheck("ForwardIm2Col::forward after alloc");
+
     for (int b = 0; b < batchSize; b ++) {
-        // M,N,K are dims of matrix A and B
-        // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
-        long m_ = dim.numFilters;
-        long n_ = dim.outputImageSizeSquared;
-        long k_ = 1;
-
-        // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
-        cl_err err = clblasSgemm(clblasColumnMajor, clblasTrans, clblasNoTrans, n_, m_, k_,
-                             1, onesWrapper->getBuffer(), 0, k_,
-                             biasWrapper->getBuffer(), 0, k_,
-                             0,
-                             outputWrapper->getBuffer(), b * dim.outputCubeSize, n_,
-                             1, cl->queue, 0, NULL, 0);
-        if (err != CL_SUCCESS) {
-            throw runtime_error("clblasSgemm() failed with " + toString(err));
-        }
-
         // Extract columns:
         im2col(
-          state,
-          input_n,
-          nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
-          columns
+            dataWrapper,
+            b * inputCubeSize,
+            columnsWrapper
         );
 
         // M,N,K are dims of matrix A and B
@@ -102,17 +88,24 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward( int batchSize, CLWrapper *dataWrappe
         long k = weight->size[1];
 
         // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
-        THClBlas_gemm(
-            state,
-            'n', 'n',
+        cl_err err = clblasSgemm(
+            clblasColumnMajor,
+            clblasNoTrans, clblasNoTrans,
             n, m, k,
             1,
-            columns, n,
-            weight, k,
+            columnsWrapper->getBuffer(), 0, n,
+            weightsWrapper->getBuffer(), 0, k,
             1,
-            output_n, n
+            outputWrapper->getBuffer(), b * dim.outputCubeSize, n,
+            1, cl->queue, 0, NULL, 0
         );
+        if (err != CL_SUCCESS) {
+            throw runtime_error("clblasSgemm() failed with " + toString(err));
+        }
     }
+
+    delete columnsWrapper;
+    delete columns;
 
     StatefulTimer::timeCheck("ForwardIm2Col::forward after call forward");
 
@@ -127,10 +120,6 @@ PUBLIC ForwardIm2Col::ForwardIm2Col( EasyCL *cl, LayerDimensions dim ) :
             Forward( cl, dim )
         {
     addBias = new AddBias( cl );
-
-    int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputImageSizeSquared;
-    columns = new float[columnsSize];
-    columns = cl->wrap(columnsSize, columns);
 
     int size = dim.inputSize;
     int padding = dim.padZeros ? dim.halfFilterSize : 0;
@@ -150,12 +139,12 @@ PUBLIC ForwardIm2Col::ForwardIm2Col( EasyCL *cl, LayerDimensions dim ) :
         getIm2ColTemplate(),
         "im2col",
         false);
-    this->kernelCol2Im = kernelBuilder.buildKernel(
-        "col2im",
-        "ForwardIm2Col.cl",
-        getIm2ColTemplate(),
-        "col2im",
-        false);
+//    this->kernelCol2Im = kernelBuilder.buildKernel(
+//        "col2im",
+//        "ForwardIm2Col.cl",
+//        getIm2ColTemplate(),
+//        "col2im",
+//        false);
 }
 STATIC std::string ForwardIm2Col::getKernelTemplate() {
     // [[[cog
