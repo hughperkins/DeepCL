@@ -26,7 +26,8 @@ else()
 endif()
 SET(EASYCL_FOUND ON)
 
-#add_custom_target(EasyCL_delete_stamp EasyCL-external clBLAS-external
-#  ${CMAKE_COMMAND} -E  remove_directory "${CMAKE_BINARY_DIR}/EasyCL/stamp"
-#)
+add_custom_target(easycl_delete_stamp ALL 
+  COMMAND ${CMAKE_COMMAND} -E  remove_directory "${CMAKE_BINARY_DIR}/EasyCL/stamp"
+)
+add_dependencies(EasyCL-external easycl_delete_stamp)
 

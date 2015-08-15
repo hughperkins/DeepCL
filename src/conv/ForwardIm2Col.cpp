@@ -14,6 +14,8 @@
 #include <iostream>
 #include <string>
 
+#include <clBLAS.h>
+
 using namespace std;
 
 #undef VIRTUAL
@@ -31,7 +33,10 @@ void ForwardIm2Col::im2col(CLWrapper* im, int imOffset, CLWrapper* columns) {
     k->in(imOffset);
     k->out(columns);
 
-    k->run_1d(GET_BLOCKS(state, num_kernels), getNumThreads(state));
+    int workgroupSize = cl->getMaxWorkgroupSize();
+    int numWorkgroups = this->numKernels;
+
+    k->run_1d(numWorkgroups * workgroupSize, workgroupSize);
 }
 //STATIC void ForwardIm2Col::col2im(
 //        CLWrapper* col, THClTensor* im) {
@@ -75,18 +80,18 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
         // Extract columns:
         im2col(
             dataWrapper,
-            b * inputCubeSize,
+            b * dim.inputCubeSize,
             columnsWrapper
        );
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
         long m = dim.numFilters;
-        long n = dim.outputSizeSquared;
+        long n = dim.outputImageSizeSquared;
         long k = dim.numFilters * dim.filterSizeSquared;
 
         // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
-        cl_err err = clblasSgemm(
+        cl_int err = clblasSgemm(
             clblasColumnMajor,
             clblasNoTrans, clblasNoTrans,
             n, m, k,
@@ -119,7 +124,7 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
         {
     addBias = new AddBias(cl);
 
-    int size = dim.inputSize;
+    int size = dim.inputImageSize;
     int padding = dim.padZeros ? dim.halfFilterSize : 0;
     int stride = 1;
     int channels = dim.inputPlanes;
@@ -134,10 +139,10 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
     builder.set("channels", dim.inputPlanes);
     builder.set("filterSize", dim.filterSize);
     builder.set("size", dim.inputImageSize);
-    this->kernelIm2Col = kernelBuilder.buildKernel(
+    this->kernelIm2Col = builder.buildKernel(
         "im2col",
         "ForwardIm2Col.cl",
-        getIm2ColTemplate(),
+        getKernelTemplate(),
         "im2col",
         false);
 //    this->kernelCol2Im = kernelBuilder.buildKernel(
