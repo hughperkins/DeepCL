@@ -12,12 +12,12 @@ class AddBias;
 
 class ForwardIm2Col : public Forward {
 private:
-    CLKernel *kernel;
+    CLKernel *kernelIm2Col;
+    CLKernel *kernelCol2Im;
     AddBias *addBias;
-	float *columns;
-	float *ones;
-	CLWrapper *columnsWrapper;
-	CLWrapper *onesWrapper;
+
+    float *columns;
+    CLWrapper *columnsWrapper;
 
     // [[[cog
     // import cog_addheaders

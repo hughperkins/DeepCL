@@ -6,18 +6,17 @@
       i < (n);                                       \
       i += get_local_size(0) * get_num_groups(0))
 
-#define gPadding {{padding}}
-#define gStride {{stride}}
-#define gColSize {{colSize}}
-#define gFilterSize {{filterSize}}
-#define gSize {{size}}
-#define gPatchSize {{patchSize}}
+//#define gPadding {{padding}}
+//#define gStride {{stride}}
+//#define gColSize {{colSize}}
+//#define gFilterSize {{filterSize}}
+//#define gSize {{size}}
 
 // Kernel for fast unfold+copy
 // (adapted from Caffe: https://github.com/BVLC/caffe/blob/master/src/caffe/layers/conv_layer.cu)
 kernel void im2col(
-	const int n,
-	global float const * im_data, int im_offset,
+    const int n,
+    global float const * im_data, int im_offset,
     global float* data_col) {
   global const float *data_im = im_data + im_offset;
 
@@ -44,9 +43,8 @@ kernel void im2col(
 }
 
 kernel void col2im(
-	const int n,
-	global float const * col_data, int col_offset,
-    const int channels,
+    const int n,
+    global float const * col_data, int col_offset,
     global float* data_im) {
   global const float *data_col = col_data + col_offset;
 
@@ -56,13 +54,13 @@ kernel void col2im(
     int h = (index / {{size}}) % {{size}} + {{padding}};
     int c = index / ({{size}} * {{size}});
     // compute the start and end of the output
-    int w_col_start = (w < {{patchSize}}) ? 0 : (w - {{patchSize}}) / {{stride}} + 1;
+    int w_col_start = (w < {{filterSize}}) ? 0 : (w - {{filterSize}}) / {{stride}} + 1;
     int w_col_end = min(w / {{stride}} + 1, {{colSize}});
-    int h_col_start = (h < {{patchSize}}) ? 0 : (h - {{patchSize}}) / {{stride}} + 1;
+    int h_col_start = (h < {{filterSize}}) ? 0 : (h - {{filterSize}}) / {{stride}} + 1;
     int h_col_end = min(h / {{stride}} + 1, {{colSize}});
 
-    int offset = (c * {{patchSize}} * {{patchSize}} + h * {{patchSize}} + w) * {{colSize}} * {{colSize}};
-    int coeff_h_col = (1 - {{stride}} * {{patchSize}} * {{colSize}}) * {{colSize}};
+    int offset = (c * {{filterSize}} * {{filterSize}} + h * {{filterSize}} + w) * {{colSize}} * {{colSize}};
+    int coeff_h_col = (1 - {{stride}} * {{filterSize}} * {{colSize}}) * {{colSize}};
     int coeff_w_col = (1 - {{stride}} * {{colSize}} * {{colSize}});
     for (int h_col = h_col_start; h_col < h_col_end; ++h_col) {
       for (int w_col = w_col_start; w_col < w_col_end; ++w_col) {

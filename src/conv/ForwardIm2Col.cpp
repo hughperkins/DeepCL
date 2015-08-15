@@ -9,6 +9,10 @@
 #include "util/StatefulTimer.h"
 #include "conv/AddBias.h"
 
+#include <sstream>
+#include <iostream>
+#include <string>
+
 using namespace std;
 
 #undef VIRTUAL
@@ -17,169 +21,99 @@ using namespace std;
 #define STATIC
 #define PUBLIC
 
-static void im2col(CLWrapper* im, int imOffset, const int channels,
-    const int size, const int ksize, const int padding, const int stride, CLWrapper* columns) {
-  // We are going to launch channels * height_col * width_col kernels, each
-  // kernel responsible for copying a single-channel grid.
-  int size_col = (size + 2 * padding - ksize) / stride + 1;
-  int num_kernels = channels * size_col * size_col;
+STATIC void ForwardIm2Col::im2col(
+        CLWrapper* im, int imOffset, CLWrapper* columns) {
+    // We are going to launch channels * height_col * width_col kernels, each
+    // kernel responsible for copying a single-channel grid.
+    int num_kernels = channels * size_col * size_col;
 
-  std::string uniqueName = "SpatialConvolutionMM::im2col";
-  EasyCL *cl = im->storage->cl;
-  CLKernel *kernel = 0;
-  if(cl->kernelExists(uniqueName)) {
-    kernel = cl->getKernel(uniqueName);
-  } else {
-    TemplatedKernel kernelBuilder(cl);
-    kernel = kernelBuilder.buildKernel(uniqueName, "SpatialConvolutionMM.cl",
-      SpatialConvolutionMM_getKernelTemplate(), "im2col_kernel");
-  }
+    CLKernel *k = kernelIm2Col;
+    k->in(num_kernels);
+    k->in(im);
+    k->out(col);
 
-  THClKernels k(state, kernel);
-  k.in(num_kernels);
-  k.in(im);
-  k.in(height);
-  k.in(width);
-  k.in(ksize_h);
-  k.in(ksize_w);
-  k.in(pad_h);
-  k.in(pad_w);
-  k.in(stride_h);
-  k.in(stride_w);
-  k.in(height_col);
-  k.in(width_col);
-  k.out(col);
-
-  k.run(GET_BLOCKS(state, num_kernels), getNumThreads(state));
+    k->run_1d(GET_BLOCKS(state, num_kernels), getNumThreads(state));
 }
+STATIC void ForwardIm2Col::col2im(
+        CLWrapper* col, THClTensor* im) {
+    int num_kernels = channels * height * width;
+    // To avoid involving atomic operations, we will launch one kernel per
+    // bottom dimension, and then in the kernel add up the top dimensions.
 
-void col2im(THClState *state, THClTensor* col, const int channels,
-    const int height, const int width, const int patch_h, const int patch_w, const int pad_h,
-    const int pad_w, const int stride_h, const int stride_w, THClTensor* im) {
-  int height_col = (height + 2 * pad_h - patch_h) / stride_h + 1;
-  int width_col = (width + 2 * pad_w - patch_w) / stride_w + 1;
-  int num_kernels = channels * height * width;
-  // To avoid involving atomic operations, we will launch one kernel per
-  // bottom dimension, and then in the kernel add up the top dimensions.
-
-  EasyCL *cl = im->storage->cl;
-  std::string uniqueName = "SpatialConvolutionMM::col2im";
-  CLKernel *kernel = 0;
-  if(cl->kernelExists(uniqueName)) {
+    EasyCL *cl = im->storage->cl;
+    std::string uniqueName = "ForwardIm2Col::col2im";
+    CLKernel *kernel = 0;
+    if(cl->kernelExists(uniqueName)) {
     kernel = cl->getKernel(uniqueName);
-  } else {
+    } else {
     TemplatedKernel kernelBuilder(cl);
-    kernel = kernelBuilder.buildKernel(uniqueName, "SpatialConvolutionMM.cl",
-      SpatialConvolutionMM_getKernelTemplate(), "col2im_kernel");
-  }
+    kernel = kernelBuilder.buildKernel(uniqueName, "ForwardIm2Col.cl",
+      ForwardIm2Col_getKernelTemplate(), "col2im_kernel");
+    }
 
-  THClKernels k(state, kernel);
-  k.in(num_kernels);
-  k.in(col);
-  k.in(height);
-  k.in(width);
-  k.in(channels);
+    CLKernel *k = kernelCol2Im;
+    k->in(num_kernels);
+    k->in(col);
+    k->out(im);
 
-  k.in(patch_h);
-  k.in(patch_w);
-  k.in(pad_h);
-  k.in(pad_w);
-  k.in(stride_h);
-  k.in(stride_w);
-
-  k.in(height_col);
-  k.in(width_col);
-  k.out(im);
-
-  k.run(GET_BLOCKS(state, num_kernels), getNumThreads(state));
+    k->run_1d(GET_BLOCKS(state, num_kernels), getNumThreads(state));
 }
-
 PUBLIC VIRTUAL ForwardIm2Col::~ForwardIm2Col() {
-    delete kernel;
+    delete kernelIm2Col;
+    delete kernelCol2Im;
     delete addBias;
-	delete columnsWrapper;
-	delete onesWrapper;
-	delete columns;
-	delete ones;
+    delete columnsWrapper;
+    delete columns;
 }
 PUBLIC VIRTUAL void ForwardIm2Col::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
     CLWrapper *outputWrapper ) {
     StatefulTimer::timeCheck("ForwardIm2Col::forward START");
 
-// =====================
+    for (int b = 0; b < batchSize; b ++) {
+        // M,N,K are dims of matrix A and B
+        // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
+        long m_ = dim.numFilters;
+        long n_ = dim.outputImageSizeSquared;
+        long k_ = 1;
 
-  // For each elt in batch, do:
-  for (int b = 0; b < batchSize; b ++) {
-    // Do Bias first:
-    // M,N,K are dims of matrix A and B
-    // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
-    long m_ = dim.numFilters;
-    long n_ = dim.outputImageSizeSquared;
-    long k_ = 1;
+        // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
+        cl_err err = clblasSgemm(clblasColumnMajor, clblasTrans, clblasNoTrans, n_, m_, k_,
+                             1, onesWrapper->getBuffer(), 0, k_,
+                             biasWrapper->getBuffer(), 0, k_,
+                             0,
+                             outputWrapper->getBuffer(), b * dim.outputCubeSize, n_,
+                             1, cl->queue, 0, NULL, 0);
+        if (err != CL_SUCCESS) {
+            throw runtime_error("clblasSgemm() failed with " + toString(err));
+        }
 
-    // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
-    cl_err err = clblasSgemm(clblasColumnMajor, clblasTrans, clblasNoTrans, n_, m_, k_,
-                         1, onesWrapper->getBuffer(), 0, k_,
-                         biasWrapper->getBuffer(), 0, k_,
-						 0,
-                         outputWrapper->getBuffer(), b * dim.outputCubeSize, n_,
-                         1, cl->queue, 0, NULL, 0);
-    if (err != CL_SUCCESS) {
-        throw runtime_error("clblasSgemm() failed with " + toString(err));
+        // Extract columns:
+        im2col(
+          state,
+          input_n,
+          nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
+          columns
+        );
+
+        // M,N,K are dims of matrix A and B
+        // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
+        long m = weight->size[0];
+        long n = columns->size[1];
+        long k = weight->size[1];
+
+        // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
+        THClBlas_gemm(
+            state,
+            'n', 'n',
+            n, m, k,
+            1,
+            columns, n,
+            weight, k,
+            1,
+            output_n, n
+        );
     }
 
-    // Extract columns:
-    im2col(
-      state,
-      input_n,
-      nInputPlane, inputHeight, inputWidth, kH, kW, padH, padW, dH, dW,
-      columns
-    );
-
-    // M,N,K are dims of matrix A and B
-    // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
-    long m = weight->size[0];
-    long n = columns->size[1];
-    long k = weight->size[1];
-
-    // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
-    THClBlas_gemm(
-        state,
-        'n', 'n',
-        n, m, k,
-        1,
-        columns, n,
-        weight, k,
-        1,
-        output_n, n
-    );
-  }
-
-  // Free
-  THClTensor_free(state, input_n);
-  THClTensor_free(state, output_n);
-
-  // Resize output
-  if (batch == 0) {
-    THClTensor_resize3d(state, output, nOutputPlane, outputHeight, outputWidth);
-    THClTensor_resize3d(state, input, nInputPlane, inputHeight, inputWidth);
-  }
-
-
-//=========================
-
-    kernel->in(batchSize);
-    kernel->input( dataWrapper );
-    kernel->input( weightsWrapper);
-    kernel->output( outputWrapper );
-
-    int globalSize = batchSize * dim.outputCubeSize;
-    int workgroupsize = std::min( globalSize, cl->getMaxWorkgroupSize() );
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
-//    cout << "forward1 globalsize " << globalSize << " workgroupsize " << workgroupsize << endl;
-
-    kernel->run_1d( globalSize, workgroupsize );
-    cl->finish();
     StatefulTimer::timeCheck("ForwardIm2Col::forward after call forward");
 
     if( dim.biased ) {
@@ -194,20 +128,39 @@ PUBLIC ForwardIm2Col::ForwardIm2Col( EasyCL *cl, LayerDimensions dim ) :
         {
     addBias = new AddBias( cl );
 
-	int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputImageSizeSquared;
-	columns = new float[];
-	columns = cl->wrap(columnsSize, columns);
+    int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputImageSizeSquared;
+    columns = new float[columnsSize];
+    columns = cl->wrap(columnsSize, columns);
 
-	int onesSize = dim.outputImageSizeSquared;
-	ones = new float[onesSize];
-	onesWrapper = cl->wrap(onesSize, ones);
+    int size = dim.inputSize;
+    int padding = dim.padZeros ? dim.halfFilterSize : 0;
+    int stride = 1;
+    int size_col = (size + 2 * padding - filterSize) / stride + 1;
 
-    std::string options = "";
-    options += dim.buildOptionsString();
-
+    TemplatedKernel builder(cl);
+    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
+    builder.set("stride", 1);
+    builder.set("colSize", size_col);
+    builder.set("channels", dim.inputPlanes);
+    builder.set("filterSize", dim.filterSize);
+    builder.set("size", dim.inputImageSize);
+    this->kernelIm2Col = kernelBuilder.buildKernel(
+        "im2col",
+        "ForwardIm2Col.cl",
+        getIm2ColTemplate(),
+        "im2col",
+        false);
+    this->kernelCol2Im = kernelBuilder.buildKernel(
+        "col2im",
+        "ForwardIm2Col.cl",
+        getIm2ColTemplate(),
+        "col2im",
+        false);
+}
+STATIC std::string ForwardIm2Col::getKernelTemplate() {
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/ForwardIm2Col.cl", "convolve_imagecubes_float2", 'options' )
+    // stringify.write_kernel( "kernel", "ForwardIm2Col.cl" )
     // ]]]
     // generated using cog, from cl/forward1.cl:
     const char * kernelSource =  
@@ -330,5 +283,6 @@ PUBLIC ForwardIm2Col::ForwardIm2Col( EasyCL *cl, LayerDimensions dim ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, "cl/ForwardIm2Col.cl" );
     // [[[end]]]
+    return kernelSource;
 }
 
