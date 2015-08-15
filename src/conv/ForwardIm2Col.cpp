@@ -83,9 +83,9 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward( int batchSize, CLWrapper *dataWrappe
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
-        long m = weight->size[0];
-        long n = columns->size[1];
-        long k = weight->size[1];
+        long m = dim.numFilters;
+        long n = dim.outputSizeSquared;
+        long k = dim.numFilters * dim.filterSizeSquared;
 
         // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
         cl_err err = clblasSgemm(
