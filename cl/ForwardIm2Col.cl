@@ -44,9 +44,9 @@ kernel void im2col(
 
 kernel void col2im(
     const int n,
-    global float const * col_data, int col_offset,
-    global float* data_im) {
-  global const float *data_col = col_data + col_offset;
+    global float const *data_col,
+    global float* im_data, int im_offset) {
+  global float *data_im = im_data + im_offset;
 
   CL_KERNEL_LOOP(index, n) {
     float val = 0;

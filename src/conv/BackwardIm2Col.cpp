@@ -60,13 +60,14 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
     int gradColumnsSize = dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
     float *gradColumns = new float[gradColumnsSize];
     CLWrapper *gradColumnsWrapper = cl->wrap(gradColumnsSize, gradColumns);
-//    cout << "columnsSize: " << columnsSize << endl;
-//    cout << "weightsize: " << weightsWrapper->size() << endl;
+    gradColumnsWrapper->createOnDevice();
+    cout << "gradColumnsSize: " << gradColumnsSize << endl;
+    cout << "weightsize: " << weightsWrapper->size() << endl;
 
     StatefulTimer::timeCheck("BackwardIm2Col::backward after alloc");
 
     for (int b = 0; b < batchSize; b ++) {
-//        cout << "b=" << b << " numkernels=" << numKernels << endl;
+        cout << "b=" << b << " numkernels=" << numKernels << endl;
         // Extract columns:
 
         // M,N,K are dims of matrix A and B
@@ -74,7 +75,7 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
         long m = dim.outputSizeSquared;
         long n = dim.numFilters;
         long k = dim.inputPlanes * dim.filterSizeSquared;
-//        cout << "m=" << m << " n=" << n << " k=" << k << endl;
+        cout << "m=" << m << " n=" << n << " k=" << k << endl;
 
         clblasOrder order = clblasColumnMajor;
         size_t lda = order == clblasRowMajor ? k : m;
@@ -91,6 +92,40 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
             gradColumnsWrapper->getBuffer(), 0, ldc,
             1, cl->queue, 0, NULL, 0
        );
+       if (err != CL_SUCCESS) {
+           throw runtime_error("clblasSgemm() failed with " + toString(err));
+       }
+
+//    long m = weight->size[1];
+//    long n = gradColumns->size[1];
+//    long k = weight->size[0];
+
+//    // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
+//    THClBlas_gemm(
+//        state,
+//        'n', 't',
+//        n, m, k,
+//        1,
+//        gradOutput_n, n,
+//        weight, m,
+//        0,
+//        gradColumns, n
+//    );
+
+       cl->finish();
+       gradOutputWrapper->copyToHost();
+       for( int i = 0; i < gradOutputWrapper->size(); i++ ) {
+           cout << "data[" << i << "]=" << reinterpret_cast<float *>(gradOutputWrapper->getHostArray())[i] << endl;
+       }
+       weightsWrapper->copyToHost();
+       for( int i = 0; i < weightsWrapper->size(); i++ ) {
+           cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
+       }
+       gradColumnsWrapper->copyToHost();
+       for( int i = 0; i < gradColumnsSize; i++ ) {
+           cout << "gradColumns[" << i << "]=" << reinterpret_cast<float *>(gradColumnsWrapper->getHostArray())[i] << endl;
+       }
+
 //    THClBlas_gemm(
 //        'n', 't',
 //        n, m, k,
@@ -100,10 +135,6 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
 //        0,
 //        gradColumns, n
 //    );
-        if (err != CL_SUCCESS) {
-            throw runtime_error("clblasSgemm() failed with " + toString(err));
-        }
-
         kernelCol2Im->in(numKernels);
         kernelCol2Im->in(gradColumnsWrapper);
         kernelCol2Im->out(gradInputWrapper);
@@ -114,18 +145,6 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
 
         kernelCol2Im->run_1d(numWorkgroups * workgroupSize, workgroupSize);
 
-//        dataWrapper->copyToHost();
-//        for( int i = 0; i < dataWrapper->size(); i++ ) {
-//            cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
-//        }
-//        columnsWrapper->copyToHost();
-//        for( int i = 0; i < columnsSize; i++ ) {
-//            cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
-//        }
-//        weightsWrapper->copyToHost();
-//        for( int i = 0; i < weightsWrapper->size(); i++ ) {
-//            cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
-//        }
 
 //        cl->finish();
 //        outputWrapper->copyToHost();
@@ -194,9 +213,9 @@ STATIC std::string BackwardIm2Col::getKernelTemplate() {
     "\n" 
     "kernel void col2im(\n" 
     "    const int n,\n" 
-    "    global float const * col_data, int col_offset,\n" 
-    "    global float* data_im) {\n" 
-    "  global const float *data_col = col_data + col_offset;\n" 
+    "    global float const *data_col,\n" 
+    "    global float* im_data, int im_offset) {\n" 
+    "  global float *data_im = im_data + im_offset;\n" 
     "\n" 
     "  CL_KERNEL_LOOP(index, n) {\n" 
     "    float val = 0;\n" 

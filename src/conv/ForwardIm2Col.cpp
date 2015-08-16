@@ -68,6 +68,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
     int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
     float *columns = new float[columnsSize];
     CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
+    columnsWrapper->createOnDevice();
 //    cout << "columnsSize: " << columnsSize << endl;
 //    cout << "weightsize: " << weightsWrapper->size() << endl;
 
@@ -195,9 +196,9 @@ STATIC std::string ForwardIm2Col::getKernelTemplate() {
     "\n" 
     "kernel void col2im(\n" 
     "    const int n,\n" 
-    "    global float const * col_data, int col_offset,\n" 
-    "    global float* data_im) {\n" 
-    "  global const float *data_col = col_data + col_offset;\n" 
+    "    global float const *data_col,\n" 
+    "    global float* im_data, int im_offset) {\n" 
+    "  global float *data_im = im_data + im_offset;\n" 
     "\n" 
     "  CL_KERNEL_LOOP(index, n) {\n" 
     "    float val = 0;\n" 
