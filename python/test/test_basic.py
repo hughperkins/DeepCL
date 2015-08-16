@@ -41,11 +41,11 @@ def test_buildnet():
         exceptionCalled = True
     assert exceptionCalled
 
-    assert 28 == net.getLayer(0).getOutputImageSize()
-    assert 28 == net.getLayer(1).getOutputImageSize()
-    assert 28 == net.getLayer(2).getOutputImageSize()
-    assert 14 == net.getLayer(3).getOutputImageSize()
-    assert 1 == net.getLayer(8).getOutputImageSize()
+    assert 28 == net.getLayer(0).getOutputSize()
+    assert 28 == net.getLayer(1).getOutputSize()
+    assert 28 == net.getLayer(2).getOutputSize()
+    assert 14 == net.getLayer(3).getOutputSize()
+    assert 1 == net.getLayer(8).getOutputSize()
 
 #    assert not net.getLayer(0).getBiased()
 #    assert net.getLayer(2).getBiased()

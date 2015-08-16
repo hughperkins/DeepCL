@@ -17,8 +17,8 @@ cdef class Layer:
         return self.thisptr.getOutputCubeSize()
     def getOutputPlanes(self):
         return self.thisptr.getOutputPlanes()
-    def getOutputImageSize(self):
-        return self.thisptr.getOutputImageSize()
+    def getOutputSize(self):
+        return self.thisptr.getOutputSize()
     def getOutput(self):
         # the underlying c++ method returns a pointer
         # to a block of memory that we dont own

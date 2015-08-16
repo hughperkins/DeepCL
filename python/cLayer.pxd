@@ -6,7 +6,7 @@ cdef extern from "layer/Layer.h":
         bool getBiased()
         int getOutputCubeSize()
         int getOutputPlanes()
-        int getOutputImageSize()
+        int getOutputSize()
         float * getOutput()
         int getOutputNumElements()
         int getPersistSize()

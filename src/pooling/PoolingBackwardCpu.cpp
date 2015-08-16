@@ -21,16 +21,16 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingBackwardCpu::PoolingBackwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingBackward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingBackwardCpu::PoolingBackwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
+        PoolingBackward( cl, padZeros, numPlanes, inputSize, poolingSize ) {
 }
 VIRTUAL void PoolingBackwardCpu::backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput ) {
     memset( gradInput, 0, sizeof( float ) * getInputNumElements( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
+            for( int outputRow = 0; outputRow < outputSize; outputRow++ ) {
                 int inputRow = outputRow * poolingSize;
-                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
+                for( int outputCol = 0; outputCol < outputSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
                     int outputIndex = getResultIndex( n, plane, outputRow, outputCol );
                     int selector = selectors[outputIndex];

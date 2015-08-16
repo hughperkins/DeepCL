@@ -656,7 +656,7 @@ void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
 TEST( SLOW_testbackward, perf_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputSize(19).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
 //    ActivationFunction *fn = new ReluActivation();
@@ -758,7 +758,7 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
 TEST( SLOW_testbackward, compare_kgsgo_32c5 ) {
     int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputImageSize(19).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputSize(19).setNumFilters( 32 ).setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
 //    ActivationFunction *fn = new ReluActivation();
@@ -770,7 +770,7 @@ TEST( SLOW_testbackward, compare_kgsgo_32c5 ) {
 TEST( SLOW_testbackward, compare_kgsgo_32c5mini ) {
     int batchSize = 4;
     LayerDimensions dim;
-    dim.setInputPlanes( 2 ).setInputImageSize(3).setNumFilters( 2 ).setFilterSize( 3 )
+    dim.setInputPlanes( 2 ).setInputSize(3).setNumFilters( 2 ).setFilterSize( 3 )
         .setPadZeros( true ).setBiased( true );  
     cout << dim.buildOptionsString() << endl;  
 //    ActivationFunction *fn = new ReluActivation();
@@ -783,7 +783,7 @@ TEST( SLOW_testbackward, compare_kgsgo_32c5mini2 ) {
     int batchSize = 1;
     int imageSize = 2;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputImageSize(imageSize).setNumFilters( 1 ).setFilterSize( imageSize )
+    dim.setInputPlanes( 1 ).setInputSize(imageSize).setNumFilters( 1 ).setFilterSize( imageSize )
         .setPadZeros( true ).setBiased( true );
     cout << dim.buildOptionsString() << endl;
 //    ActivationFunction *fn = new ReluActivation();
@@ -796,7 +796,7 @@ TEST( SLOW_testbackward, compare_kgsgo_32c5mini2 ) {
 float *test( int imageSize ) {
     const int batchSize = 128;
     LayerDimensions dim;
-    dim.setInputPlanes( 32 ).setInputImageSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+    dim.setInputPlanes( 32 ).setInputSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
         .setBiased( true ).setPadZeros( true );
 
     int weightsSize = dim.filtersSize;
@@ -855,10 +855,10 @@ float *test( int imageSize ) {
 
 //    const int batchSize = 128;
 //    LayerDimensions dim;
-//    dim.setInputPlanes( 32 ).setInputImageSize( 19 ).setNumFilters( 32 ).setFilterSize( 5 )
+//    dim.setInputPlanes( 32 ).setInputSize( 19 ).setNumFilters( 32 ).setFilterSize( 5 )
 //        .setBiased( true ).setPadZeros( true );    const int batchSize = 128;
 //    LayerDimensions dim;
-//    dim.setInputPlanes( 32 ).setInputImageSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
+//    dim.setInputPlanes( 32 ).setInputSize( 28 ).setNumFilters( 32 ).setFilterSize( 5 )
 //        .setBiased( true ).setPadZeros( true );
 
 //    int weightsSize = dim.filtersSize;
@@ -935,7 +935,7 @@ float *test( int imageSize ) {
 TEST( testbackward, comparespecific ) {
     const int batchSize = 5;
     LayerDimensions dim;
-    dim.setInputPlanes( 1 ).setInputImageSize( 5 ).setNumFilters( 1 ).setFilterSize( 3 )
+    dim.setInputPlanes( 1 ).setInputSize( 5 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( true ).setPadZeros( false );
 
     int weightsSize = dim.filtersSize;

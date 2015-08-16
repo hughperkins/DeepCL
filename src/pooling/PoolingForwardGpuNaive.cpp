@@ -31,7 +31,7 @@ VIRTUAL void PoolingForwardGpuNaive::forward( int batchSize, CLWrapper *inputWra
     StatefulTimer::instance()->timeCheck("PoolingForwardGpuNaive::forward start" );
 
     kernel->input( batchSize )->input( inputWrapper )->output( selectorsWrapper )->output( outputWrapper );
-    int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
+    int globalSize = batchSize * numPlanes * outputSize * outputSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //    cout << "PoolingForwardGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
@@ -39,17 +39,17 @@ VIRTUAL void PoolingForwardGpuNaive::forward( int batchSize, CLWrapper *inputWra
     cl->finish();
 
 //    cout << "PoolingForwardGpuNaive::forward selectorswrapper:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
+//    PrintBuffer::printInts( cl, selectorsWrapper, outputSize, outputSize );
 
     StatefulTimer::instance()->timeCheck("PoolingForwardGpuNaive::forward end" );
 }
-PoolingForwardGpuNaive::PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingForwardGpuNaive::PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
+        PoolingForward( cl, padZeros, numPlanes, inputSize, poolingSize ) {
     string options = "";
-    options += " -DgOutputImageSize=" + toString( outputImageSize );
-    options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
-    options += " -DgInputImageSize=" + toString( inputImageSize );
-    options += " -DgInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
+    options += " -DgOutputSize=" + toString( outputSize );
+    options += " -DgOutputSizeSquared=" + toString( outputSize * outputSize );
+    options += " -DgInputSize=" + toString( inputSize );
+    options += " -DgInputSizeSquared=" + toString( inputSize * inputSize );
     options += " -DgPoolingSize=" + toString( poolingSize );
     options += " -DgNumPlanes=" + toString( numPlanes );
 
@@ -71,11 +71,11 @@ PoolingForwardGpuNaive::PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int n
     "kernel void forwardNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
-    "    const int intraImageOffset = globalId % gOutputImageSizeSquared;\n" 
-    "    const int outputRow = intraImageOffset / gOutputImageSize;\n" 
-    "    const int outputCol = intraImageOffset % gOutputImageSize;\n" 
+    "    const int intraImageOffset = globalId % gOutputSizeSquared;\n" 
+    "    const int outputRow = intraImageOffset / gOutputSize;\n" 
+    "    const int outputCol = intraImageOffset % gOutputSize;\n" 
     "\n" 
-    "    const int image2dIdx = globalId / gOutputImageSizeSquared;\n" 
+    "    const int image2dIdx = globalId / gOutputSizeSquared;\n" 
     "    const int plane = image2dIdx % gNumPlanes;\n" 
     "    const int n = image2dIdx / gNumPlanes;\n" 
     "\n" 
@@ -85,15 +85,15 @@ PoolingForwardGpuNaive::PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int n
     "\n" 
     "    const int inputRow = outputRow * gPoolingSize;\n" 
     "    const int inputCol = outputCol * gPoolingSize;\n" 
-    "    const int inputImageOffset = ( n * gNumPlanes + plane ) * gInputImageSizeSquared;\n" 
+    "    const int inputImageOffset = ( n * gNumPlanes + plane ) * gInputSizeSquared;\n" 
     "    int selector = 0;\n" 
-    "    int poolInputOffset = inputImageOffset + inputRow * gInputImageSize + inputCol;\n" 
+    "    int poolInputOffset = inputImageOffset + inputRow * gInputSize + inputCol;\n" 
     "    float maxValue = input[ poolInputOffset ];\n" 
     "    for( int dRow = 0; dRow < gPoolingSize; dRow++ ) {\n" 
     "        for( int dCol = 0; dCol < gPoolingSize; dCol++ ) {\n" 
-    "            bool process = ( inputRow + dRow < gInputImageSize ) && ( inputCol + dCol < gInputImageSize );\n" 
+    "            bool process = ( inputRow + dRow < gInputSize ) && ( inputCol + dCol < gInputSize );\n" 
     "            if( process ) {\n" 
-    "                float thisValue = input[ poolInputOffset + dRow * gInputImageSize + dCol ];\n" 
+    "                float thisValue = input[ poolInputOffset + dRow * gInputSize + dCol ];\n" 
     "                if( thisValue > maxValue ) {\n" 
     "                    maxValue = thisValue;\n" 
     "                    selector = dRow * gPoolingSize + dCol;\n" 

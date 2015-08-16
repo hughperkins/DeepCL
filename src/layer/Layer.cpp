@@ -69,8 +69,8 @@ PUBLICAPI VIRTUAL int Layer::getOutputCubeSize() const {
 PUBLICAPI VIRTUAL int Layer::getOutputPlanes() const {
     throw std::runtime_error("getOutputPlanes not implemetned for " + getClassName() );
 }
-PUBLICAPI VIRTUAL int Layer::getOutputImageSize() const {
-    throw std::runtime_error("getOutputImageSize not implemetned for " + getClassName() );
+PUBLICAPI VIRTUAL int Layer::getOutputSize() const {
+    throw std::runtime_error("getOutputSize not implemetned for " + getClassName() );
 }
 VIRTUAL void Layer::forward() {
     throw std::runtime_error("forward not implemented for " + getClassName() );

@@ -42,7 +42,7 @@ public:
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
     VIRTUAL float calcLoss(float const *expectedValues );
     VIRTUAL float calcLossFromLabels(int const *labels );

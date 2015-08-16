@@ -20,30 +20,30 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingForward::PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingForward::PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
         cl( cl ),
         padZeros( padZeros ),
         numPlanes( numPlanes ),
-        inputImageSize( inputImageSize ),
+        inputSize( inputSize ),
         poolingSize( poolingSize ),
-        outputImageSize( padZeros ? ( inputImageSize + poolingSize - 1 ) / poolingSize : inputImageSize / poolingSize ) {
-//    if( inputImageSize % poolingSize != 0 ) {
-//        throw runtime_error("inputImageSize should be an exact multiple of poolingsize: " + toString( inputImageSize ) + " " + toString(poolingSize ) );
+        outputSize( padZeros ? ( inputSize + poolingSize - 1 ) / poolingSize : inputSize / poolingSize ) {
+//    if( inputSize % poolingSize != 0 ) {
+//        throw runtime_error("inputSize should be an exact multiple of poolingsize: " + toString( inputSize ) + " " + toString(poolingSize ) );
 //    }
 }
-STATIC PoolingForward *PoolingForward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
-    return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
-//    return new PoolingForwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+STATIC PoolingForward *PoolingForward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
+    return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
+//    return new PoolingForwardCpu( cl, padZeros, numPlanes, inputSize, poolingSize );
 }
-STATIC PoolingForward *PoolingForward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
-    return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+STATIC PoolingForward *PoolingForward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
+    return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
 }
-STATIC PoolingForward *PoolingForward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingForward *PoolingForward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
     if( idx == 0 ) {
-        return new PoolingForwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+        return new PoolingForwardCpu( cl, padZeros, numPlanes, inputSize, poolingSize );
     }
     if( idx == 1 ) {
-        return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+        return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
     }
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("PoolingForward::instanceSpecific idx not known: " + toString( idx ) );
@@ -67,10 +67,10 @@ VIRTUAL void PoolingForward::forward( int batchSize, float *input, int *selector
     delete inputWrapper;
 }
 VIRTUAL int PoolingForward::getInputNumElements( int batchSize ) {
-    return batchSize * numPlanes * inputImageSize * inputImageSize;
+    return batchSize * numPlanes * inputSize * inputSize;
 }
 VIRTUAL int PoolingForward::getOutputNumElements(int batchSize) {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 
 

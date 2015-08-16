@@ -85,8 +85,8 @@ public:
     inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * dim.numFilters + outPlane )
-            * dim.outputImageSize + outRow )
-            * dim.outputImageSize + outCol;
+            * dim.outputSize + outRow )
+            * dim.outputSize + outCol;
     }
     inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
         return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
@@ -128,7 +128,7 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     void randomizeWeights( WeightsInitializer *weightsInitializer );
     VIRTUAL void print();
     VIRTUAL void printWeights();

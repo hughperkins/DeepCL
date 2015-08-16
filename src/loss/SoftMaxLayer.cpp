@@ -19,9 +19,9 @@ using namespace std;
 SoftMaxLayer::SoftMaxLayer( Layer *previousLayer, SoftMaxMaker *maker ) :
     LossLayer( previousLayer, maker ),
         perPlane( maker->_perPlane ),
-        imageSize( previousLayer->getOutputImageSize() ),
+        imageSize( previousLayer->getOutputSize() ),
         numPlanes( previousLayer->getOutputPlanes() ),
-        imageSizeSquared( previousLayer->getOutputImageSize() * previousLayer->getOutputImageSize() ),
+        imageSizeSquared( previousLayer->getOutputSize() * previousLayer->getOutputSize() ),
         output( 0 ),
         gradInput( 0 ),
         allocatedSize( 0 ),

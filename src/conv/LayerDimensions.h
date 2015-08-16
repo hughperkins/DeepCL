@@ -11,7 +11,7 @@ inline int square( int value ) {
 
 class DeepCL_EXPORT LayerDimensions {
 public:
-    int inputPlanes, inputImageSize, numFilters, filterSize, outputImageSize;
+    int inputPlanes, inputSize, numFilters, filterSize, outputSize;
     bool padZeros, isEven;
     bool biased;
     int skip;
@@ -21,20 +21,20 @@ public:
     int outputCubeSize;
     int numInputPlanes;
 
-    int outputImageSizeSquared;
+    int outputSizeSquared;
     int filterSizeSquared;
-    int inputImageSizeSquared;
+    int inputSizeSquared;
 
     int halfFilterSize;
 
     LayerDimensions() {
         memset( this, 0, sizeof( LayerDimensions ) );
     }
-    LayerDimensions( int inputPlanes, int inputImageSize, 
+    LayerDimensions( int inputPlanes, int inputSize, 
                 int numFilters, int filterSize, 
                 bool padZeros, bool biased ) :
             inputPlanes( inputPlanes ),
-            inputImageSize( inputImageSize ),
+            inputSize( inputSize ),
             numFilters( numFilters ),
             filterSize( filterSize ),
             padZeros( padZeros ),
@@ -42,8 +42,8 @@ public:
         {
         skip = 0;
         deriveOthers();
-//        std::cout << "outputImageSize " << outputImageSize << " padZeros " << padZeros << " filtersize "
-//            << filterSize << " inputImageSize " << inputImageSize << std::endl;
+//        std::cout << "outputSize " << outputSize << " padZeros " << padZeros << " filtersize "
+//            << filterSize << " inputSize " << inputSize << std::endl;
     }
     LayerDimensions &setInputPlanes( int _planes ) {
         this->inputPlanes = _planes;
@@ -55,8 +55,8 @@ public:
         deriveOthers();
         return *this;
     }
-    LayerDimensions &setInputImageSize( int inputImageSize ) {
-        this->inputImageSize = inputImageSize;
+    LayerDimensions &setInputSize( int inputSize ) {
+        this->inputSize = inputSize;
         deriveOthers();
         return *this;
     }

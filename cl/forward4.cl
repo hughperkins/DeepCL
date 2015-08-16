@@ -14,7 +14,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
     }
 }
 
-#ifdef gOutputImageSize // for previous tests that dont define it
+#ifdef gOutputSize // for previous tests that dont define it
 // workgroup id organized like: [n][filterid]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [upstreamplane][filterrow][filtercol]
@@ -43,7 +43,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
 //     basically, it's a hack, so larger images actually run, without
 //     crashing, and we can probably improve it a lot :-)
 //
-// So, when outputImageSize * outputImageSize > workgroupSize, then
+// So, when outputSize * outputSize > workgroupSize, then
 // multiple workgroups will be created for each output plane
 // the number of such workgroups is given by: `gPixelsPerThread`
 // the id of our workgroup within such a set of workgroups is calculated
@@ -65,17 +65,17 @@ void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
     const int n = effectiveWorkgroupId / gNumFilters;
     const int outPlane = effectiveWorkgroupId % gNumFilters;
 
-    const int outputRow = effectiveLocalId / gOutputImageSize;
-    const int outputCol = effectiveLocalId % gOutputImageSize;
+    const int outputRow = effectiveLocalId / gOutputSize;
+    const int outputCol = effectiveLocalId % gOutputSize;
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );
+        copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared, gInputSizeSquared );
         copyLocal( _filterPlane, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
 
-        if( effectiveLocalId < gOutputImageSizeSquared ) {
+        if( effectiveLocalId < gOutputSizeSquared ) {
             for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
                 // trying to reduce register pressure...
                 #if gPadZeros == 1
@@ -83,16 +83,16 @@ void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
                 #else
                     #define inputRow ( outputRow + u + gHalfFilterSize )
                 #endif
-                int inputimagerowoffset = inputRow * gInputImageSize;
+                int inputimagerowoffset = inputRow * gInputSize;
                 int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-                bool rowOk = inputRow >= 0 && inputRow < gInputImageSize;
+                bool rowOk = inputRow >= 0 && inputRow < gInputSize;
                 for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
                     #if gPadZeros == 1
                         #define inputCol ( outputCol + v )
                     #else
                         #define inputCol ( outputCol + v + gHalfFilterSize )
                     #endif
-                    bool process = rowOk && inputCol >= 0 && inputCol < gInputImageSize;
+                    bool process = rowOk && inputCol >= 0 && inputCol < gInputSize;
                     if( process ) {
                             sum += _inputPlane[ inputimagerowoffset + inputCol] * _filterPlane[ filterrowoffset + v ];
                     }
@@ -101,8 +101,8 @@ void kernel forward_4_by_n_outplane_smallercache( const int batchSize,
         }
     }
     // output are organized like [imageid][filterid][row][col]
-    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + effectiveLocalId )
-    if( effectiveLocalId < gOutputImageSizeSquared ) {
+    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputSizeSquared + effectiveLocalId )
+    if( effectiveLocalId < gOutputSizeSquared ) {
         output[resultIndex ] = sum;
     }
 }

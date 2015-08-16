@@ -20,23 +20,23 @@ public:
     EasyCL *cl;
 
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
     ActivationFunction const *fn;
 
-    const int outputImageSize;
+    const int outputSize;
 
     virtual ~ActivationBackward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * inputImageSize + row )
-            * inputImageSize + col;
+            * inputSize + row )
+            * inputSize + col;
     }
     inline int getResultIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * outputImageSize + row )
-            * outputImageSize + col;
+            * outputSize + row )
+            * outputSize + col;
     }
 
     // [[[cog
@@ -44,10 +44,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC ActivationBackward *instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    STATIC ActivationBackward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn);
-    STATIC ActivationBackward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    ActivationBackward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    STATIC ActivationBackward *instance( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
+    STATIC ActivationBackward *instanceForTest( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
+    ActivationBackward( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
     VIRTUAL int getInputNumElements( int batchSize );
     VIRTUAL int getOutputNumElements(int batchSize);
     VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );

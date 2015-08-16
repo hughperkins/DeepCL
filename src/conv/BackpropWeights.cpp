@@ -30,11 +30,11 @@ BackpropWeights::BackpropWeights( EasyCL *cl, LayerDimensions layerDimensions ) 
         debug( false ) {
 }
 STATIC BackpropWeights *BackpropWeights::instance(EasyCL *cl, LayerDimensions dim ) {
-    if( dim.inputImageSize - dim.filterSize < 4 ) {
+    if( dim.inputSize - dim.filterSize < 4 ) {
         return new BackpropWeightsNaive( cl, dim );
     }
     if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() 
-            && dim.inputImageSize <= 32 ) { // if inputimagesize too big, we run out of local memory
+            && dim.inputSize <= 32 ) { // if inputimagesize too big, we run out of local memory
         return new BackpropWeightsScratch( cl, dim );
     } else if( square( dim.filterSize ) <= cl->getMaxWorkgroupSize() ) {
         return new BackpropWeightsScratchLarge( cl, dim );
@@ -64,7 +64,7 @@ STATIC BackpropWeights *BackpropWeights::instanceSpecific( int idx, EasyCL *cl, 
 VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBias ) {
     StatefulTimer::timeCheck("BackpropWeights::backprop begin");
 
-//    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
+//    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputSize * dim.outputSize );
 
     int outputNumElements = batchSize * dim.outputCubeSize;
     CLWrapper *gradOutputWrapper = cl->wrap( outputNumElements, gradOutput );
@@ -103,7 +103,7 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput,
 }
 
 float BackpropWeights::learningRateToMultiplier( int batchSize ) {
-//        float multiplier = rate / batchSize / sqrt( dim.outputImageSize );
+//        float multiplier = rate / batchSize / sqrt( dim.outputSize );
 //    float multiplier = rate;
 //    std::cout << "rate " << rate << " multiplier " << multiplier << std::endl;
     return 1.0f;

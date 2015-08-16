@@ -35,15 +35,15 @@ STATIC Forward *Forward::instance(EasyCL *cl, LayerDimensions dim ) {
     return new ForwardAuto( cl, dim );
 //    return new ForwardByInputPlane( cl, dim );
 
-//    if( dim.filterSize == dim.inputImageSize && dim.padZeros == false && dim.numFilters >= 64
+//    if( dim.filterSize == dim.inputSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {
 //        return new ForwardFc( cl, dim );
 //    } else {
 //    }
-//    if( dim.filterSize == dim.inputImageSize && dim.padZeros == false && dim.numFilters >= 64
+//    if( dim.filterSize == dim.inputSize && dim.padZeros == false && dim.numFilters >= 64
 //        && dim.filterSize >= 11 ) {
 //        return new ForwardFc( cl, dim );
-//    } else if( square( dim.outputImageSize ) < 32 || square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
+//    } else if( square( dim.outputSize ) < 32 || square( dim.outputSize ) > cl->getMaxWorkgroupSize() ) {
 //        return new Forward1( cl, dim );
 //    } else {
 //        return new Forward3( cl, dim );

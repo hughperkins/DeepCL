@@ -208,25 +208,25 @@ void kernel convolve_imagecubes_float(
 
 void kernel convolve_imagecubes_float_nopadzeros( 
       const int numInputPlanes, const int numFilters, 
-      const int inputImageSize, const int filterSize,
+      const int inputSize, const int filterSize,
       global const float *images, global const float *filters, global float *output ) {
     int globalId = get_global_id(0);
 
-    int inputImageSizeSquared = inputImageSize * inputImageSize;
-    int outputImageSize = inputImageSize - filterSize + 1;
-    int outputImageSizeSquared = outputImageSize * outputImageSize;
+    int inputSizeSquared = inputSize * inputSize;
+    int outputSize = inputSize - filterSize + 1;
+    int outputSizeSquared = outputSize * outputSize;
 
-    int outputImage2Id = globalId / outputImageSizeSquared;
+    int outputImage2Id = globalId / outputSizeSquared;
     int filterId = outputImage2Id % numFilters;
     int inputImage3Id = outputImage2Id / numFilters;
 
     int filterOffset = filterId * filterSize * filterSize;
-    int inputImage3Offset = inputImage3Id * numInputPlanes * inputImageSizeSquared;
+    int inputImage3Offset = inputImage3Id * numInputPlanes * inputSizeSquared;
 
     // intraimage coords
-    int localid = globalId % outputImageSizeSquared;
-    int outputRow = localid / outputImageSize;
-    int outputCol = localid % outputImageSize;
+    int localid = globalId % outputSizeSquared;
+    int outputRow = localid / outputSize;
+    int outputCol = localid % outputSize;
 
     int halfFilterSize = filterSize >> 1;
     float sum = 0;
@@ -236,11 +236,11 @@ void kernel convolve_imagecubes_float_nopadzeros(
     int maxn = halfFilterSize;
     int inputPlane = 0;
     while( inputPlane < numInputPlanes ) {
-        int inputImageOffset = inputImage3Offset + inputPlane * inputImageSizeSquared;
+        int inputImageOffset = inputImage3Offset + inputPlane * inputSizeSquared;
         int m = minm;
         while( m <= maxm ) {
             int inputRow = outputRow + m + halfFilterSize;
-            int inputimagerowoffset = inputImageOffset + inputRow * inputImageSize;
+            int inputimagerowoffset = inputImageOffset + inputRow * inputSize;
             int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
             while( n <= maxn ) {

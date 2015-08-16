@@ -48,7 +48,7 @@ public:
 //public:
 //    Layer *previousLayer;
 //    NeuralNet *net; // only used for 'insert'
-//    virtual int getOutputImageSize() const = 0;
+//    virtual int getOutputSize() const = 0;
 //    virtual int getOutputPlanes() const = 0;
 //    virtual int getBiased() const = 0;
 //    virtual ActivationFunction const*getActivationFunction() const {

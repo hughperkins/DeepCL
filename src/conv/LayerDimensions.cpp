@@ -10,10 +10,10 @@ using namespace std;
 ostream &operator<<( ostream &os, const LayerDimensions &dim ) {
     os << "LayerDimensions{";
     os << " inputPlanes=" << dim.inputPlanes;
-    os << " inputImageSize=" << dim.inputImageSize;
+    os << " inputSize=" << dim.inputSize;
     os << " numFilters=" << dim.numFilters;
     os << " filterSize=" << dim.filterSize;
-    os << " outputImageSize=" << dim.outputImageSize;
+    os << " outputSize=" << dim.outputSize;
     os << " padZeros=" << dim.padZeros;
     os << " biased=" << dim.biased;
     os << " skip=" << dim.skip;
@@ -24,17 +24,17 @@ ostream &operator<<( ostream &os, const LayerDimensions &dim ) {
 void LayerDimensions::deriveOthers() {
     this->numInputPlanes = inputPlanes;
     this->isEven = filterSize % 2 == 0;
-    this->outputImageSize = padZeros ? 
-            ( filterSize % 2 == 0 ? inputImageSize / ( skip + 1 ) + 1 : inputImageSize / ( skip + 1 ) ) :
-            ( inputImageSize - filterSize ) / ( skip + 1 ) + 1;
+    this->outputSize = padZeros ? 
+            ( filterSize % 2 == 0 ? inputSize / ( skip + 1 ) + 1 : inputSize / ( skip + 1 ) ) :
+            ( inputSize - filterSize ) / ( skip + 1 ) + 1;
 
-    this->inputImageSizeSquared = inputImageSize * inputImageSize;
+    this->inputSizeSquared = inputSize * inputSize;
     this->filterSizeSquared = filterSize * filterSize;
-    this->outputImageSizeSquared = outputImageSize * outputImageSize;
+    this->outputSizeSquared = outputSize * outputSize;
 
-    this->inputCubeSize = inputPlanes * inputImageSizeSquared;
+    this->inputCubeSize = inputPlanes * inputSizeSquared;
     this->filtersSize = inputPlanes * numFilters * filterSizeSquared;
-    this->outputCubeSize = numFilters * outputImageSizeSquared;
+    this->outputCubeSize = numFilters * outputSizeSquared;
 
     this->halfFilterSize = filterSize >> 1;
 //    cout << "deriveOthers()" << *this << endl;
@@ -47,16 +47,16 @@ string LayerDimensions::buildOptionsString() {
     }
     options += " -D gNumInputPlanes=" + toString(inputPlanes);
     options += " -D gInputPlanes=" + toString(inputPlanes);
-    options += " -D gInputImageSize=" + toString(inputImageSize);
-    options += " -D gInputImageSizeSquared=" + toString(square(inputImageSize));
+    options += " -D gInputSize=" + toString(inputSize);
+    options += " -D gInputSizeSquared=" + toString(square(inputSize));
     options += " -D gNumFilters=" + toString(numFilters);
     options += " -D gFilterSize=" + toString(filterSize);
     options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
     options += " -D gFilterSizeSquared=" + toString(square(filterSize));
     options += " -D gNumOutputPlanes=" + toString(numFilters);
     options += " -D gOutputPlanes=" + toString(numFilters);
-    options += " -D gOutputImageSize=" + toString(outputImageSize);
-    options += " -D gOutputImageSizeSquared=" + toString(square(outputImageSize));
+    options += " -D gOutputSize=" + toString(outputSize);
+    options += " -D gOutputSizeSquared=" + toString(square(outputSize));
     options += " -D gPadZeros=" + toString(padZeros ? 1 : 0);
     options += " -D gMargin=" + toString(padZeros ? filterSize >> 1 : 0);
     options += " -D gEven=" + toString(filterSize % 2 == 0 ? 1 : 0);

@@ -33,7 +33,7 @@ VIRTUAL float MultinomialCrossEntropy::calcLoss( float const *expected ) {
 //    cout << "MultinomialCrossEntropy::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
-    int imageSize = previousLayer->getOutputImageSize();
+    int imageSize = previousLayer->getOutputSize();
     for( int imageId = 0; imageId < batchSize; imageId++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outRow = 0; outRow < imageSize; outRow++ ) {

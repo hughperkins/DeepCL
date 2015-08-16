@@ -20,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingForwardCpu::PoolingForwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingForwardCpu::PoolingForwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
+        PoolingForward( cl, padZeros, numPlanes, inputSize, poolingSize ) {
 }
 VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
 //    cout << "PoolingForwardCpu::forward( CLWrapper * )" << endl;
@@ -52,15 +52,15 @@ VIRTUAL void PoolingForwardCpu::forward( int batchSize, float *input, int *selec
     StatefulTimer::instance()->timeCheck("PoolingForwardCpu::forward start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
+            for( int outputRow = 0; outputRow < outputSize; outputRow++ ) {
                 int inputRow = outputRow * poolingSize;
-                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
+                for( int outputCol = 0; outputCol < outputSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
                     int selector = 0;
                     float maxValue = input[ getInputIndex( n, plane, inputRow, inputCol ) ];
                     for( int dx = 0; dx < poolingSize; dx++ ) {
                         for( int dy = 0; dy < poolingSize; dy++ ) {
-                            if( inputRow + dx < inputImageSize && inputCol + dy < inputImageSize ) {
+                            if( inputRow + dx < inputSize && inputCol + dy < inputSize ) {
                                 float thisValue = input[ getInputIndex( n, plane, inputRow + dx, inputCol + dy ) ];
                                 if( thisValue > maxValue ) {
                                     maxValue = thisValue;

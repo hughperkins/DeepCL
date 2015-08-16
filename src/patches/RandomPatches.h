@@ -21,9 +21,9 @@ class RandomPatches : public Layer {
 public:
     const int patchSize;
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
 
-    const int outputImageSize;
+    const int outputSize;
 
     float *output;
 
@@ -43,7 +43,7 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputNumElements() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL bool providesGradInputWrapper() const;

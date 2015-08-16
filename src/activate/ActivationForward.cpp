@@ -20,26 +20,26 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationForward::ActivationForward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
+ActivationForward::ActivationForward( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn ) :
         cl( cl ),
         numPlanes( numPlanes ),
-        inputImageSize( inputImageSize ),
-        outputImageSize( inputImageSize ),
+        inputSize( inputSize ),
+        outputSize( inputSize ),
         fn(fn) {
 }
-STATIC ActivationForward *ActivationForward::instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
-    return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
-//    return new ActivationForwardCpu( cl, numPlanes, inputImageSize );
+STATIC ActivationForward *ActivationForward::instance( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn ) {
+    return new ActivationForwardGpuNaive( cl, numPlanes, inputSize, fn );
+//    return new ActivationForwardCpu( cl, numPlanes, inputSize );
 }
-STATIC ActivationForward *ActivationForward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
-    return new ActivationForwardCpu( cl, numPlanes, inputImageSize, fn );
+STATIC ActivationForward *ActivationForward::instanceForTest( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn ) {
+    return new ActivationForwardCpu( cl, numPlanes, inputSize, fn );
 }
-STATIC ActivationForward *ActivationForward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) {
+STATIC ActivationForward *ActivationForward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn ) {
     if( idx == 0 ) {
-        return new ActivationForwardCpu( cl, numPlanes, inputImageSize, fn );
+        return new ActivationForwardCpu( cl, numPlanes, inputSize, fn );
     }
     if( idx == 1 ) {
-        return new ActivationForwardGpuNaive( cl, numPlanes, inputImageSize, fn );
+        return new ActivationForwardGpuNaive( cl, numPlanes, inputSize, fn );
     }
     cout << "idx " << idx << " not known" << endl;
     throw runtime_error("ActivationForward::instanceSpecific idx not known: " + toString( idx ) );
@@ -61,9 +61,9 @@ VIRTUAL void ActivationForward::forward( int batchSize, float *input, float *out
     delete inputWrapper;
 }
 VIRTUAL int ActivationForward::getInputNumElements( int batchSize ) {
-    return batchSize * numPlanes * inputImageSize * inputImageSize;
+    return batchSize * numPlanes * inputSize * inputSize;
 }
 VIRTUAL int ActivationForward::getOutputNumElements(int batchSize) {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 

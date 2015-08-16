@@ -70,11 +70,11 @@ kernel void reduce_inputplanes( const int batchSize, global float const *output2
 // this kernel assumes:
 //   padzeros == 0 (mandatory)
 //   filtersize == inputimagesize (mandatory)
-//   outputImageSize == 1
+//   outputSize == 1
 //   lots of outplanes, hundreds, but less than max work groupsize, eg 350, 500, 361
 //   lots of inplanes, eg 32
 //   inputimagesize around 19, not too small
-#if gFilterSize == gInputImageSize && gPadZeros == 0
+#if gFilterSize == gInputSize && gPadZeros == 0
 void kernel forward_filter_matches_inimage( const int batchSize,
       global const float *images, global const float *filters, 
         #ifdef BIASED

@@ -106,7 +106,7 @@ TEST( testactivationbackward, basic_2plane_batchsize2 ) {
 }
 
 TEST( SLOW_testactivationbackward, compare_args ) {
-    int inputImageSize = 9;
+    int inputSize = 9;
     std::string activation = "relu";
     int instance0 = 0;
     int instance1 = 1;
@@ -118,22 +118,22 @@ TEST( SLOW_testactivationbackward, compare_args ) {
     TestArgsParser::arg( "activation", &activation );
 //    TestArgsParser::arg( "activationsize", &activationSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
-    TestArgsParser::arg( "inputimagesize", &inputImageSize );
+    TestArgsParser::arg( "inputimagesize", &inputSize );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    int outputImageSize = p1->outputImageSize;
-    int gradOutputNumElements = batchSize * outputImageSize * outputImageSize * numPlanes;
+    ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
+    ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
+    int outputSize = p1->outputSize;
+    int gradOutputNumElements = batchSize * outputSize * outputSize * numPlanes;
     float *gradOutput = new float[ gradOutputNumElements ];
-    int inputNumElements = batchSize * inputImageSize * inputImageSize * numPlanes;
+    int inputNumElements = batchSize * inputSize * inputSize * numPlanes;
     float *gradInput0 = new float[ inputNumElements ];
     float *gradInput1 = new float[ inputNumElements ];
     
-    ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
+    ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
     float *output = new float[gradOutputNumElements];
     float *input = new float[inputNumElements];
     float *gradInput[2];

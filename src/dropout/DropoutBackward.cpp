@@ -23,37 +23,37 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC DropoutBackward *DropoutBackward::instance( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
-    return new DropoutBackwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+STATIC DropoutBackward *DropoutBackward::instance( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) {
+    return new DropoutBackwardGpuNaive( cl, numPlanes, inputSize, dropRatio );
 }
-STATIC DropoutBackward *DropoutBackward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio) {
-    return new DropoutBackwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+STATIC DropoutBackward *DropoutBackward::instanceForTest( EasyCL *cl, int numPlanes, int inputSize, float dropRatio) {
+    return new DropoutBackwardGpuNaive( cl, numPlanes, inputSize, dropRatio );
 }
-STATIC DropoutBackward *DropoutBackward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) {
+STATIC DropoutBackward *DropoutBackward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) {
     if( idx == 0 ) {
-        return new DropoutBackwardCpu( cl, numPlanes, inputImageSize, dropRatio );
+        return new DropoutBackwardCpu( cl, numPlanes, inputSize, dropRatio );
     }
     if( idx == 1 ) {
-        return new DropoutBackwardGpuNaive( cl, numPlanes, inputImageSize, dropRatio );
+        return new DropoutBackwardGpuNaive( cl, numPlanes, inputSize, dropRatio );
     }
     throw runtime_error("DropoutBackward::instanceSpecific, idx not known: " + toString( idx ) );
 }
-DropoutBackward::DropoutBackward( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
+DropoutBackward::DropoutBackward( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) :
         cl( cl ),
         numPlanes( numPlanes ),
-        inputImageSize( inputImageSize ),
+        inputSize( inputSize ),
         dropRatio( dropRatio ),
 //        dropoutSizeSquared( dropoutSize * dropoutSize ),
-        outputImageSize( inputImageSize ) {
-//    if( inputImageSize % dropoutSize != 0 ) {
-//        throw runtime_error("inputImageSize should be an exact multiple of dropoutsize: " + toString( inputImageSize ) + " " + toString(dropoutSize ) );
+        outputSize( inputSize ) {
+//    if( inputSize % dropoutSize != 0 ) {
+//        throw runtime_error("inputSize should be an exact multiple of dropoutsize: " + toString( inputSize ) + " " + toString(dropoutSize ) );
 //    }
 }
 VIRTUAL int DropoutBackward::getInputNumElements( int batchSize ) {
-    return batchSize * numPlanes * inputImageSize * inputImageSize;
+    return batchSize * numPlanes * inputSize * inputSize;
 }
 VIRTUAL int DropoutBackward::getOutputNumElements(int batchSize) {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL void DropoutBackward::backward( int batchSize, uchar *mask, float *gradOutput, float *gradInput ) {
 //    cout << "DropoutBackward::backward( float * )" << endl;

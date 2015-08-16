@@ -22,7 +22,7 @@ public:
     int allocatedSize;
 
     const int outputPlanes;
-    const int outputImageSize;
+    const int outputSize;
 
     float const*input; // we dont own this
     float *output; // we own this :-)
@@ -30,8 +30,8 @@ public:
     inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
         return ( ( n
             * outputPlanes + outPlane )
-            * outputImageSize + outRow )
-            * outputImageSize + outCol;
+            * outputSize + outRow )
+            * outputSize + outCol;
     }
     inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
         return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
@@ -55,7 +55,7 @@ public:
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL void forward();
     VIRTUAL void backward( float learningRate, float const *gradOutput );
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputNumElements() const;

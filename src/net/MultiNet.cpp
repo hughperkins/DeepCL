@@ -33,7 +33,7 @@ MultiNet::MultiNet( int numNets, NeuralNet *model ) :
     }
     InputLayerMaker *inputLayerMaker = InputLayerMaker::instance();
     inputLayerMaker->numPlanes( trainables[0]->getOutputPlanes() );
-    inputLayerMaker->imageSize( trainables[0]->getOutputImageSize() );
+    inputLayerMaker->imageSize( trainables[0]->getOutputSize() );
     proxyInputLayer = new InputLayer( inputLayerMaker );
     lossLayer = dynamic_cast< LossLayer *>( trainables[0]->cloneLossLayerMaker()->createLayer(proxyInputLayer) );
 }
@@ -63,8 +63,8 @@ VIRTUAL int MultiNet::getOutputNumElements() const {
 VIRTUAL int MultiNet::getOutputPlanes() const {
     return trainables[0]->getOutputPlanes();
 }
-VIRTUAL int MultiNet::getOutputImageSize() const {
-    return trainables[0]->getOutputImageSize();
+VIRTUAL int MultiNet::getOutputSize() const {
+    return trainables[0]->getOutputSize();
 }
 VIRTUAL LossLayerMaker *MultiNet::cloneLossLayerMaker() const {
     throw runtime_error("need to implement MultiNet::cloneLossLayerMaker :-)" );

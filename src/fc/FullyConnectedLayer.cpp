@@ -23,7 +23,7 @@ FullyConnectedLayer::FullyConnectedLayer( EasyCL *cl, Layer *previousLayer, Full
         batchSize(0) {
     ConvolutionalMaker *convolutionalMaker = new ConvolutionalMaker();
     convolutionalMaker->numFilters( numPlanes * imageSize * imageSize )
-                      ->filterSize( previousLayer->getOutputImageSize() )
+                      ->filterSize( previousLayer->getOutputSize() )
                         ->biased( maker->_biased )
                         ->weightsInitializer( maker->_weightsInitializer );
     convolutionalLayer = new ConvolutionalLayer( cl, previousLayer, convolutionalMaker );
@@ -45,7 +45,7 @@ VIRTUAL void FullyConnectedLayer::setBatchSize( int batchSize ) {
 VIRTUAL int FullyConnectedLayer::getOutputCubeSize() const {
     return numPlanes * imageSize * imageSize;
 }
-VIRTUAL int FullyConnectedLayer::getOutputImageSize() const {
+VIRTUAL int FullyConnectedLayer::getOutputSize() const {
     return imageSize;
 }
 VIRTUAL int FullyConnectedLayer::getOutputPlanes() const {

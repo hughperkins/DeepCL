@@ -31,11 +31,11 @@ VIRTUAL void BackwardGpuCached::backward( int batchSize,
         ->in( gradOutputWrapper )
        ->in( weightsWrapper )
         ->out( gradInputWrapper )
-        ->localFloats( square( dim.outputImageSize ) )
+        ->localFloats( square( dim.outputSize ) )
         ->localFloats( square( dim.filterSize ) );
 
     int numWorkgroups = batchSize * dim.inputPlanes;
-    int workgroupSize = square( dim.inputImageSize );
+    int workgroupSize = square( dim.inputSize );
     workgroupSize = std::max( 32, workgroupSize ); // no point in wasting cores...
     int globalSize = numWorkgroups * workgroupSize;
 
@@ -102,7 +102,7 @@ BackwardGpuCached::BackwardGpuCached( EasyCL *cl, LayerDimensions dim ) :
     "// localid: [upstreamrow][upstreamcol]\n" 
     "// per-thread aggregation: [outPlane][filterRow][filterCol]\n" 
     "// need to store locally:\n" 
-    "// - _gradOutputPlane. size = outputImageSizeSquared\n" 
+    "// - _gradOutputPlane. size = outputSizeSquared\n" 
     "// - _filterPlane. size = filtersizesquared\n" 
     "// note: currently doesnt use bias as input.  thats probably an error?\n" 
     "// inputs: gradOutput :convolve: filters => gradInput\n" 
@@ -130,30 +130,30 @@ BackwardGpuCached::BackwardGpuCached( EasyCL *cl, LayerDimensions dim ) :
     "    const int n = workgroupId / gInputPlanes;\n" 
     "    const int upstreamPlane = workgroupId % gInputPlanes;\n" 
     "\n" 
-    "    const int upstreamRow = localId / gInputImageSize;\n" 
-    "    const int upstreamCol = localId % gInputImageSize;\n" 
+    "    const int upstreamRow = localId / gInputSize;\n" 
+    "    const int upstreamCol = localId % gInputSize;\n" 
     "\n" 
     "    float sumWeightTimesOutError = 0;\n" 
     "    for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        copyLocal( _filterPlane, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );\n" 
-    "        copyLocal( _gradOutputPlane, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );\n" 
+    "        copyLocal( _gradOutputPlane, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputSizeSquared, gOutputSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {\n" 
     "            int outRow = upstreamRow + gMargin - filterRow;\n" 
     "            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {\n" 
     "                int outCol = upstreamCol + gMargin - filterCol;\n" 
-    "                if( outCol >= 0 && outCol < gOutputImageSize && outRow >= 0 && outRow < gOutputImageSize ) {\n" 
+    "                if( outCol >= 0 && outCol < gOutputSize && outRow >= 0 && outRow < gOutputSize ) {\n" 
     "                    float thisWeightTimesError =\n" 
-    "                        _gradOutputPlane[outRow * gOutputImageSize + outCol] *\n" 
+    "                        _gradOutputPlane[outRow * gOutputSize + outCol] *\n" 
     "                        _filterPlane[filterRow * gFilterSize + filterCol];\n" 
     "                    sumWeightTimesOutError += thisWeightTimesError;\n" 
     "                }\n" 
     "            }\n" 
     "        }\n" 
     "    }\n" 
-    "    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
-    "    if( localId < gInputImageSizeSquared ) {\n" 
+    "    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;\n" 
+    "    if( localId < gInputSizeSquared ) {\n" 
     "        gradInput[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;\n" 
     "    }\n" 
     "}\n" 

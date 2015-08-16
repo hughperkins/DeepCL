@@ -29,7 +29,7 @@ VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *
     int globalSize = workgroupsize * numWorkgroups;
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 
-    int localMemRequiredKB = ( square( dim.outputImageSize ) * 4 + square( dim.inputImageSize ) * 4 ) / 1024 + 1;
+    int localMemRequiredKB = ( square( dim.outputSize ) * 4 + square( dim.inputSize ) * 4 ) / 1024 + 1;
     if( localMemRequiredKB >= cl->getLocalMemorySizeKB() ) {
         throw runtime_error( "local memory too small to use this kernel on this device.  Need: " + 
             toString( localMemRequiredKB ) + "KB, but only have: " + 
@@ -48,8 +48,8 @@ VIRTUAL void BackpropWeightsScratch::calcGradWeights( int batchSize, CLWrapper *
         kernel->inout( gradBiasWrapper );
     }
     kernel
-        ->localFloats( square( dim.outputImageSize ) )
-        ->localFloats( square( dim.inputImageSize ) );
+        ->localFloats( square( dim.outputSize ) )
+        ->localFloats( square( dim.inputSize ) );
 
     kernel->run_1d(globalSize, workgroupsize);
 
@@ -122,8 +122,8 @@ BackpropWeightsScratch::BackpropWeightsScratch( EasyCL *cl, LayerDimensions dim 
     "// workgroupId: [outputPlane][inputPlane]\n" 
     "// localId: [filterRow][filterCol]\n" 
     "// per-thread iteration: [n][outputRow][outputCol]\n" 
-    "// local: errorimage: outputImageSize * outputImageSize\n" 
-    "//        imageimage: inputImageSize * inputImageSize\n" 
+    "// local: errorimage: outputSize * outputSize\n" 
+    "//        imageimage: inputSize * inputSize\n" 
     "void kernel backprop_floats_withscratch_dobias(\n" 
     "        const float learningRateMultiplier, const int batchSize,\n" 
     "         global const float *gradOutput, global const float *images,\n" 
@@ -147,22 +147,22 @@ BackpropWeightsScratch::BackpropWeightsScratch( EasyCL *cl, LayerDimensions dim 
     "#endif\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _imageImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared, gInputImageSizeSquared );\n" 
-    "        copyLocal(_errorImage, gradOutput + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );\n" 
+    "        copyLocal( _imageImage, images + ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared, gInputSizeSquared );\n" 
+    "        copyLocal(_errorImage, gradOutput + ( n * gNumFilters + outPlane ) * gOutputSizeSquared, gOutputSizeSquared );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        if( localId < gFilterSizeSquared ) {\n" 
-    "            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {\n" 
+    "            for( int outRow = 0; outRow < gOutputSize; outRow++ ) {\n" 
     "                int upstreamRow = outRow - gMargin + filterRow;\n" 
-    "                for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {\n" 
+    "                for( int outCol = 0; outCol < gOutputSize; outCol++ ) {\n" 
     "                    const int upstreamCol = outCol - gMargin + filterCol;\n" 
-    "                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize )\n" 
+    "                    #define proceed ( upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize && upstreamCol < gInputSize )\n" 
     "                    if( proceed ) {\n" 
     "                        // these defines reduce register pressure, compared to const\n" 
     "                        // giving a 40% speedup on nvidia :-)\n" 
-    "                        #define resultIndex ( outRow * gOutputImageSize + outCol )\n" 
+    "                        #define resultIndex ( outRow * gOutputSize + outCol )\n" 
     "                        #define error ( _errorImage[resultIndex] )\n" 
     "                        //const float error = _errorImage[resultIndex];\n" 
-    "                        #define upstreamDataIndex ( upstreamRow * gInputImageSize + upstreamCol )\n" 
+    "                        #define upstreamDataIndex ( upstreamRow * gInputSize + upstreamCol )\n" 
     "                        #define upstreamResult ( _imageImage[upstreamDataIndex] )\n" 
     "                        thiswchange += upstreamResult * error;\n" 
     "    #ifdef BIASED\n" 

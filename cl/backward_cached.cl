@@ -20,7 +20,7 @@ void copyLocal( local float *target, global float const *source, int N ) {
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
 // need to store locally:
-// - _gradOutputPlane. size = outputImageSizeSquared
+// - _gradOutputPlane. size = outputSizeSquared
 // - _filterPlane. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
 // inputs: gradOutput :convolve: filters => gradInput
@@ -48,30 +48,30 @@ void kernel calcGradInputCached(
     const int n = workgroupId / gInputPlanes;
     const int upstreamPlane = workgroupId % gInputPlanes;
 
-    const int upstreamRow = localId / gInputImageSize;
-    const int upstreamCol = localId % gInputImageSize;
+    const int upstreamRow = localId / gInputSize;
+    const int upstreamCol = localId % gInputSize;
 
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         barrier(CLK_LOCAL_MEM_FENCE);
         copyLocal( _filterPlane, filtersGlobal + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );
-        copyLocal( _gradOutputPlane, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared, gOutputImageSizeSquared );
+        copyLocal( _gradOutputPlane, gradOutputGlobal + ( n * gNumFilters + outPlane ) * gOutputSizeSquared, gOutputSizeSquared );
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int filterRow = 0; filterRow < gFilterSize; filterRow++ ) {
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
-                if( outCol >= 0 && outCol < gOutputImageSize && outRow >= 0 && outRow < gOutputImageSize ) {
+                if( outCol >= 0 && outCol < gOutputSize && outRow >= 0 && outRow < gOutputSize ) {
                     float thisWeightTimesError = 
-                        _gradOutputPlane[outRow * gOutputImageSize + outCol] * 
+                        _gradOutputPlane[outRow * gOutputSize + outCol] * 
                         _filterPlane[filterRow * gFilterSize + filterCol];
                     sumWeightTimesOutError += thisWeightTimesError;
                 }
             }
         }
     }
-    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
-    if( localId < gInputImageSizeSquared ) {
+    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;
+    if( localId < gInputSizeSquared ) {
         gradInput[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
     }
 }

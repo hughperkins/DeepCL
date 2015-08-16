@@ -24,7 +24,7 @@ public:
     // generated, using cog:
     VIRTUAL ~DropoutForwardGpuNaive();
     VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
+    DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
 
     // [[[end]]]
 };

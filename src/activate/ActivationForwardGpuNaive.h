@@ -24,7 +24,7 @@ public:
     // generated, using cog:
     VIRTUAL ~ActivationForwardGpuNaive();
     VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    ActivationForwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    ActivationForwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
 
     // [[[end]]]
 };

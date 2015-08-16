@@ -33,7 +33,7 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize( int batchSize );
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL void persistToArray( int version, float *array );

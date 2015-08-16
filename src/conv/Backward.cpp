@@ -24,7 +24,7 @@ using namespace std;
 #define VIRTUAL 
 
 STATIC Backward *Backward::instance(EasyCL *cl, LayerDimensions dim ) {
-    if( ( dim.inputImageSize - dim.filterSize > 6 ) && square( dim.inputImageSize ) <= cl->getMaxWorkgroupSize() ) {
+    if( ( dim.inputSize - dim.filterSize > 6 ) && square( dim.inputSize ) <= cl->getMaxWorkgroupSize() ) {
         return new BackwardGpuCached( cl, dim );
     } else {
         return new BackwardGpuNaive( cl, dim );

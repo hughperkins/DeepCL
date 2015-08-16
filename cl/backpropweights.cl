@@ -37,21 +37,21 @@ void kernel backprop_floats( const float learningRateMultiplier,
     float thisbiaschange = 0;
 #endif
     for( int n = 0; n < batchSize; n++ ) {
-        for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {
+        for( int outRow = 0; outRow < gOutputSize; outRow++ ) {
             int upstreamRow = outRow - gMargin + filterRow;
-            for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
+            for( int outCol = 0; outCol < gOutputSize; outCol++ ) {
                 int upstreamCol = outCol - gMargin + filterCol;
-                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize
-                    && upstreamCol < gInputImageSize;
+                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
+                    && upstreamCol < gInputSize;
                 if( proceed ) {
                     int resultIndex = ( ( n * gNumFilters 
-                              + outPlane ) * gOutputImageSize
-                              + outRow ) * gOutputImageSize
+                              + outPlane ) * gOutputSize
+                              + outRow ) * gOutputSize
                               + outCol;
                     float error = gradOutput[resultIndex];
                     int upstreamDataIndex = ( ( n * gInputPlanes 
-                                     + upstreamPlane ) * gInputImageSize
-                                     + upstreamRow ) * gInputImageSize
+                                     + upstreamPlane ) * gInputSize
+                                     + upstreamRow ) * gInputSize
                                      + upstreamCol;
                     float upstreamResult = images[upstreamDataIndex];
                     float thisimagethiswchange = upstreamResult * error;

@@ -22,10 +22,10 @@ class PoolingLayer : public Layer {
 public:
     const bool padZeros;
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
     const int poolingSize;
 
-    const int outputImageSize;
+    const int outputSize;
 
     EasyCL *const cl; // NOT owned by us
     PoolingForward *poolingForwardImpl;
@@ -58,7 +58,7 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputNumElements() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize( int version ) const;

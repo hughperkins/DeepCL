@@ -27,9 +27,9 @@ using namespace std;
 DropoutLayer::DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes ( previousLayer->getOutputPlanes() ),
-        inputImageSize( previousLayer->getOutputImageSize() ),
+        inputSize( previousLayer->getOutputSize() ),
         dropRatio( maker->_dropRatio ),
-        outputImageSize( previousLayer->getOutputImageSize() ),
+        outputSize( previousLayer->getOutputSize() ),
         random( RandomSingleton::instance() ),
         cl( cl ),
         masks(0),
@@ -42,16 +42,16 @@ DropoutLayer::DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *make
 //        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
-    if( inputImageSize == 0 ){
+    if( inputSize == 0 ){
 //        maker->net->print();
         throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": input image size is 0" );
     }
-    if( outputImageSize == 0 ){
+    if( outputSize == 0 ){
 //        maker->net->print();
         throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    dropoutForwardImpl = DropoutForward::instance( cl, numPlanes, inputImageSize, dropRatio );
-    dropoutBackwardImpl = DropoutBackward::instance( cl, numPlanes, inputImageSize, dropRatio );
+    dropoutForwardImpl = DropoutForward::instance( cl, numPlanes, inputSize, dropRatio );
+    dropoutBackwardImpl = DropoutBackward::instance( cl, numPlanes, inputSize, dropRatio );
     multiplyBuffer = new MultiplyBuffer( cl );
 }
 VIRTUAL DropoutLayer::~DropoutLayer() {
@@ -118,7 +118,7 @@ VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
     gradInputWrapper->createOnDevice();
 }
 VIRTUAL int DropoutLayer::getOutputNumElements() {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL float *DropoutLayer::getOutput() {
     if( outputWrapper->isDeviceDirty() ) {
@@ -133,11 +133,11 @@ VIRTUAL bool DropoutLayer::needsBackProp() {
                                            // so just depends on upstream
 }
 VIRTUAL int DropoutLayer::getOutputNumElements() const {
-//    int outputImageSize = inputImageSize / dropoutSize;
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+//    int outputSize = inputSize / dropoutSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
-VIRTUAL int DropoutLayer::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int DropoutLayer::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int DropoutLayer::getOutputPlanes() const {
     return numPlanes;

@@ -18,7 +18,7 @@ InputLayer::InputLayer( InputLayerMaker *maker ) :
     batchSize(0),
     allocatedSize(0),
     outputPlanes( maker->_numPlanes ),
-    outputImageSize( maker->_imageSize ),
+    outputSize( maker->_imageSize ),
     input(0),
     output(0) {
 }
@@ -44,9 +44,9 @@ VIRTUAL void InputLayer::printOutput() {
         std::cout << "InputLayer n " << n << ":" << std::endl;
         for( int plane = 0; plane < std::min( 5, outputPlanes); plane++ ) {
             if( outputPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
-            for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
+            for( int i = 0; i < std::min(5, outputSize); i++ ) {
                 std::cout << "      ";
-                for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
+                for( int j = 0; j < std::min(5, outputSize); j++ ) {
                     std::cout << getOutput( n, plane, i, j ) << " ";
 //output[
 //                            n * numPlanes * imageSize*imageSize +
@@ -54,10 +54,10 @@ VIRTUAL void InputLayer::printOutput() {
 //                            i * imageSize +
 //                            j ] << " ";
                 }
-                if( outputImageSize > 5 ) std::cout << " ... ";
+                if( outputSize > 5 ) std::cout << " ... ";
                 std::cout << std::endl;
             }
-            if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
+            if( outputSize > 5 ) std::cout << " ... " << std::endl;
         }
         if( outputPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
     }
@@ -97,14 +97,14 @@ VIRTUAL void InputLayer::forward() {
 }
 VIRTUAL void InputLayer::backward( float learningRate, float const *gradOutput ) {
 }
-VIRTUAL int InputLayer::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int InputLayer::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int InputLayer::getOutputPlanes() const {
     return outputPlanes;
 }
 VIRTUAL int InputLayer::getOutputCubeSize() const {
-    return outputPlanes * outputImageSize * outputImageSize;
+    return outputPlanes * outputSize * outputSize;
 }
 VIRTUAL int InputLayer::getOutputNumElements() const {
     return batchSize * getOutputCubeSize();
@@ -113,15 +113,15 @@ VIRTUAL std::string InputLayer::toString() {
     return asString();
 }
 VIRTUAL std::string InputLayer::asString() const {
-    return std::string("") + "InputLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
+    return std::string("") + "InputLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputSize=" +  ::toString( outputSize ) + " }";
 }
 
 //template<>VIRTUAL std::string InputLayer<unsigned char>::asString() const {
-//    return std::string("") + "InputLayer<unsigned char>{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
+//    return std::string("") + "InputLayer<unsigned char>{ outputPlanes=" + ::toString( outputPlanes ) + " outputSize=" +  ::toString( outputSize ) + " }";
 //}
 
 //template<>VIRTUAL std::string InputLayer<float>::asString() const {
-//    return std::string("") + "InputLayer<float>{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
+//    return std::string("") + "InputLayer<float>{ outputPlanes=" + ::toString( outputPlanes ) + " outputSize=" +  ::toString( outputSize ) + " }";
 //}
 
 

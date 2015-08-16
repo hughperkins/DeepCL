@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingBackwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingBackwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
     VIRTUAL void backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput );
     VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
     CLWrapper *gradInputWrapper );

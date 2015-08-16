@@ -8,7 +8,7 @@
 // BIASED (or not)
 
 #define getFilterImageOffset( filter, inputPlane ) ( ( filter * gInputPlanes + inputPlane ) * gFilterSizeSquared )
-#define getResultImageOffset( n, filter ) ( ( n * gNumFilters + filter ) * gOutputImageSizeSquared )
+#define getResultImageOffset( n, filter ) ( ( n * gNumFilters + filter ) * gOutputSizeSquared )
 
 // handle lower layer...
 // gradOutput for upstream look like [n][inPlane][inRow][inCol]
@@ -78,7 +78,7 @@ void kernel calcGradInput(
 // localid: [upstreamrow][upstreamcol]
 // per-thread aggregation: [outPlane][filterRow][filterCol]
 // need to store locally:
-// - _errorImage. size = outputImageSizeSquared
+// - _errorImage. size = outputSizeSquared
 // - _filterImage. size = filtersizesquared
 // note: currently doesnt use bias as input.  thats probably an error?
 // inputs: gradOutput :convolve: filters => gradInput
@@ -86,7 +86,7 @@ void kernel calcGradInput(
 // per workgroup:
 // gradOutput: [outPlane][outRow][outCol] 32 * 19 * 19 * 4 = 46KB
 // weights: [filterId][filterRow][filterCol] 32 * 5 * 5 * 4 = 3.2KB
-#ifdef gOutputImageSize // for previous tests that dont define it
+#ifdef gOutputSize // for previous tests that dont define it
 void kernel calcGradInputCached( 
         const int batchSize,
         global const float *gradOutputGlobal,
@@ -103,29 +103,29 @@ void kernel calcGradInputCached(
     const int n = workgroupId / gInputPlanes;
     const int upstreamPlane = workgroupId % gInputPlanes;
 
-    const int upstreamRow = localId / gInputImageSize;
-    const int upstreamCol = localId % gInputImageSize;
+    const int upstreamRow = localId / gInputSize;
+    const int upstreamCol = localId % gInputSize;
 
-    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputImageSize - 1) );
+    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputSize - 1) );
     const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
-    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputImageSize -1) );
+    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputSize -1) );
     const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
 
     const int filterPixelCopiesPerThread = ( gFilterSizeSquared + workgroupSize - 1 ) / workgroupSize;
-    const int errorPixelCopiesPerThread = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int errorPixelCopiesPerThread = ( gOutputSizeSquared + workgroupSize - 1 ) / workgroupSize;
     const int pixelCopiesPerThread = max( filterPixelCopiesPerThread, errorPixelCopiesPerThread );
 
     float sumWeightTimesOutError = 0;
     for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
         const int filterImageGlobalOffset =( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared;
-        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
+        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < pixelCopiesPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
             if( thisOffset < gFilterSizeSquared ) {
                 _filterImage[ thisOffset ] = filtersGlobal[ filterImageGlobalOffset + thisOffset ];
             }
-            if( thisOffset < gOutputImageSizeSquared ) {
+            if( thisOffset < gOutputSizeSquared ) {
                 _errorImage[ thisOffset ] = gradOutputGlobal[ errorImageGlobalOffset + thisOffset ];
             }
         }
@@ -139,7 +139,7 @@ void kernel calcGradInputCached(
             int outRow = upstreamRow + gMargin - filterRow;
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
-                int resultIndex = outRow * gOutputImageSize + outCol;
+                int resultIndex = outRow * gOutputSize + outCol;
                 float thisError = _errorImage[resultIndex];
                 int thisWeightIndex = filterRow * gFilterSize + filterCol;
                 float thisWeight = _filterImage[thisWeightIndex];
@@ -148,8 +148,8 @@ void kernel calcGradInputCached(
             }
         }
     }
-    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
-    if( localId < gInputImageSizeSquared ) {
+    const int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;
+    if( localId < gInputSizeSquared ) {
         gradInput[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;
     }
 }
@@ -161,7 +161,7 @@ void kernel calcGradInputCached(
 // so, workgroupId is [upstreamPlane]
 // localId is [upstreamRow][upstreamCol]
 // we iterate over [n]
-#ifdef gOutputImageSize // for previous tests that dont define it
+#ifdef gOutputSize // for previous tests that dont define it
 /*
 void kernel calcGradInput2( 
         const int batchSize,
@@ -174,8 +174,8 @@ void kernel calcGradInput2(
     const int workgroupSize = get_local_size(0);
 
     const int upstreamPlane = workgroupId;
-    const int upstreamRow = localId / gInputImageSize;
-    const int upstreamCol = localId % gInputImageSize;
+    const int upstreamRow = localId / gInputSize;
+    const int upstreamCol = localId % gInputSize;
 
     const int 
     if( localId < filterSizeSquared ) {
@@ -231,14 +231,14 @@ void kernel calcGradInput2(
 //   filters are organized like [filterid][inplane][filterrow][filtercol]
 //        (so we will swap filterid and inplane around when referencing filters, kindof)
 //  globalid will be organized like upstreamoutput, ie [imageid][upstreamplane][upstreamrow][upstreamcol]
-#ifdef gOutputImageSize // for previous tests that dont define it
+#ifdef gOutputSize // for previous tests that dont define it
 void kernel convolve_errorcubes_float( 
        const int batchSize,
       global const float *errorcubes, global const float *filters, 
     global float *upstreamErrors ) {
     int globalId = get_global_id(0);
 
-    int upstreamImage2Id = globalId / gInputImageSizeSquared;
+    int upstreamImage2Id = globalId / gInputSizeSquared;
     int exampleId = upstreamImage2Id / gInputPlanes;
     int filterId = upstreamImage2Id % gInputPlanes;
 
@@ -246,28 +246,28 @@ void kernel convolve_errorcubes_float(
         return;
     }
 /*
-    int errorCubeOffset = exampleId * gOutPlanes * gOutputImageSizeSquared;
+    int errorCubeOffset = exampleId * gOutPlanes * gOutputSizeSquared;
     int filterCubeOffset = filterId * gNumInputPlanes * gFilterSizeSquared;
 
     int localid = globalId % upstreamImageSizeSquared;
-    int upstreamRow = localid / gInputImageSize;
-    int upstreamCol = localid % gInputImageSize;
+    int upstreamRow = localid / gInputSize;
+    int upstreamCol = localid % gInputSize;
 
     float sum = 0;
 // ====in progress
     int minm = padZeros ? max( -halfFilterSize, -outputRow ) : -halfFilterSize;
 // ====to do
-    int maxm = padZeros ? min( halfFilterSize, outputImageSize - 1 - outputRow ) : halfFilterSize;
+    int maxm = padZeros ? min( halfFilterSize, outputSize - 1 - outputRow ) : halfFilterSize;
     int minn = padZeros ? max( -halfFilterSize, -outputCol ) : - halfFilterSize;
-    int maxn = padZeros ? min( halfFilterSize, outputImageSize - 1 - outputCol ) : halfFilterSize;
+    int maxn = padZeros ? min( halfFilterSize, outputSize - 1 - outputCol ) : halfFilterSize;
     int inputPlane = 0;
     while( inputPlane < numInputPlanes ) {
-        int inputImageOffset = inputCubeOffset + inputPlane * inputImageSizeSquared;
+        int inputImageOffset = inputCubeOffset + inputPlane * inputSizeSquared;
         int filterImageOffset = filterCubeOffset + inputPlane * filterSizeSquared;
         int m = minm;
         while( m <= maxm ) {
             int inputRow = outputRow + m + ( padZeros ? 0 : halfFilterSize );
-            int inputimagerowoffset = inputImageOffset + inputRow * inputImageSize;
+            int inputimagerowoffset = inputImageOffset + inputRow * inputSize;
             int filterrowoffset = filterImageOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
             while( n <= maxn ) {

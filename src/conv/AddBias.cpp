@@ -19,17 +19,17 @@ using namespace std;
 VIRTUAL AddBias::~AddBias() {
 }
 VIRTUAL void AddBias::forward(
-        int batchSize, int numFilters, int outputImageSize,
+        int batchSize, int numFilters, int outputSize,
         CLWrapper *outputWrapper,
         CLWrapper *biasWrapper
             ) {
     StatefulTimer::timeCheck("AddBias::forward begin");
 
-    kernel->in( batchSize * numFilters * outputImageSize * outputImageSize )
+    kernel->in( batchSize * numFilters * outputSize * outputSize )
         ->in( numFilters )
-        ->in( outputImageSize * outputImageSize )
+        ->in( outputSize * outputSize )
         ->inout( outputWrapper )->in( biasWrapper );
-    int globalSize = batchSize * numFilters * outputImageSize * outputImageSize;
+    int globalSize = batchSize * numFilters * outputSize * outputSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );

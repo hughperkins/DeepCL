@@ -41,11 +41,11 @@ void copyLocal( local float *restrict target, global float const *restrict sourc
 //   filtersize == inputimagesize (mandatory)
 //   inputimagesize == 19
 //   filtersize == 19
-//   outputImageSize == 1
+//   outputSize == 1
 //   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361
 //   lots of inplanes, eg 32-128
 //   inputimagesize around 19, not too small
-#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)
+#if (gFilterSize == gInputSize) && (gPadZeros == 0)
 void kernel forward_fc_workgroup_perrow( const int batchSize,
     global const float *images, global const float *filters, 
     global float *output1,
@@ -72,7 +72,7 @@ void kernel forward_fc_workgroup_perrow( const int batchSize,
             _threadFilterRow[i] = filterRow[i];
         }
     }
-    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;
+    const int loopsPerExample = ( gInputSize + workgroupSize - 1 ) / workgroupSize;
     // now loop over examples...
     for( int n = 0; n < batchSize; n++ ) {
         // copy down example row, which is global to all threads in workgroup
@@ -83,9 +83,9 @@ void kernel forward_fc_workgroup_perrow( const int batchSize,
         copyLocal( _imageRow,  images 
             + ( ( n 
                 * gNumInputPlanes + inputPlaneId ) 
-                * gInputImageSize + filterRowId )
-                * gInputImageSize, 
-            gInputImageSize );
+                * gInputSize + filterRowId )
+                * gInputSize, 
+            gInputSize );
         barrier(CLK_LOCAL_MEM_FENCE);
         // add up the values in our row...
         // note: dont activate yet, since need to reduce again

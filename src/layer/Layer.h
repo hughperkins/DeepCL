@@ -64,7 +64,7 @@ public:
     PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
-    PUBLICAPI VIRTUAL int getOutputImageSize() const;
+    PUBLICAPI VIRTUAL int getOutputSize() const;
     VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();

@@ -74,7 +74,7 @@ public:
     PUBLICAPI Layer *getLayer( int index );
     PUBLICAPI Layer const*getLastLayer() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
-    PUBLICAPI VIRTUAL int getOutputImageSize() const;
+    PUBLICAPI VIRTUAL int getOutputSize() const;
     PUBLICAPI void setBatchSize( int batchSize );
     PUBLICAPI void setTraining( bool training );
     PUBLICAPI int calcNumRight( int const *labels );

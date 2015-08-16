@@ -22,11 +22,11 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationBackwardCpu::ActivationBackwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
-        ActivationBackward( cl, numPlanes, inputImageSize, fn ) {
+ActivationBackwardCpu::ActivationBackwardCpu( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn ) :
+        ActivationBackward( cl, numPlanes, inputSize, fn ) {
 }
 VIRTUAL void ActivationBackwardCpu::backward( int batchSize, float *outputs, float *gradOutput, float *gradInput ) {
-    int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+    int totalLinearSize = batchSize * numPlanes * inputSize * inputSize;
     for( int i = 0; i < totalLinearSize; i++ ) {
 //        cout << "input=" << inputs[i] << " deriv=" << fn->calcDerivative( inputs[i] )
 //            << " error=" << errors[i];

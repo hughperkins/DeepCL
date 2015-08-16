@@ -100,7 +100,7 @@ TEST( testpoolingbackward, basic_2plane_batchsize2 ) {
 }
 
 TEST( SLOW_testpoolingbackward, compare_args ) {
-    int inputImageSize = 9;
+    int inputSize = 9;
     int poolingSize = 2;
     int instance0 = 0;
     int instance1 = 1;
@@ -111,7 +111,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
     TestArgsParser::arg( "batchSize", &batchSize );
     TestArgsParser::arg( "poolingsize", &poolingSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
-    TestArgsParser::arg( "inputimagesize", &inputImageSize );
+    TestArgsParser::arg( "inputimagesize", &inputSize );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
@@ -119,17 +119,17 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
     bool padZeros = true;
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    int outputImageSize = p1->outputImageSize;
-    int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
+    PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputSize, poolingSize );
+    PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputSize, poolingSize );
+    int outputSize = p1->outputSize;
+    int errorsSize = batchSize * outputSize * outputSize * numPlanes;
     float *errors = new float[ errorsSize ];
-    int inputNumElements = batchSize * inputImageSize * inputImageSize * numPlanes;
+    int inputNumElements = batchSize * inputSize * inputSize * numPlanes;
     int *selectors = new int[ errorsSize ];
     float *errorsForUpstream0 = new float[ inputNumElements ];
     float *errorsForUpstream1 = new float[ inputNumElements ];
     
-    PoolingForward *forwardprop = PoolingForward::instanceSpecific( 0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    PoolingForward *forwardprop = PoolingForward::instanceSpecific( 0, cl, padZeros, numPlanes, inputSize, poolingSize );
     float *output = new float[errorsSize];
     float *input = new float[inputNumElements];
     float *errorsForUpstream[2];
