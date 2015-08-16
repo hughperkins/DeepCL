@@ -73,6 +73,8 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
     int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
     float *columns = new float[columnsSize];
     CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
+    cout << "columnsSize: " << columnsSize << endl;
+    cout << "weightsize: " << weightsWrapper->size() << endl;
 
     StatefulTimer::timeCheck("ForwardIm2Col::forward after alloc");
 
@@ -89,35 +91,37 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
 
         kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
         dataWrapper->copyToHost();
-        for( int i = 0; i < 1; i++ ) {
+        for( int i = 0; i < dataWrapper->size(); i++ ) {
             cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
         }
         columnsWrapper->copyToHost();
-        for( int i = 0; i < 1; i++ ) {
+        for( int i = 0; i < columnsSize; i++ ) {
             cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
         }
         weightsWrapper->copyToHost();
-        for( int i = 0; i < 1; i++ ) {
+        for( int i = 0; i < weightsWrapper->size(); i++ ) {
             cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
         }
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
-        long m = dim.numFilters;
-        long n = dim.outputSizeSquared;
-        long k = dim.numFilters * dim.filterSizeSquared;
+        long m = dim.outputSizeSquared;
+        long n = dim.numFilters;
+        long k = dim.inputPlanes * dim.filterSizeSquared;
         cout << "m=" << m << " n=" << n << " k=" << k << endl;
 
-        // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
+        size_t lda = k;
+        size_t ldb = n;
+        size_t ldc = n;
         cl_int err = clblasSgemm(
-            clblasColumnMajor,
+            clblasRowMajor,
             clblasNoTrans, clblasNoTrans,
-            n, m, k,
+            m, n, k,
             1,
-            columnsWrapper->getBuffer(), 0, n,
-            weightsWrapper->getBuffer(), 0, k,
+            columnsWrapper->getBuffer(), 0, lda,
+            weightsWrapper->getBuffer(), 0, ldb,
             0,
-            outputWrapper->getBuffer(), b * dim.outputCubeSize, n,
+            outputWrapper->getBuffer(), b * dim.outputCubeSize, ldc,
             1, cl->queue, 0, NULL, 0
        );
         if (err != CL_SUCCESS) {
