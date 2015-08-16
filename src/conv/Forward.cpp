@@ -16,6 +16,7 @@
 #include "conv/Forward4.h"
 #include "conv/ForwardFc.h"
 #include "conv/ForwardByInputPlane.h"
+#include "conv/ForwardIm2Col.h"
 #include "conv/ForwardAuto.h"
 #include "util/StatefulTimer.h"
 
@@ -84,6 +85,8 @@ STATIC Forward *Forward::instanceSpecific( int idx, EasyCL *cl, LayerDimensions 
         return new ForwardFc( cl, layerDimensions );
     } else if( idx == 6 ) {
         return new ForwardByInputPlane( cl, layerDimensions );
+    } else if( idx == 7 ) {
+        return new ForwardIm2Col( cl, layerDimensions );
     } else {
         throw runtime_error( string("") + __FILE__ + ":" + toString( __LINE__ ) + " Forward::instanceSpecific: no instance defined for index " + toString(idx) );
     }
