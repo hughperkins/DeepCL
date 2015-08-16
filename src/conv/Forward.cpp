@@ -54,13 +54,13 @@ STATIC Forward *Forward::instanceTest(EasyCL *cl, LayerDimensions layerDimension
     return new Forward2( cl, layerDimensions );
 }
 STATIC int Forward::getNumImplementations() {
-    return 7;
+    return 8;
 }
 STATIC bool Forward::plausiblyOptimal( int index, int batchSize, LayerDimensions dim ) {
     if( index == 0 ) { 
         return false;
     }
-    if( index > 6 ) {
+    if( index > 7 ) {
         return false;
     }
     return true;

@@ -55,7 +55,8 @@ if docopy:
         os.makedirs('mysrc/lua')
     for thisdir in ['../src','../EasyCL',
             '../EasyCL/thirdparty/clew/src',
-            '../EasyCL/thirdparty/clew/include']: # copy everything..
+            '../EasyCL/thirdparty/clew/include',
+            '../clMathLibraries/clBLAS/src']: # copy everything..
         for thisfile in os.listdir(thisdir):
             #print(thisfile)
             thisfilepath = thisdir +'/' + thisfile

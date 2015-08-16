@@ -16,7 +16,7 @@ using namespace std;
 /* [[[cog
     # These are used in the later cog sections in this file:
     # format:
-    # ( name, type, description, default, ispublicapi )
+    # (name, type, description, default, ispublicapi)
     options = [
         ('gpuIndex', 'int', 'gpu device index; default value is gpu if present, cpu otw.', -1, True),
         ('dataDir', 'string', 'directory to search for train and validate files', '../data/mnist', True),
@@ -38,9 +38,9 @@ using namespace std;
         ('loadOnDemand', 'int', 'load data on demand [1|0]', 0, True),
         ('fileReadBatches', 'int', 'how many batches to read from file each time? (for loadondemand=1)', 50, True),
         ('normalizationExamples', 'int', 'number of examples to read to determine normalization parameters', 10000, True),
-        ('weightsInitializer', 'string', 'initializer for weights, choices: original, uniform (default: original)', 'original', True ),
-        ('initialWeights', 'float', 'for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)', 1.0, False ),
-        ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, rmsprop, or adadelta (default: sgd)', 'sgd', True ),
+        ('weightsInitializer', 'string', 'initializer for weights, choices: original, uniform (default: original)', 'original', True),
+        ('initialWeights', 'float', 'for uniform initializer, weights will be initialized randomly within range -initialweights to +initialweights, divided by fanin, (default: 1.0f)', 1.0, False),
+        ('trainer', 'string', 'which trainer, sgd, anneal, nesterov, adagrad, rmsprop, or adadelta (default: sgd)', 'sgd', True),
         ('learningRate', 'float', 'learning rate, a float value, used by all trainers', 0.002, True),
         ('rho', 'float', 'rho decay, in adadelta trainer. 1 is no decay. 0 is full decay (default 0.9)', 0.9, False),
         ('momentum', 'float', 'momentum, used by sgd and nesterov trainers', 0.0, True),
@@ -55,7 +55,7 @@ public:
     /* [[[cog
         cog.outl('// generated using cog:')
         for (name,type,description,default,_) in options:
-            cog.outl( type + ' ' + name + ';')
+            cog.outl(type + ' ' + name + ';')
     */// ]]]
     // generated using cog:
     int gpuIndex;
@@ -102,7 +102,7 @@ public:
                     if '.' not in defaultString:
                         defaultString += '.0'
                     defaultString += 'f'
-                cog.outl( name + ' = ' + defaultString + ';')
+                cog.outl(name + ' = ' + defaultString + ';')
         */// ]]]
         // generated using cog:
         gpuIndex = -1;
@@ -167,40 +167,45 @@ void go(Config config) {
     int trainAllocateN = 0;
     int testAllocateN = 0;
 
+    if(config.dumpTimings) {
+        StatefulTimer::setEnabled(true);
+    }
+    cout << "Statefultimer enabled: " << StatefulTimer::enabled << endl;
+
 //    int totalLinearSize;
-    GenericLoaderv2 trainLoader( config.dataDir + "/" + config.trainFile );
+    GenericLoaderv2 trainLoader(config.dataDir + "/" + config.trainFile);
     Ntrain = trainLoader.getN();
     numPlanes = trainLoader.getPlanes();
     imageSize = trainLoader.getImageSize();
-    // GenericLoader::getDimensions( , &Ntrain, &numPlanes, &imageSize );
+    // GenericLoader::getDimensions(, &Ntrain, &numPlanes, &imageSize);
     Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
-    if( config.loadOnDemand ) {
+    if(config.loadOnDemand) {
         trainAllocateN = config.batchSize; // can improve this later
     } else {
         trainAllocateN = Ntrain;
     }
     trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
-    if( !config.loadOnDemand && Ntrain > 0 ) {
-        trainLoader.load( trainData, trainLabels, 0, Ntrain );
+    if(!config.loadOnDemand && Ntrain > 0) {
+        trainLoader.load(trainData, trainLabels, 0, Ntrain);
     }
 
-    GenericLoaderv2 testLoader( config.dataDir + "/" + config.validateFile );
+    GenericLoaderv2 testLoader(config.dataDir + "/" + config.validateFile);
     Ntest = testLoader.getN();
     numPlanes = testLoader.getPlanes();
     imageSize = testLoader.getImageSize();
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
-    if( config.loadOnDemand ) {
+    if(config.loadOnDemand) {
         testAllocateN = config.batchSize; // can improve this later
     } else {
         testAllocateN = Ntest;
     }
     testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
-    if( !config.loadOnDemand && Ntest > 0 ) {
-        testLoader.load( testData, testLabels, 0, Ntest );
+    if(!config.loadOnDemand && Ntest > 0) {
+        testLoader.load(testData, testLabels, 0, Ntest);
     }
     cout << "Ntest " << Ntest << " Ntest" << endl;
     
@@ -210,16 +215,16 @@ void go(Config config) {
     float translate;
     float scale;
     int normalizationExamples = config.normalizationExamples > Ntrain ? Ntrain : config.normalizationExamples;
-    if( !config.loadOnDemand ) {
-        if( config.normalization == "stddev" ) {
+    if(!config.loadOnDemand) {
+        if(config.normalization == "stddev") {
             float mean, stdDev;
-            NormalizationHelper::getMeanAndStdDev( trainData, normalizationExamples * inputCubeSize, &mean, &stdDev );
+            NormalizationHelper::getMeanAndStdDev(trainData, normalizationExamples * inputCubeSize, &mean, &stdDev);
             cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
-        } else if( config.normalization == "maxmin" ) {
+        } else if(config.normalization == "maxmin") {
             float mean, stdDev;
-            NormalizationHelper::getMinMax( trainData, normalizationExamples * inputCubeSize, &mean, &stdDev );
+            NormalizationHelper::getMinMax(trainData, normalizationExamples * inputCubeSize, &mean, &stdDev);
             translate = - mean;
             scale = 1.0f / stdDev;
         } else {
@@ -227,18 +232,18 @@ void go(Config config) {
             return;
         }
     } else {
-        if( config.normalization == "stddev" ) {
+        if(config.normalization == "stddev") {
             float mean, stdDev;
-            NormalizeGetStdDev normalizeGetStdDev( trainData, trainLabels ); 
-            BatchProcessv2::run( &trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev );
-            normalizeGetStdDev.calcMeanStdDev( &mean, &stdDev );
+            NormalizeGetStdDev normalizeGetStdDev(trainData, trainLabels); 
+            BatchProcessv2::run(&trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetStdDev);
+            normalizeGetStdDev.calcMeanStdDev(&mean, &stdDev);
             cout << " image stats mean " << mean << " stdDev " << stdDev << endl;
             translate = - mean;
             scale = 1.0f / stdDev / config.normalizationNumStds;
-        } else if( config.normalization == "maxmin" ) {
-            NormalizeGetMinMax normalizeGetMinMax( trainData, trainLabels );
-            BatchProcessv2::run( &trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax );
-            normalizeGetMinMax.calcMinMaxTransform( &translate, &scale );
+        } else if(config.normalization == "maxmin") {
+            NormalizeGetMinMax normalizeGetMinMax(trainData, trainLabels);
+            BatchProcessv2::run(&trainLoader, 0, config.batchSize, normalizationExamples, inputCubeSize, &normalizeGetMinMax);
+            normalizeGetMinMax.calcMinMaxTransform(&translate, &scale);
         } else {
             cout << "Error: Unknown normalization: " << config.normalization << endl;
             return;
@@ -251,8 +256,8 @@ void go(Config config) {
 //    const int batchSize = config.batchSize;
 
     EasyCL *cl = 0;
-    if( config.gpuIndex >= 0 ) {
-        cl = EasyCL::createForIndexedGpu( config.gpuIndex );
+    if(config.gpuIndex >= 0) {
+        cl = EasyCL::createForIndexedGpu(config.gpuIndex);
     } else {
         cl = EasyCL::createForFirstGpuOtherwiseCpu();
     }
@@ -261,58 +266,58 @@ void go(Config config) {
     net = new NeuralNet(cl);
 
     WeightsInitializer *weightsInitializer = 0;
-    if( toLower( config.weightsInitializer ) == "original" ) {
+    if(toLower(config.weightsInitializer) == "original") {
         weightsInitializer = new OriginalInitializer();
-    } else if( toLower( config.weightsInitializer ) == "uniform" ) {
-        weightsInitializer = new UniformInitializer( config.initialWeights );
+    } else if(toLower(config.weightsInitializer) == "uniform") {
+        weightsInitializer = new UniformInitializer(config.initialWeights);
     } else {
         cout << "Unknown weights initializer " << config.weightsInitializer << endl;
         return;
     }
 
 //    net->inputMaker<unsigned char>()->numPlanes(numPlanes)->imageSize(imageSize)->insert();
-    net->addLayer( InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
-    net->addLayer( NormalizationLayerMaker::instance()->translate(translate)->scale(scale) );
-    if( !NetdefToNet::createNetFromNetdef( net, config.netDef, weightsInitializer ) ) {
+    net->addLayer(InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize));
+    net->addLayer(NormalizationLayerMaker::instance()->translate(translate)->scale(scale));
+    if(!NetdefToNet::createNetFromNetdef(net, config.netDef, weightsInitializer)) {
         return;
     }
     // apply the trainer
     Trainer *trainer = 0;
-    if( toLower( config.trainer ) == "sgd" ) {
-        SGD *sgd = new SGD( cl );
-        sgd->setLearningRate( config.learningRate );
-        sgd->setMomentum( config.momentum );
-        sgd->setWeightDecay( config.weightDecay );
+    if(toLower(config.trainer) == "sgd") {
+        SGD *sgd = new SGD(cl);
+        sgd->setLearningRate(config.learningRate);
+        sgd->setMomentum(config.momentum);
+        sgd->setWeightDecay(config.weightDecay);
         trainer = sgd;
-    } else if( toLower( config.trainer ) == "anneal" ) {
-        Annealer *annealer = new Annealer( cl );
-        annealer->setLearningRate( config.learningRate );
-        annealer->setAnneal( config.anneal );
+    } else if(toLower(config.trainer) == "anneal") {
+        Annealer *annealer = new Annealer(cl);
+        annealer->setLearningRate(config.learningRate);
+        annealer->setAnneal(config.anneal);
         trainer = annealer;
-    } else if( toLower( config.trainer ) == "nesterov" ) {
-        Nesterov *nesterov = new Nesterov( cl );
-        nesterov->setLearningRate( config.learningRate );
-        nesterov->setMomentum( config.momentum );
+    } else if(toLower(config.trainer) == "nesterov") {
+        Nesterov *nesterov = new Nesterov(cl);
+        nesterov->setLearningRate(config.learningRate);
+        nesterov->setMomentum(config.momentum);
         trainer = nesterov;
-    } else if( toLower( config.trainer ) == "adagrad" ) {
-        Adagrad *adagrad = new Adagrad( cl );
-        adagrad->setLearningRate( config.learningRate );
+    } else if(toLower(config.trainer) == "adagrad") {
+        Adagrad *adagrad = new Adagrad(cl);
+        adagrad->setLearningRate(config.learningRate);
         trainer = adagrad;
-    } else if( toLower( config.trainer ) == "rmsprop" ) {
-        Rmsprop *rmsprop = new Rmsprop( cl );
-        rmsprop->setLearningRate( config.learningRate );
+    } else if(toLower(config.trainer) == "rmsprop") {
+        Rmsprop *rmsprop = new Rmsprop(cl);
+        rmsprop->setLearningRate(config.learningRate);
         trainer = rmsprop;
-    } else if( toLower( config.trainer ) == "adadelta" ) {
-        Adadelta *adadelta = new Adadelta( cl, config.rho );
+    } else if(toLower(config.trainer) == "adadelta") {
+        Adadelta *adadelta = new Adadelta(cl, config.rho);
         trainer = adadelta;
     } else {
         cout << "trainer " << config.trainer << " unknown." << endl;
         return;
     }
     cout << "Using trainer " << trainer->asString() << endl;
-//    trainer->bindTo( net );
-//    net->setTrainer( trainer );
-    net->setBatchSize( config.batchSize );
+//    trainer->bindTo(net);
+//    net->setTrainer(trainer);
+    net->setBatchSize(config.batchSize);
     net->print();
 
     bool afterRestart = false;
@@ -321,19 +326,19 @@ void go(Config config) {
     float restartAnnealedLearningRate = 0;
     int restartNumRight = 0;
     float restartLoss = 0;
-    if( config.loadWeights && config.weightsFile != "" ) {
+    if(config.loadWeights && config.weightsFile != "") {
         cout << "loadingweights" << endl;
-        afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
-        if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
+        afterRestart = WeightsPersister::loadWeights(config.weightsFile, config.getTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss);
+        if(!afterRestart && FileHelper::exists(config.weightsFile)) {
             // try old trainingstring
-            afterRestart = WeightsPersister::loadWeights( config.weightsFile, config.getOldTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss );
+            afterRestart = WeightsPersister::loadWeights(config.weightsFile, config.getOldTrainingString(), net, &restartEpoch, &restartBatch, &restartAnnealedLearningRate, &restartNumRight, &restartLoss);
         }
-        if( !afterRestart && FileHelper::exists( config.weightsFile ) ) {
+        if(!afterRestart && FileHelper::exists(config.weightsFile)) {
             cout << "Weights file " << config.weightsFile << " exists, but doesnt match training options provided." << endl;
             cout << "Continue loading anyway (might crash, or weights might be completely inappropriate)? (y/n)" << endl;
             string response;
             cin >> response;
-            if( response != "y" ) {
+            if(response != "y") {
                 cout << "Please either check the training options, or choose a weights file that doesnt exist yet" << endl;
                 return;
             }
@@ -342,70 +347,73 @@ void go(Config config) {
     }
 
     timer.timeCheck("before learning start");
-    if( config.dumpTimings ) {
-        StatefulTimer::dump( true );
+    if(config.dumpTimings) {
+        StatefulTimer::dump(true);
     }
     StatefulTimer::timeCheck("START");
 
     Trainable *trainable = net;
     MultiNet *multiNet = 0;
-    if( config.multiNet > 1 ) {
-        multiNet = new MultiNet( config.multiNet, net );
+    if(config.multiNet > 1) {
+        multiNet = new MultiNet(config.multiNet, net);
         trainable = multiNet;
     }
     NetLearnerBase *netLearner = 0;
-    if( config.loadOnDemand ) {
-        netLearner = new NetLearnerOnDemandv2( trainer, trainable,
+    if(config.loadOnDemand) {
+        netLearner = new NetLearnerOnDemandv2(trainer, trainable,
             &trainLoader, Ntrain,
             &testLoader, Ntest,
             config.fileReadBatches, config.batchSize
         );
     } else {
-        netLearner = new NetLearner( trainer, trainable,
+        netLearner = new NetLearner(trainer, trainable,
             Ntrain, trainData, trainLabels,
             Ntest, testData, testLabels,
             config.batchSize 
         );
     }
-//    netLearner->setTrainer( trainer );
+//    netLearner->setTrainer(trainer);
     netLearner->reset();
-    netLearner->setSchedule( config.numEpochs, afterRestart ? restartEpoch : 0 );
-    if( afterRestart ) {
-        netLearner->setBatchState( restartBatch, restartNumRight, restartLoss ); 
+    netLearner->setSchedule(config.numEpochs, afterRestart ? restartEpoch : 0);
+    if(afterRestart) {
+        netLearner->setBatchState(restartBatch, restartNumRight, restartLoss); 
     }
-    netLearner->setDumpTimings( config.dumpTimings );
-//    netLearner->setLearningRate( config.learningRate, config.annealLearningRate );
+    netLearner->setDumpTimings(config.dumpTimings);
+//    netLearner->setLearningRate(config.learningRate, config.annealLearningRate);
     Timer weightsWriteTimer;
-    while( !netLearner->isLearningDone() ) {
+    while(!netLearner->isLearningDone()) {
 //        netLearnerBase->tickEpoch();
         netLearner->tickBatch();
-        if( netLearner->getEpochDone() ) {
+        if(netLearner->getEpochDone()) {
 //            cout << "epoch done" << endl;
-            if( config.weightsFile != "" ) {
+            if(config.weightsFile != "") {
                 cout << "record epoch=" << netLearner->getNextEpoch() << endl;
-                WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0 );
+                WeightsPersister::persistWeights(config.weightsFile, config.getTrainingString(), net, netLearner->getNextEpoch(), 0, 0, 0, 0);
                 weightsWriteTimer.lap();
             }
-//            Sampler::sampleFloatWrapper( "conv weights", net->getLayer(6)->getWeightsWrapper() );
-//            Sampler::sampleFloatWrapper( "fc weights", net->getLayer(11)->getWeightsWrapper() );
-//            Sampler::sampleFloatWrapper( "conv bias", net->getLayer(6)->getBiasWrapper() );
-//            Sampler::sampleFloatWrapper( "fc bias", net->getLayer(11)->getBiasWrapper() );
+//            Sampler::sampleFloatWrapper("conv weights", net->getLayer(6)->getWeightsWrapper());
+//            Sampler::sampleFloatWrapper("fc weights", net->getLayer(11)->getWeightsWrapper());
+//            Sampler::sampleFloatWrapper("conv bias", net->getLayer(6)->getBiasWrapper());
+//            Sampler::sampleFloatWrapper("fc bias", net->getLayer(11)->getBiasWrapper());
+            if(config.dumpTimings) {
+                StatefulTimer::dump(true);
+            }
         } else {
-            if( config.writeWeightsInterval > 0 ) {
+            if(config.writeWeightsInterval > 0) {
 //                cout << "batch done" << endl;
                 float timeMinutes = weightsWriteTimer.interval() / 1000.0f / 60.0f;
 //                cout << "timeMinutes " << timeMinutes << endl;
-                if( timeMinutes >= config.writeWeightsInterval ) {
+                if(timeMinutes >= config.writeWeightsInterval) {
                     int nextEpoch = netLearner->getNextEpoch();
                     int nextBatch = netLearner->getNextBatch();
                     int batchNumRight = netLearner->getBatchNumRight();
                     float batchLoss = netLearner->getBatchLoss();
                     cout << "record epoch=" << nextEpoch << " batch=" << nextBatch <<
-                        "(" << ( (float)nextBatch * 100.0f / netLearner->getNTrain() * config.batchSize ) << "% of epoch)" <<
-                        " numRight=" << batchNumRight << "(" << (batchNumRight * 100.0f / nextBatch / config.batchSize ) << "%)" <<
+                        "(" << ((float)nextBatch * 100.0f / netLearner->getNTrain() * config.batchSize) << "% of epoch)" <<
+                        " numRight=" << batchNumRight << "(" << (batchNumRight * 100.0f / nextBatch / config.batchSize) << "%)" <<
                         " loss=" << batchLoss << endl;
-                    WeightsPersister::persistWeights( config.weightsFile, config.getTrainingString(), net,
-                        nextEpoch, nextBatch, 0, batchNumRight, batchLoss );
+                    WeightsPersister::persistWeights(config.weightsFile, config.getTrainingString(), net,
+                        nextEpoch, nextBatch, 0, batchNumRight, batchLoss);
                     weightsWriteTimer.lap();
                 }
             }
@@ -415,26 +423,26 @@ void go(Config config) {
     delete weightsInitializer;
     delete trainer;
     delete netLearner;
-    if( multiNet != 0 ) {
+    if(multiNet != 0) {
         delete multiNet;
     }
     delete net;
-    if( trainData != 0 ) {
+    if(trainData != 0) {
         delete[] trainData;
     }
-    if( testData != 0 ) {
+    if(testData != 0) {
         delete[] testData;
     }
-    if( testLabels != 0 ) {
+    if(testLabels != 0) {
         delete[] testLabels;
     }
-    if( trainLabels != 0 ) {
+    if(trainLabels != 0) {
         delete[] trainLabels;
     }
     delete cl;
 }
 
-void printUsage( char *argv[], Config config ) {
+void printUsage(char *argv[], Config config) {
     cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
     cout << endl;
     cout << "Possible key=value pairs:" << endl;
@@ -443,12 +451,12 @@ void printUsage( char *argv[], Config config ) {
         cog.outl('cout << "public api, shouldnt change within major version:" << endl;')
         for (name,type,description,_, is_public_api) in options:
             if is_public_api:
-                cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
+                cog.outl('cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
         cog.outl('cout << "" << endl; ')
         cog.outl('cout << "unstable, might change within major version:" << endl; ')
         for (name,type,description,_, is_public_api) in options:
             if not is_public_api:
-                cog.outl( 'cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
+                cog.outl('cout << "    ' + name.lower() + '=[' + description + '] (" << config.' + name + ' << ")" << endl;')
     *///]]]
     // generated using cog:
     cout << "public api, shouldnt change within major version:" << endl;
@@ -485,14 +493,14 @@ void printUsage( char *argv[], Config config ) {
     // [[[end]]]
 }
 
-int main( int argc, char *argv[] ) {
+int main(int argc, char *argv[]) {
     Config config;
-    if( argc == 2 && ( string(argv[1]) == "--help" || string(argv[1]) == "--?" || string(argv[1]) == "-?" || string(argv[1]) == "-h" ) ) {
-        printUsage( argv, config );
+    if(argc == 2 && (string(argv[1]) == "--help" || string(argv[1]) == "--?" || string(argv[1]) == "-?" || string(argv[1]) == "-h")) {
+        printUsage(argv, config);
     } 
-    for( int i = 1; i < argc; i++ ) {
-        vector<string> splitkeyval = split( argv[i], "=" );
-        if( splitkeyval.size() != 2 ) {
+    for(int i = 1; i < argc; i++) {
+        vector<string> splitkeyval = split(argv[i], "=");
+        if(splitkeyval.size() != 2) {
           cout << "Usage: " << argv[0] << " [key]=[value] [[key]=[value]] ..." << endl;
           exit(1);
         } else {
@@ -501,105 +509,105 @@ int main( int argc, char *argv[] ) {
 //            cout << "key [" << key << "]" << endl;
             /* [[[cog
                 cog.outl('// generated using cog:')
-                cog.outl('if( false ) {')
+                cog.outl('if(false) {')
                 for (name,type,description,_,_) in options:
-                    cog.outl( '} else if( key == "' + name.lower() + '" ) {')
+                    cog.outl('} else if(key == "' + name.lower() + '") {')
                     converter = '';
                     if type == 'int':
                         converter = 'atoi';
                     elif type == 'float':
                         converter = 'atof';
-                    cog.outl( '    config.' + name + ' = ' + converter + '(value);')
+                    cog.outl('    config.' + name + ' = ' + converter + '(value);')
             */// ]]]
             // generated using cog:
-            if( false ) {
-            } else if( key == "gpuindex" ) {
+            if(false) {
+            } else if(key == "gpuindex") {
                 config.gpuIndex = atoi(value);
-            } else if( key == "datadir" ) {
+            } else if(key == "datadir") {
                 config.dataDir = (value);
-            } else if( key == "trainfile" ) {
+            } else if(key == "trainfile") {
                 config.trainFile = (value);
-            } else if( key == "dataset" ) {
+            } else if(key == "dataset") {
                 config.dataset = (value);
-            } else if( key == "validatefile" ) {
+            } else if(key == "validatefile") {
                 config.validateFile = (value);
-            } else if( key == "numtrain" ) {
+            } else if(key == "numtrain") {
                 config.numTrain = atoi(value);
-            } else if( key == "numtest" ) {
+            } else if(key == "numtest") {
                 config.numTest = atoi(value);
-            } else if( key == "batchsize" ) {
+            } else if(key == "batchsize") {
                 config.batchSize = atoi(value);
-            } else if( key == "numepochs" ) {
+            } else if(key == "numepochs") {
                 config.numEpochs = atoi(value);
-            } else if( key == "netdef" ) {
+            } else if(key == "netdef") {
                 config.netDef = (value);
-            } else if( key == "loadweights" ) {
+            } else if(key == "loadweights") {
                 config.loadWeights = atoi(value);
-            } else if( key == "weightsfile" ) {
+            } else if(key == "weightsfile") {
                 config.weightsFile = (value);
-            } else if( key == "writeweightsinterval" ) {
+            } else if(key == "writeweightsinterval") {
                 config.writeWeightsInterval = atof(value);
-            } else if( key == "normalization" ) {
+            } else if(key == "normalization") {
                 config.normalization = (value);
-            } else if( key == "normalizationnumstds" ) {
+            } else if(key == "normalizationnumstds") {
                 config.normalizationNumStds = atof(value);
-            } else if( key == "dumptimings" ) {
+            } else if(key == "dumptimings") {
                 config.dumpTimings = atoi(value);
-            } else if( key == "multinet" ) {
+            } else if(key == "multinet") {
                 config.multiNet = atoi(value);
-            } else if( key == "loadondemand" ) {
+            } else if(key == "loadondemand") {
                 config.loadOnDemand = atoi(value);
-            } else if( key == "filereadbatches" ) {
+            } else if(key == "filereadbatches") {
                 config.fileReadBatches = atoi(value);
-            } else if( key == "normalizationexamples" ) {
+            } else if(key == "normalizationexamples") {
                 config.normalizationExamples = atoi(value);
-            } else if( key == "weightsinitializer" ) {
+            } else if(key == "weightsinitializer") {
                 config.weightsInitializer = (value);
-            } else if( key == "initialweights" ) {
+            } else if(key == "initialweights") {
                 config.initialWeights = atof(value);
-            } else if( key == "trainer" ) {
+            } else if(key == "trainer") {
                 config.trainer = (value);
-            } else if( key == "learningrate" ) {
+            } else if(key == "learningrate") {
                 config.learningRate = atof(value);
-            } else if( key == "rho" ) {
+            } else if(key == "rho") {
                 config.rho = atof(value);
-            } else if( key == "momentum" ) {
+            } else if(key == "momentum") {
                 config.momentum = atof(value);
-            } else if( key == "weightdecay" ) {
+            } else if(key == "weightdecay") {
                 config.weightDecay = atof(value);
-            } else if( key == "anneal" ) {
+            } else if(key == "anneal") {
                 config.anneal = atof(value);
             // [[[end]]]
             } else {
                 cout << endl;
                 cout << "Error: key '" << key << "' not recognised" << endl;
                 cout << endl;
-                printUsage( argv, config );
+                printUsage(argv, config);
                 cout << endl;
                 return -1;
             }
         }
     }
-    string dataset = toLower( config.dataset );
-    if( dataset != "" ) {
-        if( dataset == "mnist" ) {
+    string dataset = toLower(config.dataset);
+    if(dataset != "") {
+        if(dataset == "mnist") {
             config.dataDir = "../data/mnist";
             config.trainFile = "train-images-idx3-ubyte";
             config.validateFile = "t10k-images-idx3-ubyte";
-        } else if( dataset == "norb" ) {
+        } else if(dataset == "norb") {
             config.dataDir = "../data/norb";
             config.trainFile = "training-shuffled-dat.mat";
             config.validateFile = "testing-sampled-dat.mat";
-        } else if( dataset == "cifar10" ) {
+        } else if(dataset == "cifar10") {
             config.dataDir = "../data/cifar10";
             config.trainFile = "train-dat.mat";
             config.validateFile = "test-dat.mat";
-        } else if( dataset == "kgsgo" ) {
+        } else if(dataset == "kgsgo") {
             config.dataDir = "../data/kgsgo";
             config.trainFile = "kgsgo-train10k-v2.dat";
             config.validateFile = "kgsgo-test-v2.dat";
             config.loadOnDemand = 1;
-        } else if( dataset == "kgsgoall" ) {
+        } else if(dataset == "kgsgoall") {
             config.dataDir = "../data/kgsgo";
             config.trainFile = "kgsgo-trainall-v2.dat";
             config.validateFile = "kgsgo-test-v2.dat";
@@ -614,8 +622,8 @@ int main( int argc, char *argv[] ) {
         cout << "   validatefile: " << config.validateFile << ":" << endl;
     }
     try {
-        go( config );
-    } catch( runtime_error e ) {
+        go(config);
+    } catch(runtime_error e) {
         cout << "Something went wrong: " << e.what() << endl;
         return -1;
     }
