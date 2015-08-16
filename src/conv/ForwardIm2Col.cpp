@@ -77,6 +77,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
     StatefulTimer::timeCheck("ForwardIm2Col::forward after alloc");
 
     for (int b = 0; b < batchSize; b ++) {
+        cout << "b=" << b << " numkernels=" << numKernels << endl;
         // Extract columns:
         kernelIm2Col->in(numKernels);
         kernelIm2Col->in(dataWrapper);
@@ -87,12 +88,25 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
         int numWorkgroups = this->numKernels;
 
         kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
+        dataWrapper->copyToHost();
+        for( int i = 0; i < 1; i++ ) {
+            cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
+        }
+        columnsWrapper->copyToHost();
+        for( int i = 0; i < 1; i++ ) {
+            cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
+        }
+        weightsWrapper->copyToHost();
+        for( int i = 0; i < 1; i++ ) {
+            cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
+        }
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
         long m = dim.numFilters;
         long n = dim.outputSizeSquared;
         long k = dim.numFilters * dim.filterSizeSquared;
+        cout << "m=" << m << " n=" << n << " k=" << k << endl;
 
         // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
         cl_int err = clblasSgemm(
@@ -102,12 +116,17 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
             1,
             columnsWrapper->getBuffer(), 0, n,
             weightsWrapper->getBuffer(), 0, k,
-            1,
+            0,
             outputWrapper->getBuffer(), b * dim.outputCubeSize, n,
             1, cl->queue, 0, NULL, 0
        );
         if (err != CL_SUCCESS) {
             throw runtime_error("clblasSgemm() failed with " + toString(err));
+        }
+        cl->finish();
+        outputWrapper->copyToHost();
+        for( int i = 0; i < 1; i++ ) {
+            cout << "output[" << i << "]=" << reinterpret_cast<float *>(outputWrapper->getHostArray())[i] << endl;
         }
     }
 
