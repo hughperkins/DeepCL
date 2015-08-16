@@ -73,13 +73,13 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
     int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
     float *columns = new float[columnsSize];
     CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
-    cout << "columnsSize: " << columnsSize << endl;
-    cout << "weightsize: " << weightsWrapper->size() << endl;
+//    cout << "columnsSize: " << columnsSize << endl;
+//    cout << "weightsize: " << weightsWrapper->size() << endl;
 
     StatefulTimer::timeCheck("ForwardIm2Col::forward after alloc");
 
     for (int b = 0; b < batchSize; b ++) {
-        cout << "b=" << b << " numkernels=" << numKernels << endl;
+//        cout << "b=" << b << " numkernels=" << numKernels << endl;
         // Extract columns:
         kernelIm2Col->in(numKernels);
         kernelIm2Col->in(dataWrapper);
@@ -90,31 +90,32 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
         int numWorkgroups = this->numKernels;
 
         kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
-        dataWrapper->copyToHost();
-        for( int i = 0; i < dataWrapper->size(); i++ ) {
-            cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
-        }
-        columnsWrapper->copyToHost();
-        for( int i = 0; i < columnsSize; i++ ) {
-            cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
-        }
-        weightsWrapper->copyToHost();
-        for( int i = 0; i < weightsWrapper->size(); i++ ) {
-            cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
-        }
+//        dataWrapper->copyToHost();
+//        for( int i = 0; i < dataWrapper->size(); i++ ) {
+//            cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
+//        }
+//        columnsWrapper->copyToHost();
+//        for( int i = 0; i < columnsSize; i++ ) {
+//            cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
+//        }
+//        weightsWrapper->copyToHost();
+//        for( int i = 0; i < weightsWrapper->size(); i++ ) {
+//            cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
+//        }
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
         long m = dim.outputSizeSquared;
         long n = dim.numFilters;
         long k = dim.inputPlanes * dim.filterSizeSquared;
-        cout << "m=" << m << " n=" << n << " k=" << k << endl;
+//        cout << "m=" << m << " n=" << n << " k=" << k << endl;
 
-        size_t lda = k;
-        size_t ldb = n;
-        size_t ldc = n;
+        clblasOrder order = clblasColumnMajor;
+        size_t lda = order == clblasRowMajor ? k : m;
+        size_t ldb = order == clblasRowMajor ? n : k;
+        size_t ldc = order == clblasRowMajor ? n : m;
         cl_int err = clblasSgemm(
-            clblasRowMajor,
+            order,
             clblasNoTrans, clblasNoTrans,
             m, n, k,
             1,
@@ -127,11 +128,11 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
         if (err != CL_SUCCESS) {
             throw runtime_error("clblasSgemm() failed with " + toString(err));
         }
-        cl->finish();
-        outputWrapper->copyToHost();
-        for( int i = 0; i < 1; i++ ) {
-            cout << "output[" << i << "]=" << reinterpret_cast<float *>(outputWrapper->getHostArray())[i] << endl;
-        }
+//        cl->finish();
+//        outputWrapper->copyToHost();
+//        for( int i = 0; i < 1; i++ ) {
+//            cout << "output[" << i << "]=" << reinterpret_cast<float *>(outputWrapper->getHostArray())[i] << endl;
+//        }
     }
 
     delete columnsWrapper;
