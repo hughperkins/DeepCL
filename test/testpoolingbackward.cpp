@@ -124,14 +124,14 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
     int outputImageSize = p1->outputImageSize;
     int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
     float *errors = new float[ errorsSize ];
-    int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
+    int inputNumFloats = batchSize * inputImageSize * inputImageSize * numPlanes;
     int *selectors = new int[ errorsSize ];
-    float *errorsForUpstream0 = new float[ inputSize ];
-    float *errorsForUpstream1 = new float[ inputSize ];
+    float *errorsForUpstream0 = new float[ inputNumFloats ];
+    float *errorsForUpstream1 = new float[ inputNumFloats ];
     
     PoolingForward *forwardprop = PoolingForward::instanceSpecific( 0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
     float *output = new float[errorsSize];
-    float *input = new float[inputSize];
+    float *input = new float[inputNumFloats];
     float *errorsForUpstream[2];
     errorsForUpstream[0] = errorsForUpstream0;
     errorsForUpstream[1] = errorsForUpstream1;
@@ -143,7 +143,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
         // easiest way to select valid selectors might be to just forwardforward first?
 
         WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
+        WeightRandomizer::randomize( it, input, inputNumFloats, -0.1f, 0.1f );    
         forwardprop->forward( batchSize, input, selectors, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
@@ -151,7 +151,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
         }
         bool ok = true;
         int numErrors = 0;
-        for( int i = 0; i < inputSize; i++ ) {
+        for( int i = 0; i < inputNumFloats; i++ ) {
             if( errorsForUpstream0[i] != errorsForUpstream1[i] ) {
                 cout << "diff: i=" << i << " " << errorsForUpstream0[i] << " != " << errorsForUpstream1[i] << endl;
                 ok = false;
@@ -201,9 +201,9 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = poolingForward->getOutputSize( batchSize );
-    int *selectors = new int[outputSize];
-    float *output = new float[outputSize];
+    int outputNumFloats = poolingForward->getOutputSize( batchSize );
+    int *selectors = new int[outputNumFloats];
+    float *output = new float[outputNumFloats];
 
     poolingForward->forward( batchSize, data, selectors, output );
 

@@ -160,16 +160,16 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
-    int inputSize = net->getLayer(0)->getOutputSize();
-    int outputSize = net->getLayer(1)->getOutputSize();
+    int inputNumFloats = net->getLayer(0)->getOutputSize();
+    int outputNumFloats = net->getLayer(1)->getOutputSize();
     int weightsSize = net->getLayer(1)->getWeightsSize();
 
-    float *inputData = new float[max(10000, inputSize )];
-    float *expectedOutput = new float[max(10000, outputSize )];
-    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
-    memset( expectedOutput, 0, sizeof(float) * max(10000, outputSize ) );
-    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, expectedOutput, max(10000, outputSize ), -1.0f, 1.0f );
+    float *inputData = new float[max(10000, inputNumFloats )];
+    float *expectedOutput = new float[max(10000, outputNumFloats )];
+    memset( inputData, 0, sizeof(float) * max(10000, inputNumFloats ) );
+    memset( expectedOutput, 0, sizeof(float) * max(10000, outputNumFloats ) );
+    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputNumFloats ), -1.0f, 1.0f );
+    WeightRandomizer::randomize( random, expectedOutput, max(10000, outputNumFloats ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, net->getLayer(1)->getWeights(), weightsSize, -0.1f, 0.1f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
 
@@ -403,16 +403,16 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize5_filtersize3 ) {
 }
 
 float *allocateInputCleared( int batchSize, LayerDimensions &dim ) {
-    int inputSize = batchSize * dim.inputCubeSize;
-    float *data = new float[ inputSize ];
-    memset( data, 0, sizeof(float) * inputSize );
+    int inputNumFloats = batchSize * dim.inputCubeSize;
+    float *data = new float[ inputNumFloats ];
+    memset( data, 0, sizeof(float) * inputNumFloats );
     return data;
 }
 
 float *allocateErrorsCleared( int batchSize, LayerDimensions &dim ) {
-    int outputSize = batchSize * dim.outputCubeSize;
-    float *errors = new float[ outputSize ];
-    memset( errors, 0, sizeof(float) * outputSize );
+    int outputNumFloats = batchSize * dim.outputCubeSize;
+    float *errors = new float[ outputNumFloats ];
+    memset( errors, 0, sizeof(float) * outputNumFloats );
     return errors;
 }
 
@@ -519,20 +519,20 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int outputNumFloats = batchSize * dim.outputCubeSize;
+    int inputNumFloats = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
 //    int biasSize = dim.numFilters;
 
     cout << "numweights: " << weightsSize << endl;
 
-    float *errors = new float[max(10000, outputSize )];
-    float *inputData = new float[max(10000, inputSize )];
+    float *errors = new float[max(10000, outputNumFloats )];
+    float *inputData = new float[max(10000, inputNumFloats )];
     float *weights0 = new float[max(10000, weightsSize ) ];
     float *weights1 = new float[max(10000, weightsSize ) ];
 
-    memset( errors, 0, sizeof(float) * max(10000, outputSize ) );
-    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
+    memset( errors, 0, sizeof(float) * max(10000, outputNumFloats ) );
+    memset( inputData, 0, sizeof(float) * max(10000, inputNumFloats ) );
     memset( weights0, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
 
@@ -698,13 +698,13 @@ namespace testupdateweights {
 void compareSpecific( bool debug, float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int outputNumFloats = batchSize * dim.outputCubeSize;
+    int inputNumFloats = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
 
-    int outputAllocated = max( 10000, outputSize );
-    int inputAllocated = max( 10000, inputSize );
+    int outputAllocated = max( 10000, outputNumFloats );
+    int inputAllocated = max( 10000, inputNumFloats );
     int weightsAllocated = max( 10000, weightsSize );
     int biasAllocated = max( 10000, biasSize );
 
@@ -903,13 +903,13 @@ TEST( SLOW_testupdateweights, compare_args ) {
 
 void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int outputNumFloats = batchSize * dim.outputCubeSize;
+    int inputNumFloats = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
 
-    int outputAllocated = outputSize;
-    int inputAllocated = inputSize;
+    int outputAllocated = outputNumFloats;
+    int inputAllocated = inputNumFloats;
     int weightsAllocated = weightsSize;
     int biasAllocated = biasSize;
 

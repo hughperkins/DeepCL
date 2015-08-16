@@ -496,18 +496,18 @@ void testNumerically( float learningRate, int batchSize, int imageSize, int filt
     net->addLayer( SquareLossMaker::instance() );
     net->setBatchSize( batchSize );
 
-    int inputSize = net->getLayer(0)->getOutputSize();
-    int outputSize = net->getLastLayer()->getOutputSize();
+    int inputNumFloats = net->getLayer(0)->getOutputSize();
+    int outputNumFloats = net->getLastLayer()->getOutputSize();
     int weightsSize1 = net->getLayer(1)->getWeightsSize();
     int weightsSize2 = net->getLayer(3)->getWeightsSize();
 
-    float *inputData = new float[std::max<int>(10000, inputSize )];
-    float *expectedOutput = new float[std::max<int>(10000, outputSize )];
-    memset( inputData, 0, sizeof(float) * std::max<int>(10000, inputSize ) );
-    memset( expectedOutput, 0, sizeof(float) * std::max<int>(10000, outputSize ) );
+    float *inputData = new float[std::max<int>(10000, inputNumFloats )];
+    float *expectedOutput = new float[std::max<int>(10000, outputNumFloats )];
+    memset( inputData, 0, sizeof(float) * std::max<int>(10000, inputNumFloats ) );
+    memset( expectedOutput, 0, sizeof(float) * std::max<int>(10000, outputNumFloats ) );
 //    int seed = 0;
-    std::mt19937 random = WeightRandomizer::randomize( inputData, std::max<int>(10000, inputSize ), -2.0f, 2.0f );
-    WeightRandomizer::randomize( random, expectedOutput, std::max<int>(10000, outputSize ), -2.0f, 2.0f );
+    std::mt19937 random = WeightRandomizer::randomize( inputData, std::max<int>(10000, inputNumFloats ), -2.0f, 2.0f );
+    WeightRandomizer::randomize( random, expectedOutput, std::max<int>(10000, outputNumFloats ), -2.0f, 2.0f );
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weights, weightsSize1, -2.0f, 2.0f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
     WeightRandomizer::randomize( random, dynamic_cast<ConvolutionalLayer*>(net->getLayer(3))->weights, weightsSize2, -2.0f, 2.0f );
@@ -607,20 +607,20 @@ TEST( testbackward, checknumerically_imagesize5_filter3_relu ) {
 void measurePerf( int instance, int batchSize, LayerDimensions dim ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
-    int inputSize = dim.inputCubeSize * batchSize;
+    int inputNumFloats = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
     int weightsSize = dim.filtersSize;
     int errorsForUpstreamSize = dim.inputCubeSize * batchSize;
-    float *input = new float[inputSize];
+    float *input = new float[inputNumFloats];
     float *errors = new float[errorsSize];
     float *weights = new float[weightsSize];
 
-    WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( input, inputNumFloats, -0.1f, 0.1f );
     WeightRandomizer::randomize( errors, errorsSize, -0.1f, 0.1f );
     WeightRandomizer::randomize( weights, weightsSize, -0.1f, 0.1f );
 
     float *errorsForUpstream = new float[errorsForUpstreamSize];
-    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
+    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
     CLWrapper *errorsWrapper = cl->wrap( errorsSize, errors );
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, weights );
     CLWrapper *errorsForUpstreamWrapper = cl->wrap( errorsForUpstreamSize, errorsForUpstream );
@@ -667,22 +667,22 @@ TEST( SLOW_testbackward, perf_kgsgo_32c5 ) {
 void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensions dim ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
-    int inputSize = dim.inputCubeSize * batchSize;
+    int inputNumFloats = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
     int weightsSize = dim.filtersSize;
     int errorsForUpstreamSize = dim.inputCubeSize * batchSize;
 
-    float *input = new float[inputSize];
+    float *input = new float[inputNumFloats];
     float *errors = new float[errorsSize];
     float *weights = new float[weightsSize];
     float *errorsForUpstream0 = new float[errorsForUpstreamSize];
     float *errorsForUpstream1 = new float[errorsForUpstreamSize];
 
-    WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( input, inputNumFloats, -0.1f, 0.1f );
     WeightRandomizer::randomize( errors, errorsSize, -0.1f, 0.1f );
     WeightRandomizer::randomize( weights, weightsSize, -0.1f, 0.1f );
 
-    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
+    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
     CLWrapper *errorsWrapper = cl->wrap( errorsSize, errors );
     CLWrapper *weightsWrapper = cl->wrap( weightsSize, weights );
     CLWrapper *errorsForUpstreamWrapper0 = cl->wrap( errorsForUpstreamSize, errorsForUpstream0 );
@@ -707,11 +707,11 @@ void compareSpecific( int instance0, int instance1, int batchSize, LayerDimensio
     errorsForUpstreamWrapper0->copyToHost();
     errorsForUpstreamWrapper1->copyToHost();
 
-    int outputSize = errorsForUpstreamSize;
+    int outputNumFloats = errorsForUpstreamSize;
     cout << dim << endl;
     bool same = true;
-    for( int i = 0; i < max( 20, outputSize ); i++ ) {
-        if( i < outputSize ) {
+    for( int i = 0; i < max( 20, outputNumFloats ); i++ ) {
+        if( i < outputNumFloats ) {
             if( abs( errorsForUpstream0[i] - errorsForUpstream1[i] ) < 0.000001 || abs( errorsForUpstream0[i] - errorsForUpstream1[i] ) <= 0.001 * max( abs( errorsForUpstream0[i] ), abs( errorsForUpstream1[i] ) ) ) {
                 if( i < 20 ) {
                     cout << "output[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
@@ -801,15 +801,15 @@ float *test( int imageSize ) {
 
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
-    int outputSize = batchSize * dim.outputCubeSize;
+    int outputNumFloats = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
     float *bias = new float[max( 10000, biasSize)];
-    float *errors = new float[max(10000, outputSize )];
-    float *output = new float[max(10000, outputSize )];
+    float *errors = new float[max(10000, outputNumFloats )];
+    float *output = new float[max(10000, outputNumFloats )];
     WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
     WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
-    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
-    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
+    WeightRandomizer::randomize( errors, max(10000, outputNumFloats ), -1, 1 );
+    WeightRandomizer::randomize( output, max(10000, outputNumFloats ), -1, 1 );
 
     EasyCL cl;
     Backward *backwardImpl = Backward::instanceForTest( &cl, dim, new ReluActivation() );
@@ -863,15 +863,15 @@ float *test( int imageSize ) {
 
 //    int weightsSize = dim.filtersSize;
 //    int biasSize = dim.numFilters;
-//    int outputSize = batchSize * dim.outputCubeSize;
+//    int outputNumFloats = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
 //    float *bias = new float[max( 10000, biasSize)];
-//    float *errors = new float[max(10000, outputSize )];
-//    float *output = new float[max(10000, outputSize )];
+//    float *errors = new float[max(10000, outputNumFloats )];
+//    float *output = new float[max(10000, outputNumFloats )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
 //    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
-//    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
-//    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
+//    WeightRandomizer::randomize( errors, max(10000, outputNumFloats ), -1, 1 );
+//    WeightRandomizer::randomize( output, max(10000, outputNumFloats ), -1, 1 );
 
 //    EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
@@ -898,15 +898,15 @@ float *test( int imageSize ) {
 
 //    int weightsSize = dim.filtersSize;
 //    int biasSize = dim.numFilters;
-//    int outputSize = batchSize * dim.outputCubeSize;
+//    int outputNumFloats = batchSize * dim.outputCubeSize;
 //    float *weights = new float[max(10000, weightsSize ) ];
 //    float *bias = new float[max( 10000, biasSize)];
-//    float *errors = new float[max(10000, outputSize )];
-//    float *output = new float[max(10000, outputSize )];
+//    float *errors = new float[max(10000, outputNumFloats )];
+//    float *output = new float[max(10000, outputNumFloats )];
 //    WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
 //    WeightRandomizer::randomize( bias, max( 10000, biasSize), -1, 1 );
-//    WeightRandomizer::randomize( errors, max(10000, outputSize ), -1, 1 );
-//    WeightRandomizer::randomize( output, max(10000, outputSize ), -1, 1 );
+//    WeightRandomizer::randomize( errors, max(10000, outputNumFloats ), -1, 1 );
+//    WeightRandomizer::randomize( output, max(10000, outputNumFloats ), -1, 1 );
 
 //    EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest( &cl, dim, new ReluActivation() );
@@ -940,23 +940,23 @@ TEST( testbackward, comparespecific ) {
 
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
-    int outputSize = batchSize * dim.outputCubeSize;
+    int outputNumFloats = batchSize * dim.outputCubeSize;
     float *weights = new float[max(10000, weightsSize ) ];
     float *bias = new float[max( 10000, biasSize)];
-    float *errors = new float[max(10000, outputSize )];
-    float *output = new float[max(10000, outputSize )];
+    float *errors = new float[max(10000, outputNumFloats )];
+    float *output = new float[max(10000, outputNumFloats )];
     memset( weights, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( bias, 0, sizeof(float) * max(10000, biasSize ) );
-    memset( errors, 0, sizeof(float) * max(10000, outputSize ) );
-    memset( output, 0, sizeof(float) * max(10000, outputSize ) );
+    memset( errors, 0, sizeof(float) * max(10000, outputNumFloats ) );
+    memset( output, 0, sizeof(float) * max(10000, outputNumFloats ) );
     mt19937 random = WeightRandomizer::randomize( weights, max(10000, weightsSize ), -1, 1 );
     WeightRandomizer::randomize( random, bias, max( 10000, biasSize), -1, 1 );
-    WeightRandomizer::randomize( random, errors, max(10000, outputSize ), -1, 1 );
-    WeightRandomizer::randomize( random, output, max(10000, outputSize ), -1, 1 );
+    WeightRandomizer::randomize( random, errors, max(10000, outputNumFloats ), -1, 1 );
+    WeightRandomizer::randomize( random, output, max(10000, outputNumFloats ), -1, 1 );
 //    WeightRandomizer::randomizeInts( weights, max(10000, weightsSize ), 1, 3 );
 //    WeightRandomizer::randomizeInts( bias, max( 10000, biasSize), 0, 3 );
-//    WeightRandomizer::randomizeInts( errors, max(10000, outputSize ), 0, 3 );
-//    WeightRandomizer::randomizeInts( output, max(10000, outputSize ), 0, 3 );
+//    WeightRandomizer::randomizeInts( errors, max(10000, outputNumFloats ), 0, 3 );
+//    WeightRandomizer::randomizeInts( output, max(10000, outputNumFloats ), 0, 3 );
 
 //    weights[0] = 3;
 //    weights[1] = 5;
@@ -991,7 +991,7 @@ TEST( testbackward, comparespecific ) {
     cout << dim << endl;
     for( int i = 0; i < 25; i++ ) {
         cout << "output[" << i << "]=" << errorsForUpstream1[i] << " " << errorsForUpstream2[i];
-        if( i < outputSize ) {
+        if( i < outputNumFloats ) {
             if( errorsForUpstream1[i] == errorsForUpstream2[i] ) {
                 cout << " SAME";
             } else {

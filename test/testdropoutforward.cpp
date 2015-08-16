@@ -54,9 +54,9 @@ TEST( testdropoutforward, basic ) {
                      3, 8.2f, 4.1f,
                      3, -33.1f, 14.2f,
     };
-    int outputSize = dropoutForward->getOutputSize( batchSize );
-    EXPECT_FLOAT_NEAR( outputSize, imageSize * imageSize );
-    float *output = new float[outputSize];
+    int outputNumFloats = dropoutForward->getOutputSize( batchSize );
+    EXPECT_FLOAT_NEAR( outputNumFloats, imageSize * imageSize );
+    float *output = new float[outputNumFloats];
 
     dropoutForward->forward( batchSize, mask, data, output );
 
@@ -108,8 +108,8 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
         1,1,
         0,1
     };
-    int outputSize = dropoutForward->getOutputSize( batchSize );
-    float *output = new float[outputSize];
+    int outputNumFloats = dropoutForward->getOutputSize( batchSize );
+    float *output = new float[outputNumFloats];
 
     dropoutForward->forward( batchSize, mask, data, output );
 
@@ -144,13 +144,13 @@ TEST( testdropoutforward, fromwrappers ) {
             1,0,1,0,
             0,0,1,1
     };
-    int outputSize = dropoutForward->getOutputSize( batchSize );
-    float *output = new float[outputSize];
+    int outputNumFloats = dropoutForward->getOutputSize( batchSize );
+    float *output = new float[outputNumFloats];
 
-    const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *maskWrapper = cl->wrap( inputSize, mask );
-    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
-    CLWrapper *outputWrapper = cl->wrap( outputSize, output );
+    const int inputNumFloats = batchSize * numPlanes * imageSize * imageSize;
+    CLWrapper *maskWrapper = cl->wrap( inputNumFloats, mask );
+    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
+    CLWrapper *outputWrapper = cl->wrap( outputNumFloats, output );
 
     maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
@@ -245,25 +245,25 @@ void compareSpecific( CompareSpecificArgs args ) {
     DropoutForward *dropoutForward0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
     DropoutForward *dropoutForward1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
 
-    const int inputSize = batchSize * numPlanes * imageSize * imageSize;
-    int outputSize = dropoutForward0->getOutputSize( batchSize );
+    const int inputNumFloats = batchSize * numPlanes * imageSize * imageSize;
+    int outputNumFloats = dropoutForward0->getOutputSize( batchSize );
 
-    unsigned char *mask = new unsigned char[ inputSize ];
-    float *input = new float[ inputSize ];
-    float *output = new float[ outputSize ];
+    unsigned char *mask = new unsigned char[ inputNumFloats ];
+    float *input = new float[ inputNumFloats ];
+    float *output = new float[ outputNumFloats ];
 
-    CLWrapper *maskWrapper = cl->wrap( inputSize, mask );
-    CLWrapper *inputWrapper = cl->wrap( inputSize, input );
-    CLWrapper *outputWrapper = cl->wrap( outputSize, output );
+    CLWrapper *maskWrapper = cl->wrap( inputNumFloats, mask );
+    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
+    CLWrapper *outputWrapper = cl->wrap( outputNumFloats, output );
 
-    WeightRandomizer::randomizeInts( mask, inputSize, 0, 2 );
-//    for( int i = 0; i < inputSize; i++ ) {
+    WeightRandomizer::randomizeInts( mask, inputNumFloats, 0, 2 );
+//    for( int i = 0; i < inputNumFloats; i++ ) {
 //        cout << (int)mask[i] << " ";
 //    }
 //    cout << endl;
-    WeightRandomizer::randomize( input, inputSize, -0.1f, 0.1f );
+    WeightRandomizer::randomize( input, inputNumFloats, -0.1f, 0.1f );
 
-    memset( output, 99, sizeof(int) * outputSize );
+    memset( output, 99, sizeof(int) * outputNumFloats );
 
     maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
@@ -272,10 +272,10 @@ void compareSpecific( CompareSpecificArgs args ) {
     dropoutForward0->forward( batchSize, maskWrapper, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
-    float *output0 = new float[ outputSize ];
-    memcpy( output0, output, sizeof(float) * outputSize );
+    float *output0 = new float[ outputNumFloats ];
+    memcpy( output0, output, sizeof(float) * outputNumFloats );
     
-    memset( output, 99, sizeof(int) * outputSize );
+    memset( output, 99, sizeof(int) * outputNumFloats );
 
     maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
@@ -285,7 +285,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     outputWrapper->copyToHost();
     
     int numErrors = 0;
-    for( int i = 0; i < outputSize; i++ ) {
+    for( int i = 0; i < outputNumFloats; i++ ) {
         bool ok = true;
         if( ( output[i] > 0 && output0[i] < 0 ) || ( output[i] < 0 && output0[i] > 0 ) ) {
             cout << "signs differ" << endl;
@@ -318,7 +318,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     }
     EXPECT_FLOAT_NEAR( 0, numErrors );
     if( numErrors > 0 ) {
-        int num2dPlanes = inputSize / imageSize / imageSize;
+        int num2dPlanes = inputNumFloats / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {
             cout << "2dplane " << plane << ":" << endl;
             for( int i = 0; i < imageSize; i++ ) {

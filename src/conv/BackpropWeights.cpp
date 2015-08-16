@@ -66,12 +66,12 @@ VIRTUAL void BackpropWeights::calcGradWeights( int batchSize, float *gradOutput,
 
 //    const float learningMultiplier = learningRate / batchSize / sqrt( dim.outputImageSize * dim.outputImageSize );
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    CLWrapper *gradOutputWrapper = cl->wrap( outputSize, gradOutput );
+    int outputNumFloats = batchSize * dim.outputCubeSize;
+    CLWrapper *gradOutputWrapper = cl->wrap( outputNumFloats, gradOutput );
     gradOutputWrapper->copyToDevice();
 
-    int inputSize = batchSize * dim.inputCubeSize;
-    CLWrapper *inputDataWrapper = cl->wrap( inputSize, inputs );
+    int inputNumFloats = batchSize * dim.inputCubeSize;
+    CLWrapper *inputDataWrapper = cl->wrap( inputNumFloats, inputs );
     inputDataWrapper->copyToDevice();
 
     CLWrapper *gradWeightsWrapper = 0;

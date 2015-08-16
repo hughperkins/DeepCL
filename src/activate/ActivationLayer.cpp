@@ -74,7 +74,7 @@ VIRTUAL float ActivationLayer::getOutput( int n, int plane, int row, int col ) {
 VIRTUAL void ActivationLayer::printOutput() {
 //    float const*output = getOutput();
 //    int outPlanes = getOutputPlanes();
-//    int outputSize = getOutputImageSize();
+//    int outputNumFloats = getOutputImageSize();
     std::cout << "  outputs: " << std::endl;
     getOutput();
 // output are organized like [imageid][filterid][row][col]

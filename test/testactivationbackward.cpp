@@ -129,13 +129,13 @@ TEST( SLOW_testactivationbackward, compare_args ) {
     int outputImageSize = p1->outputImageSize;
     int gradOutputSize = batchSize * outputImageSize * outputImageSize * numPlanes;
     float *gradOutput = new float[ gradOutputSize ];
-    int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
-    float *gradInput0 = new float[ inputSize ];
-    float *gradInput1 = new float[ inputSize ];
+    int inputNumFloats = batchSize * inputImageSize * inputImageSize * numPlanes;
+    float *gradInput0 = new float[ inputNumFloats ];
+    float *gradInput1 = new float[ inputNumFloats ];
     
     ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
     float *output = new float[gradOutputSize];
-    float *input = new float[inputSize];
+    float *input = new float[inputNumFloats];
     float *gradInput[2];
     gradInput[0] = gradInput0;
     gradInput[1] = gradInput1;
@@ -147,7 +147,7 @@ TEST( SLOW_testactivationbackward, compare_args ) {
         // easiest way to select valid selectors might be to just forwardforward first?
 
         WeightRandomizer::randomize( it, gradOutput, gradOutputSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
+        WeightRandomizer::randomize( it, input, inputNumFloats, -0.1f, 0.1f );    
         forwardprop->forward( batchSize, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
@@ -155,7 +155,7 @@ TEST( SLOW_testactivationbackward, compare_args ) {
         }
         bool ok = true;
         int numErrors = 0;
-        for( int i = 0; i < inputSize; i++ ) {
+        for( int i = 0; i < inputNumFloats; i++ ) {
             if( gradInput0[i] != gradInput1[i] ) {
                 cout << "diff: i=" << i << " " << gradInput0[i] << " != " << gradInput1[i] << endl;
                 ok = false;
@@ -204,9 +204,9 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationForward->getOutputSize( batchSize );
-    int *selectors = new int[outputSize];
-    float *output = new float[outputSize];
+    int outputNumFloats = activationForward->getOutputSize( batchSize );
+    int *selectors = new int[outputNumFloats];
+    float *output = new float[outputNumFloats];
 
     activationForward->forward( batchSize, data, selectors, output );
 
