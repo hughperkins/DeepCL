@@ -65,7 +65,7 @@ NeuralNet *NeuralNet::clone() {
         copy->addLayer( makerCopy );
     }
     copy->print();
-    cout << "outputimagesize: " << copy->getOutputImageSize() << endl;
+    cout << "outputimagesize: " << copy->getOutputSize() << endl;
     return copy;
 }
 EasyCL *NeuralNet::getCl() {
@@ -150,8 +150,8 @@ PUBLICAPI Layer const*NeuralNet::getLastLayer() const {
 PUBLICAPI VIRTUAL int NeuralNet::getOutputPlanes() const {
     return getLastLayer()->getOutputPlanes();
 }
-PUBLICAPI VIRTUAL int NeuralNet::getOutputImageSize() const {
-    return getLastLayer()->getOutputImageSize();
+PUBLICAPI VIRTUAL int NeuralNet::getOutputSize() const {
+    return getLastLayer()->getOutputSize();
 }
 PUBLICAPI void NeuralNet::setBatchSize( int batchSize ) {
     for( std::vector<Layer*>::iterator it = layers.begin(); it != layers.end(); it++ ) {
@@ -236,8 +236,8 @@ PUBLICAPI int NeuralNet::getOutputCubeSize() const {
 PUBLICAPI float const *NeuralNet::getOutput() const {
     return getOutput( (int)layers.size() - 1 );
 }
-PUBLICAPI VIRTUAL int NeuralNet::getOutputSize() const {
-    return getLastLayer()->getOutputSize();
+PUBLICAPI VIRTUAL int NeuralNet::getOutputNumElements() const {
+    return getLastLayer()->getOutputNumElements();
 }
 void NeuralNet::print() {
     cout << this->asString();

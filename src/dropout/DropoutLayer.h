@@ -22,10 +22,10 @@ class MultiplyBuffer;
 class DropoutLayer : public Layer {
 public:
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
     const float dropRatio;
 
-    const int outputImageSize;
+    const int outputSize;
 
     RandomSingleton *random;
 
@@ -58,11 +58,11 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL void fortesting_setRandomSingleton( RandomSingleton *random );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getOutputSize();
+    VIRTUAL int getOutputNumElements();
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputSize() const;
-    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize( int version ) const;
     VIRTUAL bool providesGradInputWrapper() const;

@@ -10,8 +10,8 @@
 // workgroupId: [outputPlane][inputPlane]
 // localId: [filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-// local: errorimage: outputImageSize * outputImageSize
-//        imageimage: inputImageSize * inputImageSize
+// local: errorimage: outputSize * outputSize
+//        imageimage: inputSize * inputSize
 // specific characteristic: load one stripe of each image at a time,
 // so we dont run out of memory
 // number of stripes set in: gNumStripes
@@ -32,15 +32,15 @@ void kernel backprop_floats_withscratch_dobias_striped(
         local float *_errorStripe, local float *_imageStripe
  ) {
     // gHalfFilterSize
-    // gInputImageSize
+    // gInputSize
     //
     // gInputStripeMarginRows => basically equal to gHalfFilterSize
-    // gInputStripeInnerNumRows = gInputImageSize / gNumStripes
+    // gInputStripeInnerNumRows = gInputSize / gNumStripes
     // gInputStripeOuterNumRows = gInputStripeInnerNumRows + 2 * gHalfFilterSize  (note: one row less than
     //                                                         if we just added gFilterSize)
-    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputImageSize
-    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputImageSize
-    // gInputStripeMarginSize = gInputStripeMarginRows * gInputImageSize
+    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputSize
+    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputSize
+    // gInputStripeMarginSize = gInputStripeMarginRows * gInputSize
     //
     // gOutputStripeNumRows
     // gOutputStripeSize
@@ -63,12 +63,12 @@ void kernel backprop_floats_withscratch_dobias_striped(
     float thisbiaschange = 0;
 #endif
     const int numLoopsForImageStripe = ( gInputStripeOuterSize + workgroupSize - 1 ) / workgroupSize;
-    const int numLoopsForErrorStripe = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int numLoopsForErrorStripe = ( gOutputSizeSquared + workgroupSize - 1 ) / workgroupSize;
     for( int n = 0; n < batchSize; n++ ) {
-        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
-        const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputImageSizeSquared;
-        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
-        const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputImageSizeSquared;
+        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;
+        const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputSizeSquared;
+        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputSizeSquared;
+        const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputSizeSquared;
         for( int stripe = 0; stripe < gNumStripes; stripe++ ) {
             const int imageStripeInnerOffset = imageImageGlobalOffset + stripe * gInputStripeInnerSize;
             const int imageStripeOuterOffset = imageStripeInnerOffset - gInputStripeMarginSize;
@@ -99,25 +99,25 @@ void kernel backprop_floats_withscratch_dobias_striped(
             barrier(CLK_LOCAL_MEM_FENCE);
 //            if( localId == 13 ) {
 //                for( int i = 0; i < 12; i++ ) {
-//                    gradWeights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputImageSize];
+//                    gradWeights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputSize];
 //                }
 //                for( int i = 0; i < 20; i++ ) {
-//                    gradWeights[200 + stripe * 20 + i ] = _imageStripe[i * gInputImageSize];
+//                    gradWeights[200 + stripe * 20 + i ] = _imageStripe[i * gInputSize];
 //                }
 //            }
             if( localId < gFilterSizeSquared ) {
                 for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {
                     int upstreamRow = outRow - gMargin + filterRow;
-                    for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
+                    for( int outCol = 0; outCol < gOutputSize; outCol++ ) {
                         int upstreamCol = outCol - gMargin + filterCol;
                         bool proceed = 
                             upstreamRow >= 0 && upstreamCol >= 0 
-                            && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize
-                            && outRow < gOutputImageSize;
+                            && upstreamRow < gInputSize && upstreamCol < gInputSize
+                            && outRow < gOutputSize;
                         if( proceed ) {
-                            int resultIndex = outRow * gOutputImageSize + outCol;
+                            int resultIndex = outRow * gOutputSize + outCol;
                             float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];
-                            int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;
+                            int upstreamDataIndex = upstreamRow * gInputSize + upstreamCol;
                             float upstreamResult = _imageStripe[upstreamDataIndex +  gInputStripeMarginSize
                                         - stripe * gInputStripeInnerSize ];
                             thiswchange += upstreamResult * error;

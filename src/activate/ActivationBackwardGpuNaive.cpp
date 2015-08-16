@@ -33,14 +33,14 @@ VIRTUAL void ActivationBackwardGpuNaive::backward( int batchSize, CLWrapper *inp
 
     StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward start" );
 
-    int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+    int globalSize = batchSize * numPlanes * inputSize * inputSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->in( batchSize * numPlanes * inputImageSize * inputImageSize )
+    kernel->in( batchSize * numPlanes * inputSize * inputSize )
           ->in( inputWrapper )
           ->in( gradOutputWrapper )
           ->out( gradInputWrapper );
-    globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
+    globalSize = batchSize * numPlanes * outputSize * outputSize;
     workgroupSize = 64;
     numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
@@ -48,15 +48,15 @@ VIRTUAL void ActivationBackwardGpuNaive::backward( int batchSize, CLWrapper *inp
 
     StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward end" );
 }
-ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
-        ActivationBackward( cl, numPlanes, inputImageSize, fn ) {
+ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn ) :
+        ActivationBackward( cl, numPlanes, inputSize, fn ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
     options += " -D gNumPlanes=" + toString( numPlanes );
-    options += " -D gInputImageSize=" + toString( inputImageSize );
-    options += " -D gInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
-    options += " -D gOutputImageSize=" + toString( outputImageSize );
-    options += " -D gOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
+    options += " -D gInputSize=" + toString( inputSize );
+    options += " -D gInputSizeSquared=" + toString( inputSize * inputSize );
+    options += " -D gOutputSize=" + toString( outputSize );
+    options += " -D gOutputSizeSquared=" + toString( outputSize * outputSize );
     options += " -D " + fn->getDefineName();
 
     // [[[cog

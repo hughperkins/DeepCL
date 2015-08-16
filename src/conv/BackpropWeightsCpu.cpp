@@ -58,26 +58,26 @@ VIRTUAL void BackpropWeightsCpu::calcGradWeights( int batchSize, float *gradOutp
                     float thisBiasChange = 0;
                     // gradWeights:     [outPlane][inputPlane][filterRow][filterCol]
                     //       aggregate over:  [outRow][outCol][n]
-                    for( int outRow = 0; outRow < dim.outputImageSize; outRow++ ) {
+                    for( int outRow = 0; outRow < dim.outputSize; outRow++ ) {
                         int inputRow = outRow - margin + filterRow;
-                        if( inputRow < 0 || inputRow > dim.inputImageSize - 1 ) {
+                        if( inputRow < 0 || inputRow > dim.inputSize - 1 ) {
                             continue;
                         }
-                        for( int outCol = 0; outCol < dim.outputImageSize; outCol++ ) {
+                        for( int outCol = 0; outCol < dim.outputSize; outCol++ ) {
                             int inputCol = outCol - margin + filterCol;
-                            if( inputCol < 0 || inputCol > dim.inputImageSize - 1 ) {
+                            if( inputCol < 0 || inputCol > dim.inputSize - 1 ) {
                                 continue;
                             }
                             for( int n = 0; n < batchSize; n++ ) {
                                 int outputIndex = ( ( n
                                     * dim.numFilters + outPlane )
-                                    * dim.outputImageSize + outRow )
-                                    * dim.outputImageSize + outCol;
+                                    * dim.outputSize + outRow )
+                                    * dim.outputSize + outCol;
                                 float gradOutputValue = gradOutput[outputIndex];
                                 int inputIndex = ( ( n
                                     * dim.inputPlanes + inputPlane )
-                                    * dim.inputImageSize + inputRow )
-                                    * dim.inputImageSize + inputCol;
+                                    * dim.inputSize + inputRow )
+                                    * dim.inputSize + inputCol;
                                 float inputValue = inputs[ inputIndex ];
                                 thiswchange += gradOutputValue * inputValue;
                                 thisBiasChange += gradOutputValue; // fairly sure this is right.  Fairly :-P

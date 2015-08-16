@@ -20,8 +20,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingForwardCpu::PoolingForwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingForward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingForwardCpu::PoolingForwardCpu( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
+        PoolingForward( cl, padZeros, numPlanes, inputSize, poolingSize ) {
 }
 VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper ) {
 //    cout << "PoolingForwardCpu::forward( CLWrapper * )" << endl;
@@ -29,16 +29,16 @@ VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper,
     inputWrapper->copyToHost();
 
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    int *selectors = new int[ getOutputSize( batchSize ) ];
-    float *output = new float[ getOutputSize( batchSize ) ];
+    int *selectors = new int[ getOutputNumElements( batchSize ) ];
+    float *output = new float[ getOutputNumElements( batchSize ) ];
 
     forward( batchSize, input, selectors, output );
 
     int *selectorsHostArray = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
-    memcpy( selectorsHostArray, selectors, sizeof(int) * getOutputSize( batchSize ) );
+    memcpy( selectorsHostArray, selectors, sizeof(int) * getOutputNumElements( batchSize ) );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
+    memcpy( outputHostArray, output, sizeof(float) * getOutputNumElements( batchSize ) );
 
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
@@ -47,20 +47,20 @@ VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper,
     delete[] output;
 }
 VIRTUAL void PoolingForwardCpu::forward( int batchSize, float *input, int *selectors, float *output ) {
-//    float *output = new float[ getOutputSize( batchSize ) ];
+//    float *output = new float[ getOutputNumElements( batchSize ) ];
 //    cout << "PoolingForwardCpu::forward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingForwardCpu::forward start" );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
+            for( int outputRow = 0; outputRow < outputSize; outputRow++ ) {
                 int inputRow = outputRow * poolingSize;
-                for( int outputCol = 0; outputCol < outputImageSize; outputCol++ ) {
+                for( int outputCol = 0; outputCol < outputSize; outputCol++ ) {
                     int inputCol = outputCol * poolingSize;
                     int selector = 0;
                     float maxValue = input[ getInputIndex( n, plane, inputRow, inputCol ) ];
                     for( int dx = 0; dx < poolingSize; dx++ ) {
                         for( int dy = 0; dy < poolingSize; dy++ ) {
-                            if( inputRow + dx < inputImageSize && inputCol + dy < inputImageSize ) {
+                            if( inputRow + dx < inputSize && inputCol + dy < inputSize ) {
                                 float thisValue = input[ getInputIndex( n, plane, inputRow + dx, inputCol + dy ) ];
                                 if( thisValue > maxValue ) {
                                     maxValue = thisValue;

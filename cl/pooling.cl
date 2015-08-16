@@ -10,11 +10,11 @@
 kernel void forwardNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {
     const int globalId = get_global_id(0);
 
-    const int intraImageOffset = globalId % gOutputImageSizeSquared;
-    const int outputRow = intraImageOffset / gOutputImageSize;
-    const int outputCol = intraImageOffset % gOutputImageSize;
+    const int intraImageOffset = globalId % gOutputSizeSquared;
+    const int outputRow = intraImageOffset / gOutputSize;
+    const int outputCol = intraImageOffset % gOutputSize;
 
-    const int image2dIdx = globalId / gOutputImageSizeSquared;
+    const int image2dIdx = globalId / gOutputSizeSquared;
     const int plane = image2dIdx % gNumPlanes;
     const int n = image2dIdx / gNumPlanes;
 
@@ -24,15 +24,15 @@ kernel void forwardNaive( const int batchSize, global const float *input, global
 
     const int inputRow = outputRow * gPoolingSize;
     const int inputCol = outputCol * gPoolingSize;
-    const int inputImageOffset = ( n * gNumPlanes + plane ) * gInputImageSizeSquared;
+    const int inputImageOffset = ( n * gNumPlanes + plane ) * gInputSizeSquared;
     int selector = 0;
-    int poolInputOffset = inputImageOffset + inputRow * gInputImageSize + inputCol;
+    int poolInputOffset = inputImageOffset + inputRow * gInputSize + inputCol;
     float maxValue = input[ poolInputOffset ];
     for( int dRow = 0; dRow < gPoolingSize; dRow++ ) {
         for( int dCol = 0; dCol < gPoolingSize; dCol++ ) {
-            bool process = ( inputRow + dRow < gInputImageSize ) && ( inputCol + dCol < gInputImageSize );
+            bool process = ( inputRow + dRow < gInputSize ) && ( inputCol + dCol < gInputSize );
             if( process ) {
-                float thisValue = input[ poolInputOffset + dRow * gInputImageSize + dCol ];
+                float thisValue = input[ poolInputOffset + dRow * gInputSize + dCol ];
                 if( thisValue > maxValue ) {
                     maxValue = thisValue;
                     selector = dRow * gPoolingSize + dCol;

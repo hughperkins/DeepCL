@@ -40,7 +40,7 @@ public:
     /// \brief Get the size of array needed for persisting to/from an array
     PUBLICAPI virtual int getPersistSize( int version ) const = 0;
     /// \brief Get the size of the activated output from this layer
-    PUBLICAPI virtual int getOutputSize() const = 0;
+    PUBLICAPI virtual int getOutputNumElements() const = 0;
     virtual std::string getClassName() const = 0;
 
     // [[[cog
@@ -64,7 +64,7 @@ public:
     PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
-    PUBLICAPI VIRTUAL int getOutputImageSize() const;
+    PUBLICAPI VIRTUAL int getOutputSize() const;
     VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();

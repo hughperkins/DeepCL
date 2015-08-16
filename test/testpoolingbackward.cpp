@@ -31,12 +31,12 @@ TEST( testpoolingbackward, basic ) {
         2, 1,
         0, 3
     };
-    float *errorsForUpstream = new float[ poolingBackprop->getInputSize( batchSize ) ];
+    float *errorsForUpstream = new float[ poolingBackprop->getInputNumElements( batchSize ) ];
 
     poolingBackprop->backward( batchSize, errors, selectors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ poolingForward->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingForward->getInputSize( batchSize ) ];
+//    float *expectedErrorsForUpstream = new float[ poolingForward->getInputNumElements( batchSize ) ];
+//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingForward->getInputNumElements( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         0,0,0,5,
         3,0,0,0,
@@ -71,12 +71,12 @@ TEST( testpoolingbackward, basic_2plane_batchsize2 ) {
         0, 
         3
     };
-    float *errorsForUpstream = new float[ poolingBackprop->getInputSize( batchSize ) ];
+    float *errorsForUpstream = new float[ poolingBackprop->getInputNumElements( batchSize ) ];
 
     poolingBackprop->backward( batchSize, errors, selectors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ poolingForward->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingForward->getInputSize( batchSize ) ];
+//    float *expectedErrorsForUpstream = new float[ poolingForward->getInputNumElements( batchSize ) ];
+//    memset( expectedErrorsForUpstream, 0, sizeof(float) * poolingForward->getInputNumElements( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         0,0,
         3,0,
@@ -100,7 +100,7 @@ TEST( testpoolingbackward, basic_2plane_batchsize2 ) {
 }
 
 TEST( SLOW_testpoolingbackward, compare_args ) {
-    int inputImageSize = 9;
+    int inputSize = 9;
     int poolingSize = 2;
     int instance0 = 0;
     int instance1 = 1;
@@ -111,7 +111,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
     TestArgsParser::arg( "batchSize", &batchSize );
     TestArgsParser::arg( "poolingsize", &poolingSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
-    TestArgsParser::arg( "inputimagesize", &inputImageSize );
+    TestArgsParser::arg( "inputimagesize", &inputSize );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
@@ -119,19 +119,19 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
     bool padZeros = true;
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    int outputImageSize = p1->outputImageSize;
-    int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
+    PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputSize, poolingSize );
+    PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputSize, poolingSize );
+    int outputSize = p1->outputSize;
+    int errorsSize = batchSize * outputSize * outputSize * numPlanes;
     float *errors = new float[ errorsSize ];
-    int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
+    int inputNumElements = batchSize * inputSize * inputSize * numPlanes;
     int *selectors = new int[ errorsSize ];
-    float *errorsForUpstream0 = new float[ inputSize ];
-    float *errorsForUpstream1 = new float[ inputSize ];
+    float *errorsForUpstream0 = new float[ inputNumElements ];
+    float *errorsForUpstream1 = new float[ inputNumElements ];
     
-    PoolingForward *forwardprop = PoolingForward::instanceSpecific( 0, cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    PoolingForward *forwardprop = PoolingForward::instanceSpecific( 0, cl, padZeros, numPlanes, inputSize, poolingSize );
     float *output = new float[errorsSize];
-    float *input = new float[inputSize];
+    float *input = new float[inputNumElements];
     float *errorsForUpstream[2];
     errorsForUpstream[0] = errorsForUpstream0;
     errorsForUpstream[1] = errorsForUpstream1;
@@ -143,7 +143,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
         // easiest way to select valid selectors might be to just forwardforward first?
 
         WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
+        WeightRandomizer::randomize( it, input, inputNumElements, -0.1f, 0.1f );    
         forwardprop->forward( batchSize, input, selectors, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
@@ -151,7 +151,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
         }
         bool ok = true;
         int numErrors = 0;
-        for( int i = 0; i < inputSize; i++ ) {
+        for( int i = 0; i < inputNumElements; i++ ) {
             if( errorsForUpstream0[i] != errorsForUpstream1[i] ) {
                 cout << "diff: i=" << i << " " << errorsForUpstream0[i] << " != " << errorsForUpstream1[i] << endl;
                 ok = false;
@@ -201,9 +201,9 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = poolingForward->getOutputSize( batchSize );
-    int *selectors = new int[outputSize];
-    float *output = new float[outputSize];
+    int outputNumElements = poolingForward->getOutputNumElements( batchSize );
+    int *selectors = new int[outputNumElements];
+    float *output = new float[outputNumElements];
 
     poolingForward->forward( batchSize, data, selectors, output );
 

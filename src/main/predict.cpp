@@ -230,7 +230,7 @@ void go(Config config) {
                     *outFile << "\n";
                 }
             } else {
-                outFile->write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputSize() * 4 * config.batchSize);
+                outFile->write( reinterpret_cast<const char *>(net->getOutput()), net->getOutputNumElements() * 4 * config.batchSize);
             }
         } else {
             SoftMaxLayer *softMaxLayer = dynamic_cast< SoftMaxLayer *>(net->getLayer( config.outputLayer ) );

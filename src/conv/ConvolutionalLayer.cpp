@@ -53,7 +53,7 @@ ConvolutionalLayer::ConvolutionalLayer( EasyCL *cl, Layer *previousLayer, Convol
         allocatedSpaceNumExamples( 0 )
             {
     dim.setInputPlanes( previousLayer->getOutputPlanes() )
-        .setInputImageSize( previousLayer->getOutputImageSize() )
+        .setInputSize( previousLayer->getOutputSize() )
         .setNumFilters( maker->_numFilters )
         .setFilterSize( maker->_filterSize )
         .setBiased( maker->_biased )
@@ -72,9 +72,9 @@ ConvolutionalLayer::ConvolutionalLayer( EasyCL *cl, Layer *previousLayer, Convol
         backwardImpl = Backward::instance( cl, dim );
     }
 
-    if( dim.filterSize > dim.inputImageSize ) {
+    if( dim.filterSize > dim.inputSize ) {
             throw std::runtime_error("filter size cannot be larger than upstream image size: " + toString( dim.filterSize) +
-                " > " + toString(dim.inputImageSize) );
+                " > " + toString(dim.inputSize) );
     }
     weights = new float[ getWeightsSize() ];
     if( dim.biased ) {
@@ -181,14 +181,14 @@ VIRTUAL CLWrapper *ConvolutionalLayer::getOutputWrapper() {
 VIRTUAL bool ConvolutionalLayer::needsBackProp() {
     return true;
 }
-VIRTUAL int ConvolutionalLayer::getOutputSize() const {
+VIRTUAL int ConvolutionalLayer::getOutputNumElements() const {
     return batchSize * dim.outputCubeSize;
 }
 VIRTUAL int ConvolutionalLayer::getOutputPlanes() const {
     return dim.numFilters;
 }
-VIRTUAL int ConvolutionalLayer::getOutputImageSize() const {
-    return dim.outputImageSize;
+VIRTUAL int ConvolutionalLayer::getOutputSize() const {
+    return dim.outputSize;
 }
 // filters are organized like [filterid][plane][row][col]
 void ConvolutionalLayer::randomizeWeights( WeightsInitializer *weightsInitializer ) {
@@ -250,18 +250,18 @@ VIRTUAL void ConvolutionalLayer::printOutput() {
         std::cout << "    n: " << n << std::endl;
         for( int plane = 0; plane < std::min(5, dim.numFilters ); plane++ ) {
             if( dim.numFilters > 1 ) std::cout << "      plane " << plane << std::endl;
-            if( dim.outputImageSize == 1 ) {
+            if( dim.outputSize == 1 ) {
                  std::cout << "        " << getOutput(n, plane, 0, 0 ) << std::endl;
             } else {
-                for( int i = 0; i < std::min(5, dim.outputImageSize); i++ ) {
+                for( int i = 0; i < std::min(5, dim.outputSize); i++ ) {
                     std::cout << "      ";
-                    for( int j = 0; j < std::min(5, dim.outputImageSize); j++ ) {
+                    for( int j = 0; j < std::min(5, dim.outputSize); j++ ) {
                         std::cout << getOutput( n, plane, i, j ) << " ";
                     }
-                    if( dim.outputImageSize > 5 ) std::cout << " ... ";
+                    if( dim.outputSize > 5 ) std::cout << " ... ";
                     std::cout << std::endl;
                 }
-                if( dim.outputImageSize > 5 ) std::cout << " ... " << std::endl;
+                if( dim.outputSize > 5 ) std::cout << " ... " << std::endl;
             }
             if( dim.numFilters > 5 ) std::cout << " ... other planes ... " << std::endl;
         }
@@ -283,12 +283,12 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     delete gradInputWrapper;
     delete[] gradInput;
 
-    output = new float[getOutputSize()];
-    outputWrapper = cl->wrap( getOutputSize(), output );
+    output = new float[getOutputNumElements()];
+    outputWrapper = cl->wrap( getOutputNumElements(), output );
 
     if( layerIndex > 1 ) {
-        gradInput = new float[ previousLayer->getOutputSize() ];
-        gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+        gradInput = new float[ previousLayer->getOutputNumElements() ];
+        gradInputWrapper = cl->wrap( previousLayer->getOutputNumElements(), gradInput );
     }
 }
 VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *bias ) {
@@ -391,7 +391,7 @@ VIRTUAL void ConvolutionalLayer::forward() {
         upstreamWrapper = previousLayer->getOutputWrapper();
     } else {
 //            std::cout << "layer " << previousLayer->layerIndex << " has no outputWrapper" << std::endl;
-        upstreamWrapper = cl->wrap( previousLayer->getOutputSize(), (float *)previousLayer->getOutput() );
+        upstreamWrapper = cl->wrap( previousLayer->getOutputNumElements(), (float *)previousLayer->getOutput() );
         upstreamWrapper->copyToDevice();
     }
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", copied to device");
@@ -410,7 +410,7 @@ VIRTUAL void ConvolutionalLayer::backward() {
     if( previousLayer->hasOutputWrapper() ) {
         inputWrapper = previousLayer->getOutputWrapper();
     } else {
-        inputWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
+        inputWrapper = cl->wrap( previousLayer->getOutputNumElements(), previousLayer->getOutput() );
         inputWrapper->copyToDevice();
     }
 
@@ -419,7 +419,7 @@ VIRTUAL void ConvolutionalLayer::backward() {
     if( nextLayer->providesGradInputWrapper() ) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper = cl->wrap( getOutputNumElements(), nextLayer->getGradInput() );
         gradOutputWrapper->copyToDevice();
         weOwnGradOutputWrapper = true;
     }

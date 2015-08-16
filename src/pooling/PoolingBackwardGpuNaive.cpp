@@ -32,15 +32,15 @@ VIRTUAL void PoolingBackwardGpuNaive::backward( int batchSize, CLWrapper *gradOu
     StatefulTimer::instance()->timeCheck("PoolingBackwardGpuNaive::backward start" );
 
     // first, memset errors to 0 ...
-    kMemset->out( gradInputWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputImageSize * inputImageSize );
-    int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+    kMemset->out( gradInputWrapper )->in( 0.0f )->in( batchSize * numPlanes * inputSize * inputSize );
+    int globalSize = batchSize * numPlanes * inputSize * inputSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
     cl->finish();
 
     kernel->in( batchSize )->inout( gradOutputWrapper )->in( selectorsWrapper )->in( gradInputWrapper );
-    globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
+    globalSize = batchSize * numPlanes * outputSize * outputSize;
     workgroupSize = 64;
     numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
@@ -48,15 +48,15 @@ VIRTUAL void PoolingBackwardGpuNaive::backward( int batchSize, CLWrapper *gradOu
 
     StatefulTimer::instance()->timeCheck("PoolingBackwardGpuNaive::backward end" );
 }
-PoolingBackwardGpuNaive::PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
-        PoolingBackward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
+PoolingBackwardGpuNaive::PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
+        PoolingBackward( cl, padZeros, numPlanes, inputSize, poolingSize ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
     options += " -D gNumPlanes=" + toString( numPlanes );
-    options += " -D gInputImageSize=" + toString( inputImageSize );
-    options += " -D gInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
-    options += " -D gOutputImageSize=" + toString( outputImageSize );
-    options += " -D gOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
+    options += " -D gInputSize=" + toString( inputSize );
+    options += " -D gInputSizeSquared=" + toString( inputSize * inputSize );
+    options += " -D gOutputSize=" + toString( outputSize );
+    options += " -D gOutputSizeSquared=" + toString( outputSize * outputSize );
     options += " -D gPoolingSize=" + toString( poolingSize );
     options += " -D gPadZeros=" + toString( padZeros ? 1 : 0 );
 
@@ -84,13 +84,13 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int
     "    global const float *gradOutput, global const int *selectors, global float *gradInput ) {\n" 
     "\n" 
     "    #define globalId get_global_id(0)\n" 
-    "    #define nPlaneCombo ( globalId / gOutputImageSizeSquared )\n" 
-    "    #define outputPosCombo ( globalId % gOutputImageSizeSquared )\n" 
+    "    #define nPlaneCombo ( globalId / gOutputSizeSquared )\n" 
+    "    #define outputPosCombo ( globalId % gOutputSizeSquared )\n" 
     "\n" 
     "    const int n = nPlaneCombo / gNumPlanes;\n" 
     "    const int plane = nPlaneCombo % gNumPlanes;\n" 
-    "    const int outputRow = outputPosCombo / gOutputImageSize;\n" 
-    "    const int outputCol = outputPosCombo % gOutputImageSize;\n" 
+    "    const int outputRow = outputPosCombo / gOutputSize;\n" 
+    "    const int outputCol = outputPosCombo % gOutputSize;\n" 
     "\n" 
     "    if( n >= batchSize ) {\n" 
     "        return;\n" 
@@ -98,8 +98,8 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int
     "\n" 
     "    int resultIndex = ( ( n\n" 
     "        * gNumPlanes + plane )\n" 
-    "        * gOutputImageSize + outputRow )\n" 
-    "        * gOutputImageSize + outputCol;\n" 
+    "        * gOutputSize + outputRow )\n" 
+    "        * gOutputSize + outputCol;\n" 
     "    #define error ( gradOutput[resultIndex] )\n" 
     "    int selector = ( selectors[resultIndex] );\n" 
     "    #define drow ( selector / gPoolingSize )\n" 
@@ -108,8 +108,8 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int
     "    #define inputCol ( outputCol * gPoolingSize + dcol )\n" 
     "    int inputIndex = ( ( n\n" 
     "        * gNumPlanes + plane )\n" 
-    "        * gInputImageSize + inputRow )\n" 
-    "        * gInputImageSize + inputCol;\n" 
+    "        * gInputSize + inputRow )\n" 
+    "        * gInputSize + inputCol;\n" 
     "//    if( n < batchSize ) {\n" 
     "        gradInput[ inputIndex ] = error;\n" 
     "//    }\n" 

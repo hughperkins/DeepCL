@@ -22,8 +22,8 @@ using namespace std;
 ActivationLayer::ActivationLayer( EasyCL *cl, Layer *previousLayer, ActivationMaker *maker ) :
         Layer( previousLayer, maker ),
         numPlanes ( previousLayer->getOutputPlanes() ),
-        inputImageSize( previousLayer->getOutputImageSize() ),
-        outputImageSize( previousLayer->getOutputImageSize() ),
+        inputSize( previousLayer->getOutputSize() ),
+        outputSize( previousLayer->getOutputSize() ),
         fn( maker->_activationFunction ),
         cl( cl ),
         output(0),
@@ -34,16 +34,16 @@ ActivationLayer::ActivationLayer( EasyCL *cl, Layer *previousLayer, ActivationMa
 //        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
-    if( inputImageSize == 0 ){
+    if( inputSize == 0 ){
 //        maker->net->print();
         throw runtime_error("Error: Activation layer " + toString( layerIndex ) + ": input image size is 0" );
     }
-    if( outputImageSize == 0 ){
+    if( outputSize == 0 ){
 //        maker->net->print();
         throw runtime_error("Error: Activation layer " + toString( layerIndex ) + ": output image size is 0" );
     }
-    activationForwardImpl = ActivationForward::instance( cl, numPlanes, inputImageSize, fn );
-    activationBackpropImpl = ActivationBackward::instance( cl, numPlanes, inputImageSize, fn );
+    activationForwardImpl = ActivationForward::instance( cl, numPlanes, inputSize, fn );
+    activationBackpropImpl = ActivationBackward::instance( cl, numPlanes, inputSize, fn );
 }
 VIRTUAL ActivationLayer::~ActivationLayer() {
     delete activationForwardImpl;
@@ -67,14 +67,14 @@ VIRTUAL std::string ActivationLayer::getClassName() const {
 VIRTUAL float ActivationLayer::getOutput( int n, int plane, int row, int col ) {
     int index = ( ( n
         * numPlanes + plane )
-        * outputImageSize + row )
-        * outputImageSize + col;
+        * outputSize + row )
+        * outputSize + col;
     return output[ index ];
 }
 VIRTUAL void ActivationLayer::printOutput() {
 //    float const*output = getOutput();
 //    int outPlanes = getOutputPlanes();
-//    int outputSize = getOutputImageSize();
+//    int outputNumElements = getOutputSize();
     std::cout << "  outputs: " << std::endl;
     getOutput();
 // output are organized like [imageid][filterid][row][col]
@@ -82,18 +82,18 @@ VIRTUAL void ActivationLayer::printOutput() {
         std::cout << "    n: " << n << std::endl;
         for( int plane = 0; plane < std::min(5, numPlanes ); plane++ ) {
             if( numPlanes > 1 ) std::cout << "      plane " << plane << std::endl;
-            if( outputImageSize == 1 ) {
+            if( outputSize == 1 ) {
                  std::cout << "        " << getOutput(n, plane, 0, 0 ) << std::endl;
             } else {
-                for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
+                for( int i = 0; i < std::min(5, outputSize); i++ ) {
                     std::cout << "      ";
-                    for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
+                    for( int j = 0; j < std::min(5, outputSize); j++ ) {
                         std::cout << getOutput( n, plane, i, j ) << " ";
                     }
-                    if( outputImageSize > 5 ) std::cout << " ... ";
+                    if( outputSize > 5 ) std::cout << " ... ";
                     std::cout << std::endl;
                 }
-                if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
+                if( outputSize > 5 ) std::cout << " ... " << std::endl;
             }
             if( numPlanes > 5 ) std::cout << " ... other planes ... " << std::endl;
         }
@@ -120,15 +120,15 @@ VIRTUAL void ActivationLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ getOutputSize() ];
-    outputWrapper = cl->wrap( getOutputSize(), output );
+    output = new float[ getOutputNumElements() ];
+    outputWrapper = cl->wrap( getOutputNumElements(), output );
     outputWrapper->createOnDevice();
-    gradInput = new float[ previousLayer->getOutputSize() ];
-    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    gradInput = new float[ previousLayer->getOutputNumElements() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputNumElements(), gradInput );
     gradInputWrapper->createOnDevice();
 }
-VIRTUAL int ActivationLayer::getOutputSize() {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int ActivationLayer::getOutputNumElements() {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL float *ActivationLayer::getOutput() {
     if( outputWrapper->isDeviceDirty() ) {
@@ -141,15 +141,15 @@ VIRTUAL float *ActivationLayer::getOutput() {
 VIRTUAL bool ActivationLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL int ActivationLayer::getOutputSize() const {
-//    int outputImageSize = inputImageSize / poolingSize;
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int ActivationLayer::getOutputNumElements() const {
+//    int outputSize = inputSize / poolingSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL int ActivationLayer::getOutputCubeSize() const {
-    return numPlanes * outputImageSize * outputImageSize;
+    return numPlanes * outputSize * outputSize;
 }
-VIRTUAL int ActivationLayer::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int ActivationLayer::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int ActivationLayer::getOutputPlanes() const {
     return numPlanes;
@@ -188,7 +188,7 @@ VIRTUAL void ActivationLayer::forward() {
         inputWrapper = previousLayer->getOutputWrapper();
     } else {
         float *input = previousLayer->getOutput();
-        inputWrapper = cl->wrap( previousLayer->getOutputSize(), input );
+        inputWrapper = cl->wrap( previousLayer->getOutputNumElements(), input );
         inputWrapper->copyToDevice();
     }
     activationForwardImpl->forward( batchSize, inputWrapper, outputWrapper );
@@ -204,7 +204,7 @@ VIRTUAL void ActivationLayer::backward() {
 //    if( previousLayer->hasOutputWrapper() ) {
 //        imagesWrapper = previousLayer->getOutputWrapper();
 //    } else {
-//        imagesWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
+//        imagesWrapper = cl->wrap( previousLayer->getOutputNumElements(), previousLayer->getOutput() );
 //        imagesWrapper->copyToDevice();
 //    }
 
@@ -213,7 +213,7 @@ VIRTUAL void ActivationLayer::backward() {
     if( nextLayer->providesGradInputWrapper() ) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper = cl->wrap( getOutputNumElements(), nextLayer->getGradInput() );
         gradOutputWrapper->copyToDevice();
         weOwnGradOutputWrapper = true;
     }

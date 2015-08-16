@@ -26,14 +26,14 @@ VIRTUAL bool LossLayer::needsBackProp() {
 VIRTUAL float *LossLayer::getOutput() {
     return previousLayer->getOutput();
 }
-VIRTUAL int LossLayer::getOutputSize() const {
-    return previousLayer->getOutputSize();
+VIRTUAL int LossLayer::getOutputNumElements() const {
+    return previousLayer->getOutputNumElements();
 }
 VIRTUAL int LossLayer::getOutputCubeSize() const {
     return previousLayer->getOutputCubeSize();
 }
-VIRTUAL int LossLayer::getOutputImageSize() const {
-    return previousLayer->getOutputImageSize();
+VIRTUAL int LossLayer::getOutputSize() const {
+    return previousLayer->getOutputSize();
 }
 VIRTUAL int LossLayer::getOutputPlanes() const {
     return previousLayer->getOutputPlanes();

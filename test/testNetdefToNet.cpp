@@ -140,7 +140,7 @@ TEST( testNetdefToNet, 3x32c5zmp2 ) {
     EXPECT_TRUE( dynamic_cast< SoftMaxLayer * >( net->getLayer(8) ) != 0 );
 
     ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(1) );
-    EXPECT_EQ( 128, conv->dim.inputImageSize );
+    EXPECT_EQ( 128, conv->dim.inputSize );
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 1, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
@@ -163,7 +163,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
     EXPECT_TRUE( dynamic_cast< ConvolutionalLayer * >( net->getLayer(5) ) != 0 );
     EXPECT_TRUE( dynamic_cast< SoftMaxLayer * >( net->getLayer(7) ) != 0 );
     ConvolutionalLayer *conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(1) );
-    EXPECT_EQ( 19, conv->dim.inputImageSize );
+    EXPECT_EQ( 19, conv->dim.inputSize );
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 1, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
@@ -171,7 +171,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
 //    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(2) );
-    EXPECT_EQ( 19, conv->dim.inputImageSize );
+    EXPECT_EQ( 19, conv->dim.inputSize );
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 32, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
@@ -179,7 +179,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
 //    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(3) );
-    EXPECT_EQ( 19, conv->dim.inputImageSize );
+    EXPECT_EQ( 19, conv->dim.inputSize );
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 32, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );
@@ -187,7 +187,7 @@ TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
 //    EXPECT_EQ( "RELU", conv->activationFunction->getDefineName() );
 
     conv = dynamic_cast< ConvolutionalLayer * >( net->getLayer(5) );
-    EXPECT_EQ( 19, conv->dim.inputImageSize );
+    EXPECT_EQ( 19, conv->dim.inputSize );
     EXPECT_EQ( true, conv->dim.padZeros );
     EXPECT_EQ( 32, conv->dim.inputPlanes );
     EXPECT_EQ( 32, conv->dim.numFilters );

@@ -24,7 +24,7 @@ public:
     VIRTUAL void backward( int batchSize, CLWrapper *inputWrapper,
     CLWrapper *gradOutputWrapper,
     CLWrapper *gradInputWrapper );
-    ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
+    ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
 
     // [[[end]]]
 };

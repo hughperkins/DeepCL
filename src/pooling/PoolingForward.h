@@ -20,23 +20,23 @@ public:
 
     const bool padZeros;
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
     const int poolingSize;
 
-    const int outputImageSize;
+    const int outputSize;
 
     virtual ~PoolingForward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * inputImageSize + row )
-            * inputImageSize + col;
+            * inputSize + row )
+            * inputSize + col;
     }
     inline int getResultIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * outputImageSize + row )
-            * outputImageSize + col;
+            * outputSize + row )
+            * outputSize + col;
     }
 
     // [[[cog
@@ -44,14 +44,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingForward *instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingForward *instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingForward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
+    STATIC PoolingForward *instance( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
+    STATIC PoolingForward *instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
+    STATIC PoolingForward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
     VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]
 };

@@ -23,45 +23,45 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC PoolingBackward *PoolingBackward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
-    return new PoolingBackwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+STATIC PoolingBackward *PoolingBackward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
+    return new PoolingBackwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
 }
-STATIC PoolingBackward *PoolingBackward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize) {
-    return new PoolingBackwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+STATIC PoolingBackward *PoolingBackward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize) {
+    return new PoolingBackwardCpu( cl, padZeros, numPlanes, inputSize, poolingSize );
 }
-STATIC PoolingBackward *PoolingBackward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) {
+STATIC PoolingBackward *PoolingBackward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
     if( idx == 0 ) {
-        return new PoolingBackwardCpu( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+        return new PoolingBackwardCpu( cl, padZeros, numPlanes, inputSize, poolingSize );
     }
     if( idx == 1 ) {
-        return new PoolingBackwardGpuNaive( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+        return new PoolingBackwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
     }
     throw runtime_error("PoolingBackward::instanceSpecific, idx not known: " + toString( idx ) );
 }
-PoolingBackward::PoolingBackward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize ) :
+PoolingBackward::PoolingBackward( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
         cl( cl ),
         padZeros( padZeros ),
         numPlanes( numPlanes ),
-        inputImageSize( inputImageSize ),
+        inputSize( inputSize ),
         poolingSize( poolingSize ),
 //        poolingSizeSquared( poolingSize * poolingSize ),
-        outputImageSize( padZeros ? ( inputImageSize + poolingSize - 1 ) / poolingSize : inputImageSize / poolingSize ) {
-//    if( inputImageSize % poolingSize != 0 ) {
-//        throw runtime_error("inputImageSize should be an exact multiple of poolingsize: " + toString( inputImageSize ) + " " + toString(poolingSize ) );
+        outputSize( padZeros ? ( inputSize + poolingSize - 1 ) / poolingSize : inputSize / poolingSize ) {
+//    if( inputSize % poolingSize != 0 ) {
+//        throw runtime_error("inputSize should be an exact multiple of poolingsize: " + toString( inputSize ) + " " + toString(poolingSize ) );
 //    }
 }
-VIRTUAL int PoolingBackward::getInputSize( int batchSize ) {
-    return batchSize * numPlanes * inputImageSize * inputImageSize;
+VIRTUAL int PoolingBackward::getInputNumElements( int batchSize ) {
+    return batchSize * numPlanes * inputSize * inputSize;
 }
-VIRTUAL int PoolingBackward::getOutputSize(int batchSize) {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int PoolingBackward::getOutputNumElements(int batchSize) {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL void PoolingBackward::backward( int batchSize, float *gradOutput, int *selectors, float *gradInput ) {
 //    cout << "PoolingBackward::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingBackward::backward float->wrapper start" );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
-    CLWrapper *selectorsWrapper = cl->wrap( getOutputSize(batchSize), selectors );
-    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputNumElements(batchSize), gradOutput );
+    CLWrapper *selectorsWrapper = cl->wrap( getOutputNumElements(batchSize), selectors );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputNumElements(batchSize), gradInput );
 
     gradOutputWrapper->copyToDevice();
     selectorsWrapper->copyToDevice();

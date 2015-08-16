@@ -63,7 +63,7 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
 //    cout << "dim: " << dim << endl;
     std::string options = dim.buildOptionsString();
 
-    int localMemoryRequirementsFullImage = dim.inputImageSize * dim.inputImageSize * 4 + dim.outputImageSize * dim.outputImageSize * 4;
+    int localMemoryRequirementsFullImage = dim.inputSize * dim.inputSize * 4 + dim.outputSize * dim.outputSize * 4;
     int availableLocal = cl->getLocalMemorySize();
 //    cout << "localmemoryrequirementsfullimage: " << localMemoryRequirementsFullImage << endl;
 //    cout << "availablelocal: " << availableLocal << endl;
@@ -77,15 +77,15 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
 //    cout << "numStripes: " << numStripes << endl;
 
     int inputStripeMarginRows = dim.filterSize - 1;
-    int inputStripeInnerNumRows = dim.inputImageSize / numStripes;
+    int inputStripeInnerNumRows = dim.inputSize / numStripes;
     int inputStripeOuterNumRows = inputStripeInnerNumRows + 2 * inputStripeMarginRows;
 
-    int inputStripeInnerSize = inputStripeInnerNumRows * dim.inputImageSize;
-    inputStripeOuterSize = inputStripeOuterNumRows * dim.inputImageSize;
-    int inputStripeMarginSize = inputStripeMarginRows * dim.inputImageSize;
+    int inputStripeInnerSize = inputStripeInnerNumRows * dim.inputSize;
+    inputStripeOuterSize = inputStripeOuterNumRows * dim.inputSize;
+    int inputStripeMarginSize = inputStripeMarginRows * dim.inputSize;
 
-    int outputStripeNumRows = ( dim.outputImageSize + numStripes - 1 ) / numStripes;
-    outputStripeSize = outputStripeNumRows * dim.outputImageSize;
+    int outputStripeNumRows = ( dim.outputSize + numStripes - 1 ) / numStripes;
+    outputStripeSize = outputStripeNumRows * dim.outputSize;
 
     // [[[cog
     // import cog_optionswriter
@@ -124,8 +124,8 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
     "// workgroupId: [outputPlane][inputPlane]\n" 
     "// localId: [filterRow][filterCol]\n" 
     "// per-thread iteration: [n][outputRow][outputCol]\n" 
-    "// local: errorimage: outputImageSize * outputImageSize\n" 
-    "//        imageimage: inputImageSize * inputImageSize\n" 
+    "// local: errorimage: outputSize * outputSize\n" 
+    "//        imageimage: inputSize * inputSize\n" 
     "// specific characteristic: load one stripe of each image at a time,\n" 
     "// so we dont run out of memory\n" 
     "// number of stripes set in: gNumStripes\n" 
@@ -146,15 +146,15 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
     "        local float *_errorStripe, local float *_imageStripe\n" 
     " ) {\n" 
     "    // gHalfFilterSize\n" 
-    "    // gInputImageSize\n" 
+    "    // gInputSize\n" 
     "    //\n" 
     "    // gInputStripeMarginRows => basically equal to gHalfFilterSize\n" 
-    "    // gInputStripeInnerNumRows = gInputImageSize / gNumStripes\n" 
+    "    // gInputStripeInnerNumRows = gInputSize / gNumStripes\n" 
     "    // gInputStripeOuterNumRows = gInputStripeInnerNumRows + 2 * gHalfFilterSize  (note: one row less than\n" 
     "    //                                                         if we just added gFilterSize)\n" 
-    "    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputImageSize\n" 
-    "    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputImageSize\n" 
-    "    // gInputStripeMarginSize = gInputStripeMarginRows * gInputImageSize\n" 
+    "    // gInputStripeInnerSize = gInputStripeInnerNumRows * gInputSize\n" 
+    "    // gInputStripeOuterSize = gInputStripeOuterNumRows * gInputSize\n" 
+    "    // gInputStripeMarginSize = gInputStripeMarginRows * gInputSize\n" 
     "    //\n" 
     "    // gOutputStripeNumRows\n" 
     "    // gOutputStripeSize\n" 
@@ -177,12 +177,12 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
     "    float thisbiaschange = 0;\n" 
     "#endif\n" 
     "    const int numLoopsForImageStripe = ( gInputStripeOuterSize + workgroupSize - 1 ) / workgroupSize;\n" 
-    "    const int numLoopsForErrorStripe = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numLoopsForErrorStripe = ( gOutputSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
-    "        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
-    "        const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputImageSizeSquared;\n" 
-    "        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;\n" 
-    "        const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputImageSizeSquared;\n" 
+    "        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;\n" 
+    "        const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputSizeSquared;\n" 
+    "        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputSizeSquared;\n" 
+    "        const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputSizeSquared;\n" 
     "        for( int stripe = 0; stripe < gNumStripes; stripe++ ) {\n" 
     "            const int imageStripeInnerOffset = imageImageGlobalOffset + stripe * gInputStripeInnerSize;\n" 
     "            const int imageStripeOuterOffset = imageStripeInnerOffset - gInputStripeMarginSize;\n" 
@@ -213,25 +213,25 @@ BackpropWeightsScratchLarge::BackpropWeightsScratchLarge( EasyCL *cl, LayerDimen
     "            barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "//            if( localId == 13 ) {\n" 
     "//                for( int i = 0; i < 12; i++ ) {\n" 
-    "//                    gradWeights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputImageSize];\n" 
+    "//                    gradWeights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputSize];\n" 
     "//                }\n" 
     "//                for( int i = 0; i < 20; i++ ) {\n" 
-    "//                    gradWeights[200 + stripe * 20 + i ] = _imageStripe[i * gInputImageSize];\n" 
+    "//                    gradWeights[200 + stripe * 20 + i ] = _imageStripe[i * gInputSize];\n" 
     "//                }\n" 
     "//            }\n" 
     "            if( localId < gFilterSizeSquared ) {\n" 
     "                for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {\n" 
     "                    int upstreamRow = outRow - gMargin + filterRow;\n" 
-    "                    for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {\n" 
+    "                    for( int outCol = 0; outCol < gOutputSize; outCol++ ) {\n" 
     "                        int upstreamCol = outCol - gMargin + filterCol;\n" 
     "                        bool proceed =\n" 
     "                            upstreamRow >= 0 && upstreamCol >= 0\n" 
-    "                            && upstreamRow < gInputImageSize && upstreamCol < gInputImageSize\n" 
-    "                            && outRow < gOutputImageSize;\n" 
+    "                            && upstreamRow < gInputSize && upstreamCol < gInputSize\n" 
+    "                            && outRow < gOutputSize;\n" 
     "                        if( proceed ) {\n" 
-    "                            int resultIndex = outRow * gOutputImageSize + outCol;\n" 
+    "                            int resultIndex = outRow * gOutputSize + outCol;\n" 
     "                            float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];\n" 
-    "                            int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;\n" 
+    "                            int upstreamDataIndex = upstreamRow * gInputSize + upstreamCol;\n" 
     "                            float upstreamResult = _imageStripe[upstreamDataIndex +  gInputStripeMarginSize\n" 
     "                                        - stripe * gInputStripeInnerSize ];\n" 
     "                            thiswchange += upstreamResult * error;\n" 

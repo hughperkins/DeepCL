@@ -48,7 +48,7 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     kernel1->input( dataWrapper );
     kernel1->input( weightsWrapper);
     kernel1->output( output1Wrapper );
-    kernel1->localFloats( dim.inputImageSize );
+    kernel1->localFloats( dim.inputSize );
     kernel1->localFloats( dim.numFilters * dim.filterSize  );
 
     int workgroupSize = dim.numFilters;
@@ -66,7 +66,7 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     // add bias...
     if( dim.biased ) {
         addBias->forward(
-            batchSize, dim.numFilters, dim.outputImageSize,
+            batchSize, dim.numFilters, dim.outputSize,
             outputWrapper, biasWrapper );
     }
 
@@ -81,7 +81,7 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
         Forward( cl, dim )
             {
 
-    if( dim.inputImageSize != dim.filterSize ) {
+    if( dim.inputSize != dim.filterSize ) {
         throw runtime_error("For ForwardFc, filtersize and inputimagesize must be identical");
     }
     if( dim.padZeros ) {
@@ -144,11 +144,11 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "//   filtersize == inputimagesize (mandatory)\n" 
     "//   inputimagesize == 19\n" 
     "//   filtersize == 19\n" 
-    "//   outputImageSize == 1\n" 
+    "//   outputSize == 1\n" 
     "//   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361\n" 
     "//   lots of inplanes, eg 32-128\n" 
     "//   inputimagesize around 19, not too small\n" 
-    "#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)\n" 
+    "#if (gFilterSize == gInputSize) && (gPadZeros == 0)\n" 
     "void kernel forward_fc_workgroup_perrow( const int batchSize,\n" 
     "    global const float *images, global const float *filters,\n" 
     "    global float *output1,\n" 
@@ -175,7 +175,7 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "            _threadFilterRow[i] = filterRow[i];\n" 
     "        }\n" 
     "    }\n" 
-    "    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int loopsPerExample = ( gInputSize + workgroupSize - 1 ) / workgroupSize;\n" 
     "    // now loop over examples...\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        // copy down example row, which is global to all threads in workgroup\n" 
@@ -186,9 +186,9 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "        copyLocal( _imageRow,  images\n" 
     "            + ( ( n\n" 
     "                * gNumInputPlanes + inputPlaneId )\n" 
-    "                * gInputImageSize + filterRowId )\n" 
-    "                * gInputImageSize,\n" 
-    "            gInputImageSize );\n" 
+    "                * gInputSize + filterRowId )\n" 
+    "                * gInputSize,\n" 
+    "            gInputSize );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        // add up the values in our row...\n" 
     "        // note: dont activate yet, since need to reduce again\n" 

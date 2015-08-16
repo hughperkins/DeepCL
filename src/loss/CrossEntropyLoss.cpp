@@ -35,10 +35,10 @@ VIRTUAL int CrossEntropyLoss::getPersistSize( int version ) const {
 }
 VIRTUAL float CrossEntropyLoss::calcLoss( float const *expected ) {
     float loss = 0;
-    int inputSize = previousLayer->getOutputSize();
+    int inputNumElements = previousLayer->getOutputNumElements();
     float *input = previousLayer->getOutput();
 //    cout << "CrossEntropyLoss::calcLoss" << endl;
-    for( int i = 0; i < inputSize; i++ ) {
+    for( int i = 0; i < inputNumElements; i++ ) {
         float expectedOutput = expected[i];
         float inputValue = input[i];
         float negthisloss = expectedOutput * log( inputValue ) 
@@ -55,15 +55,15 @@ VIRTUAL void CrossEntropyLoss::setBatchSize( int batchSize ) {
     if( gradInput != 0 ) {
         delete[] gradInput;
     }
-    gradInput = new float[ batchSize * previousLayer->getOutputSize() ];
+    gradInput = new float[ batchSize * previousLayer->getOutputNumElements() ];
     this->batchSize = batchSize;
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
 VIRTUAL void CrossEntropyLoss::calcGradInput( float const*expectedOutput ) {
-    int inputSize = previousLayer->getOutputSize();
+    int inputNumElements = previousLayer->getOutputNumElements();
     float *input = previousLayer->getOutput();
-    for( int i = 0; i < inputSize; i++ ) {
+    for( int i = 0; i < inputNumElements; i++ ) {
         gradInput[i] = ( input[i] - expectedOutput[i] ) / input[i] / ( 1.0f - input[i] );
     }
 }

@@ -32,10 +32,10 @@ VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     kernel->input( dataWrapper );
     kernel->input( weightsWrapper);
     kernel->output( outputWrapper );
-    kernel->localFloats( square( dim.inputImageSize ) );
+    kernel->localFloats( square( dim.inputSize ) );
     kernel->localFloats( square( dim.filterSize ) * dim.inputPlanes );
 
-    int workgroupsize = std::max( 32, square( dim.outputImageSize ) ); // no point in wasting threads....
+    int workgroupsize = std::max( 32, square( dim.outputSize ) ); // no point in wasting threads....
     int numWorkgroups = dim.numFilters * batchSize;
     int globalSize = workgroupsize * numWorkgroups;
     kernel->run_1d( globalSize, workgroupsize );
@@ -44,7 +44,7 @@ VIRTUAL void Forward3::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
     StatefulTimer::timeCheck("Forward3::forward after kernel1");
 
     if( dim.biased ) {
-        addBias->forward( batchSize, dim.numFilters, dim.outputImageSize,
+        addBias->forward( batchSize, dim.numFilters, dim.outputSize,
                           outputWrapper, biasWrapper );
     }
 }
@@ -54,7 +54,7 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
 
     addBias = new AddBias( cl );
 
-    if( square( dim.outputImageSize ) > cl->getMaxWorkgroupSize() ) {
+    if( square( dim.outputSize ) > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("cannot use forward3, since outputimagesize * outputimagesize > maxworkgroupsize");
     }
 
@@ -97,15 +97,15 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     "    const int outPlane = workgroupId % gNumFilters;\n" 
     "\n" 
     "    const int localId = get_local_id(0);\n" 
-    "    const int outputRow = localId / gOutputImageSize;\n" 
-    "    const int outputCol = localId % gOutputImageSize;\n" 
+    "    const int outputRow = localId / gOutputSize;\n" 
+    "    const int outputCol = localId % gOutputSize;\n" 
     "\n" 
     "    const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;\n" 
-    "    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;\n" 
+    "    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;\n" 
     "    const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;\n" 
-    "    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;\n" 
+    "    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;\n" 
     "\n" 
-    "    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int numUpstreamsPerThread = ( gInputSizeSquared + workgroupSize - 1 ) / workgroupSize;\n" 
     "\n" 
     "    const int filterCubeLength = gInputPlanes * gFilterSizeSquared;\n" 
     "    const int filterCubeGlobalOffset = outPlane * filterCubeLength;\n" 
@@ -120,11 +120,11 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     "\n" 
     "    float sum = 0;\n" 
     "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
-    "        int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;\n" 
+    "        int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        for( int i = 0; i < numUpstreamsPerThread; i++ ) {\n" 
     "            int thisOffset = workgroupSize * i + localId;\n" 
-    "            if( thisOffset < gInputImageSizeSquared ) {\n" 
+    "            if( thisOffset < gInputSizeSquared ) {\n" 
     "                _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];\n" 
     "            }\n" 
     "        }\n" 
@@ -135,14 +135,14 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     "            #if gPadZeros == 0\n" 
     "                inputRow += gHalfFilterSize;\n" 
     "            #endif\n" 
-    "            int inputimagerowoffset = inputRow * gInputImageSize;\n" 
+    "            int inputimagerowoffset = inputRow * gInputSize;\n" 
     "            int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
     "            for( int v = minv; v <= maxv; v++ ) {\n" 
     "                int inputCol = outputCol + v;\n" 
     "                #if gPadZeros == 0\n" 
     "                    inputCol += gHalfFilterSize;\n" 
     "                #endif\n" 
-    "                if( localId < gOutputImageSizeSquared ) {\n" 
+    "                if( localId < gOutputSizeSquared ) {\n" 
     "                    sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];\n" 
     "                }\n" 
     "            }\n" 
@@ -150,8 +150,8 @@ Forward3::Forward3( EasyCL *cl, LayerDimensions dim ) :
     "    }\n" 
     "\n" 
     "    // output are organized like [imageid][filterid][row][col]\n" 
-    "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;\n" 
-    "    if( localId < gOutputImageSizeSquared ) {\n" 
+    "    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputSizeSquared + localId;\n" 
+    "    if( localId < gOutputSizeSquared ) {\n" 
     "        output[resultIndex ] = sum;\n" 
     "    }\n" 
     "}\n" 

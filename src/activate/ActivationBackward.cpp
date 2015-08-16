@@ -23,41 +23,41 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-STATIC ActivationBackward *ActivationBackward::instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
-    return new ActivationBackwardGpuNaive( cl, numPlanes, inputImageSize, fn );
+STATIC ActivationBackward *ActivationBackward::instance( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn ) {
+    return new ActivationBackwardGpuNaive( cl, numPlanes, inputSize, fn );
 }
-STATIC ActivationBackward *ActivationBackward::instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn) {
-    return new ActivationBackwardCpu( cl, numPlanes, inputImageSize, fn );
+STATIC ActivationBackward *ActivationBackward::instanceForTest( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn) {
+    return new ActivationBackwardCpu( cl, numPlanes, inputSize, fn );
 }
-STATIC ActivationBackward *ActivationBackward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) {
+STATIC ActivationBackward *ActivationBackward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn ) {
     if( idx == 0 ) {
-        return new ActivationBackwardCpu( cl, numPlanes, inputImageSize, fn );
+        return new ActivationBackwardCpu( cl, numPlanes, inputSize, fn );
     }
     if( idx == 1 ) {
-        return new ActivationBackwardGpuNaive( cl, numPlanes, inputImageSize, fn );
+        return new ActivationBackwardGpuNaive( cl, numPlanes, inputSize, fn );
     }
     throw runtime_error("ActivationBackward::instanceSpecific, idx not known: " + toString( idx ) );
 }
-ActivationBackward::ActivationBackward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn ) :
+ActivationBackward::ActivationBackward( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn ) :
         cl( cl ),
         numPlanes( numPlanes ),
-        inputImageSize( inputImageSize ),
+        inputSize( inputSize ),
         fn( fn ),
-        outputImageSize( inputImageSize ) {
+        outputSize( inputSize ) {
 }
-VIRTUAL int ActivationBackward::getInputSize( int batchSize ) {
-    return batchSize * numPlanes * inputImageSize * inputImageSize;
+VIRTUAL int ActivationBackward::getInputNumElements( int batchSize ) {
+    return batchSize * numPlanes * inputSize * inputSize;
 }
-VIRTUAL int ActivationBackward::getOutputSize(int batchSize) {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int ActivationBackward::getOutputNumElements(int batchSize) {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL void ActivationBackward::backward( int batchSize, float *inputs, float *gradOutput, float *gradInput ) {
 //    cout << "ActivationBackward::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationBackward::backward float->wrapper start" );
 
-    CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
-    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
+    CLWrapper *inputsWrapper = cl->wrap( getInputNumElements(batchSize), inputs );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputNumElements(batchSize), gradOutput );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputNumElements(batchSize), gradInput );
 
     inputsWrapper->copyToDevice();
     gradOutputWrapper->copyToDevice();

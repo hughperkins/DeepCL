@@ -16,7 +16,7 @@ using namespace std;
 ForceBackpropLayer::ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayerMaker *maker ) :
        Layer( previousLayer, maker ),
     outputPlanes( previousLayer->getOutputPlanes() ),
-    outputImageSize( previousLayer->getOutputImageSize() ),
+    outputSize( previousLayer->getOutputSize() ),
     batchSize(0),
     allocatedSize(0),
     output(0) {
@@ -49,9 +49,9 @@ VIRTUAL void ForceBackpropLayer::printOutput() {
         std::cout << "ForceBackpropLayer n " << n << ":" << std::endl;
         for( int plane = 0; plane < std::min( 5, outputPlanes); plane++ ) {
             if( outputPlanes > 1 ) std::cout << "    plane " << plane << ":" << std::endl;
-            for( int i = 0; i < std::min(5, outputImageSize); i++ ) {
+            for( int i = 0; i < std::min(5, outputSize); i++ ) {
                 std::cout << "      ";
-                for( int j = 0; j < std::min(5, outputImageSize); j++ ) {
+                for( int j = 0; j < std::min(5, outputSize); j++ ) {
                     std::cout << getOutput( n, plane, i, j ) << " ";
 //output[
 //                            n * numPlanes * imageSize*imageSize +
@@ -59,10 +59,10 @@ VIRTUAL void ForceBackpropLayer::printOutput() {
 //                            i * imageSize +
 //                            j ] << " ";
                 }
-                if( outputImageSize > 5 ) std::cout << " ... ";
+                if( outputSize > 5 ) std::cout << " ... ";
                 std::cout << std::endl;
             }
-            if( outputImageSize > 5 ) std::cout << " ... " << std::endl;
+            if( outputSize > 5 ) std::cout << " ... " << std::endl;
         }
         if( outputPlanes > 5 ) std::cout << "   ... other planes ... " << std::endl;
     }
@@ -84,10 +84,10 @@ VIRTUAL void ForceBackpropLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = allocatedSize;
-    output = new float[ getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
 }
 VIRTUAL void ForceBackpropLayer::forward() {
-    int totalLinearLength = getOutputSize();
+    int totalLinearLength = getOutputNumElements();
     float *input = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {
         output[i] = input[i];
@@ -96,23 +96,23 @@ VIRTUAL void ForceBackpropLayer::forward() {
 VIRTUAL void ForceBackpropLayer::backward() {
   // do nothing... ?
 }
-VIRTUAL int ForceBackpropLayer::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int ForceBackpropLayer::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int ForceBackpropLayer::getOutputPlanes() const {
     return outputPlanes;
 }
 VIRTUAL int ForceBackpropLayer::getOutputCubeSize() const {
-    return outputPlanes * outputImageSize * outputImageSize;
+    return outputPlanes * outputSize * outputSize;
 }
-VIRTUAL int ForceBackpropLayer::getOutputSize() const {
+VIRTUAL int ForceBackpropLayer::getOutputNumElements() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string ForceBackpropLayer::toString() {
     return toString();
 }
 VIRTUAL std::string ForceBackpropLayer::asString() const {
-    return std::string("") + "ForceBackpropLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputImageSize=" +  ::toString( outputImageSize ) + " }";
+    return std::string("") + "ForceBackpropLayer{ outputPlanes=" + ::toString( outputPlanes ) + " outputSize=" +  ::toString( outputSize ) + " }";
 }
 
 

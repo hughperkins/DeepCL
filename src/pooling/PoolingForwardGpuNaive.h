@@ -24,7 +24,7 @@ public:
     // generated, using cog:
     VIRTUAL ~PoolingForwardGpuNaive();
     VIRTUAL void forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper );
-    PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
+    PoolingForwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
 
     // [[[end]]]
 };

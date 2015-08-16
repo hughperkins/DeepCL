@@ -14,7 +14,7 @@ void copyLocal( local float *target, global float const *source, const int N ) {
     }
 }
 
-#ifdef gOutputImageSize // for previous tests that dont define it
+#ifdef gOutputSize // for previous tests that dont define it
 // workgroup id organized like: [outplane]
 // local id organized like: [outrow][outcol]
 // each thread iterates over: [imageid][upstreamplane][filterrow][filtercol]
@@ -38,14 +38,14 @@ void kernel forward_2_by_outplane(
     const int outPlane = workgroupId;
 
     const int localId = get_local_id(0);
-    const int outputRow = localId / gOutputImageSize;
-    const int outputCol = localId % gOutputImageSize;
+    const int outputRow = localId / gOutputSize;
+    const int outputCol = localId % gOutputSize;
 
     #if gPadZeros == 1
         const int minu = max( -gHalfFilterSize, -outputRow );
-        const int maxu = min( gHalfFilterSize, gOutputImageSize - 1 - outputRow ) - gEven;
+        const int maxu = min( gHalfFilterSize, gOutputSize - 1 - outputRow ) - gEven;
         const int minv = max( -gHalfFilterSize, -outputCol );
-        const int maxv = min( gHalfFilterSize, gOutputImageSize - 1 - outputCol ) - gEven;
+        const int maxv = min( gHalfFilterSize, gOutputSize - 1 - outputCol ) - gEven;
     #else
         const int minu = -gHalfFilterSize;
         const int maxu = gHalfFilterSize - gEven;
@@ -66,17 +66,17 @@ void kernel forward_2_by_outplane(
         for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
             barrier(CLK_LOCAL_MEM_FENCE);
             copyLocal( _inputPlane, 
-                       images + ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared,
-                       gInputImageSizeSquared );
+                       images + ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared,
+                       gInputSizeSquared );
             barrier(CLK_LOCAL_MEM_FENCE);
             int filterImageOffset = upstreamPlane * gFilterSizeSquared;
-            if( localId < gOutputImageSizeSquared ) {
+            if( localId < gOutputSizeSquared ) {
                 for( int u = minu; u <= maxu; u++ ) {
                     int inputRow = outputRow + u;
                     #if gPadZeros == 0
                          inputRow += gHalfFilterSize;
                     #endif
-                    int inputimagerowoffset = inputRow * gInputImageSize;
+                    int inputimagerowoffset = inputRow * gInputSize;
                     int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
                     for( int v = minv; v <= maxv; v++ ) {
                         int inputCol = outputCol + v;
@@ -89,8 +89,8 @@ void kernel forward_2_by_outplane(
             }
         }
         // output are organized like [imageid][filterid][row][col]
-        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
-        if( localId < gOutputImageSizeSquared ) {
+        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputSizeSquared + localId;
+        if( localId < gOutputSizeSquared ) {
             output[resultIndex ] = sum;
         }
     }

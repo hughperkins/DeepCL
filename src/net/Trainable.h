@@ -20,7 +20,7 @@ class TrainerMaker;
 class DeepCL_EXPORT Trainable {
 public:
     virtual ~Trainable() {}
-    virtual int getOutputSize() const = 0;
+    virtual int getOutputNumElements() const = 0;
     virtual float calcLoss(float const *expectedValues ) = 0;
     virtual float calcLossFromLabels(int const *labels ) = 0;
     virtual void setBatchSize( int batchSize ) = 0;
@@ -32,7 +32,7 @@ public:
     virtual float const *getOutput() const = 0;
     virtual LossLayerMaker *cloneLossLayerMaker() const = 0;
     virtual int getOutputPlanes() const = 0;
-    virtual int getOutputImageSize() const = 0;
+    virtual int getOutputSize() const = 0;
     virtual int getInputCubeSize() const = 0;
     virtual int getOutputCubeSize() const = 0;
 //    virtual void setTrainer( TrainerMaker *trainer ) = 0;

@@ -29,17 +29,17 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
     StatefulTimer::instance()->timeCheck("BackpropWeightsByRow start" );
 
     cout << "input buffer:" << endl;
-    PrintBuffer::printFloats( cl, imagesWrapper, batchSize * dim.inputImageSize, dim.inputImageSize );
+    PrintBuffer::printFloats( cl, imagesWrapper, batchSize * dim.inputSize, dim.inputSize );
     cout << endl;
 
     cout << "errors buffer:" << endl;
-    PrintBuffer::printFloats( cl, gradOutputWrapper, batchSize * dim.outputImageSize, dim.outputImageSize );
+    PrintBuffer::printFloats( cl, gradOutputWrapper, batchSize * dim.outputSize, dim.outputSize );
     cout << endl;
 
     int globalSize = workgroupSize * numWorkgroups;
     globalSize = ( ( globalSize + workgroupSize - 1 ) / workgroupSize ) * workgroupSize;
 
-    int localMemRequiredKB = ( dim.outputImageSize * 4 + dim.inputImageSize * 4 ) / 1024 + 1;
+    int localMemRequiredKB = ( dim.outputSize * 4 + dim.inputSize * 4 ) / 1024 + 1;
     if( localMemRequiredKB >= cl->getLocalMemorySizeKB() ) {
         throw runtime_error( "local memory too small to use this kernel on this device.  Need: " + 
             toString( localMemRequiredKB ) + "KB, but only have: " + 
@@ -48,7 +48,7 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
 
     const float learningMultiplier = learningRateToMultiplier( batchSize, learningRate );
 
-    const int weights1Size = dim.filtersSize * dim.outputImageSize;
+    const int weights1Size = dim.filtersSize * dim.outputSize;
     float *weights1 = new float[ weights1Size ];
     CLWrapper *weights1Wrapper = cl->wrap( weights1Size, weights1 );
     weights1Wrapper->createOnDevice();
@@ -56,7 +56,7 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
     float *bias1 = 0;
     CLWrapper *bias1Wrapper = 0;
     if( dim.biased ) {
-        const int bias1Size = dim.numFilters * dim.outputImageSize;
+        const int bias1Size = dim.numFilters * dim.outputSize;
         bias1 = new float[ bias1Size ];
         bias1Wrapper = cl->wrap( bias1Size, bias1 );
         bias1Wrapper->createOnDevice();
@@ -86,21 +86,21 @@ VIRTUAL void BackpropWeightsByRow::backpropWeights( int batchSize, float learnin
         kernel->out( bias1Wrapper );
     }
     kernel
-        ->localFloats( dim.outputImageSize )
-        ->localFloats( dim.inputImageSize );
+        ->localFloats( dim.outputSize )
+        ->localFloats( dim.inputSize );
 
     kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
 
     cout << "weights1wrapper after first kernel:" << endl;
-    PrintBuffer::printFloats( cl, weights1Wrapper, dim.filterSize * dim.outputImageSize, dim.filterSize );
+    PrintBuffer::printFloats( cl, weights1Wrapper, dim.filterSize * dim.outputSize, dim.filterSize );
     cout << endl;
 
-    reduce->in( dim.filtersSize )->in( dim.outputImageSize )
+    reduce->in( dim.filtersSize )->in( dim.outputSize )
         ->in( weights1Wrapper )->out( weights2Wrapper );
     reduce->run_1d( ( dim.filtersSize + 64 - 1 ) / 64 * 64, 64 );
     if( dim.biased ) {
-        reduce->in( dim.numFilters )->in( dim.outputImageSize )
+        reduce->in( dim.numFilters )->in( dim.outputSize )
             ->in( bias1Wrapper )->out( bias2Wrapper );
         reduce->run_1d( ( dim.numFilters + 64 - 1 ) / 64 * 64, 64 );
     }
@@ -139,7 +139,7 @@ BackpropWeightsByRow::BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim ) :
         BackpropWeights( cl, dim )
             {
     workgroupSize = std::max( 32, dim.filterSize ); // no point in wasting cores...
-    numWorkgroups = dim.inputPlanes * dim.numFilters * dim.outputImageSize;
+    numWorkgroups = dim.inputPlanes * dim.numFilters * dim.outputSize;
     cout << "numWorkgroups " << numWorkgroups << " workgropuSize=" << workgroupSize << endl;
     if( workgroupSize > cl->getMaxWorkgroupSize() ) {
         throw runtime_error("filtersize larger than maxworkgroupsize, so cannot use BackpropWeightsByRow kernel");
@@ -192,8 +192,8 @@ BackpropWeightsByRow::BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim ) :
     "\n" 
     "    const int filterRow = localId / gFilterSize;\n" 
     "    const int filterCol = localId % gFilterSize;\n" 
-    "    const int outputRow = workgroupId % gOutputImageSize;\n" 
-    "    #define outInCombo ( workgroupId / gOutputImageSize )\n" 
+    "    const int outputRow = workgroupId % gOutputSize;\n" 
+    "    #define outInCombo ( workgroupId / gOutputSize )\n" 
     "    const int outputPlane = outInCombo / gNumInputPlanes;\n" 
     "    const int inputPlane = outInCombo % gNumInputPlanes;\n" 
     "\n" 
@@ -210,9 +210,9 @@ BackpropWeightsByRow::BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim ) :
     "            global float const*gradOutputRow = gradOutput +\n" 
     "                ( ( n\n" 
     "                    * gNumOutputPlanes + outputPlane )\n" 
-    "                    * gOutputImageSize + outputRow )\n" 
-    "                    * gOutputImageSize;\n" 
-    "            if( localId < gOutputImageSize ) { // assume we have enough threads for now... should fix later\n" 
+    "                    * gOutputSize + outputRow )\n" 
+    "                    * gOutputSize;\n" 
+    "            if( localId < gOutputSize ) { // assume we have enough threads for now... should fix later\n" 
     "                _errorRow[ localId ] = gradOutputRow[ localId ];\n" 
     "            }\n" 
     "        }\n" 
@@ -221,16 +221,16 @@ BackpropWeightsByRow::BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim ) :
     "            global float const*inputRowData = input +\n" 
     "                ( ( n\n" 
     "                    * gNumInputPlanes + inputPlane )\n" 
-    "                    * gInputImageSize + thisInputRow )\n" 
-    "                    * gInputImageSize;\n" 
-    "            if( localId < gInputImageSize ) { // assume we have enough threads for now... should fix later\n" 
+    "                    * gInputSize + thisInputRow )\n" 
+    "                    * gInputSize;\n" 
+    "            if( localId < gInputSize ) { // assume we have enough threads for now... should fix later\n" 
     "                _inputRow[ localId ] = inputRowData[ localId ];\n" 
     "            }\n" 
     "        }\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for( int outputCol = 0; outputCol < gOutputImageSize; outputCol++ ) {\n" 
+    "        for( int outputCol = 0; outputCol < gOutputSize; outputCol++ ) {\n" 
     "            const int inputCol = outputCol - gMargin + filterCol;\n" 
-    "            if( inputRow >= 0 && inputRow < gInputImageSize && inputCol >= 0 && inputCol < gInputImageSize ) {\n" 
+    "            if( inputRow >= 0 && inputRow < gInputSize && inputCol >= 0 && inputCol < gInputSize ) {\n" 
     "                if( localId < gFilterSizeSquared ) {\n" 
     "                    thiswchange += _inputRow[ inputCol ] * _errorRow[ outputCol ];\n" 
     "                    #ifdef BIASED\n" 
@@ -249,13 +249,13 @@ BackpropWeightsByRow::BackpropWeightsByRow( EasyCL *cl, LayerDimensions dim ) :
     "    if( localId < gFilterSizeSquared ) {\n" 
     "        #define weightsIndex ( ( ( outInCombo \\\n" 
     "            * gFilterSizeSquared ) + localId \\\n" 
-    "            * gOutputImageSize ) + outputRow )\n" 
+    "            * gOutputSize ) + outputRow )\n" 
     "        //gradWeights1[ weightsIndex ] -= learningRateMultiplier * thiswchange;\n" 
     "        //gradWeights1[weightsIndex] = 123.0f;\n" 
     "    }\n" 
     "    #ifdef BIASED\n" 
     "        if( inputPlane == 0 && localId == 0 ) {\n" 
-    "            gradBiasWeights1[outputPlane * gOutputImageSize + outputRow ] = learningRateMultiplier * thisbiaschange;\n" 
+    "            gradBiasWeights1[outputPlane * gOutputSize + outputRow ] = learningRateMultiplier * thisbiaschange;\n" 
     "        }\n" 
     "    #endif\n" 
     "}\n" 

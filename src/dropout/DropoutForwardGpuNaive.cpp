@@ -30,11 +30,11 @@ VIRTUAL void DropoutForwardGpuNaive::forward( int batchSize, CLWrapper *masksWra
 //    cout << StatefulTimer::instance()->prefix << "DropoutForwardGpuNaive::forward( CLWrapper * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward start" );
 
-    kernel  ->input( batchSize * numPlanes * outputImageSize * outputImageSize )
+    kernel  ->input( batchSize * numPlanes * outputSize * outputSize )
             ->input( masksWrapper )
             ->input( inputWrapper )
             ->output( outputWrapper );
-    int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
+    int globalSize = batchSize * numPlanes * outputSize * outputSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
     globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
 //    cout << "DropoutForwardGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
@@ -42,17 +42,17 @@ VIRTUAL void DropoutForwardGpuNaive::forward( int batchSize, CLWrapper *masksWra
     cl->finish();
 
 //    cout << "DropoutForwardGpuNaive::forward selectorswrapper:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
+//    PrintBuffer::printInts( cl, selectorsWrapper, outputSize, outputSize );
 
     StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward end" );
 }
-DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutForward( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) :
+        DropoutForward( cl, numPlanes, inputSize, dropRatio ) {
     string options = "";
-    options += " -DgOutputImageSize=" + toString( outputImageSize );
-    options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
-    options += " -DgInputImageSize=" + toString( inputImageSize );
-    options += " -DgInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
+    options += " -DgOutputSize=" + toString( outputSize );
+    options += " -DgOutputSizeSquared=" + toString( outputSize * outputSize );
+    options += " -DgInputSize=" + toString( inputSize );
+    options += " -DgInputSizeSquared=" + toString( inputSize * inputSize );
     options += " -DgNumPlanes=" + toString( numPlanes );
 //    float inverseDropRatio = 1.0f / dropRatio;
 //    string inverseDropRatioString = toString( inverseDropRatio );

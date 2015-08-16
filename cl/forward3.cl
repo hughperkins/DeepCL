@@ -27,15 +27,15 @@ void kernel forward_3_by_n_outplane( const int batchSize,
     const int outPlane = workgroupId % gNumFilters;
 
     const int localId = get_local_id(0);
-    const int outputRow = localId / gOutputImageSize;
-    const int outputCol = localId % gOutputImageSize;
+    const int outputRow = localId / gOutputSize;
+    const int outputCol = localId % gOutputSize;
 
     const int minu = gPadZeros ? max( -gHalfFilterSize, -outputRow ) : -gHalfFilterSize;
-    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
+    const int maxu = gPadZeros ? min( gHalfFilterSize - gEven, gOutputSize - 1 - outputRow  - gEven) : gHalfFilterSize - gEven;
     const int minv = gPadZeros ? max( -gHalfFilterSize, -outputCol ) : - gHalfFilterSize;
-    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputImageSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
+    const int maxv = gPadZeros ? min( gHalfFilterSize - gEven, gOutputSize - 1 - outputCol - gEven) : gHalfFilterSize - gEven;
 
-    const int numUpstreamsPerThread = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+    const int numUpstreamsPerThread = ( gInputSizeSquared + workgroupSize - 1 ) / workgroupSize;
 
     const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
     const int filterCubeGlobalOffset = outPlane * filterCubeLength;
@@ -50,11 +50,11 @@ void kernel forward_3_by_n_outplane( const int batchSize,
 
     float sum = 0;
     for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
-        int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+        int thisUpstreamImageOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;
         barrier(CLK_LOCAL_MEM_FENCE);
         for( int i = 0; i < numUpstreamsPerThread; i++ ) {
             int thisOffset = workgroupSize * i + localId;
-            if( thisOffset < gInputImageSizeSquared ) {
+            if( thisOffset < gInputSizeSquared ) {
                 _upstreamImage[ thisOffset ] = images[ thisUpstreamImageOffset + thisOffset ];
             }
         }
@@ -65,14 +65,14 @@ void kernel forward_3_by_n_outplane( const int batchSize,
             #if gPadZeros == 0
                 inputRow += gHalfFilterSize;
             #endif
-            int inputimagerowoffset = inputRow * gInputImageSize;
+            int inputimagerowoffset = inputRow * gInputSize;
             int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
             for( int v = minv; v <= maxv; v++ ) {
                 int inputCol = outputCol + v;
                 #if gPadZeros == 0
                     inputCol += gHalfFilterSize;
                 #endif
-                if( localId < gOutputImageSizeSquared ) {
+                if( localId < gOutputSizeSquared ) {
                     sum += _upstreamImage[ inputimagerowoffset + inputCol] * _filterCube[ filterrowoffset + v ];
                 }
             }
@@ -80,8 +80,8 @@ void kernel forward_3_by_n_outplane( const int batchSize,
     }
 
     // output are organized like [imageid][filterid][row][col]
-    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared + localId;
-    if( localId < gOutputImageSizeSquared ) {
+    int resultIndex = ( n * gNumFilters + outPlane ) * gOutputSizeSquared + localId;
+    if( localId < gOutputSizeSquared ) {
         output[resultIndex ] = sum;
     }
 }

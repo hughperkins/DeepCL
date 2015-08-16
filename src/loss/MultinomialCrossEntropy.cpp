@@ -33,7 +33,7 @@ VIRTUAL float MultinomialCrossEntropy::calcLoss( float const *expected ) {
 //    cout << "MultinomialCrossEntropy::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
-    int imageSize = previousLayer->getOutputImageSize();
+    int imageSize = previousLayer->getOutputSize();
     for( int imageId = 0; imageId < batchSize; imageId++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outRow = 0; outRow < imageSize; outRow++ ) {
@@ -63,16 +63,16 @@ VIRTUAL void MultinomialCrossEntropy::setBatchSize( int batchSize ) {
     if( errors != 0 ) {
         delete[] errors;
     }
-    errors = new float[ batchSize * previousLayer->getOutputSize() ];
+    errors = new float[ batchSize * previousLayer->getOutputNumElements() ];
     this->batchSize = batchSize;
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
 VIRTUAL void MultinomialCrossEntropy::calcGradInput( float const*expectedOutput ) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();
-    int outputSize = previousLayer->getOutputSize();
+    int outputNumElements = previousLayer->getOutputNumElements();
     float *output = previousLayer->getOutput();
-    for( int i = 0; i < outputSize; i++ ) {
+    for( int i = 0; i < outputNumElements; i++ ) {
         float result = output[i];
         float partialOutBySum = fn->calcDerivative( result );
         float partialLossByOut = - expectedOutput[i] / result;

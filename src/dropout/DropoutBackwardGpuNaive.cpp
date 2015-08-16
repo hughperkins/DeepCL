@@ -38,18 +38,18 @@ VIRTUAL void DropoutBackwardGpuNaive::backward(
     // first, memset errors to 0 ...
 //    kMemset ->out( gradInputWrapper )
 //            ->in( 0.0f )
-//            ->in( batchSize * numPlanes * inputImageSize * inputImageSize );
-//    int globalSize = batchSize * numPlanes * inputImageSize * inputImageSize;
+//            ->in( batchSize * numPlanes * inputSize * inputSize );
+//    int globalSize = batchSize * numPlanes * inputSize * inputSize;
 //    int workgroupSize = 64;
 //    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
 //    kMemset->run_1d( numWorkgroups * workgroupSize, workgroupSize );
 //    cl->finish();
 
-    kernel  ->in( batchSize * numPlanes * outputImageSize * outputImageSize )
+    kernel  ->in( batchSize * numPlanes * outputSize * outputSize )
             ->in( maskWrapper )
             ->in( gradOutputWrapper )
             ->out( gradInputWrapper );
-    int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
+    int globalSize = batchSize * numPlanes * outputSize * outputSize;
     int workgroupSize = 64;
     int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
     kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
@@ -57,15 +57,15 @@ VIRTUAL void DropoutBackwardGpuNaive::backward(
 
     StatefulTimer::instance()->timeCheck("DropoutBackwardGpuNaive::backward end" );
 }
-DropoutBackwardGpuNaive::DropoutBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutBackward( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutBackwardGpuNaive::DropoutBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) :
+        DropoutBackward( cl, numPlanes, inputSize, dropRatio ) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
     options += " -D gNumPlanes=" + toString( numPlanes );
-    options += " -D gInputImageSize=" + toString( inputImageSize );
-    options += " -D gInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
-    options += " -D gOutputImageSize=" + toString( outputImageSize );
-    options += " -D gOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
+    options += " -D gInputSize=" + toString( inputSize );
+    options += " -D gInputSizeSquared=" + toString( inputSize * inputSize );
+    options += " -D gOutputSize=" + toString( outputSize );
+    options += " -D gOutputSizeSquared=" + toString( outputSize * outputSize );
 //    float inverseDropRatio = 1.0f / dropRatio;
     string dropRatioString = toString( dropRatio );
     if( dropRatioString.find( "." ) == string::npos ) {

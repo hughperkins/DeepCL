@@ -19,23 +19,23 @@ public:
     EasyCL *cl;
 
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
     const float dropRatio;
 
-    const int outputImageSize;
+    const int outputSize;
 
     virtual ~DropoutForward() {}
     inline int getInputIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * inputImageSize + row )
-            * inputImageSize + col;
+            * inputSize + row )
+            * inputSize + col;
     }
     inline int getResultIndex( int n, int plane, int row, int col ) {
         return ( ( n
             * numPlanes + plane )
-            * outputImageSize + row )
-            * outputImageSize + col;
+            * outputSize + row )
+            * outputSize + col;
     }
 
     // [[[cog
@@ -43,14 +43,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutForward( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutForward *instance( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutForward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
-    STATIC DropoutForward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
+    DropoutForward( EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
+    STATIC DropoutForward *instance( EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
+    STATIC DropoutForward *instanceForTest( EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
+    STATIC DropoutForward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
     VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, unsigned char *masks, float *input, float *output );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]
 };

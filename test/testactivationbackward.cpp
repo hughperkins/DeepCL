@@ -33,14 +33,14 @@ TEST( testactivationbackward, basic ) {
         2, -9, 2.1f,
         0, -1.1f, 3.5f
     };
-    int inputTotalSize = activationBackprop->getInputSize( batchSize );
+    int inputTotalSize = activationBackprop->getInputNumElements( batchSize );
     EXPECT_EQ( batchSize * imageSize * imageSize, inputTotalSize );
     float *gradInput = new float[ inputTotalSize ];
 
     activationBackprop->backward( batchSize, outputs, gradOutput, gradInput );
 
-//    float *expectedGradInput = new float[ activationForward->getInputSize( batchSize ) ];
-//    memset( expectedGradInput, 0, sizeof(float) * activationForward->getInputSize( batchSize ) ];
+//    float *expectedGradInput = new float[ activationForward->getInputNumElements( batchSize ) ];
+//    memset( expectedGradInput, 0, sizeof(float) * activationForward->getInputNumElements( batchSize ) ];
 //    float expectedGradInput[] = {
 //        3,0,-2.7f,
 //        2,0,2.1f,
@@ -84,12 +84,12 @@ TEST( testactivationbackward, basic_2plane_batchsize2 ) {
         2, 
         9
     };
-    float *gradInput = new float[ activationBackprop->getInputSize( batchSize ) ];
+    float *gradInput = new float[ activationBackprop->getInputNumElements( batchSize ) ];
 
     activationBackprop->backward( batchSize, outputs, gradOutput, gradInput );
 
-//    float *expectedGradInput = new float[ activationForward->getInputSize( batchSize ) ];
-//    memset( expectedGradInput, 0, sizeof(float) * activationForward->getInputSize( batchSize ) ];
+//    float *expectedGradInput = new float[ activationForward->getInputNumElements( batchSize ) ];
+//    memset( expectedGradInput, 0, sizeof(float) * activationForward->getInputNumElements( batchSize ) ];
     float expectedGradInput[] = {
         3,
         0,
@@ -106,7 +106,7 @@ TEST( testactivationbackward, basic_2plane_batchsize2 ) {
 }
 
 TEST( SLOW_testactivationbackward, compare_args ) {
-    int inputImageSize = 9;
+    int inputSize = 9;
     std::string activation = "relu";
     int instance0 = 0;
     int instance1 = 1;
@@ -118,24 +118,24 @@ TEST( SLOW_testactivationbackward, compare_args ) {
     TestArgsParser::arg( "activation", &activation );
 //    TestArgsParser::arg( "activationsize", &activationSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
-    TestArgsParser::arg( "inputimagesize", &inputImageSize );
+    TestArgsParser::arg( "inputimagesize", &inputSize );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    int outputImageSize = p1->outputImageSize;
-    int gradOutputSize = batchSize * outputImageSize * outputImageSize * numPlanes;
-    float *gradOutput = new float[ gradOutputSize ];
-    int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
-    float *gradInput0 = new float[ inputSize ];
-    float *gradInput1 = new float[ inputSize ];
+    ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
+    ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
+    int outputSize = p1->outputSize;
+    int gradOutputNumElements = batchSize * outputSize * outputSize * numPlanes;
+    float *gradOutput = new float[ gradOutputNumElements ];
+    int inputNumElements = batchSize * inputSize * inputSize * numPlanes;
+    float *gradInput0 = new float[ inputNumElements ];
+    float *gradInput1 = new float[ inputNumElements ];
     
-    ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputImageSize, ActivationFunction::fromName( activation ) );
-    float *output = new float[gradOutputSize];
-    float *input = new float[inputSize];
+    ActivationForward *forwardprop = ActivationForward::instanceSpecific( 0, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
+    float *output = new float[gradOutputNumElements];
+    float *input = new float[inputNumElements];
     float *gradInput[2];
     gradInput[0] = gradInput0;
     gradInput[1] = gradInput1;
@@ -146,8 +146,8 @@ TEST( SLOW_testactivationbackward, compare_args ) {
         // selectors might go over the edge if we just choose random ints
         // easiest way to select valid selectors might be to just forwardforward first?
 
-        WeightRandomizer::randomize( it, gradOutput, gradOutputSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );    
+        WeightRandomizer::randomize( it, gradOutput, gradOutputNumElements, -0.1f, 0.1f );
+        WeightRandomizer::randomize( it, input, inputNumElements, -0.1f, 0.1f );    
         forwardprop->forward( batchSize, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
@@ -155,7 +155,7 @@ TEST( SLOW_testactivationbackward, compare_args ) {
         }
         bool ok = true;
         int numErrors = 0;
-        for( int i = 0; i < inputSize; i++ ) {
+        for( int i = 0; i < inputNumElements; i++ ) {
             if( gradInput0[i] != gradInput1[i] ) {
                 cout << "diff: i=" << i << " " << gradInput0[i] << " != " << gradInput1[i] << endl;
                 ok = false;
@@ -204,9 +204,9 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = activationForward->getOutputSize( batchSize );
-    int *selectors = new int[outputSize];
-    float *output = new float[outputSize];
+    int outputNumElements = activationForward->getOutputNumElements( batchSize );
+    int *selectors = new int[outputNumElements];
+    float *output = new float[outputNumElements];
 
     activationForward->forward( batchSize, data, selectors, output );
 

@@ -33,7 +33,7 @@ VIRTUAL void ForwardFc_workgroupPerFilterPlane::forward( int batchSize, CLWrappe
     kernel1->input( weightsWrapper);
     if( dim.biased ) kernel1->input( biasWrapper );
     kernel1->output( output1Wrapper );
-    kernel1->localFloats( dim.inputImageSize );
+    kernel1->localFloats( dim.inputSize );
     kernel1->localFloats( batchSize * dim.filterSize );
 
     int workgroupSize = dim.numFilters;
@@ -113,11 +113,11 @@ ForwardFc_workgroupPerFilterPlane::ForwardFc_workgroupPerFilterPlane( EasyCL *cl
     "//   filtersize == inputimagesize (mandatory)\n" 
     "//   inputimagesize == 19\n" 
     "//   filtersize == 19\n" 
-    "//   outputImageSize == 1\n" 
+    "//   outputSize == 1\n" 
     "//   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361\n" 
     "//   lots of inplanes, eg 32-128\n" 
     "//   inputimagesize around 19, not too small\n" 
-    "#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)\n" 
+    "#if (gFilterSize == gInputSize) && (gPadZeros == 0)\n" 
     "void kernel forward_fc_workgroup_perrow( const int batchSize,\n" 
     "    global const float *images, global const float *filters,\n" 
     "    global float *output1,\n" 
@@ -142,7 +142,7 @@ ForwardFc_workgroupPerFilterPlane::ForwardFc_workgroupPerFilterPlane( EasyCL *cl
     "    for( int i = 0; i < gFilterSize; i++ ) {\n" 
     "        _threadFilterRow[i] = filterRow[i];\n" 
     "    }\n" 
-    "    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int loopsPerExample = ( gInputSize + workgroupSize - 1 ) / workgroupSize;\n" 
     "    // now loop over examples...\n" 
     "    for( int n = 0; n < batchSize; n++ ) {\n" 
     "        // copy down example row, which is global to all threads in workgroup\n" 
@@ -153,9 +153,9 @@ ForwardFc_workgroupPerFilterPlane::ForwardFc_workgroupPerFilterPlane( EasyCL *cl
     "        copyLocal( _imageRow,  images\n" 
     "            + ( ( n\n" 
     "                * gNumInputPlanes + inputPlaneId )\n" 
-    "                * gInputImageSize + filterRowId )\n" 
-    "                * gInputImageSize,\n" 
-    "            gInputImageSize );\n" 
+    "                * gInputSize + filterRowId )\n" 
+    "                * gInputSize,\n" 
+    "            gInputSize );\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        // add up the values in our row...\n" 
     "        float sum = 0;\n" 
@@ -190,11 +190,11 @@ ForwardFc_workgroupPerFilterPlane::ForwardFc_workgroupPerFilterPlane( EasyCL *cl
     "// this kernel assumes:\n" 
     "//   padzeros == 0 (mandatory)\n" 
     "//   filtersize == inputimagesize (mandatory)\n" 
-    "//   outputImageSize == 1\n" 
+    "//   outputSize == 1\n" 
     "//   lots of outplanes, hundreds, but less than max work groupsize, eg 350, 500, 361\n" 
     "//   lots of inplanes, eg 32\n" 
     "//   inputimagesize around 19, not too small\n" 
-    "#if gFilterSize == gInputImageSize && gPadZeros == 0\n" 
+    "#if gFilterSize == gInputSize && gPadZeros == 0\n" 
     "void kernel forward_filter_matches_inimage( const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "    global float *output,\n" 

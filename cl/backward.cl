@@ -16,11 +16,11 @@ void kernel calcGradInput(
         global const float *gradOutput, global float *weights, global float *gradInput ) {
     int globalId = get_global_id(0);
 
-    const int upstreamImage2dId = globalId / gInputImageSizeSquared;
+    const int upstreamImage2dId = globalId / gInputSizeSquared;
 
-    const int intraImageOffset = globalId % gInputImageSizeSquared;
-    const int upstreamRow = intraImageOffset / gInputImageSize;
-    const int upstreamCol = intraImageOffset % gInputImageSize;
+    const int intraImageOffset = globalId % gInputSizeSquared;
+    const int upstreamRow = intraImageOffset / gInputSize;
+    const int upstreamCol = intraImageOffset % gInputSize;
 
     const int upstreamPlane = upstreamImage2dId % gInputPlanes;
     const int n = upstreamImage2dId / gInputPlanes;
@@ -29,9 +29,9 @@ void kernel calcGradInput(
         return;
     }
 
-    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputImageSize - 1) );
+    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputSize - 1) );
     const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
-    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputImageSize -1) );
+    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputSize -1) );
     const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
 
     float sumWeightTimesOutError = 0;
@@ -42,8 +42,8 @@ void kernel calcGradInput(
             for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
                 int outCol = upstreamCol + gMargin - filterCol;
                 int resultIndex = ( ( n * gNumFilters 
-                          + outPlane ) * gOutputImageSize
-                          + outRow ) * gOutputImageSize
+                          + outPlane ) * gOutputSize
+                          + outRow ) * gOutputSize
                           + outCol;
                 float thisError = gradOutput[resultIndex];
                 int thisWeightIndex = ( ( outPlane * gInputPlanes

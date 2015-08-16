@@ -19,7 +19,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationBackwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
+    ActivationBackwardCpu( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
     VIRTUAL void backward( int batchSize, float *outputs, float *gradOutput, float *gradInput );
     VIRTUAL void backward( int batchSize,
     CLWrapper *outputWrapper,

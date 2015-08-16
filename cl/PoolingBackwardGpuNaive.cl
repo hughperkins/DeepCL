@@ -15,13 +15,13 @@ kernel void backward( const int batchSize,
     global const float *gradOutput, global const int *selectors, global float *gradInput ) {
 
     #define globalId get_global_id(0)
-    #define nPlaneCombo ( globalId / gOutputImageSizeSquared ) 
-    #define outputPosCombo ( globalId % gOutputImageSizeSquared )
+    #define nPlaneCombo ( globalId / gOutputSizeSquared ) 
+    #define outputPosCombo ( globalId % gOutputSizeSquared )
 
     const int n = nPlaneCombo / gNumPlanes;
     const int plane = nPlaneCombo % gNumPlanes;
-    const int outputRow = outputPosCombo / gOutputImageSize;
-    const int outputCol = outputPosCombo % gOutputImageSize;
+    const int outputRow = outputPosCombo / gOutputSize;
+    const int outputCol = outputPosCombo % gOutputSize;
 
     if( n >= batchSize ) {
         return;
@@ -29,8 +29,8 @@ kernel void backward( const int batchSize,
 
     int resultIndex = ( ( n
         * gNumPlanes + plane )
-        * gOutputImageSize + outputRow )
-        * gOutputImageSize + outputCol;
+        * gOutputSize + outputRow )
+        * gOutputSize + outputCol;
     #define error ( gradOutput[resultIndex] )
     int selector = ( selectors[resultIndex] );
     #define drow ( selector / gPoolingSize )
@@ -39,8 +39,8 @@ kernel void backward( const int batchSize,
     #define inputCol ( outputCol * gPoolingSize + dcol )
     int inputIndex = ( ( n
         * gNumPlanes + plane )
-        * gInputImageSize + inputRow )
-        * gInputImageSize + inputCol;
+        * gInputSize + inputRow )
+        * gInputSize + inputCol;
 //    if( n < batchSize ) {
         gradInput[ inputIndex ] = error;
 //    }

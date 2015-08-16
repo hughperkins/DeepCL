@@ -160,16 +160,16 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
-    int inputSize = net->getLayer(0)->getOutputSize();
-    int outputSize = net->getLayer(1)->getOutputSize();
+    int inputNumElements = net->getLayer(0)->getOutputNumElements();
+    int outputNumElements = net->getLayer(1)->getOutputNumElements();
     int weightsSize = net->getLayer(1)->getWeightsSize();
 
-    float *inputData = new float[max(10000, inputSize )];
-    float *expectedOutput = new float[max(10000, outputSize )];
-    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
-    memset( expectedOutput, 0, sizeof(float) * max(10000, outputSize ) );
-    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputSize ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, expectedOutput, max(10000, outputSize ), -1.0f, 1.0f );
+    float *inputData = new float[max(10000, inputNumElements )];
+    float *expectedOutput = new float[max(10000, outputNumElements )];
+    memset( inputData, 0, sizeof(float) * max(10000, inputNumElements ) );
+    memset( expectedOutput, 0, sizeof(float) * max(10000, outputNumElements ) );
+    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputNumElements ), -1.0f, 1.0f );
+    WeightRandomizer::randomize( random, expectedOutput, max(10000, outputNumElements ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, net->getLayer(1)->getWeights(), weightsSize, -0.1f, 0.1f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
 
@@ -313,7 +313,7 @@ void testBackpropWeights( LayerDimensions &dim, int batchSize, float learningMul
 
 TEST( testupdateweights, backprop_weights_2 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 1 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+    dim.setInputSize( 1 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
 
     const int batchSize = 1;
@@ -328,7 +328,7 @@ TEST( testupdateweights, backprop_weights_2 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize2 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 2 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+    dim.setInputSize( 2 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
@@ -345,7 +345,7 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize2 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize3_filtersize3 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 3 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
+    dim.setInputSize( 3 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
@@ -363,7 +363,7 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize3_filtersize3 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize4_filtersize3 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 4 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
+    dim.setInputSize( 4 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
@@ -383,7 +383,7 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize4_filtersize3 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize5_filtersize3 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 5 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
+    dim.setInputSize( 5 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 3 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
@@ -403,35 +403,35 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize5_filtersize3 ) {
 }
 
 float *allocateInputCleared( int batchSize, LayerDimensions &dim ) {
-    int inputSize = batchSize * dim.inputCubeSize;
-    float *data = new float[ inputSize ];
-    memset( data, 0, sizeof(float) * inputSize );
+    int inputNumElements = batchSize * dim.inputCubeSize;
+    float *data = new float[ inputNumElements ];
+    memset( data, 0, sizeof(float) * inputNumElements );
     return data;
 }
 
 float *allocateErrorsCleared( int batchSize, LayerDimensions &dim ) {
-    int outputSize = batchSize * dim.outputCubeSize;
-    float *errors = new float[ outputSize ];
-    memset( errors, 0, sizeof(float) * outputSize );
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    float *errors = new float[ outputNumElements ];
+    memset( errors, 0, sizeof(float) * outputNumElements );
     return errors;
 }
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize3_filtersize1 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 3 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+    dim.setInputSize( 3 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
 
     float *data = allocateInputCleared( batchSize, dim );
     data[0] = 2;
-    data[1 * dim.inputImageSize + 1] = 7;
-    data[2 * dim.inputImageSize + 2] = 5;
+    data[1 * dim.inputSize + 1] = 7;
+    data[2 * dim.inputSize + 2] = 5;
 
     float *errors = allocateErrorsCleared( batchSize, dim );
     errors[0] = 5;
-    errors[1 * dim.outputImageSize + 1] = 11;
-    errors[2 * dim.outputImageSize + 2] = 3;
+    errors[1 * dim.outputSize + 1] = 11;
+    errors[2 * dim.outputSize + 2] = 3;
 
     float expectedOutput[] = { -(2 * 5 +  5 * 3 + 7 * 11 ) };          //           
 
@@ -440,18 +440,18 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize3_filtersize1 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize16_filtersize1 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 16 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+    dim.setInputSize( 16 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
 
     float *data = allocateInputCleared( batchSize, dim );
     data[0] = 2;
-    data[15 * dim.inputImageSize + 15] = 5;
+    data[15 * dim.inputSize + 15] = 5;
 
     float *errors = allocateErrorsCleared( batchSize, dim );
     errors[0] = 4;
-    errors[15 * dim.outputImageSize + 15] = 3;
+    errors[15 * dim.outputSize + 15] = 3;
 
     float expectedOutput[] = { -(2 * 4 +  3 * 5 ) };          //           
 
@@ -460,7 +460,7 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize16_filtersize1 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+    dim.setInputSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
@@ -470,13 +470,13 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1 ) {
     data[0] = 2;
     data[1] = 3.2f;
     data[2] = 1.234f;
-    data[16 * dim.inputImageSize + 16] = 5;
+    data[16 * dim.inputSize + 16] = 5;
 
     float *errors = allocateErrorsCleared( batchSize, dim );
     errors[0] = 4;
     errors[1] = -2.5f;
     errors[2] = 4.125f;
-    errors[16 * dim.outputImageSize + 16] = 3;
+    errors[16 * dim.outputSize + 16] = 3;
 
     float expectedOutput[] = { -( 4*2 - 3.2f * 2.5f + 1.234f * 4.125f + 3*5 ) };          // 
 
@@ -485,24 +485,24 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1 ) {
 
 TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1_moredata ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
+    dim.setInputSize( 17 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 1 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
     const float learningMultiplier = 1;
 
     float *data = allocateInputCleared( batchSize, dim );
-    for( int i = 0; i < square( dim.inputImageSize ); i++ ) {
+    for( int i = 0; i < square( dim.inputSize ); i++ ) {
         data[i] = ( ( 1 + i ) % 20 ) / 5.3f;
     }
 
     float *errors = allocateErrorsCleared( batchSize, dim );
-    for( int i = 0; i < square( dim.outputImageSize ); i++ ) {
+    for( int i = 0; i < square( dim.outputSize ); i++ ) {
         errors[i] = ( ( 2 + i ) % 17 ) / 4.2f;
     }
 
     float expectedOutput[1];
     expectedOutput[0] = 0;
-    for ( int i = 0; i < square( dim.inputImageSize ); i++ ) {
+    for ( int i = 0; i < square( dim.inputSize ); i++ ) {
         expectedOutput[0] += - data[i] * errors[i];
     }
     cout << "expectedresult: " << expectedOutput[0] << endl;
@@ -512,27 +512,27 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize17_filtersize1_more
 
 TEST( testupdateweights, backprop_instance3_smaller2 ) {
     LayerDimensions dim;
-    dim.setInputImageSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
+    dim.setInputSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
         .setBiased( 0 ).setPadZeros( 0 );
     int batchSize = 1;
 //    const float learningRate = 1;
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    int inputNumElements = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
 //    int biasSize = dim.numFilters;
 
     cout << "numweights: " << weightsSize << endl;
 
-    float *errors = new float[max(10000, outputSize )];
-    float *inputData = new float[max(10000, inputSize )];
+    float *errors = new float[max(10000, outputNumElements )];
+    float *inputData = new float[max(10000, inputNumElements )];
     float *weights0 = new float[max(10000, weightsSize ) ];
     float *weights1 = new float[max(10000, weightsSize ) ];
 
-    memset( errors, 0, sizeof(float) * max(10000, outputSize ) );
-    memset( inputData, 0, sizeof(float) * max(10000, inputSize ) );
+    memset( errors, 0, sizeof(float) * max(10000, outputNumElements ) );
+    memset( inputData, 0, sizeof(float) * max(10000, inputNumElements ) );
     memset( weights0, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
 
@@ -541,11 +541,11 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
     CLWrapper *weights0Wrap = cl->wrap( 10000, weights0 );
     CLWrapper *weights1Wrap = cl->wrap( 10000, weights1 );
 
-    for( int i = 0 * dim.inputImageSize; i < dim.inputImageSize * dim.inputImageSize; i+= dim.inputImageSize * 4 ) {
+    for( int i = 0 * dim.inputSize; i < dim.inputSize * dim.inputSize; i+= dim.inputSize * 4 ) {
         inputData[i] = 3;
     }
 
-    for( int i = 0; i < dim.outputImageSize * dim.outputImageSize; i+= dim.outputImageSize ) {
+    for( int i = 0; i < dim.outputSize * dim.outputSize; i+= dim.outputSize ) {
         errors[i] = 2;
     }
 
@@ -628,14 +628,14 @@ public:
 
     // [[[cog
     // floats= []
-    // ints = [  'inputPlanes', 'inputImageSize', 'numFilters', 'filterSize',
+    // ints = [  'inputPlanes', 'inputSize', 'numFilters', 'filterSize',
     //    'batchSize', 'biased', 'padZeros', 'instance0', 'instance1' ]
     // import cog_fluent
     // cog_fluent.gov3( 'CompareSpecificArgs', ints = ints, floats = floats )
     // ]]]
     // generated, using cog:
     int _inputPlanes;
-    int _inputImageSize;
+    int _inputSize;
     int _numFilters;
     int _filterSize;
     int _batchSize;
@@ -645,7 +645,7 @@ public:
     int _instance1;
     CompareSpecificArgs() {
         _inputPlanes = 0;
-        _inputImageSize = 0;
+        _inputSize = 0;
         _numFilters = 0;
         _filterSize = 0;
         _batchSize = 0;
@@ -658,8 +658,8 @@ public:
         this->_inputPlanes = _inputPlanes;
         return *this;
     }
-    CompareSpecificArgs inputImageSize( int _inputImageSize ) {
-        this->_inputImageSize = _inputImageSize;
+    CompareSpecificArgs inputSize( int _inputSize ) {
+        this->_inputSize = _inputSize;
         return *this;
     }
     CompareSpecificArgs numFilters( int _numFilters ) {
@@ -698,13 +698,13 @@ namespace testupdateweights {
 void compareSpecific( bool debug, float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    int inputNumElements = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
 
-    int outputAllocated = max( 10000, outputSize );
-    int inputAllocated = max( 10000, inputSize );
+    int outputAllocated = max( 10000, outputNumElements );
+    int inputAllocated = max( 10000, inputNumElements );
     int weightsAllocated = max( 10000, weightsSize );
     int biasAllocated = max( 10000, biasSize );
 
@@ -825,7 +825,7 @@ TEST( SLOW_testupdateweights, compare_args ) {
     int instance0 = 1;
     int instance1 = 3;
     LayerDimensions dim;
-    dim.setInputImageSize( 28 ).setInputPlanes( 1 ).setNumFilters( 8 ).setFilterSize( 5 )
+    dim.setInputSize( 28 ).setInputPlanes( 1 ).setNumFilters( 8 ).setFilterSize( 5 )
         .setBiased( 1 ).setPadZeros( 1 );
     int batchSize = 4;
     int its = 1;
@@ -849,67 +849,67 @@ TEST( SLOW_testupdateweights, compare_args ) {
 
 //    TEST( testupdateweights, compare_instance3_smaller2 ) {
 //        LayerDimensions dim;
-//        dim.setInputImageSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
+//        dim.setInputSize( 96 ).setInputPlanes( 1 ).setNumFilters( 1 ).setFilterSize( 6 )
 //            .setBiased( 0 ).setPadZeros( 0 );
 //        int batchSize = 1;
 //        const float learningRate = 1;
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 96 ).numFilters( 1 )
+//            .batchSize( 1 ).inputPlanes( 1 ).inputSize( 96 ).numFilters( 1 )
 //            .filterSize( 6 ).biased( 0 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
 //    TEST( SLOW_testupdateweights, compare_specific ) {
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 128 ).inputPlanes( 32 ).inputImageSize( 19 ).numFilters( 32 )
+//            .batchSize( 128 ).inputPlanes( 32 ).inputSize( 19 ).numFilters( 32 )
 //            .filterSize( 3 ).biased( 0 ).padZeros( false )
 //            .instance0(1).instance1(3) );
 //    }
 
 //    TEST( SLOW_testupdateweights, compare_specific_96image ) {
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 128 ).inputPlanes( 2 ).inputImageSize( 96 ).numFilters( 8 )
+//            .batchSize( 128 ).inputPlanes( 2 ).inputSize( 96 ).numFilters( 8 )
 //            .filterSize( 6 ).biased( 1 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
 //    TEST( SLOW_testupdateweights, compare_specific_96image_smaller ) {
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 48 ).numFilters( 1 )
+//            .batchSize( 1 ).inputPlanes( 1 ).inputSize( 48 ).numFilters( 1 )
 //            .filterSize( 2 ).biased( 1 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
 //    TEST( SLOW_testupdateweights, compare_specific_96image_smaller2 ) {
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 96 ).numFilters( 1 )
+//            .batchSize( 1 ).inputPlanes( 1 ).inputSize( 96 ).numFilters( 1 )
 //            .filterSize( 4 ).biased( 0 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
 //    TEST( SLOW_testupdateweights, compare_specific_96image_smaller3 ) {
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 1 ).inputPlanes( 1 ).inputImageSize( 96 ).numFilters( 1 )
+//            .batchSize( 1 ).inputPlanes( 1 ).inputSize( 96 ).numFilters( 1 )
 //            .filterSize( 6 ).biased( false ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
 //    TEST( SLOW_testupdateweights, compare_specific_96image_smaller4 ) {
 //        compareSpecific( CompareSpecificArgs::instance()
-//            .batchSize( 1 ).inputPlanes( 2 ).inputImageSize( 96 ).numFilters( 8 )
+//            .batchSize( 1 ).inputPlanes( 2 ).inputSize( 96 ).numFilters( 8 )
 //            .filterSize( 4 ).biased( 1 ).padZeros( false )
 //            .instance0(0).instance1(3) );
 //    }
 
 void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
 
-    int outputSize = batchSize * dim.outputCubeSize;
-    int inputSize = batchSize * dim.inputCubeSize;
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    int inputNumElements = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
 
-    int outputAllocated = outputSize;
-    int inputAllocated = inputSize;
+    int outputAllocated = outputNumElements;
+    int inputAllocated = inputNumElements;
     int weightsAllocated = weightsSize;
     int biasAllocated = biasSize;
 

@@ -40,7 +40,7 @@ VIRTUAL void Forward1::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper
 
     if( dim.biased ) {
         addBias->forward(
-            batchSize, dim.numFilters, dim.outputImageSize,
+            batchSize, dim.numFilters, dim.outputSize,
             outputWrapper, biasWrapper );
     }
     StatefulTimer::timeCheck("Forward1::forward END");
@@ -127,22 +127,22 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "    global float *output ) {\n" 
     "    int globalId = get_global_id(0);\n" 
     "\n" 
-    "    int outputImage2Id = globalId / gOutputImageSizeSquared;\n" 
+    "    int outputImage2Id = globalId / gOutputSizeSquared;\n" 
     "    int exampleId = outputImage2Id / gNumFilters;\n" 
     "    int filterId = outputImage2Id % gNumFilters;\n" 
     "\n" 
     "    // intraimage coords\n" 
-    "    int localid = globalId % gOutputImageSizeSquared;\n" 
-    "    int outputRow = localid / gOutputImageSize;\n" 
-    "    int outputCol = localid % gOutputImageSize;\n" 
+    "    int localid = globalId % gOutputSizeSquared;\n" 
+    "    int outputRow = localid / gOutputSize;\n" 
+    "    int outputCol = localid % gOutputSize;\n" 
     "\n" 
-    "    global float const*inputCube = inputs + exampleId * gNumInputPlanes * gInputImageSizeSquared;\n" 
+    "    global float const*inputCube = inputs + exampleId * gNumInputPlanes * gInputSizeSquared;\n" 
     "    global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;\n" 
     "\n" 
     "    float sum = 0;\n" 
     "    if( exampleId < numExamples ) {\n" 
     "        for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {\n" 
-    "            global float const*inputPlane = inputCube + inputPlaneIdx * gInputImageSizeSquared;\n" 
+    "            global float const*inputPlane = inputCube + inputPlaneIdx * gInputSizeSquared;\n" 
     "            global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;\n" 
     "            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {\n" 
     "                // trying to reduce register pressure...\n" 
@@ -151,9 +151,9 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "                #else\n" 
     "                    #define inputRowIdx ( outputRow + u + gHalfFilterSize )\n" 
     "                #endif\n" 
-    "                global float const *inputRow = inputPlane + inputRowIdx * gInputImageSize;\n" 
+    "                global float const *inputRow = inputPlane + inputRowIdx * gInputSize;\n" 
     "                global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
-    "                bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputImageSize;\n" 
+    "                bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputSize;\n" 
     "                #pragma unroll\n" 
     "                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {\n" 
     "                    #if gPadZeros == 1\n" 
@@ -161,7 +161,7 @@ Forward1::Forward1( EasyCL *cl, LayerDimensions dim ) :
     "                    #else\n" 
     "                        #define inputColIdx ( outputCol + v + gHalfFilterSize )\n" 
     "                    #endif\n" 
-    "                    bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputImageSize;\n" 
+    "                    bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputSize;\n" 
     "                    if( process ) {\n" 
     "                            sum += inputRow[inputColIdx] * filterRow[v];\n" 
     "                    }\n" 

@@ -586,13 +586,13 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
                     0,0,0,0,0,
                     1,1,1,1,1,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -683,13 +683,13 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
                     1,1,1,1,1,
                     0,0,0,0,0,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2, 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -801,13 +801,13 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
                     1,1,1,1,1,
                     0,0,0,0,0,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2, 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -990,15 +990,15 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
                     1,1,1,0,0,
                     0,0,0,0,0,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2, 0, 1, 2,
                     0, 1, 2, 0, 1, 2,
                     0, 1, 2, 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
