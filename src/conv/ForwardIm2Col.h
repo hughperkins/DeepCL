@@ -14,7 +14,7 @@ class AddBias;
 #define STATIC static
 
 class ForwardIm2Col : public Forward {
-private:
+    private:
     CLKernel *kernelIm2Col;
 //    CLKernel *kernelCol2Im;
     AddBias *addBias;

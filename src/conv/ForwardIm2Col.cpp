@@ -78,11 +78,15 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
 
     for (int b = 0; b < batchSize; b ++) {
         // Extract columns:
-        im2col(
-            dataWrapper,
-            b * dim.inputCubeSize,
-            columnsWrapper
-       );
+        kernelIm2Col->in(numKernels);
+        kernelIm2Col->in(dataWrapper);
+        kernelIm2Col->in(b * dim.inputCubeSize);
+        kernelIm2Col->out(columnsWrapper);
+
+        int workgroupSize = cl->getMaxWorkgroupSize();
+        int numWorkgroups = this->numKernels;
+
+        kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
