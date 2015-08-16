@@ -32,7 +32,7 @@ PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
     int channels = dim.inputPlanes;
     int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
 
-    this->numKernels = channels * size_col * size_col;
+    this->numKernels = channels * dim.inputSizeSquared;
 
     TemplatedKernel builder(cl);
     builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
@@ -61,13 +61,16 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
     float *gradColumns = new float[gradColumnsSize];
     CLWrapper *gradColumnsWrapper = cl->wrap(gradColumnsSize, gradColumns);
     gradColumnsWrapper->createOnDevice();
-    cout << "gradColumnsSize: " << gradColumnsSize << endl;
-    cout << "weightsize: " << weightsWrapper->size() << endl;
+//    cout << "gradColumnsSize: " << gradColumnsSize << endl;
+//    cout << "weightsize: " << weightsWrapper->size() << endl;
 
     StatefulTimer::timeCheck("BackwardIm2Col::backward after alloc");
 
+    if(!gradInputWrapper->isOnDevice()) {
+        gradInputWrapper->createOnDevice();
+    }
     for (int b = 0; b < batchSize; b ++) {
-        cout << "b=" << b << " numkernels=" << numKernels << endl;
+//        cout << "b=" << b << " numkernels=" << numKernels << endl;
         // Extract columns:
 
         // M,N,K are dims of matrix A and B
@@ -81,7 +84,7 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
         long m = dim.outputSizeSquared;
         long n = dim.inputPlanes * dim.filterSizeSquared;
         long k = dim.numFilters;
-        cout << "m=" << m << " k=" << k << " n=" << n << endl;
+//        cout << "m=" << m << " k=" << k << " n=" << n << endl;
 
         clblasOrder order = clblasColumnMajor;
         clblasTranspose aTrans = clblasNoTrans;
@@ -120,19 +123,19 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
 //        gradColumns, n
 //    );
 
-       cl->finish();
-       gradOutputWrapper->copyToHost();
-       for( int i = 0; i < gradOutputWrapper->size(); i++ ) {
-           cout << "gradOutput[" << i << "]=" << reinterpret_cast<float *>(gradOutputWrapper->getHostArray())[i] << endl;
-       }
-       weightsWrapper->copyToHost();
-       for( int i = 0; i < weightsWrapper->size(); i++ ) {
-           cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
-       }
-       gradColumnsWrapper->copyToHost();
-       for( int i = 0; i < gradColumnsSize; i++ ) {
-           cout << "gradColumns[" << i << "]=" << reinterpret_cast<float *>(gradColumnsWrapper->getHostArray())[i] << endl;
-       }
+//       cl->finish();
+//       gradOutputWrapper->copyToHost();
+//       for( int i = 0; i < gradOutputWrapper->size(); i++ ) {
+//           cout << "gradOutput[" << i << "]=" << reinterpret_cast<float *>(gradOutputWrapper->getHostArray())[i] << endl;
+//       }
+//       weightsWrapper->copyToHost();
+//       for( int i = 0; i < weightsWrapper->size(); i++ ) {
+//           cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
+//       }
+//       gradColumnsWrapper->copyToHost();
+//       for( int i = 0; i < gradColumnsSize; i++ ) {
+//           cout << "gradColumns[" << i << "]=" << reinterpret_cast<float *>(gradColumnsWrapper->getHostArray())[i] << endl;
+//       }
 
 //    THClBlas_gemm(
 //        'n', 't',
@@ -151,14 +154,16 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
         int workgroupSize = cl->getMaxWorkgroupSize();
         int numWorkgroups = this->numKernels;
 
+//        cout << "numworkgroups=" << numWorkgroups << " workgorupSize=" << workgroupSize << endl;
         kernelCol2Im->run_1d(numWorkgroups * workgroupSize, workgroupSize);
 
 
-        cl->finish();
-        gradInputWrapper->copyToHost();
-        for( int i = 0; i < gradInputWrapper->size(); i++ ) {
-            cout << "gradInput[" << i << "]=" << reinterpret_cast<float *>(gradInputWrapper->getHostArray())[i] << endl;
-        }
+//        cl->finish();
+//        gradInputWrapper->copyToHost();
+//        cl->finish();
+//        for( int i = 0; i < gradInputWrapper->size(); i++ ) {
+//            cout << "gradInput[" << i << "]=" << reinterpret_cast<float *>(gradInputWrapper->getHostArray())[i] << endl;
+//        }
     }
 
     delete gradColumnsWrapper;
@@ -225,7 +230,7 @@ STATIC std::string BackwardIm2Col::getKernelTemplate() {
     "    global float* im_data, int im_offset) {\n" 
     "  global float *data_im = im_data + im_offset;\n" 
     "\n" 
-    "  CL_KERNEL_LOOP(index, n) {\n" 
+    "  for (int index = get_group_id(0) * get_local_size(0) + get_local_id(0); index < (n); index += get_local_size(0) * get_num_groups(0)) {\n" 
     "    float val = 0;\n" 
     "    int w = index % {{size}} + {{padding}};\n" 
     "    int h = (index / {{size}}) % {{size}} + {{padding}};\n" 

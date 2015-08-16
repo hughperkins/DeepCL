@@ -200,7 +200,7 @@ STATIC std::string ForwardIm2Col::getKernelTemplate() {
     "    global float* im_data, int im_offset) {\n" 
     "  global float *data_im = im_data + im_offset;\n" 
     "\n" 
-    "  CL_KERNEL_LOOP(index, n) {\n" 
+    "  for (int index = get_group_id(0) * get_local_size(0) + get_local_id(0); index < (n); index += get_local_size(0) * get_num_groups(0)) {\n" 
     "    float val = 0;\n" 
     "    int w = index % {{size}} + {{padding}};\n" 
     "    int h = (index / {{size}}) % {{size}} + {{padding}};\n" 

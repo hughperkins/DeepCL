@@ -48,7 +48,7 @@ kernel void col2im(
     global float* im_data, int im_offset) {
   global float *data_im = im_data + im_offset;
 
-  CL_KERNEL_LOOP(index, n) {
+  for (int index = get_group_id(0) * get_local_size(0) + get_local_id(0); index < (n); index += get_local_size(0) * get_num_groups(0)) {
     float val = 0;
     int w = index % {{size}} + {{padding}};
     int h = (index / {{size}}) % {{size}} + {{padding}};
