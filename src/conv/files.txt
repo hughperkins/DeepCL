@@ -1,3 +1,4 @@
+BackwardIm2Col.cpp
 ForwardIm2Col.cpp
 ReduceSegments.cpp
 AddBias.cpp

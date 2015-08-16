@@ -1,13 +1,6 @@
-// Copyright Hugh Perkins 2014 hughperkins at gmail
-//
-// This Source Code Form is subject to the terms of the Mozilla Public License, 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
-// obtain one at http://mozilla.org/MPL/2.0/.
-
-#include "conv/ForwardIm2Col.h"
+#include "EasyCL.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
-#include "conv/AddBias.h"
 #include "templates/TemplatedKernel.h"
 
 #include <sstream>
@@ -16,18 +9,22 @@
 
 #include <clBLAS.h>
 
+#include "BackwardIm2Col.h"
+
 using namespace std;
 
-#undef VIRTUAL
 #undef STATIC
-#define VIRTUAL
-#define STATIC
+#define STATIC 
+
+#undef VIRTUAL
+#define VIRTUAL 
+
 #define PUBLIC
 
-PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
-            Forward(cl, dim)
+PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
+            Backward(cl, dim)
         {
-    addBias = new AddBias(cl);
+//    addBias = new AddBias(cl);
 
     int size = dim.inputSize;
     int padding = dim.padZeros ? dim.halfFilterSize : 0;
@@ -44,59 +41,33 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
     builder.set("channels", dim.inputPlanes);
     builder.set("filterSize", dim.filterSize);
     builder.set("size", dim.inputSize);
-    this->kernelIm2Col = builder.buildKernel(
-        "im2col",
+    this->kernelCol2Im = builder.buildKernel(
+        "col2im",
         "ForwardIm2Col.cl",
         getKernelTemplate(),
-        "im2col",
+        "col2im",
         false);
-//    this->kernelCol2Im = kernelBuilder.buildKernel(
-//        "col2im",
-//        "ForwardIm2Col.cl",
-//        getIm2ColTemplate(),
-//        "col2im",
-//        false);
 }
-PUBLIC VIRTUAL ForwardIm2Col::~ForwardIm2Col() {
-    delete kernelIm2Col;
-//    delete kernelCol2Im;
-    delete addBias;
+PUBLIC VIRTUAL BackwardIm2Col::~BackwardIm2Col() {
+    delete kernelCol2Im;
+//    delete addBias;
 }
-PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper) {
-    StatefulTimer::timeCheck("ForwardIm2Col::forward START");
+PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize, 
+        CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
+        CLWrapper *gradInputWrapper ) {
+    StatefulTimer::timeCheck("BackwardIm2Col::backward START");
 
-    int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
-    float *columns = new float[columnsSize];
-    CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
+    int gradColumnsSize = dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
+    float *gradColumns = new float[gradColumnsSize];
+    CLWrapper *gradColumnsWrapper = cl->wrap(gradColumnsSize, gradColumns);
 //    cout << "columnsSize: " << columnsSize << endl;
 //    cout << "weightsize: " << weightsWrapper->size() << endl;
 
-    StatefulTimer::timeCheck("ForwardIm2Col::forward after alloc");
+    StatefulTimer::timeCheck("BackwardIm2Col::backward after alloc");
 
     for (int b = 0; b < batchSize; b ++) {
 //        cout << "b=" << b << " numkernels=" << numKernels << endl;
         // Extract columns:
-        kernelIm2Col->in(numKernels);
-        kernelIm2Col->in(dataWrapper);
-        kernelIm2Col->in(b * dim.inputCubeSize);
-        kernelIm2Col->out(columnsWrapper);
-
-        int workgroupSize = cl->getMaxWorkgroupSize();
-        int numWorkgroups = this->numKernels;
-
-        kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
-//        dataWrapper->copyToHost();
-//        for( int i = 0; i < dataWrapper->size(); i++ ) {
-//            cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
-//        }
-//        columnsWrapper->copyToHost();
-//        for( int i = 0; i < columnsSize; i++ ) {
-//            cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
-//        }
-//        weightsWrapper->copyToHost();
-//        for( int i = 0; i < weightsWrapper->size(); i++ ) {
-//            cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
-//        }
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
@@ -111,18 +82,51 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
         size_t ldc = order == clblasRowMajor ? n : m;
         cl_int err = clblasSgemm(
             order,
-            clblasNoTrans, clblasNoTrans,
+            clblasNoTrans, clblasTrans,
             m, n, k,
             1,
-            columnsWrapper->getBuffer(), 0, lda,
+            gradOutputWrapper->getBuffer(), b * dim.outputCubeSize, lda,
             weightsWrapper->getBuffer(), 0, ldb,
             0,
-            outputWrapper->getBuffer(), b * dim.outputCubeSize, ldc,
+            gradColumnsWrapper->getBuffer(), 0, ldc,
             1, cl->queue, 0, NULL, 0
        );
+//    THClBlas_gemm(
+//        'n', 't',
+//        n, m, k,
+//        1,
+//        gradOutput_n, n,
+//        weight, m,
+//        0,
+//        gradColumns, n
+//    );
         if (err != CL_SUCCESS) {
             throw runtime_error("clblasSgemm() failed with " + toString(err));
         }
+
+        kernelCol2Im->in(numKernels);
+        kernelCol2Im->in(gradColumnsWrapper);
+        kernelCol2Im->out(gradInputWrapper);
+        kernelCol2Im->in(b * dim.inputCubeSize);
+
+        int workgroupSize = cl->getMaxWorkgroupSize();
+        int numWorkgroups = this->numKernels;
+
+        kernelCol2Im->run_1d(numWorkgroups * workgroupSize, workgroupSize);
+
+//        dataWrapper->copyToHost();
+//        for( int i = 0; i < dataWrapper->size(); i++ ) {
+//            cout << "data[" << i << "]=" << reinterpret_cast<float *>(dataWrapper->getHostArray())[i] << endl;
+//        }
+//        columnsWrapper->copyToHost();
+//        for( int i = 0; i < columnsSize; i++ ) {
+//            cout << "columns[" << i << "]=" << reinterpret_cast<float *>(columnsWrapper->getHostArray())[i] << endl;
+//        }
+//        weightsWrapper->copyToHost();
+//        for( int i = 0; i < weightsWrapper->size(); i++ ) {
+//            cout << "weights[" << i << "]=" << reinterpret_cast<float *>(weightsWrapper->getHostArray())[i] << endl;
+//        }
+
 //        cl->finish();
 //        outputWrapper->copyToHost();
 //        for( int i = 0; i < 1; i++ ) {
@@ -130,19 +134,14 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
 //        }
     }
 
-    delete columnsWrapper;
-    delete columns;
+    delete gradColumnsWrapper;
+    delete gradColumns;
 
-    StatefulTimer::timeCheck("ForwardIm2Col::forward after call forward");
+    StatefulTimer::timeCheck("BackwardIm2Col::backward after call backward");
 
-    if(dim.biased) {
-        addBias->forward(
-            batchSize, dim.numFilters, dim.outputSize,
-            outputWrapper, biasWrapper);
-    }
-    StatefulTimer::timeCheck("ForwardIm2Col::forward END");
+    StatefulTimer::timeCheck("BackwardIm2Col::backward END");
 }
-STATIC std::string ForwardIm2Col::getKernelTemplate() {
+STATIC std::string BackwardIm2Col::getKernelTemplate() {
     // [[[cog
     // import stringify
     // stringify.write_kernel("kernel", "cl/ForwardIm2Col.cl")

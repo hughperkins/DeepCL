@@ -10,10 +10,12 @@
 
 class AddBias;
 
+#include "DeepCLDllExport.h"
+
 #define VIRTUAL virtual
 #define STATIC static
 
-class ForwardIm2Col : public Forward {
+class DeepCL_EXPORT ForwardIm2Col : public Forward {
     private:
     CLKernel *kernelIm2Col;
 //    CLKernel *kernelCol2Im;
@@ -30,12 +32,11 @@ class ForwardIm2Col : public Forward {
     // generated, using cog:
 
     public:
+    ForwardIm2Col(EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~ForwardIm2Col();
     VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper);
-    ForwardIm2Col(EasyCL *cl, LayerDimensions dim);
 
     private:
-    void im2col(CLWrapper* im, int imOffset, CLWrapper* columns);
     STATIC std::string getKernelTemplate();
 
     // [[[end]]]

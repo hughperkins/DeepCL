@@ -12,6 +12,7 @@
 #include "BackwardCpu.h"
 #include "BackwardGpuNaive.h"
 #include "BackwardGpuCached.h"
+#include "BackwardIm2Col.h"
 
 #include "Backward.h"
 
@@ -42,6 +43,9 @@ STATIC Backward *Backward::instanceSpecific( int idx, EasyCL *cl, LayerDimension
     }
     if( idx == 2 ) {
         return new BackwardGpuCached( cl, layerDimensions );
+    }
+    if( idx == 3 ) {
+        return new BackwardIm2Col( cl, layerDimensions );
     }
     throw std::runtime_error("backproperrorsv2::isntancespecifc, index not known: " + toString( idx ) );
 }
