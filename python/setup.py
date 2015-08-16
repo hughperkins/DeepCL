@@ -190,7 +190,7 @@ print('deeplcl_sources', deepcl_sources)
 easyclsources = list(map( lambda name : 'mysrc/' + name, [
         'EasyCL.cpp',
         'deviceinfo_helper.cpp', 'platforminfo_helper.cpp',
-         'templates/LuaTemplater.cpp',
+         'templates/LuaTemplater.cpp', 'util/StatefulTimer.cpp',
         'util/easycl_stringhelper.cpp', 'templates/TemplatedKernel.cpp',
 #        'EasyCL/speedtemplates/SpeedTemplates.cpp',
         'CLWrapper.cpp',
@@ -211,11 +211,15 @@ else:
 
 runtime_library_dirs = []
 libraries = []
+libraries.append('clBLAS' + get_so_suffix())
+libraries.append('EasyCL' + get_so_suffix())
+libraries.append('DeepCL' + get_so_suffix())
+
 if osfamily == 'Linux':
     runtime_library_dirs= ['.']
 
 if osfamily == 'Windows':
-    libraries = ['winmm']
+    libraries.append('winmm')
 
 if cython_present:
     my_cythonize = cythonize
@@ -255,16 +259,16 @@ ext_modules = [
 ##        language='c++'
 #    ),
     Extension("PyDeepCL",
-              sources=["PyDeepCL.pyx", 'CyWrappers.cpp'] 
-                + easyclsources
-                + deepcl_sources, 
+              sources=["PyDeepCL.pyx", 'CyWrappers.cpp'],
+#                + easyclsources
+#                + deepcl_sources, 
 #                glob.glob('DeepCL/EasyCL/*.h'),
               include_dirs = ['mysrc', 'mysrc/lua'],
               libraries= libraries,
               extra_compile_args=compile_options,
         define_macros = [('DeepCL_EXPORTS',1),('EasyCL_EXPORTS',1)],
 #              extra_objects=['cDeepCL.pxd'],
-#              library_dirs = [lib_build_dir()],
+              library_dirs = [lib_build_dir(), '../dist/lib'],
               runtime_library_dirs=runtime_library_dirs,
               language="c++"
     )
