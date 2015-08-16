@@ -58,10 +58,10 @@ public:
     VIRTUAL float getOutput( int n, int plane, int row, int col );
     VIRTUAL void printOutput();
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getOutputSize();
+    VIRTUAL int getOutputNumElements();
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;

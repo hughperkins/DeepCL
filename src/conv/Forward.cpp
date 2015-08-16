@@ -134,9 +134,9 @@ VIRTUAL void Forward::forward( int batchSize, float *inputData, float *filters, 
 
 //    int outputDataSize = batchSize * dim.outputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
-//    int allocatedOutputSize = std::max(5000, outputDataSize );
-//    int allocatedOutputSize = outputDataSize;
-//    float *output = new float[allocatedOutputSize];
+//    int allocatedOutputNumElements = std::max(5000, outputDataSize );
+//    int allocatedOutputNumElements = outputDataSize;
+//    float *output = new float[allocatedOutputNumElements];
     CLWrapper *outputWrapper = cl->wrap( batchSize * dim.outputCubeSize, output );
     outputWrapper->createOnDevice();
     cl->finish();

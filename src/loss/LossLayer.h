@@ -24,7 +24,7 @@ public:
     VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL float *getOutput();
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;

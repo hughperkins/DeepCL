@@ -25,7 +25,7 @@ PoolingBackwardCpu::PoolingBackwardCpu( EasyCL *cl, bool padZeros, int numPlanes
         PoolingBackward( cl, padZeros, numPlanes, inputImageSize, poolingSize ) {
 }
 VIRTUAL void PoolingBackwardCpu::backward( int batchSize,  float *gradOutput, int *selectors, float *gradInput ) {
-    memset( gradInput, 0, sizeof( float ) * getInputSize( batchSize ) );
+    memset( gradInput, 0, sizeof( float ) * getInputNumElements( batchSize ) );
     for( int n = 0; n < batchSize; n++ ) {
         for( int plane = 0; plane < numPlanes; plane++ ) {
             for( int outputRow = 0; outputRow < outputImageSize; outputRow++ ) {
@@ -52,12 +52,12 @@ VIRTUAL void PoolingBackwardCpu::backward( int batchSize, CLWrapper *gradOutputW
 
     float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
     int *selectors = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
-    float *gradInput = new float[ getInputSize( batchSize ) ];
+    float *gradInput = new float[ getInputNumElements( batchSize ) ];
 
     backward( batchSize, gradOutput, selectors, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
-    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
+    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputNumElements( batchSize ) );
     gradInputWrapper->copyToDevice();
 
     delete[] gradInput;

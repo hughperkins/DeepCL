@@ -29,16 +29,16 @@ VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper,
     inputWrapper->copyToHost();
 
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    int *selectors = new int[ getOutputSize( batchSize ) ];
-    float *output = new float[ getOutputSize( batchSize ) ];
+    int *selectors = new int[ getOutputNumElements( batchSize ) ];
+    float *output = new float[ getOutputNumElements( batchSize ) ];
 
     forward( batchSize, input, selectors, output );
 
     int *selectorsHostArray = reinterpret_cast<int *>( selectorsWrapper->getHostArray() );
-    memcpy( selectorsHostArray, selectors, sizeof(int) * getOutputSize( batchSize ) );
+    memcpy( selectorsHostArray, selectors, sizeof(int) * getOutputNumElements( batchSize ) );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
+    memcpy( outputHostArray, output, sizeof(float) * getOutputNumElements( batchSize ) );
 
     selectorsWrapper->copyToDevice();
     outputWrapper->copyToDevice();
@@ -47,7 +47,7 @@ VIRTUAL void PoolingForwardCpu::forward( int batchSize, CLWrapper *inputWrapper,
     delete[] output;
 }
 VIRTUAL void PoolingForwardCpu::forward( int batchSize, float *input, int *selectors, float *output ) {
-//    float *output = new float[ getOutputSize( batchSize ) ];
+//    float *output = new float[ getOutputNumElements( batchSize ) ];
 //    cout << "PoolingForwardCpu::forward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingForwardCpu::forward start" );
     for( int n = 0; n < batchSize; n++ ) {

@@ -51,8 +51,8 @@ public:
     STATIC ActivationForward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
     VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, float *input, float *output );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]
 };

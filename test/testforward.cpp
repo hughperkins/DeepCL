@@ -129,8 +129,8 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
  };
     int outputImageSize = ( imageSize - filterWidth ) / ( skip + 1 ) + 1;
     cout << "outputimagesize: " << outputImageSize << endl;
-    int outputNumFloats = outputImageSize * numOutPlanes * batchSize;
-    cout << "outputsize: " << outputNumFloats << endl;
+    int outputNumElements = outputImageSize * numOutPlanes * batchSize;
+    cout << "outputsize: " << outputNumElements << endl;
     float expectedOutput[] = {
         -2,  0,
         0, 0,
@@ -146,7 +146,7 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
 
 
     };
-    cout << "expected number of output: " << outputNumFloats << endl;
+    cout << "expected number of output: " << outputNumElements << endl;
 //    int outputImageSize = 0;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     for( int i = 1; i <= 1; i++ ) {
@@ -155,7 +155,7 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
             padZeros == 1, false ).setSkip(1) );
         float *output = new float[forward->getOutputTotalSize(batchSize)];
         forward->forward( batchSize, data, filter1, 0, output );  
-        for( int result = 0; result < outputNumFloats; result++ ) {
+        for( int result = 0; result < outputNumElements; result++ ) {
             cout << "checking result " << result << endl;
             EXPECT_EQ( expectedOutput[result], output[result] );
         }
@@ -440,9 +440,9 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
         if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
 
-    int outputNumFloats = N * dim.outputCubeSize;
-    float *output1 = new float[ outputNumFloats ];
-    float *output2 = new float[ outputNumFloats ];
+    int outputNumElements = N * dim.outputCubeSize;
+    float *output1 = new float[ outputNumElements ];
+    float *output2 = new float[ outputNumElements ];
     
     int numBatches = ( N + batchSize - 1 ) / batchSize;
     Forward *p1 = Forward::instanceSpecific( instance0, cl, dim );
@@ -482,8 +482,8 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
     cout << dim << endl;
     bool same = true;
     int numDiff = 0;
-    for( int i = 0; i < max( 20, outputNumFloats ); i++ ) {
-        if( i < outputNumFloats ) {
+    for( int i = 0; i < max( 20, outputNumElements ); i++ ) {
+        if( i < outputNumElements ) {
             if( abs( output1[i] - output2[i] ) < 0.00001f || abs( output1[i] - output2[i] ) <= 0.001f * max( abs( output1[i] ), abs( output2[i] ) ) ) {
                 if( i < 20 ) {
                     if( debug ) cout << "output[" << i << "]=" << output1[i] << " " << output2[i];

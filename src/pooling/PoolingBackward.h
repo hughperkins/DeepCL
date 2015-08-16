@@ -49,8 +49,8 @@ public:
     STATIC PoolingBackward *instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize);
     STATIC PoolingBackward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     PoolingBackward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
     VIRTUAL void backward( int batchSize, float *gradOutput, int *selectors, float *gradInput );
     VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper );
 

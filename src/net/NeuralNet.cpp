@@ -236,8 +236,8 @@ PUBLICAPI int NeuralNet::getOutputCubeSize() const {
 PUBLICAPI float const *NeuralNet::getOutput() const {
     return getOutput( (int)layers.size() - 1 );
 }
-PUBLICAPI VIRTUAL int NeuralNet::getOutputSize() const {
-    return getLastLayer()->getOutputSize();
+PUBLICAPI VIRTUAL int NeuralNet::getOutputNumElements() const {
+    return getLastLayer()->getOutputNumElements();
 }
 void NeuralNet::print() {
     cout << this->asString();

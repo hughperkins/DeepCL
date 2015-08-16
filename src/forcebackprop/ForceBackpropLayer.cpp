@@ -84,10 +84,10 @@ VIRTUAL void ForceBackpropLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = allocatedSize;
-    output = new float[ getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
 }
 VIRTUAL void ForceBackpropLayer::forward() {
-    int totalLinearLength = getOutputSize();
+    int totalLinearLength = getOutputNumElements();
     float *input = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {
         output[i] = input[i];
@@ -105,7 +105,7 @@ VIRTUAL int ForceBackpropLayer::getOutputPlanes() const {
 VIRTUAL int ForceBackpropLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int ForceBackpropLayer::getOutputSize() const {
+VIRTUAL int ForceBackpropLayer::getOutputNumElements() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string ForceBackpropLayer::toString() {

@@ -87,7 +87,7 @@ public:
     PUBLICAPI int getInputCubeSize() const;
     PUBLICAPI int getOutputCubeSize() const;
     PUBLICAPI float const *getOutput() const;
-    PUBLICAPI VIRTUAL int getOutputSize() const;
+    PUBLICAPI VIRTUAL int getOutputNumElements() const;
     void print();
     void printWeights();
     void printOutput();

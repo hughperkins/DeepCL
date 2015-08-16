@@ -49,8 +49,8 @@ VIRTUAL void ActivationForward::forward( int batchSize, CLWrapper *inputData, CL
 }
 VIRTUAL void ActivationForward::forward( int batchSize, float *input, float *output ) {
 //    cout << "ActivationForward::forward( float * )" << endl;
-    CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
-    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
+    CLWrapper *inputWrapper = cl->wrap( getInputNumElements( batchSize ), input );
+    CLWrapper *outputWrapper = cl->wrap( getOutputNumElements( batchSize ), output );
 
     inputWrapper->copyToDevice();
     outputWrapper->createOnDevice();
@@ -60,10 +60,10 @@ VIRTUAL void ActivationForward::forward( int batchSize, float *input, float *out
     delete outputWrapper;
     delete inputWrapper;
 }
-VIRTUAL int ActivationForward::getInputSize( int batchSize ) {
+VIRTUAL int ActivationForward::getInputNumElements( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int ActivationForward::getOutputSize(int batchSize) {
+VIRTUAL int ActivationForward::getOutputNumElements(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

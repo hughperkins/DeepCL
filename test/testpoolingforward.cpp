@@ -29,9 +29,9 @@ TEST( testpoolingforward, basic ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputNumFloats = poolingForward->getOutputSize( batchSize );
-    int *selectors = new int[outputNumFloats];
-    float *output = new float[outputNumFloats];
+    int outputNumElements = poolingForward->getOutputNumElements( batchSize );
+    int *selectors = new int[outputNumElements];
+    float *output = new float[outputNumElements];
 
     poolingForward->forward( batchSize, data, selectors, output );
 
@@ -70,9 +70,9 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputNumFloats = poolingForward->getOutputSize( batchSize );
-    int *selectors = new int[outputNumFloats];
-    float *output = new float[outputNumFloats];
+    int outputNumElements = poolingForward->getOutputNumElements( batchSize );
+    int *selectors = new int[outputNumElements];
+    float *output = new float[outputNumElements];
 
     poolingForward->forward( batchSize, data, selectors, output );
 
@@ -104,14 +104,14 @@ TEST( testpoolingforward, fromwrappers ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputNumFloats = poolingForward->getOutputSize( batchSize );
-    int *selectors = new int[outputNumFloats];
-    float *output = new float[outputNumFloats];
+    int outputNumElements = poolingForward->getOutputNumElements( batchSize );
+    int *selectors = new int[outputNumElements];
+    float *output = new float[outputNumElements];
 
-    const int inputNumFloats = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
-    CLWrapper *selectorsWrapper = cl->wrap( outputNumFloats, selectors );
-    CLWrapper *outputWrapper = cl->wrap( outputNumFloats, output );
+    const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
+    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    CLWrapper *selectorsWrapper = cl->wrap( outputNumElements, selectors );
+    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     inputWrapper->copyToDevice();
 
@@ -214,21 +214,21 @@ void compareSpecific( CompareSpecificArgs args ) {
     PoolingForward *poolingForward0 = PoolingForward::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
     PoolingForward *poolingForward1 = PoolingForward::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
 
-    const int inputNumFloats = batchSize * numPlanes * imageSize * imageSize;
-    int outputNumFloats = poolingForward0->getOutputSize( batchSize );
+    const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
+    int outputNumElements = poolingForward0->getOutputNumElements( batchSize );
 
-    float *input = new float[ inputNumFloats ];
-    int *selectors = new int[ outputNumFloats ];
-    float *output = new float[ outputNumFloats ];
+    float *input = new float[ inputNumElements ];
+    int *selectors = new int[ outputNumElements ];
+    float *output = new float[ outputNumElements ];
 
-    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
-    CLWrapper *selectorsWrapper = cl->wrap( outputNumFloats, selectors );
-    CLWrapper *outputWrapper = cl->wrap( outputNumFloats, output );
+    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    CLWrapper *selectorsWrapper = cl->wrap( outputNumElements, selectors );
+    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
-    WeightRandomizer::randomize( input, inputNumFloats, -0.1f, 0.1f );
+    WeightRandomizer::randomize( input, inputNumElements, -0.1f, 0.1f );
 
-    memset( selectors, 99, sizeof(int) * outputNumFloats );
-    memset( output, 99, sizeof(int) * outputNumFloats );
+    memset( selectors, 99, sizeof(int) * outputNumElements );
+    memset( output, 99, sizeof(int) * outputNumElements );
 
     inputWrapper->copyToDevice();
     selectorsWrapper->copyToDevice();
@@ -238,13 +238,13 @@ void compareSpecific( CompareSpecificArgs args ) {
     selectorsWrapper->copyToHost();
     outputWrapper->copyToHost();
 
-    int *selectors0 = new int[ outputNumFloats ];
-    float *output0 = new float[ outputNumFloats ];
-    memcpy( selectors0, selectors, sizeof(int) * outputNumFloats );
-    memcpy( output0, output, sizeof(float) * outputNumFloats );
+    int *selectors0 = new int[ outputNumElements ];
+    float *output0 = new float[ outputNumElements ];
+    memcpy( selectors0, selectors, sizeof(int) * outputNumElements );
+    memcpy( output0, output, sizeof(float) * outputNumElements );
     
-    memset( selectors, 99, sizeof(int) * outputNumFloats );
-    memset( output, 99, sizeof(int) * outputNumFloats );
+    memset( selectors, 99, sizeof(int) * outputNumElements );
+    memset( output, 99, sizeof(int) * outputNumElements );
 
     inputWrapper->copyToDevice();
     selectorsWrapper->copyToDevice();
@@ -255,7 +255,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     outputWrapper->copyToHost();
     
     int numErrors = 0;
-    for( int i = 0; i < outputNumFloats; i++ ) {
+    for( int i = 0; i < outputNumElements; i++ ) {
         if( selectors[i] != selectors0[i] ) {
             cout << "ERROR: selectors[" << i << "] instance0:" << selectors0[i] << " != instance1:" << selectors[i] << endl;
             numErrors++;
@@ -271,7 +271,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     }
     EXPECT_EQ( 0, numErrors );
     if( numErrors > 0 ) {
-        int num2dPlanes = inputNumFloats / imageSize / imageSize;
+        int num2dPlanes = inputNumElements / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {
             cout << "2dplane " << plane << ":" << endl;
             for( int i = 0; i < imageSize; i++ ) {

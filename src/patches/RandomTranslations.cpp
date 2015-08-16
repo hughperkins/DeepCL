@@ -59,9 +59,9 @@ VIRTUAL void RandomTranslations::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
 }
-VIRTUAL int RandomTranslations::getOutputSize() {
+VIRTUAL int RandomTranslations::getOutputNumElements() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *RandomTranslations::getOutput() {
@@ -70,7 +70,7 @@ VIRTUAL float *RandomTranslations::getOutput() {
 VIRTUAL bool RandomTranslations::needsBackProp() {
     return false;
 }
-VIRTUAL int RandomTranslations::getOutputSize() const {
+VIRTUAL int RandomTranslations::getOutputNumElements() const {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL int RandomTranslations::getOutputImageSize() const {
@@ -91,7 +91,7 @@ VIRTUAL bool RandomTranslations::hasOutputWrapper() const {
 VIRTUAL void RandomTranslations::forward() {
     float *upstreamOutput = previousLayer->getOutput();
     if( !training ) {
-        memcpy( output, upstreamOutput, sizeof(float) * getOutputSize() );
+        memcpy( output, upstreamOutput, sizeof(float) * getOutputNumElements() );
         return;
     }
     for( int n = 0; n < batchSize; n++ ) {

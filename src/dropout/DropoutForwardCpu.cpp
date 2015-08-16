@@ -30,19 +30,19 @@ VIRTUAL void DropoutForwardCpu::forward( int batchSize, CLWrapper *masksWrapper,
 
     unsigned char *masks = reinterpret_cast<unsigned char *>( masksWrapper->getHostArray() );
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    float *output = new float[ getOutputSize( batchSize ) ];
+    float *output = new float[ getOutputNumElements( batchSize ) ];
 
     forward( batchSize, masks, input, output );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
+    memcpy( outputHostArray, output, sizeof(float) * getOutputNumElements( batchSize ) );
 
     outputWrapper->copyToDevice();
 
     delete[] output;
 }
 VIRTUAL void DropoutForwardCpu::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
-//    float *output = new float[ getOutputSize( batchSize ) ];
+//    float *output = new float[ getOutputNumElements( batchSize ) ];
 //    cout << "DropoutForwardCpu::forward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutForwardCpu::forward start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;

@@ -90,7 +90,7 @@ VIRTUAL void InputLayer::setBatchSize( int batchSize ) {
     output = new float[batchSize * getOutputCubeSize() ];
 }
 VIRTUAL void InputLayer::forward() {
-    int totalLinearLength = getOutputSize();
+    int totalLinearLength = getOutputNumElements();
     for( int i = 0; i < totalLinearLength; i++ ) {
         output[i] = input[i];
     }
@@ -106,7 +106,7 @@ VIRTUAL int InputLayer::getOutputPlanes() const {
 VIRTUAL int InputLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int InputLayer::getOutputSize() const {
+VIRTUAL int InputLayer::getOutputNumElements() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string InputLayer::toString() {

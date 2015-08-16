@@ -7783,7 +7783,7 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_22getNumLayers(struct __pyx_obj_8
  *         return self.thisptr.getNumLayers()
  *     def getOutput(self):             # <<<<<<<<<<<<<<
  *         cdef const float *output = self.thisptr.getOutput()
- *         cdef int outputSize = self.thisptr.getOutputSize()
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
  */
 
 /* Python wrapper */
@@ -7801,7 +7801,7 @@ static PyObject *__pyx_pw_8PyDeepCL_9NeuralNet_25getOutput(PyObject *__pyx_v_sel
 
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_24getOutput(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self) {
   float const *__pyx_v_output;
-  int __pyx_v_outputSize;
+  int __pyx_v_outputNumElements;
   arrayobject *__pyx_v_outputArray = 0;
   int __pyx_v_i;
   PyObject *__pyx_r = NULL;
@@ -7823,33 +7823,33 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_24getOutput(struct __pyx_obj_8PyD
  *         return self.thisptr.getNumLayers()
  *     def getOutput(self):
  *         cdef const float *output = self.thisptr.getOutput()             # <<<<<<<<<<<<<<
- *         cdef int outputSize = self.thisptr.getOutputSize()
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
  */
   __pyx_v_output = __pyx_v_self->thisptr->getOutput();
 
   /* "NeuralNet.pyx":48
  *     def getOutput(self):
  *         cdef const float *output = self.thisptr.getOutput()
- *         cdef int outputSize = self.thisptr.getOutputSize()             # <<<<<<<<<<<<<<
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
- *         for i in range(outputSize):
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()             # <<<<<<<<<<<<<<
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+ *         for i in range(outputNumElements):
  */
-  __pyx_v_outputSize = __pyx_v_self->thisptr->getOutputSize();
+  __pyx_v_outputNumElements = __pyx_v_self->thisptr->getOutputNumElements();
 
   /* "NeuralNet.pyx":49
  *         cdef const float *output = self.thisptr.getOutput()
- *         cdef int outputSize = self.thisptr.getOutputSize()
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )             # <<<<<<<<<<<<<<
- *         for i in range(outputSize):
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )             # <<<<<<<<<<<<<<
+ *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]
  */
   __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyList_New(1 * ((__pyx_v_outputSize<0) ? 0:__pyx_v_outputSize)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyList_New(1 * ((__pyx_v_outputNumElements<0) ? 0:__pyx_v_outputNumElements)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   { Py_ssize_t __pyx_temp;
-    for (__pyx_temp=0; __pyx_temp < __pyx_v_outputSize; __pyx_temp++) {
+    for (__pyx_temp=0; __pyx_temp < __pyx_v_outputNumElements; __pyx_temp++) {
       __Pyx_INCREF(__pyx_int_0);
       PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_int_0);
       __Pyx_GIVEREF(__pyx_int_0);
@@ -7887,19 +7887,19 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_24getOutput(struct __pyx_obj_8PyD
   __pyx_t_1 = 0;
 
   /* "NeuralNet.pyx":50
- *         cdef int outputSize = self.thisptr.getOutputSize()
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
- *         for i in range(outputSize):             # <<<<<<<<<<<<<<
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+ *         for i in range(outputNumElements):             # <<<<<<<<<<<<<<
  *             outputArray[i] = output[i]
  *         return outputArray
  */
-  __pyx_t_7 = __pyx_v_outputSize;
+  __pyx_t_7 = __pyx_v_outputNumElements;
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_i = __pyx_t_8;
 
     /* "NeuralNet.pyx":51
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
- *         for i in range(outputSize):
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+ *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]             # <<<<<<<<<<<<<<
  *         return outputArray
  *     def setTraining(self, training): # 1 is, we are training net, 0 is we are not
@@ -7911,7 +7911,7 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_24getOutput(struct __pyx_obj_8PyD
   }
 
   /* "NeuralNet.pyx":52
- *         for i in range(outputSize):
+ *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]
  *         return outputArray             # <<<<<<<<<<<<<<
  *     def setTraining(self, training): # 1 is, we are training net, 0 is we are not
@@ -7927,7 +7927,7 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_24getOutput(struct __pyx_obj_8PyD
  *         return self.thisptr.getNumLayers()
  *     def getOutput(self):             # <<<<<<<<<<<<<<
  *         cdef const float *output = self.thisptr.getOutput()
- *         cdef int outputSize = self.thisptr.getOutputSize()
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
  */
 
   /* function exit code */
@@ -8452,7 +8452,7 @@ static PyObject *__pyx_pw_8PyDeepCL_5Layer_15getOutput(PyObject *__pyx_v_self, C
 
 static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepCL_Layer *__pyx_v_self) {
   float *__pyx_v_output;
-  int __pyx_v_outputSize;
+  int __pyx_v_outputNumElements;
   arrayobject *__pyx_v_outputArray = 0;
   int __pyx_v_i;
   PyObject *__pyx_r = NULL;
@@ -8474,33 +8474,33 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
  *         # to a block of memory that we dont own
  *         # we should probably copy it I suppose
  *         cdef float *output = self.thisptr.getOutput()             # <<<<<<<<<<<<<<
- *         cdef int outputSize = self.thisptr.getOutputSize()
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
  */
   __pyx_v_output = __pyx_v_self->thisptr->getOutput();
 
   /* "Layer.pyx":27
  *         # we should probably copy it I suppose
  *         cdef float *output = self.thisptr.getOutput()
- *         cdef int outputSize = self.thisptr.getOutputSize()             # <<<<<<<<<<<<<<
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
- *         for i in range(outputSize):
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()             # <<<<<<<<<<<<<<
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+ *         for i in range(outputNumElements):
  */
-  __pyx_v_outputSize = __pyx_v_self->thisptr->getOutputSize();
+  __pyx_v_outputNumElements = __pyx_v_self->thisptr->getOutputNumElements();
 
   /* "Layer.pyx":28
  *         cdef float *output = self.thisptr.getOutput()
- *         cdef int outputSize = self.thisptr.getOutputSize()
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )             # <<<<<<<<<<<<<<
- *         for i in range(outputSize):
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )             # <<<<<<<<<<<<<<
+ *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]
  */
   __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 28; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyList_New(1 * ((__pyx_v_outputSize<0) ? 0:__pyx_v_outputSize)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 28; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = PyList_New(1 * ((__pyx_v_outputNumElements<0) ? 0:__pyx_v_outputNumElements)); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 28; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   { Py_ssize_t __pyx_temp;
-    for (__pyx_temp=0; __pyx_temp < __pyx_v_outputSize; __pyx_temp++) {
+    for (__pyx_temp=0; __pyx_temp < __pyx_v_outputNumElements; __pyx_temp++) {
       __Pyx_INCREF(__pyx_int_0);
       PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_int_0);
       __Pyx_GIVEREF(__pyx_int_0);
@@ -8538,19 +8538,19 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
   __pyx_t_1 = 0;
 
   /* "Layer.pyx":29
- *         cdef int outputSize = self.thisptr.getOutputSize()
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
- *         for i in range(outputSize):             # <<<<<<<<<<<<<<
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+ *         for i in range(outputNumElements):             # <<<<<<<<<<<<<<
  *             outputArray[i] = output[i]
  * #        cdef float[:] outputMv = output
  */
-  __pyx_t_7 = __pyx_v_outputSize;
+  __pyx_t_7 = __pyx_v_outputNumElements;
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_i = __pyx_t_8;
 
     /* "Layer.pyx":30
- *         cdef c_array.array outputArray = array('f', [0] * outputSize )
- *         for i in range(outputSize):
+ *         cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+ *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]             # <<<<<<<<<<<<<<
  * #        cdef float[:] outputMv = output
  * #        cdef float[:] outputArrayMv = outputArray

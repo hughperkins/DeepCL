@@ -29,19 +29,19 @@ VIRTUAL void ActivationForwardCpu::forward( int batchSize, CLWrapper *inputWrapp
     inputWrapper->copyToHost();
 
     float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    float *output = new float[ getOutputSize( batchSize ) ];
+    float *output = new float[ getOutputNumElements( batchSize ) ];
 
     forward( batchSize, input, output );
 
     float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
+    memcpy( outputHostArray, output, sizeof(float) * getOutputNumElements( batchSize ) );
 
     outputWrapper->copyToDevice();
 
     delete[] output;
 }
 VIRTUAL void ActivationForwardCpu::forward( int batchSize, float *input, float *output ) {
-//    float *output = new float[ getOutputSize( batchSize ) ];
+//    float *output = new float[ getOutputNumElements( batchSize ) ];
 //    cout << "ActivationForwardCpu::forward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationForwardCpu::forward start" );
     int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;

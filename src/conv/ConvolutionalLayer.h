@@ -126,7 +126,7 @@ public:
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
     void randomizeWeights( WeightsInitializer *weightsInitializer );

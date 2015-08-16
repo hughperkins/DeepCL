@@ -39,12 +39,12 @@ VIRTUAL void DropoutBackwardCpu::backward( int batchSize, CLWrapper *maskWrapper
 
     uchar *mask = reinterpret_cast<uchar *>( maskWrapper->getHostArray() );
     float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
-    float *gradInput = new float[ getInputSize( batchSize ) ];
+    float *gradInput = new float[ getInputNumElements( batchSize ) ];
 
     backward( batchSize, mask, gradOutput, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
-    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
+    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputNumElements( batchSize ) );
     gradInputWrapper->copyToDevice();
 
     delete[] gradInput;

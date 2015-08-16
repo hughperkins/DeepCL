@@ -42,7 +42,7 @@ public:
     VIRTUAL float * getWeights();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
     VIRTUAL CLWrapper *getGradWeightsWrapper();

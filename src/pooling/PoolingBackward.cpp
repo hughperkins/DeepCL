@@ -50,18 +50,18 @@ PoolingBackward::PoolingBackward( EasyCL *cl, bool padZeros, int numPlanes, int 
 //        throw runtime_error("inputImageSize should be an exact multiple of poolingsize: " + toString( inputImageSize ) + " " + toString(poolingSize ) );
 //    }
 }
-VIRTUAL int PoolingBackward::getInputSize( int batchSize ) {
+VIRTUAL int PoolingBackward::getInputNumElements( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int PoolingBackward::getOutputSize(int batchSize) {
+VIRTUAL int PoolingBackward::getOutputNumElements(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL void PoolingBackward::backward( int batchSize, float *gradOutput, int *selectors, float *gradInput ) {
 //    cout << "PoolingBackward::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("PoolingBackward::backward float->wrapper start" );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
-    CLWrapper *selectorsWrapper = cl->wrap( getOutputSize(batchSize), selectors );
-    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputNumElements(batchSize), gradOutput );
+    CLWrapper *selectorsWrapper = cl->wrap( getOutputNumElements(batchSize), selectors );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputNumElements(batchSize), gradInput );
 
     gradOutputWrapper->copyToDevice();
     selectorsWrapper->copyToDevice();

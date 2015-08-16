@@ -24,9 +24,9 @@ cdef class Layer:
         # to a block of memory that we dont own
         # we should probably copy it I suppose
         cdef float *output = self.thisptr.getOutput()
-        cdef int outputSize = self.thisptr.getOutputSize()
-        cdef c_array.array outputArray = array('f', [0] * outputSize )
-        for i in range(outputSize):
+        cdef int outputNumElements = self.thisptr.getOutputNumElements()
+        cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+        for i in range(outputNumElements):
             outputArray[i] = output[i]
 #        cdef float[:] outputMv = output
 #        cdef float[:] outputArrayMv = outputArray

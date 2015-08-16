@@ -45,19 +45,19 @@ ActivationBackward::ActivationBackward( EasyCL *cl, int numPlanes, int inputImag
         fn( fn ),
         outputImageSize( inputImageSize ) {
 }
-VIRTUAL int ActivationBackward::getInputSize( int batchSize ) {
+VIRTUAL int ActivationBackward::getInputNumElements( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int ActivationBackward::getOutputSize(int batchSize) {
+VIRTUAL int ActivationBackward::getOutputNumElements(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL void ActivationBackward::backward( int batchSize, float *inputs, float *gradOutput, float *gradInput ) {
 //    cout << "ActivationBackward::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("ActivationBackward::backward float->wrapper start" );
 
-    CLWrapper *inputsWrapper = cl->wrap( getInputSize(batchSize), inputs );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
-    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
+    CLWrapper *inputsWrapper = cl->wrap( getInputNumElements(batchSize), inputs );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputNumElements(batchSize), gradOutput );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputNumElements(batchSize), gradInput );
 
     inputsWrapper->copyToDevice();
     gradOutputWrapper->copyToDevice();

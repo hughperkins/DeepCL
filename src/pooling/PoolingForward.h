@@ -50,8 +50,8 @@ public:
     STATIC PoolingForward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
     VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
     VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]
 };

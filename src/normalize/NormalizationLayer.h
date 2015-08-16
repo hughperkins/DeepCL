@@ -59,7 +59,7 @@ public:
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL std::string toString();
     VIRTUAL std::string asString() const;
 

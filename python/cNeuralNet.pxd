@@ -14,7 +14,7 @@ cdef extern from "net/NeuralNet.h":
         Layer *getLayer( int index )
         int getNumLayers()
         const float *getOutput()
-        int getOutputSize()
+        int getOutputNumElements()
         void setTraining( bool training )
 
 

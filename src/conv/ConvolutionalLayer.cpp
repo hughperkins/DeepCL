@@ -181,7 +181,7 @@ VIRTUAL CLWrapper *ConvolutionalLayer::getOutputWrapper() {
 VIRTUAL bool ConvolutionalLayer::needsBackProp() {
     return true;
 }
-VIRTUAL int ConvolutionalLayer::getOutputSize() const {
+VIRTUAL int ConvolutionalLayer::getOutputNumElements() const {
     return batchSize * dim.outputCubeSize;
 }
 VIRTUAL int ConvolutionalLayer::getOutputPlanes() const {
@@ -283,12 +283,12 @@ VIRTUAL void ConvolutionalLayer::setBatchSize( int batchSize ) {
     delete gradInputWrapper;
     delete[] gradInput;
 
-    output = new float[getOutputSize()];
-    outputWrapper = cl->wrap( getOutputSize(), output );
+    output = new float[getOutputNumElements()];
+    outputWrapper = cl->wrap( getOutputNumElements(), output );
 
     if( layerIndex > 1 ) {
-        gradInput = new float[ previousLayer->getOutputSize() ];
-        gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+        gradInput = new float[ previousLayer->getOutputNumElements() ];
+        gradInputWrapper = cl->wrap( previousLayer->getOutputNumElements(), gradInput );
     }
 }
 VIRTUAL void ConvolutionalLayer::setWeights( float *weights, float *bias ) {
@@ -391,7 +391,7 @@ VIRTUAL void ConvolutionalLayer::forward() {
         upstreamWrapper = previousLayer->getOutputWrapper();
     } else {
 //            std::cout << "layer " << previousLayer->layerIndex << " has no outputWrapper" << std::endl;
-        upstreamWrapper = cl->wrap( previousLayer->getOutputSize(), (float *)previousLayer->getOutput() );
+        upstreamWrapper = cl->wrap( previousLayer->getOutputNumElements(), (float *)previousLayer->getOutput() );
         upstreamWrapper->copyToDevice();
     }
     StatefulTimer::instance()->timeCheck("    forward layer " + toString( layerIndex ) + ", copied to device");
@@ -410,7 +410,7 @@ VIRTUAL void ConvolutionalLayer::backward() {
     if( previousLayer->hasOutputWrapper() ) {
         inputWrapper = previousLayer->getOutputWrapper();
     } else {
-        inputWrapper = cl->wrap( previousLayer->getOutputSize(), previousLayer->getOutput() );
+        inputWrapper = cl->wrap( previousLayer->getOutputNumElements(), previousLayer->getOutput() );
         inputWrapper->copyToDevice();
     }
 
@@ -419,7 +419,7 @@ VIRTUAL void ConvolutionalLayer::backward() {
     if( nextLayer->providesGradInputWrapper() ) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper = cl->wrap( getOutputNumElements(), nextLayer->getGradInput() );
         gradOutputWrapper->copyToDevice();
         weOwnGradOutputWrapper = true;
     }

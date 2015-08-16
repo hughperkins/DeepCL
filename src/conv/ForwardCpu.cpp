@@ -30,10 +30,10 @@ VIRTUAL void ForwardCpu::forward( int batchSize, CLWrapper *inputDataWrapper, CL
         bias =  (float *)biasWrapper->getHostArray();
     }
     float *output = forward( batchSize, (float *)inputDataWrapper->getHostArray(), (float *)weightsWrapper->getHostArray(), bias );
-    int outputNumFloats = batchSize * dim.outputCubeSize;
-//        memcpy( (float *)outputWrapper->getHostArray(), output, sizeof(float) * outputNumFloats );
+    int outputNumElements = batchSize * dim.outputCubeSize;
+//        memcpy( (float *)outputWrapper->getHostArray(), output, sizeof(float) * outputNumElements );
     float *hostArray = (float *)outputWrapper->getHostArray();
-    for( int i = 0; i < outputNumFloats; i++ ) {
+    for( int i = 0; i < outputNumElements; i++ ) {
         hostArray[i] = output[i];
     }
     outputWrapper->copyToDevice();

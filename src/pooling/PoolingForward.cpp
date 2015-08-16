@@ -53,9 +53,9 @@ VIRTUAL void PoolingForward::forward( int batchSize, CLWrapper *inputData, CLWra
 }
 VIRTUAL void PoolingForward::forward( int batchSize, float *input, int *selectors, float *output ) {
 //    cout << "PoolingForward::forward( float * )" << endl;
-    CLWrapper *inputWrapper = cl->wrap( getInputSize( batchSize ), input );
-    CLWrapper *selectorsWrapper = cl->wrap( getOutputSize( batchSize ), selectors );
-    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
+    CLWrapper *inputWrapper = cl->wrap( getInputNumElements( batchSize ), input );
+    CLWrapper *selectorsWrapper = cl->wrap( getOutputNumElements( batchSize ), selectors );
+    CLWrapper *outputWrapper = cl->wrap( getOutputNumElements( batchSize ), output );
 
     inputWrapper->copyToDevice();
     forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
@@ -66,10 +66,10 @@ VIRTUAL void PoolingForward::forward( int batchSize, float *input, int *selector
     delete selectorsWrapper;
     delete inputWrapper;
 }
-VIRTUAL int PoolingForward::getInputSize( int batchSize ) {
+VIRTUAL int PoolingForward::getInputNumElements( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int PoolingForward::getOutputSize(int batchSize) {
+VIRTUAL int PoolingForward::getOutputNumElements(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

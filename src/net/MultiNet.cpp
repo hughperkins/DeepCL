@@ -57,8 +57,8 @@ VIRTUAL int MultiNet::getInputCubeSize() const {
 VIRTUAL int MultiNet::getOutputCubeSize() const {
     return trainables[0]->getOutputCubeSize();
 }
-VIRTUAL int MultiNet::getOutputSize() const {
-    return trainables[0]->getOutputSize();
+VIRTUAL int MultiNet::getOutputNumElements() const {
+    return trainables[0]->getOutputNumElements();
 }
 VIRTUAL int MultiNet::getOutputPlanes() const {
     return trainables[0]->getOutputPlanes();
@@ -78,7 +78,7 @@ VIRTUAL float MultiNet::calcLoss(float const *expectedValues ) {
     // but .... we need a loss layer?
     // maybe just report average/total child loss, for now?
 //    float totalLoss = 0.0f;
-//    const int outputSize = trainables[0]->getOutputSize();
+//    const int outputNumElements = trainables[0]->getOutputNumElements();
 //    float *expectedValuesSum = new 
 //    for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
 //        //totalLoss += (*it)->calcLoss( expectedValues );
@@ -118,7 +118,7 @@ VIRTUAL void MultiNet::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ trainables[0]->getOutputSize() ];
+    output = new float[ trainables[0]->getOutputNumElements() ];
 }
 VIRTUAL void MultiNet::setTraining( bool training ) {
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
@@ -146,19 +146,19 @@ VIRTUAL int MultiNet::calcNumRight( int const *labels ) {
 void MultiNet::forwardToOurselves() {
     // now forward to ourselves :-)
     // I suppose this could be done in GPU, but what if we want to split across mpi?
-    const int outputSize = trainables[0]->getOutputSize();
-    memset( output, 0, sizeof( float ) * outputSize );
+    const int outputNumElements = trainables[0]->getOutputNumElements();
+    memset( output, 0, sizeof( float ) * outputNumElements );
     for( vector< Trainable * >::iterator it = trainables.begin(); it != trainables.end(); it++ ) {
         float const*childOutput = (*it)->getOutput();
-        for( int i = 0; i < outputSize; i++ ) {
+        for( int i = 0; i < outputNumElements; i++ ) {
             output[i] += childOutput[i];
         }
     }    
     const int numChildren = (int)trainables.size();
-    for( int i = 0; i < outputSize; i++ ) {
+    for( int i = 0; i < outputNumElements; i++ ) {
         output[i] /= numChildren;
     }
-    memcpy( dynamic_cast< SoftMaxLayer * >( lossLayer )->output, output, sizeof(float) * lossLayer->getOutputSize() );
+    memcpy( dynamic_cast< SoftMaxLayer * >( lossLayer )->output, output, sizeof(float) * lossLayer->getOutputNumElements() );
 //    proxyInputLayer->in( output );
 }
 VIRTUAL void MultiNet::forward( float const*images) {

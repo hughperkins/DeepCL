@@ -160,16 +160,16 @@ void test( int imageSize, int filterSize, int numPlanes, int batchSize ) {
     net->addLayer( SquareLossMaker::instance() );;
     net->setBatchSize( batchSize );
 
-    int inputNumFloats = net->getLayer(0)->getOutputSize();
-    int outputNumFloats = net->getLayer(1)->getOutputSize();
+    int inputNumElements = net->getLayer(0)->getOutputNumElements();
+    int outputNumElements = net->getLayer(1)->getOutputNumElements();
     int weightsSize = net->getLayer(1)->getWeightsSize();
 
-    float *inputData = new float[max(10000, inputNumFloats )];
-    float *expectedOutput = new float[max(10000, outputNumFloats )];
-    memset( inputData, 0, sizeof(float) * max(10000, inputNumFloats ) );
-    memset( expectedOutput, 0, sizeof(float) * max(10000, outputNumFloats ) );
-    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputNumFloats ), -1.0f, 1.0f );
-    WeightRandomizer::randomize( random, expectedOutput, max(10000, outputNumFloats ), -1.0f, 1.0f );
+    float *inputData = new float[max(10000, inputNumElements )];
+    float *expectedOutput = new float[max(10000, outputNumElements )];
+    memset( inputData, 0, sizeof(float) * max(10000, inputNumElements ) );
+    memset( expectedOutput, 0, sizeof(float) * max(10000, outputNumElements ) );
+    std::mt19937 random = WeightRandomizer::randomize( inputData, max(10000, inputNumElements ), -1.0f, 1.0f );
+    WeightRandomizer::randomize( random, expectedOutput, max(10000, outputNumElements ), -1.0f, 1.0f );
     WeightRandomizer::randomize( random, net->getLayer(1)->getWeights(), weightsSize, -0.1f, 0.1f );
     dynamic_cast<ConvolutionalLayer*>(net->getLayer(1))->weightsWrapper->copyToDevice();
 
@@ -403,16 +403,16 @@ TEST( testupdateweights, backprop_weights_2_upstreamimagesize5_filtersize3 ) {
 }
 
 float *allocateInputCleared( int batchSize, LayerDimensions &dim ) {
-    int inputNumFloats = batchSize * dim.inputCubeSize;
-    float *data = new float[ inputNumFloats ];
-    memset( data, 0, sizeof(float) * inputNumFloats );
+    int inputNumElements = batchSize * dim.inputCubeSize;
+    float *data = new float[ inputNumElements ];
+    memset( data, 0, sizeof(float) * inputNumElements );
     return data;
 }
 
 float *allocateErrorsCleared( int batchSize, LayerDimensions &dim ) {
-    int outputNumFloats = batchSize * dim.outputCubeSize;
-    float *errors = new float[ outputNumFloats ];
-    memset( errors, 0, sizeof(float) * outputNumFloats );
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    float *errors = new float[ outputNumElements ];
+    memset( errors, 0, sizeof(float) * outputNumElements );
     return errors;
 }
 
@@ -519,20 +519,20 @@ TEST( testupdateweights, backprop_instance3_smaller2 ) {
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
-    int outputNumFloats = batchSize * dim.outputCubeSize;
-    int inputNumFloats = batchSize * dim.inputCubeSize;
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    int inputNumElements = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
 //    int biasSize = dim.numFilters;
 
     cout << "numweights: " << weightsSize << endl;
 
-    float *errors = new float[max(10000, outputNumFloats )];
-    float *inputData = new float[max(10000, inputNumFloats )];
+    float *errors = new float[max(10000, outputNumElements )];
+    float *inputData = new float[max(10000, inputNumElements )];
     float *weights0 = new float[max(10000, weightsSize ) ];
     float *weights1 = new float[max(10000, weightsSize ) ];
 
-    memset( errors, 0, sizeof(float) * max(10000, outputNumFloats ) );
-    memset( inputData, 0, sizeof(float) * max(10000, inputNumFloats ) );
+    memset( errors, 0, sizeof(float) * max(10000, outputNumElements ) );
+    memset( inputData, 0, sizeof(float) * max(10000, inputNumElements ) );
     memset( weights0, 0, sizeof(float) * max(10000, weightsSize ) );
     memset( weights1, 0, sizeof(float) * max(10000, weightsSize ) );
 
@@ -698,13 +698,13 @@ namespace testupdateweights {
 void compareSpecific( bool debug, float learningRate, int its, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
 
-    int outputNumFloats = batchSize * dim.outputCubeSize;
-    int inputNumFloats = batchSize * dim.inputCubeSize;
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    int inputNumElements = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
 
-    int outputAllocated = max( 10000, outputNumFloats );
-    int inputAllocated = max( 10000, inputNumFloats );
+    int outputAllocated = max( 10000, outputNumElements );
+    int inputAllocated = max( 10000, inputNumElements );
     int weightsAllocated = max( 10000, weightsSize );
     int biasAllocated = max( 10000, biasSize );
 
@@ -903,13 +903,13 @@ TEST( SLOW_testupdateweights, compare_args ) {
 
 void measurePerf( int batchSize, LayerDimensions dim, int instance ) {
 
-    int outputNumFloats = batchSize * dim.outputCubeSize;
-    int inputNumFloats = batchSize * dim.inputCubeSize;
+    int outputNumElements = batchSize * dim.outputCubeSize;
+    int inputNumElements = batchSize * dim.inputCubeSize;
     int weightsSize = dim.filtersSize;
     int biasSize = dim.numFilters;
 
-    int outputAllocated = outputNumFloats;
-    int inputAllocated = inputNumFloats;
+    int outputAllocated = outputNumElements;
+    int inputAllocated = inputNumElements;
     int weightsAllocated = weightsSize;
     int biasAllocated = biasSize;
 

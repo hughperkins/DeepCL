@@ -45,7 +45,7 @@ VIRTUAL void ActivationBackwardCpu::backward( int batchSize,
 
     float *outputs = reinterpret_cast<float *>( outputWrapper->getHostArray() );
     float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
-    float *gradInput = new float[ getInputSize( batchSize ) ];
+    float *gradInput = new float[ getInputNumElements( batchSize ) ];
     for( int i = 0; i < 4; i++ ) {
         cout << "i=" << i << " outputs=" << outputs[i] << " gradOutput=" << gradOutput[i] << endl;
     }
@@ -53,7 +53,7 @@ VIRTUAL void ActivationBackwardCpu::backward( int batchSize,
     backward( batchSize, outputs, gradOutput, gradInput );
 
     float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
-    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputSize( batchSize ) );
+    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputNumElements( batchSize ) );
     gradInputWrapper->copyToDevice();
 
     for( int i = 0; i < 4; i++ ) {

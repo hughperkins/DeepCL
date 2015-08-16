@@ -56,8 +56,8 @@ VIRTUAL void SoftMaxLayer::setBatchSize( int batchSize ) {
     if( gradInput != 0 ) {
         delete[] gradInput;
     }
-    output = new float[ getOutputSize() ];
-    gradInput = new float[ previousLayer-> getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
+    gradInput = new float[ previousLayer-> getOutputNumElements() ];
     allocatedSize = batchSize;
 }
 

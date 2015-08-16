@@ -40,7 +40,7 @@ public:
     VIRTUAL ~MultiNet();
     VIRTUAL int getInputCubeSize() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;

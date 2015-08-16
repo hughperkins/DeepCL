@@ -52,10 +52,10 @@ VIRTUAL void DropoutForward::forward( int batchSize, CLWrapper *masksWrapper, CL
 }
 VIRTUAL void DropoutForward::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
 //    cout << "DropoutForward::forward( float * )" << endl;
-    int inputLinearSize = getInputSize( batchSize );
+    int inputLinearSize = getInputNumElements( batchSize );
     CLWrapper *masksWrapper = cl->wrap( inputLinearSize, masks );
     CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
-    CLWrapper *outputWrapper = cl->wrap( getOutputSize( batchSize ), output );
+    CLWrapper *outputWrapper = cl->wrap( getOutputNumElements( batchSize ), output );
 
     masksWrapper->copyToDevice();
     inputWrapper->copyToDevice();
@@ -66,10 +66,10 @@ VIRTUAL void DropoutForward::forward( int batchSize, unsigned char *masks, float
     delete inputWrapper;
     delete masksWrapper;
 }
-VIRTUAL int DropoutForward::getInputSize( int batchSize ) {
+VIRTUAL int DropoutForward::getInputNumElements( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int DropoutForward::getOutputSize(int batchSize) {
+VIRTUAL int DropoutForward::getOutputNumElements(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 

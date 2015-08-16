@@ -73,8 +73,8 @@ VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
 VIRTUAL int FullyConnectedLayer::getBiasSize() const {
     return convolutionalLayer->getBiasSize();
 }
-VIRTUAL int FullyConnectedLayer::getOutputSize() const {
-    return convolutionalLayer->getOutputSize();
+VIRTUAL int FullyConnectedLayer::getOutputNumElements() const {
+    return convolutionalLayer->getOutputNumElements();
 }
 VIRTUAL float *FullyConnectedLayer::getOutput() {
     return convolutionalLayer->getOutput();

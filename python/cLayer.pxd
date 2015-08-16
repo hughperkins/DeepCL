@@ -8,7 +8,7 @@ cdef extern from "layer/Layer.h":
         int getOutputPlanes()
         int getOutputImageSize()
         float * getOutput()
-        int getOutputSize()
+        int getOutputNumElements()
         int getPersistSize()
         void persistToArray(float *array)
         void unpersistFromArray(const float *array)

@@ -20,7 +20,7 @@ class TrainerMaker;
 class DeepCL_EXPORT Trainable {
 public:
     virtual ~Trainable() {}
-    virtual int getOutputSize() const = 0;
+    virtual int getOutputNumElements() const = 0;
     virtual float calcLoss(float const *expectedValues ) = 0;
     virtual float calcLossFromLabels(int const *labels ) = 0;
     virtual void setBatchSize( int batchSize ) = 0;

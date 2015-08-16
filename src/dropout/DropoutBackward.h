@@ -47,8 +47,8 @@ public:
     STATIC DropoutBackward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio);
     STATIC DropoutBackward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
     DropoutBackward( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
     VIRTUAL void backward( int batchSize, uchar *mask, float *gradOutput, float *gradInput );
     VIRTUAL void backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper );
 

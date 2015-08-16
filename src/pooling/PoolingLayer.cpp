@@ -102,15 +102,15 @@ VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ getOutputSize() ];
-    outputWrapper = cl->wrap( getOutputSize(), output );
-    selectors = new int[ getOutputSize() ];
-    selectorsWrapper = cl->wrap( getOutputSize(), selectors );
-    gradInput = new float[ previousLayer->getOutputSize() ];
-    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    output = new float[ getOutputNumElements() ];
+    outputWrapper = cl->wrap( getOutputNumElements(), output );
+    selectors = new int[ getOutputNumElements() ];
+    selectorsWrapper = cl->wrap( getOutputNumElements(), selectors );
+    gradInput = new float[ previousLayer->getOutputNumElements() ];
+    gradInputWrapper = cl->wrap( previousLayer->getOutputNumElements(), gradInput );
     gradInputWrapper->createOnDevice();
 }
-VIRTUAL int PoolingLayer::getOutputSize() {
+VIRTUAL int PoolingLayer::getOutputNumElements() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *PoolingLayer::getOutput() {
@@ -123,7 +123,7 @@ VIRTUAL float *PoolingLayer::getOutput() {
 VIRTUAL bool PoolingLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL int PoolingLayer::getOutputSize() const {
+VIRTUAL int PoolingLayer::getOutputNumElements() const {
 //    int outputImageSize = inputImageSize / poolingSize;
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
@@ -164,7 +164,7 @@ VIRTUAL void PoolingLayer::forward() {
         upstreamOutputWrapper = previousLayer->getOutputWrapper();
     } else {
         float *upstreamOutput = previousLayer->getOutput();
-        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
+        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputNumElements(), upstreamOutput );
         upstreamOutputWrapper->copyToDevice();
     }
     poolingForwardImpl->forward( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
@@ -191,7 +191,7 @@ VIRTUAL void PoolingLayer::backward() {
     if( nextLayer->providesGradInputWrapper() ) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper = cl->wrap( getOutputNumElements(), nextLayer->getGradInput() );
         gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }

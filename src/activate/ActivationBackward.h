@@ -48,8 +48,8 @@ public:
     STATIC ActivationBackward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn);
     STATIC ActivationBackward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
     ActivationBackward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const *fn );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    VIRTUAL int getInputNumElements( int batchSize );
+    VIRTUAL int getOutputNumElements(int batchSize);
     VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );
     VIRTUAL void backward( int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper );
 

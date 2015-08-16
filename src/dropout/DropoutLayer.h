@@ -58,10 +58,10 @@ public:
     VIRTUAL std::string getClassName() const;
     VIRTUAL void fortesting_setRandomSingleton( RandomSingleton *random );
     VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getOutputSize();
+    VIRTUAL int getOutputNumElements();
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize( int version ) const;

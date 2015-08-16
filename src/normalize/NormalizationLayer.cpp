@@ -104,10 +104,10 @@ VIRTUAL void NormalizationLayer::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = allocatedSize;
-    output = new float[ getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
 }
 VIRTUAL void NormalizationLayer::forward() {
-    int totalLinearLength = getOutputSize();
+    int totalLinearLength = getOutputNumElements();
     float *upstreamOutput = previousLayer->getOutput();
     for( int i = 0; i < totalLinearLength; i++ ) {
         output[i] = ( upstreamOutput[i] + translate ) * scale;
@@ -125,7 +125,7 @@ VIRTUAL int NormalizationLayer::getOutputPlanes() const {
 VIRTUAL int NormalizationLayer::getOutputCubeSize() const {
     return outputPlanes * outputImageSize * outputImageSize;
 }
-VIRTUAL int NormalizationLayer::getOutputSize() const {
+VIRTUAL int NormalizationLayer::getOutputNumElements() const {
     return batchSize * getOutputCubeSize();
 }
 VIRTUAL std::string NormalizationLayer::toString() {

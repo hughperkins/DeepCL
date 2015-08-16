@@ -49,18 +49,18 @@ DropoutBackward::DropoutBackward( EasyCL *cl, int numPlanes, int inputImageSize,
 //        throw runtime_error("inputImageSize should be an exact multiple of dropoutsize: " + toString( inputImageSize ) + " " + toString(dropoutSize ) );
 //    }
 }
-VIRTUAL int DropoutBackward::getInputSize( int batchSize ) {
+VIRTUAL int DropoutBackward::getInputNumElements( int batchSize ) {
     return batchSize * numPlanes * inputImageSize * inputImageSize;
 }
-VIRTUAL int DropoutBackward::getOutputSize(int batchSize) {
+VIRTUAL int DropoutBackward::getOutputNumElements(int batchSize) {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL void DropoutBackward::backward( int batchSize, uchar *mask, float *gradOutput, float *gradInput ) {
 //    cout << "DropoutBackward::backward( float * )" << endl;
     StatefulTimer::instance()->timeCheck("DropoutBackward::backward float->wrapper start" );
-    CLWrapper *maskWrapper = cl->wrap( getOutputSize(batchSize), mask );
-    CLWrapper *gradOutputWrapper = cl->wrap( getOutputSize(batchSize), gradOutput );
-    CLWrapper *gradInputWrapper = cl->wrap( getInputSize(batchSize), gradInput );
+    CLWrapper *maskWrapper = cl->wrap( getOutputNumElements(batchSize), mask );
+    CLWrapper *gradOutputWrapper = cl->wrap( getOutputNumElements(batchSize), gradOutput );
+    CLWrapper *gradInputWrapper = cl->wrap( getInputNumElements(batchSize), gradInput );
 
     maskWrapper->copyToDevice();
     gradOutputWrapper->copyToDevice();

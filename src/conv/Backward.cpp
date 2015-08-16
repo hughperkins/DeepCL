@@ -64,9 +64,9 @@ VIRTUAL float * Backward::backward( int batchSize, float *input, float *gradOutp
 
     int outputDataSize = batchSize * dim.inputCubeSize;
 //    cout << " batchsize " << batchSize << " " << dim << endl;
-    int allocatedOutputSize = std::max(5000, outputDataSize );
-    float *gradInput = new float[allocatedOutputSize];
-    CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputSize, gradInput );
+    int allocatedOutputNumElements = std::max(5000, outputDataSize );
+    float *gradInput = new float[allocatedOutputNumElements];
+    CLWrapper *gradInputWrapper = cl->wrap( allocatedOutputNumElements, gradInput );
 
     StatefulTimer::timeCheck("Backward::backprop after copied to device");
     backward( batchSize, inputWrapper, gradOutputWrapper, weightsWrapper, gradInputWrapper );

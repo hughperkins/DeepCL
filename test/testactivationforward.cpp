@@ -28,9 +28,9 @@ TEST( testactivationforward, basic ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputNumFloats = activationForward->getOutputSize( batchSize );
-    EXPECT_EQ( outputNumFloats, imageSize * imageSize );
-    float *output = new float[outputNumFloats];
+    int outputNumElements = activationForward->getOutputNumElements( batchSize );
+    EXPECT_EQ( outputNumElements, imageSize * imageSize );
+    float *output = new float[outputNumElements];
 
     activationForward->forward( batchSize, data, output );
 
@@ -65,8 +65,8 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputNumFloats = activationForward->getOutputSize( batchSize );
-    float *output = new float[outputNumFloats];
+    int outputNumElements = activationForward->getOutputNumElements( batchSize );
+    float *output = new float[outputNumElements];
 
     activationForward->forward( batchSize, data, output );
 
@@ -94,12 +94,12 @@ TEST( testactivationforward, fromwrappers ) {
                      3, 33, 14,23,
                      -1, -3.5f,37.4f,5
     };
-    int outputNumFloats = activationForward->getOutputSize( batchSize );
-    float *output = new float[outputNumFloats];
+    int outputNumElements = activationForward->getOutputNumElements( batchSize );
+    float *output = new float[outputNumElements];
 
-    const int inputNumFloats = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
-    CLWrapper *outputWrapper = cl->wrap( outputNumFloats, output );
+    const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
+    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     inputWrapper->copyToDevice();
 
@@ -198,18 +198,18 @@ void compareSpecific( CompareSpecificArgs args ) {
     ActivationForward *activationForward0 = ActivationForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
     ActivationForward *activationForward1 = ActivationForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
 
-    const int inputNumFloats = batchSize * numPlanes * imageSize * imageSize;
-    int outputNumFloats = activationForward0->getOutputSize( batchSize );
+    const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
+    int outputNumElements = activationForward0->getOutputNumElements( batchSize );
 
-    float *input = new float[ inputNumFloats ];
-    float *output = new float[ outputNumFloats ];
+    float *input = new float[ inputNumElements ];
+    float *output = new float[ outputNumElements ];
 
-    CLWrapper *inputWrapper = cl->wrap( inputNumFloats, input );
-    CLWrapper *outputWrapper = cl->wrap( outputNumFloats, output );
+    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
-    WeightRandomizer::randomize( input, inputNumFloats, -0.1f, 0.1f );
+    WeightRandomizer::randomize( input, inputNumElements, -0.1f, 0.1f );
 
-    memset( output, 99, sizeof(int) * outputNumFloats );
+    memset( output, 99, sizeof(int) * outputNumElements );
 
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
@@ -217,10 +217,10 @@ void compareSpecific( CompareSpecificArgs args ) {
     activationForward0->forward( batchSize, inputWrapper, outputWrapper );
     outputWrapper->copyToHost();
 
-    float *output0 = new float[ outputNumFloats ];
-    memcpy( output0, output, sizeof(float) * outputNumFloats );
+    float *output0 = new float[ outputNumElements ];
+    memcpy( output0, output, sizeof(float) * outputNumElements );
     
-    memset( output, 99, sizeof(int) * outputNumFloats );
+    memset( output, 99, sizeof(int) * outputNumElements );
 
     inputWrapper->copyToDevice();
     outputWrapper->copyToDevice();
@@ -229,7 +229,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     outputWrapper->copyToHost();
     
     int numErrors = 0;
-    for( int i = 0; i < outputNumFloats; i++ ) {
+    for( int i = 0; i < outputNumElements; i++ ) {
         bool ok = true;
         if( ( output[i] > 0 && output0[i] < 0 ) || ( output[i] < 0 && output0[i] > 0 ) ) {
             cout << "signs differ" << endl;
@@ -262,7 +262,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     }
     EXPECT_EQ( 0, numErrors );
     if( numErrors > 0 ) {
-        int num2dPlanes = inputNumFloats / imageSize / imageSize;
+        int num2dPlanes = inputNumElements / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {
             cout << "2dplane " << plane << ":" << endl;
             for( int i = 0; i < imageSize; i++ ) {

@@ -59,9 +59,9 @@ VIRTUAL void RandomPatches::setBatchSize( int batchSize ) {
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
 }
-VIRTUAL int RandomPatches::getOutputSize() {
+VIRTUAL int RandomPatches::getOutputNumElements() {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL float *RandomPatches::getOutput() {
@@ -70,7 +70,7 @@ VIRTUAL float *RandomPatches::getOutput() {
 VIRTUAL bool RandomPatches::needsBackProp() {
     return false;
 }
-VIRTUAL int RandomPatches::getOutputSize() const {
+VIRTUAL int RandomPatches::getOutputNumElements() const {
     return batchSize * numPlanes * outputImageSize * outputImageSize;
 }
 VIRTUAL int RandomPatches::getOutputImageSize() const {
