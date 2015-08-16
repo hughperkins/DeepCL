@@ -72,18 +72,26 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
 
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
+
+//    long m = weight->size[1];  = inputPlanes * filterSizeSquared
+//    long n = gradColumns->size[1]; = outputSizeSquared
+//    long k = weight->size[0]; = numFilters
+
+
         long m = dim.outputSizeSquared;
-        long n = dim.numFilters;
-        long k = dim.inputPlanes * dim.filterSizeSquared;
-        cout << "m=" << m << " n=" << n << " k=" << k << endl;
+        long n = dim.inputPlanes * dim.filterSizeSquared;
+        long k = dim.numFilters;
+        cout << "m=" << m << " k=" << k << " n=" << n << endl;
 
         clblasOrder order = clblasColumnMajor;
-        size_t lda = order == clblasRowMajor ? k : m;
-        size_t ldb = order == clblasRowMajor ? n : k;
+        clblasTranspose aTrans = clblasNoTrans;
+        clblasTranspose bTrans = clblasTrans;
+        size_t lda = ((order == clblasRowMajor) != (aTrans == clblasTrans)) ? k : m;
+        size_t ldb = ((order == clblasRowMajor) != (bTrans == clblasTrans)) ? n : k;
         size_t ldc = order == clblasRowMajor ? n : m;
         cl_int err = clblasSgemm(
             order,
-            clblasNoTrans, clblasTrans,
+            aTrans, bTrans,
             m, n, k,
             1,
             gradOutputWrapper->getBuffer(), b * dim.outputCubeSize, lda,
@@ -115,7 +123,7 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
        cl->finish();
        gradOutputWrapper->copyToHost();
        for( int i = 0; i < gradOutputWrapper->size(); i++ ) {
-           cout << "data[" << i << "]=" << reinterpret_cast<float *>(gradOutputWrapper->getHostArray())[i] << endl;
+           cout << "gradOutput[" << i << "]=" << reinterpret_cast<float *>(gradOutputWrapper->getHostArray())[i] << endl;
        }
        weightsWrapper->copyToHost();
        for( int i = 0; i < weightsWrapper->size(); i++ ) {
@@ -146,11 +154,11 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
         kernelCol2Im->run_1d(numWorkgroups * workgroupSize, workgroupSize);
 
 
-//        cl->finish();
-//        outputWrapper->copyToHost();
-//        for( int i = 0; i < 1; i++ ) {
-//            cout << "output[" << i << "]=" << reinterpret_cast<float *>(outputWrapper->getHostArray())[i] << endl;
-//        }
+        cl->finish();
+        gradInputWrapper->copyToHost();
+        for( int i = 0; i < gradInputWrapper->size(); i++ ) {
+            cout << "gradInput[" << i << "]=" << reinterpret_cast<float *>(gradInputWrapper->getHostArray())[i] << endl;
+        }
     }
 
     delete gradColumnsWrapper;
