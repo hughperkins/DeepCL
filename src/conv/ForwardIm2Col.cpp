@@ -70,7 +70,7 @@ PUBLIC VIRTUAL ForwardIm2Col::~ForwardIm2Col() {
 PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper) {
     StatefulTimer::timeCheck("ForwardIm2Col::forward START");
 
-    int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputImageSizeSquared;
+    int columnsSize= dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
     float *columns = new float[columnsSize];
     CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
 
@@ -87,7 +87,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
         // M,N,K are dims of matrix A and B
         // (see http://docs.nvidia.com/cuda/clblas/#clblas-lt-t-gt-gemm)
         long m = dim.numFilters;
-        long n = dim.outputImageSizeSquared;
+        long n = dim.outputSizeSquared;
         long k = dim.numFilters * dim.filterSizeSquared;
 
         // Do GEMM (note: this is a bit confusing because gemm assumes column-major matrices)
@@ -114,7 +114,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
 
     if(dim.biased) {
         addBias->forward(
-            batchSize, dim.numFilters, dim.outputImageSize,
+            batchSize, dim.numFilters, dim.outputSize,
             outputWrapper, biasWrapper);
     }
     StatefulTimer::timeCheck("ForwardIm2Col::forward END");
@@ -124,7 +124,7 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
         {
     addBias = new AddBias(cl);
 
-    int size = dim.inputImageSize;
+    int size = dim.inputSize;
     int padding = dim.padZeros ? dim.halfFilterSize : 0;
     int stride = 1;
     int channels = dim.inputPlanes;
@@ -138,7 +138,7 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
     builder.set("colSize", size_col);
     builder.set("channels", dim.inputPlanes);
     builder.set("filterSize", dim.filterSize);
-    builder.set("size", dim.inputImageSize);
+    builder.set("size", dim.inputSize);
     this->kernelIm2Col = builder.buildKernel(
         "im2col",
         "ForwardIm2Col.cl",
