@@ -10,6 +10,8 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
+mark_as_advanced(CLEAR PYTHON_LIBRARY)
+mark_as_advanced(CLEAR PYTHON_INCLUDE_DIR)
 
 include_directories(.)
 include_directories(../EasyCL)
@@ -45,8 +47,15 @@ target_link_libraries(PyDeepCL ${DEEPCL_LIBRARIES})
 
 install(PROGRAMS test_deepcl.py test_lowlevel.py test_qlearning.py
     DESTINATION bin)
-install(TARGETS PyDeepCL
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib )
+if(WIN32)
+	install(TARGETS PyDeepCL
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION lib
+		LIBRARY DESTINATION bin )
+else()
+	install(TARGETS PyDeepCL
+		RUNTIME DESTINATION bin
+		ARCHIVE DESTINATION lib
+		LIBRARY DESTINATION lib )
+endif()
 
