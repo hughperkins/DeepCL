@@ -16,6 +16,8 @@
 
 #include <clBLAS.h>
 
+#include "clblas/ClBlasInstance.h"
+
 using namespace std;
 
 #undef VIRTUAL
@@ -27,6 +29,8 @@ using namespace std;
 PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
             Forward(cl, dim)
         {
+    ClBlasInstance::initializeIfNecessary();
+
     addBias = new AddBias(cl);
 
     int size = dim.inputSize;
@@ -50,16 +54,9 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
         getKernelTemplate(),
         "im2col",
         false);
-//    this->kernelCol2Im = kernelBuilder.buildKernel(
-//        "col2im",
-//        "ForwardIm2Col.cl",
-//        getIm2ColTemplate(),
-//        "col2im",
-//        false);
 }
 PUBLIC VIRTUAL ForwardIm2Col::~ForwardIm2Col() {
     delete kernelIm2Col;
-//    delete kernelCol2Im;
     delete addBias;
 }
 PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper) {

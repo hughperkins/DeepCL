@@ -66,7 +66,7 @@ if( ON_WINDOWS)
     link_libraries(winmm) # needed for timeGetTime
 endif()
 
-set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
+set(dirs clblas activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights qlearning
    )
 foreach(dir ${dirs})

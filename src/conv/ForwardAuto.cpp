@@ -53,14 +53,16 @@ VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrap
     while( chosenIndex == -1 && nextIndex < num ) {
         int thisIndex = nextIndex;
         nextIndex++;
+        cout << "forward try kernel " << thisIndex << endl;
         if( Forward::plausiblyOptimal( thisIndex, batchSize, dim ) ) {
             Forward *candidate = 0;
             try {
                 candidate = Forward::instanceSpecific( thisIndex, cl, dim );
                 instances[thisIndex] = candidate;
                 valid[thisIndex] = true;
+                cout << "   ... seems valid" << endl;
             } catch( runtime_error &e ) {
-//                cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << ": this instance cant be used: " << e.what() << endl;
+                cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << ": this instance cant be used: " << e.what() << endl;
                 valid[thisIndex] = false;
             }
             if( valid[thisIndex] ) {
@@ -68,15 +70,19 @@ VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrap
                 try {
                     candidate->forward( batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper );
                     milliseconds[thisIndex] = (int)timer.lap();
-//                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch( runtime_error &e ) {
-//                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: instance " << thisIndex << " this instance cant be used: " << e.what() << endl;
+                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
                     valid[thisIndex] = false;
                     delete instances[thisIndex];
                     instances[thisIndex] = 0;
                 }
+            } else {
+                cout << "   ... not valid" << endl;
             }
+        } else {
+            cout << "  ... not plausibly optimal, skipping" << endl;
         }
     }
     if( chosenIndex == -1 ) {
@@ -85,10 +91,10 @@ VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrap
         int bestTime = 0;
         for( int i = 0; i < num; i++ ) {
             if( !valid[i] ) {
-//                cout << "   instance " << i << ": cannot be used" << endl;
+                cout << "   forward kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-//            cout << "   instance " << i << ": " << milliseconds[i] << "ms" << endl;
+            cout << "   forward kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
             if( bestIndex == -1 ) {
                 bestIndex = i;
                 bestTime = milliseconds[i];
@@ -100,7 +106,7 @@ VIRTUAL void ForwardAuto::forward( int batchSize, CLWrapper *dataWrapper, CLWrap
             }
         }
         if( bestIndex != -1 ) {
-//            cout << "   selected: instance " << bestIndex << endl;
+            cout << "   forward layer selected kernel " << bestIndex << endl;
             this->chosenIndex = bestIndex;
         } else {
             throw runtime_error(StatefulTimer::instance()->prefix + "No valid forward implementations found" );

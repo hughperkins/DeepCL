@@ -96,7 +96,7 @@ def time_layer(num_epochs, label, batch_size, net_string):
     net.setBatchSize(batch_size)
 
     # warm up forward
-    for i in range(8):
+    for i in range(9):
         last = time.time()
         net.forward( images )
         now = time.time()
