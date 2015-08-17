@@ -15,23 +15,27 @@
 
 #To build
 
-Do you want to use DeepCL via python, or from the commandline, or from C++?
-* to use from Python, please see [python/README.md](../python/README.md)
-* To use from the commandline, or from C++, please continue reading this page :-)
+## Build options
+
+* If you want to build the Python wrappers, make sure you have python, and the python development libraries and headers available, and choose `BUILD_PYTHON_WRAPPERS` = `ON`
+  * If not, or if you dont have Python, then set to 'OFF'
+* If you want to be able to read training/testing data from jpeg files, then please choose `BUILD_JPEG_SUPPORT` = `ON`. You will need to provide turbojpeg library and headers, or compatible.  Otherwise set to `OFF`
 
 ## linux
 
 ### Pre-requisites
 
+*Required:*
 - git
+- make 
 - cmake
+- cmake-curses-gui
 - g++ (should support c++0x; eg 4.4 or better)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
-  - tested using beignet, which provides OpenCL 1.2; and on CUDA 6.5 driver
-- opencl-headers
-- make 
-- (new) libjpeg62 or compatible, eg `sudo apt-get install libjpeg-turbo8-dev` (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
-- (new) lua5.1
+
+*Optional:*
+- python (2.7 or 3.4)
+- libjpeg62 or compatible, eg `sudo apt-get install libjpeg-turbo8-dev` (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
 
 ### Procedure
 
@@ -40,9 +44,16 @@ git clone --recursive https://github.com/hughperkins/DeepCL.git
 cd DeepCL
 mkdir build
 cd build
-cmake ..
-make
+ccmake ..
+# in ccmake:
+# - press 'c'/configure
+# - choose the options you want
+# - press 'c' /configure again
+# - press 'g' / generate, then `q` / quit
+make -j 4 install
 ```
+
+The outputs will appear in subdirectories of `../dist`
 
 Note:
 * be sure to add `--recursive` when you clone, else when you build it will complain about OpenCLHelper missing (or clew missing)
@@ -51,19 +62,42 @@ Note:
 * note: recently, moved EasyCL/thirdparty/clew from submodule to simply copying in the files
    * hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
 
+### To check all is working
+
+Unit-tests:
+```
+LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_unittests
+```
+Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
+
+Commandline training:
+```
+LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
+```
+(change path to wherever the mnist data files are downloaded)
+
+For python wrappers:
+```
+LD_LIBRARY_PATH=../dist/lib PYTHONPATH=../dist/lib python ../dist/bin/test_deepcl.py /norep/data/mnist
+```
+(change path to wherever the mnist data files are downloaded)
+
 ## Windows
 
 ### Pre-requisites
 
+*Required:*
 - git
 - cmake
 - Visual Studio (current 'standard' build system is: Visual Studio 2010 Express, but should also work on Visual Studio 2008 for Python 2.7, and Visual Studio Express 2013)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
+
+*Optional:*
 - (new) libjpeg62, or compatible, eg [libjpeg-turbo](http://www.libjpeg-turbo.org/Documentation/OfficialBinaries)  (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
   - if you want, I made a fresh build of libjpeg-turbo 1.4.0:
     - dynamic library (doesnt work for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64.zip)
     - static library (works ok for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32-static.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64-static.zip)
-- (new) lua5.1
+- Python 2.7 or Python 3.4 (needs python, and also the development library and include files)
 
 ### Procedure
 
@@ -72,14 +106,43 @@ Note:
   - hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
 - create a subdirectory `build` in the git cloned `DeepCL` directory
 - open cmake, point at the `DeepCL` directory, and set to build in the `build` subdirectory
-  - `configure` then `generate`
+  - `configure`, select 'visual studio 2010' (or as appropriate)
+- choose the options you want, eg turn python on/off, jpeg on/off
+- click `generate`
 - open visual studio, and load any of the projects in the `build` directory
   - change release type to `Release`
   - choose `build` from the `build` menu
+- select 'INSTALL' project, right-click and 'Build'
+
+The outputs will appear in the subdirectory 'dist'
+
+### To check all is working
+
+TODO: fix this section, in progress
+
+Unit-tests:
+```
+LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_unittests
+```
+Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
+
+Commandline training:
+```
+LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
+```
+(change path to wherever the mnist data files are downloaded)
+
+For python wrappers:
+```
+LD_LIBRARY_PATH=../dist/lib PYTHONPATH=../dist/lib python ../dist/bin/test_deepcl.py /norep/data/mnist
+```
+(change path to wherever the mnist data files are downloaded)
 
 ## Linking
 
 If you want to use the DeepCL library from C++, you will need to link with the following libraries:
 - libDeepCL.so (or DeepCL.dll, on Windows)
 - libEasyCL.so (or EasyCL.dll, on Windows)
+- libclew.so / clew.dll
+- libclBLAS.so / clBLAS.dll
 
