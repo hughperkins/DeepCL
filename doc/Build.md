@@ -118,23 +118,23 @@ The outputs will appear in the subdirectory 'dist'
 
 ### To check all is working
 
-TODO: fix this section, in progress
+TODO: fix this section, in progress.  Prior to each of these, please open a cmd prompt, and cd to the `DeepCL` directory
 
 Unit-tests:
 ```
-LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_unittests
+dist\bin\deepcl_unittests
 ```
 Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
 
 Commandline training:
 ```
-LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
+dist\bin\deepcl_train numtest=-1 numtrain=10000 datadir=c:\data\mnist
 ```
 (change path to wherever the mnist data files are downloaded)
 
 For python wrappers:
 ```
-LD_LIBRARY_PATH=../dist/lib PYTHONPATH=../dist/lib python ../dist/bin/test_deepcl.py /norep/data/mnist
+python dist\bin\test_deepcl.py c:\data\mnist
 ```
 (change path to wherever the mnist data files are downloaded)
 
