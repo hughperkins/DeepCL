@@ -43,3 +43,10 @@ endif()
 
 target_link_libraries(PyDeepCL ${DEEPCL_LIBRARIES})
 
+install(PROGRAMS test_deepcl.py test_lowlevel.py test_qlearning.py
+    DESTINATION bin)
+install(TARGETS PyDeepCL
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib )
+
