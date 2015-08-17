@@ -35,6 +35,7 @@ else()
     include_directories(${PYTHON_INCLUDE_DIRS})
     add_library( PyDeepCL SHARED PyDeepCL.cxx CyWrappers.cpp)
 	target_link_libraries(PyDeepCL ${PYTHON_LIBRARY})
+    SET_TARGET_PROPERTIES(PyDeepCL PROPERTIES PREFIX "") 
 endif()
 
 if(WIN32)
