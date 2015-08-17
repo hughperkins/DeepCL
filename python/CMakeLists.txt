@@ -1,5 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 
+OPTION(DEV_RUN_CYTHON "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -8,7 +10,6 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-include(UseCython)
 
 include_directories(.)
 include_directories(../EasyCL)
@@ -24,8 +25,16 @@ if(WIN32)
     link_libraries(winmm) # needed for timeGetTime
 endif()
 
-set_source_files_properties(PyDeepCL.pyx PROPERTIES CYTHON_IS_CXX TRUE)
-cython_add_module(PyDeepCL PyDeepCL.pyx CyWrappers.cpp)
+if(DEV_RUN_CYTHON)
+    include(UseCython)
+    set_source_files_properties(PyDeepCL.pyx PROPERTIES CYTHON_IS_CXX TRUE)
+    cython_add_module(PyDeepCL PyDeepCL.pyx CyWrappers.cpp)
+else()
+    find_package( PythonLibs REQUIRED )
+    find_package( PythonInterp )
+    include_directories(${PYTHON_INCLUDE_DIRS})
+    add_library( PyDeepCL SHARED PyDeepCL.cpp CyWrappers.cpp)
+endif()
 
 if(WIN32)
 	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/DeepCL.lib)
