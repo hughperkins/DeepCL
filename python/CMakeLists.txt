@@ -17,7 +17,6 @@ include_directories(../EasyCL/thirdparty/clew/include)
 include_directories(../src)
 
 if(UNIX)
-#    target_link_libraries(EasyCL dl)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 

@@ -13,13 +13,14 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
+OPTION(BUILD_PYTHON_WRAPPERS "Build Python wrappers.  Needs Python." ON)
 OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file." ON)
+OPTION(BUILD_INTERNAL_LUA "If using from Lua, set to 'OFF'" ON)
 OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
-OPTION(PROTOTYPING "Only for devs." OFF)
-    mark_as_advanced( FORCE PROTOTYPING )
 OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
     mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
-OPTION(BUILD_INTERNAL_LUA "If using from Lua, set to 'OFF'" ON)
+OPTION(PROTOTYPING "Only for devs." OFF)
+    mark_as_advanced( FORCE PROTOTYPING )
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   SET(CMAKE_INSTALL_PREFIX
@@ -31,7 +32,6 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 unset(PROVIDE_LUA_ENGINE CACHE)
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
 unset(BUILD_LUA_WRAPPERS CACHE)
-unset(BUILD_PYTHON_WRAPPERS CACHE)
 unset(RUN_COG CACHE)
 unset(RUN_SWIG CACHE)
 unset(DEV_RUN_SWIG CACHE)
@@ -59,7 +59,6 @@ include_directories( src )
 include_directories( qlearning )
 
 if( ON_LINUX )
-#    target_link_libraries(EasyCL dl)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 
@@ -143,7 +142,7 @@ if( LIBPNGPP_AVAILABLE)
     target_link_libraries(deepcl_unittests ${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
-link_libraries(DeepCL)
+#link_libraries(DeepCL)
 
 if(DEV_RUN_COG)
     foreach( dir ${dirs} main)
@@ -175,6 +174,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
     add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/stringhelper.cpp src/loaders/MnistLoader.cpp )
+    target_link_libraries(mnist-to-jpegs DeepCL)
 endif(LIBJPEG_AVAILABLE)
 
 add_executable( deepcl_train src/main/train.cpp src/util/stringhelper.cpp )
@@ -185,6 +185,10 @@ add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp )
 
+foreach(exe deepcl_train deepcl_predict cifar-to-mat prepare-norb mnist-to-floats mnist-to-pipe)
+    target_link_libraries(${exe} DeepCL)
+endforeach()
+
 #target_link_libraries( cifar-to-mat ${LUA_LIBRARIES} )
 
 if( LIBPNGPP_AVAILABLE)
@@ -192,6 +196,10 @@ if( LIBPNGPP_AVAILABLE)
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/patches/PatchExtractor.cpp )
     add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/patches/Translator.cpp )
     add_executable( testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp )
+
+    foreach(exe testpatchextractor testtranslator testgenericloader)
+        target_link_libraries(${exe} DeepCL)
+    endforeach()
 endif(LIBPNGPP_AVAILABLE)
 
 if( ON_LINUX )
@@ -216,6 +224,10 @@ target_link_libraries( deepcl_unittests DeepCL )
 
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp deepcl_gtest )
+
+if(BUILD_PYTHON_WRAPPERS)
+    add_subdirectory(python)
+endif()
 
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
 #INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
