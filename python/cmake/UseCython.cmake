@@ -212,7 +212,7 @@ function( compile_pyx _name generated_file )
   endforeach()
 
   # Determining generated file name.
-  set( _generated_file "${CMAKE_CURRENT_BINARY_DIR}/${_name}.${extension}" )
+  set( _generated_file "${CMAKE_CURRENT_SOURCE_DIR}/${_name}.${extension}" )
   set_source_files_properties( ${_generated_file} PROPERTIES GENERATED TRUE )
   set( ${generated_file} ${_generated_file} PARENT_SCOPE )
 

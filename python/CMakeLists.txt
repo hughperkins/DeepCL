@@ -33,7 +33,7 @@ else()
     find_package( PythonLibs REQUIRED )
     # find_package( PythonInterp )
     include_directories(${PYTHON_INCLUDE_DIRS})
-    add_library( PyDeepCL SHARED PyDeepCL.cpp CyWrappers.cpp)
+    add_library( PyDeepCL SHARED PyDeepCL.cxx CyWrappers.cpp)
 	target_link_libraries(PyDeepCL ${PYTHON_LIBRARY})
 endif()
 
