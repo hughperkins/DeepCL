@@ -9,6 +9,7 @@
 
 #include <clBLAS.h>
 
+#include "clblas/ClBlasInstance.h"
 #include "BackwardIm2Col.h"
 
 using namespace std;
@@ -24,6 +25,8 @@ using namespace std;
 PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
             Backward(cl, dim)
         {
+    ClBlasInstance::initializeIfNecessary();
+
 //    addBias = new AddBias(cl);
 
     int size = dim.inputSize;
