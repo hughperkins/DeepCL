@@ -102,10 +102,10 @@ def time_layer(num_epochs, label, batch_size, net_string):
         now = time.time()
         print('  warm up forward all-layer time', ( now - last ) * 1000, 'ms' )
         last = now
-    net.backwardFromLabels(labels)
-    now = time.time()
-    print('   warm up backward all-layer time', (now - last) * 1000, 'ms' )
-    last = now
+        net.backwardFromLabels(labels)
+        now = time.time()
+        print('   warm up backward all-layer time', (now - last) * 1000, 'ms' )
+        last = now
 
     layer = net.getLayer(2)
     print('running forward prop timings:')
