@@ -12,7 +12,7 @@
 
 #include "EasyCL.h"
 #include "activate/ActivationFunction.h"
-#include "conv/Forward.h"
+#include "conv/Backward.h"
 #include "conv/LayerDimensions.h"
 #include "DeepCLDllExport.h"
 
@@ -25,7 +25,7 @@ using namespace std;
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT ForwardAuto : public Forward {
+class DeepCL_EXPORT BackwardAuto : public Backward {
 public:
 //    EasyCL *cl;
 //    LayerDimensions dim;
@@ -35,7 +35,7 @@ public:
     int *milliseconds;
     bool *valid;
     int chosenIndex;
-    Forward **instances;
+    Backward **instances;
     int nextIndex;
 
     // [[[cog
@@ -43,10 +43,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ForwardAuto(EasyCL *cl, LayerDimensions dim);
-    VIRTUAL ~ForwardAuto();
-    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *biasWrapper, CLWrapper *outputWrapper);
+    BackwardAuto(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL ~BackwardAuto();
+    VIRTUAL void backward(
+    int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
+    CLWrapper *gradInput);
 
     // [[[end]]]
 

@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "conv/ForwardAuto.h"
+#include "conv/BackwardAuto.h"
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
 #include "util/Timer.h"
@@ -21,17 +21,17 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL 
 
-ForwardAuto::ForwardAuto(EasyCL *cl, LayerDimensions dim) :
-        Forward(cl, dim),
+BackwardAuto::BackwardAuto(EasyCL *cl, LayerDimensions dim) :
+        Backward(cl, dim),
         milliseconds(0),
         valid(0),
         chosenIndex(-1),
         instances(0)
          {
-    num = Forward::getNumImplementations();
+    num = Backward::getNumImplementations();
     milliseconds = new int[ num];
     valid = new bool[ num ];
-    instances = new Forward *[ num ];
+    instances = new Backward *[ num ];
     for(int i = 0; i < num; i++) {
         instances[i] = 0;
         valid[i] = false;
@@ -39,41 +39,40 @@ ForwardAuto::ForwardAuto(EasyCL *cl, LayerDimensions dim) :
     }
     nextIndex = 0;
 }
-VIRTUAL ForwardAuto::~ForwardAuto() {
+VIRTUAL BackwardAuto::~BackwardAuto() {
     for(int i = 0; i < num; i++) {
         if(instances[i] != 0) {
             delete instances[i];
         }
     }
 }
-VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
-        CLWrapper *biasWrapper, CLWrapper *outputWrapper) {
-//    Forward *instance = 0;
-//    cout << "ForwardAuto::forward" << endl;
+VIRTUAL void BackwardAuto::backward(
+        int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
+        CLWrapper *gradInput) {
     while(chosenIndex == -1 && nextIndex < num) {
         int thisIndex = nextIndex;
         nextIndex++;
-        cout << "forward try kernel " << thisIndex << endl;
-        if(Forward::plausiblyOptimal(thisIndex, batchSize, dim)) {
-            Forward *candidate = 0;
+        cout << "backward try kernel " << thisIndex << endl;
+        if(Backward::plausiblyOptimal(thisIndex, batchSize, dim)) {
+            Backward *candidate = 0;
             try {
-                candidate = Forward::instanceSpecific(thisIndex, cl, dim);
+                candidate = Backward::instanceSpecific(thisIndex, cl, dim);
                 instances[thisIndex] = candidate;
                 valid[thisIndex] = true;
                 cout << "   ... seems valid" << endl;
             } catch(runtime_error &e) {
-                cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << ": this instance cant be used: " << e.what() << endl;
+                cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << ": this instance cant be used: " << e.what() << endl;
                 valid[thisIndex] = false;
             }
             if(valid[thisIndex]) {
                 Timer timer;
                 try {
-                    candidate->forward(batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper);
+                    candidate->backward(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
                     milliseconds[thisIndex] = (int)timer.lap();
-                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+                    cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
                     return;
                 } catch(runtime_error &e) {
-                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
+                    cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
                     valid[thisIndex] = false;
                     delete instances[thisIndex];
                     instances[thisIndex] = 0;
@@ -86,15 +85,15 @@ VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapp
         }
     }
     if(chosenIndex == -1) {
-//        cout << StatefulTimer::instance()->prefix + "ForwardAuto::forward choosing best instance:" << endl;
+//        cout << StatefulTimer::instance()->prefix + "BackwardAuto::backward choosing best instance:" << endl;
         int bestIndex = -1;
         int bestTime = 0;
         for(int i = 0; i < num; i++) {
             if(!valid[i]) {
-                cout << "   forward kernel " << i << ": cannot be used" << endl;
+                cout << "   backward kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-            cout << "   forward kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
+            cout << "   backward kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
             if(bestIndex == -1) {
                 bestIndex = i;
                 bestTime = milliseconds[i];
@@ -106,13 +105,13 @@ VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapp
             }
         }
         if(bestIndex != -1) {
-            cout << "   forward layer selected kernel " << bestIndex << endl;
+            cout << "   backward layer selected kernel " << bestIndex << endl;
             this->chosenIndex = bestIndex;
         } else {
-            throw runtime_error(StatefulTimer::instance()->prefix + "No valid forward implementations found");
+            throw runtime_error(StatefulTimer::instance()->prefix + "No valid backward implementations found");
         }
     }
-//    cout << "ForwardAuto::forward using instance index: " << chosenIndex << endl;
-    instances[chosenIndex]->forward(batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper);
+//    cout << "BackwardAuto::backward using instance index: " << chosenIndex << endl;
+    instances[chosenIndex]->backward(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
 }
 
