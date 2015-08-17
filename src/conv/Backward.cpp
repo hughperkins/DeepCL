@@ -37,6 +37,9 @@ STATIC Backward *Backward::instanceForTest(EasyCL *cl, LayerDimensions layerDime
     return new BackwardGpuNaive(cl, layerDimensions);
 }
 STATIC Backward *Backward::instanceSpecific(int idx, EasyCL *cl, LayerDimensions layerDimensions) {
+    if(idx == -1) {
+        return new BackwardAuto(cl, layerDimensions);
+    }
     if(idx == 0) {
         return new BackwardCpu(cl, layerDimensions);
     }

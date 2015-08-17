@@ -668,8 +668,8 @@ TEST(SLOW_testbackward, perf_kgsgo_32c5) {
     measurePerf(2, batchSize, dim);
 }
 
-void compareSpecific(int instance0, int instance1, int batchSize, LayerDimensions dim) {
-    cout << dim << endl;
+void compareSpecific(int instance0, int instance1, int numIts, int batchSize, LayerDimensions dim) {
+    cout << "batchsize=" << batchSize << " " << dim << endl;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     clblasSetup();
 
@@ -703,47 +703,49 @@ void compareSpecific(int instance0, int instance1, int batchSize, LayerDimension
     Backward *bp0 = Backward::instanceSpecific(instance0, cl, dim);
     Backward *bp1 = Backward::instanceSpecific(instance1, cl, dim);
     
-    bp0->backward(batchSize, 
-            inputWrapper, errorsWrapper, weightsWrapper,
-            errorsForUpstreamWrapper0);
-    bp1->backward(batchSize, 
-            inputWrapper, errorsWrapper, weightsWrapper,
-            errorsForUpstreamWrapper1);
+    for(int it=0; it < numIts; it++ ) {
+        bp0->backward(batchSize, 
+                inputWrapper, errorsWrapper, weightsWrapper,
+                errorsForUpstreamWrapper0);
+        bp1->backward(batchSize, 
+                inputWrapper, errorsWrapper, weightsWrapper,
+                errorsForUpstreamWrapper1);
 
-    errorsForUpstreamWrapper0->copyToHost();
-    errorsForUpstreamWrapper1->copyToHost();
+        errorsForUpstreamWrapper0->copyToHost();
+        errorsForUpstreamWrapper1->copyToHost();
 
-    int outputNumElements = errorsForUpstreamSize;
-    cout << dim << endl;
-    bool same = true;
-    for(int i = 0; i < max(20, outputNumElements); i++) {
-        if(i < outputNumElements) {
-            if(abs(errorsForUpstream0[i] - errorsForUpstream1[i]) < 0.000001 || abs(errorsForUpstream0[i] - errorsForUpstream1[i]) <= 0.001 * max(abs(errorsForUpstream0[i]), abs(errorsForUpstream1[i]))) {
-                if(i < 20) {
+        int outputNumElements = errorsForUpstreamSize;
+        cout << dim << endl;
+        bool same = true;
+        for(int i = 0; i < max(20, outputNumElements); i++) {
+            if(i < outputNumElements) {
+                if(abs(errorsForUpstream0[i] - errorsForUpstream1[i]) < 0.000001 || abs(errorsForUpstream0[i] - errorsForUpstream1[i]) <= 0.001 * max(abs(errorsForUpstream0[i]), abs(errorsForUpstream1[i]))) {
+                    if(it == 0 && i < 20) {
+                        cout << "output[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
+                        cout << " SAME";
+                    }
+                } else {
                     cout << "output[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
-                    cout << " SAME";
+                    cout << " DIFF";
+                    same = false;
                 }
             } else {
-                cout << "output[" << i << "]=" << errorsForUpstream0[i] << " " << errorsForUpstream1[i];
-                cout << " DIFF";
-                same = false;
+                 if(it == 0 && i < 20) {
+                     cout << "     ";
+                 }
             }
-        } else {
-             if(i < 20) {
-                 cout << "     ";
-             }
+            if(it == 0 && i < 20) {
+                cout << "  || " << errorsForUpstream1[100+i] ;
+                cout << "  || " << errorsForUpstream1[200+i] ;
+                cout << "  || " << errorsForUpstream1[300+i] ;
+                cout << "  || " << errorsForUpstream1[400+i] ;
+                cout << "  || " << errorsForUpstream1[500+i] ;
+                cout << "  || " << errorsForUpstream1[600+i] ;
+                cout << "  || " << errorsForUpstream1[700+i] << endl;
+            }
         }
-        if(i < 20) {
-            cout << "  || " << errorsForUpstream1[100+i] ;
-            cout << "  || " << errorsForUpstream1[200+i] ;
-            cout << "  || " << errorsForUpstream1[300+i] ;
-            cout << "  || " << errorsForUpstream1[400+i] ;
-            cout << "  || " << errorsForUpstream1[500+i] ;
-            cout << "  || " << errorsForUpstream1[600+i] ;
-            cout << "  || " << errorsForUpstream1[700+i] << endl;
-        }
+        EXPECT_EQ(true, same);
     }
-    EXPECT_EQ(true, same);
 
     delete inputWrapper;
     delete errorsWrapper;
@@ -764,6 +766,7 @@ void compareSpecific(int instance0, int instance1, int batchSize, LayerDimension
 TEST(SLOW_testbackward, compare_specific_args) {
     LayerDimensions dim;
     int batchSize = 128;
+    int numIts = 1;
     int instance0 = 1;
     int instance1 = 3;
 //    int N = 128;
@@ -772,7 +775,7 @@ TEST(SLOW_testbackward, compare_specific_args) {
         .setFilterSize(7)
         .setPadZeros(true).setBiased(false);    
 
-//    TestArgsParser::arg("n", &N);
+    TestArgsParser::arg("its", &numIts);
     DimFromArgs::arg(&dim);
     TestArgsParser::arg("instance0", &instance0);
     TestArgsParser::arg("instance1", &instance1);
@@ -781,7 +784,7 @@ TEST(SLOW_testbackward, compare_specific_args) {
     TestArgsParser::go();
     dim.deriveOthers();
 
-    compareSpecific(instance0, instance1, batchSize, dim);
+    compareSpecific(instance0, instance1, numIts, batchSize, dim);
 }
 
 TEST(SLOW_testbackward, compare_kgsgo_32c5) {
@@ -792,7 +795,7 @@ TEST(SLOW_testbackward, compare_kgsgo_32c5) {
     cout << dim.buildOptionsString() << endl;  
 //    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific(1, 2, batchSize, dim);
+    compareSpecific(1, 2, 1, batchSize, dim);
 
 }
 
@@ -804,7 +807,7 @@ TEST(SLOW_testbackward, compare_kgsgo_32c5mini) {
     cout << dim.buildOptionsString() << endl;  
 //    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific(1, 2, batchSize, dim);
+    compareSpecific(1, 2, 1, batchSize, dim);
 
 }
 
@@ -817,7 +820,7 @@ TEST(SLOW_testbackward, compare_kgsgo_32c5mini2) {
     cout << dim.buildOptionsString() << endl;
 //    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific(1, 2, batchSize, dim);
+    compareSpecific(1, 2, 1, batchSize, dim);
 
 }
 
