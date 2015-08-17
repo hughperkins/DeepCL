@@ -38,12 +38,13 @@ else()
 endif()
 
 if(WIN32)
-	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/DeepCL.lib ${CMAKE_INSTALL_PREFIX}/lib/EasyCL.lib)
+#	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/DeepCL.lib ${CMAKE_INSTALL_PREFIX}/lib/EasyCL.lib)
 else()
-	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}DeepCL${CMAKE_SHARED_LIBRARY_SUFFIX})
+#	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}DeepCL${CMAKE_SHARED_LIBRARY_SUFFIX})
 endif()
 
-target_link_libraries(PyDeepCL ${DEEPCL_LIBRARIES})
+#target_link_libraries(PyDeepCL ${DEEPCL_LIBRARIES})
+target_link_libraries(PyDeepCL DeepCL)
 
 install(PROGRAMS test_deepcl.py test_lowlevel.py test_qlearning.py
     DESTINATION bin)

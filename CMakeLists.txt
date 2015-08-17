@@ -227,7 +227,8 @@ target_link_libraries( testgtestsupp deepcl_gtest )
 
 if(BUILD_PYTHON_WRAPPERS)
     add_subdirectory(python)
-    add_dependencies(PyDeepCL DeepCL)
+#    add_dependencies(PyDeepCL DeepCL)
+#    target_link_libraries(PyDeepCL DeepCL)
 endif()
 
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
