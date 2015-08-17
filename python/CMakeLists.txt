@@ -27,7 +27,11 @@ endif()
 set_source_files_properties(PyDeepCL.pyx PROPERTIES CYTHON_IS_CXX TRUE)
 cython_add_module(PyDeepCL PyDeepCL.pyx CyWrappers.cpp)
 
-#link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-#target_link_libraries(PyDeepCL DeepCL)
-target_link_libraries(PyDeepCL ${CMAKE_INSTALL_PREFIX}/lib/libDeepCL.so)
+if(WIN32)
+	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/DeepCL.lib)
+else()
+	SET(DEEPCL_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}DeepCL${CMAKE_SHARED_LIBRARY_SUFFIX})
+endif()
+
+target_link_libraries(PyDeepCL ${DEEPCL_LIBRARIES})
 
