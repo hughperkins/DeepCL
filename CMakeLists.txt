@@ -14,10 +14,11 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 OPTION(BUILD_PYTHON_WRAPPERS "Build Python wrappers.  Needs Python." ON)
-OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file." ON)
+OPTION(BUILD_JPEG_SUPPORT "Allows native loading of jpegs, via manifest file." ON)
 OPTION(BUILD_INTERNAL_LUA "If using from Lua, set to 'OFF'" ON)
 OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
 OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+
     mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
 OPTION(PROTOTYPING "Only for devs." OFF)
     mark_as_advanced( FORCE PROTOTYPING )
@@ -29,6 +30,7 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 # remove old flags from the cache:
+unset(LIBJPEG_AVAILABLE CACHE)
 unset(PROVIDE_LUA_ENGINE CACHE)
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
 unset(BUILD_LUA_WRAPPERS CACHE)
@@ -233,7 +235,7 @@ endif()
 
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
 #INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
-INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests
+INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib )
