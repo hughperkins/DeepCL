@@ -144,6 +144,13 @@ License
 Recent changes
 ==============
 
+* week up to Aug 17th:
+  * added forward and backward im2col layer
+  * forward im2col automatically used during forward propagation, where appropriate
+  * backwards has yet to be integrated
+  * under the covers:
+    * added clBLAS
+    * migrated the Python build process to use cmake, rather than setup.py (whether this turns out to be good or bad is a bit up in the air for now)
 * June 22nd:
   * removed lua wrappers
   * if you want to use lua with OpenCL, please consider using [cltorch](http://github.com/hughperkins/cltorch) and [clnn](http://github.com/hughperkins/clnn)
