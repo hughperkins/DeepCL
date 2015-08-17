@@ -75,7 +75,14 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
   - 2 epochs, 2 days per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU (about half as powerful as a GTX780)
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n numepochs=20 multinet=6 learningrate=0.002`
    - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
- 
+
+# Releases
+
+* Stable: here
+* Unstable/dev: please see [8.x](https://github.com/hughperkins/DeepCL/tree/8.x)
+
+Unstable/dev is working on adding im2col, which promises faster convolution for larger layers, ie layers 1 and 2 in [Soumith's benchmarks](https://github.com/soumith/convnet-benchmarks)
+
 # To install
 
 ## Python
