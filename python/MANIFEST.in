@@ -1,9 +1,0 @@
-include cDeepCL.pxd
-include Cy*.cpp
-include Cy*.h
-include mysrc/*
-include *.pxd
-include *.pyx
-include version.txt
-recursive-include mysrc *.txt *.cpp *.h *.cl *.c
-
