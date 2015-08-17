@@ -78,25 +78,7 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
  
 # To install
 
-## Python
-
-* For python, please use [Python API](python/README.md), or use [pip](https://pypi.python.org/pypi/DeepCL)
-
-## Commandline tools, and c++ libraries
-
-### Windows
-
-Pre-built binaries are available for Windows.  In order to use them you need:
-* An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v5.5.0](https://github.com/hughperkins/DeepCL/releases/tag/v5.5.0) 
-
-### linux
-
-Pre-build binaries are available for linux.  In order to use them you need:
-* An OpenCL driver for your GPU
-* A recent release with linux binaries is [v5.5.0](https://github.com/hughperkins/DeepCL/releases/tag/v5.5.0) 
-
-If the binaries dont work on your distribution, please [build from source](doc/Build.md)
+8.x must be [built from source](doc/Build.md) for now.
 
 ## What if it doesn't run?
 
@@ -130,11 +112,8 @@ Related projects
 ================
 
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
-
-Credits
-=======
-
-* Tambet Matilsen has provided excellent suggestions and feedback on which functionalities to prioritize, and on how to make the website somewhat presentable
+* [cltorch](https://github.com/hughperkins/cltorch)
+* [clnn](https://github.com/hughperkins/clnn)
 
 License
 =======
@@ -158,5 +137,5 @@ Recent changes
 To get in contact
 =================
 
-There is a mailing list at http://lists.hughperkins.com/listinfo.cgi/deepcl-hughperkins.com for discussions, ideas, or just to say 'hi'.  You can also just create issues, in github, in the top right of this page.
+Just create an issues, in github, in the top right of this page.  Don't worry about whether you think the issue sounds silly or anything.  The more feedback the better!
 
