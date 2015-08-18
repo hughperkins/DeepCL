@@ -24,19 +24,21 @@ public:
     bool debug; // = false;
 
     virtual ~BackpropWeights() {}
-    virtual void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *inputsWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) = 0;
+    virtual void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *inputsWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropWeights( EasyCL *cl, LayerDimensions layerDimensions );
-    STATIC BackpropWeights *instance(EasyCL *cl, LayerDimensions dim );
-    STATIC BackpropWeights *instanceForTest(EasyCL *cl, LayerDimensions layerDimensions );
-    STATIC BackpropWeights *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
-    VIRTUAL void calcGradWeights( int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBias );
-    float learningRateToMultiplier( int batchSize );
+    BackpropWeights(EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC BackpropWeights *instance(EasyCL *cl, LayerDimensions dim);
+    STATIC int getNumImplementations();
+    STATIC bool plausiblyOptimal(int index, int batchSize, LayerDimensions dim);
+    STATIC BackpropWeights *instanceForTest(EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC BackpropWeights *instanceSpecific(int idx, EasyCL *cl, LayerDimensions layerDimensions);
+    VIRTUAL void calcGradWeights(int batchSize, float *gradOutput, float *inputs, float *gradWeights, float *gradBias);
+    float learningRateToMultiplier(int batchSize);
 
     // [[[end]]]
 };

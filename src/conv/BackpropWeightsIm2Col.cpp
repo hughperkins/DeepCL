@@ -10,8 +10,7 @@
 #include <clBLAS.h>
 
 #include "clblas/ClBlasInstance.h"
-#include "clblas/ClBlasHelper.h"
-#include "BackwardIm2Col.h"
+#include "BackpropWeightsIm2Col.h"
 
 using namespace std;
 
@@ -23,10 +22,12 @@ using namespace std;
 
 #define PUBLIC
 
-PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
-            Backward(cl, dim)
+PUBLIC BackpropWeightsIm2Col::BackpropWeightsIm2Col(EasyCL *cl, LayerDimensions dim) :
+            BackpropWeights(cl, dim)
         {
     ClBlasInstance::initializeIfNecessary();
+
+//    addBias = new AddBias(cl);
 
     int size = dim.inputSize;
     int padding = dim.padZeros ? dim.halfFilterSize : 0;
@@ -43,70 +44,74 @@ PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
     builder.set("channels", dim.inputPlanes);
     builder.set("filterSize", dim.filterSize);
     builder.set("size", dim.inputSize);
-    this->kernelCol2Im = builder.buildKernel(
-        "col2im",
+    this->kernelIm2Col = builder.buildKernel(
+        "im2col",
         "ForwardIm2Col.cl",
         getKernelTemplate(),
-        "col2im",
+        "im2col",
         false);
 }
-PUBLIC VIRTUAL BackwardIm2Col::~BackwardIm2Col() {
-    delete kernelCol2Im;
+PUBLIC VIRTUAL BackpropWeightsIm2Col::~BackpropWeightsIm2Col() {
+    delete kernelIm2Col;
+//    delete addBias;
 }
-PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize, 
-        CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-        CLWrapper *gradInputWrapper ) {
-    StatefulTimer::timeCheck("BackwardIm2Col::backward START");
+//int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper
+PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *inputWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper) {
+    StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights START");
 
-    int gradColumnsSize = dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
-    float *gradColumns = new float[gradColumnsSize];
-    CLWrapper *gradColumnsWrapper = cl->wrap(gradColumnsSize, gradColumns);
-    gradColumnsWrapper->createOnDevice();
+    int columnsSize = dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
+    float *columns = new float[columnsSize];
+    CLWrapper *gradColumnsWrapper = cl->wrap(columnsSize, columns);
+    columnsWrapper->createOnDevice();
 //    cout << "gradColumnsSize: " << gradColumnsSize << endl;
 //    cout << "weightsize: " << weightsWrapper->size() << endl;
 
-    StatefulTimer::timeCheck("BackwardIm2Col::backward after alloc");
+    StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights after alloc");
 
-    if(!gradInputWrapper->isOnDevice()) {
-        gradInputWrapper->createOnDevice();
-    }
+    
     for (int b = 0; b < batchSize; b ++) {
 //        cout << "b=" << b << " numkernels=" << numKernels << endl;
-        long m = dim.outputSizeSquared;
-        long n = dim.inputPlanes * dim.filterSizeSquared;
-        long k = dim.numFilters;
-//        cout << "m=" << m << " k=" << k << " n=" << n << endl;
 
-        ClBlasHelper::Gemm(
-            cl, clblasColumnMajor, clblasNoTrans, clblasTrans,
-            m, n, k,
-            1,
-            gradOutputWrapper, b * dim.outputCubeSize,
-            weightsWrapper, 0,
-            0,
-            gradColumnsWrapper, 0
+        im2col(
+          inputWrapper, b * dim.inputCubeSize,
+          columnsWrapper
         );
 
-        kernelCol2Im->in(numKernels);
-        kernelCol2Im->in(gradColumnsWrapper);
-        kernelCol2Im->out(gradInputWrapper);
-        kernelCol2Im->in(b * dim.inputCubeSize);
+        ClBlasHelper::Gemm(
+            cl, clblasColumnMajor, clblasTrans, clblasNoTrans,
+            m, n, k,
+            scale,
+            columnsWrapper, 0,
+            gradOutputWrapper, b * dim.outputCubeSize,
+            1,
+            gradWeightsWrapper, 0
+        );
 
-        int workgroupSize = cl->getMaxWorkgroupSize();
-        int numWorkgroups = this->numKernels;
+        // Do Bias:
+        long n_ = dim.numFilters;
+        long m_ = dim.outputSizeSquared;
 
-//        cout << "numworkgroups=" << numWorkgroups << " workgorupSize=" << workgroupSize << endl;
-        kernelCol2Im->run_1d(numWorkgroups * workgroupSize, workgroupSize);
+        // Do GEMV (note: this is a bit confusing because gemv assumes column-major matrices)
+        ClBlasHelper:Gemv(
+            clblasColumnMajor,
+            clblasTrans,
+            m_, n_,
+            scale,
+            gradOutputWrapper, b * dim.outputCubeSize,
+            onesWrapper, 0,
+            1,
+            gradBiasWrapper, 0
+        );
     }
 
-    delete gradColumnsWrapper;
-    delete gradColumns;
+    delete columnsWrapper;
+    delete columns;
 
-    StatefulTimer::timeCheck("BackwardIm2Col::backward after call backward");
+    StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights after call calcGradWeights");
 
-    StatefulTimer::timeCheck("BackwardIm2Col::backward END");
+    StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights END");
 }
-STATIC std::string BackwardIm2Col::getKernelTemplate() {
+STATIC std::string BackpropWeightsIm2Col::getKernelTemplate() {
     // [[[cog
     // import stringify
     // stringify.write_kernel("kernel", "cl/ForwardIm2Col.cl")

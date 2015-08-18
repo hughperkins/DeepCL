@@ -25,12 +25,6 @@ public:
     virtual std::string getOperationString() = 0;
     virtual std::string getName() = 0;
 };
-class DeepCL_EXPORT Op1Equal : public Op1 {
-    std::string getOperationString() {
-        return "val_one";
-    }
-    std::string getName(){ return "Op1_Equal"; }
-};
 class DeepCL_EXPORT Op1Inv : public Op1 {
     std::string getOperationString() {
         return "1.0f / val_one";
@@ -54,6 +48,12 @@ class DeepCL_EXPORT Op2 {
 public:
     virtual std::string getOperationString() = 0;
     virtual std::string getName() = 0;
+};
+class DeepCL_EXPORT Op2Equal : public Op2 {
+    std::string getOperationString() {
+        return "val_two";
+    }
+    std::string getName(){ return "Op2_Equal"; }
 };
 class DeepCL_EXPORT Op2Add : public Op2 {
 public:

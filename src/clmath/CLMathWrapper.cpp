@@ -22,6 +22,12 @@ using namespace std;
 VIRTUAL CLMathWrapper::~CLMathWrapper() {
     delete gpuOp;
 }
+VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const float scalar ) {
+//    cout << "CLMathWrapper.operator*=(scalar)" << endl;
+    Op2Equal op;
+    gpuOp->apply2_inplace( N, wrapper, scalar, &op );
+    return *this;    
+}
 VIRTUAL CLMathWrapper &CLMathWrapper::operator*=( const float scalar ) {
 //    cout << "CLMathWrapper.operator*=(scalar)" << endl;
     Op2Mul op;
@@ -60,8 +66,8 @@ VIRTUAL CLMathWrapper &CLMathWrapper::operator=( const CLMathWrapper &rhs ) {
         throw runtime_error("CLMathWrapper::operator= array size mismatch, cannot assign " + toString( rhs.N ) + 
             " vs " + toString( N ) );
     }
-    Op1Equal op;
-    gpuOp->apply1_outofplace( N, wrapper, ((CLMathWrapper &)rhs).wrapper, &op );
+    Op2Equal op;
+    gpuOp->apply2_inplace( N, wrapper, ((CLMathWrapper &)rhs).wrapper, &op );
     return *this;
 }
 VIRTUAL CLMathWrapper &CLMathWrapper::sqrt() {

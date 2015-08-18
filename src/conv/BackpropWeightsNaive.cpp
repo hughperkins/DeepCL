@@ -20,38 +20,38 @@ VIRTUAL BackpropWeightsNaive::~BackpropWeightsNaive() {
 //    cout << "~backpropgradWeights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start" );
+VIRTUAL void BackpropWeightsNaive::calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper) {
+    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start");
 
-    const float learningMultiplier = learningRateToMultiplier( batchSize );
+    const float learningMultiplier = learningRateToMultiplier(batchSize);
 
     kernel
        ->in(learningMultiplier)
-       ->in( batchSize )
-       ->in( gradOutputWrapper )
-        ->in( imagesWrapper )
-       ->inout( gradWeightsWrapper );
-    if( dim.biased ) {
-        kernel->inout( gradBiasWrapper );
+       ->in(batchSize)
+       ->in(gradOutputWrapper)
+        ->in(imagesWrapper)
+       ->inout(gradWeightsWrapper);
+    if(dim.biased) {
+        kernel->inout(gradBiasWrapper);
     }
 
     int globalSize = dim.filtersSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    globalSize = ((globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize;
     kernel->run_1d(globalSize, workgroupsize);
 
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive end" );
+    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive end");
 }
-BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
-        BackpropWeights( cl, dim )
+BackpropWeightsNaive::BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim) :
+        BackpropWeights(cl, dim)
             {
     std::string options = dim.buildOptionsString();
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/backpropweights.cl", "backprop_floats", 'options' )
+    // stringify.write_kernel2("kernel", "cl/backpropweights.cl", "backprop_floats", 'options')
     // ]]]
     // generated using cog, from cl/backpropweights.cl:
     const char * kernelSource =  

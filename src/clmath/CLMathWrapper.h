@@ -40,6 +40,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~CLMathWrapper();
+    VIRTUAL CLMathWrapper &operator=( const float scalar );
     VIRTUAL CLMathWrapper &operator*=( const float scalar );
     VIRTUAL CLMathWrapper &operator+=( const float scalar );
     VIRTUAL CLMathWrapper &operator*=( const CLMathWrapper &two );

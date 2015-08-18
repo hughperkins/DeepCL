@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Backward.h"
+#include "BackpropWeights.h"
 #include "EasyCL.h"
 
 #include "DeepCLDllExport.h"
@@ -8,10 +8,9 @@
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT BackwardIm2Col : public Backward {
+class DeepCL_EXPORT BackpropWeightsIm2Col : public BackpropWeights {
     private:
-    CLKernel *kernelCol2Im;
-//    AddBias *addBias;
+    CLKernel *kernelIm2Col;
 
     float *columns;
     CLWrapper *columnsWrapper;
@@ -24,11 +23,9 @@ class DeepCL_EXPORT BackwardIm2Col : public Backward {
     // generated, using cog:
 
     public:
-    BackwardIm2Col(EasyCL *cl, LayerDimensions dim);
-    VIRTUAL ~BackwardIm2Col();
-    VIRTUAL void backward( int batchSize,
-        CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *gradInputWrapper );
+    BackpropWeightsIm2Col(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL ~BackpropWeightsIm2Col();
+    VIRTUAL void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *inputWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper);
 
     private:
     STATIC std::string getKernelTemplate();

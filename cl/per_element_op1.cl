@@ -4,23 +4,23 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-float operation( float val_one ) {
+float operation(float val_one) {
     return {{operation}};
 }
 
-kernel void per_element_op1_inplace( const int N, global float *target ) {
+kernel void per_element_op1_inplace(const int N, global float *target) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if(globalId >= N) {
         return;
     }
-    target[globalId] = operation( target[globalId] );
+    target[globalId] = operation(target[globalId]);
 }
 
-kernel void per_element_op1_outofplace( const int N, global float *target, global float *one ) {
+kernel void per_element_op1_outofplace(const int N, global float *target, global float *one) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if(globalId >= N) {
         return;
     }
-    target[globalId] = operation( one[globalId] );
+    target[globalId] = operation(one[globalId]);
 }
 
