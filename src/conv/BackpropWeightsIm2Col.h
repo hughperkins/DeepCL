@@ -1,9 +1,14 @@
 #pragma once
 
 #include "BackpropWeights.h"
-#include "EasyCL.h"
+//#include "EasyCL.h"
 
 #include "DeepCLDllExport.h"
+
+class Im2Col;
+class CLWrapper;
+class EasyCL;
+class CLKernel;
 
 #define STATIC static
 #define VIRTUAL virtual
@@ -11,6 +16,7 @@
 class DeepCL_EXPORT BackpropWeightsIm2Col : public BackpropWeights {
     private:
     CLKernel *kernelIm2Col;
+    Im2Col *im2Col;
 
     float *columns;
     CLWrapper *columnsWrapper;

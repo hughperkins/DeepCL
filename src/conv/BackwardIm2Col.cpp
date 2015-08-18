@@ -100,7 +100,7 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
     }
 
     delete gradColumnsWrapper;
-    delete gradColumns;
+    delete[] gradColumns;
 
     StatefulTimer::timeCheck("BackwardIm2Col::backward after call backward");
 

@@ -102,7 +102,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
     }
 
     delete columnsWrapper;
-    delete columns;
+    delete[] columns;
 
     StatefulTimer::timeCheck("ForwardIm2Col::forward after call forward");
 

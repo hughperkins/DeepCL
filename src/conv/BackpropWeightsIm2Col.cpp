@@ -10,7 +10,9 @@
 #include <clBLAS.h>
 
 #include "clblas/ClBlasInstance.h"
+#include "clblas/ClBlasHelper.h"
 #include "BackpropWeightsIm2Col.h"
+#include "conv/Im2Col.h"
 
 using namespace std;
 
@@ -28,6 +30,8 @@ PUBLIC BackpropWeightsIm2Col::BackpropWeightsIm2Col(EasyCL *cl, LayerDimensions 
     ClBlasInstance::initializeIfNecessary();
 
 //    addBias = new AddBias(cl);
+
+    this->im2Col = new Im2Col(cl, dim);
 
     int size = dim.inputSize;
     int padding = dim.padZeros ? dim.halfFilterSize : 0;
@@ -52,6 +56,7 @@ PUBLIC BackpropWeightsIm2Col::BackpropWeightsIm2Col(EasyCL *cl, LayerDimensions 
         false);
 }
 PUBLIC VIRTUAL BackpropWeightsIm2Col::~BackpropWeightsIm2Col() {
+    delete im2Col;
     delete kernelIm2Col;
 //    delete addBias;
 }
@@ -61,26 +66,40 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
 
     int columnsSize = dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;
     float *columns = new float[columnsSize];
-    CLWrapper *gradColumnsWrapper = cl->wrap(columnsSize, columns);
+    CLWrapper *columnsWrapper = cl->wrap(columnsSize, columns);
     columnsWrapper->createOnDevice();
+
+    int onesSize = dim.outputSizeSquared;
+    float *ones = new float[onesSize];
+    CLWrapper *onesWrapper = cl->wrap(onesSize, ones);
+    onesWrapper->createOnDevice();
+    // TODO: set onesWrapper to all 1s...
+
 //    cout << "gradColumnsSize: " << gradColumnsSize << endl;
 //    cout << "weightsize: " << weightsWrapper->size() << endl;
 
     StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights after alloc");
 
-    
+    // TODO: zero out gradWeightsWrapper and gradBiasWrapper
     for (int b = 0; b < batchSize; b ++) {
 //        cout << "b=" << b << " numkernels=" << numKernels << endl;
 
-        im2col(
-          inputWrapper, b * dim.inputCubeSize,
-          columnsWrapper
+        im2Col->im2Col(
+            inputWrapper, b * dim.inputCubeSize,
+            columnsWrapper
         );
 
+        
+        int64 m = dim.inputPlanes * dim.filterSizeSquared;
+        int64 n = dim.numFilters;
+        int64 k = dim.outputSizeSquared;
+
         ClBlasHelper::Gemm(
-            cl, clblasColumnMajor, clblasTrans, clblasNoTrans,
+            cl,
+            clblasColumnMajor,
+            clblasTrans, clblasNoTrans,
             m, n, k,
-            scale,
+            1,
             columnsWrapper, 0,
             gradOutputWrapper, b * dim.outputCubeSize,
             1,
@@ -92,11 +111,12 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
         long m_ = dim.outputSizeSquared;
 
         // Do GEMV (note: this is a bit confusing because gemv assumes column-major matrices)
-        ClBlasHelper:Gemv(
+        ClBlasHelper::Gemv(
+            cl,
             clblasColumnMajor,
             clblasTrans,
             m_, n_,
-            scale,
+            1,
             gradOutputWrapper, b * dim.outputCubeSize,
             onesWrapper, 0,
             1,
@@ -104,8 +124,11 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
         );
     }
 
+    delete onesWrapper;
+    delete[] ones;
+
     delete columnsWrapper;
-    delete columns;
+    delete[] columns;
 
     StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights after call calcGradWeights");
 

@@ -1,3 +1,4 @@
+Im2Col.cpp
 BackpropWeightsIm2Col.cpp
 BackpropWeightsAuto.cpp
 BackwardAuto.cpp
