@@ -38,9 +38,6 @@ class DeepCL_EXPORT ForwardIm2Col : public Forward {
     VIRTUAL ~ForwardIm2Col();
     VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper);
 
-    private:
-    STATIC std::string getKernelTemplate();
-
     // [[[end]]]
 };
 

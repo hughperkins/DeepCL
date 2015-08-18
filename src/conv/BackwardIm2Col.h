@@ -33,9 +33,6 @@ class DeepCL_EXPORT BackwardIm2Col : public Backward {
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
     CLWrapper *gradInputWrapper );
 
-    private:
-    STATIC std::string getKernelTemplate();
-
     // [[[end]]]
 };
 

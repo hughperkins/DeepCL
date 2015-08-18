@@ -33,9 +33,6 @@ class DeepCL_EXPORT BackpropWeightsIm2Col : public BackpropWeights {
     VIRTUAL ~BackpropWeightsIm2Col();
     VIRTUAL void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *inputWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper);
 
-    private:
-    STATIC std::string getKernelTemplate();
-
     // [[[end]]]
 };
 
