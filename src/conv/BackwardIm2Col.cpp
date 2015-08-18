@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "clblas/ClBlasInstance.h"
+//#include "clblas/ClBlasInstance.h"
 #include "clblas/ClBlasHelper.h"
 #include "conv/Im2Col.h"
 #include "BackwardIm2Col.h"
@@ -23,7 +23,7 @@ using namespace std;
 PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
             Backward(cl, dim)
         {
-    ClBlasInstance::initializeIfNecessary();
+//    ClBlasInstance::initializeIfNecessary();
     im2Col = new Im2Col(cl, dim);
 }
 PUBLIC VIRTUAL BackwardIm2Col::~BackwardIm2Col() {

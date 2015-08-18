@@ -12,6 +12,7 @@
 #include "layer/LayerMakers.h"
 #include "util/StatefulTimer.h"
 #include "net/NeuralNetMould.h"
+#include "clblas/ClBlasInstance.h"
 #include "clBLAS.h"
 
 #include "test/WeightRandomizer.h"
@@ -409,7 +410,8 @@ TEST( testforward, test3 ) {
 void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    clblasSetup();
+//    clblasSetup();
+    ClBlasInstance clblasInstance;
 
     int inputsSize = N * dim.inputCubeSize;
     int filtersSize = dim.filtersSize;
@@ -521,10 +523,10 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
     delete[] output2;
     delete p1;
     delete p2;
-    delete cl;
     delete[] inputs;
     delete[] filters;
     delete[] biasFilters;
+    delete cl;
 }
 
 // first, compare the slow, but probably correct, cpu version, with forward1

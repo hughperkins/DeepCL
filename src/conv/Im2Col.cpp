@@ -1,4 +1,4 @@
-#include "clblas/ClBlasInstance.h"
+//#include "clblas/ClBlasInstance.h"
 #include "clblas/ClBlasHelper.h"
 #include "EasyCL.h"
 #include "templates/TemplatedKernel.h"
@@ -18,7 +18,7 @@ using namespace std;
 PUBLIC Im2Col::Im2Col(EasyCL *cl, LayerDimensions dim) :
         cl(cl),
         dim(dim) {
-    ClBlasInstance::initializeIfNecessary();
+//    ClBlasInstance::initializeIfNecessary();
     this->kernelIm2Col = 0;
     this->kernelCol2Im = 0;
 }

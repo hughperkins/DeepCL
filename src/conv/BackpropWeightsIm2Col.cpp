@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#include "clblas/ClBlasInstance.h"
+//#include "clblas/ClBlasInstance.h"
 #include "clblas/ClBlasHelper.h"
 #include "BackpropWeightsIm2Col.h"
 #include "conv/Im2Col.h"
@@ -25,7 +25,7 @@ using namespace std;
 PUBLIC BackpropWeightsIm2Col::BackpropWeightsIm2Col(EasyCL *cl, LayerDimensions dim) :
             BackpropWeights(cl, dim)
         {
-    ClBlasInstance::initializeIfNecessary();
+//    ClBlasInstance::initializeIfNecessary();
 
 //    addBias = new AddBias(cl);
 

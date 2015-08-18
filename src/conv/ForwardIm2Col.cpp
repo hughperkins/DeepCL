@@ -8,7 +8,7 @@
 #include "util/stringhelper.h"
 #include "util/StatefulTimer.h"
 #include "conv/AddBias.h"
-#include "clblas/ClBlasInstance.h"
+//#include "clblas/ClBlasInstance.h"
 #include "clblas/ClBlasHelper.h"
 #include "conv/Im2Col.h"
 
@@ -27,7 +27,7 @@ using namespace std;
 PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
             Forward(cl, dim)
         {
-    ClBlasInstance::initializeIfNecessary();
+//    ClBlasInstance::initializeIfNecessary();
 
     addBias = new AddBias(cl);
     im2Col = new Im2Col(cl, dim);

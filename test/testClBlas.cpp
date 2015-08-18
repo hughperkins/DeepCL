@@ -1,5 +1,6 @@
 #include "clblas/ClBlasHelper.h"
 #include "clblas/ClBlasInstance.h"
+#include "clBLAS.h"
 #include "EasyCL.h"
 
 #include <iostream>
@@ -22,12 +23,15 @@ TEST(testClBlas, basic) {
                  -1};
 
     float C[3];
-    ClBlasInstance::initializeIfNecessary();
+    clblasSetup();
+//    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);
     CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
+    CWrap->createOnDevice();
     ClBlasHelper::Gemm(
         cl,
         clblasRowMajor,
@@ -39,17 +43,22 @@ TEST(testClBlas, basic) {
         0,
         CWrap, 0
     );
-//    cl->finish();
+    cl->finish();
     CWrap->copyToHost();
     EXPECT_EQ(0, C[0]);
     EXPECT_EQ(-1, C[1]);
     EXPECT_EQ(22, C[2]);
 
+    cl->finish();
+
     delete CWrap;
     delete BWrap;
     delete AWrap;
 
+    cl->finish();
+
     delete cl;
+    clblasTeardown();
 }
 
 static void transpose(float *matrix, int rows, int cols) {
@@ -87,7 +96,8 @@ TEST(testClBlas, transA) {
         }
         cout << endl;
     }
-    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
+//    ClBlasInstance::initializeIfNecessary();
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);
     CLWrapper *CWrap = cl->wrap(3, C);
@@ -134,7 +144,8 @@ TEST(testClBlas, transB) {
         }
         cout << endl;
     }
-    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
+//    ClBlasInstance::initializeIfNecessary();
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);
     CLWrapper *CWrap = cl->wrap(3, C);
@@ -182,7 +193,8 @@ TEST(testClBlas, colMajor) {
 //        }
 //        cout << endl;
 //    }
-    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
+//    ClBlasInstance::initializeIfNecessary();
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);
     CLWrapper *CWrap = cl->wrap(3, C);
@@ -231,7 +243,8 @@ TEST(testClBlas, colMajor2) {
 //        }
 //        cout << endl;
 //    }
-    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
+//    ClBlasInstance::initializeIfNecessary();
     CLWrapper *AWrap = cl->wrap(4*2, A);
     CLWrapper *BWrap = cl->wrap(2*3, B);
     CLWrapper *CWrap = cl->wrap(4*3, C);
@@ -280,7 +293,8 @@ TEST(testClBlas, colMajorTransA) {
 //        }
 //        cout << endl;
 //    }
-    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
+//    ClBlasInstance::initializeIfNecessary();
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);
     CLWrapper *CWrap = cl->wrap(3, C);
@@ -328,7 +342,8 @@ TEST(testClBlas, colMajorTransB) {
 //        }
 //        cout << endl;
 //    }
-    ClBlasInstance::initializeIfNecessary();
+    ClBlasInstance clblasInstance;
+//    ClBlasInstance::initializeIfNecessary();
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);
     CLWrapper *CWrap = cl->wrap(3, C);
