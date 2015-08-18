@@ -57,9 +57,11 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
     StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights after alloc");
 
     CLMathWrapper gradWeights_(gradWeightsWrapper);
-    CLMathWrapper gradBias_(gradBiasWrapper);
     gradWeights_ = 0.0f;
-    gradBias_ = 0.0f;
+    if(dim.biased) {
+        CLMathWrapper gradBias_(gradBiasWrapper);
+        gradBias_ = 0.0f;
+    }
     for (int b = 0; b < batchSize; b ++) {
 //        cout << "b=" << b << " numkernels=" << numKernels << endl;
 
@@ -76,27 +78,28 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
             cl,
             clblasColumnMajor,
             clblasTrans, clblasNoTrans,
-            m, n, k,
+            m, k, n,
             1,
             columnsWrapper, 0,
             gradOutputWrapper, b * dim.outputCubeSize,
             1,
             gradWeightsWrapper, 0
         );
-
-        int64 m_ = dim.outputSizeSquared;
-        int64 n_ = dim.numFilters;
-        ClBlasHelper::Gemv(
-            cl,
-            clblasColumnMajor,
-            clblasTrans,
-            m_, n_,
-            1,
-            gradOutputWrapper, b * dim.outputCubeSize,
-            onesWrapper, 0,
-            1,
-            gradBiasWrapper, 0
-        );
+        if(dim.biased) {
+            int64 m_ = dim.outputSizeSquared;
+            int64 n_ = dim.numFilters;
+            ClBlasHelper::Gemv(
+                cl,
+                clblasColumnMajor,
+                clblasTrans,
+                m_, n_,
+                1,
+                gradOutputWrapper, b * dim.outputCubeSize,
+                onesWrapper, 0,
+                1,
+                gradBiasWrapper, 0
+            );
+        }
     }
 
     delete onesWrapper;

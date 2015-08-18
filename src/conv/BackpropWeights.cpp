@@ -32,17 +32,18 @@ BackpropWeights::BackpropWeights(EasyCL *cl, LayerDimensions layerDimensions) :
         debug(false) {
 }
 STATIC BackpropWeights *BackpropWeights::instance(EasyCL *cl, LayerDimensions dim) {
-    if(dim.inputSize - dim.filterSize < 4) {
-        return new BackpropWeightsNaive(cl, dim);
-    }
-    if(square(dim.filterSize) <= cl->getMaxWorkgroupSize() 
-            && dim.inputSize <= 32) { // if inputimagesize too big, we run out of local memory
-        return new BackpropWeightsScratch(cl, dim);
-    } else if(square(dim.filterSize) <= cl->getMaxWorkgroupSize()) {
-        return new BackpropWeightsScratchLarge(cl, dim);
-    } else {
-        return new BackpropWeightsNaive(cl, dim);
-    }
+    return new BackpropWeightsAuto(cl, dim);
+//    if(dim.inputSize - dim.filterSize < 4) {
+//        return new BackpropWeightsNaive(cl, dim);
+//    }
+//    if(square(dim.filterSize) <= cl->getMaxWorkgroupSize() 
+//            && dim.inputSize <= 32) { // if inputimagesize too big, we run out of local memory
+//        return new BackpropWeightsScratch(cl, dim);
+//    } else if(square(dim.filterSize) <= cl->getMaxWorkgroupSize()) {
+//        return new BackpropWeightsScratchLarge(cl, dim);
+//    } else {
+//        return new BackpropWeightsNaive(cl, dim);
+//    }
 }
 STATIC int BackpropWeights::getNumImplementations() {
     return 5;
