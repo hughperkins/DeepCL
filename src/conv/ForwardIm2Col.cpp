@@ -84,7 +84,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
 
         ClBlasHelper::Gemm(
             cl, clblasColumnMajor, clblasNoTrans, clblasNoTrans,
-            m, n, k,
+            m, k, n,
             1,
             columnsWrapper, 0,
             weightsWrapper, 0,
