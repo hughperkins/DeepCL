@@ -440,6 +440,7 @@ TEST(testbackward, softmax2) {
 
 TEST(testbackward, conv1) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 4);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0));
@@ -457,6 +458,7 @@ TEST(testbackward, conv1) {
 
 TEST(testbackward, fc1) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 4);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(FullyConnectedMaker::instance()->numPlanes(4)->imageSize(1)->biased(0));
@@ -493,6 +495,7 @@ TEST(testbackward, act1) {
 
 void testNumerically(float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance clblasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer(ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros));
     net->addLayer(ActivationMaker::instance()->fn(fn));
@@ -576,12 +579,15 @@ void testNumerically(float learningRate, int batchSize, int imageSize, int filte
     //    cout << abs(estimatedLossChangeFromW - lossChange) / estimatedLossChangeFromW << endl;    
         EXPECT_GT(0.01f * imageSize * imageSize, abs(estimatedLossChangeFromW - lossChange) / lossChange); 
         EXPECT_GT(0.01f * imageSize * imageSize, abs(estimatedLossChangeFromW - lossChange) / estimatedLossChangeFromW); 
+        delete[] weightsBefore1;
+        delete[] weightsBefore2;
     }
-
 //    delete[] weights1;
 //    delete[] errors;
 //    delete[] output;
+    delete sgd;
     delete[] inputData;
+    delete[] expectedOutput;
     delete net;
     delete cl;
 }

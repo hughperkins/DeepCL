@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <io.h>
 #endif // _WIN32
+#include "clblas/ClBlasInstance.h"
 
 using namespace std;
 
@@ -120,6 +121,7 @@ void go(Config config) {
     } else {
         cl = EasyCL::createForFirstGpuOtherwiseCpu( verbose );
     }
+    ClBlasInstance blasInstance;
 
     NeuralNet *net;
     net = new NeuralNet(cl);

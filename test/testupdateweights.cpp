@@ -19,6 +19,7 @@
 #include "input/InputLayer.h"
 #include "layer/LayerMakers.h"
 #include "trainers/SGD.h"
+#include "clblas/ClBlasInstance.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -123,6 +124,7 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
 
 TEST(testupdateweights, conv1) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 5);
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0));
     net->addLayer(SquareLossMaker::instance());
@@ -137,6 +139,7 @@ TEST(testupdateweights, conv1) {
 
 TEST(testupdateweights, conv1z) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 3);
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(1));
     net->addLayer(SquareLossMaker::instance());

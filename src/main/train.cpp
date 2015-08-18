@@ -10,6 +10,7 @@
 
 #include "DeepCL.h"
 //#include "test/Sampler.h"  // TODO: REMOVE THIS
+#include "clblas/ClBlasInstance.h"
 
 using namespace std;
 
@@ -261,6 +262,7 @@ void go(Config config) {
     } else {
         cl = EasyCL::createForFirstGpuOtherwiseCpu();
     }
+    ClBlasInstance blasInstance;
 
     NeuralNet *net;
     net = new NeuralNet(cl);

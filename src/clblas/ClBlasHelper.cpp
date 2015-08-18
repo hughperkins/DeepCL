@@ -12,6 +12,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
+extern int clblasInitialized;
+
+class ClblasNotInitializedException {
+};
+
 PUBLIC ClBlasHelper::ClBlasHelper() {
 }
 
@@ -25,6 +30,10 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
     float beta,
     CLWrapper *CWrapper, int64 cOffset
         ) {
+    if(!clblasInitialized) {
+        cout << "Didnt initialize clBLAS" << endl;
+        throw ClblasNotInitializedException();
+    }
     if(!CWrapper->isOnDevice()) {
         if(beta == 0) {
             CWrapper->createOnDevice();
@@ -61,6 +70,10 @@ PUBLIC STATIC void ClBlasHelper::Gemv(
     float beta,
     CLWrapper *CWrapper, int64 cOffset
         ) {
+    if(!clblasInitialized) {
+        cout << "Didnt initialize clBLAS" << endl;
+        throw ClblasNotInitializedException();
+    }
     if(!CWrapper->isOnDevice()) {
         if(beta == 0) {
             CWrapper->createOnDevice();

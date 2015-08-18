@@ -12,6 +12,7 @@
 #include "net/NeuralNetMould.h"
 #include "layer/LayerMakers.h"
 #include "trainers/SGD.h"
+#include "clblas/ClBlasInstance.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -231,6 +232,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net, flo
 
 void test( ActivationFunction *fn, TestArgs args, float tolerance = 1.3f ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased() );
@@ -321,6 +323,7 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
 
 void testLabelled( TestArgs args ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased()->padZeros() );
