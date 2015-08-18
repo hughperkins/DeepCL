@@ -160,7 +160,8 @@ endif(DEV_RUN_COG)
 
 #ADD_DEPENDENCIES(DeepCL clBLAS)
 
-set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
+set( UNITTEST_SOURCES test/testClBlas.cpp
+ test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackward.cpp test/testsinglebatch.cpp 
  test/testpoolingforward.cpp test/testpoolingbackward.cpp test/testNorbLoader.cpp

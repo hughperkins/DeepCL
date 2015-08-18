@@ -31,8 +31,8 @@ class Im2Col {
     public:
     Im2Col(EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~Im2Col();
-    void im2Col(CLWrapper *imagesWrapper, int64 imagesOffset, CLWrapper *columnsWrapper);
-    void col2Im(CLWrapper *columnsWrapper, CLWrapper *imagesWrapper, int64 imagesOffset);
+    void im2Col(CLWrapper *imagesWrapper, int imagesOffset, CLWrapper *columnsWrapper);
+    void col2Im(CLWrapper *columnsWrapper, CLWrapper *imagesWrapper, int imagesOffset);
 
     private:
     void setupBuilder(TemplatedKernel *builder);

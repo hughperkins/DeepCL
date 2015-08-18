@@ -566,7 +566,7 @@ TEST( testforward, compare_1_n_biased_nopad ) {
     dim.setInputPlanes( 8 ).setInputSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
         .setPadZeros( false ).setBiased( true );
-    for( int instance = 2; instance <= 6; instance++ ) {
+    for( int instance = 2; instance <= 7; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }
@@ -583,7 +583,7 @@ TEST( testforward, compare_1_n_biased_pad ) {
     dim.setInputPlanes( 8 ).setInputSize(19).setNumFilters( 8 )
         .setFilterSize( 5 )
         .setPadZeros( true ).setBiased( true );
-    for( int instance = 2; instance <= 6; instance++ ) {
+    for( int instance = 2; instance <= 7; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }

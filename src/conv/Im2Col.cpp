@@ -65,7 +65,7 @@ void Im2Col::buildKernelCol2Im() {
         false
     );
 }
-PUBLIC void Im2Col::im2Col(CLWrapper *imagesWrapper, int64 imagesOffset, CLWrapper *columnsWrapper) {
+PUBLIC void Im2Col::im2Col(CLWrapper *imagesWrapper, int imagesOffset, CLWrapper *columnsWrapper) {
     if(kernelIm2Col == 0) {
         buildKernelIm2Col();
     }
@@ -79,7 +79,7 @@ PUBLIC void Im2Col::im2Col(CLWrapper *imagesWrapper, int64 imagesOffset, CLWrapp
 
     kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
 }
-PUBLIC void Im2Col::col2Im(CLWrapper *columnsWrapper, CLWrapper *imagesWrapper, int64 imagesOffset) {
+PUBLIC void Im2Col::col2Im(CLWrapper *columnsWrapper, CLWrapper *imagesWrapper, int imagesOffset) {
     if(kernelCol2Im == 0) {
         buildKernelCol2Im();
     }

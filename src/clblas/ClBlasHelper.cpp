@@ -25,7 +25,13 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
     float beta,
     CLWrapper *CWrapper, int64 cOffset
         ) {
-
+    if(!CWrapper->isOnDevice()) {
+        if(beta == 0) {
+            CWrapper->createOnDevice();
+        } else {
+            CWrapper->copyToDevice();
+        }
+    }
     size_t lda = ((order == clblasRowMajor) != (aTrans == clblasTrans)) ? k : m;
     size_t ldb = ((order == clblasRowMajor) != (bTrans == clblasTrans)) ? n : k;
     size_t ldc = order == clblasRowMajor ? n : m;
@@ -55,7 +61,13 @@ PUBLIC STATIC void ClBlasHelper::Gemv(
     float beta,
     CLWrapper *CWrapper, int64 cOffset
         ) {
-
+    if(!CWrapper->isOnDevice()) {
+        if(beta == 0) {
+            CWrapper->createOnDevice();
+        } else {
+            CWrapper->copyToDevice();
+        }
+    }
     int lda = order == clblasRowMajor ? n : m;
     cl_int err = clblasSgemv(
         order,
