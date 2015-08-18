@@ -787,16 +787,18 @@ TEST(SLOW_testbackward, compare_specific_args) {
     compareSpecific(instance0, instance1, numIts, batchSize, dim);
 }
 
-TEST(SLOW_testbackward, compare_kgsgo_32c5) {
-    int batchSize = 128;
+TEST(testbackward, compare_1_n_kgsgo_32c5) {
+    int batchSize = 8;
     LayerDimensions dim;
     dim.setInputPlanes(32).setInputSize(19).setNumFilters(32).setFilterSize(5)
         .setPadZeros(true).setBiased(true);  
     cout << dim.buildOptionsString() << endl;  
 //    ActivationFunction *fn = new ReluActivation();
 
-    compareSpecific(1, 2, 1, batchSize, dim);
-
+    compareSpecific(0, 1, 1, batchSize, dim);
+    for(int i=2; i < Backward::getNumImplementations(); i++) {
+        compareSpecific(1, i, 1, batchSize, dim);
+    }
 }
 
 TEST(SLOW_testbackward, compare_kgsgo_32c5mini) {

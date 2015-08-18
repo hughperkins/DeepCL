@@ -82,7 +82,7 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
 
         ClBlasHelper::Gemm(
             cl, clblasColumnMajor, clblasNoTrans, clblasTrans,
-            m, n, k,
+            m, k, n,
             1,
             gradOutputWrapper, b * dim.outputCubeSize,
             weightsWrapper, 0,
