@@ -410,7 +410,6 @@ TEST( testforward, test3 ) {
 void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-//    clblasSetup();
     ClBlasInstance clblasInstance;
 
     int inputsSize = N * dim.inputCubeSize;

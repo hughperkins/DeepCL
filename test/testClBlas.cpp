@@ -23,8 +23,6 @@ TEST(testClBlas, basic) {
                  -1};
 
     float C[3];
-    clblasSetup();
-//    ClBlasInstance::initializeIfNecessary();
     ClBlasInstance clblasInstance;
     CLWrapper *AWrap = cl->wrap(6, A);
     CLWrapper *BWrap = cl->wrap(2, B);

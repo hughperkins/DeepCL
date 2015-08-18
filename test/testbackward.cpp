@@ -18,6 +18,7 @@
 #include "conv/ConvolutionalLayer.h"
 #include "input/InputLayer.h"
 #include "trainers/SGD.h"
+#include "clblas/ClBlasInstance.h"
 
 #include "clBLAS.h"
 
@@ -671,7 +672,7 @@ TEST(SLOW_testbackward, perf_kgsgo_32c5) {
 void compareSpecific(int instance0, int instance1, int numIts, int batchSize, LayerDimensions dim) {
     cout << "batchsize=" << batchSize << " " << dim << endl;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    clblasSetup();
+    ClBlasInstance clblasInstance;
 
     int inputNumElements = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
