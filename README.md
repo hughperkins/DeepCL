@@ -123,6 +123,14 @@ License
 Recent changes
 ==============
 
+* Aug 18th:
+  * added BackwardIm2Col layer, which uses im2col for backward propagation
+  * added BackpropWeightsIm2Col layer, which uses im2col for weight update
+  * added BackwardAuto layer, which automatically selects fastest Backward layer
+  * added BackpropWeightsAuto layer, which automatically selects faster weight update layer
+  * under the covers:
+    * created ClBlasHelper, to handle Gemm and Gemv
+    * factorized im2col into Im2Col class
 * week up to Aug 17th:
   * added forward and backward im2col layer
   * forward im2col automatically used during forward propagation, where appropriate
