@@ -11,6 +11,7 @@
 
 #include "clblas/ClBlasInstance.h"
 #include "clblas/ClBlasHelper.h"
+#include "conv/Im2Col.h"
 #include "BackwardIm2Col.h"
 
 using namespace std;
@@ -27,31 +28,33 @@ PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
             Backward(cl, dim)
         {
     ClBlasInstance::initializeIfNecessary();
+    im2Col = new Im2Col(cl, dim);
 
-    int size = dim.inputSize;
-    int padding = dim.padZeros ? dim.halfFilterSize : 0;
-    int stride = 1;
-    int channels = dim.inputPlanes;
-    int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
+//    int size = dim.inputSize;
+//    int padding = dim.padZeros ? dim.halfFilterSize : 0;
+//    int stride = 1;
+//    int channels = dim.inputPlanes;
+//    int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
 
-    this->numKernels = channels * dim.inputSizeSquared;
+//    this->numKernels = channels * dim.inputSizeSquared;
 
-    TemplatedKernel builder(cl);
-    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
-    builder.set("stride", 1);
-    builder.set("colSize", size_col);
-    builder.set("channels", dim.inputPlanes);
-    builder.set("filterSize", dim.filterSize);
-    builder.set("size", dim.inputSize);
-    this->kernelCol2Im = builder.buildKernel(
-        "col2im",
-        "ForwardIm2Col.cl",
-        getKernelTemplate(),
-        "col2im",
-        false);
+//    TemplatedKernel builder(cl);
+//    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
+//    builder.set("stride", 1);
+//    builder.set("colSize", size_col);
+//    builder.set("channels", dim.inputPlanes);
+//    builder.set("filterSize", dim.filterSize);
+//    builder.set("size", dim.inputSize);
+//    this->kernelCol2Im = builder.buildKernel(
+//        "col2im",
+//        "ForwardIm2Col.cl",
+//        getKernelTemplate(),
+//        "col2im",
+//        false);
 }
 PUBLIC VIRTUAL BackwardIm2Col::~BackwardIm2Col() {
-    delete kernelCol2Im;
+    delete im2Col;
+//    delete kernelCol2Im;
 }
 PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
@@ -87,16 +90,7 @@ PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize,
             gradColumnsWrapper, 0
         );
 
-        kernelCol2Im->in(numKernels);
-        kernelCol2Im->in(gradColumnsWrapper);
-        kernelCol2Im->out(gradInputWrapper);
-        kernelCol2Im->in(b * dim.inputCubeSize);
-
-        int workgroupSize = cl->getMaxWorkgroupSize();
-        int numWorkgroups = this->numKernels;
-
-//        cout << "numworkgroups=" << numWorkgroups << " workgorupSize=" << workgroupSize << endl;
-        kernelCol2Im->run_1d(numWorkgroups * workgroupSize, workgroupSize);
+        im2Col->col2Im(gradColumnsWrapper, gradInputWrapper, b * dim.inputCubeSize);
     }
 
     delete gradColumnsWrapper;

@@ -9,15 +9,15 @@
 #include "util/StatefulTimer.h"
 #include "conv/AddBias.h"
 #include "templates/TemplatedKernel.h"
+#include "clblas/ClBlasInstance.h"
+#include "clblas/ClBlasHelper.h"
+#include "conv/Im2Col.h"
 
 #include <sstream>
 #include <iostream>
 #include <string>
 
 #include <clBLAS.h>
-
-#include "clblas/ClBlasInstance.h"
-#include "clblas/ClBlasHelper.h"
 
 using namespace std;
 
@@ -33,32 +33,34 @@ PUBLIC ForwardIm2Col::ForwardIm2Col(EasyCL *cl, LayerDimensions dim) :
     ClBlasInstance::initializeIfNecessary();
 
     addBias = new AddBias(cl);
+    im2Col = new Im2Col(cl, dim);
 
-    int size = dim.inputSize;
-    int padding = dim.padZeros ? dim.halfFilterSize : 0;
-    int stride = 1;
-    int channels = dim.inputPlanes;
-    int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
+//    int size = dim.inputSize;
+//    int padding = dim.padZeros ? dim.halfFilterSize : 0;
+//    int stride = 1;
+//    int channels = dim.inputPlanes;
+//    int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
 
-    this->numKernels = channels * size_col * size_col;
+//    this->numKernels = channels * size_col * size_col;
 
-    TemplatedKernel builder(cl);
-    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
-    builder.set("stride", 1);
-    builder.set("colSize", size_col);
-    builder.set("channels", dim.inputPlanes);
-    builder.set("filterSize", dim.filterSize);
-    builder.set("size", dim.inputSize);
-    this->kernelIm2Col = builder.buildKernel(
-        "im2col",
-        "ForwardIm2Col.cl",
-        getKernelTemplate(),
-        "im2col",
-        false);
+//    TemplatedKernel builder(cl);
+//    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
+//    builder.set("stride", 1);
+//    builder.set("colSize", size_col);
+//    builder.set("channels", dim.inputPlanes);
+//    builder.set("filterSize", dim.filterSize);
+//    builder.set("size", dim.inputSize);
+//    this->kernelIm2Col = builder.buildKernel(
+//        "im2col",
+//        "ForwardIm2Col.cl",
+//        getKernelTemplate(),
+//        "im2col",
+//        false);
 }
 PUBLIC VIRTUAL ForwardIm2Col::~ForwardIm2Col() {
-    delete kernelIm2Col;
+//    delete kernelIm2Col;
     delete addBias;
+    delete im2Col;
 }
 PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper) {
     StatefulTimer::timeCheck("ForwardIm2Col::forward START");
@@ -73,17 +75,7 @@ PUBLIC VIRTUAL void ForwardIm2Col::forward(int batchSize, CLWrapper *dataWrapper
     StatefulTimer::timeCheck("ForwardIm2Col::forward after alloc");
 
     for (int b = 0; b < batchSize; b ++) {
-//        cout << "b=" << b << " numkernels=" << numKernels << endl;
-
-        kernelIm2Col->in(numKernels);
-        kernelIm2Col->in(dataWrapper);
-        kernelIm2Col->in(b * dim.inputCubeSize);
-        kernelIm2Col->out(columnsWrapper);
-
-        int workgroupSize = cl->getMaxWorkgroupSize();
-        int numWorkgroups = this->numKernels;
-
-        kernelIm2Col->run_1d(numWorkgroups * workgroupSize, workgroupSize);
+        im2Col->im2Col(dataWrapper, b * dim.inputCubeSize, columnsWrapper);
 
         long m = dim.outputSizeSquared;
         long n = dim.numFilters;

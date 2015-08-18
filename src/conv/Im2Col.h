@@ -4,6 +4,8 @@
 
 class EasyCL;
 class CLWrapper;
+class CLKernel;
+class TemplatedKernel;
 
 #include "DeepCLDllExport.h"
 
@@ -14,6 +16,12 @@ class Im2Col {
     EasyCL *cl;
     LayerDimensions dim;
 
+    CLKernel *kernelIm2Col;
+    CLKernel *kernelCol2Im;
+
+    int numKernelsIm2Col;
+    int numKernelsCol2Im;
+
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.addv2()
@@ -22,8 +30,15 @@ class Im2Col {
 
     public:
     Im2Col(EasyCL *cl, LayerDimensions dim);
-    void im2Col(CLWrapper *im, int64 im_offset, CLWrapper *columns);
-    void col2Im(CLWrapper *columns, CLWrapper *im, int64 im_offset);
+    VIRTUAL ~Im2Col();
+    void im2Col(CLWrapper *imagesWrapper, int64 imagesOffset, CLWrapper *columnsWrapper);
+    void col2Im(CLWrapper *columnsWrapper, CLWrapper *imagesWrapper, int64 imagesOffset);
+
+    private:
+    void setupBuilder(TemplatedKernel *builder);
+    void buildKernelIm2Col();
+    void buildKernelCol2Im();
+    STATIC std::string getKernelTemplate();
 
     // [[[end]]]
 };

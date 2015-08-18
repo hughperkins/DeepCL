@@ -13,6 +13,7 @@
 #include "clblas/ClBlasHelper.h"
 #include "BackpropWeightsIm2Col.h"
 #include "conv/Im2Col.h"
+#include "clmath/CLMathWrapper.h"
 
 using namespace std;
 
@@ -33,31 +34,31 @@ PUBLIC BackpropWeightsIm2Col::BackpropWeightsIm2Col(EasyCL *cl, LayerDimensions 
 
     this->im2Col = new Im2Col(cl, dim);
 
-    int size = dim.inputSize;
-    int padding = dim.padZeros ? dim.halfFilterSize : 0;
-    int stride = 1;
-    int channels = dim.inputPlanes;
-    int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
+//    int size = dim.inputSize;
+//    int padding = dim.padZeros ? dim.halfFilterSize : 0;
+//    int stride = 1;
+//    int channels = dim.inputPlanes;
+//    int size_col = (size + 2 * padding - dim.filterSize) / stride + 1;
 
-    this->numKernels = channels * dim.inputSizeSquared;
+//    this->numKernels = channels * dim.inputSizeSquared;
 
-    TemplatedKernel builder(cl);
-    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
-    builder.set("stride", 1);
-    builder.set("colSize", size_col);
-    builder.set("channels", dim.inputPlanes);
-    builder.set("filterSize", dim.filterSize);
-    builder.set("size", dim.inputSize);
-    this->kernelIm2Col = builder.buildKernel(
-        "im2col",
-        "ForwardIm2Col.cl",
-        getKernelTemplate(),
-        "im2col",
-        false);
+//    TemplatedKernel builder(cl);
+//    builder.set("padding", dim.padZeros ? dim.halfFilterSize : 0);
+//    builder.set("stride", 1);
+//    builder.set("colSize", size_col);
+//    builder.set("channels", dim.inputPlanes);
+//    builder.set("filterSize", dim.filterSize);
+//    builder.set("size", dim.inputSize);
+//    this->kernelIm2Col = builder.buildKernel(
+//        "im2col",
+//        "ForwardIm2Col.cl",
+//        getKernelTemplate(),
+//        "im2col",
+//        false);
 }
 PUBLIC VIRTUAL BackpropWeightsIm2Col::~BackpropWeightsIm2Col() {
     delete im2Col;
-    delete kernelIm2Col;
+//    delete kernelIm2Col;
 //    delete addBias;
 }
 //int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper
@@ -73,14 +74,18 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
     float *ones = new float[onesSize];
     CLWrapper *onesWrapper = cl->wrap(onesSize, ones);
     onesWrapper->createOnDevice();
-    // TODO: set onesWrapper to all 1s...
+    CLMathWrapper ones_(onesWrapper);
+    ones_ = 1.0f;
 
 //    cout << "gradColumnsSize: " << gradColumnsSize << endl;
 //    cout << "weightsize: " << weightsWrapper->size() << endl;
 
     StatefulTimer::timeCheck("BackpropWeightsIm2Col::calcGradWeights after alloc");
 
-    // TODO: zero out gradWeightsWrapper and gradBiasWrapper
+    CLMathWrapper gradWeights_(gradWeightsWrapper);
+    CLMathWrapper gradBias_(gradBiasWrapper);
+    gradWeights_ = 0.0f;
+    gradBias_ = 0.0f;
     for (int b = 0; b < batchSize; b ++) {
 //        cout << "b=" << b << " numkernels=" << numKernels << endl;
 
@@ -88,7 +93,6 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
             inputWrapper, b * dim.inputCubeSize,
             columnsWrapper
         );
-
         
         int64 m = dim.inputPlanes * dim.filterSizeSquared;
         int64 n = dim.numFilters;
@@ -106,11 +110,8 @@ PUBLIC VIRTUAL void BackpropWeightsIm2Col::calcGradWeights(int batchSize, CLWrap
             gradWeightsWrapper, 0
         );
 
-        // Do Bias:
-        long n_ = dim.numFilters;
-        long m_ = dim.outputSizeSquared;
-
-        // Do GEMV (note: this is a bit confusing because gemv assumes column-major matrices)
+        int64 m_ = dim.outputSizeSquared;
+        int64 n_ = dim.numFilters;
         ClBlasHelper::Gemv(
             cl,
             clblasColumnMajor,

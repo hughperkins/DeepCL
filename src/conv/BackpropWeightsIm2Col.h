@@ -15,7 +15,7 @@ class CLKernel;
 
 class DeepCL_EXPORT BackpropWeightsIm2Col : public BackpropWeights {
     private:
-    CLKernel *kernelIm2Col;
+//    CLKernel *kernelIm2Col;
     Im2Col *im2Col;
 
     float *columns;

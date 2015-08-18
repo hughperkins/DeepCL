@@ -9,6 +9,7 @@
 #include "Forward.h"
 
 class AddBias;
+class Im2Col;
 
 #include "DeepCLDllExport.h"
 
@@ -17,9 +18,10 @@ class AddBias;
 
 class DeepCL_EXPORT ForwardIm2Col : public Forward {
     private:
-    CLKernel *kernelIm2Col;
+//    CLKernel *kernelIm2Col;
 //    CLKernel *kernelCol2Im;
     AddBias *addBias;
+    Im2Col *im2Col;
 
     float *columns;
     CLWrapper *columnsWrapper;

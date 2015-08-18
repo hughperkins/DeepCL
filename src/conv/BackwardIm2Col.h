@@ -5,12 +5,15 @@
 
 #include "DeepCLDllExport.h"
 
+class Im2Col;
+
 #define STATIC static
 #define VIRTUAL virtual
 
 class DeepCL_EXPORT BackwardIm2Col : public Backward {
     private:
-    CLKernel *kernelCol2Im;
+    Im2Col *im2Col;
+//    CLKernel *kernelCol2Im;
 //    AddBias *addBias;
 
     float *columns;

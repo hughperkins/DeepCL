@@ -23,7 +23,7 @@ class ClBlasHelper {
     STATIC void Gemm(
         EasyCL *cl,
         clblasOrder order, clblasTranspose aTrans, clblasTranspose bTrans,
-        int m, int k, int n,
+        int64 m, int64 k, int64 n,
         float alpha,
         CLWrapper *AWrapper, int64 aOffset,
         CLWrapper *BWrapper, int64 bOffset,
@@ -33,7 +33,7 @@ class ClBlasHelper {
     STATIC void Gemv(
         EasyCL *cl,
         clblasOrder order, clblasTranspose trans,
-        int m, int n,
+        int64 m, int64 n,
         float alpha,
         CLWrapper *AWrapper, int64 aOffset,
         CLWrapper *BWrapper, int64 bOffset,

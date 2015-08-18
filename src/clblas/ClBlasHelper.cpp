@@ -18,7 +18,7 @@ PUBLIC ClBlasHelper::ClBlasHelper() {
 PUBLIC STATIC void ClBlasHelper::Gemm(
     EasyCL *cl,
     clblasOrder order, clblasTranspose aTrans, clblasTranspose bTrans,
-    int m, int k, int n,
+    int64 m, int64 k, int64 n,
     float alpha,
     CLWrapper *AWrapper, int64 aOffset,
     CLWrapper *BWrapper, int64 bOffset,
@@ -48,7 +48,7 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
 PUBLIC STATIC void ClBlasHelper::Gemv(
     EasyCL *cl,
     clblasOrder order, clblasTranspose trans,
-    int m, int n,
+    int64 m, int64 n,
     float alpha,
     CLWrapper *AWrapper, int64 aOffset,
     CLWrapper *BWrapper, int64 bOffset,
