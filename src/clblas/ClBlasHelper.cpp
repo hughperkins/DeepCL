@@ -53,12 +53,12 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
     cl_int err = clblasSgemm(
         order,
         aTrans, bTrans,
-        m, n, k,
+        (size_t)m, (size_t)n, (size_t)k,
         alpha,
-        AWrapper->getBuffer(), aOffset, lda,
-        BWrapper->getBuffer(), bOffset, ldb,
+        AWrapper->getBuffer(), (size_t)aOffset, (size_t)lda,
+        BWrapper->getBuffer(), (size_t)bOffset, (size_t)ldb,
         beta,
-        CWrapper->getBuffer(), cOffset, ldc,
+        CWrapper->getBuffer(), (size_t)cOffset, (size_t)ldc,
         1, cl->queue, 0, NULL, 0
    );
    if (err != CL_SUCCESS) {
@@ -93,12 +93,12 @@ PUBLIC STATIC void ClBlasHelper::Gemv(
     cl_int err = clblasSgemv(
         order,
         trans,
-        m, n,
+        (size_t)m, (size_t)n,
         alpha,
-        AWrapper->getBuffer(), aOffset, lda,
-        BWrapper->getBuffer(), bOffset, 1,
+        AWrapper->getBuffer(), (size_t)aOffset, (size_t)lda,
+        BWrapper->getBuffer(), (size_t)bOffset, 1,
         beta,
-        CWrapper->getBuffer(), cOffset, 1,
+        CWrapper->getBuffer(), (size_t)cOffset, 1,
         1, cl->queue, 0, NULL, 0
    );
    if (err != CL_SUCCESS) {
