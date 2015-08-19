@@ -1,6 +1,8 @@
 #pragma once
 
-class ClBlasInstance {
+#include "DeepCLDllExport.h"
+
+class DeepCL_EXPORT ClBlasInstance {
 //    static bool initialized;
 
 public:

@@ -12,7 +12,9 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-extern int clblasInitialized;
+#ifndef _WIN32
+    extern int clblasInitialized;
+#endif
 
 class ClblasNotInitializedException {
 };
@@ -30,10 +32,14 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
     float beta,
     CLWrapper *CWrapper, int64 cOffset
         ) {
-    if(!clblasInitialized) {
-        cout << "Didnt initialize clBLAS" << endl;
-        throw ClblasNotInitializedException();
-    }
+    #ifndef _WIN32  // not sure how to check this on Windows, but this is mostly to detect bugs during
+                    // development/testing anyway.  we can fix any initialization-bugs on linux, and
+                    // then it should work ok on Windows too
+        if(!clblasInitialized) {
+            cout << "Didnt initialize clBLAS" << endl;
+            throw ClblasNotInitializedException();
+        }
+    #endif
     if(!CWrapper->isOnDevice()) {
         if(beta == 0) {
             CWrapper->createOnDevice();
@@ -70,10 +76,12 @@ PUBLIC STATIC void ClBlasHelper::Gemv(
     float beta,
     CLWrapper *CWrapper, int64 cOffset
         ) {
-    if(!clblasInitialized) {
-        cout << "Didnt initialize clBLAS" << endl;
-        throw ClblasNotInitializedException();
-    }
+    #ifndef _WIN32
+        if(!clblasInitialized) {
+            cout << "Didnt initialize clBLAS" << endl;
+            throw ClblasNotInitializedException();
+        }
+    #endif
     if(!CWrapper->isOnDevice()) {
         if(beta == 0) {
             CWrapper->createOnDevice();

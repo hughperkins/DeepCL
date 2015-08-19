@@ -9,7 +9,7 @@
 class EasyCL;
 class CLWrapper;
 
-class ClBlasHelper {
+class DeepCL_EXPORT ClBlasHelper {
     public:
 
     // [[[cog
