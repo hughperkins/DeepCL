@@ -47,9 +47,9 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
             CWrapper->copyToDevice();
         }
     }
-    size_t lda = ((order == clblasRowMajor) != (aTrans == clblasTrans)) ? k : m;
-    size_t ldb = ((order == clblasRowMajor) != (bTrans == clblasTrans)) ? n : k;
-    size_t ldc = order == clblasRowMajor ? n : m;
+    int64 lda = ((order == clblasRowMajor) != (aTrans == clblasTrans)) ? k : m;
+    int64 ldb = ((order == clblasRowMajor) != (bTrans == clblasTrans)) ? n : k;
+    int64 ldc = order == clblasRowMajor ? n : m;
     cl_int err = clblasSgemm(
         order,
         aTrans, bTrans,
@@ -89,7 +89,7 @@ PUBLIC STATIC void ClBlasHelper::Gemv(
             CWrapper->copyToDevice();
         }
     }
-    int lda = order == clblasRowMajor ? n : m;
+    int64 lda = order == clblasRowMajor ? n : m;
     cl_int err = clblasSgemv(
         order,
         trans,
