@@ -236,6 +236,7 @@ endif()
 
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
 INSTALL(PROGRAMS src/activate.sh DESTINATION bin)
+INSTALL(PROGRAMS src/activate.bat DESTINATION bin)
 #INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
 INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest
     RUNTIME DESTINATION bin
