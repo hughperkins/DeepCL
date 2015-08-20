@@ -4,22 +4,22 @@ DeepCL Python wrappers
 Python wrapper for `DeepCL <https://github.com/hughperkins/DeepCL>`__
 
 Pre-requisites
-==============
+--------------
 
 You must have first installed and activated DeepCL native libraries, see
 `Build.md <https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md>`__
 
-To install from pip (note, 8.x not in pip yet...)
-=================================================
+To install from pip
+-------------------
 
 .. code:: bash
 
-    pip install DeepCL 
+    pip install DeepCL==8.0.0-alpha
 
 -  related pypi page: https://pypi.python.org/pypi/DeepCL
 
 How to use
-==========
+----------
 
 See
 `test\_deepcl.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl.py>`__
@@ -39,10 +39,10 @@ For example of using q-learning, see
 `test\_qlearning.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py>`__.
 
 To install from source
-======================
+----------------------
 
 Pre-requisites:
----------------
+~~~~~~~~~~~~~~~
 
 -  on Windows:
 -  Python 2.7 or Python 3.4
@@ -59,49 +59,10 @@ Pre-requisites:
 -  g++, supporting c++0x, eg 4.4 or higher
 
 To install:
------------
+~~~~~~~~~~~
 
 .. code:: bash
 
     cd python
     python setup.py install
-
-Notes on how the wrapper works
-------------------------------
-
--  `cDeepCL.pxd <https://github.com/hughperkins/DeepCL/blob/master/python/cDeepCL.pxd>`__
-   contains the definitions of the underlying DeepCL c++ libraries
-   classes
--  `PyDeepCL.pyx <https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx>`__
-   contains Cython wrapper classes around the underlying c++ classes
--  `setup.py <https://github.com/hughperkins/DeepCL/blob/master/python/setup.py>`__
-   is a setup file for compiling the ``PyDeepCL.pyx`` Cython file
-
-Maintainer/development information
-----------------------------------
-
-If you want to modify the python wrappers, you'll need to re-run Cython.
-This is no longer handled by ``setup.py``, but is handled by the cmake
-build. So, to run cython you'll need to: - install Cython, eg
-``pip install cython`` - follow the instructions for the native build,
-`Build.md <https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md>`__
-- when you open ``ccmake``: - enable option ``Maintainer options``, then
-press ``c``/``configure`` - enable ``BUILD_PYTHON_WRAPPERS``, then
-``c``/``configure`` - enable ``DEV_RUN_CYTHON``, then
-``c``/``configure`` - => and now ``g``/``generate``, and build
-
--  If you want to update this readme, you need to re-generate the
-   README.rst, so you'll need pypandoc:
-
-   ::
-
-       pip install pypandoc
-
--  (note that pypandoc depends on pandoc native library)
-
-And then to regenerate README.rst:
-
-::
-
-    python setup.py sdist
 
