@@ -82,7 +82,7 @@ DropoutForwardGpuNaive::DropoutForwardGpuNaive(EasyCL *cl, int numPlanes, int in
     "        global const float *input,\n" 
     "        global float *output) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
@@ -94,14 +94,14 @@ DropoutForwardGpuNaive::DropoutForwardGpuNaive(EasyCL *cl, int numPlanes, int in
     "        global const float *gradOutput,\n" 
     "        global float *output) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? gradOutput[globalId] : 0.0f;\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "forwardNaive", options, "cl/dropout.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/dropout.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel("dropout.cl", "forwardNaive", options);
 }

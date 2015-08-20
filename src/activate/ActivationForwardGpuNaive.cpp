@@ -87,7 +87,7 @@ ActivationForwardGpuNaive::ActivationForwardGpuNaive(EasyCL *cl, int numPlanes, 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
     "kernel void activate(const int N, global float *inout) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    inout[globalId] = ACTIVATION_FUNCTION(inout[globalId]);\n" 
@@ -97,7 +97,7 @@ ActivationForwardGpuNaive::ActivationForwardGpuNaive(EasyCL *cl, int numPlanes, 
     "#ifdef ACTIVATION_FUNCTION // protect against not defined\n" 
     "kernel void forwardNaive(const int N, global float *out, global const float *in) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId] = ACTIVATION_FUNCTION(in[globalId]);\n" 
@@ -105,7 +105,7 @@ ActivationForwardGpuNaive::ActivationForwardGpuNaive(EasyCL *cl, int numPlanes, 
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "forwardNaive", options, "cl/activate.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/activate.cl" );
     // [[[end]]]
 }
 

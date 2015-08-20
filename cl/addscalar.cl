@@ -7,9 +7,9 @@
 kernel void add_scalar(
         const int N,
         const float scalar,
-        global float *data ) {
+        global float *data) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     data[globalId] += scalar;

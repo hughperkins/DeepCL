@@ -82,7 +82,7 @@ BackwardGpuNaive::BackwardGpuNaive(EasyCL *cl, LayerDimensions dim) :
     "    const int upstreamPlane = upstreamImage2dId % gInputPlanes;\n" 
     "    const int n = upstreamImage2dId / gInputPlanes;\n" 
     "\n" 
-    "    if(n >= batchSize) {\n" 
+    "    if (n >= batchSize) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
@@ -93,10 +93,10 @@ BackwardGpuNaive::BackwardGpuNaive(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "    float sumWeightTimesOutError = 0;\n" 
     "    // aggregate over [outPlane][outRow][outCol]\n" 
-    "    for(int outPlane = 0; outPlane < gNumFilters; outPlane++) {\n" 
-    "        for(int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++) {\n" 
+    "    for (int outPlane = 0; outPlane < gNumFilters; outPlane++) {\n" 
+    "        for (int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++) {\n" 
     "            int outRow = upstreamRow + gMargin - filterRow;\n" 
-    "            for(int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++) {\n" 
+    "            for (int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++) {\n" 
     "                int outCol = upstreamCol + gMargin - filterCol;\n" 
     "                int resultIndex = (( n * gNumFilters\n" 
     "                          + outPlane) * gOutputSize\n" 
@@ -117,7 +117,7 @@ BackwardGpuNaive::BackwardGpuNaive(EasyCL *cl, LayerDimensions dim) :
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "calcGradInput", options, "cl/backward.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "calcGradInput", options, "cl/backward.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel("backproperrorsv2.cl", "calcGradInput", options);
 //    kernel = cl->buildKernelFromString(kernelSource, "calcGradInput", options);

@@ -73,9 +73,9 @@ BackpropWeightsNaive::BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim) :
     "        #ifdef BIASED\n" 
     "            , global float *gradBiasWeights\n" 
     "        #endif\n" 
-    ") {\n" 
+    " ) {\n" 
     "    int globalId = get_global_id(0);\n" 
-    "    if(globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize) {\n" 
+    "    if (globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
@@ -93,14 +93,14 @@ BackpropWeightsNaive::BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim) :
     "#ifdef BIASED\n" 
     "    float thisbiaschange = 0;\n" 
     "#endif\n" 
-    "    for(int n = 0; n < batchSize; n++) {\n" 
-    "        for(int outRow = 0; outRow < gOutputSize; outRow++) {\n" 
+    "    for (int n = 0; n < batchSize; n++) {\n" 
+    "        for (int outRow = 0; outRow < gOutputSize; outRow++) {\n" 
     "            int upstreamRow = outRow - gMargin + filterRow;\n" 
-    "            for(int outCol = 0; outCol < gOutputSize; outCol++) {\n" 
+    "            for (int outCol = 0; outCol < gOutputSize; outCol++) {\n" 
     "                int upstreamCol = outCol - gMargin + filterCol;\n" 
     "                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize\n" 
     "                    && upstreamCol < gInputSize;\n" 
-    "                if(proceed) {\n" 
+    "                if (proceed) {\n" 
     "                    int resultIndex = (( n * gNumFilters\n" 
     "                              + outPlane) * gOutputSize\n" 
     "                              + outRow) * gOutputSize\n" 
@@ -125,7 +125,7 @@ BackpropWeightsNaive::BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim) :
     "    gradWeights[ globalId ] = learningRateMultiplier * thiswchange;\n" 
     "#ifdef BIASED\n" 
     "    bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;\n" 
-    "    if(writeBias) {\n" 
+    "    if (writeBias) {\n" 
     "        gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;\n" 
     "    }\n" 
     "#endif\n" 
@@ -134,7 +134,7 @@ BackpropWeightsNaive::BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "backprop_floats", options, "cl/backpropweights.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "backprop_floats", options, "cl/backpropweights.cl" );
     // [[[end]]]
 }
 

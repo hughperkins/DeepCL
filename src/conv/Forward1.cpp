@@ -140,11 +140,11 @@ Forward1::Forward1(EasyCL *cl, LayerDimensions dim) :
     "    global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;\n" 
     "\n" 
     "    float sum = 0;\n" 
-    "    if(exampleId < numExamples) {\n" 
-    "        for(int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++) {\n" 
+    "    if (exampleId < numExamples) {\n" 
+    "        for (int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++) {\n" 
     "            global float const*inputPlane = inputCube + inputPlaneIdx * gInputSizeSquared;\n" 
     "            global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;\n" 
-    "            for(int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++) {\n" 
+    "            for (int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++) {\n" 
     "                // trying to reduce register pressure...\n" 
     "                #if gPadZeros == 1\n" 
     "                    #define inputRowIdx (outputRow + u)\n" 
@@ -155,14 +155,14 @@ Forward1::Forward1(EasyCL *cl, LayerDimensions dim) :
     "                global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
     "                bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputSize;\n" 
     "                #pragma unroll\n" 
-    "                for(int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++) {\n" 
+    "                for (int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++) {\n" 
     "                    #if gPadZeros == 1\n" 
     "                        #define inputColIdx (outputCol + v)\n" 
     "                    #else\n" 
     "                        #define inputColIdx (outputCol + v + gHalfFilterSize)\n" 
     "                    #endif\n" 
     "                    bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputSize;\n" 
-    "                    if(process) {\n" 
+    "                    if (process) {\n" 
     "                            sum += inputRow[inputColIdx] * filterRow[v];\n" 
     "                    }\n" 
     "                }\n" 
@@ -170,13 +170,13 @@ Forward1::Forward1(EasyCL *cl, LayerDimensions dim) :
     "        }\n" 
     "    }\n" 
     "\n" 
-    "    if(exampleId < numExamples) {\n" 
+    "    if (exampleId < numExamples) {\n" 
     "        output[globalId] = sum;\n" 
     "    }\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "convolve_imagecubes_float2", options, "cl/forward1.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "convolve_imagecubes_float2", options, "cl/forward1.cl" );
     // [[[end]]]
 }
 

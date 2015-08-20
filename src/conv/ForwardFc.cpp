@@ -109,9 +109,9 @@ ForwardFc::ForwardFc(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "void copyLocal(local float *restrict target, global float const *restrict source, int N) {\n" 
     "    int numLoops = (N + get_local_size(0) - 1) / get_local_size(0);\n" 
-    "    for(int loop = 0; loop < numLoops; loop++) {\n" 
+    "    for (int loop = 0; loop < numLoops; loop++) {\n" 
     "        int offset = loop * get_local_size(0) + get_local_id(0);\n" 
-    "        if(offset < N) {\n" 
+    "        if (offset < N) {\n" 
     "            target[offset] = source[offset];\n" 
     "        }\n" 
     "    }\n" 
@@ -170,14 +170,14 @@ ForwardFc::ForwardFc(EasyCL *cl, LayerDimensions dim) :
     "        + inputPlaneId * gFilterSizeSquared\n" 
     "        + filterRowId * gFilterSize;\n" 
     "    local float *_threadFilterRow = _filterRows + localId * gFilterSize;\n" 
-    "    if(localId < gNumFilters) {\n" 
-    "        for(int i = 0; i < gFilterSize; i++) {\n" 
+    "    if (localId < gNumFilters) {\n" 
+    "        for (int i = 0; i < gFilterSize; i++) {\n" 
     "            _threadFilterRow[i] = filterRow[i];\n" 
     "        }\n" 
     "    }\n" 
     "    const int loopsPerExample = (gInputSize + workgroupSize - 1) / workgroupSize;\n" 
     "    // now loop over examples...\n" 
-    "    for(int n = 0; n < batchSize; n++) {\n" 
+    "    for (int n = 0; n < batchSize; n++) {\n" 
     "        // copy down example row, which is global to all threads in workgroup\n" 
     "        // hopefully should be enough threads....\n" 
     "        // but we should check anyway really, since depends on number of filters configured,\n" 
@@ -193,9 +193,9 @@ ForwardFc::ForwardFc(EasyCL *cl, LayerDimensions dim) :
     "        // add up the values in our row...\n" 
     "        // note: dont activate yet, since need to reduce again\n" 
     "        // output structured as: [n][filter][inputplane][filterrow], need to reduce again after\n" 
-    "        if(localId < gNumFilters) {\n" 
+    "        if (localId < gNumFilters) {\n" 
     "            float sum = 0;\n" 
-    "            for(int filterCol = 0; filterCol < gFilterSize; filterCol++) {\n" 
+    "            for (int filterCol = 0; filterCol < gFilterSize; filterCol++) {\n" 
     "                sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];\n" 
     "            }\n" 
     "            output1[ n * gNumInputPlanes * gNumFilters * gFilterSize\n" 
@@ -207,7 +207,7 @@ ForwardFc::ForwardFc(EasyCL *cl, LayerDimensions dim) :
     "#endif\n" 
     "\n" 
     "";
-    kernel1 = cl->buildKernelFromString(kernel1Source, "forward_fc_workgroup_perrow", options, "cl/forward_fc_wgperrow.cl");
+    kernel1 = cl->buildKernelFromString( kernel1Source, "forward_fc_workgroup_perrow", options, "cl/forward_fc_wgperrow.cl" );
     // [[[end]]]
 }
 

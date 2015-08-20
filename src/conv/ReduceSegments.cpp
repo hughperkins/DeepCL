@@ -69,13 +69,13 @@ ReduceSegments::ReduceSegments(EasyCL *cl) :
     "    const int globalId = get_global_id(0);\n" 
     "    const int segmentId = globalId;\n" 
     "\n" 
-    "    if(segmentId >= numSegments) {\n" 
+    "    if (segmentId >= numSegments) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
     "    float sum = 0;\n" 
     "    global const float *segment = in + segmentId * segmentLength;\n" 
-    "    for(int i = 0; i < segmentLength; i++) {\n" 
+    "    for (int i = 0; i < segmentLength; i++) {\n" 
     "        sum += segment[i];\n" 
     "    }\n" 
     "    out[segmentId] = sum;\n" 
@@ -83,7 +83,7 @@ ReduceSegments::ReduceSegments(EasyCL *cl) :
     "\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "reduce_segments", options, "cl/reduce_segments.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "reduce_segments", options, "cl/reduce_segments.cl" );
     // [[[end]]]
 
     cl->storeKernel(kernelName, kernel, true);

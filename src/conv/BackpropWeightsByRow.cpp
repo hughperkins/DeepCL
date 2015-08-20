@@ -203,7 +203,7 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "    #ifdef BIASED\n" 
     "        float thisbiaschange = 0.0f;\n" 
     "    #endif\n" 
-    "    for(int n = 0; n < batchSize; n++) {\n" 
+    "    for (int n = 0; n < batchSize; n++) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        // copy down the gradOutput row...\n" 
     "        {\n" 
@@ -212,7 +212,7 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "                    * gNumOutputPlanes + outputPlane)\n" 
     "                    * gOutputSize + outputRow)\n" 
     "                    * gOutputSize;\n" 
-    "            if(localId < gOutputSize) { // assume we have enough threads for now... should fix later\n" 
+    "            if (localId < gOutputSize) { // assume we have enough threads for now... should fix later\n" 
     "                _errorRow[ localId ] = gradOutputRow[ localId ];\n" 
     "            }\n" 
     "        }\n" 
@@ -223,15 +223,15 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "                    * gNumInputPlanes + inputPlane)\n" 
     "                    * gInputSize + thisInputRow)\n" 
     "                    * gInputSize;\n" 
-    "            if(localId < gInputSize) { // assume we have enough threads for now... should fix later\n" 
+    "            if (localId < gInputSize) { // assume we have enough threads for now... should fix later\n" 
     "                _inputRow[ localId ] = inputRowData[ localId ];\n" 
     "            }\n" 
     "        }\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for(int outputCol = 0; outputCol < gOutputSize; outputCol++) {\n" 
+    "        for (int outputCol = 0; outputCol < gOutputSize; outputCol++) {\n" 
     "            const int inputCol = outputCol - gMargin + filterCol;\n" 
-    "            if(inputRow >= 0 && inputRow < gInputSize && inputCol >= 0 && inputCol < gInputSize) {\n" 
-    "                if(localId < gFilterSizeSquared) {\n" 
+    "            if (inputRow >= 0 && inputRow < gInputSize && inputCol >= 0 && inputCol < gInputSize) {\n" 
+    "                if (localId < gFilterSizeSquared) {\n" 
     "                    thiswchange += _inputRow[ inputCol ] * _errorRow[ outputCol ];\n" 
     "                    #ifdef BIASED\n" 
     "                        thisbiaschange += _errorRow[ outputCol ];\n" 
@@ -241,12 +241,12 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "        }\n" 
     "    }\n" 
     "\n" 
-    "    if(workgroupId == 0 && localId == 0) {\n" 
+    "    if (workgroupId == 0 && localId == 0) {\n" 
     "        gradWeights1[0] = _inputRow[0];\n" 
     "        gradWeights1[1] = _inputRow[1];\n" 
     "    }\n" 
     "\n" 
-    "    if(localId < gFilterSizeSquared) {\n" 
+    "    if (localId < gFilterSizeSquared) {\n" 
     "        #define weightsIndex (( (outInCombo \\\n" 
     "            * gFilterSizeSquared) + localId \\\n" 
     "            * gOutputSize) + outputRow)\n" 
@@ -254,14 +254,14 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "        //gradWeights1[weightsIndex] = 123.0f;\n" 
     "    }\n" 
     "    #ifdef BIASED\n" 
-    "        if(inputPlane == 0 && localId == 0) {\n" 
+    "        if (inputPlane == 0 && localId == 0) {\n" 
     "            gradBiasWeights1[outputPlane * gOutputSize + outputRow ] = learningRateMultiplier * thisbiaschange;\n" 
     "        }\n" 
     "    #endif\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "backprop_weights", options, "cl/backpropweights_byrow.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "backprop_weights", options, "cl/backpropweights_byrow.cl" );
     // generated using cog, from cl/reduce_segments.cl:
     const char * reduceSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
@@ -275,13 +275,13 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "    const int globalId = get_global_id(0);\n" 
     "    const int segmentId = globalId;\n" 
     "\n" 
-    "    if(segmentId >= numSegments) {\n" 
+    "    if (segmentId >= numSegments) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
     "    float sum = 0;\n" 
     "    global const float *segment = in + segmentId * segmentLength;\n" 
-    "    for(int i = 0; i < segmentLength; i++) {\n" 
+    "    for (int i = 0; i < segmentLength; i++) {\n" 
     "        sum += segment[i];\n" 
     "    }\n" 
     "    out[segmentId] = sum;\n" 
@@ -289,7 +289,7 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "\n" 
     "";
-    reduce = cl->buildKernelFromString(reduceSource, "reduce_segments", "", "cl/reduce_segments.cl");
+    reduce = cl->buildKernelFromString( reduceSource, "reduce_segments", "", "cl/reduce_segments.cl" );
     // generated using cog, from cl/per_element_add.cl:
     const char * perElementAddSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
@@ -300,7 +300,7 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "kernel void per_element_add(const int N, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId];\n" 
@@ -310,7 +310,7 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "// tiles source as necessary, according to tilingSize\n" 
     "kernel void per_element_tiled_add(const int N, const int tilingSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId % tilingSize];\n" 
@@ -318,14 +318,14 @@ BackpropWeightsByRow::BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "kernel void repeated_add(const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[ (globalId / repeatSize) % sourceSize ];\n" 
     "}\n" 
     "\n" 
     "";
-    perElementAdd = cl->buildKernelFromString(perElementAddSource, "per_element_add", "", "cl/per_element_add.cl");
+    perElementAdd = cl->buildKernelFromString( perElementAddSource, "per_element_add", "", "cl/per_element_add.cl" );
     // [[[end]]]
 }
 

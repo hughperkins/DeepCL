@@ -100,7 +100,7 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes
     "        const int N,\n" 
     "        global float *target, global const float *source) {\n" 
     "    int globalId = get_global_id(0);\n" 
-    "    if(globalId < N) {\n" 
+    "    if (globalId < N) {\n" 
     "        target[globalId] *= ACTIVATION_DERIV(source[globalId]);\n" 
     "    }\n" 
     "  //  target[globalId] *= source[globalId];\n" 
@@ -114,7 +114,7 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes
     "        global const float *gradOutput,\n" 
     "        global float *gradInput) {\n" 
     "    int globalId = get_global_id(0);\n" 
-    "    if(globalId < N) {\n" 
+    "    if (globalId < N) {\n" 
     "        gradInput[globalId] = ACTIVATION_DERIV(inputs[globalId]) * gradOutput[globalId];\n" 
     "            // probably not ideal to have the output and input separate?\n" 
     "    }\n" 
@@ -123,7 +123,7 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "backward", options, "cl/applyActivationDeriv.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "backward", options, "cl/applyActivationDeriv.cl" );
     // [[[end]]]
 }
 

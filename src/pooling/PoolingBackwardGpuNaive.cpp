@@ -92,7 +92,7 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int 
     "    const int outputRow = outputPosCombo / gOutputSize;\n" 
     "    const int outputCol = outputPosCombo % gOutputSize;\n" 
     "\n" 
-    "    if(n >= batchSize) {\n" 
+    "    if (n >= batchSize) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
@@ -110,13 +110,13 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int 
     "        * gNumPlanes + plane)\n" 
     "        * gInputSize + inputRow)\n" 
     "        * gInputSize + inputCol;\n" 
-    "//    if(n < batchSize) {\n" 
+    "//    if (n < batchSize) {\n" 
     "        gradInput[ inputIndex ] = error;\n" 
     "//    }\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "backward", options, "cl/PoolingBackwardGpuNaive.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "backward", options, "cl/PoolingBackwardGpuNaive.cl" );
     // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
     "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
@@ -127,13 +127,13 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int 
     "\n" 
     "kernel void memset(global float *target, const float value, const int N) {\n" 
     "    #define globalId get_global_id(0)\n" 
-    "    if(globalId < N) {\n" 
+    "    if (globalId < N) {\n" 
     "        target[globalId] = value;\n" 
     "    }\n" 
     "}\n" 
     "\n" 
     "";
-    kMemset = cl->buildKernelFromString(kMemsetSource, "memset", "", "cl/memset.cl");
+    kMemset = cl->buildKernelFromString( kMemsetSource, "memset", "", "cl/memset.cl" );
     // [[[end]]]
 }
 

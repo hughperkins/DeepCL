@@ -95,7 +95,7 @@ DropoutBackwardGpuNaive::DropoutBackwardGpuNaive(EasyCL *cl, int numPlanes, int 
     "        global const float *input,\n" 
     "        global float *output) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
@@ -107,14 +107,14 @@ DropoutBackwardGpuNaive::DropoutBackwardGpuNaive(EasyCL *cl, int numPlanes, int 
     "        global const float *gradOutput,\n" 
     "        global float *output) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? gradOutput[globalId] : 0.0f;\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "backpropNaive", options, "cl/dropout.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "backpropNaive", options, "cl/dropout.cl" );
     // [[[end]]]
 }
 

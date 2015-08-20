@@ -62,59 +62,59 @@ void kernel backprop_floats_withscratch_dobias_striped(
 #ifdef BIASED
     float thisbiaschange = 0;
 #endif
-    const int numLoopsForImageStripe = ( gInputStripeOuterSize + workgroupSize - 1 ) / workgroupSize;
-    const int numLoopsForErrorStripe = ( gOutputSizeSquared + workgroupSize - 1 ) / workgroupSize;
-    for( int n = 0; n < batchSize; n++ ) {
-        const int imageImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared;
+    const int numLoopsForImageStripe = (gInputStripeOuterSize + workgroupSize - 1) / workgroupSize;
+    const int numLoopsForErrorStripe = (gOutputSizeSquared + workgroupSize - 1) / workgroupSize;
+    for (int n = 0; n < batchSize; n++) {
+        const int imageImageGlobalOffset = (n * gInputPlanes + upstreamPlane) * gInputSizeSquared;
         const int imageImageGlobalOffsetAfter = imageImageGlobalOffset + gInputSizeSquared;
-        const int errorImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputSizeSquared;
+        const int errorImageGlobalOffset = (n * gNumFilters + outPlane) * gOutputSizeSquared;
         const int errorImageGlobalOffsetAfter = errorImageGlobalOffset + gOutputSizeSquared;
-        for( int stripe = 0; stripe < gNumStripes; stripe++ ) {
+        for (int stripe = 0; stripe < gNumStripes; stripe++) {
             const int imageStripeInnerOffset = imageImageGlobalOffset + stripe * gInputStripeInnerSize;
             const int imageStripeOuterOffset = imageStripeInnerOffset - gInputStripeMarginSize;
             // need to fetch the image, but it's bigger than us, so will need to loop...
             barrier(CLK_LOCAL_MEM_FENCE);
-            for( int i = 0; i < numLoopsForImageStripe; i++ ) {
+            for (int i = 0; i < numLoopsForImageStripe; i++) {
                 int thisOffset = i * workgroupSize + localId;
                 int thisGlobalImagesOffset = imageStripeOuterOffset + thisOffset;
                 bool process = thisOffset < gInputStripeOuterSize 
                     && thisGlobalImagesOffset >= imageImageGlobalOffset 
                     && thisGlobalImagesOffset < imageImageGlobalOffsetAfter;
-                if( process ) {
+                if (process) {
                     _imageStripe[thisOffset] = images[ thisGlobalImagesOffset ];
                 }
             }
             int errorStripeOffset = errorImageGlobalOffset + stripe * gOutputStripeSize;
-            for( int i = 0; i < numLoopsForErrorStripe; i++ ) {
+            for (int i = 0; i < numLoopsForErrorStripe; i++) {
                 int thisOffset = i * workgroupSize + localId;
                 int globalErrorsOffset = errorStripeOffset + thisOffset;
                 bool process = thisOffset < gOutputStripeSize 
                     && globalErrorsOffset < errorImageGlobalOffsetAfter;
-                if( process ) {
+                if (process) {
                     _errorStripe[thisOffset ] = gradOutput[globalErrorsOffset];
                 }
             }
             const int stripeOutRowStart = stripe * gOutputStripeNumRows;
             const int stripeOutRowEndExcl = stripeOutRowStart + gOutputStripeNumRows;
             barrier(CLK_LOCAL_MEM_FENCE);
-//            if( localId == 13 ) {
-//                for( int i = 0; i < 12; i++ ) {
+//            if (localId == 13) {
+//                for (int i = 0; i < 12; i++) {
 //                    gradWeights[100 + stripe * 12 + i ] = _errorStripe[i * gOutputSize];
 //                }
-//                for( int i = 0; i < 20; i++ ) {
+//                for (int i = 0; i < 20; i++) {
 //                    gradWeights[200 + stripe * 20 + i ] = _imageStripe[i * gInputSize];
 //                }
 //            }
-            if( localId < gFilterSizeSquared ) {
-                for( int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++ ) {
+            if (localId < gFilterSizeSquared) {
+                for (int outRow = stripeOutRowStart; outRow < stripeOutRowEndExcl; outRow++) {
                     int upstreamRow = outRow - gMargin + filterRow;
-                    for( int outCol = 0; outCol < gOutputSize; outCol++ ) {
+                    for (int outCol = 0; outCol < gOutputSize; outCol++) {
                         int upstreamCol = outCol - gMargin + filterCol;
                         bool proceed = 
                             upstreamRow >= 0 && upstreamCol >= 0 
                             && upstreamRow < gInputSize && upstreamCol < gInputSize
                             && outRow < gOutputSize;
-                        if( proceed ) {
+                        if (proceed) {
                             int resultIndex = outRow * gOutputSize + outCol;
                             float error = _errorStripe[resultIndex - stripe * gOutputStripeSize];
                             int upstreamDataIndex = upstreamRow * gInputSize + upstreamCol;
@@ -130,13 +130,13 @@ void kernel backprop_floats_withscratch_dobias_striped(
             }
         }
     }
-    if( localId < gFilterSizeSquared ) {
+    if (localId < gFilterSizeSquared) {
         gradWeights[ workgroupId * gFilterSizeSquared + localId ] = learningRateMultiplier * thiswchange;
 //        weightChanges[ workgroupId * gFilterSizeSquared + localId ] = workgroupId;
     }
 #ifdef BIASED
     bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
-    if( writeBias ) {
+    if (writeBias) {
         gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
     }
 #endif

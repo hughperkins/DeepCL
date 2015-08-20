@@ -63,7 +63,7 @@
 void kernel convolve_imagecubes_float2(
     const int numExamples,
       global const float *inputs, global const float *filters, 
-    global float *output ) {
+    global float *output) {
     int globalId = get_global_id(0);
 
     int outputImage2Id = globalId / gOutputSizeSquared;
@@ -79,29 +79,29 @@ void kernel convolve_imagecubes_float2(
     global float const*filterCube = filters + filterId * gNumInputPlanes * gFilterSizeSquared;
 
     float sum = 0;
-    if( exampleId < numExamples ) {
-        for( int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++ ) {
+    if (exampleId < numExamples) {
+        for (int inputPlaneIdx = 0; inputPlaneIdx < gNumInputPlanes; inputPlaneIdx++) {
             global float const*inputPlane = inputCube + inputPlaneIdx * gInputSizeSquared;
             global float const*filterPlane = filterCube + inputPlaneIdx * gFilterSizeSquared;
-            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {
+            for (int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++) {
                 // trying to reduce register pressure...
                 #if gPadZeros == 1
-                    #define inputRowIdx ( outputRow + u )
+                    #define inputRowIdx (outputRow + u)
                 #else
-                    #define inputRowIdx ( outputRow + u + gHalfFilterSize )
+                    #define inputRowIdx (outputRow + u + gHalfFilterSize)
                 #endif
                 global float const *inputRow = inputPlane + inputRowIdx * gInputSize;
                 global float const *filterRow = filterPlane + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
                 bool rowOk = inputRowIdx >= 0 && inputRowIdx < gInputSize;
                 #pragma unroll
-                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {
+                for (int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++) {
                     #if gPadZeros == 1
-                        #define inputColIdx ( outputCol + v )
+                        #define inputColIdx (outputCol + v)
                     #else
-                        #define inputColIdx ( outputCol + v + gHalfFilterSize )
+                        #define inputColIdx (outputCol + v + gHalfFilterSize)
                     #endif
                     bool process = rowOk && inputColIdx >= 0 && inputColIdx < gInputSize;
-                    if( process ) {
+                    if (process) {
                             sum += inputRow[inputColIdx] * filterRow[v];
                     }
                 }
@@ -109,7 +109,7 @@ void kernel convolve_imagecubes_float2(
         }
     }
 
-    if( exampleId < numExamples ) {
+    if (exampleId < numExamples) {
         output[globalId] = sum;
     }
 }

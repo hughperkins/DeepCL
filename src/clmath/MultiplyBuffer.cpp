@@ -81,7 +81,7 @@ MultiplyBuffer::MultiplyBuffer(EasyCL *cl) :
     "        global const float *in,\n" 
     "        global float *out) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId] = in[globalId];\n" 
@@ -94,7 +94,7 @@ MultiplyBuffer::MultiplyBuffer(EasyCL *cl) :
     "        global float *out,\n" 
     "        const int outoffset) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId + outoffset] = in[globalId + inoffset];\n" 
@@ -106,7 +106,7 @@ MultiplyBuffer::MultiplyBuffer(EasyCL *cl) :
     "        global const float *in,\n" 
     "        global float *out) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId] = multiplier * in[globalId];\n" 
@@ -117,14 +117,14 @@ MultiplyBuffer::MultiplyBuffer(EasyCL *cl) :
     "        const float multiplier,\n" 
     "        global float *data) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    data[globalId] *= multiplier;\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "multiplyConstant", options, "cl/copy.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "multiplyConstant", options, "cl/copy.cl" );
     // [[[end]]]
     cl->storeKernel(kernelName, kernel, true);
     this->kernel = kernel;

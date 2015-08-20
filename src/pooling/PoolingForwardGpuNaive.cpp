@@ -79,7 +79,7 @@ PoolingForwardGpuNaive::PoolingForwardGpuNaive(EasyCL *cl, bool padZeros, int nu
     "    const int plane = image2dIdx % gNumPlanes;\n" 
     "    const int n = image2dIdx / gNumPlanes;\n" 
     "\n" 
-    "    if(n >= batchSize) {\n" 
+    "    if (n >= batchSize) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
@@ -89,12 +89,12 @@ PoolingForwardGpuNaive::PoolingForwardGpuNaive(EasyCL *cl, bool padZeros, int nu
     "    int selector = 0;\n" 
     "    int poolInputOffset = inputImageOffset + inputRow * gInputSize + inputCol;\n" 
     "    float maxValue = input[ poolInputOffset ];\n" 
-    "    for(int dRow = 0; dRow < gPoolingSize; dRow++) {\n" 
-    "        for(int dCol = 0; dCol < gPoolingSize; dCol++) {\n" 
+    "    for (int dRow = 0; dRow < gPoolingSize; dRow++) {\n" 
+    "        for (int dCol = 0; dCol < gPoolingSize; dCol++) {\n" 
     "            bool process = (inputRow + dRow < gInputSize) && (inputCol + dCol < gInputSize);\n" 
-    "            if(process) {\n" 
+    "            if (process) {\n" 
     "                float thisValue = input[ poolInputOffset + dRow * gInputSize + dCol ];\n" 
-    "                if(thisValue > maxValue) {\n" 
+    "                if (thisValue > maxValue) {\n" 
     "                    maxValue = thisValue;\n" 
     "                    selector = dRow * gPoolingSize + dCol;\n" 
     "                }\n" 
@@ -107,7 +107,7 @@ PoolingForwardGpuNaive::PoolingForwardGpuNaive(EasyCL *cl, bool padZeros, int nu
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "forwardNaive", options, "cl/pooling.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/pooling.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel("pooling.cl", "forwardNaive", options);
 }

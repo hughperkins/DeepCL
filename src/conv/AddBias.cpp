@@ -62,7 +62,7 @@ AddBias::AddBias(EasyCL *cl) :
     "\n" 
     "kernel void per_element_add(const int N, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId];\n" 
@@ -72,7 +72,7 @@ AddBias::AddBias(EasyCL *cl) :
     "// tiles source as necessary, according to tilingSize\n" 
     "kernel void per_element_tiled_add(const int N, const int tilingSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId % tilingSize];\n" 
@@ -80,14 +80,14 @@ AddBias::AddBias(EasyCL *cl) :
     "\n" 
     "kernel void repeated_add(const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if(globalId >= N) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[ (globalId / repeatSize) % sourceSize ];\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "repeated_add", options, "cl/per_element_add.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "repeated_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
 
     cl->storeKernel(kernelName, kernel, true);

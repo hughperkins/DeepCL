@@ -88,9 +88,9 @@ BackwardGpuCached::BackwardGpuCached(EasyCL *cl, LayerDimensions dim) :
     "\n" 
     "void copyLocal(local float *target, global float const *source, int N) {\n" 
     "    int numLoops = (N + get_local_size(0) - 1) / get_local_size(0);\n" 
-    "    for(int loop = 0; loop < numLoops; loop++) {\n" 
+    "    for (int loop = 0; loop < numLoops; loop++) {\n" 
     "        int offset = loop * get_local_size(0) + get_local_id(0);\n" 
-    "        if(offset < N) {\n" 
+    "        if (offset < N) {\n" 
     "            target[offset] = source[offset];\n" 
     "        }\n" 
     "    }\n" 
@@ -134,16 +134,16 @@ BackwardGpuCached::BackwardGpuCached(EasyCL *cl, LayerDimensions dim) :
     "    const int upstreamCol = localId % gInputSize;\n" 
     "\n" 
     "    float sumWeightTimesOutError = 0;\n" 
-    "    for(int outPlane = 0; outPlane < gNumFilters; outPlane++) {\n" 
+    "    for (int outPlane = 0; outPlane < gNumFilters; outPlane++) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        copyLocal(_filterPlane, filtersGlobal + (outPlane * gInputPlanes + upstreamPlane) * gFilterSizeSquared, gFilterSizeSquared);\n" 
     "        copyLocal(_gradOutputPlane, gradOutputGlobal + (n * gNumFilters + outPlane) * gOutputSizeSquared, gOutputSizeSquared);\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        for(int filterRow = 0; filterRow < gFilterSize; filterRow++) {\n" 
+    "        for (int filterRow = 0; filterRow < gFilterSize; filterRow++) {\n" 
     "            int outRow = upstreamRow + gMargin - filterRow;\n" 
-    "            for(int filterCol = 0; filterCol < gFilterSize; filterCol++) {\n" 
+    "            for (int filterCol = 0; filterCol < gFilterSize; filterCol++) {\n" 
     "                int outCol = upstreamCol + gMargin - filterCol;\n" 
-    "                if(outCol >= 0 && outCol < gOutputSize && outRow >= 0 && outRow < gOutputSize) {\n" 
+    "                if (outCol >= 0 && outCol < gOutputSize && outRow >= 0 && outRow < gOutputSize) {\n" 
     "                    float thisWeightTimesError =\n" 
     "                        _gradOutputPlane[outRow * gOutputSize + outCol] *\n" 
     "                        _filterPlane[filterRow * gFilterSize + filterCol];\n" 
@@ -153,13 +153,13 @@ BackwardGpuCached::BackwardGpuCached(EasyCL *cl, LayerDimensions dim) :
     "        }\n" 
     "    }\n" 
     "    const int upstreamImageGlobalOffset = (n * gInputPlanes + upstreamPlane) * gInputSizeSquared;\n" 
-    "    if(localId < gInputSizeSquared) {\n" 
+    "    if (localId < gInputSizeSquared) {\n" 
     "        gradInput[upstreamImageGlobalOffset + localId] = sumWeightTimesOutError;\n" 
     "    }\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString(kernelSource, "calcGradInputCached", options, "cl/backward_cached.cl");
+    kernel = cl->buildKernelFromString( kernelSource, "calcGradInputCached", options, "cl/backward_cached.cl" );
     // [[[end]]]
 //    kernel = cl->buildKernel("backproperrorsv2.cl", "calcGradInput", options);
 //    kernel = cl->buildKernelFromString(kernelSource, "calcGradInput", options);

@@ -10,9 +10,9 @@
 kernel void copy(
         const int N,
         global const float *in,
-        global float *out ) {
+        global float *out) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     out[globalId] = in[globalId];
@@ -23,9 +23,9 @@ kernel void copy_with_offset(
         global const float *in,
         const int inoffset,
         global float *out,
-        const int outoffset ) {
+        const int outoffset) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     out[globalId + outoffset] = in[globalId + inoffset];
@@ -35,9 +35,9 @@ kernel void multiplyConstant(
         const int N,
         const float multiplier,
         global const float *in,
-        global float *out ) {
+        global float *out) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     out[globalId] = multiplier * in[globalId];
@@ -46,9 +46,9 @@ kernel void multiplyConstant(
 kernel void multiplyInplace(
         const int N,
         const float multiplier,
-        global float *data ) {
+        global float *data) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     data[globalId] *= multiplier;

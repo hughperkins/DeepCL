@@ -13,7 +13,7 @@ kernel void updateWeights(
         global float *weights
             ) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     // first update the update
