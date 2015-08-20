@@ -88,6 +88,7 @@ foreach(dir ${dirs})
         set( deepcl_sources ${deepcl_sources} src/${dir}/${source})
     endforeach()
 endforeach()
+set(deepcl_sources ${deepcl_sources} src/DeepCL.cpp)
 #message("deepcl_sources ${deepcl_sources}")
 
 #find_package(Lua51)
@@ -162,7 +163,7 @@ if(DEV_RUN_COG)
     endforeach()
     add_custom_target(
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
     add_dependencies( DeepCL cog )
@@ -171,6 +172,7 @@ endif(DEV_RUN_COG)
 #ADD_DEPENDENCIES(DeepCL clBLAS)
 
 set( UNITTEST_SOURCES test/testClBlas.cpp
+ test/testDeepCL.cpp
  test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackward.cpp test/testsinglebatch.cpp 
