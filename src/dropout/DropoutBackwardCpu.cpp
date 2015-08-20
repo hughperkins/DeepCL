@@ -21,34 +21,34 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutBackwardCpu::DropoutBackwardCpu( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) :
-        DropoutBackward( cl, numPlanes, inputSize, dropRatio ) {
+DropoutBackwardCpu::DropoutBackwardCpu(EasyCL *cl, int numPlanes, int inputSize, float dropRatio) :
+        DropoutBackward(cl, numPlanes, inputSize, dropRatio) {
 }
-VIRTUAL void DropoutBackwardCpu::backward( int batchSize, uchar *mask,  float *gradOutput, float *gradInput ) {
+VIRTUAL void DropoutBackwardCpu::backward(int batchSize, uchar *mask,  float *gradOutput, float *gradInput) {
     int totalLinearSize = batchSize * numPlanes * inputSize * inputSize;
-    for( int i = 0; i < totalLinearSize; i++ ) {
+    for(int i = 0; i < totalLinearSize; i++) {
         gradInput[i] = mask[i] == 1 ? gradOutput[i] : 0.0f;
     }
 }
-VIRTUAL void DropoutBackwardCpu::backward( int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, 
-        CLWrapper *gradInputWrapper ) {
-    StatefulTimer::instance()->timeCheck("DropoutBackwardCpu::backward start" );
+VIRTUAL void DropoutBackwardCpu::backward(int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, 
+        CLWrapper *gradInputWrapper) {
+    StatefulTimer::instance()->timeCheck("DropoutBackwardCpu::backward start");
 
     maskWrapper->copyToHost();
     gradOutputWrapper->copyToHost();
 
-    uchar *mask = reinterpret_cast<uchar *>( maskWrapper->getHostArray() );
-    float *gradOutput = reinterpret_cast<float *>( gradOutputWrapper->getHostArray() );
-    float *gradInput = new float[ getInputNumElements( batchSize ) ];
+    uchar *mask = reinterpret_cast<uchar *>(maskWrapper->getHostArray());
+    float *gradOutput = reinterpret_cast<float *>(gradOutputWrapper->getHostArray());
+    float *gradInput = new float[ getInputNumElements(batchSize) ];
 
-    backward( batchSize, mask, gradOutput, gradInput );
+    backward(batchSize, mask, gradOutput, gradInput);
 
-    float *gradInputHostArray = reinterpret_cast<float *>( gradInputWrapper->getHostArray() );
-    memcpy( gradInputHostArray, gradInput, sizeof(float) * getInputNumElements( batchSize ) );
+    float *gradInputHostArray = reinterpret_cast<float *>(gradInputWrapper->getHostArray());
+    memcpy(gradInputHostArray, gradInput, sizeof(float) * getInputNumElements(batchSize) );
     gradInputWrapper->copyToDevice();
 
     delete[] gradInput;
     
-    StatefulTimer::instance()->timeCheck("DropoutBackwardCpu::backward end" );
+    StatefulTimer::instance()->timeCheck("DropoutBackwardCpu::backward end");
 }
 

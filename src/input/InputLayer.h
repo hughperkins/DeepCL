@@ -27,14 +27,14 @@ public:
     float const*input; // we dont own this
     float *output; // we own this :-)
 
-    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
-        return ( ( n
-            * outputPlanes + outPlane )
-            * outputSize + outRow )
+    inline int getOutputIndex(int n, int outPlane, int outRow, int outCol) const {
+        return (( n
+            * outputPlanes + outPlane)
+            * outputSize + outRow)
             * outputSize + outCol;
     }
-    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput(int n, int outPlane, int outRow, int outCol) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol) ];
     }
 
     // [[[cog
@@ -42,19 +42,19 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    InputLayer( InputLayerMaker *maker );
+    InputLayer(InputLayerMaker *maker);
     VIRTUAL ~InputLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL int getPersistSize(int version) const;
     VIRTUAL void printOutput();
     VIRTUAL void print();
-    void in( float const*images );
+    void in(float const*images);
     VIRTUAL bool needErrorsBackprop();
-    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL void forward();
-    VIRTUAL void backward( float learningRate, float const *gradOutput );
+    VIRTUAL void backward(float learningRate, float const *gradOutput);
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
@@ -65,6 +65,6 @@ public:
     // [[[end]]]
 };
 
- std::ostream &operator<<( std::ostream &os, InputLayer &layer );
- std::ostream &operator<<( std::ostream &os, InputLayer const*layer );
+ std::ostream &operator<<(std::ostream &os, InputLayer &layer);
+ std::ostream &operator<<(std::ostream &os, InputLayer const*layer);
 

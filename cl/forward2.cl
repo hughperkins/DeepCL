@@ -4,11 +4,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-void copyLocal( local float *target, global float const *source, const int N ) {
-    int numLoops = ( N + gWorkgroupSize - 1 ) / gWorkgroupSize;
-    for( int loop = 0; loop < numLoops; loop++ ) {
+void copyLocal(local float *target, global float const *source, const int N) {
+    int numLoops = (N + gWorkgroupSize - 1) / gWorkgroupSize;
+    for (int loop = 0; loop < numLoops; loop++) {
         int offset = loop * gWorkgroupSize + get_local_id(0);
-        if( offset < N ) {
+        if (offset < N) {
             target[offset] = source[offset];
         }
     }
@@ -30,7 +30,7 @@ void kernel forward_2_by_outplane(
         const int batchSize,
         global const float *images, global const float *filters, 
         global float *output,
-        local float *_inputPlane, local float *_filterCube ) {
+        local float *_inputPlane, local float *_filterCube) {
     const int globalId = get_global_id(0);
 
     const int workgroupId = get_group_id(0);
@@ -42,10 +42,10 @@ void kernel forward_2_by_outplane(
     const int outputCol = localId % gOutputSize;
 
     #if gPadZeros == 1
-        const int minu = max( -gHalfFilterSize, -outputRow );
-        const int maxu = min( gHalfFilterSize, gOutputSize - 1 - outputRow ) - gEven;
-        const int minv = max( -gHalfFilterSize, -outputCol );
-        const int maxv = min( gHalfFilterSize, gOutputSize - 1 - outputCol ) - gEven;
+        const int minu = max(-gHalfFilterSize, -outputRow);
+        const int maxu = min(gHalfFilterSize, gOutputSize - 1 - outputRow) - gEven;
+        const int minv = max(-gHalfFilterSize, -outputCol);
+        const int maxv = min(gHalfFilterSize, gOutputSize - 1 - outputCol) - gEven;
     #else
         const int minu = -gHalfFilterSize;
         const int maxu = gHalfFilterSize - gEven;
@@ -55,30 +55,30 @@ void kernel forward_2_by_outplane(
 
     {
         const int filterCubeLength = gInputPlanes * gFilterSizeSquared;
-        copyLocal( _filterCube, 
+        copyLocal(_filterCube, 
                 filters + outPlane * filterCubeLength,
-                filterCubeLength );
+                filterCubeLength);
     }
     // dont need a barrier, since we'll just run behind the barrier from the upstream image download
 
-    for( int n = 0; n < batchSize; n++ ) {
+    for (int n = 0; n < batchSize; n++) {
         float sum = 0;
-        for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {
+        for (int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++) {
             barrier(CLK_LOCAL_MEM_FENCE);
-            copyLocal( _inputPlane, 
-                       images + ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared,
-                       gInputSizeSquared );
+            copyLocal(_inputPlane, 
+                       images + (n * gInputPlanes + upstreamPlane) * gInputSizeSquared,
+                       gInputSizeSquared);
             barrier(CLK_LOCAL_MEM_FENCE);
             int filterImageOffset = upstreamPlane * gFilterSizeSquared;
-            if( localId < gOutputSizeSquared ) {
-                for( int u = minu; u <= maxu; u++ ) {
+            if (localId < gOutputSizeSquared) {
+                for (int u = minu; u <= maxu; u++) {
                     int inputRow = outputRow + u;
                     #if gPadZeros == 0
                          inputRow += gHalfFilterSize;
                     #endif
                     int inputimagerowoffset = inputRow * gInputSize;
                     int filterrowoffset = filterImageOffset + (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;
-                    for( int v = minv; v <= maxv; v++ ) {
+                    for (int v = minv; v <= maxv; v++) {
                         int inputCol = outputCol + v;
                         #if gPadZeros == 0
                              inputCol += gHalfFilterSize;
@@ -89,8 +89,8 @@ void kernel forward_2_by_outplane(
             }
         }
         // output are organized like [imageid][filterid][row][col]
-        int resultIndex = ( n * gNumFilters + outPlane ) * gOutputSizeSquared + localId;
-        if( localId < gOutputSizeSquared ) {
+        int resultIndex = (n * gNumFilters + outPlane) * gOutputSizeSquared + localId;
+        if (localId < gOutputSizeSquared) {
             output[resultIndex ] = sum;
         }
     }

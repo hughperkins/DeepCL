@@ -20,16 +20,16 @@ class DeepCL_EXPORT BatchAction {
 public:
     float *data;
     int *labels;
-    BatchAction( float *data, int *labels ) :
+    BatchAction(float *data, int *labels) :
         data(data),
         labels(labels) { // have to provide appropriate buffers for this
     }
-    virtual void processBatch( int batchSize, int cubeSize ) = 0;
+    virtual void processBatch(int batchSize, int cubeSize) = 0;
 };
 
 class DeepCL_EXPORT BatchProcessv2 {
 public:
-    static void run( GenericLoaderv2*loader, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction);
+    static void run(GenericLoaderv2*loader, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction);
 };
 
 class DeepCL_EXPORT BatchProcess {
@@ -40,14 +40,14 @@ public:
 class DeepCL_EXPORT NormalizeGetStdDev : public BatchAction {
 public:
     Statistics statistics; 
-    NormalizeGetStdDev( float *data, int *labels ) :
-        BatchAction( data, labels ) {
+    NormalizeGetStdDev(float *data, int *labels) :
+        BatchAction(data, labels) {
     }
-    virtual void processBatch( int batchSize, int cubeSize ) {
-        NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );
+    virtual void processBatch(int batchSize, int cubeSize) {
+        NormalizationHelper::updateStatistics(this->data, batchSize, cubeSize, &statistics);
     }
-    void calcMeanStdDev( float *p_mean, float *p_stdDev ) {
-        NormalizationHelper::calcMeanAndStdDev( &statistics, p_mean, p_stdDev );
+    void calcMeanStdDev(float *p_mean, float *p_stdDev) {
+        NormalizationHelper::calcMeanAndStdDev(&statistics, p_mean, p_stdDev);
     }
 };
 
@@ -55,17 +55,17 @@ public:
 class DeepCL_EXPORT NormalizeGetMinMax : public BatchAction {
 public:
     Statistics statistics; 
-    NormalizeGetMinMax( float *data, int *labels ) :
-        BatchAction( data, labels ) {
+    NormalizeGetMinMax(float *data, int *labels) :
+        BatchAction(data, labels) {
     }
-    virtual void processBatch( int batchSize, int cubeSize ) {
-        NormalizationHelper::updateStatistics( this->data, batchSize, cubeSize, &statistics );
+    virtual void processBatch(int batchSize, int cubeSize) {
+        NormalizationHelper::updateStatistics(this->data, batchSize, cubeSize, &statistics);
     }
-    void calcMinMaxTransform( float *p_translate, float *p_scale ) {
+    void calcMinMaxTransform(float *p_translate, float *p_scale) {
         // add this to our values to center
-        *p_translate = - ( statistics.maxY - statistics.minY ) / 2.0f;
+        *p_translate = - (statistics.maxY - statistics.minY) / 2.0f;
         // multiply our values by this to scale to -1 / +1 range
-        *p_scale = 1.0f / ( statistics.maxY - statistics.minY );
+        *p_scale = 1.0f / (statistics.maxY - statistics.minY);
     }
 };
 

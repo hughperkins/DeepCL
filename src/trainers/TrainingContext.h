@@ -28,7 +28,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    TrainingContext( int epoch, int batch );
+    TrainingContext(int epoch, int batch);
     int getEpoch();
     int getBatch();
 

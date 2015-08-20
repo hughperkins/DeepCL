@@ -252,7 +252,7 @@ class __Pyx_FakeReference {
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
-#include "EasyCL.h"
+#include "DeepCL.h"
 #include "layer/LayerMaker.h"
 #include "input/InputLayerMaker.h"
 #include "dropout/DropoutMaker.h"
@@ -464,7 +464,7 @@ static const char *__pyx_f[] = {
   "LayerMaker.pyx",
   "NeuralNet.pyx",
   "PyDeepCL.pyx",
-  "EasyCL.pyx",
+  "DeepCL.pyx",
   "SGD.pyx",
   "Annealer.pyx",
   "Nesterov.pyx",
@@ -579,7 +579,7 @@ typedef volatile __pyx_atomic_int_type __pyx_atomic_int;
 struct arrayobject;
 typedef struct arrayobject arrayobject;
 #endif
-struct __pyx_obj_8PyDeepCL_EasyCL;
+struct __pyx_obj_8PyDeepCL_DeepCL;
 struct __pyx_obj_8PyDeepCL_TrainingContext;
 struct __pyx_obj_8PyDeepCL_SGD;
 struct __pyx_obj_8PyDeepCL_Annealer;
@@ -610,14 +610,14 @@ struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
 
-/* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":1
- * cdef class EasyCL:             # <<<<<<<<<<<<<<
- *     cdef cDeepCL.EasyCL *thisptr
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":1
+ * cdef class DeepCL:             # <<<<<<<<<<<<<<
+ *     cdef cDeepCL.DeepCL *thisptr
  * 
  */
-struct __pyx_obj_8PyDeepCL_EasyCL {
+struct __pyx_obj_8PyDeepCL_DeepCL {
   PyObject_HEAD
-  EasyCL *thisptr;
+  DeepCL *thisptr;
 };
 
 struct __pyx_obj_8PyDeepCL_TrainingContext {
@@ -631,7 +631,7 @@ struct __pyx_obj_8PyDeepCL_TrainingContext {
  * 
  * cdef class SGD:             # <<<<<<<<<<<<<<
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  */
 struct __pyx_obj_8PyDeepCL_SGD {
   PyObject_HEAD
@@ -642,7 +642,7 @@ struct __pyx_obj_8PyDeepCL_SGD {
 /* "../../../../../../home/user/git/DeepCL/python/Annealer.pyx":1
  * cdef class Annealer:             # <<<<<<<<<<<<<<
  *     cdef cDeepCL.Annealer *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, anneal=1.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, anneal=1.0 ):
  */
 struct __pyx_obj_8PyDeepCL_Annealer {
   PyObject_HEAD
@@ -1649,7 +1649,7 @@ static CYTHON_INLINE int __pyx_f_7cpython_5array_extend_buffer(arrayobject *, ch
 /* Module declarations from 'cDeepCL' */
 
 /* Module declarations from 'PyDeepCL' */
-static PyTypeObject *__pyx_ptype_8PyDeepCL_EasyCL = 0;
+static PyTypeObject *__pyx_ptype_8PyDeepCL_DeepCL = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_TrainingContext = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_SGD = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_Annealer = 0;
@@ -1746,44 +1746,44 @@ static PyObject *__pyx_builtin_Ellipsis;
 static PyObject *__pyx_builtin_TypeError;
 static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
-static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self); /* proto */
+static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_2__dealloc(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
 static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self, int __pyx_v_epoch, int __pyx_v_batch); /* proto */
 static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self); /* proto */
-static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum); /* proto */
+static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_2__dealloc(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_4setLearningRate(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_6setMomentum(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_8setWeightDecay(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, float __pyx_v_weightDecay); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_10train(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_expectedOutput); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_3SGD_12trainFromLabels(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_labels); /* proto */
-static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_anneal); /* proto */
+static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_anneal); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Annealer_2__dealloc(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Annealer_4setLearningRate(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Annealer_6setAnneal(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, float __pyx_v_anneal); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Annealer_8train(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_expectedOutput); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Annealer_10trainFromLabels(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_labels); /* proto */
-static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum); /* proto */
+static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_2__dealloc(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_4setLearningRate(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_6setMomentum(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, float __pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_8train(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_expectedOutput); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_10trainFromLabels(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_labels); /* proto */
-static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum); /* proto */
+static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Adagrad_2__dealloc(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Adagrad_4setLearningRate(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Adagrad_6train(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_expectedOutput); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Adagrad_8trainFromLabels(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_labels); /* proto */
-static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum); /* proto */
+static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Rmsprop_2__dealloc(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Rmsprop_4setLearningRate(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, float __pyx_v_learningRate); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Rmsprop_6train(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_expectedOutput); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_7Rmsprop_8trainFromLabels(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_labels); /* proto */
-static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_rho); /* proto */
+static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_rho); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Adadelta_2__dealloc(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Adadelta_4train(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_expectedOutput); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_8Adadelta_6trainFromLabels(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self, struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_net, struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_context, __Pyx_memviewslice __pyx_v_inputdata, __Pyx_memviewslice __pyx_v_labels); /* proto */
-static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size); /* proto */
+static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_2__dealloc(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_4asString(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_6setBatchSize(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, int __pyx_v_batchSize); /* proto */
@@ -1911,7 +1911,7 @@ static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_20
 static PyObject *__pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_22copy_fortran(struct __pyx_memoryview_obj *__pyx_v_self); /* proto */
 static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewslice___dealloc__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView_16_memoryviewslice_4base___get__(struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
-static PyObject *__pyx_tp_new_8PyDeepCL_EasyCL(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8PyDeepCL_DeepCL(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_TrainingContext(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_SGD(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_Annealer(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -2286,8 +2286,8 @@ static PyObject *__pyx_codeobj__41;
 static PyObject *__pyx_codeobj__43;
 static PyObject *__pyx_codeobj__45;
 
-/* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":4
- *     cdef cDeepCL.EasyCL *thisptr
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":4
+ *     cdef cDeepCL.DeepCL *thisptr
  * 
  *     def __cinit__(self, gpuindex=None ):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
@@ -2295,8 +2295,8 @@ static PyObject *__pyx_codeobj__45;
  */
 
 /* Python wrapper */
-static int __pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static int __pyx_pw_8PyDeepCL_6DeepCL_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_8PyDeepCL_6DeepCL_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_gpuindex = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -2340,18 +2340,18 @@ static int __pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(PyObject *__pyx_v_self, PyObjec
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[3]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("PyDeepCL.EasyCL.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_6EasyCL___cinit__(((struct __pyx_obj_8PyDeepCL_EasyCL *)__pyx_v_self), __pyx_v_gpuindex);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL___cinit__(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self), __pyx_v_gpuindex);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self, PyObject *__pyx_v_gpuindex) {
+static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_gpuindex) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -2362,43 +2362,43 @@ static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyC
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":6
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":6
  *     def __cinit__(self, gpuindex=None ):
  * #        print( '__cinit__(planes,size)')
  *         if gpuindex is None:             # <<<<<<<<<<<<<<
- *              self.thisptr = cDeepCL.EasyCL.createForFirstGpuOtherwiseCpu()
+ *              self.thisptr = cDeepCL.DeepCL.createForFirstGpuOtherwiseCpu()
  *         else:
  */
   __pyx_t_1 = (__pyx_v_gpuindex == Py_None);
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":7
+    /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":7
  * #        print( '__cinit__(planes,size)')
  *         if gpuindex is None:
- *              self.thisptr = cDeepCL.EasyCL.createForFirstGpuOtherwiseCpu()             # <<<<<<<<<<<<<<
+ *              self.thisptr = cDeepCL.DeepCL.createForFirstGpuOtherwiseCpu()             # <<<<<<<<<<<<<<
  *         else:
- *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)
+ *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
  */
-    __pyx_v_self->thisptr = EasyCL::createForFirstGpuOtherwiseCpu();
+    __pyx_v_self->thisptr = DeepCL::createForFirstGpuOtherwiseCpu();
     goto __pyx_L3;
   }
   /*else*/ {
 
-    /* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":9
- *              self.thisptr = cDeepCL.EasyCL.createForFirstGpuOtherwiseCpu()
+    /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":9
+ *              self.thisptr = cDeepCL.DeepCL.createForFirstGpuOtherwiseCpu()
  *         else:
- *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)             # <<<<<<<<<<<<<<
+ *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)             # <<<<<<<<<<<<<<
  * 
  *     def __dealloc(self):
  */
     __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_gpuindex); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __pyx_v_self->thisptr = EasyCL::createForIndexedGpu(__pyx_t_3);
+    __pyx_v_self->thisptr = DeepCL::createForIndexedGpu(__pyx_t_3);
   }
   __pyx_L3:;
 
-  /* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":4
- *     cdef cDeepCL.EasyCL *thisptr
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":4
+ *     cdef cDeepCL.DeepCL *thisptr
  * 
  *     def __cinit__(self, gpuindex=None ):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
@@ -2409,15 +2409,15 @@ static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyC
   __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.EasyCL.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":11
- *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":11
+ *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
  * 
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -2425,24 +2425,24 @@ static int __pyx_pf_8PyDeepCL_6EasyCL___cinit__(struct __pyx_obj_8PyDeepCL_EasyC
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_6EasyCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_6EasyCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(((struct __pyx_obj_8PyDeepCL_EasyCL *)__pyx_v_self));
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_2__dealloc(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_self) {
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_2__dealloc(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc", 0);
 
-  /* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":12
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":12
  * 
  *     def __dealloc(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -2450,8 +2450,8 @@ static PyObject *__pyx_pf_8PyDeepCL_6EasyCL_2__dealloc(struct __pyx_obj_8PyDeepC
  */
   delete __pyx_v_self->thisptr;
 
-  /* "../../../../../../home/user/git/DeepCL/python/EasyCL.pyx":11
- *             self.thisptr = cDeepCL.EasyCL.createForIndexedGpu(gpuindex)
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":11
+ *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
  * 
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -2609,7 +2609,7 @@ static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8
 /* "../../../../../../home/user/git/DeepCL/python/SGD.pyx":10
  * cdef class SGD:
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -2617,7 +2617,7 @@ static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_learningRate = 0;
   PyObject *__pyx_v_momentum = 0;
   int __pyx_lineno = 0;
@@ -2668,7 +2668,7 @@ static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_learningRate = values[1];
     __pyx_v_momentum = values[2];
   }
@@ -2680,7 +2680,7 @@ static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 10; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_3SGD___cinit__(((struct __pyx_obj_8PyDeepCL_SGD *)__pyx_v_self), __pyx_v_cl, __pyx_v_learningRate, __pyx_v_momentum);
 
   /* function exit code */
@@ -2692,7 +2692,7 @@ static int __pyx_pw_8PyDeepCL_3SGD_1__cinit__(PyObject *__pyx_v_self, PyObject *
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum) {
+static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   SGD *__pyx_t_1;
@@ -2704,7 +2704,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
 
   /* "../../../../../../home/user/git/DeepCL/python/SGD.pyx":11
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)             # <<<<<<<<<<<<<<
  *         self.thisptr.setLearningRate(learningRate)
  *         self.thisptr.setMomentum(momentum)
@@ -2718,7 +2718,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
   __pyx_v_self->thisptr = __pyx_t_1;
 
   /* "../../../../../../home/user/git/DeepCL/python/SGD.pyx":12
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)             # <<<<<<<<<<<<<<
  *         self.thisptr.setMomentum(momentum)
@@ -2740,7 +2740,7 @@ static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__p
   /* "../../../../../../home/user/git/DeepCL/python/SGD.pyx":10
  * cdef class SGD:
  *     cdef cDeepCL.SGD *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.SGD(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -3367,7 +3367,7 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_12trainFromLabels(struct __pyx_obj_8PyD
 /* "../../../../../../home/user/git/DeepCL/python/Annealer.pyx":3
  * cdef class Annealer:
  *     cdef cDeepCL.Annealer *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, anneal=1.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, anneal=1.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Annealer(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -3375,7 +3375,7 @@ static PyObject *__pyx_pf_8PyDeepCL_3SGD_12trainFromLabels(struct __pyx_obj_8PyD
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_8Annealer_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_8Annealer_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_learningRate = 0;
   PyObject *__pyx_v_anneal = 0;
   int __pyx_lineno = 0;
@@ -3426,7 +3426,7 @@ static int __pyx_pw_8PyDeepCL_8Annealer_1__cinit__(PyObject *__pyx_v_self, PyObj
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_learningRate = values[1];
     __pyx_v_anneal = values[2];
   }
@@ -3438,7 +3438,7 @@ static int __pyx_pw_8PyDeepCL_8Annealer_1__cinit__(PyObject *__pyx_v_self, PyObj
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_8Annealer___cinit__(((struct __pyx_obj_8PyDeepCL_Annealer *)__pyx_v_self), __pyx_v_cl, __pyx_v_learningRate, __pyx_v_anneal);
 
   /* function exit code */
@@ -3450,7 +3450,7 @@ static int __pyx_pw_8PyDeepCL_8Annealer_1__cinit__(PyObject *__pyx_v_self, PyObj
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_anneal) {
+static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Annealer *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_anneal) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   Annealer *__pyx_t_1;
@@ -3462,7 +3462,7 @@ static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Ann
 
   /* "../../../../../../home/user/git/DeepCL/python/Annealer.pyx":4
  *     cdef cDeepCL.Annealer *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, anneal=1.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, anneal=1.0 ):
  *         self.thisptr = new cDeepCL.Annealer(cl.thisptr)             # <<<<<<<<<<<<<<
  *         self.thisptr.setLearningRate(learningRate)
  *         self.thisptr.setAnneal(anneal)
@@ -3476,7 +3476,7 @@ static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Ann
   __pyx_v_self->thisptr = __pyx_t_1;
 
   /* "../../../../../../home/user/git/DeepCL/python/Annealer.pyx":5
- *     def __cinit__( self, EasyCL cl, learningRate, anneal=1.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, anneal=1.0 ):
  *         self.thisptr = new cDeepCL.Annealer(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)             # <<<<<<<<<<<<<<
  *         self.thisptr.setAnneal(anneal)
@@ -3498,7 +3498,7 @@ static int __pyx_pf_8PyDeepCL_8Annealer___cinit__(struct __pyx_obj_8PyDeepCL_Ann
   /* "../../../../../../home/user/git/DeepCL/python/Annealer.pyx":3
  * cdef class Annealer:
  *     cdef cDeepCL.Annealer *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, anneal=1.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, anneal=1.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Annealer(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -4062,7 +4062,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Annealer_10trainFromLabels(struct __pyx_obj
 /* "../../../../../../home/user/git/DeepCL/python/Nesterov.pyx":3
  * cdef class Nesterov:
  *     cdef cDeepCL.Nesterov *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Nesterov(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -4070,7 +4070,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Annealer_10trainFromLabels(struct __pyx_obj
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_8Nesterov_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_8Nesterov_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_learningRate = 0;
   PyObject *__pyx_v_momentum = 0;
   int __pyx_lineno = 0;
@@ -4121,7 +4121,7 @@ static int __pyx_pw_8PyDeepCL_8Nesterov_1__cinit__(PyObject *__pyx_v_self, PyObj
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_learningRate = values[1];
     __pyx_v_momentum = values[2];
   }
@@ -4133,7 +4133,7 @@ static int __pyx_pw_8PyDeepCL_8Nesterov_1__cinit__(PyObject *__pyx_v_self, PyObj
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_8Nesterov___cinit__(((struct __pyx_obj_8PyDeepCL_Nesterov *)__pyx_v_self), __pyx_v_cl, __pyx_v_learningRate, __pyx_v_momentum);
 
   /* function exit code */
@@ -4145,7 +4145,7 @@ static int __pyx_pw_8PyDeepCL_8Nesterov_1__cinit__(PyObject *__pyx_v_self, PyObj
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum) {
+static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nesterov *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   Nesterov *__pyx_t_1;
@@ -4157,7 +4157,7 @@ static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nes
 
   /* "../../../../../../home/user/git/DeepCL/python/Nesterov.pyx":4
  *     cdef cDeepCL.Nesterov *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.Nesterov(cl.thisptr)             # <<<<<<<<<<<<<<
  *         self.thisptr.setLearningRate(learningRate)
  *         self.thisptr.setMomentum(momentum)
@@ -4171,7 +4171,7 @@ static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nes
   __pyx_v_self->thisptr = __pyx_t_1;
 
   /* "../../../../../../home/user/git/DeepCL/python/Nesterov.pyx":5
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.Nesterov(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)             # <<<<<<<<<<<<<<
  *         self.thisptr.setMomentum(momentum)
@@ -4193,7 +4193,7 @@ static int __pyx_pf_8PyDeepCL_8Nesterov___cinit__(struct __pyx_obj_8PyDeepCL_Nes
   /* "../../../../../../home/user/git/DeepCL/python/Nesterov.pyx":3
  * cdef class Nesterov:
  *     cdef cDeepCL.Nesterov *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Nesterov(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -4757,7 +4757,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_10trainFromLabels(struct __pyx_obj
 /* "../../../../../../home/user/git/DeepCL/python/Adagrad.pyx":3
  * cdef class Adagrad:
  *     cdef cDeepCL.Adagrad *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Adagrad(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -4765,7 +4765,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Nesterov_10trainFromLabels(struct __pyx_obj
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_7Adagrad_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_7Adagrad_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_learningRate = 0;
   CYTHON_UNUSED PyObject *__pyx_v_momentum = 0;
   int __pyx_lineno = 0;
@@ -4816,7 +4816,7 @@ static int __pyx_pw_8PyDeepCL_7Adagrad_1__cinit__(PyObject *__pyx_v_self, PyObje
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_learningRate = values[1];
     __pyx_v_momentum = values[2];
   }
@@ -4828,7 +4828,7 @@ static int __pyx_pw_8PyDeepCL_7Adagrad_1__cinit__(PyObject *__pyx_v_self, PyObje
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[7]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[7]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_7Adagrad___cinit__(((struct __pyx_obj_8PyDeepCL_Adagrad *)__pyx_v_self), __pyx_v_cl, __pyx_v_learningRate, __pyx_v_momentum);
 
   /* function exit code */
@@ -4840,7 +4840,7 @@ static int __pyx_pw_8PyDeepCL_7Adagrad_1__cinit__(PyObject *__pyx_v_self, PyObje
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum) {
+static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adagrad *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   Adagrad *__pyx_t_1;
@@ -4852,7 +4852,7 @@ static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adag
 
   /* "../../../../../../home/user/git/DeepCL/python/Adagrad.pyx":4
  *     cdef cDeepCL.Adagrad *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.Adagrad(cl.thisptr)             # <<<<<<<<<<<<<<
  *         self.thisptr.setLearningRate(learningRate)
  *     def __dealloc(self):
@@ -4866,7 +4866,7 @@ static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adag
   __pyx_v_self->thisptr = __pyx_t_1;
 
   /* "../../../../../../home/user/git/DeepCL/python/Adagrad.pyx":5
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.Adagrad(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)             # <<<<<<<<<<<<<<
  *     def __dealloc(self):
@@ -4878,7 +4878,7 @@ static int __pyx_pf_8PyDeepCL_7Adagrad___cinit__(struct __pyx_obj_8PyDeepCL_Adag
   /* "../../../../../../home/user/git/DeepCL/python/Adagrad.pyx":3
  * cdef class Adagrad:
  *     cdef cDeepCL.Adagrad *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Adagrad(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -5379,7 +5379,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7Adagrad_8trainFromLabels(struct __pyx_obj_8
 /* "../../../../../../home/user/git/DeepCL/python/Rmsprop.pyx":3
  * cdef class Rmsprop:
  *     cdef cDeepCL.Rmsprop *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Rmsprop(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -5387,7 +5387,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7Adagrad_8trainFromLabels(struct __pyx_obj_8
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_7Rmsprop_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_7Rmsprop_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_learningRate = 0;
   CYTHON_UNUSED PyObject *__pyx_v_momentum = 0;
   int __pyx_lineno = 0;
@@ -5438,7 +5438,7 @@ static int __pyx_pw_8PyDeepCL_7Rmsprop_1__cinit__(PyObject *__pyx_v_self, PyObje
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_learningRate = values[1];
     __pyx_v_momentum = values[2];
   }
@@ -5450,7 +5450,7 @@ static int __pyx_pw_8PyDeepCL_7Rmsprop_1__cinit__(PyObject *__pyx_v_self, PyObje
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(((struct __pyx_obj_8PyDeepCL_Rmsprop *)__pyx_v_self), __pyx_v_cl, __pyx_v_learningRate, __pyx_v_momentum);
 
   /* function exit code */
@@ -5462,7 +5462,7 @@ static int __pyx_pw_8PyDeepCL_7Rmsprop_1__cinit__(PyObject *__pyx_v_self, PyObje
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum) {
+static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsprop *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, CYTHON_UNUSED PyObject *__pyx_v_momentum) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   Rmsprop *__pyx_t_1;
@@ -5474,7 +5474,7 @@ static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsp
 
   /* "../../../../../../home/user/git/DeepCL/python/Rmsprop.pyx":4
  *     cdef cDeepCL.Rmsprop *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.Rmsprop(cl.thisptr)             # <<<<<<<<<<<<<<
  *         self.thisptr.setLearningRate(learningRate)
  *     def __dealloc(self):
@@ -5488,7 +5488,7 @@ static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsp
   __pyx_v_self->thisptr = __pyx_t_1;
 
   /* "../../../../../../home/user/git/DeepCL/python/Rmsprop.pyx":5
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
  *         self.thisptr = new cDeepCL.Rmsprop(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)             # <<<<<<<<<<<<<<
  *     def __dealloc(self):
@@ -5500,7 +5500,7 @@ static int __pyx_pf_8PyDeepCL_7Rmsprop___cinit__(struct __pyx_obj_8PyDeepCL_Rmsp
   /* "../../../../../../home/user/git/DeepCL/python/Rmsprop.pyx":3
  * cdef class Rmsprop:
  *     cdef cDeepCL.Rmsprop *thisptr
- *     def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Rmsprop(cl.thisptr)
  *         self.thisptr.setLearningRate(learningRate)
  */
@@ -6001,7 +6001,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7Rmsprop_8trainFromLabels(struct __pyx_obj_8
 /* "../../../../../../home/user/git/DeepCL/python/Adadelta.pyx":3
  * cdef class Adadelta:
  *     cdef cDeepCL.Adadelta *thisptr
- *     def __cinit__( self, EasyCL cl, rho=0.9 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, rho=0.9 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)
  *     def __dealloc(self):
  */
@@ -6009,7 +6009,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7Rmsprop_8trainFromLabels(struct __pyx_obj_8
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_8Adadelta_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_8Adadelta_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_rho = 0;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
@@ -6052,7 +6052,7 @@ static int __pyx_pw_8PyDeepCL_8Adadelta_1__cinit__(PyObject *__pyx_v_self, PyObj
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_rho = values[1];
   }
   goto __pyx_L4_argument_unpacking_done;
@@ -6063,7 +6063,7 @@ static int __pyx_pw_8PyDeepCL_8Adadelta_1__cinit__(PyObject *__pyx_v_self, PyObj
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[9]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[9]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_8Adadelta___cinit__(((struct __pyx_obj_8PyDeepCL_Adadelta *)__pyx_v_self), __pyx_v_cl, __pyx_v_rho);
 
   /* function exit code */
@@ -6075,7 +6075,7 @@ static int __pyx_pw_8PyDeepCL_8Adadelta_1__cinit__(PyObject *__pyx_v_self, PyObj
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_rho) {
+static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Adadelta *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_rho) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   float __pyx_t_1;
@@ -6087,7 +6087,7 @@ static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Ada
 
   /* "../../../../../../home/user/git/DeepCL/python/Adadelta.pyx":4
  *     cdef cDeepCL.Adadelta *thisptr
- *     def __cinit__( self, EasyCL cl, rho=0.9 ):
+ *     def __cinit__( self, DeepCL cl, rho=0.9 ):
  *         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)             # <<<<<<<<<<<<<<
  *     def __dealloc(self):
  *         del self.thisptr
@@ -6104,7 +6104,7 @@ static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Ada
   /* "../../../../../../home/user/git/DeepCL/python/Adadelta.pyx":3
  * cdef class Adadelta:
  *     cdef cDeepCL.Adadelta *thisptr
- *     def __cinit__( self, EasyCL cl, rho=0.9 ):             # <<<<<<<<<<<<<<
+ *     def __cinit__( self, DeepCL cl, rho=0.9 ):             # <<<<<<<<<<<<<<
  *         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)
  *     def __dealloc(self):
  */
@@ -6121,7 +6121,7 @@ static int __pyx_pf_8PyDeepCL_8Adadelta___cinit__(struct __pyx_obj_8PyDeepCL_Ada
 }
 
 /* "../../../../../../home/user/git/DeepCL/python/Adadelta.pyx":5
- *     def __cinit__( self, EasyCL cl, rho=0.9 ):
+ *     def __cinit__( self, DeepCL cl, rho=0.9 ):
  *         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -6156,7 +6156,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Adadelta_2__dealloc(struct __pyx_obj_8PyDee
   delete __pyx_v_self->thisptr;
 
   /* "../../../../../../home/user/git/DeepCL/python/Adadelta.pyx":5
- *     def __cinit__( self, EasyCL cl, rho=0.9 ):
+ *     def __cinit__( self, DeepCL cl, rho=0.9 ):
  *         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)
  *     def __dealloc(self):             # <<<<<<<<<<<<<<
  *         del self.thisptr
@@ -6542,7 +6542,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Adadelta_6trainFromLabels(struct __pyx_obj_
 /* "../../../../../../home/user/git/DeepCL/python/NeuralNet.pyx":4
  *     cdef cDeepCL.NeuralNet *thisptr
  * 
- *     def __cinit__(self, EasyCL cl, planes = None, size = None):             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, DeepCL cl, planes = None, size = None):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
  *         if planes == None and size == None:
  */
@@ -6550,7 +6550,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Adadelta_6trainFromLabels(struct __pyx_obj_
 /* Python wrapper */
 static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl = 0;
+  struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl = 0;
   PyObject *__pyx_v_planes = 0;
   PyObject *__pyx_v_size = 0;
   int __pyx_lineno = 0;
@@ -6602,7 +6602,7 @@ static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyOb
         default: goto __pyx_L5_argtuple_error;
       }
     }
-    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_EasyCL *)values[0]);
+    __pyx_v_cl = ((struct __pyx_obj_8PyDeepCL_DeepCL *)values[0]);
     __pyx_v_planes = values[1];
     __pyx_v_size = values[2];
   }
@@ -6614,7 +6614,7 @@ static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyOb
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_EasyCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cl), __pyx_ptype_8PyDeepCL_DeepCL, 1, "cl", 0))) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_r = __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(((struct __pyx_obj_8PyDeepCL_NeuralNet *)__pyx_v_self), __pyx_v_cl, __pyx_v_planes, __pyx_v_size);
 
   /* function exit code */
@@ -6626,7 +6626,7 @@ static int __pyx_pw_8PyDeepCL_9NeuralNet_1__cinit__(PyObject *__pyx_v_self, PyOb
   return __pyx_r;
 }
 
-static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_EasyCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size) {
+static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_NeuralNet *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_planes, PyObject *__pyx_v_size) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -6641,7 +6641,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "../../../../../../home/user/git/DeepCL/python/NeuralNet.pyx":6
- *     def __cinit__(self, EasyCL cl, planes = None, size = None):
+ *     def __cinit__(self, DeepCL cl, planes = None, size = None):
  * #        print( '__cinit__(planes,size)')
  *         if planes == None and size == None:             # <<<<<<<<<<<<<<
  *              self.thisptr = new cDeepCL.NeuralNet(cl.thisptr)
@@ -6702,7 +6702,7 @@ static int __pyx_pf_8PyDeepCL_9NeuralNet___cinit__(struct __pyx_obj_8PyDeepCL_Ne
   /* "../../../../../../home/user/git/DeepCL/python/NeuralNet.pyx":4
  *     cdef cDeepCL.NeuralNet *thisptr
  * 
- *     def __cinit__(self, EasyCL cl, planes = None, size = None):             # <<<<<<<<<<<<<<
+ *     def __cinit__(self, DeepCL cl, planes = None, size = None):             # <<<<<<<<<<<<<<
  * #        print( '__cinit__(planes,size)')
  *         if planes == None and size == None:
  */
@@ -14978,7 +14978,7 @@ static PyObject *__pyx_pf_8PyDeepCL_8Scenario_14getPerception(CYTHON_UNUSED stru
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":31
+/* "PyDeepCL.pyx":32
  * include "QLearning.pyx"
  * 
  * def checkException():             # <<<<<<<<<<<<<<
@@ -15014,7 +15014,7 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("checkException", 0);
 
-  /* "PyDeepCL.pyx":32
+  /* "PyDeepCL.pyx":33
  * 
  * def checkException():
  *     cdef int threwException = 0             # <<<<<<<<<<<<<<
@@ -15023,17 +15023,17 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
  */
   __pyx_v_threwException = 0;
 
-  /* "PyDeepCL.pyx":33
+  /* "PyDeepCL.pyx":34
  * def checkException():
  *     cdef int threwException = 0
  *     cdef string message = ""             # <<<<<<<<<<<<<<
  *     cDeepCL.checkException( &threwException, &message)
  *     # print('threwException: ' + str(threwException) + ' ' + message )
  */
-  __pyx_t_1 = __pyx_convert_string_from_py_std__in_string(__pyx_kp_b__9); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __pyx_convert_string_from_py_std__in_string(__pyx_kp_b__9); if (unlikely(PyErr_Occurred())) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_v_message = __pyx_t_1;
 
-  /* "PyDeepCL.pyx":34
+  /* "PyDeepCL.pyx":35
  *     cdef int threwException = 0
  *     cdef string message = ""
  *     cDeepCL.checkException( &threwException, &message)             # <<<<<<<<<<<<<<
@@ -15042,7 +15042,7 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
  */
   checkException((&__pyx_v_threwException), (&__pyx_v_message));
 
-  /* "PyDeepCL.pyx":36
+  /* "PyDeepCL.pyx":37
  *     cDeepCL.checkException( &threwException, &message)
  *     # print('threwException: ' + str(threwException) + ' ' + message )
  *     if threwException:             # <<<<<<<<<<<<<<
@@ -15052,29 +15052,29 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
   __pyx_t_2 = (__pyx_v_threwException != 0);
   if (__pyx_t_2) {
 
-    /* "PyDeepCL.pyx":37
+    /* "PyDeepCL.pyx":38
  *     # print('threwException: ' + str(threwException) + ' ' + message )
  *     if threwException:
  *         raise RuntimeError(message)             # <<<<<<<<<<<<<<
  * 
  * def interruptableCall( function, args ):
  */
-    __pyx_t_3 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_v_message); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __pyx_convert_PyBytes_string_to_py_std__in_string(__pyx_v_message); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_t_4, NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    {__pyx_filename = __pyx_f[2]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
 
-  /* "PyDeepCL.pyx":31
+  /* "PyDeepCL.pyx":32
  * include "QLearning.pyx"
  * 
  * def checkException():             # <<<<<<<<<<<<<<
@@ -15096,7 +15096,7 @@ static PyObject *__pyx_pf_8PyDeepCL_checkException(CYTHON_UNUSED PyObject *__pyx
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":39
+/* "PyDeepCL.pyx":40
  *         raise RuntimeError(message)
  * 
  * def interruptableCall( function, args ):             # <<<<<<<<<<<<<<
@@ -15136,11 +15136,11 @@ static PyObject *__pyx_pw_8PyDeepCL_3interruptableCall(PyObject *__pyx_self, PyO
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_args)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("interruptableCall", 1, 2, 2, 1); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("interruptableCall", 1, 2, 2, 1); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "interruptableCall") < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "interruptableCall") < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -15153,7 +15153,7 @@ static PyObject *__pyx_pw_8PyDeepCL_3interruptableCall(PyObject *__pyx_self, PyO
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("interruptableCall", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("interruptableCall", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
   __Pyx_AddTraceback("PyDeepCL.interruptableCall", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -15179,46 +15179,46 @@ static PyObject *__pyx_pf_8PyDeepCL_2interruptableCall(CYTHON_UNUSED PyObject *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("interruptableCall", 0);
 
-  /* "PyDeepCL.pyx":40
+  /* "PyDeepCL.pyx":41
  * 
  * def interruptableCall( function, args ):
  *     mythread = threading.Thread( target=function, args = args )             # <<<<<<<<<<<<<<
  *     mythread.daemon = True
  *     mythread.start()
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_threading); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_threading); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_Thread); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_Thread); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_target, __pyx_v_function) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_args, __pyx_v_args) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_target, __pyx_v_function) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_args, __pyx_v_args) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_empty_tuple, __pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mythread = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "PyDeepCL.pyx":41
+  /* "PyDeepCL.pyx":42
  * def interruptableCall( function, args ):
  *     mythread = threading.Thread( target=function, args = args )
  *     mythread.daemon = True             # <<<<<<<<<<<<<<
  *     mythread.start()
  *     while mythread.isAlive():
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_mythread, __pyx_n_s_daemon, Py_True) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 41; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_mythread, __pyx_n_s_daemon, Py_True) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":42
+  /* "PyDeepCL.pyx":43
  *     mythread = threading.Thread( target=function, args = args )
  *     mythread.daemon = True
  *     mythread.start()             # <<<<<<<<<<<<<<
  *     while mythread.isAlive():
  *         mythread.join(0.1)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_mythread, __pyx_n_s_start); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_mythread, __pyx_n_s_start); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_1))) {
@@ -15231,16 +15231,16 @@ static PyObject *__pyx_pf_8PyDeepCL_2interruptableCall(CYTHON_UNUSED PyObject *_
     }
   }
   if (__pyx_t_2) {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else {
-    __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 42; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "PyDeepCL.pyx":43
+  /* "PyDeepCL.pyx":44
  *     mythread.daemon = True
  *     mythread.start()
  *     while mythread.isAlive():             # <<<<<<<<<<<<<<
@@ -15248,7 +15248,7 @@ static PyObject *__pyx_pf_8PyDeepCL_2interruptableCall(CYTHON_UNUSED PyObject *_
  *         #print('join timed out')
  */
   while (1) {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_mythread, __pyx_n_s_isAlive); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_mythread, __pyx_n_s_isAlive); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_2 = NULL;
     if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_1))) {
@@ -15261,33 +15261,33 @@ static PyObject *__pyx_pf_8PyDeepCL_2interruptableCall(CYTHON_UNUSED PyObject *_
       }
     }
     if (__pyx_t_2) {
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     } else {
-      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_3 = __Pyx_PyObject_CallNoArg(__pyx_t_1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 43; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (!__pyx_t_4) break;
 
-    /* "PyDeepCL.pyx":44
+    /* "PyDeepCL.pyx":45
  *     mythread.start()
  *     while mythread.isAlive():
  *         mythread.join(0.1)             # <<<<<<<<<<<<<<
  *         #print('join timed out')
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_mythread, __pyx_n_s_join); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_mythread, __pyx_n_s_join); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "PyDeepCL.pyx":39
+  /* "PyDeepCL.pyx":40
  *         raise RuntimeError(message)
  * 
  * def interruptableCall( function, args ):             # <<<<<<<<<<<<<<
@@ -15311,7 +15311,7 @@ static PyObject *__pyx_pf_8PyDeepCL_2interruptableCall(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "PyDeepCL.pyx":47
+/* "PyDeepCL.pyx":48
  *         #print('join timed out')
  * 
  * def toCppString( pyString ):             # <<<<<<<<<<<<<<
@@ -15345,7 +15345,7 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("toCppString", 0);
 
-  /* "PyDeepCL.pyx":48
+  /* "PyDeepCL.pyx":49
  * 
  * def toCppString( pyString ):
  *     if isinstance( pyString, unicode ):             # <<<<<<<<<<<<<<
@@ -15356,7 +15356,7 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
   __pyx_t_2 = (__pyx_t_1 != 0);
   if (__pyx_t_2) {
 
-    /* "PyDeepCL.pyx":49
+    /* "PyDeepCL.pyx":50
  * def toCppString( pyString ):
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')             # <<<<<<<<<<<<<<
@@ -15364,9 +15364,9 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
  * 
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_pyString, __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_pyString, __pyx_n_s_encode); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_r = __pyx_t_4;
@@ -15374,7 +15374,7 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
     goto __pyx_L0;
   }
 
-  /* "PyDeepCL.pyx":50
+  /* "PyDeepCL.pyx":51
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')
  *     return pyString             # <<<<<<<<<<<<<<
@@ -15386,7 +15386,7 @@ static PyObject *__pyx_pf_8PyDeepCL_4toCppString(CYTHON_UNUSED PyObject *__pyx_s
   __pyx_r = __pyx_v_pyString;
   goto __pyx_L0;
 
-  /* "PyDeepCL.pyx":47
+  /* "PyDeepCL.pyx":48
  *         #print('join timed out')
  * 
  * def toCppString( pyString ):             # <<<<<<<<<<<<<<
@@ -26970,7 +26970,7 @@ static std::string __pyx_convert_string_from_py_std__in_string(PyObject *__pyx_v
   return __pyx_r;
 }
 
-static PyObject *__pyx_tp_new_8PyDeepCL_EasyCL(PyTypeObject *t, PyObject *a, PyObject *k) {
+static PyObject *__pyx_tp_new_8PyDeepCL_DeepCL(PyTypeObject *t, PyObject *a, PyObject *k) {
   PyObject *o;
   if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
     o = (*t->tp_alloc)(t, 0);
@@ -26978,13 +26978,13 @@ static PyObject *__pyx_tp_new_8PyDeepCL_EasyCL(PyTypeObject *t, PyObject *a, PyO
     o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
   }
   if (unlikely(!o)) return 0;
-  if (unlikely(__pyx_pw_8PyDeepCL_6EasyCL_1__cinit__(o, a, k) < 0)) {
+  if (unlikely(__pyx_pw_8PyDeepCL_6DeepCL_1__cinit__(o, a, k) < 0)) {
     Py_DECREF(o); o = 0;
   }
   return o;
 }
 
-static void __pyx_tp_dealloc_8PyDeepCL_EasyCL(PyObject *o) {
+static void __pyx_tp_dealloc_8PyDeepCL_DeepCL(PyObject *o) {
   #if PY_VERSION_HEX >= 0x030400a1
   if (unlikely(Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
@@ -26993,17 +26993,17 @@ static void __pyx_tp_dealloc_8PyDeepCL_EasyCL(PyObject *o) {
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static PyMethodDef __pyx_methods_8PyDeepCL_EasyCL[] = {
-  {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_6EasyCL_3__dealloc, METH_NOARGS, 0},
+static PyMethodDef __pyx_methods_8PyDeepCL_DeepCL[] = {
+  {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_3__dealloc, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 
-static PyTypeObject __pyx_type_8PyDeepCL_EasyCL = {
+static PyTypeObject __pyx_type_8PyDeepCL_DeepCL = {
   PyVarObject_HEAD_INIT(0, 0)
-  "PyDeepCL.EasyCL", /*tp_name*/
-  sizeof(struct __pyx_obj_8PyDeepCL_EasyCL), /*tp_basicsize*/
+  "PyDeepCL.DeepCL", /*tp_name*/
+  sizeof(struct __pyx_obj_8PyDeepCL_DeepCL), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_8PyDeepCL_EasyCL, /*tp_dealloc*/
+  __pyx_tp_dealloc_8PyDeepCL_DeepCL, /*tp_dealloc*/
   0, /*tp_print*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -27030,7 +27030,7 @@ static PyTypeObject __pyx_type_8PyDeepCL_EasyCL = {
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_8PyDeepCL_EasyCL, /*tp_methods*/
+  __pyx_methods_8PyDeepCL_DeepCL, /*tp_methods*/
   0, /*tp_members*/
   0, /*tp_getset*/
   0, /*tp_base*/
@@ -27040,7 +27040,7 @@ static PyTypeObject __pyx_type_8PyDeepCL_EasyCL = {
   0, /*tp_dictoffset*/
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_8PyDeepCL_EasyCL, /*tp_new*/
+  __pyx_tp_new_8PyDeepCL_DeepCL, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -29950,7 +29950,7 @@ static int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_staticmethod = __Pyx_GetBuiltinName(__pyx_n_s_staticmethod); if (!__pyx_builtin_staticmethod) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_Exception = __Pyx_GetBuiltinName(__pyx_n_s_Exception); if (!__pyx_builtin_Exception) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) {__pyx_filename = __pyx_f[15]; __pyx_lineno = 107; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[16]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_enumerate = __Pyx_GetBuiltinName(__pyx_n_s_enumerate); if (!__pyx_builtin_enumerate) {__pyx_filename = __pyx_f[16]; __pyx_lineno = 145; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -30054,25 +30054,25 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__8);
   __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "PyDeepCL.pyx":44
+  /* "PyDeepCL.pyx":45
  *     mythread.start()
  *     while mythread.isAlive():
  *         mythread.join(0.1)             # <<<<<<<<<<<<<<
  *         #print('join timed out')
  * 
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_float_0_1); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 44; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_float_0_1); if (unlikely(!__pyx_tuple__10)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 45; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "PyDeepCL.pyx":49
+  /* "PyDeepCL.pyx":50
  * def toCppString( pyString ):
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')             # <<<<<<<<<<<<<<
  *     return pyString
  * 
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_n_s_utf8); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 49; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_n_s_utf8); if (unlikely(!__pyx_tuple__11)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 50; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
 
@@ -30337,41 +30337,41 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__38);
   __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_Net, __pyx_n_s_createNetFromNetdef, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) {__pyx_filename = __pyx_f[13]; __pyx_lineno = 3; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":31
+  /* "PyDeepCL.pyx":32
  * include "QLearning.pyx"
  * 
  * def checkException():             # <<<<<<<<<<<<<<
  *     cdef int threwException = 0
  *     cdef string message = ""
  */
-  __pyx_tuple__40 = PyTuple_Pack(2, __pyx_n_s_threwException, __pyx_n_s_message); if (unlikely(!__pyx_tuple__40)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__40 = PyTuple_Pack(2, __pyx_n_s_threwException, __pyx_n_s_message); if (unlikely(!__pyx_tuple__40)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__40);
   __Pyx_GIVEREF(__pyx_tuple__40);
-  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(0, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_PyD, __pyx_n_s_checkException, 31, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(0, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_PyD, __pyx_n_s_checkException, 32, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":39
+  /* "PyDeepCL.pyx":40
  *         raise RuntimeError(message)
  * 
  * def interruptableCall( function, args ):             # <<<<<<<<<<<<<<
  *     mythread = threading.Thread( target=function, args = args )
  *     mythread.daemon = True
  */
-  __pyx_tuple__42 = PyTuple_Pack(3, __pyx_n_s_function, __pyx_n_s_args, __pyx_n_s_mythread); if (unlikely(!__pyx_tuple__42)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__42 = PyTuple_Pack(3, __pyx_n_s_function, __pyx_n_s_args, __pyx_n_s_mythread); if (unlikely(!__pyx_tuple__42)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__42);
   __Pyx_GIVEREF(__pyx_tuple__42);
-  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_PyD, __pyx_n_s_interruptableCall, 39, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_PyD, __pyx_n_s_interruptableCall, 40, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-  /* "PyDeepCL.pyx":47
+  /* "PyDeepCL.pyx":48
  *         #print('join timed out')
  * 
  * def toCppString( pyString ):             # <<<<<<<<<<<<<<
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')
  */
-  __pyx_tuple__44 = PyTuple_Pack(1, __pyx_n_s_pyString); if (unlikely(!__pyx_tuple__44)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_tuple__44 = PyTuple_Pack(1, __pyx_n_s_pyString); if (unlikely(!__pyx_tuple__44)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__44);
   __Pyx_GIVEREF(__pyx_tuple__44);
-  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_PyD, __pyx_n_s_toCppString, 47, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_home_user_git_DeepCL_python_PyD, __pyx_n_s_toCppString, 48, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
   /* "View.MemoryView":276
  *         return self.name
@@ -30534,10 +30534,10 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_EasyCL) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_type_8PyDeepCL_EasyCL.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "EasyCL", (PyObject *)&__pyx_type_8PyDeepCL_EasyCL) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_8PyDeepCL_EasyCL = &__pyx_type_8PyDeepCL_EasyCL;
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_DeepCL) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_type_8PyDeepCL_DeepCL.tp_print = 0;
+  if (PyObject_SetAttrString(__pyx_m, "DeepCL", (PyObject *)&__pyx_type_8PyDeepCL_DeepCL) < 0) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_8PyDeepCL_DeepCL = &__pyx_type_8PyDeepCL_DeepCL;
   if (PyType_Ready(&__pyx_type_8PyDeepCL_TrainingContext) < 0) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_type_8PyDeepCL_TrainingContext.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "TrainingContext", (PyObject *)&__pyx_type_8PyDeepCL_TrainingContext) < 0) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -31476,40 +31476,40 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_8PyDeepCL_NetdefToNet);
 
-  /* "PyDeepCL.pyx":31
+  /* "PyDeepCL.pyx":32
  * include "QLearning.pyx"
  * 
  * def checkException():             # <<<<<<<<<<<<<<
  *     cdef int threwException = 0
  *     cdef string message = ""
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_1checkException, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_1checkException, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_checkException, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 31; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_checkException, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 32; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "PyDeepCL.pyx":39
+  /* "PyDeepCL.pyx":40
  *         raise RuntimeError(message)
  * 
  * def interruptableCall( function, args ):             # <<<<<<<<<<<<<<
  *     mythread = threading.Thread( target=function, args = args )
  *     mythread.daemon = True
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_3interruptableCall, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_3interruptableCall, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_interruptableCall, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 39; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_interruptableCall, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 40; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "PyDeepCL.pyx":47
+  /* "PyDeepCL.pyx":48
  *         #print('join timed out')
  * 
  * def toCppString( pyString ):             # <<<<<<<<<<<<<<
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_5toCppString, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_5toCppString, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_toCppString, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 47; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_toCppString, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 48; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "PyDeepCL.pyx":1

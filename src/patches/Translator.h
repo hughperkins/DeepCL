@@ -8,6 +8,6 @@
 
 class Translator {
 public:
-    static void translate( int n, int numPlanes, int imageSize, int translateRows, int translateCols, float *source, float *destination );
+    static void translate(int n, int numPlanes, int imageSize, int translateRows, int translateCols, float *source, float *destination);
 };
 

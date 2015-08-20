@@ -123,6 +123,8 @@ License
 Recent changes
 ==============
 
+* Aug 19th-20th:
+  * Python wrappers now built using a very thin setup.py layer, on top of the standard native DeepCL build
 * Aug 18th:
   * added BackwardIm2Col layer, which uses im2col for backward propagation
   * added BackpropWeightsIm2Col layer, which uses im2col for weight update

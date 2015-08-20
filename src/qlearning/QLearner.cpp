@@ -11,10 +11,10 @@
 
 using namespace std;
 
-QLearner::QLearner( Trainer *trainer, Scenario *scenario, NeuralNet *net ) :
-        trainer( trainer ),
-        scenario( scenario ),
-        net( net ) {
+QLearner::QLearner(Trainer *trainer, Scenario *scenario, NeuralNet *net) :
+        trainer(trainer),
+        scenario(scenario),
+        net(net) {
     epoch = 0;
     lambda = 0.9f;
     maxSamples = 32;
@@ -46,7 +46,7 @@ void QLearner::learnFromPast() {
 
     // draw samples
     Experience **experiences = new Experience *[ batchSize ];
-    for( int n = 0; n < batchSize; n++ ) {
+    for(int n = 0; n < batchSize; n++) {
         int sampleIdx = myrand() % availableSamples;
         Experience *experience = history[sampleIdx];
         experiences[n] = experience;
@@ -55,23 +55,23 @@ void QLearner::learnFromPast() {
     // copy in data 
     float *afters = new float[ batchSize * planes * size * size ];
     float *befores = new float[ batchSize * planes * size * size ];
-    for( int n = 0; n < batchSize; n++ ) {
+    for(int n = 0; n < batchSize; n++) {
         Experience *experience = experiences[n]; 
-        arrayCopy( afters + n * planes * size * size, experience->after, planes * size * size );
-        arrayCopy( befores + n * planes * size * size, experience->before, planes * size * size );
+        arrayCopy(afters + n * planes * size * size, experience->after, planes * size * size);
+        arrayCopy(befores + n * planes * size * size, experience->before, planes * size * size);
     }
 
     // get next q values, based on forward prop 'afters'
-    net->forward( afters );
+    net->forward(afters);
     float const *allOutput = net->getOutput();
     float *bestQ = new float[ batchSize ];
     int *bestAction = new int[ batchSize ];
-    for( int n = 0; n < batchSize; n++ ) {
+    for(int n = 0; n < batchSize; n++) {
         float const *output = allOutput + n * numActions;
         float thisBestQ = output[0];
         int thisBestAction = 0;
-        for( int action = 1; action < numActions; action++ ) {
-            if( output[action] > thisBestQ ) {
+        for(int action = 1; action < numActions; action++) {
+            if(output[action] > thisBestQ) {
                 thisBestQ = output[action];
                 thisBestAction = action;
             }
@@ -81,13 +81,13 @@ void QLearner::learnFromPast() {
     }
     // forward prop 'befores', set up expected values, and backprop
     // new q values
-    net->forward( befores );
+    net->forward(befores);
     allOutput = net->getOutput();
     float *expectedValues = new float[ numActions * batchSize ];
-    arrayCopy( expectedValues, allOutput, batchSize * numActions );
-    for( int n = 0; n < batchSize; n++ ) {
+    arrayCopy(expectedValues, allOutput, batchSize * numActions);
+    for(int n = 0; n < batchSize; n++) {
         Experience *experience = experiences[n]; 
-        if( experience->isEndState ) {
+        if(experience->isEndState) {
             expectedValues[ n * numActions + experience->action ] = experience->reward; 
         } else {
             expectedValues[ n * numActions + experience->action ] = experience->reward + lambda * bestQ[n];        
@@ -95,9 +95,9 @@ void QLearner::learnFromPast() {
     }
     // backprop...
 //    throw runtime_error("need to implement this");
-    TrainingContext context( epoch, 0 );
-    trainer->train( net, &context, befores, expectedValues );
-//    net->backward( learningRate / batchSize, expectedValues );
+    TrainingContext context(epoch, 0);
+    trainer->train(net, &context, befores, expectedValues);
+//    net->backward(learningRate / batchSize, expectedValues);
     net->setBatchSize(1);
 
     epoch++;
@@ -112,36 +112,36 @@ void QLearner::learnFromPast() {
 
 // this is now a scenario-free zone, and therefore no callbacks, and easy to wrap with
 // swig, cython etc.
-int QLearner::step( float lastReward, bool wasReset, float *perception ) { // do one frame
-    if( lastAction != -1 ) {
+int QLearner::step(float lastReward, bool wasReset, float *perception) { // do one frame
+    if(lastAction != -1) {
         Experience *experience = new Experience(); 
         experience->action = lastAction;
         experience->reward = lastReward;
         experience->isEndState = wasReset;
         experience->before = new float[ size * size * planes ];
-        arrayCopy( experience->before, this->lastPerception, size * size * planes );
-//        scenario->getPerception( perception );
+        arrayCopy(experience->before, this->lastPerception, size * size * planes);
+//        scenario->getPerception(perception);
         experience->after = new float[ size * size * planes ];
-        arrayCopy( experience->after, perception, size * size * planes );
-        history.push_back( experience );
-        if( wasReset ) {
+        arrayCopy(experience->after, perception, size * size * planes);
+        history.push_back(experience);
+        if(wasReset) {
             game++;
         }
         learnFromPast();
     }
-//        cout << "see: " << toString( perception, perceptionSize + numActions ) << endl;
+//        cout << "see: " << toString(perception, perceptionSize + numActions) << endl;
     int action = -1;
-    if( lastAction == -1 || (myrand() % 10000 / 10000.0f) <= epsilon ) {
+    if(lastAction == -1 || (myrand() % 10000 / 10000.0f) <= epsilon) {
         action = myrand() % numActions;
 //            cout << "action, rand: " << action << endl;
     } else {
         net->setBatchSize(1);
-        net->forward( perception );
+        net->forward(perception);
         float highestQ = 0;
         int bestAction = 0;
         float const*output = net->getOutput();
-        for( int i = 0; i < numActions; i++ ) {
-            if( i == 0 || output[i] > highestQ ) {
+        for(int i = 0; i < numActions; i++) {
+            if(i == 0 || output[i] > highestQ) {
                 highestQ = output[i];
                 bestAction = i;
             }
@@ -149,8 +149,8 @@ int QLearner::step( float lastReward, bool wasReset, float *perception ) { // do
         action = bestAction;
 //            cout << "action, q: " << action << endl;
     }
-    arrayCopy( this->lastPerception, perception, size * size * planes );
-//        printDirections( net, scenario->height, scenario->width );
+    arrayCopy(this->lastPerception, perception, size * size * planes);
+//        printDirections(net, scenario->height, scenario->width);
     this->lastAction = action;
     return action;
 }
@@ -162,11 +162,11 @@ void QLearner::run() {
 //    int selectedAction = -1;
     float *perception = new float[ size * size * planes ];
     bool wasReset = false;
-    while( true ) {
-        scenario->getPerception( perception );
-        int action = step( lastReward, wasReset, perception );
-        lastReward = scenario->act( action );
-        if( scenario->hasFinished() ) {
+    while(true) {
+        scenario->getPerception(perception);
+        int action = step(lastReward, wasReset, perception);
+        lastReward = scenario->act(action);
+        if(scenario->hasFinished()) {
             scenario->reset();
             wasReset = true;
         } else {

@@ -14,9 +14,9 @@ class DeepCL_EXPORT DropoutMaker : public LayerMaker2 {
 public:
     float _dropRatio; // 0.0 -> 1.0
     DropoutMaker() :
-        _dropRatio( 0.5f ) {
+        _dropRatio(0.5f) {
     }
-    DropoutMaker *dropRatio( float _dropRatio ) {
+    DropoutMaker *dropRatio(float _dropRatio) {
         this->_dropRatio = _dropRatio;
         return this;
     }
@@ -25,10 +25,10 @@ public:
     }
     virtual DropoutMaker *clone() const {
         DropoutMaker *thisClone = new DropoutMaker();
-        memcpy( thisClone, this, sizeof( DropoutMaker ) );
+        memcpy(thisClone, this, sizeof(DropoutMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 
 

@@ -7,7 +7,7 @@
 // every plane is independent
 // every example is independent
 // so, globalid can be: [n][plane][outputRow][outputCol]
-kernel void forwardNaive( const int batchSize, global const float *input, global int *selectors, global float *output ) {
+kernel void forwardNaive(const int batchSize, global const float *input, global int *selectors, global float *output) {
     const int globalId = get_global_id(0);
 
     const int intraImageOffset = globalId % gOutputSizeSquared;
@@ -18,22 +18,22 @@ kernel void forwardNaive( const int batchSize, global const float *input, global
     const int plane = image2dIdx % gNumPlanes;
     const int n = image2dIdx / gNumPlanes;
 
-    if( n >= batchSize ) {
+    if (n >= batchSize) {
         return;
     }
 
     const int inputRow = outputRow * gPoolingSize;
     const int inputCol = outputCol * gPoolingSize;
-    const int inputImageOffset = ( n * gNumPlanes + plane ) * gInputSizeSquared;
+    const int inputImageOffset = (n * gNumPlanes + plane) * gInputSizeSquared;
     int selector = 0;
     int poolInputOffset = inputImageOffset + inputRow * gInputSize + inputCol;
     float maxValue = input[ poolInputOffset ];
-    for( int dRow = 0; dRow < gPoolingSize; dRow++ ) {
-        for( int dCol = 0; dCol < gPoolingSize; dCol++ ) {
-            bool process = ( inputRow + dRow < gInputSize ) && ( inputCol + dCol < gInputSize );
-            if( process ) {
+    for (int dRow = 0; dRow < gPoolingSize; dRow++) {
+        for (int dCol = 0; dCol < gPoolingSize; dCol++) {
+            bool process = (inputRow + dRow < gInputSize) && (inputCol + dCol < gInputSize);
+            if (process) {
                 float thisValue = input[ poolInputOffset + dRow * gInputSize + dCol ];
-                if( thisValue > maxValue ) {
+                if (thisValue > maxValue) {
                     maxValue = thisValue;
                     selector = dRow * gPoolingSize + dCol;
                 }

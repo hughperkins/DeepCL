@@ -7,7 +7,7 @@
 
 using namespace std;
 
-ostream &operator<<( ostream &os, const LayerDimensions &dim ) {
+ostream &operator<<(ostream &os, const LayerDimensions &dim) {
     os << "LayerDimensions{";
     os << " inputPlanes=" << dim.inputPlanes;
     os << " inputSize=" << dim.inputSize;
@@ -25,8 +25,8 @@ void LayerDimensions::deriveOthers() {
     this->numInputPlanes = inputPlanes;
     this->isEven = filterSize % 2 == 0;
     this->outputSize = padZeros ? 
-            ( filterSize % 2 == 0 ? inputSize / ( skip + 1 ) + 1 : inputSize / ( skip + 1 ) ) :
-            ( inputSize - filterSize ) / ( skip + 1 ) + 1;
+            (filterSize % 2 == 0 ? inputSize / (skip + 1) + 1 : inputSize / (skip + 1) ) :
+            (inputSize - filterSize) / (skip + 1) + 1;
 
     this->inputSizeSquared = inputSize * inputSize;
     this->filterSizeSquared = filterSize * filterSize;
@@ -42,7 +42,7 @@ void LayerDimensions::deriveOthers() {
 
 string LayerDimensions::buildOptionsString() {
     string options = "";
-    if( biased ) {
+    if(biased) {
          options += " -D BIASED";
     }
     options += " -D gNumInputPlanes=" + toString(inputPlanes);
@@ -51,7 +51,7 @@ string LayerDimensions::buildOptionsString() {
     options += " -D gInputSizeSquared=" + toString(square(inputSize));
     options += " -D gNumFilters=" + toString(numFilters);
     options += " -D gFilterSize=" + toString(filterSize);
-    options += " -D gHalfFilterSize=" + toString( filterSize >> 1 );
+    options += " -D gHalfFilterSize=" + toString(filterSize >> 1);
     options += " -D gFilterSizeSquared=" + toString(square(filterSize));
     options += " -D gNumOutputPlanes=" + toString(numFilters);
     options += " -D gOutputPlanes=" + toString(numFilters);

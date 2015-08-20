@@ -21,10 +21,10 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ActivationBackwardGpuNaive();
-    VIRTUAL void backward( int batchSize, CLWrapper *inputWrapper,
+    VIRTUAL void backward(int batchSize, CLWrapper *inputWrapper,
     CLWrapper *gradOutputWrapper,
-    CLWrapper *gradInputWrapper );
-    ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
+    CLWrapper *gradInputWrapper);
+    ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
 
     // [[[end]]]
 };

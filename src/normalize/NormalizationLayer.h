@@ -26,14 +26,14 @@ public:
     int allocatedSize;
     float *output;
 
-    inline int getResultIndex( int n, int outPlane, int outRow, int outCol ) const {
-        return ( ( n
-            * outputPlanes + outPlane )
-            * outputSize + outRow )
+    inline int getResultIndex(int n, int outPlane, int outRow, int outCol) const {
+        return (( n
+            * outputPlanes + outPlane)
+            * outputSize + outRow)
             * outputSize + outCol;
     }
-    inline float getResult( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getResultIndex(n,outPlane, outRow, outCol ) ];
+    inline float getResult(int n, int outPlane, int outRow, int outCol) const {
+        return output[ getResultIndex(n,outPlane, outRow, outCol) ];
     }
 
     // [[[cog
@@ -41,21 +41,21 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NormalizationLayer( Layer *previousLayer, NormalizationLayerMaker *maker );
+    NormalizationLayer(Layer *previousLayer, NormalizationLayerMaker *maker);
     VIRTUAL ~NormalizationLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getOutput();
     VIRTUAL ActivationFunction const *getActivationFunction();
-    VIRTUAL int getPersistSize( int version ) const;
-    VIRTUAL void persistToArray( int version, float *array );
-    VIRTUAL void unpersistFromArray( int version, float const*array );
+    VIRTUAL int getPersistSize(int version) const;
+    VIRTUAL void persistToArray(int version, float *array);
+    VIRTUAL void unpersistFromArray(int version, float const*array);
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput() const;
     VIRTUAL void print() const;
     VIRTUAL bool needErrorsBackprop();
-    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL void forward();
-    VIRTUAL void backward( float learningRate, float const *gradOutput );
+    VIRTUAL void backward(float learningRate, float const *gradOutput);
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputCubeSize() const;
@@ -66,6 +66,6 @@ public:
     // [[[end]]]
 };
 
-std::ostream &operator<<( std::ostream &os, NormalizationLayer &layer );
-std::ostream &operator<<( std::ostream &os, NormalizationLayer const*layer );
+std::ostream &operator<<(std::ostream &os, NormalizationLayer &layer);
+std::ostream &operator<<(std::ostream &os, NormalizationLayer const*layer);
 

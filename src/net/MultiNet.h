@@ -36,7 +36,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    MultiNet( int numNets, NeuralNet *model );
+    MultiNet(int numNets, NeuralNet *model);
     VIRTUAL ~MultiNet();
     VIRTUAL int getInputCubeSize() const;
     VIRTUAL int getOutputCubeSize() const;
@@ -44,18 +44,18 @@ public:
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputSize() const;
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
-    VIRTUAL float calcLoss(float const *expectedValues );
-    VIRTUAL float calcLossFromLabels(int const *labels );
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void setTraining( bool training );
-    VIRTUAL int calcNumRight( int const *labels );
+    VIRTUAL float calcLoss(float const *expectedValues);
+    VIRTUAL float calcLossFromLabels(int const *labels);
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL void setTraining(bool training);
+    VIRTUAL int calcNumRight(int const *labels);
     void forwardToOurselves();
-    VIRTUAL void forward( float const*images);
-    VIRTUAL void backwardFromLabels( int const *labels);
-    VIRTUAL void backward( float const *expectedOutput);
+    VIRTUAL void forward(float const*images);
+    VIRTUAL void backwardFromLabels(int const *labels);
+    VIRTUAL void backward(float const *expectedOutput);
     VIRTUAL float const *getOutput() const;
     VIRTUAL int getNumNets() const;
-    VIRTUAL Trainable *getNet( int idx );
+    VIRTUAL Trainable *getNet(int idx);
 
     // [[[end]]]
 };

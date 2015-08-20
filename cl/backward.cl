@@ -13,7 +13,7 @@
 // weights: [filterId][inputPlane][filterRow][filterCol] 32 * 32 * 5 * 5 * 4 = 409KB
 void kernel calcGradInput( 
         const int batchSize,
-        global const float *gradOutput, global float *weights, global float *gradInput ) {
+        global const float *gradOutput, global float *weights, global float *gradInput) {
     int globalId = get_global_id(0);
 
     const int upstreamImage2dId = globalId / gInputSizeSquared;
@@ -25,30 +25,30 @@ void kernel calcGradInput(
     const int upstreamPlane = upstreamImage2dId % gInputPlanes;
     const int n = upstreamImage2dId / gInputPlanes;
 
-    if( n >= batchSize ) {
+    if (n >= batchSize) {
         return;
     }
 
-    const int minFilterRow = max( 0, upstreamRow + gMargin - (gOutputSize - 1) );
-    const int maxFilterRow = min( gFilterSize - 1, upstreamRow + gMargin );
-    const int minFilterCol = max( 0, upstreamCol + gMargin - (gOutputSize -1) );
-    const int maxFilterCol = min( gFilterSize - 1, upstreamCol + gMargin );
+    const int minFilterRow = max(0, upstreamRow + gMargin - (gOutputSize - 1));
+    const int maxFilterRow = min(gFilterSize - 1, upstreamRow + gMargin);
+    const int minFilterCol = max(0, upstreamCol + gMargin - (gOutputSize -1));
+    const int maxFilterCol = min(gFilterSize - 1, upstreamCol + gMargin);
 
     float sumWeightTimesOutError = 0;
     // aggregate over [outPlane][outRow][outCol]
-    for( int outPlane = 0; outPlane < gNumFilters; outPlane++ ) {
-        for( int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++ ) {
+    for (int outPlane = 0; outPlane < gNumFilters; outPlane++) {
+        for (int filterRow = minFilterRow; filterRow <= maxFilterRow; filterRow++) {
             int outRow = upstreamRow + gMargin - filterRow;
-            for( int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++ ) {
+            for (int filterCol = minFilterCol; filterCol <= maxFilterCol; filterCol++) {
                 int outCol = upstreamCol + gMargin - filterCol;
-                int resultIndex = ( ( n * gNumFilters 
-                          + outPlane ) * gOutputSize
-                          + outRow ) * gOutputSize
+                int resultIndex = (( n * gNumFilters 
+                          + outPlane) * gOutputSize
+                          + outRow) * gOutputSize
                           + outCol;
                 float thisError = gradOutput[resultIndex];
-                int thisWeightIndex = ( ( outPlane * gInputPlanes
-                                    + upstreamPlane ) * gFilterSize
-                                    + filterRow ) * gFilterSize
+                int thisWeightIndex = (( outPlane * gInputPlanes
+                                    + upstreamPlane) * gFilterSize
+                                    + filterRow) * gFilterSize
                                     + filterCol;
                 float thisWeight = weights[thisWeightIndex];
                 float thisWeightTimesError = thisWeight * thisError;

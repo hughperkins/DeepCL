@@ -21,21 +21,21 @@ class DeepCL_EXPORT Trainable {
 public:
     virtual ~Trainable() {}
     virtual int getOutputNumElements() const = 0;
-    virtual float calcLoss(float const *expectedValues ) = 0;
-    virtual float calcLossFromLabels(int const *labels ) = 0;
-    virtual void setBatchSize( int batchSize ) = 0;
-    virtual void setTraining( bool training ) = 0;
-    virtual int calcNumRight( int const *labels ) = 0;
-    virtual void forward( float const*images) = 0;
-    virtual void backwardFromLabels( int const *labels) = 0;
-    virtual void backward( float const *expectedOutput) = 0;
+    virtual float calcLoss(float const *expectedValues) = 0;
+    virtual float calcLossFromLabels(int const *labels) = 0;
+    virtual void setBatchSize(int batchSize) = 0;
+    virtual void setTraining(bool training) = 0;
+    virtual int calcNumRight(int const *labels) = 0;
+    virtual void forward(float const*images) = 0;
+    virtual void backwardFromLabels(int const *labels) = 0;
+    virtual void backward(float const *expectedOutput) = 0;
     virtual float const *getOutput() const = 0;
     virtual LossLayerMaker *cloneLossLayerMaker() const = 0;
     virtual int getOutputPlanes() const = 0;
     virtual int getOutputSize() const = 0;
     virtual int getInputCubeSize() const = 0;
     virtual int getOutputCubeSize() const = 0;
-//    virtual void setTrainer( TrainerMaker *trainer ) = 0;
+//    virtual void setTrainer(TrainerMaker *trainer) = 0;
 
     // [[[cog
     // import cog_addheaders

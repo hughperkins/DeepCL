@@ -22,13 +22,13 @@ VIRTUAL AdagradState::~AdagradState() {
     delete[] sumSquares;
 }
 
-AdagradState::AdagradState( EasyCL *cl, int numWeights, float fudgeFactor ) :
-        numWeights( numWeights ) {
+AdagradState::AdagradState(EasyCL *cl, int numWeights, float fudgeFactor) :
+        numWeights(numWeights) {
     sumSquares = new float[numWeights];
-    for( int i = 0; i < numWeights; i++ ) {
+    for(int i = 0; i < numWeights; i++) {
         sumSquares[i] = fudgeFactor;
     }
-    sumSquaresWrapper = cl->wrap( numWeights, sumSquares );
+    sumSquaresWrapper = cl->wrap(numWeights, sumSquares);
     sumSquaresWrapper->copyToDevice();
 }
 

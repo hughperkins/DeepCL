@@ -13,15 +13,25 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-OPTION(BUILD_PYTHON_WRAPPERS "Build Python wrappers.  Needs Python." ON)
+#OPTION(BUILD_PYTHON_WRAPPERS "Build Python wrappers.  Needs Python." ON)
 OPTION(BUILD_JPEG_SUPPORT "Allows native loading of jpegs, via manifest file." ON)
 OPTION(BUILD_INTERNAL_LUA "If using from Lua, set to 'OFF'" ON)
-OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
-OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+OPTION(MAINTAINER_OPTIONS "Show maintainer options" OFF)
 
-    mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
-OPTION(PROTOTYPING "Only for devs." OFF)
-    mark_as_advanced( FORCE PROTOTYPING )
+if(MAINTAINER_OPTIONS)
+    OPTION(BUILD_PYTHON_WRAPPERS "Build python wrappers.  Maintainers only." OFF.)
+    OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
+    OPTION(PROTOTYPING "Only for devs." OFF)
+#    mark_as_advanced( FORCE PROTOTYPING )
+    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+#    mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
+else()
+    unset(DEV_RUN_COG CACHE)
+    unset(DEV_RUN_CYTHON CACHE)
+    unset(BUILD_PYTHON_WRAPPERS CACHE)
+    unset(LIBPNGPP_AVAILABLE CACHE)
+    unset(PROTOTYPING CACHE)
+endif()
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   SET(CMAKE_INSTALL_PREFIX
@@ -46,7 +56,7 @@ unset(LUA_INCLUDE_DIR CACHE)
 
 # SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
 
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 INCLUDE("${CMAKE_MODULE_PATH}/build_EasyCL.cmake")
 INCLUDE_DIRECTORIES(${EASYCL_INCLUDE_DIRS})
@@ -78,6 +88,7 @@ foreach(dir ${dirs})
         set( deepcl_sources ${deepcl_sources} src/${dir}/${source})
     endforeach()
 endforeach()
+set(deepcl_sources ${deepcl_sources} src/DeepCL.cpp)
 #message("deepcl_sources ${deepcl_sources}")
 
 #find_package(Lua51)
@@ -152,7 +163,7 @@ if(DEV_RUN_COG)
     endforeach()
     add_custom_target(
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
     add_dependencies( DeepCL cog )
@@ -161,6 +172,7 @@ endif(DEV_RUN_COG)
 #ADD_DEPENDENCIES(DeepCL clBLAS)
 
 set( UNITTEST_SOURCES test/testClBlas.cpp
+ test/testDeepCL.cpp
  test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackward.cpp test/testsinglebatch.cpp 

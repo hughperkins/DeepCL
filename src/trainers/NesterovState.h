@@ -46,7 +46,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~NesterovState();
-    NesterovState( EasyCL *cl, int numWeights );
+    NesterovState(EasyCL *cl, int numWeights);
 
     // [[[end]]]
 };

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Layer *RandomPatchesMaker::createLayer( Layer *previousLayer ) {
-    return new RandomPatches( previousLayer, this );
+Layer *RandomPatchesMaker::createLayer(Layer *previousLayer) {
+    return new RandomPatches(previousLayer, this);
 }
 

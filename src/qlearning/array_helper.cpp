@@ -9,22 +9,22 @@
 
 using namespace std;
 
-void arrayCopy( float *dest, float const*src, int N ) {
-    for( int i = 0; i < N; i++ ) {
+void arrayCopy(float *dest, float const*src, int N) {
+    for(int i = 0; i < N; i++) {
         dest[i] = src[i];
     }
 }
 
-void arrayZero( float *array, int N ) {
-    for( int i = 0; i < N; i++ ) {
+void arrayZero(float *array, int N) {
+    for(int i = 0; i < N; i++) {
         array[i] = 0;
     }
 }
 
-string toString( float const*array, int N ) {
+string toString(float const*array, int N) {
     string result = "";
-    for( int i = 0; i < N; i++ ) {
-        result += toString( array[i] );
+    for(int i = 0; i < N; i++) {
+        result += toString(array[i]);
     }
     return result;
 }

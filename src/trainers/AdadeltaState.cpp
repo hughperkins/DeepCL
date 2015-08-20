@@ -24,16 +24,16 @@ VIRTUAL AdadeltaState::~AdadeltaState() {
     delete[] sumUpdateSquared;
 }
 
-AdadeltaState::AdadeltaState( EasyCL *cl, int numWeights ) :
-        numWeights( numWeights ) {
+AdadeltaState::AdadeltaState(EasyCL *cl, int numWeights) :
+        numWeights(numWeights) {
     sumGradSquared = new float[numWeights];
     sumUpdateSquared = new float[numWeights];
-    for( int i = 0; i < numWeights; i++ ) {
+    for(int i = 0; i < numWeights; i++) {
         sumGradSquared[i] = 0.0000001f; // should move this into fudgefactor I guess?
         sumUpdateSquared[i] = 0.0000001f; // should move this into fudgefactor I guess?
     }
-    sumGradSquaredWrapper = cl->wrap( numWeights, sumGradSquared );
-    sumUpdateSquaredWrapper = cl->wrap( numWeights, sumUpdateSquared );
+    sumGradSquaredWrapper = cl->wrap(numWeights, sumGradSquared);
+    sumUpdateSquaredWrapper = cl->wrap(numWeights, sumUpdateSquared);
     sumGradSquaredWrapper->copyToDevice();
     sumUpdateSquaredWrapper->copyToDevice();
 }

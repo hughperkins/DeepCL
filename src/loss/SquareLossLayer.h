@@ -27,14 +27,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    SquareLossLayer( Layer *previousLayer, SquareLossMaker *maker );
+    SquareLossLayer(Layer *previousLayer, SquareLossMaker *maker);
     VIRTUAL ~SquareLossLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float*getGradInput();
-    VIRTUAL float calcLoss( float const *expected );
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcGradInput( float const*expectedOutput );
-    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL float calcLoss(float const *expected);
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL void calcGradInput(float const*expectedOutput);
+    VIRTUAL int getPersistSize(int version) const;
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

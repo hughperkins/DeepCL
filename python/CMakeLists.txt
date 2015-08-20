@@ -46,8 +46,8 @@ endif()
 #target_link_libraries(PyDeepCL ${DEEPCL_LIBRARIES})
 target_link_libraries(PyDeepCL DeepCL)
 
-install(PROGRAMS test_deepcl.py test_lowlevel.py test_qlearning.py
-    DESTINATION bin)
+#install(PROGRAMS test_deepcl.py test_lowlevel.py test_qlearning.py
+#    DESTINATION bin)
 if(WIN32)
 	install(TARGETS PyDeepCL
 		RUNTIME DESTINATION bin

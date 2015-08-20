@@ -24,15 +24,15 @@ public:
     int _numPlanes;
     int _imageSize;
     PUBLICAPI InputLayerMaker() :
-//            LayerMaker( net, 0 ),
+//            LayerMaker(net, 0),
             _numPlanes(0),
             _imageSize(0) {
     }
-    PUBLICAPI InputLayerMaker *numPlanes( int _numPlanes ) {
+    PUBLICAPI InputLayerMaker *numPlanes(int _numPlanes) {
         this->_numPlanes = _numPlanes;
         return this;
     }    
-    PUBLICAPI InputLayerMaker *imageSize( int _imageSize ) {
+    PUBLICAPI InputLayerMaker *imageSize(int _imageSize) {
         this->_imageSize = _imageSize;
         return this;
     }    
@@ -41,9 +41,9 @@ public:
     }    
     virtual InputLayerMaker *clone() const {
         InputLayerMaker *thisClone = new InputLayerMaker();
-        memcpy( thisClone, this, sizeof( InputLayerMaker ) );
+        memcpy(thisClone, this, sizeof(InputLayerMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

@@ -15,8 +15,8 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-LossLayer::LossLayer( Layer *previousLayer, LossLayerMaker *maker ) :
-        Layer( previousLayer, maker ) {
+LossLayer::LossLayer(Layer *previousLayer, LossLayerMaker *maker) :
+        Layer(previousLayer, maker) {
 }
 VIRTUAL void LossLayer::forward() {
 }
@@ -42,42 +42,42 @@ VIRTUAL int LossLayer::getWeightsSize() const {
     return previousLayer->getWeightsSize();
 }
 
-VIRTUAL float LossLayer::calcLoss( OutputData *outputData ) {
-    ExpectedData *expectedData = dynamic_cast< ExpectedData * >( outputData );
-    LabeledData *labeledData = dynamic_cast< LabeledData * >( outputData );
-    if( expectedData != 0 ) {
-        return this->calcLoss( expectedData->expected );
-    } else if( labeledData != 0 ) {
-        IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >( this );
-        return labeled->calcLossFromLabels( labeledData->labels );
+VIRTUAL float LossLayer::calcLoss(OutputData *outputData) {
+    ExpectedData *expectedData = dynamic_cast< ExpectedData * >(outputData);
+    LabeledData *labeledData = dynamic_cast< LabeledData * >(outputData);
+    if(expectedData != 0) {
+        return this->calcLoss(expectedData->expected);
+    } else if(labeledData != 0) {
+        IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >(this);
+        return labeled->calcLossFromLabels(labeledData->labels);
     } else {
-        throw runtime_error( "OutputData child class not implemeneted in LossLayer::calcLoss" );
+        throw runtime_error("OutputData child class not implemeneted in LossLayer::calcLoss");
     }
 }
 
-VIRTUAL void LossLayer::calcGradInput( OutputData *outputData ) {
-    ExpectedData *expectedData = dynamic_cast< ExpectedData * >( outputData );
-    LabeledData *labeledData = dynamic_cast< LabeledData * >( outputData );
-    if( expectedData != 0 ) {
-        this->calcGradInput( expectedData->expected );
-    } else if( labeledData != 0 ) {
-        IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >( this );
-        labeled->calcGradInputFromLabels( labeledData->labels );
+VIRTUAL void LossLayer::calcGradInput(OutputData *outputData) {
+    ExpectedData *expectedData = dynamic_cast< ExpectedData * >(outputData);
+    LabeledData *labeledData = dynamic_cast< LabeledData * >(outputData);
+    if(expectedData != 0) {
+        this->calcGradInput(expectedData->expected);
+    } else if(labeledData != 0) {
+        IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >(this);
+        labeled->calcGradInputFromLabels(labeledData->labels);
     } else {
-        throw runtime_error( "OutputData child class not implemeneted in LossLayer::calcGradInput" );
+        throw runtime_error("OutputData child class not implemeneted in LossLayer::calcGradInput");
     }
 }
 
-VIRTUAL int LossLayer::calcNumRight( OutputData *outputData ) {
-    ExpectedData *expectedData = dynamic_cast< ExpectedData * >( outputData );
-    LabeledData *labeledData = dynamic_cast< LabeledData * >( outputData );
-    if( expectedData != 0 ) {
+VIRTUAL int LossLayer::calcNumRight(OutputData *outputData) {
+    ExpectedData *expectedData = dynamic_cast< ExpectedData * >(outputData);
+    LabeledData *labeledData = dynamic_cast< LabeledData * >(outputData);
+    if(expectedData != 0) {
         return 0; // how are we going to calculate num right, if not labeled?
-    } else if( labeledData != 0 ) {
-        IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >( this );
-        return labeled->calcNumRight( labeledData->labels );
+    } else if(labeledData != 0) {
+        IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >(this);
+        return labeled->calcNumRight(labeledData->labels);
     } else {
-        throw runtime_error( "OutputData child class not implemeneted in LossLayer::calcNumRight" );
+        throw runtime_error("OutputData child class not implemeneted in LossLayer::calcNumRight");
     }
 }
 

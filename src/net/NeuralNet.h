@@ -35,11 +35,11 @@ PUBLICAPI
 class DeepCL_EXPORT NeuralNet : public Trainable {
 protected:
 #ifdef _WIN32
-#pragma warning( disable: 4251 )
+#pragma warning(disable: 4251)
 #endif
     std::vector< Layer *> layers;
 #ifdef _WIN32
-#pragma warning( default: 4251 )
+#pragma warning(default: 4251)
 #endif
     EasyCL *cl; // NOT owned by us, dont delete
     Trainer *trainer; // NOT owned by us, dont delete
@@ -52,38 +52,38 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NeuralNet( EasyCL *cl );
-    PUBLICAPI NeuralNet(  EasyCL *cl, int numPlanes, int imageSize );
+    NeuralNet(EasyCL *cl);
+    PUBLICAPI NeuralNet(  EasyCL *cl, int numPlanes, int imageSize);
     ~NeuralNet();
-    STATIC NeuralNetMould *maker( EasyCL *cl );
+    STATIC NeuralNetMould *maker(EasyCL *cl);
     NeuralNet *clone();
     EasyCL *getCl();
-    PUBLICAPI void addLayer( LayerMaker2 *maker );
-    PUBLICAPI void initWeights( int layerIndex, float *weights, float *bias );
-    PUBLICAPI void initWeights( int layerIndex, float *weights );
-    PUBLICAPI void initBias( int layerIndex, float *weights );
-    PUBLICAPI float calcLoss(float const *expectedValues );
-    PUBLICAPI float calcLossFromLabels(int const *labels );
-    float calcLoss( OutputData *outputData );
-    int calcNumRight( OutputData *outputData );
-    EpochMaker *epochMaker( Trainer *trainer );
+    PUBLICAPI void addLayer(LayerMaker2 *maker);
+    PUBLICAPI void initWeights(int layerIndex, float *weights, float *bias);
+    PUBLICAPI void initWeights(int layerIndex, float *weights);
+    PUBLICAPI void initBias(int layerIndex, float *weights);
+    PUBLICAPI float calcLoss(float const *expectedValues);
+    PUBLICAPI float calcLossFromLabels(int const *labels);
+    float calcLoss(OutputData *outputData);
+    int calcNumRight(OutputData *outputData);
+    EpochMaker *epochMaker(Trainer *trainer);
     VIRTUAL LossLayerMaker *cloneLossLayerMaker() const;
     PUBLICAPI InputLayer *getFirstLayer();
     PUBLICAPI Layer *getLastLayer();
     PUBLICAPI int getNumLayers() const;
-    PUBLICAPI Layer *getLayer( int index );
+    PUBLICAPI Layer *getLayer(int index);
     PUBLICAPI Layer const*getLastLayer() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
     PUBLICAPI VIRTUAL int getOutputSize() const;
-    PUBLICAPI void setBatchSize( int batchSize );
-    PUBLICAPI void setTraining( bool training );
-    PUBLICAPI int calcNumRight( int const *labels );
-    PUBLICAPI void forward( float const*images);
-    PUBLICAPI void backwardFromLabels( int const *labels);
-    PUBLICAPI void backward( float const *expectedOutput);
-    void backward( OutputData *outputData );
+    PUBLICAPI void setBatchSize(int batchSize);
+    PUBLICAPI void setTraining(bool training);
+    PUBLICAPI int calcNumRight(int const *labels);
+    PUBLICAPI void forward(float const*images);
+    PUBLICAPI void backwardFromLabels(int const *labels);
+    PUBLICAPI void backward(float const *expectedOutput);
+    void backward(OutputData *outputData);
     PUBLICAPI int getNumLayers();
-    PUBLICAPI float const *getOutput( int layer ) const;
+    PUBLICAPI float const *getOutput(int layer) const;
     PUBLICAPI int getInputCubeSize() const;
     PUBLICAPI int getOutputCubeSize() const;
     PUBLICAPI float const *getOutput() const;
@@ -91,7 +91,7 @@ public:
     void print();
     void printWeights();
     void printOutput();
-    VIRTUAL void setTrainer( Trainer *trainer );
+    VIRTUAL void setTrainer(Trainer *trainer);
     void printParamStats();
     PUBLICAPI std::string asString();
 

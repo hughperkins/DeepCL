@@ -20,45 +20,45 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingForward::PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) :
-        cl( cl ),
-        padZeros( padZeros ),
-        numPlanes( numPlanes ),
-        inputSize( inputSize ),
-        poolingSize( poolingSize ),
-        outputSize( padZeros ? ( inputSize + poolingSize - 1 ) / poolingSize : inputSize / poolingSize ) {
-//    if( inputSize % poolingSize != 0 ) {
-//        throw runtime_error("inputSize should be an exact multiple of poolingsize: " + toString( inputSize ) + " " + toString(poolingSize ) );
+PoolingForward::PoolingForward(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize) :
+        cl(cl),
+        padZeros(padZeros),
+        numPlanes(numPlanes),
+        inputSize(inputSize),
+        poolingSize(poolingSize),
+        outputSize(padZeros ? (inputSize + poolingSize - 1) / poolingSize : inputSize / poolingSize) {
+//    if(inputSize % poolingSize != 0) {
+//        throw runtime_error("inputSize should be an exact multiple of poolingsize: " + toString(inputSize) + " " + toString(poolingSize) );
 //    }
 }
-STATIC PoolingForward *PoolingForward::instance( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
-    return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
-//    return new PoolingForwardCpu( cl, padZeros, numPlanes, inputSize, poolingSize );
+STATIC PoolingForward *PoolingForward::instance(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize) {
+    return new PoolingForwardGpuNaive(cl, padZeros, numPlanes, inputSize, poolingSize);
+//    return new PoolingForwardCpu(cl, padZeros, numPlanes, inputSize, poolingSize);
 }
-STATIC PoolingForward *PoolingForward::instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
-    return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
+STATIC PoolingForward *PoolingForward::instanceForTest(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize) {
+    return new PoolingForwardGpuNaive(cl, padZeros, numPlanes, inputSize, poolingSize);
 }
-STATIC PoolingForward *PoolingForward::instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize ) {
-    if( idx == 0 ) {
-        return new PoolingForwardCpu( cl, padZeros, numPlanes, inputSize, poolingSize );
+STATIC PoolingForward *PoolingForward::instanceSpecific(int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize) {
+    if(idx == 0) {
+        return new PoolingForwardCpu(cl, padZeros, numPlanes, inputSize, poolingSize);
     }
-    if( idx == 1 ) {
-        return new PoolingForwardGpuNaive( cl, padZeros, numPlanes, inputSize, poolingSize );
+    if(idx == 1) {
+        return new PoolingForwardGpuNaive(cl, padZeros, numPlanes, inputSize, poolingSize);
     }
     cout << "idx " << idx << " not known" << endl;
-    throw runtime_error("PoolingForward::instanceSpecific idx not known: " + toString( idx ) );
+    throw runtime_error("PoolingForward::instanceSpecific idx not known: " + toString(idx) );
 }
-VIRTUAL void PoolingForward::forward( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData ) {
+VIRTUAL void PoolingForward::forward(int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData) {
     throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void PoolingForward::forward( int batchSize, float *input, int *selectors, float *output ) {
-//    cout << "PoolingForward::forward( float * )" << endl;
-    CLWrapper *inputWrapper = cl->wrap( getInputNumElements( batchSize ), input );
-    CLWrapper *selectorsWrapper = cl->wrap( getOutputNumElements( batchSize ), selectors );
-    CLWrapper *outputWrapper = cl->wrap( getOutputNumElements( batchSize ), output );
+VIRTUAL void PoolingForward::forward(int batchSize, float *input, int *selectors, float *output) {
+//    cout << "PoolingForward::forward(float *)" << endl;
+    CLWrapper *inputWrapper = cl->wrap(getInputNumElements(batchSize), input);
+    CLWrapper *selectorsWrapper = cl->wrap(getOutputNumElements(batchSize), selectors);
+    CLWrapper *outputWrapper = cl->wrap(getOutputNumElements(batchSize), output);
 
     inputWrapper->copyToDevice();
-    forward( batchSize, inputWrapper, selectorsWrapper, outputWrapper );
+    forward(batchSize, inputWrapper, selectorsWrapper, outputWrapper);
     selectorsWrapper->copyToHost();    
     outputWrapper->copyToHost();    
 
@@ -66,7 +66,7 @@ VIRTUAL void PoolingForward::forward( int batchSize, float *input, int *selector
     delete selectorsWrapper;
     delete inputWrapper;
 }
-VIRTUAL int PoolingForward::getInputNumElements( int batchSize ) {
+VIRTUAL int PoolingForward::getInputNumElements(int batchSize) {
     return batchSize * numPlanes * inputSize * inputSize;
 }
 VIRTUAL int PoolingForward::getOutputNumElements(int batchSize) {

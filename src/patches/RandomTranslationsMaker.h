@@ -28,15 +28,15 @@ public:
     PUBLICAPI static RandomTranslationsMaker *instance() {
         return new RandomTranslationsMaker();
     }    
-    PUBLICAPI RandomTranslationsMaker *translateSize( int _translateSize ) {
+    PUBLICAPI RandomTranslationsMaker *translateSize(int _translateSize) {
         this->_translateSize = _translateSize;
         return this;
     }
     virtual RandomTranslationsMaker *clone() const {
         RandomTranslationsMaker *thisClone = new RandomTranslationsMaker();
-        memcpy( thisClone, this, sizeof( RandomTranslationsMaker ) );
+        memcpy(thisClone, this, sizeof(RandomTranslationsMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

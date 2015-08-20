@@ -10,9 +10,9 @@
 #ifdef TANH
     #define ACTIVATION_DERIV(output) (1 - output * output)
 #elif defined SCALEDTANH
-    #define ACTIVATION_DERIV(output) ( 0.66667f * ( 1.7159f - 1 / 1.7159f * output * output ) )
+    #define ACTIVATION_DERIV(output) (0.66667f * (1.7159f - 1 / 1.7159f * output * output) )
 #elif defined SIGMOID
-    #define ACTIVATION_DERIV(output) (output * ( 1 - output ) )
+    #define ACTIVATION_DERIV(output) (output * (1 - output) )
 #elif defined RELU
     #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)
 #elif defined LINEAR
@@ -22,19 +22,19 @@
 //#ifdef ACTIVATION_DERIV
 //void kernel applyActivationDeriv( 
 //        const int N,
-//        global float *inout ) {
+//        global float *inout) {
 //    int globalId = get_global_id(0);
-//    inout[globalId] = ACTIVATION_DERIV( inout[globalId] );
+//    inout[globalId] = ACTIVATION_DERIV(inout[globalId]);
 //}
 //#endif
 
 #ifdef ACTIVATION_DERIV
 void kernel applyActivationDeriv( 
         const int N,
-        global float *target, global const float *source ) {
+        global float *target, global const float *source) {
     int globalId = get_global_id(0);
-    if( globalId < N ) {
-        target[globalId] *= ACTIVATION_DERIV( source[globalId] );
+    if (globalId < N) {
+        target[globalId] *= ACTIVATION_DERIV(source[globalId]);
     }
   //  target[globalId] *= source[globalId];
 }
@@ -45,10 +45,10 @@ void kernel backward(
         const int N,
         global const float *inputs,
         global const float *gradOutput, 
-        global float *gradInput ) {
+        global float *gradInput) {
     int globalId = get_global_id(0);
-    if( globalId < N ) {
-        gradInput[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * gradOutput[globalId];
+    if (globalId < N) {
+        gradInput[globalId] = ACTIVATION_DERIV(inputs[globalId]) * gradOutput[globalId];
             // probably not ideal to have the output and input separate?
     }
   //  target[globalId] *= source[globalId];

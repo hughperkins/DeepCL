@@ -22,13 +22,13 @@ VIRTUAL RmspropState::~RmspropState() {
     delete[] meanSquare;
 }
 
-RmspropState::RmspropState( EasyCL *cl, int numWeights ) :
-        numWeights( numWeights ) {
+RmspropState::RmspropState(EasyCL *cl, int numWeights) :
+        numWeights(numWeights) {
     meanSquare = new float[numWeights];
-    for( int i = 0; i < numWeights; i++ ) {
+    for(int i = 0; i < numWeights; i++) {
         meanSquare[i] = 0.0000001f; // should move this into fudgefactor I guess?
     }
-    meanSquareWrapper = cl->wrap( numWeights, meanSquare );
+    meanSquareWrapper = cl->wrap(numWeights, meanSquare);
     meanSquareWrapper->copyToDevice();
 }
 

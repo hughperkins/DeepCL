@@ -64,21 +64,21 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI NetLearnerOnDemandv2( Trainer *trainer, Trainable *net,
+    PUBLICAPI NetLearnerOnDemandv2(Trainer *trainer, Trainable *net,
     GenericLoaderv2 *trainLoader, int Ntrain,
     GenericLoaderv2 *validateLoader, int Ntest,
-    int fileReadBatches, int batchSize );
+    int fileReadBatches, int batchSize);
     VIRTUAL ~NetLearnerOnDemandv2();
-    VIRTUAL void setSchedule( int numEpochs );
-    VIRTUAL void setDumpTimings( bool dumpTimings );
-    VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
+    VIRTUAL void setSchedule(int numEpochs);
+    VIRTUAL void setDumpTimings(bool dumpTimings);
+    VIRTUAL void setSchedule(int numEpochs, int nextEpoch);
     PUBLICAPI VIRTUAL bool getEpochDone();
     PUBLICAPI VIRTUAL int getNextEpoch();
     PUBLICAPI VIRTUAL int getNextBatch();
     PUBLICAPI VIRTUAL int getNTrain();
     PUBLICAPI VIRTUAL int getBatchNumRight();
     PUBLICAPI VIRTUAL float getBatchLoss();
-    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
+    VIRTUAL void setBatchState(int nextBatch, int numRight, float loss);
     PUBLICAPI VIRTUAL void reset();
     VIRTUAL void postEpochTesting();
     PUBLICAPI VIRTUAL bool tickBatch();  // means: filebatch, not low-level batch

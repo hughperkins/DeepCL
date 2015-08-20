@@ -27,16 +27,16 @@ public:
     ActivationFunction const*fn;
 
     virtual ~ActivationForward() {}
-    inline int getInputIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * inputSize + row )
+    inline int getInputIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * inputSize + row)
             * inputSize + col;
     }
-    inline int getResultIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * outputSize + row )
+    inline int getResultIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * outputSize + row)
             * outputSize + col;
     }
 
@@ -45,13 +45,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationForward( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instance( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instanceForTest( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn );
-    VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
-    VIRTUAL void forward( int batchSize, float *input, float *output );
-    VIRTUAL int getInputNumElements( int batchSize );
+    ActivationForward(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instance(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    VIRTUAL void forward(int batchSize, CLWrapper *inputData, CLWrapper *outputData);
+    VIRTUAL void forward(int batchSize, float *input, float *output);
+    VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]

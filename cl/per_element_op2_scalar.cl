@@ -10,7 +10,7 @@ float operation(float val_one, float val_two) {
 
 kernel void per_element_op2_inplace(const int N, global float *target, const float scalar) {
     const int globalId = get_global_id(0);
-    if(globalId >= N) {
+    if (globalId >= N) {
         return;
     }
     target[globalId] = operation(target[globalId], scalar);
@@ -18,7 +18,7 @@ kernel void per_element_op2_inplace(const int N, global float *target, const flo
 
 kernel void per_element_op2_outofplace(const int N, global float *target, global float *source, const float scalar) {
     const int globalId = get_global_id(0);
-    if(globalId >= N) {
+    if (globalId >= N) {
         return;
     }
     target[globalId] = operation(source[globalId], scalar);

@@ -18,13 +18,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackwardCpu( EasyCL *cl, LayerDimensions dim );
+    BackwardCpu(EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~BackwardCpu();
-    VIRTUAL float *backward( int batchSize, float *inputs,
-    float *gradOutput, float *weights );
-    VIRTUAL void backward( int batchSize,
+    VIRTUAL float *backward(int batchSize, float *inputs,
+    float *gradOutput, float *weights);
+    VIRTUAL void backward(int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *gradInputWrapper );
+    CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

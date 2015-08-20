@@ -72,38 +72,38 @@ public:
     GpuAdd *gpuAdd;
     CopyBuffer *copyBuffer;
 
-    inline int getWeightIndex( int filterId, int inputPlane, int filterRow, int filterCol ) const {
-        return ( ( filterId 
-            * dim.inputPlanes + inputPlane )
-            * dim.filterSize + filterRow )
+    inline int getWeightIndex(int filterId, int inputPlane, int filterRow, int filterCol) const {
+        return (( filterId 
+            * dim.inputPlanes + inputPlane)
+            * dim.filterSize + filterRow)
             * dim.filterSize + filterCol;
     }
-    inline float getWeight( int filterId, int inputPlane, int filterRow, int filterCol ) const {
+    inline float getWeight(int filterId, int inputPlane, int filterRow, int filterCol) const {
 //        getWeights();
-        return weights[ getWeightIndex( filterId, inputPlane, filterRow, filterCol ) ];
+        return weights[ getWeightIndex(filterId, inputPlane, filterRow, filterCol) ];
     }
-    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
-        return ( ( n
-            * dim.numFilters + outPlane )
-            * dim.outputSize + outRow )
+    inline int getOutputIndex(int n, int outPlane, int outRow, int outCol) const {
+        return (( n
+            * dim.numFilters + outPlane)
+            * dim.outputSize + outRow)
             * dim.outputSize + outCol;
     }
-    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput(int n, int outPlane, int outRow, int outCol) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol) ];
     }
 
-//    ConvolutionalLayer( Layer *previousLayer, ConvolutionalMaker const*maker );
+//    ConvolutionalLayer(Layer *previousLayer, ConvolutionalMaker const*maker);
     // images are organized like [imageId][plane][imagerow][imagecol]
     // filters are organized like [filterid][plane][filterrow][filtercol]
     // output are organized like [imageid][filterid][imagerow][imagecol]
-//    inline int getWeightIndex( int outPlane, int inPlane, int filterrow, int filtercol ) const {
-//        return ( ( outPlane * upstreamNumPlanes 
-//             + inPlane ) * filterSize 
-//             + filterrow ) * filterSize
+//    inline int getWeightIndex(int outPlane, int inPlane, int filterrow, int filtercol) const {
+//        return (( outPlane * upstreamNumPlanes 
+//             + inPlane) * filterSize 
+//             + filterrow) * filterSize
 //             + filtercol;
 //    }
-//    inline float getWeight( int outPlane, int inPlane, int filterrow, int filtercol ) const {
-//        return weights[getWeightIndex( outPlane, inPlane, filterrow, filtercol ) ];
+//    inline float getWeight(int outPlane, int inPlane, int filterrow, int filtercol) const {
+//        return weights[getWeightIndex(outPlane, inPlane, filterrow, filtercol) ];
 //    }
 
     // [[[cog
@@ -111,7 +111,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ConvolutionalLayer( EasyCL *cl, Layer *previousLayer, ConvolutionalMaker *maker );
+    ConvolutionalLayer(EasyCL *cl, Layer *previousLayer, ConvolutionalMaker *maker);
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getGradInput();
@@ -129,18 +129,18 @@ public:
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getOutputSize() const;
-    void randomizeWeights( WeightsInitializer *weightsInitializer );
+    void randomizeWeights(WeightsInitializer *weightsInitializer);
     VIRTUAL void print();
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void setWeights( float *weights, float *bias );
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getPersistSize( int version ) const;
-    VIRTUAL void persistToArray( int version, float *array );
-    VIRTUAL void unpersistFromArray( int version, float const*array );
-    VIRTUAL void initWeights( float const*weights );
-    VIRTUAL void initBias( float const*bias );
+    VIRTUAL int getPersistSize(int version) const;
+    VIRTUAL void persistToArray(int version, float *array);
+    VIRTUAL void unpersistFromArray(int version, float const*array);
+    VIRTUAL void initWeights(float const*weights);
+    VIRTUAL void initBias(float const*bias);
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
     VIRTUAL float const *getWeights() const;
@@ -155,7 +155,7 @@ public:
     VIRTUAL bool biased();
     VIRTUAL TrainerState *getTrainerState();
     VIRTUAL TrainerState *getBiasTrainerState();
-    VIRTUAL void setTrainerState( TrainerStateMaker *trainerStateMaker );
+    VIRTUAL void setTrainerState(TrainerStateMaker *trainerStateMaker);
 
     // [[[end]]]
 };

@@ -34,7 +34,7 @@ public:
     CLWrapper *outputWrapper,
     CLWrapper *biasWrapper
     );
-    AddBias( EasyCL *cl );
+    AddBias(EasyCL *cl);
 
     // [[[end]]]
 };

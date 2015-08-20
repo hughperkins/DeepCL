@@ -37,7 +37,7 @@ public:
     CLWrapper *inputWrapper,
     CLWrapper *outputWrapper
     );
-    ReduceSegments( EasyCL *cl );
+    ReduceSegments(EasyCL *cl);
 
     // [[[end]]]
 };

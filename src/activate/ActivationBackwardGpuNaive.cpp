@@ -27,41 +27,41 @@ VIRTUAL ActivationBackwardGpuNaive::~ActivationBackwardGpuNaive() {
     delete kernel;
 //    delete kMemset;
 }
-VIRTUAL void ActivationBackwardGpuNaive::backward( int batchSize, CLWrapper *inputWrapper,
+VIRTUAL void ActivationBackwardGpuNaive::backward(int batchSize, CLWrapper *inputWrapper,
          CLWrapper *gradOutputWrapper, 
-        CLWrapper *gradInputWrapper ) {
+        CLWrapper *gradInputWrapper) {
 
-    StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward start" );
+    StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward start");
 
     int globalSize = batchSize * numPlanes * inputSize * inputSize;
     int workgroupSize = 64;
-    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->in( batchSize * numPlanes * inputSize * inputSize )
-          ->in( inputWrapper )
-          ->in( gradOutputWrapper )
-          ->out( gradInputWrapper );
+    int numWorkgroups = (globalSize + workgroupSize - 1) / workgroupSize;
+    kernel->in(batchSize * numPlanes * inputSize * inputSize)
+          ->in(inputWrapper)
+          ->in(gradOutputWrapper)
+          ->out(gradInputWrapper);
     globalSize = batchSize * numPlanes * outputSize * outputSize;
     workgroupSize = 64;
-    numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    numWorkgroups = (globalSize + workgroupSize - 1) / workgroupSize;
+    kernel->run_1d(numWorkgroups * workgroupSize, workgroupSize);
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward end" );
+    StatefulTimer::instance()->timeCheck("ActivationBackwardGpuNaive::backward end");
 }
-ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn ) :
-        ActivationBackward( cl, numPlanes, inputSize, fn ) {
+ActivationBackwardGpuNaive::ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn) :
+        ActivationBackward(cl, numPlanes, inputSize, fn) {
 //    std::string options = "-D " + fn->getDefineName();
     string options = "";
-    options += " -D gNumPlanes=" + toString( numPlanes );
-    options += " -D gInputSize=" + toString( inputSize );
-    options += " -D gInputSizeSquared=" + toString( inputSize * inputSize );
-    options += " -D gOutputSize=" + toString( outputSize );
-    options += " -D gOutputSizeSquared=" + toString( outputSize * outputSize );
+    options += " -D gNumPlanes=" + toString(numPlanes);
+    options += " -D gInputSize=" + toString(inputSize);
+    options += " -D gInputSizeSquared=" + toString(inputSize * inputSize);
+    options += " -D gOutputSize=" + toString(outputSize);
+    options += " -D gOutputSizeSquared=" + toString(outputSize * outputSize);
     options += " -D " + fn->getDefineName();
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/applyActivationDeriv.cl", "backward", 'options' )
+    // stringify.write_kernel2("kernel", "cl/applyActivationDeriv.cl", "backward", 'options')
     // ]]]
     // generated using cog, from cl/applyActivationDeriv.cl:
     const char * kernelSource =  
@@ -77,9 +77,9 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlane
     "#ifdef TANH\n" 
     "    #define ACTIVATION_DERIV(output) (1 - output * output)\n" 
     "#elif defined SCALEDTANH\n" 
-    "    #define ACTIVATION_DERIV(output) ( 0.66667f * ( 1.7159f - 1 / 1.7159f * output * output ) )\n" 
+    "    #define ACTIVATION_DERIV(output) (0.66667f * (1.7159f - 1 / 1.7159f * output * output) )\n" 
     "#elif defined SIGMOID\n" 
-    "    #define ACTIVATION_DERIV(output) (output * ( 1 - output ) )\n" 
+    "    #define ACTIVATION_DERIV(output) (output * (1 - output) )\n" 
     "#elif defined RELU\n" 
     "    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)\n" 
     "#elif defined LINEAR\n" 
@@ -89,19 +89,19 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlane
     "//#ifdef ACTIVATION_DERIV\n" 
     "//void kernel applyActivationDeriv(\n" 
     "//        const int N,\n" 
-    "//        global float *inout ) {\n" 
+    "//        global float *inout) {\n" 
     "//    int globalId = get_global_id(0);\n" 
-    "//    inout[globalId] = ACTIVATION_DERIV( inout[globalId] );\n" 
+    "//    inout[globalId] = ACTIVATION_DERIV(inout[globalId]);\n" 
     "//}\n" 
     "//#endif\n" 
     "\n" 
     "#ifdef ACTIVATION_DERIV\n" 
     "void kernel applyActivationDeriv(\n" 
     "        const int N,\n" 
-    "        global float *target, global const float *source ) {\n" 
+    "        global float *target, global const float *source) {\n" 
     "    int globalId = get_global_id(0);\n" 
-    "    if( globalId < N ) {\n" 
-    "        target[globalId] *= ACTIVATION_DERIV( source[globalId] );\n" 
+    "    if (globalId < N) {\n" 
+    "        target[globalId] *= ACTIVATION_DERIV(source[globalId]);\n" 
     "    }\n" 
     "  //  target[globalId] *= source[globalId];\n" 
     "}\n" 
@@ -112,10 +112,10 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive( EasyCL *cl, int numPlane
     "        const int N,\n" 
     "        global const float *inputs,\n" 
     "        global const float *gradOutput,\n" 
-    "        global float *gradInput ) {\n" 
+    "        global float *gradInput) {\n" 
     "    int globalId = get_global_id(0);\n" 
-    "    if( globalId < N ) {\n" 
-    "        gradInput[globalId] = ACTIVATION_DERIV( inputs[globalId] ) * gradOutput[globalId];\n" 
+    "    if (globalId < N) {\n" 
+    "        gradInput[globalId] = ACTIVATION_DERIV(inputs[globalId]) * gradOutput[globalId];\n" 
     "            // probably not ideal to have the output and input separate?\n" 
     "    }\n" 
     "  //  target[globalId] *= source[globalId];\n" 

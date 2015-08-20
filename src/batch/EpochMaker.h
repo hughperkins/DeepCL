@@ -19,8 +19,8 @@ class DeepCL_EXPORT EpochMaker {
     float *_expectedOutputs;
     int const*_labels;
 public:
-    EpochMaker( NeuralNet *net, Trainer *trainer ) {
-        memset( this, 0, sizeof(EpochMaker) );
+    EpochMaker(NeuralNet *net, Trainer *trainer) {
+        memset(this, 0, sizeof(EpochMaker));
         _expectedOutputs = 0;
         _labels = 0;
         this->net = net;
@@ -51,8 +51,8 @@ public:
         this->_labels = labels;
         return this;
     }
-    float run( int epoch );
-    float runWithCalcTrainingAccuracy( int epoch, int *p_numRight);
-    float runFromLabels( int epoch, int *p_numRight);
+    float run(int epoch);
+    float runWithCalcTrainingAccuracy(int epoch, int *p_numRight);
+    float runFromLabels(int epoch, int *p_numRight);
 };
 

@@ -24,19 +24,19 @@ class DeepCL_EXPORT FileHelper {
     // generated, using cog:
 
     public:
-    STATIC char *readBinary( std::string filepath, long *p_filesize );
-    STATIC long getFilesize( std::string filepath );
-    STATIC char *readBinaryChunk( std::string filepath, long start, long length );
-    STATIC void readBinaryChunk( char *targetArray, std::string filepath, long start, long length );
-    STATIC void writeBinary( std::string filepath, char const*data, long filesize );
-    STATIC void writeBinaryChunk( std::string filepath, char const*data, long startPos, long filesize );
-    STATIC bool exists( const std::string filepath );
-    STATIC void rename( std::string oldname, std::string newname );
-    STATIC void remove( std::string filename );
-    STATIC std::string localizePath( std::string path );
+    STATIC char *readBinary(std::string filepath, long *p_filesize);
+    STATIC long getFilesize(std::string filepath);
+    STATIC char *readBinaryChunk(std::string filepath, long start, long length);
+    STATIC void readBinaryChunk(char *targetArray, std::string filepath, long start, long length);
+    STATIC void writeBinary(std::string filepath, char const*data, long filesize);
+    STATIC void writeBinaryChunk(std::string filepath, char const*data, long startPos, long filesize);
+    STATIC bool exists(const std::string filepath);
+    STATIC void rename(std::string oldname, std::string newname);
+    STATIC void remove(std::string filename);
+    STATIC std::string localizePath(std::string path);
     STATIC std::string pathSeparator();
-    STATIC void createDirectory( std::string path );
-    STATIC bool folderExists( std::string path );
+    STATIC void createDirectory(std::string path);
+    STATIC bool folderExists(std::string path);
 
     // [[[end]]]
 };

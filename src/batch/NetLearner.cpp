@@ -22,11 +22,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLICAPI NetLearner::NetLearner( Trainer *trainer, Trainable *net,
+PUBLICAPI NetLearner::NetLearner(Trainer *trainer, Trainable *net,
         int Ntrain, float *trainData, int *trainLabels,
         int Ntest, float *testData, int *testLabels,
-        int batchSize ) :
-        net( net )
+        int batchSize) :
+        net(net)
         {
 //    annealLearningRate = 1.0f;
     numEpochs = 12;
@@ -34,20 +34,20 @@ PUBLICAPI NetLearner::NetLearner( Trainer *trainer, Trainable *net,
     dumpTimings = false;
     learningDone = false;
 
-    trainBatcher = new LearnBatcher( trainer, net, batchSize, Ntrain, trainData, trainLabels );
-    testBatcher = new ForwardBatcher( net, batchSize, Ntest, testData, testLabels );   
+    trainBatcher = new LearnBatcher(trainer, net, batchSize, Ntrain, trainData, trainLabels);
+    testBatcher = new ForwardBatcher(net, batchSize, Ntest, testData, testLabels);   
 }
 VIRTUAL NetLearner::~NetLearner() {
     delete trainBatcher;
     delete testBatcher;
 }
-VIRTUAL void NetLearner::setSchedule( int numEpochs ) {
-    setSchedule( numEpochs, 0 );
+VIRTUAL void NetLearner::setSchedule(int numEpochs) {
+    setSchedule(numEpochs, 0);
 }
-VIRTUAL void NetLearner::setDumpTimings( bool dumpTimings ) {
+VIRTUAL void NetLearner::setDumpTimings(bool dumpTimings) {
     this->dumpTimings = dumpTimings;
 }
-VIRTUAL void NetLearner::setSchedule( int numEpochs, int nextEpoch ) {
+VIRTUAL void NetLearner::setSchedule(int numEpochs, int nextEpoch) {
     this->numEpochs = numEpochs;
     this->nextEpoch = nextEpoch;
 }
@@ -55,38 +55,38 @@ PUBLICAPI VIRTUAL void NetLearner::reset() {
 //    cout << "NetLearner::reset()" << endl;
     learningDone = false;
     nextEpoch = 0;
-//    net->setTraining( true );
+//    net->setTraining(true);
     trainBatcher->reset();
     testBatcher->reset();
     timer.lap();
 }
 VIRTUAL void NetLearner::postEpochTesting() {
-    if( dumpTimings ) {
+    if(dumpTimings) {
         StatefulTimer::dump(true);
     }
 //        cout << "-----------------------" << endl;
     cout << endl;
-    timer.timeCheck("after epoch " + toString(nextEpoch+1) );
+    timer.timeCheck("after epoch " + toString(nextEpoch+1));
 //    cout << "annealed learning rate: " << trainBatcher->getLearningRate() <<
     cout << " training loss: " << trainBatcher->getLoss() << endl;
     cout << " train accuracy: " << trainBatcher->getNumRight() << "/" << trainBatcher->getN() << " " << (trainBatcher->getNumRight() * 100.0f/ trainBatcher->getN()) << "%" << std::endl;
-    net->setTraining( false );
+    net->setTraining(false);
     testBatcher->run(nextEpoch);
     cout << "test accuracy: " << testBatcher->getNumRight() << "/" << testBatcher->getN() << " " << 
-        (testBatcher->getNumRight() * 100.0f / testBatcher->getN() ) << "%" << endl;
+        (testBatcher->getNumRight() * 100.0f / testBatcher->getN()) << "%" << endl;
     timer.timeCheck("after tests");
 }
 PUBLICAPI VIRTUAL bool NetLearner::tickBatch() { // just tick one learn batch, once all done, then run testing etc
 //    int epoch = nextEpoch;
-//    trainBatcher->setLearningRate( learningRate * pow( annealLearningRate, epoch ) );
-    net->setTraining( true );
+//    trainBatcher->setLearningRate(learningRate * pow(annealLearningRate, epoch) );
+    net->setTraining(true);
     trainBatcher->tick(nextEpoch);       // returns false once all learning done (all epochs)
-    if( trainBatcher->getEpochDone() ) {
+    if(trainBatcher->getEpochDone()) {
         postEpochTesting();
         nextEpoch++;
     }
 //    cout << "check learningDone nextEpoch=" << nextEpoch << " numEpochs=" << numEpochs << endl;
-    if( nextEpoch == numEpochs ) {
+    if(nextEpoch == numEpochs) {
 //        cout << "setting learningdone to true" << endl;
         learningDone = true;
     }
@@ -110,8 +110,8 @@ PUBLICAPI VIRTUAL int NetLearner::getBatchNumRight() {
 PUBLICAPI VIRTUAL float NetLearner::getBatchLoss() {
     return trainBatcher->getLoss();
 }
-VIRTUAL void NetLearner::setBatchState( int nextBatch, int numRight, float loss ) {
-    trainBatcher->setBatchState( nextBatch, numRight, loss );
+VIRTUAL void NetLearner::setBatchState(int nextBatch, int numRight, float loss) {
+    trainBatcher->setBatchState(nextBatch, numRight, loss);
 //    trainBatcher->numRight = numRight;
 //    trainBatcher->loss = loss;
 }
@@ -119,40 +119,40 @@ PUBLICAPI VIRTUAL bool NetLearner::tickEpoch() {
 //    int epoch = nextEpoch;
 //    cout << "NetLearner.tickEpoch epoch=" << epoch << " learningDone=" << learningDone << " epochDone=" << trainBatcher->getEpochDone() << endl;
 //    cout << "numEpochs=" << numEpochs << endl;
-    if( trainBatcher->getEpochDone() ) {
+    if(trainBatcher->getEpochDone()) {
         trainBatcher->reset();
     }
-    while(!trainBatcher->getEpochDone() ) {
+    while(!trainBatcher->getEpochDone()) {
         tickBatch();
     }
     return !learningDone;
 }
 PUBLICAPI VIRTUAL void NetLearner::run() {
-    if( learningDone ) {
+    if(learningDone) {
         reset();
     }
-    while( !learningDone ) {
+    while(!learningDone) {
         tickEpoch();
     }
 }
 PUBLICAPI VIRTUAL bool NetLearner::isLearningDone() {
     return learningDone;
 }
-//PUBLICAPI VIRTUAL void NetLearner::setLearningRate( float learningRate ) {
-//    this->setLearningRate( learningRate, 1.0f );
+//PUBLICAPI VIRTUAL void NetLearner::setLearningRate(float learningRate) {
+//    this->setLearningRate(learningRate, 1.0f);
 //}
-//VIRTUAL void NetLearner::setLearningRate( float learningRate, float annealLearningRate ) {
+//VIRTUAL void NetLearner::setLearningRate(float learningRate, float annealLearningRate) {
 //    this->learningRate = learningRate;
 //    this->annealLearningRate = annealLearningRate;
 //}
-//PUBLICAPI VIRTUAL void NetLearner::learn( float learningRate ) {
-//    learn( learningRate, 1.0f );
+//PUBLICAPI VIRTUAL void NetLearner::learn(float learningRate) {
+//    learn(learningRate, 1.0f);
 //}
-//VIRTUAL void NetLearner::learn( float learningRate, float annealLearningRate ) {
-//    setLearningRate( learningRate, annealLearningRate );
+//VIRTUAL void NetLearner::learn(float learningRate, float annealLearningRate) {
+//    setLearningRate(learningRate, annealLearningRate);
 //    run();
 //}
-//VIRTUAL void NetLearner::setTrainer( Trainer *trainer ) {
+//VIRTUAL void NetLearner::setTrainer(Trainer *trainer) {
 //    this->trainer = trainer;
 //}
 

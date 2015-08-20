@@ -22,7 +22,7 @@ class NesterovState;
 
 // implements Nesterov momentum
 // Nesterov momentum defined eg in http://www.cs.toronto.edu/~gdahl/papers/momentumNesterovDeepLearning.pdf
-//      dweights[t+1] = mom * dweights[t] - learningrate * gradient( weights[t] + mom * dweights[t] )
+//      dweights[t+1] = mom * dweights[t] - learningrate * gradient(weights[t] + mom * dweights[t])
 //      weights[t+1] = weights[t] + dweights[t+1]
 //
 // given weights[t], dweights[t]:
@@ -40,25 +40,25 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~Nesterov();
-    VIRTUAL void setMomentum( float momentum );
+    VIRTUAL void setMomentum(float momentum);
     VIRTUAL std::string asString();
     VIRTUAL void loadFutureWeights(
     CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-    NesterovState *trainerState );
-    VIRTUAL void updateWeights( CLWrapper *weightsWrapper,
+    NesterovState *trainerState);
+    VIRTUAL void updateWeights(CLWrapper *weightsWrapper,
     CLWrapper *gradWeightsWrapper,
-    NesterovState *trainerState );
+    NesterovState *trainerState);
     VIRTUAL BatchResult train(
     NeuralNet *net, TrainingContext *context,
-    float const *input, OutputData *outputData );
-    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, float const*expectedOutput );
-    VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
-    float const*input, int const*labels );
-    VIRTUAL void bindState( NeuralNet *net );
-    STATIC Nesterov *instance( EasyCL *cl, float learningRate );
-    STATIC Nesterov *instance( EasyCL *cl, float learningRate, float momentum );
-    Nesterov( EasyCL *cl );
+    float const *input, OutputData *outputData);
+    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput);
+    VIRTUAL BatchResult trainFromLabels(NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels);
+    VIRTUAL void bindState(NeuralNet *net);
+    STATIC Nesterov *instance(EasyCL *cl, float learningRate);
+    STATIC Nesterov *instance(EasyCL *cl, float learningRate, float momentum);
+    Nesterov(EasyCL *cl);
 
     // [[[end]]]
 };

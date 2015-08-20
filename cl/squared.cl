@@ -6,9 +6,9 @@
 
 kernel void array_squared(
         const int N,
-        global float *data ) {
+        global float *data) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     data[globalId] = data[globalId] * data[globalId];

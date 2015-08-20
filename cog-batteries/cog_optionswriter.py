@@ -11,5 +11,5 @@ def write_options( optionsList ):
     for option in optionsList:
         optionTcase = option[0].upper() + option[1:]
         gOption = 'g' + optionTcase
-        cog.outl( 'options += " -D' + gOption + '=" + toString( ' + option + ' );' )
+        cog.outl( 'options += " -D' + gOption + '=" + toString(' + option + ');' )
 

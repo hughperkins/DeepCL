@@ -30,14 +30,14 @@ PUBLIC VIRTUAL int GenericLoaderv1Wrapper::getPlanes() {
 PUBLIC VIRTUAL int GenericLoaderv1Wrapper::getImageSize() {
     return size;
 }
-PUBLIC GenericLoaderv1Wrapper::GenericLoaderv1Wrapper( std::string imagesFilepath ) {
+PUBLIC GenericLoaderv1Wrapper::GenericLoaderv1Wrapper(std::string imagesFilepath) {
     this->imagesFilepath = imagesFilepath;
-    GenericLoader::getDimensions( imagesFilepath, &N, &planes, &size );
+    GenericLoader::getDimensions(imagesFilepath, &N, &planes, &size);
 }
 PUBLIC VIRTUAL int GenericLoaderv1Wrapper::getImageCubeSize() {
     return planes * size * size;
 }
-PUBLIC VIRTUAL void GenericLoaderv1Wrapper::load( unsigned char *data, int *labels, int startRecord, int numRecords ) {
-    GenericLoader::load( imagesFilepath, data, labels, startRecord, numRecords );
+PUBLIC VIRTUAL void GenericLoaderv1Wrapper::load(unsigned char *data, int *labels, int startRecord, int numRecords) {
+    GenericLoader::load(imagesFilepath, data, labels, startRecord, numRecords);
 }
 

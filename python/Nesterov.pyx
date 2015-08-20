@@ -1,6 +1,6 @@
 cdef class Nesterov: 
     cdef cDeepCL.Nesterov *thisptr
-    def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+    def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
         self.thisptr = new cDeepCL.Nesterov(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
         self.thisptr.setMomentum(momentum)

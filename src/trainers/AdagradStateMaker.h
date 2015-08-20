@@ -25,9 +25,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    AdagradStateMaker( float fudgeFactor );
-    TrainerState *instance( EasyCL *cl, int numWeights );
-    VIRTUAL bool created( TrainerState *state );
+    AdagradStateMaker(float fudgeFactor);
+    TrainerState *instance(EasyCL *cl, int numWeights);
+    VIRTUAL bool created(TrainerState *state);
 
     // [[[end]]]
 };

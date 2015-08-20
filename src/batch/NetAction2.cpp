@@ -18,30 +18,30 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-void NetLearnAction2::run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData ) {
+void NetLearnAction2::run(Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
-    TrainingContext context( epoch, batch );
-    ExpectedData *expected = dynamic_cast< ExpectedData * >( outputData );
-    LabeledData *labeled = dynamic_cast< LabeledData * >( outputData );
+    TrainingContext context(epoch, batch);
+    ExpectedData *expected = dynamic_cast< ExpectedData * >(outputData);
+    LabeledData *labeled = dynamic_cast< LabeledData * >(outputData);
     BatchResult batchResult;
-    if( expected != 0 ) {
-        batchResult = trainer->train( net, &context, inputData->inputs, expected->expected );
-    } else if( labeled != 0 ) {
-        batchResult = trainer->trainFromLabels( net, &context, inputData->inputs, labeled->labels );        
+    if(expected != 0) {
+        batchResult = trainer->train(net, &context, inputData->inputs, expected->expected);
+    } else if(labeled != 0) {
+        batchResult = trainer->trainFromLabels(net, &context, inputData->inputs, labeled->labels);        
     }
     epochLoss += batchResult.loss;
     epochNumRight += batchResult.numRight;
 }
 
-void NetForwardAction2::run( Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData ) {
+void NetForwardAction2::run(Trainable *net, int epoch, int batch, InputData *inputData, OutputData *outputData) {
 //    cout << "NetForwardBatch" << endl;
-    net->forward( inputData->inputs );
-//    trainer->train( net, batchData, batchLabels );
+    net->forward(inputData->inputs);
+//    trainer->train(net, batchData, batchLabels);
 }
 
-//void NetBackpropAction::run( Trainable *net, InputData *inputData, OutputData *outputData ) {
+//void NetBackpropAction::run(Trainable *net, InputData *inputData, OutputData *outputData) {
 ////    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
-//    net->backwardFromLabels( learningRate, batchLabels );
+//    net->backwardFromLabels(learningRate, batchLabels);
 //}
 
 

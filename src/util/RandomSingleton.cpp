@@ -22,18 +22,18 @@ PUBLIC RandomSingleton::RandomSingleton() {
     #else
     {
         std::chrono::time_point<std::chrono::high_resolution_clock> thistime = std::chrono::high_resolution_clock::now();
-        time = static_cast<int>( std::chrono::duration_cast<std::chrono::milliseconds> ( thistime.time_since_epoch() ).count() );
+        time = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds> (thistime.time_since_epoch()).count());
     }
     #endif
     srand(time);
-    unsigned long seed = ( rand() << 8 ) + rand();
-    myrandom.seed( seed );
+    unsigned long seed = (rand() << 8) + rand();
+    myrandom.seed(seed);
 }
 PUBLIC STATIC RandomSingleton *RandomSingleton::instance() {
     static RandomSingleton *thisinstance = new RandomSingleton();
     return thisinstance; // assume single-threaded, which... we are :-)
 }
-//    void testingonly_setInstance( RandomSingleton *testInstance ) {
+//    void testingonly_setInstance(RandomSingleton *testInstance) {
 //        _instance = testinstance;
 //    }
 PUBLIC VIRTUAL float RandomSingleton::_uniform() {
@@ -42,9 +42,9 @@ PUBLIC VIRTUAL float RandomSingleton::_uniform() {
 PUBLIC STATIC float RandomSingleton::uniform() {
     return instance()->_uniform();
 }
-PUBLIC STATIC int RandomSingleton::uniformInt( int minValueInclusive, int maxValueInclusive ) {
-    return ( instance()->myrandom() % 
-        ( maxValueInclusive - minValueInclusive + 1 ) )
+PUBLIC STATIC int RandomSingleton::uniformInt(int minValueInclusive, int maxValueInclusive) {
+    return (instance()->myrandom() % 
+        (maxValueInclusive - minValueInclusive + 1) )
      + minValueInclusive;
 }
 

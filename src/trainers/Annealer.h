@@ -24,7 +24,7 @@ class OutputData;
 #define STATIC static
 
 // anneals learning, so actual learning rate =
-//    learning rate * pow( anneal, epoch )
+//    learning rate * pow(anneal, epoch)
 //    (for zero-based epoch number)
 class DeepCL_EXPORT Annealer : public Trainer {
 public:
@@ -40,20 +40,20 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC Annealer *instance( EasyCL *cl, float learningRate, float anneal );
-    Annealer( EasyCL *cl );
+    STATIC Annealer *instance(EasyCL *cl, float learningRate, float anneal);
+    Annealer(EasyCL *cl);
     VIRTUAL ~Annealer();
     VIRTUAL std::string asString();
-    VIRTUAL void setAnneal( float anneal );
-    VIRTUAL void updateWeights( float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper );
+    VIRTUAL void setAnneal(float anneal);
+    VIRTUAL void updateWeights(float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper);
     VIRTUAL BatchResult train(
     NeuralNet *net, TrainingContext *context,
-    float const *input, OutputData *outputData );
-    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, float const*expectedOutput );
-    VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
-    float const*input, int const*labels );
-    VIRTUAL void bindState( NeuralNet *net );
+    float const *input, OutputData *outputData);
+    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput);
+    VIRTUAL BatchResult trainFromLabels(NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels);
+    VIRTUAL void bindState(NeuralNet *net);
 
     // [[[end]]]
 };

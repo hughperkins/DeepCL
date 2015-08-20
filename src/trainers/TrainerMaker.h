@@ -20,7 +20,7 @@ class NeuralNet;
 
 class TrainerMaker {
 public:
-    virtual Trainer *instance( EasyCL *cl, NeuralNet *net ) = 0;
+    virtual Trainer *instance(EasyCL *cl, NeuralNet *net) = 0;
 
     // [[[cog
     // import cog_addheaders

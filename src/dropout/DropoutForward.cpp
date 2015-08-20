@@ -20,53 +20,53 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutForward::DropoutForward( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) :
-        cl( cl ),
-        numPlanes( numPlanes ),
-        inputSize( inputSize ),
-        dropRatio( dropRatio ),
-        outputSize( inputSize ) {
-//    if( inputSize % dropoutSize != 0 ) {
-//        throw runtime_error("inputSize should be an exact multiple of dropoutsize: " + toString( inputSize ) + " " + toString(dropoutSize ) );
+DropoutForward::DropoutForward(EasyCL *cl, int numPlanes, int inputSize, float dropRatio) :
+        cl(cl),
+        numPlanes(numPlanes),
+        inputSize(inputSize),
+        dropRatio(dropRatio),
+        outputSize(inputSize) {
+//    if(inputSize % dropoutSize != 0) {
+//        throw runtime_error("inputSize should be an exact multiple of dropoutsize: " + toString(inputSize) + " " + toString(dropoutSize) );
 //    }
 }
-STATIC DropoutForward *DropoutForward::instance( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) {
-    return new DropoutForwardGpuNaive( cl, numPlanes, inputSize, dropRatio );
-//    return new DropoutForwardCpu( cl, padZeros, numPlanes, inputSize, dropoutSize );
+STATIC DropoutForward *DropoutForward::instance(EasyCL *cl, int numPlanes, int inputSize, float dropRatio) {
+    return new DropoutForwardGpuNaive(cl, numPlanes, inputSize, dropRatio);
+//    return new DropoutForwardCpu(cl, padZeros, numPlanes, inputSize, dropoutSize);
 }
-STATIC DropoutForward *DropoutForward::instanceForTest( EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) {
-    return new DropoutForwardCpu( cl, numPlanes, inputSize, dropRatio );
+STATIC DropoutForward *DropoutForward::instanceForTest(EasyCL *cl, int numPlanes, int inputSize, float dropRatio) {
+    return new DropoutForwardCpu(cl, numPlanes, inputSize, dropRatio);
 }
-STATIC DropoutForward *DropoutForward::instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, float dropRatio ) {
-    if( idx == 0 ) {
-        return new DropoutForwardCpu( cl, numPlanes, inputSize, dropRatio );
+STATIC DropoutForward *DropoutForward::instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, float dropRatio) {
+    if(idx == 0) {
+        return new DropoutForwardCpu(cl, numPlanes, inputSize, dropRatio);
     }
-    if( idx == 1 ) {
-        return new DropoutForwardGpuNaive( cl, numPlanes, inputSize, dropRatio );
+    if(idx == 1) {
+        return new DropoutForwardGpuNaive(cl, numPlanes, inputSize, dropRatio);
     }
     cout << "idx " << idx << " not known" << endl;
-    throw runtime_error("DropoutForward::instanceSpecific idx not known: " + toString( idx ) );
+    throw runtime_error("DropoutForward::instanceSpecific idx not known: " + toString(idx) );
 }
-VIRTUAL void DropoutForward::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData ) {
+VIRTUAL void DropoutForward::forward(int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData) {
     throw runtime_error("forward not implemented for this child type");
 }
-VIRTUAL void DropoutForward::forward( int batchSize, unsigned char *masks, float *input, float *output ) {
-//    cout << "DropoutForward::forward( float * )" << endl;
-    int inputLinearSize = getInputNumElements( batchSize );
-    CLWrapper *masksWrapper = cl->wrap( inputLinearSize, masks );
-    CLWrapper *inputWrapper = cl->wrap( inputLinearSize, input );
-    CLWrapper *outputWrapper = cl->wrap( getOutputNumElements( batchSize ), output );
+VIRTUAL void DropoutForward::forward(int batchSize, unsigned char *masks, float *input, float *output) {
+//    cout << "DropoutForward::forward(float *)" << endl;
+    int inputLinearSize = getInputNumElements(batchSize);
+    CLWrapper *masksWrapper = cl->wrap(inputLinearSize, masks);
+    CLWrapper *inputWrapper = cl->wrap(inputLinearSize, input);
+    CLWrapper *outputWrapper = cl->wrap(getOutputNumElements(batchSize), output);
 
     masksWrapper->copyToDevice();
     inputWrapper->copyToDevice();
-    forward( batchSize, masksWrapper, inputWrapper, outputWrapper );
+    forward(batchSize, masksWrapper, inputWrapper, outputWrapper);
     outputWrapper->copyToHost();    
 
     delete outputWrapper;
     delete inputWrapper;
     delete masksWrapper;
 }
-VIRTUAL int DropoutForward::getInputNumElements( int batchSize ) {
+VIRTUAL int DropoutForward::getInputNumElements(int batchSize) {
     return batchSize * numPlanes * inputSize * inputSize;
 }
 VIRTUAL int DropoutForward::getOutputNumElements(int batchSize) {

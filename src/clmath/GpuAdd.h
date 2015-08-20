@@ -30,9 +30,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void add( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper );
+    VIRTUAL void add(int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper);
     VIRTUAL ~GpuAdd();
-    GpuAdd( EasyCL *cl );
+    GpuAdd(EasyCL *cl);
 
     // [[[end]]]
 };

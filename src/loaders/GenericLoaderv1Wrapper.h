@@ -38,9 +38,9 @@ class GenericLoaderv1Wrapper : public Loader {
     VIRTUAL int getN();
     VIRTUAL int getPlanes();
     VIRTUAL int getImageSize();
-    GenericLoaderv1Wrapper( std::string imagesFilepath );
+    GenericLoaderv1Wrapper(std::string imagesFilepath);
     VIRTUAL int getImageCubeSize();
-    VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords );
+    VIRTUAL void load(unsigned char *data, int *labels, int startRecord, int numRecords);
 
     // [[[end]]]
 };

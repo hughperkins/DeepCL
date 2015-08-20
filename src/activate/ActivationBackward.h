@@ -26,16 +26,16 @@ public:
     const int outputSize;
 
     virtual ~ActivationBackward() {}
-    inline int getInputIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * inputSize + row )
+    inline int getInputIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * inputSize + row)
             * inputSize + col;
     }
-    inline int getResultIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * outputSize + row )
+    inline int getResultIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * outputSize + row)
             * outputSize + col;
     }
 
@@ -44,14 +44,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC ActivationBackward *instance( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
-    STATIC ActivationBackward *instanceForTest( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
-    STATIC ActivationBackward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
-    ActivationBackward( EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn );
-    VIRTUAL int getInputNumElements( int batchSize );
+    STATIC ActivationBackward *instance(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    ActivationBackward(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);
-    VIRTUAL void backward( int batchSize, float *inputs, float *gradOutput, float *gradInput );
-    VIRTUAL void backward( int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper );
+    VIRTUAL void backward(int batchSize, float *inputs, float *gradOutput, float *gradInput);
+    VIRTUAL void backward(int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

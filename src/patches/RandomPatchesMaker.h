@@ -27,7 +27,7 @@ public:
     PUBLICAPI RandomPatchesMaker() :
         _patchSize(0) {
     }
-    PUBLICAPI RandomPatchesMaker *patchSize( int _patchSize ) {
+    PUBLICAPI RandomPatchesMaker *patchSize(int _patchSize) {
         this->_patchSize = _patchSize;
         return this;
     }
@@ -36,9 +36,9 @@ public:
     }
     virtual RandomPatchesMaker *clone() const {
         RandomPatchesMaker *thisClone = new RandomPatchesMaker();
-        memcpy( thisClone, this, sizeof( RandomPatchesMaker ) );
+        memcpy(thisClone, this, sizeof(RandomPatchesMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

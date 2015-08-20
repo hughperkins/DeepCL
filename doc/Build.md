@@ -17,8 +17,6 @@
 
 ## Build options
 
-* If you want to build the Python wrappers, make sure you have python, and the python development libraries and headers available, and choose `BUILD_PYTHON_WRAPPERS` = `ON`
-  * If not, or if you dont have Python, then set to 'OFF'
 * If you want to be able to read training/testing data from jpeg files, then please choose `BUILD_JPEG_SUPPORT` = `ON`. You will need to provide turbojpeg library and headers, or compatible.  Otherwise set to `OFF`
 
 ## linux
@@ -34,7 +32,6 @@
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 *Optional:*
-- python (2.7 or 3.4)
 - libjpeg62 or compatible, eg `sudo apt-get install libjpeg-turbo8-dev` (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
 
 ### Procedure
@@ -62,23 +59,27 @@ Note:
 * note: recently, moved EasyCL/thirdparty/clew from submodule to simply copying in the files
    * hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
 
+### To activate, setup environment:
+
+Open a bash prompt, and run:
+```
+source /path/to/DeepCL/dist/bin/activate.sh
+```
+(where you need to modify `/path/to/DeepCL` appropriately)
+
+Keep the bash open, and go to the next section
+
 ### To check all is working
 
 Unit-tests:
 ```
-LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_unittests
+deepcl_unittests
 ```
 Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
 
 Commandline training:
 ```
-LD_LIBRARY_PATH=../dist/lib ../dist/bin/deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
-```
-(change path to wherever the mnist data files are downloaded)
-
-For python wrappers:
-```
-LD_LIBRARY_PATH=../dist/lib PYTHONPATH=../dist/lib python ../dist/bin/test_deepcl.py /norep/data/mnist
+deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 ```
 (change path to wherever the mnist data files are downloaded)
 
@@ -116,25 +117,29 @@ LD_LIBRARY_PATH=../dist/lib PYTHONPATH=../dist/lib python ../dist/bin/test_deepc
 
 The outputs will appear in the subdirectory 'dist'
 
+### To activate, setup environment:
+
+Open a cmd prompt, and run:
+```
+call \path\to\DeepCL\dist\bin\activate.bat
+```
+(where you need to modify `\path\to\DeepCL` appropriately)
+
+Keep the cmd open, and go to the next section
+
 ### To check all is working
 
-TODO: fix this section, in progress.  Prior to each of these, please open a cmd prompt, and cd to the `DeepCL` directory
+First open a cmd prompt, and activate, as above, then:
 
 Unit-tests:
 ```
-dist\bin\deepcl_unittests
+deepcl_unittests
 ```
 Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
 
 Commandline training:
 ```
-dist\bin\deepcl_train numtest=-1 numtrain=10000 datadir=c:\data\mnist
-```
-(change path to wherever the mnist data files are downloaded)
-
-For python wrappers:
-```
-python dist\bin\test_deepcl.py c:\data\mnist
+deepcl_train numtest=-1 numtrain=10000 datadir=c:\data\mnist
 ```
 (change path to wherever the mnist data files are downloaded)
 
