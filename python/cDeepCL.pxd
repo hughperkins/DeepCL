@@ -7,7 +7,13 @@
 from libcpp.string cimport string
 from libcpp cimport bool
 
-include "cEasyCL.pxd"
+cdef extern from "DeepCL.h":
+    cdef cppclass DeepCL:
+        @staticmethod
+        DeepCL *createForFirstGpuOtherwiseCpu()
+        @staticmethod
+        DeepCL *createForIndexedGpu( int gpu )
+
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
 include "cSGD.pxd"
@@ -24,5 +30,4 @@ include "cQLearning.pxd"
 
 cdef extern from "CyWrappers.h":
     cdef void checkException( int *wasRaised, string *message )
-
 

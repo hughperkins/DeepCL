@@ -1,6 +1,6 @@
 cdef class Adagrad: 
     cdef cDeepCL.Adagrad *thisptr
-    def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+    def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
         self.thisptr = new cDeepCL.Adagrad(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
     def __dealloc(self):

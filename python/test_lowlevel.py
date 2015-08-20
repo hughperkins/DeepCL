@@ -13,7 +13,7 @@ if len(sys.argv) != 2:
 
 mnistFilePath = sys.argv[1] + '/t10k-images-idx3-ubyte' 
 
-cl = PyDeepCL.EasyCL()
+cl = PyDeepCL.DeepCL()
 net = PyDeepCL.NeuralNet(cl)
 sgd = PyDeepCL.SGD( cl, 0.002, 0 )
 sgd.setMomentum( 0.0001 )

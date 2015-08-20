@@ -13,7 +13,8 @@ from libcpp cimport bool
 
 cimport cDeepCL
 
-include "EasyCL.pyx"
+include "DeepCL.pyx"
+#include "DeepCL.pyx"
 include "SGD.pyx"
 include "Annealer.pyx"
 include "Nesterov.pyx"

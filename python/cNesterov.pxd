@@ -1,6 +1,6 @@
 cdef extern from "trainers/Nesterov.h":
     cdef cppclass Nesterov:
-        Nesterov( EasyCL *cl ) except +
+        Nesterov( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         void setMomentum( float momentum )
         BatchResult train( NeuralNet *net, TrainingContext *context,

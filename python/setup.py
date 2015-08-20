@@ -37,7 +37,7 @@ else:
 runtime_library_dirs = []
 libraries = []
 libraries.append('clBLAS' + get_so_suffix())
-libraries.append('EasyCL' + get_so_suffix())
+libraries.append('DeepCL' + get_so_suffix())
 libraries.append('DeepCL' + get_so_suffix())
 
 if osfamily == 'Linux':

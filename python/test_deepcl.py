@@ -14,7 +14,7 @@ if len(sys.argv) != 2:
 
 mnistFilePath = sys.argv[1] + '/t10k-images-idx3-ubyte' 
 
-cl = PyDeepCL.EasyCL()
+cl = PyDeepCL.DeepCL()
 net = PyDeepCL.NeuralNet(cl, 1,28)
 print('created net')
 print( net.asString() )

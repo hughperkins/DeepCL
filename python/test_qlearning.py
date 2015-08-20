@@ -166,7 +166,7 @@ def go():
     #planes = 2
     print('size',size,'planes',planes,'numActions',numActions)
 
-    cl = PyDeepCL.EasyCL()
+    cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet(cl)
     sgd = PyDeepCL.SGD(cl, 0.1, 0.0)
     net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size) )

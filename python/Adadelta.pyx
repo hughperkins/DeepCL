@@ -1,6 +1,6 @@
 cdef class Adadelta: 
     cdef cDeepCL.Adadelta *thisptr
-    def __cinit__( self, EasyCL cl, rho=0.9 ):
+    def __cinit__( self, DeepCL cl, rho=0.9 ):
         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)
     def __dealloc(self):
         del self.thisptr
