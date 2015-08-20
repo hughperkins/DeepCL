@@ -77,15 +77,6 @@ Notes on how the wrapper works
 -  `setup.py <https://github.com/hughperkins/DeepCL/blob/master/python/setup.py>`__
    is a setup file for compiling the ``PyDeepCL.pyx`` Cython file
 
-to run unit-tests
------------------
-
-From the python directory:
-
-.. code:: bash
-
-    nosetests -sv
-
 Maintainer/development information
 ----------------------------------
 
@@ -99,13 +90,18 @@ press ``c``/``configure`` - enable ``BUILD_PYTHON_WRAPPERS``, then
 ``c``/``configure`` - enable ``DEV_RUN_CYTHON``, then
 ``c``/``configure`` - => and now ``g``/``generate``, and build
 
--  If you want to update this readme, you might want to re-generate the
+-  If you want to update this readme, you need to re-generate the
    README.rst, so you'll need pypandoc:
 
    ::
 
        pip install pypandoc
 
--  (note that pypandoc depends on pandoc)
+-  (note that pypandoc depends on pandoc native library)
 
+And then to regenerate README.rst:
+
+::
+
+    python setup.py sdist
 

@@ -12,14 +12,18 @@ import glob
 import platform
 from setuptools import setup
 from setuptools import Extension
-import distutils.dir_util
-import distutils.file_util
+#import distutils.dir_util
+#import distutils.file_util
 
+building_dist = False
 for arg in sys.argv:
     if arg in ('sdist','bdist','bdist_egg','build_ext'):
-        import pypandoc
-        pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
+        building_dist = True
         break
+
+if building_dist:
+    import pypandoc
+    pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -71,6 +75,8 @@ def read_if_exists(filename):
         return ""
 
 version = read_if_exists('version.txt').strip().replace('v', '')
+if building_dist and version == '':
+    raise Exception('version cannot be empty string when building dist')
 print('version: ', version )
 
 setup(
