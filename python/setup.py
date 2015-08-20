@@ -4,6 +4,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from __future__ import print_function
 import os
 import os.path
 import sysconfig
@@ -22,8 +23,11 @@ for arg in sys.argv:
         break
 
 if building_dist:
-    import pypandoc
-    pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
+    try:
+        import pypandoc
+        pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
+    except:
+        print('WARNING: pypandoc not installed, cannot update README.rst')
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
