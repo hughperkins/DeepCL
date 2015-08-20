@@ -3,8 +3,14 @@ DeepCL Python wrappers
 
 Python wrapper for `DeepCL <https://github.com/hughperkins/DeepCL>`__
 
-To install from pip
-===================
+Pre-requisites
+==============
+
+You must have first installed and activated DeepCL native libraries, see
+`Build.md <https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md>`__
+
+To install from pip (note, 8.x not in pip yet...)
+=================================================
 
 .. code:: bash
 
@@ -32,8 +38,8 @@ For examples of using lower-level entrypoints, see
 For example of using q-learning, see
 `test\_qlearning.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py>`__.
 
-To build from source
-====================
+To install from source
+======================
 
 Pre-requisites:
 ---------------
@@ -51,21 +57,6 @@ Pre-requisites:
 -  on linux:
 -  Python 2.7 or Python 3.4
 -  g++, supporting c++0x, eg 4.4 or higher
-
-To build:
----------
-
-.. code:: bash
-
-    cd python
-    python setup.py build_ext -i
-
-Then, you can run from this directory, by making sure to add it to the
-path, eg:
-
-::
-
-    PYTHONPATH=. python test_lowlevel.py /my/mnist/data/dir 
 
 To install:
 -----------
@@ -95,15 +86,18 @@ From the python directory:
 
     nosetests -sv
 
-Development builds
-------------------
+Maintainer/development information
+----------------------------------
 
--  If you want to modify the sourcecode, you'll need to re-run cython,
-   so you'll need cython:
-
-   ::
-
-       pip install cython
+If you want to modify the python wrappers, you'll need to re-run Cython.
+This is no longer handled by ``setup.py``, but is handled by the cmake
+build. So, to run cython you'll need to: - install Cython, eg
+``pip install cython`` - follow the instructions for the native build,
+`Build.md <https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md>`__
+- when you open ``ccmake``: - enable option ``Maintainer options``, then
+press ``c``/``configure`` - enable ``BUILD_PYTHON_WRAPPERS``, then
+``c``/``configure`` - enable ``DEV_RUN_CYTHON``, then
+``c``/``configure`` - => and now ``g``/``generate``, and build
 
 -  If you want to update this readme, you might want to re-generate the
    README.rst, so you'll need pypandoc:

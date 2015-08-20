@@ -59,18 +59,26 @@ Note:
 * note: recently, moved EasyCL/thirdparty/clew from submodule to simply copying in the files
    * hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
 
+### To activate, setup environment:
+
+Open a bash prompt, and run:
+```
+source /path/to/DeepCL/dist/bin/activate.sh
+```
+(where you need to modify `/path/to/DeepCL` appropriately)
+
+Keep the bash open, and go to the next section
+
 ### To check all is working
 
 Unit-tests:
 ```
-source ../dist/bin/activate.sh
 deepcl_unittests
 ```
 Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
 
 Commandline training:
 ```
-call ../dist/bin/activate.sh
 deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 ```
 (change path to wherever the mnist data files are downloaded)
@@ -109,20 +117,28 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 
 The outputs will appear in the subdirectory 'dist'
 
+### To activate, setup environment:
+
+Open a cmd prompt, and run:
+```
+call \path\to\DeepCL\dist\bin\activate.bat
+```
+(where you need to modify `\path\to\DeepCL` appropriately)
+
+Keep the cmd open, and go to the next section
+
 ### To check all is working
 
-TODO: fix this section, in progress.  Prior to each of these, please open a cmd prompt, and cd to the `DeepCL` directory
+First open a cmd prompt, and activate, as above, then:
 
 Unit-tests:
 ```
-call ..\dist\bin\activate.bat
 deepcl_unittests
 ```
 Most tests should pass, but one or two might fail.  Please do feel free to raise an issue for failing tests, even if they fail intermittently.
 
 Commandline training:
 ```
-call ..\dist\bin\activate.bat
 deepcl_train numtest=-1 numtrain=10000 datadir=c:\data\mnist
 ```
 (change path to wherever the mnist data files are downloaded)

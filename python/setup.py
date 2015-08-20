@@ -15,6 +15,12 @@ from setuptools import Extension
 import distutils.dir_util
 import distutils.file_util
 
+for arg in sys.argv:
+    if arg in ('sdist','bdist','bdist_egg','build_ext'):
+        import pypandoc
+        pypandoc.convert('README.md', 'rst', outputfile = 'README.rst' )
+        break
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 

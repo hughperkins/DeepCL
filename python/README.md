@@ -2,7 +2,11 @@
 
 Python wrapper for  [DeepCL](https://github.com/hughperkins/DeepCL)
 
-# To install from pip
+# Pre-requisites
+
+You must have first installed and activated DeepCL native libraries, see [Build.md](https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md)
+
+# To install from pip (note, 8.x not in pip yet...)
 
 ```bash
 pip install DeepCL 
@@ -25,7 +29,7 @@ For examples of using lower-level entrypoints, see [test_lowlevel.py](https://gi
 
 For example of using q-learning, see [test_qlearning.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py).
 
-# To build from source
+# To install from source
 
 ## Pre-requisites:
 
@@ -37,18 +41,6 @@ For example of using q-learning, see [test_qlearning.py](https://github.com/hugh
 * on linux:
   * Python 2.7 or Python 3.4
   * g++, supporting c++0x, eg 4.4 or higher
-
-## To build:
-
-```bash
-cd python
-python setup.py build_ext -i
-```
-
-Then, you can run from this directory, by making sure to add it to the path, eg:
-```
-PYTHONPATH=. python test_lowlevel.py /my/mnist/data/dir 
-```
 
 ## To install:
 
@@ -63,23 +55,26 @@ python setup.py install
 * [PyDeepCL.pyx](https://github.com/hughperkins/DeepCL/blob/master/python/PyDeepCL.pyx) contains Cython wrapper classes around the underlying c++ classes
 * [setup.py](https://github.com/hughperkins/DeepCL/blob/master/python/setup.py) is a setup file for compiling the `PyDeepCL.pyx` Cython file
 
-## to run unit-tests
+## Maintainer/development information
 
-From the python directory:
+If you want to modify the python wrappers, you'll need to re-run Cython.  This is no longer handled by `setup.py`, but is handled by the cmake build.  So, to run cython you'll need to:
+- install Cython, eg `pip install cython`
+- follow the instructions for the native build, [Build.md](https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md)
+- when you open `ccmake`:
+  - enable option `Maintainer options`, then press `c`/`configure`
+  - enable `BUILD_PYTHON_WRAPPERS`, then `c`/`configure`
+  - enable `DEV_RUN_CYTHON`, then `c`/`configure`
+- => and now `g`/`generate`, and build
 
-```bash
-nosetests -sv
-```
-
-## Development builds
-
-* If you want to modify the sourcecode, you'll need to re-run cython, so you'll need cython:
-```
-pip install cython
-```
-* If you want to update this readme, you might want to re-generate the README.rst, so you'll need pypandoc:
+* If you want to update this readme, you need to re-generate the README.rst, so you'll need pypandoc:
 ```
 pip install pypandoc
 ```
-  * (note that pypandoc depends on pandoc)
+  * (note that pypandoc depends on pandoc native library)
+
+And then to regenerate README.rst:
+```
+python setup.py sdist
+```
+
 
