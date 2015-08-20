@@ -44,7 +44,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~SGDState();
-    SGDState( EasyCL *cl, int numWeights );
+    SGDState(EasyCL *cl, int numWeights);
 
     // [[[end]]]
 };

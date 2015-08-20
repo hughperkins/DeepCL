@@ -20,28 +20,28 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-//BatchLearnerOnDemand::BatchLearnerOnDemand( Trainable *net ) :
-//    net( net ) {
+//BatchLearnerOnDemand::BatchLearnerOnDemand(Trainable *net) :
+//    net(net) {
 //}
 
-//EpochResult BatchLearnerOnDemand::runBatchedNetAction( std::string filepath, int fileReadBatches, int batchSize, int N, NetAction *netAction ) {
-//    OnDemandBatcher onDemandBatcher(net, netAction, filepath, N, fileReadBatches, batchSize );
+//EpochResult BatchLearnerOnDemand::runBatchedNetAction(std::string filepath, int fileReadBatches, int batchSize, int N, NetAction *netAction) {
+//    OnDemandBatcher onDemandBatcher(net, netAction, filepath, N, fileReadBatches, batchSize);
 //    return onDemandBatcher.run();
 //}
 
-//int BatchLearnerOnDemand::test( std::string filepath, int fileReadBatches, int batchSize, int Ntest ) {
-//    net->setTraining( false );
+//int BatchLearnerOnDemand::test(std::string filepath, int fileReadBatches, int batchSize, int Ntest) {
+//    net->setTraining(false);
 //    NetAction *action = new NetForwardAction();
-//    int numRight = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntest, action ).numRight;
+//    int numRight = runBatchedNetAction(filepath, fileReadBatches, batchSize, Ntest, action).numRight;
 //    delete action;
 //    return numRight;
 //}
 
-//EpochResult BatchLearnerOnDemand::runEpochFromLabels( Trainer *trainer, TrainingContext *context,
-//         std::string filepath, int fileReadBatches, int batchSize, int Ntrain ) {
-//    net->setTraining( true );
-//    NetAction *action = new NetLearnLabeledAction( trainer, context );
-//    EpochResult epochResult = runBatchedNetAction( filepath, fileReadBatches, batchSize, Ntrain, action );
+//EpochResult BatchLearnerOnDemand::runEpochFromLabels(Trainer *trainer, TrainingContext *context,
+//         std::string filepath, int fileReadBatches, int batchSize, int Ntrain) {
+//    net->setTraining(true);
+//    NetAction *action = new NetLearnLabeledAction(trainer, context);
+//    EpochResult epochResult = runBatchedNetAction(filepath, fileReadBatches, batchSize, Ntrain, action);
 //    delete action;
 //    return epochResult;
 //}

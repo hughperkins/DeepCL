@@ -32,14 +32,14 @@ public:
     int allocatedSize;
     float *output;
 
-    inline int getOutputIndex( int n, int outPlane, int outRow, int outCol ) const {
-        return ( ( n
-            * outputPlanes + outPlane )
-            * outputSize + outRow )
+    inline int getOutputIndex(int n, int outPlane, int outRow, int outCol) const {
+        return (( n
+            * outputPlanes + outPlane)
+            * outputSize + outRow)
             * outputSize + outCol;
     }
-    inline float getOutput( int n, int outPlane, int outRow, int outCol ) const {
-        return output[ getOutputIndex(n,outPlane, outRow, outCol ) ];
+    inline float getOutput(int n, int outPlane, int outRow, int outCol) const {
+        return output[ getOutputIndex(n,outPlane, outRow, outCol) ];
     }
 
     // [[[cog
@@ -47,16 +47,16 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ForceBackpropLayer( Layer *previousLayer, ForceBackpropLayerMaker *maker );
+    ForceBackpropLayer(Layer *previousLayer, ForceBackpropLayerMaker *maker);
     VIRTUAL ~ForceBackpropLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL void backward( float learningRate );
+    VIRTUAL void backward(float learningRate);
     VIRTUAL float *getOutput();
-    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL int getPersistSize(int version) const;
     VIRTUAL bool needsBackProp();
     VIRTUAL void printOutput();
     VIRTUAL void print();
-    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL void forward();
     VIRTUAL void backward();
     VIRTUAL int getOutputSize() const;
@@ -69,6 +69,6 @@ public:
     // [[[end]]]
 };
 
-std::ostream &operator<<( std::ostream &os, ForceBackpropLayer &layer );
-std::ostream &operator<<( std::ostream &os, ForceBackpropLayer const*layer );
+std::ostream &operator<<(std::ostream &os, ForceBackpropLayer &layer);
+std::ostream &operator<<(std::ostream &os, ForceBackpropLayer const*layer);
 

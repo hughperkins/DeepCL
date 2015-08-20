@@ -30,9 +30,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void multiply( int N, float multiplier, CLWrapper *in, CLWrapper *out );
+    VIRTUAL void multiply(int N, float multiplier, CLWrapper *in, CLWrapper *out);
     VIRTUAL ~MultiplyBuffer();
-    MultiplyBuffer( EasyCL *cl );
+    MultiplyBuffer(EasyCL *cl);
 
     // [[[end]]]
 };

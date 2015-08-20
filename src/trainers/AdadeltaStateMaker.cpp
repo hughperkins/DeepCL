@@ -16,11 +16,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainerState *AdadeltaStateMaker::instance( EasyCL *cl, int numWeights ) {
-    AdadeltaState *state = new AdadeltaState( cl, numWeights );
+TrainerState *AdadeltaStateMaker::instance(EasyCL *cl, int numWeights) {
+    AdadeltaState *state = new AdadeltaState(cl, numWeights);
     return state;
 }
-VIRTUAL bool AdadeltaStateMaker::created( TrainerState *state ) {
+VIRTUAL bool AdadeltaStateMaker::created(TrainerState *state) {
     return dynamic_cast< AdadeltaState * >(state) != 0;
 }
 

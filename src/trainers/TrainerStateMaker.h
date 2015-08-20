@@ -19,14 +19,14 @@ class EasyCL;
 
 class TrainerStateMaker {
 public:
-    virtual TrainerState *instance( EasyCL *cl, int numWeights ) = 0;
+    virtual TrainerState *instance(EasyCL *cl, int numWeights) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL bool created( TrainerState *state );
+    VIRTUAL bool created(TrainerState *state);
 
     // [[[end]]]
 };

@@ -64,10 +64,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI OnDemandBatcherv2( Trainable *net, NetAction *netAction,
-    GenericLoaderv2 *loader, int N, int fileReadBatches, int batchSize );
+    PUBLICAPI OnDemandBatcherv2(Trainable *net, NetAction *netAction,
+    GenericLoaderv2 *loader, int N, int fileReadBatches, int batchSize);
     VIRTUAL ~OnDemandBatcherv2();
-    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
+    VIRTUAL void setBatchState(int nextBatch, int numRight, float loss);
     VIRTUAL int getBatchSize();
     PUBLICAPI VIRTUAL int getNextFileBatch();
     PUBLICAPI VIRTUAL int getNextBatch();
@@ -77,7 +77,7 @@ public:
     PUBLICAPI VIRTUAL int getN();
     PUBLICAPI void reset();
     PUBLICAPI bool tick(int epoch);
-    PUBLICAPI EpochResult run( int epoch );
+    PUBLICAPI EpochResult run(int epoch);
 
     // [[[end]]]
 };

@@ -15,10 +15,10 @@ public:
 //    virtual void printQRepresentation(NeuralNet *net) {} // optional implementation
     virtual int getPerceptionSize() = 0;
     virtual int getPerceptionPlanes() = 0;
-    virtual void getPerception( float *perception ) = 0;
+    virtual void getPerception(float *perception) = 0;
     virtual void reset() = 0;
     virtual int getNumActions() = 0;
-    virtual float act( int index ) = 0;  // returns reward
+    virtual float act(int index) = 0;  // returns reward
     virtual bool hasFinished() = 0;
 //    virtual int getWorldSize() = 0;
 };

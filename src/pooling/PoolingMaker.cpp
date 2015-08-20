@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Layer *PoolingMaker::createLayer( Layer *previousLayer ) {
-    return new PoolingLayer( cl, previousLayer, this );
+Layer *PoolingMaker::createLayer(Layer *previousLayer) {
+    return new PoolingLayer(cl, previousLayer, this);
 }
 

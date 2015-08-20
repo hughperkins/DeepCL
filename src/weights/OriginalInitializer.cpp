@@ -16,19 +16,19 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL void OriginalInitializer::initializeWeights( int numWeights, float *weights, int fanin ) {
+VIRTUAL void OriginalInitializer::initializeWeights(int numWeights, float *weights, int fanin) {
     float rangesize = sqrt(12.0f / (float)fanin) ;
-    for( int i = 0; i < numWeights; i++ ) {
+    for(int i = 0; i < numWeights; i++) {
         float uniformrand = RandomSingleton::uniform();  
-        float weight = rangesize * ( uniformrand - 0.5f );
+        float weight = rangesize * (uniformrand - 0.5f);
         weights[i] = weight;
     }
 }
-VIRTUAL void OriginalInitializer::initializeBias( int numBias, float *bias, int fanin ) {
+VIRTUAL void OriginalInitializer::initializeBias(int numBias, float *bias, int fanin) {
     float rangesize = sqrt(12.0f / (float)fanin) ;
-    for( int i = 0; i < numBias; i++ ) {
+    for(int i = 0; i < numBias; i++) {
         float uniformrand = RandomSingleton::uniform();  
-        float weight = rangesize * ( uniformrand - 0.5f );
+        float weight = rangesize * (uniformrand - 0.5f);
         bias[i] = weight;
     }
 }

@@ -14,38 +14,38 @@ using namespace std;
 #define VIRTUAL
 #define STATIC
 
-MultinomialCrossEntropy::MultinomialCrossEntropy( Layer *previousLayer, MultinomialCrossEntropyMaker const*maker ) :
-        LossLayer( previousLayer, maker ),
-        errors( 0 ),
-        allocatedSize( 0 ) {
+MultinomialCrossEntropy::MultinomialCrossEntropy(Layer *previousLayer, MultinomialCrossEntropyMaker const*maker) :
+        LossLayer(previousLayer, maker),
+        errors(0),
+        allocatedSize(0) {
 }
 VIRTUAL MultinomialCrossEntropy::~MultinomialCrossEntropy(){
-    if( errors != 0 ) {
+    if(errors != 0) {
         delete[] errors;
     }
 }
 VIRTUAL float*MultinomialCrossEntropy::getGradInput() {
     return errors;
 }
-VIRTUAL float MultinomialCrossEntropy::calcLoss( float const *expected ) {
+VIRTUAL float MultinomialCrossEntropy::calcLoss(float const *expected) {
     float loss = 0;
     float *output = getOutput();
 //    cout << "MultinomialCrossEntropy::calcLoss" << endl;
     // this is matrix subtraction, then element-wise square, then aggregation
     int numPlanes = previousLayer->getOutputPlanes();
     int imageSize = previousLayer->getOutputSize();
-    for( int imageId = 0; imageId < batchSize; imageId++ ) {
-        for( int plane = 0; plane < numPlanes; plane++ ) {
-            for( int outRow = 0; outRow < imageSize; outRow++ ) {
-                for( int outCol = 0; outCol < imageSize; outCol++ ) {
-                    int resultOffset = ( ( imageId
-                         * numPlanes + plane )
-                         * imageSize + outRow )
+    for(int imageId = 0; imageId < batchSize; imageId++) {
+        for(int plane = 0; plane < numPlanes; plane++) {
+            for(int outRow = 0; outRow < imageSize; outRow++) {
+                for(int outCol = 0; outCol < imageSize; outCol++) {
+                    int resultOffset = (( imageId
+                         * numPlanes + plane)
+                         * imageSize + outRow)
                          * imageSize + outCol;
- //                   int resultOffset = getResultIndex( imageId, plane, outRow, outCol ); //imageId * numPlanes + out;
+ //                   int resultOffset = getResultIndex(imageId, plane, outRow, outCol); //imageId * numPlanes + out;
                     float expectedOutput = expected[resultOffset];
                     float actualOutput = output[resultOffset];
-                    float negthisloss = expectedOutput * log( actualOutput );
+                    float negthisloss = expectedOutput * log(actualOutput);
                     loss -= negthisloss;
                 }
             }
@@ -55,12 +55,12 @@ VIRTUAL float MultinomialCrossEntropy::calcLoss( float const *expected ) {
 //    cout << "loss " << loss << endl;
     return loss;
  }
-VIRTUAL void MultinomialCrossEntropy::setBatchSize( int batchSize ) {
-    if( batchSize <= allocatedSize ) {
+VIRTUAL void MultinomialCrossEntropy::setBatchSize(int batchSize) {
+    if(batchSize <= allocatedSize) {
         this->batchSize = batchSize;
         return;
     }
-    if( errors != 0 ) {
+    if(errors != 0) {
         delete[] errors;
     }
     errors = new float[ batchSize * previousLayer->getOutputNumElements() ];
@@ -68,13 +68,13 @@ VIRTUAL void MultinomialCrossEntropy::setBatchSize( int batchSize ) {
     allocatedSize = batchSize;
 }
 // just do naively for now, then add sigmoid short-cutting later
-VIRTUAL void MultinomialCrossEntropy::calcGradInput( float const*expectedOutput ) {
+VIRTUAL void MultinomialCrossEntropy::calcGradInput(float const*expectedOutput) {
     ActivationFunction const*fn = previousLayer->getActivationFunction();
     int outputNumElements = previousLayer->getOutputNumElements();
     float *output = previousLayer->getOutput();
-    for( int i = 0; i < outputNumElements; i++ ) {
+    for(int i = 0; i < outputNumElements; i++) {
         float result = output[i];
-        float partialOutBySum = fn->calcDerivative( result );
+        float partialOutBySum = fn->calcDerivative(result);
         float partialLossByOut = - expectedOutput[i] / result;
         errors[i] = partialLossByOut * partialOutBySum;
     }

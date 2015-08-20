@@ -19,7 +19,7 @@
 #define STATIC static
 
 // idea of this is that it will assign random floats uniformly sampled
-// in range ( - multiplier / fanin ) to ( + multiplier / fanin )
+// in range (- multiplier / fanin) to (+ multiplier / fanin)
 class DeepCL_EXPORT UniformInitializer : public WeightsInitializer {
 public:
     float multiplier;
@@ -29,9 +29,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    UniformInitializer( float multiplier );
-    VIRTUAL void initializeWeights( int numWeights, float *weights, int fanin );
-    VIRTUAL void initializeBias( int numBias, float *bias, int fanin );
+    UniformInitializer(float multiplier);
+    VIRTUAL void initializeWeights(int numWeights, float *weights, int fanin);
+    VIRTUAL void initializeBias(int numBias, float *bias, int fanin);
 
     // [[[end]]]
 };

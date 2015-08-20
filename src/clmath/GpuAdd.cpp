@@ -18,27 +18,27 @@ using namespace std;
 #define VIRTUAL
 
 /// \brief calculates destinationWrapper += deltaWrapper
-VIRTUAL void GpuAdd::add( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper ) {
-    StatefulTimer::instance()->timeCheck("GpuAdd::add start" );
+VIRTUAL void GpuAdd::add(int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper) {
+    StatefulTimer::instance()->timeCheck("GpuAdd::add start");
 
-    kernel->in( N );
-    kernel->inout( destinationWrapper );
-    kernel->in( deltaWrapper );
+    kernel->in(N);
+    kernel->inout(destinationWrapper);
+    kernel->in(deltaWrapper);
     int globalSize = N;
     int workgroupSize = 64;
-    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    int numWorkgroups = (globalSize + workgroupSize - 1) / workgroupSize;
+    kernel->run_1d(numWorkgroups * workgroupSize, workgroupSize);
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("GpuAdd::add end" );
+    StatefulTimer::instance()->timeCheck("GpuAdd::add end");
 }
 VIRTUAL GpuAdd::~GpuAdd() {
 }
-GpuAdd::GpuAdd( EasyCL *cl ) :
-        cl( cl ) {
+GpuAdd::GpuAdd(EasyCL *cl) :
+        cl(cl) {
     std::string kernelName = "per_element_add.per_element_add";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernel = cl->getKernel( kernelName );
+    if(cl->kernelExists(kernelName) ) {
+        this->kernel = cl->getKernel(kernelName);
 //        cout << "GpuAdd kernel already built => reusing" << endl;
         return;
     }
@@ -48,7 +48,7 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/per_element_add.cl", "per_element_add", 'options' )
+    // stringify.write_kernel2("kernel", "cl/per_element_add.cl", "per_element_add", 'options')
     // ]]]
     // generated using cog, from cl/per_element_add.cl:
     const char * kernelSource =  
@@ -58,9 +58,9 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
+    "kernel void per_element_add(const int N, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if(globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId];\n" 
@@ -68,26 +68,26 @@ GpuAdd::GpuAdd( EasyCL *cl ) :
     "\n" 
     "// adds source to target\n" 
     "// tiles source as necessary, according to tilingSize\n" 
-    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
+    "kernel void per_element_tiled_add(const int N, const int tilingSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if(globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId % tilingSize];\n" 
     "}\n" 
     "\n" 
-    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
+    "kernel void repeated_add(const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if(globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
+    "    target[globalId] += source[ (globalId / repeatSize) % sourceSize ];\n" 
     "}\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "per_element_add", options, "cl/per_element_add.cl" );
+    kernel = cl->buildKernelFromString(kernelSource, "per_element_add", options, "cl/per_element_add.cl");
     // [[[end]]]
-    cl->storeKernel( kernelName, kernel, true );
+    cl->storeKernel(kernelName, kernel, true);
     this->kernel = kernel;
 }
 

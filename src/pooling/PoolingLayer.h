@@ -50,10 +50,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingLayer( EasyCL *cl, Layer *previousLayer, PoolingMaker *maker );
+    PoolingLayer(EasyCL *cl, Layer *previousLayer, PoolingMaker *maker);
     VIRTUAL ~PoolingLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL int getOutputNumElements();
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
@@ -61,7 +61,7 @@ public:
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL int getPersistSize(int version) const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;

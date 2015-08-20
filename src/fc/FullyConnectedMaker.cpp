@@ -10,8 +10,8 @@
 
 using namespace std;
 
-Layer *FullyConnectedMaker::createLayer( Layer *previousLayer ) {
-    return new FullyConnectedLayer( cl, previousLayer, this );
+Layer *FullyConnectedMaker::createLayer(Layer *previousLayer) {
+    return new FullyConnectedLayer(cl, previousLayer, this);
 }
 
 

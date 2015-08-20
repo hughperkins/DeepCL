@@ -10,8 +10,8 @@
 
 using namespace std;
 
-Layer *NormalizationLayerMaker::createLayer( Layer *previousLayer ) {
-    return new NormalizationLayer( previousLayer, this );
+Layer *NormalizationLayerMaker::createLayer(Layer *previousLayer) {
+    return new NormalizationLayer(previousLayer, this);
 }
 
 

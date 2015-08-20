@@ -16,19 +16,19 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-UniformInitializer::UniformInitializer( float multiplier ) {
+UniformInitializer::UniformInitializer(float multiplier) {
     this->multiplier = multiplier;
 }
-VIRTUAL void UniformInitializer::initializeWeights( int numWeights, float *weights, int fanin ) {
+VIRTUAL void UniformInitializer::initializeWeights(int numWeights, float *weights, int fanin) {
     float range = multiplier / (float)fanin;
-    for( int i = 0; i < numWeights; i++ ) {
+    for(int i = 0; i < numWeights; i++) {
         float uniformrand = RandomSingleton::uniform() * 2.0f - 1.0f;  
         weights[i] = range * uniformrand;
     }
 }
-VIRTUAL void UniformInitializer::initializeBias( int numBias, float *bias, int fanin ) {
+VIRTUAL void UniformInitializer::initializeBias(int numBias, float *bias, int fanin) {
     float range = multiplier / (float)fanin;
-    for( int i = 0; i < numBias; i++ ) {
+    for(int i = 0; i < numBias; i++) {
         float uniformrand = RandomSingleton::uniform() * 2.0f - 1.0f;  
         bias[i] = range * uniformrand;
     }

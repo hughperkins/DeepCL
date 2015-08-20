@@ -57,14 +57,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI NetLearner( Trainer *trainer, Trainable *net,
+    PUBLICAPI NetLearner(Trainer *trainer, Trainable *net,
     int Ntrain, float *trainData, int *trainLabels,
     int Ntest, float *testData, int *testLabels,
-    int batchSize );
+    int batchSize);
     VIRTUAL ~NetLearner();
-    VIRTUAL void setSchedule( int numEpochs );
-    VIRTUAL void setDumpTimings( bool dumpTimings );
-    VIRTUAL void setSchedule( int numEpochs, int nextEpoch );
+    VIRTUAL void setSchedule(int numEpochs);
+    VIRTUAL void setDumpTimings(bool dumpTimings);
+    VIRTUAL void setSchedule(int numEpochs, int nextEpoch);
     PUBLICAPI VIRTUAL void reset();
     VIRTUAL void postEpochTesting();
     PUBLICAPI VIRTUAL bool tickBatch();  // just tick one learn batch, once all done, then run testing etc
@@ -74,7 +74,7 @@ public:
     PUBLICAPI VIRTUAL int getNTrain();
     PUBLICAPI VIRTUAL int getBatchNumRight();
     PUBLICAPI VIRTUAL float getBatchLoss();
-    VIRTUAL void setBatchState( int nextBatch, int numRight, float loss );
+    VIRTUAL void setBatchState(int nextBatch, int numRight, float loss);
     PUBLICAPI VIRTUAL bool tickEpoch();
     PUBLICAPI VIRTUAL void run();
     PUBLICAPI VIRTUAL bool isLearningDone();

@@ -8,7 +8,7 @@
 
 #include "RandomTranslationsMaker.h"
 
-Layer *RandomTranslationsMaker::createLayer( Layer *previousLayer ) {
-    return new RandomTranslations( previousLayer, this );
+Layer *RandomTranslationsMaker::createLayer(Layer *previousLayer) {
+    return new RandomTranslations(previousLayer, this);
 }
 

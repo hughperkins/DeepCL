@@ -33,7 +33,7 @@ public:
         loss = 0;
         numRight = 0;
     }
-    BatchResult( float loss, int numRight ) {
+    BatchResult(float loss, int numRight) {
         this->loss = loss;
         this->numRight = numRight;
     }
@@ -59,29 +59,29 @@ public:
 
     float learningRate;
 
-    virtual BatchResult train( NeuralNet *net, 
+    virtual BatchResult train(NeuralNet *net, 
         TrainingContext *context,
-        float const*input, float const*expectedOutput ) = 0;
-    virtual BatchResult trainFromLabels( NeuralNet *net, 
+        float const*input, float const*expectedOutput) = 0;
+    virtual BatchResult trainFromLabels(NeuralNet *net, 
         TrainingContext *context,
-        float const*input, int const*labels ) = 0;
+        float const*input, int const*labels) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Trainer( EasyCL *cl );
+    Trainer(EasyCL *cl);
     VIRTUAL ~Trainer();
-    VIRTUAL void setLearningRate( float learningRate );
+    VIRTUAL void setLearningRate(float learningRate);
     VIRTUAL std::string asString();
-    VIRTUAL BatchResult train( Trainable *trainable,
+    VIRTUAL BatchResult train(Trainable *trainable,
     TrainingContext *context,
-    float const*input, float const*expectedOutput );
-    VIRTUAL BatchResult trainFromLabels( Trainable *trainable,
+    float const*input, float const*expectedOutput);
+    VIRTUAL BatchResult trainFromLabels(Trainable *trainable,
     TrainingContext *context,
-    float const*input, int const*labels );
-    VIRTUAL void _bindState( NeuralNet *net, TrainerStateMaker *stateMaker );
+    float const*input, int const*labels);
+    VIRTUAL void _bindState(NeuralNet *net, TrainerStateMaker *stateMaker);
 
     // [[[end]]]
 };

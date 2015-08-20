@@ -17,7 +17,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL Trainer *SGDMaker::instance( EasyCL *cl ) {
-    return new SGD( cl );
+VIRTUAL Trainer *SGDMaker::instance(EasyCL *cl) {
+    return new SGD(cl);
 }
 

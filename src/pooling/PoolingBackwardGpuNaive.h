@@ -22,9 +22,9 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~PoolingBackwardGpuNaive();
-    VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
-    CLWrapper *gradInputWrapper );
-    PoolingBackwardGpuNaive( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
+    VIRTUAL void backward(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
+    CLWrapper *gradInputWrapper);
+    PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
 
     // [[[end]]]
 };

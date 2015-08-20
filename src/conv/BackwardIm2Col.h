@@ -29,9 +29,9 @@ class DeepCL_EXPORT BackwardIm2Col : public Backward {
     public:
     BackwardIm2Col(EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~BackwardIm2Col();
-    VIRTUAL void backward( int batchSize,
+    VIRTUAL void backward(int batchSize,
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *gradInputWrapper );
+    CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

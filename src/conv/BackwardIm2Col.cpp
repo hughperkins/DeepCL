@@ -29,9 +29,9 @@ PUBLIC BackwardIm2Col::BackwardIm2Col(EasyCL *cl, LayerDimensions dim) :
 PUBLIC VIRTUAL BackwardIm2Col::~BackwardIm2Col() {
     delete im2Col;
 }
-PUBLIC VIRTUAL void BackwardIm2Col::backward( int batchSize, 
+PUBLIC VIRTUAL void BackwardIm2Col::backward(int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-        CLWrapper *gradInputWrapper ) {
+        CLWrapper *gradInputWrapper) {
     StatefulTimer::timeCheck("BackwardIm2Col::backward START");
 
     int gradColumnsSize = dim.inputPlanes * dim.filterSizeSquared * dim.outputSizeSquared;

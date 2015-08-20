@@ -31,9 +31,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC bool parseSubstring( WeightsInitializer *weightsInitializer, NeuralNet *net, std::string substring, bool isLast );
-    PUBLICAPI STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef );
-    STATIC bool createNetFromNetdef( NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer );
+    STATIC bool parseSubstring(WeightsInitializer *weightsInitializer, NeuralNet *net, std::string substring, bool isLast);
+    PUBLICAPI STATIC bool createNetFromNetdef(NeuralNet *net, std::string netdef);
+    STATIC bool createNetFromNetdef(NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer);
 
     // [[[end]]]
 };

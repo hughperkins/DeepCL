@@ -28,23 +28,23 @@ using namespace std;
 
 VIRTUAL Nesterov::~Nesterov() {
 }
-VIRTUAL void Nesterov::setMomentum( float momentum ) {
+VIRTUAL void Nesterov::setMomentum(float momentum) {
     this->momentum = momentum;
 }
 VIRTUAL std::string Nesterov::asString() {
-    return "Nesterov{ learningRate=" + toString( learningRate ) + ", momentum=" + 
-        toString( momentum ) + " }";
+    return "Nesterov{ learningRate=" + toString(learningRate) + ", momentum=" + 
+        toString(momentum) + " }";
 }
 VIRTUAL void Nesterov::loadFutureWeights(
         CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-        NesterovState *trainerState ) {
+        NesterovState *trainerState) {
     // this will save the old weights, into the trainerState,
     // and then add mom * dweights to them
 
     // create CLMathWrapper objects, so we can do per-element maths on the gpu:
-    CLMathWrapper clOldWeights( trainerState->oldWeightsWrapper );
-    CLMathWrapper clWeights( weightsWrapper );
-    CLMathWrapper clGradWeights( gradWeightsWrapper );
+    CLMathWrapper clOldWeights(trainerState->oldWeightsWrapper);
+    CLMathWrapper clWeights(weightsWrapper);
+    CLMathWrapper clGradWeights(gradWeightsWrapper);
 
     // following happens on the gpu:
     clOldWeights = clWeights;
@@ -52,22 +52,22 @@ VIRTUAL void Nesterov::loadFutureWeights(
     clWeights *= momentum;
     clWeights += clOldWeights;
 }
-VIRTUAL void Nesterov::updateWeights( CLWrapper *weightsWrapper,
+VIRTUAL void Nesterov::updateWeights(CLWrapper *weightsWrapper,
         CLWrapper *gradWeightsWrapper,
-        NesterovState *trainerState ) {
-    // we have: gradWeights = gradient( weights[t] + mom * dweights[t] )
+        NesterovState *trainerState) {
+    // we have: gradWeights = gradient(weights[t] + mom * dweights[t])
     //          trainerState->oldWeights = weights[t]
     //          trainerState->lastUpdate = dweights[t]
     // and so we can calculate
     //      dweights[t+1] = mom * dweights[t] - learningrate * gradient( 
-    //                          weights[t] + mom * dweights[t] )
+    //                          weights[t] + mom * dweights[t])
     //      weights[t+1] = weights[t] + dweights[t+1]
 
     // create CLMathWrapper objects, so we can do per-element maths on the gpu:
-    CLMathWrapper clLastUpdate( trainerState->lastUpdateWrapper );
-    CLMathWrapper clOldWeights( trainerState->oldWeightsWrapper );
-    CLMathWrapper clGradWeights( gradWeightsWrapper );
-    CLMathWrapper clWeights( weightsWrapper );
+    CLMathWrapper clLastUpdate(trainerState->lastUpdateWrapper);
+    CLMathWrapper clOldWeights(trainerState->oldWeightsWrapper);
+    CLMathWrapper clGradWeights(gradWeightsWrapper);
+    CLMathWrapper clWeights(weightsWrapper);
 
     // following happens on the gpu, via CLMathWrapper:
 
@@ -79,95 +79,95 @@ VIRTUAL void Nesterov::updateWeights( CLWrapper *weightsWrapper,
 }
 VIRTUAL BatchResult Nesterov::train( 
     NeuralNet *net, TrainingContext *context,
-    float const *input, OutputData *outputData ) {
+    float const *input, OutputData *outputData) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
     // or loading data, or anything like that
 
     //      dweights[t+1] = mom * dweights[t] - learningrate * gradient(
-    //                      weights[t] + mom * dweights[t] )
+    //                      weights[t] + mom * dweights[t])
     //      weights[t+1] = weights[t] + dweights[t+1]
     //
     // given weights[t], dweights[t]:
     //      forward/backprop weights[t] + mom * dweights[t]
     //      => calc dweights[t+1]
     //      => calc weights[t+1]
-    bindState( net );
+    bindState(net);
 
     // first, substitute weights + mom * dweights into the weights
     // calculate them first
     // save old weights first I suppose?
 
     int numLayers = net->getNumLayers();
-    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( !layer->needsBackProp() ) {
+    for(int layerIdx = numLayers - 2; layerIdx > 0; layerIdx--) {
+        Layer *layer = net->getLayer(layerIdx);
+        if(!layer->needsBackProp()) {
             break;
         }
-        if( layer->needsTrainerState() ) {
-            loadFutureWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
-                dynamic_cast< NesterovState * >( layer->getTrainerState() ) );
-            if( layer->biased() ) {
-                loadFutureWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
-                    dynamic_cast< NesterovState * >( layer->getBiasTrainerState() ) );
+        if(layer->needsTrainerState()) {
+            loadFutureWeights(layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
+                dynamic_cast< NesterovState * >(layer->getTrainerState()) );
+            if(layer->biased()) {
+                loadFutureWeights(layer->getBiasWrapper(), layer->getGradBiasWrapper(),
+                    dynamic_cast< NesterovState * >(layer->getBiasTrainerState()) );
             }
         }
     }
 
     // now, we have loaded in weigths + mom * dweights into the weights
     // do forward/backward:
-    net->forward( input );
-    int numRight = net->calcNumRight( outputData );
-    float loss = net->calcLoss( outputData );
-    net->backward( outputData );
+    net->forward(input);
+    int numRight = net->calcNumRight(outputData);
+    float loss = net->calcLoss(outputData);
+    net->backward(outputData);
 
     // now, calculate the new weights
-    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( !layer->needsBackProp() ) {
+    for(int layerIdx = numLayers - 2; layerIdx > 0; layerIdx--) {
+        Layer *layer = net->getLayer(layerIdx);
+        if(!layer->needsBackProp()) {
             break;
         }
-        if( layer->needsTrainerState() ) {
-            updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
-                dynamic_cast< NesterovState * >( layer->getTrainerState() ) );
-            if( layer->biased() ) {
-                updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
-                    dynamic_cast< NesterovState * >( layer->getBiasTrainerState() ) );
+        if(layer->needsTrainerState()) {
+            updateWeights(layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
+                dynamic_cast< NesterovState * >(layer->getTrainerState()) );
+            if(layer->biased()) {
+                updateWeights(layer->getBiasWrapper(), layer->getGradBiasWrapper(),
+                    dynamic_cast< NesterovState * >(layer->getBiasTrainerState()) );
             }
         }
     }
 
-    return BatchResult( loss, numRight );
+    return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Nesterov::train( NeuralNet *net, TrainingContext *context,
-        float const*input, float const*expectedOutput ) {
+VIRTUAL BatchResult Nesterov::train(NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput) {
 
-    ExpectedData expectedData( net, expectedOutput );
-    return this->train( net, context, input, &expectedData );
+    ExpectedData expectedData(net, expectedOutput);
+    return this->train(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Nesterov::trainFromLabels( NeuralNet *net, TrainingContext *context,
-        float const*input, int const*labels ) {
+VIRTUAL BatchResult Nesterov::trainFromLabels(NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels) {
 
-    LabeledData labeledData( net, labels );
-    return this->train( net, context, input, &labeledData );
+    LabeledData labeledData(net, labels);
+    return this->train(net, context, input, &labeledData);
 }
-VIRTUAL void Nesterov::bindState( NeuralNet *net ) {
+VIRTUAL void Nesterov::bindState(NeuralNet *net) {
     NesterovStateMaker stateMaker;
-    this->_bindState( net, &stateMaker );
+    this->_bindState(net, &stateMaker);
 }
-STATIC Nesterov *Nesterov::instance( EasyCL *cl, float learningRate ) {
-    Nesterov *sgd = new Nesterov( cl );
-    sgd->setLearningRate( learningRate );
+STATIC Nesterov *Nesterov::instance(EasyCL *cl, float learningRate) {
+    Nesterov *sgd = new Nesterov(cl);
+    sgd->setLearningRate(learningRate);
     return sgd;
 }
-STATIC Nesterov *Nesterov::instance( EasyCL *cl, float learningRate, float momentum ) {
-    Nesterov *sgd = new Nesterov( cl );
-    sgd->setLearningRate( learningRate );
-    sgd->setMomentum( momentum );
+STATIC Nesterov *Nesterov::instance(EasyCL *cl, float learningRate, float momentum) {
+    Nesterov *sgd = new Nesterov(cl);
+    sgd->setLearningRate(learningRate);
+    sgd->setMomentum(momentum);
     return sgd;
 }
-Nesterov::Nesterov( EasyCL *cl ) :
-        Trainer( cl ),
-        momentum( 0.0f ) {
+Nesterov::Nesterov(EasyCL *cl) :
+        Trainer(cl),
+        momentum(0.0f) {
 }
 

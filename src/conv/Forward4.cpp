@@ -20,36 +20,36 @@ VIRTUAL Forward4::~Forward4() {
     delete kernel;
     delete addBias;
 }
-VIRTUAL void Forward4::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-    CLWrapper *outputWrapper ) {
+VIRTUAL void Forward4::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
+    CLWrapper *outputWrapper) {
     StatefulTimer::timeCheck("Forward4::forward start");
 
     int numWorkgroups = dim.numFilters * batchSize * pixelsPerThread;
     int globalSize = workgroupSize * numWorkgroups;
 
     kernel->in(batchSize);
-    kernel->input( dataWrapper );
-    kernel->input( weightsWrapper);
-    kernel->output( outputWrapper );
-    kernel->localFloats( square( dim.inputSize ) );
-    kernel->localFloats( square( dim.filterSize ) );
+    kernel->input(dataWrapper);
+    kernel->input(weightsWrapper);
+    kernel->output(outputWrapper);
+    kernel->localFloats(square(dim.inputSize) );
+    kernel->localFloats(square(dim.filterSize) );
 
-    kernel->run_1d( globalSize, workgroupSize );
+    kernel->run_1d(globalSize, workgroupSize);
     cl->finish();
     StatefulTimer::timeCheck("Forward4::forward after call forward");
 
-    if( dim.biased ) {
+    if(dim.biased) {
         addBias->forward(
             batchSize, dim.numFilters, dim.outputSize,
-            outputWrapper, biasWrapper );
+            outputWrapper, biasWrapper);
     }
 }
-Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
-        Forward( cl, dim )
+Forward4::Forward4(EasyCL *cl, LayerDimensions dim) :
+        Forward(cl, dim)
             {
-    addBias = new AddBias( cl );
+    addBias = new AddBias(cl);
 
-    workgroupSize = std::max( 32, square( dim.outputSize ) ); // no point in wasting threads....
+    workgroupSize = std::max(32, square(dim.outputSize) ); // no point in wasting threads....
     const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     // see comments in forward4.cl,
     // if the outputimagesize * outputimagesize > maxWorkgroupSize,
@@ -59,20 +59,20 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     // here, we calculate how many workgroups we will need, in powers
     // of two:
     pixelsPerThread = 1;
-    while( workgroupSize > maxWorkgroupSize ) {
-        workgroupSize = (workgroupSize + 1 ) >> 1;
+    while(workgroupSize > maxWorkgroupSize) {
+        workgroupSize = (workgroupSize + 1) >> 1;
         pixelsPerThread <<= 1;
     }
     //cout << "workgroupSize=" << workgroupSize << " pixelsPerThread=" << pixelsPerThread << endl;
 
     std::string options = ""; // "-D " + fn->getDefineName();
-    options += " -D gWorkgroupSize=" + toString( workgroupSize );
-    options += " -D gPixelsPerThread=" + toString( pixelsPerThread );
+    options += " -D gWorkgroupSize=" + toString(workgroupSize);
+    options += " -D gPixelsPerThread=" + toString(pixelsPerThread);
 //    cout << "options " << options << endl;
     options += dim.buildOptionsString();
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/forward4.cl", "forward_4_by_n_outplane_smallercache", 'options' )
+    // stringify.write_kernel2("kernel", "cl/forward4.cl", "forward_4_by_n_outplane_smallercache", 'options')
     // ]]]
     // generated using cog, from cl/forward4.cl:
     const char * kernelSource =  
@@ -82,11 +82,11 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "void copyLocal( local float *target, global float const *source, int N ) {\n" 
-    "    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);\n" 
-    "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
+    "void copyLocal(local float *target, global float const *source, int N) {\n" 
+    "    int numLoops = (N + get_local_size(0) - 1) / get_local_size(0);\n" 
+    "    for(int loop = 0; loop < numLoops; loop++) {\n" 
     "        int offset = loop * get_local_size(0) + get_local_id(0);\n" 
-    "        if( offset < N ) {\n" 
+    "        if(offset < N) {\n" 
     "            target[offset] = source[offset];\n" 
     "        }\n" 
     "    }\n" 
@@ -128,14 +128,14 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "// as `pixel`\n" 
     "// effectiveLocalId is our local id if we had one enormous workgroup\n" 
     "// containing the whole output image plane\n" 
-    "void kernel forward_4_by_n_outplane_smallercache( const int batchSize,\n" 
+    "void kernel forward_4_by_n_outplane_smallercache(const int batchSize,\n" 
     "      global const float *images, global const float *filters,\n" 
     "    global float *output,\n" 
-    "    local float *_inputPlane, local float *_filterPlane ) {\n" 
-    "    #define globalId ( get_global_id(0) )\n" 
+    "    local float *_inputPlane, local float *_filterPlane) {\n" 
+    "    #define globalId (get_global_id(0))\n" 
     "\n" 
-    "    #define localId ( get_local_id(0) )\n" 
-    "    #define workgroupId ( get_group_id(0) )\n" 
+    "    #define localId (get_local_id(0))\n" 
+    "    #define workgroupId (get_group_id(0))\n" 
     "//    const int workgroupSize = get_local_size(0);\n" 
     "    const int effectiveWorkgroupId = workgroupId / gPixelsPerThread;\n" 
     "    const int pixel = workgroupId % gPixelsPerThread;\n" 
@@ -147,31 +147,31 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "    const int outputCol = effectiveLocalId % gOutputSize;\n" 
     "\n" 
     "    float sum = 0;\n" 
-    "    for( int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++ ) {\n" 
+    "    for(int upstreamPlane = 0; upstreamPlane < gInputPlanes; upstreamPlane++) {\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _inputPlane, images + ( n * gInputPlanes + upstreamPlane ) * gInputSizeSquared, gInputSizeSquared );\n" 
-    "        copyLocal( _filterPlane, filters + ( outPlane * gInputPlanes + upstreamPlane ) * gFilterSizeSquared, gFilterSizeSquared );\n" 
+    "        copyLocal(_inputPlane, images + (n * gInputPlanes + upstreamPlane) * gInputSizeSquared, gInputSizeSquared);\n" 
+    "        copyLocal(_filterPlane, filters + (outPlane * gInputPlanes + upstreamPlane) * gFilterSizeSquared, gFilterSizeSquared);\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "\n" 
-    "        if( effectiveLocalId < gOutputSizeSquared ) {\n" 
-    "            for( int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++ ) {\n" 
+    "        if(effectiveLocalId < gOutputSizeSquared) {\n" 
+    "            for(int u = -gHalfFilterSize; u <= gHalfFilterSize - gEven; u++) {\n" 
     "                // trying to reduce register pressure...\n" 
     "                #if gPadZeros == 1\n" 
-    "                    #define inputRow ( outputRow + u )\n" 
+    "                    #define inputRow (outputRow + u)\n" 
     "                #else\n" 
-    "                    #define inputRow ( outputRow + u + gHalfFilterSize )\n" 
+    "                    #define inputRow (outputRow + u + gHalfFilterSize)\n" 
     "                #endif\n" 
     "                int inputimagerowoffset = inputRow * gInputSize;\n" 
     "                int filterrowoffset = (u+gHalfFilterSize) * gFilterSize + gHalfFilterSize;\n" 
     "                bool rowOk = inputRow >= 0 && inputRow < gInputSize;\n" 
-    "                for( int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++ ) {\n" 
+    "                for(int v = -gHalfFilterSize; v <= gHalfFilterSize - gEven; v++) {\n" 
     "                    #if gPadZeros == 1\n" 
-    "                        #define inputCol ( outputCol + v )\n" 
+    "                        #define inputCol (outputCol + v)\n" 
     "                    #else\n" 
-    "                        #define inputCol ( outputCol + v + gHalfFilterSize )\n" 
+    "                        #define inputCol (outputCol + v + gHalfFilterSize)\n" 
     "                    #endif\n" 
     "                    bool process = rowOk && inputCol >= 0 && inputCol < gInputSize;\n" 
-    "                    if( process ) {\n" 
+    "                    if(process) {\n" 
     "                            sum += _inputPlane[ inputimagerowoffset + inputCol] * _filterPlane[ filterrowoffset + v ];\n" 
     "                    }\n" 
     "                }\n" 
@@ -179,15 +179,15 @@ Forward4::Forward4( EasyCL *cl, LayerDimensions dim ) :
     "        }\n" 
     "    }\n" 
     "    // output are organized like [imageid][filterid][row][col]\n" 
-    "    #define resultIndex ( ( n * gNumFilters + outPlane ) * gOutputSizeSquared + effectiveLocalId )\n" 
-    "    if( effectiveLocalId < gOutputSizeSquared ) {\n" 
+    "    #define resultIndex (( n * gNumFilters + outPlane) * gOutputSizeSquared + effectiveLocalId)\n" 
+    "    if(effectiveLocalId < gOutputSizeSquared) {\n" 
     "        output[resultIndex ] = sum;\n" 
     "    }\n" 
     "}\n" 
     "#endif\n" 
     "\n" 
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "forward_4_by_n_outplane_smallercache", options, "cl/forward4.cl" );
+    kernel = cl->buildKernelFromString(kernelSource, "forward_4_by_n_outplane_smallercache", options, "cl/forward4.cl");
     // [[[end]]]
 }
 

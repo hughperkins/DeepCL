@@ -19,16 +19,16 @@ class DeepCL_EXPORT EpochResult {
 public:
     float loss;
     int numRight;
-    EpochResult( float loss, int numRight ) :
-        loss( loss ),
-        numRight( numRight ) {
+    EpochResult(float loss, int numRight) :
+        loss(loss),
+        numRight(numRight) {
     }
 };
 
 class DeepCL_EXPORT NetAction {
 public:
     virtual ~NetAction() {}
-    virtual void run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels ) = 0;
+    virtual void run(Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels) = 0;
 };
 
 
@@ -39,10 +39,10 @@ public:
 //        return learningRate;
 //    }
     Trainer *trainer;
-    NetLearnLabeledAction( Trainer *trainer ) :
-        trainer( trainer ) {
+    NetLearnLabeledAction(Trainer *trainer) :
+        trainer(trainer) {
     }   
-    virtual void run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels );
+    virtual void run(Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels);
 };
 
 
@@ -50,7 +50,7 @@ class DeepCL_EXPORT NetForwardAction : public NetAction {
 public:
     NetForwardAction() {
     }
-    virtual void run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels );
+    virtual void run(Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels);
 };
 
 
@@ -60,10 +60,10 @@ public:
 //    float getLearningRate() {
 //        return learningRate;
 //    }
-//    NetBackpropAction( float learningRate ) :
-//        learningRate( learningRate ) {
+//    NetBackpropAction(float learningRate) :
+//        learningRate(learningRate) {
 //    }
-//    virtual void run( Trainable *net, float const*const batchData, int const*const batchLabels );
+//    virtual void run(Trainable *net, float const*const batchData, int const*const batchLabels);
 //};
 
 

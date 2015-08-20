@@ -15,41 +15,41 @@
 
 using namespace std;
 
-float EpochMaker::run( int epoch ) {
-    if( _labels != 0 ) {
+float EpochMaker::run(int epoch) {
+    if(_labels != 0) {
         throw runtime_error("should not provide labels if using Epoch::run");
     }
-    if( _expectedOutputs == 0 ) {
+    if(_expectedOutputs == 0) {
         throw runtime_error("must provide expectedOutputs if using runWithCalcTrainingAccuracy");
     }
     
-    InputData input( net->getInputCubeSize(), _inputData );
-    ExpectedData output( net->getOutputCubeSize(), _expectedOutputs );
-    LearnBatcher2 learnBatcher( net, trainer, _batchSize, _numExamples,
-        &input, &output );
-    learnBatcher.run( epoch );
+    InputData input(net->getInputCubeSize(), _inputData);
+    ExpectedData output(net->getOutputCubeSize(), _expectedOutputs);
+    LearnBatcher2 learnBatcher(net, trainer, _batchSize, _numExamples,
+        &input, &output);
+    learnBatcher.run(epoch);
     return learnBatcher.getEpochLoss();
 }
 
-//float EpochMaker::runWithCalcTrainingAccuracy( int *p_numRight ) {
-//    if( _expectedOutputs == 0 ) {
+//float EpochMaker::runWithCalcTrainingAccuracy(int *p_numRight) {
+//    if(_expectedOutputs == 0) {
 //        throw runtime_error("must provide expectedOutputs if using Epoch::runWithCalcTrainingAccuracy");
 //    }
-//    if( _expectedOutputs == 0 ) {
+//    if(_expectedOutputs == 0) {
 //        throw runtime_error("must provide labels if using Epoch::runWithCalcTrainingAccuracy");
 //    }
-//    return net->doEpochWithCalcTrainingAccuracy( _learningRate, _batchSize, _numExamples, _inputData, _expectedOutputs, _labels, p_numRight );
+//    return net->doEpochWithCalcTrainingAccuracy(_learningRate, _batchSize, _numExamples, _inputData, _expectedOutputs, _labels, p_numRight);
 //}
 
-//float EpochMaker::runFromLabels( int *p_numRight ) {
-//    if( _expectedOutputs != 0 ) {
+//float EpochMaker::runFromLabels(int *p_numRight) {
+//    if(_expectedOutputs != 0) {
 //        throw runtime_error("should not provide expectedOutputs if using Epoch::runFromLabels");
 //    }
-//    if( _labels == 0 ) {
+//    if(_labels == 0) {
 //        throw runtime_error("must provide labels if using Epoch::runFromLabels");
 //    }
-//    BatchLearner batchLearner( net );
-//    EpochResult epochResult = batchLearner.runEpochFromLabels( _learningRate, _batchSize, _numExamples, _inputData, _labels );
+//    BatchLearner batchLearner(net);
+//    EpochResult epochResult = batchLearner.runEpochFromLabels(_learningRate, _batchSize, _numExamples, _inputData, _labels);
 //    *p_numRight = epochResult.numRight;
 //    return epochResult.loss;
 //}

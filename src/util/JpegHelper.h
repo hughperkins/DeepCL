@@ -22,8 +22,8 @@ class DeepCL_EXPORT JpegHelper {
     // generated, using cog:
 
     public:
-    STATIC void write( std::string filename, int planes, int width, int height, unsigned char *values );
-    STATIC void read( std::string filename, int planes, int width, int height, unsigned char *values );
+    STATIC void write(std::string filename, int planes, int width, int height, unsigned char *values);
+    STATIC void read(std::string filename, int planes, int width, int height, unsigned char *values);
 
     // [[[end]]]
 };

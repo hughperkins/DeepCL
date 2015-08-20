@@ -8,7 +8,7 @@
 
 class WeightsHelper {
 public:
-    static inline float generateWeight( float rangesize ) {
+    static inline float generateWeight(float rangesize) {
 //        float rangesize = sqrt(12.0f / (float)fanin) ;
     //        float uniformrand = random() / (float)random.max();     
         float signeduniformrand = RandomSingleton::uniform() * 2.0f - 1.0f;

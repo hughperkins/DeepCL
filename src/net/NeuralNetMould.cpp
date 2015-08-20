@@ -17,18 +17,18 @@ using namespace std;
 
 NeuralNet *NeuralNetMould::instance() {
 //    cout << "neuralnetmould::instance imagesize " << _imageSize << " numPlanes " << _numPlanes << endl;
-    if( _numPlanes != 0 || _imageSize != 0 ) {
-        if( _numPlanes == 0 ) {
+    if(_numPlanes != 0 || _imageSize != 0) {
+        if(_numPlanes == 0) {
             throw runtime_error("Must provide ->planes(planes)");
         }
-        if( _imageSize == 0 ) {
+        if(_imageSize == 0) {
             throw runtime_error("Must provide ->imageSize(imageSize)");
         }
-        NeuralNet *net = new NeuralNet( cl, _numPlanes, _imageSize );
+        NeuralNet *net = new NeuralNet(cl, _numPlanes, _imageSize);
         delete this;
         return net;
     } else {
-        NeuralNet *net = new NeuralNet( cl );
+        NeuralNet *net = new NeuralNet(cl);
         delete this;
         return net;
     }

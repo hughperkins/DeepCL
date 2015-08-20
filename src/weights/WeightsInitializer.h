@@ -18,8 +18,8 @@
 
 class DeepCL_EXPORT WeightsInitializer {
 public:
-    virtual void initializeWeights( int numWeights, float *weights, int fanin ) = 0;
-    virtual void initializeBias( int numBias, float *bias, int fanin ) = 0;
+    virtual void initializeWeights(int numWeights, float *weights, int fanin) = 0;
+    virtual void initializeBias(int numBias, float *bias, int fanin) = 0;
     virtual ~WeightsInitializer() {
     }
 

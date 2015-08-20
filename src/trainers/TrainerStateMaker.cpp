@@ -16,7 +16,7 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL bool TrainerStateMaker::created( TrainerState *state ) {
+VIRTUAL bool TrainerStateMaker::created(TrainerState *state) {
     throw runtime_error("TrainerStateMaker::created not implemented for .. this class");
 }
 

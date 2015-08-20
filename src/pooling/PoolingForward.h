@@ -26,16 +26,16 @@ public:
     const int outputSize;
 
     virtual ~PoolingForward() {}
-    inline int getInputIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * inputSize + row )
+    inline int getInputIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * inputSize + row)
             * inputSize + col;
     }
-    inline int getResultIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * outputSize + row )
+    inline int getResultIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * outputSize + row)
             * outputSize + col;
     }
 
@@ -44,13 +44,13 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingForward( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
-    STATIC PoolingForward *instance( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
-    STATIC PoolingForward *instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
-    STATIC PoolingForward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize );
-    VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData );
-    VIRTUAL void forward( int batchSize, float *input, int *selectors, float *output );
-    VIRTUAL int getInputNumElements( int batchSize );
+    PoolingForward(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingForward *instance(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingForward *instanceForTest(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingForward *instanceSpecific(int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    VIRTUAL void forward(int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData);
+    VIRTUAL void forward(int batchSize, float *input, int *selectors, float *output);
+    VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]

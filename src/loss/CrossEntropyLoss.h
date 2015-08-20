@@ -26,14 +26,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    CrossEntropyLoss( Layer *previousLayer, CrossEntropyLossMaker *maker );
+    CrossEntropyLoss(Layer *previousLayer, CrossEntropyLossMaker *maker);
     VIRTUAL ~CrossEntropyLoss();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float*getGradInput();
-    VIRTUAL int getPersistSize( int version ) const;
-    VIRTUAL float calcLoss( float const *expected );
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcGradInput( float const*expectedOutput );
+    VIRTUAL int getPersistSize(int version) const;
+    VIRTUAL float calcLoss(float const *expected);
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL void calcGradInput(float const*expectedOutput);
 
     // [[[end]]]
 };

@@ -50,7 +50,7 @@ public:
         this->_padZeros = true;
         return this;
     }    
-    PUBLICAPI ConvolutionalMaker *padZeros( bool value ) {
+    PUBLICAPI ConvolutionalMaker *padZeros(bool value) {
         this->_padZeros = value;
         return this;
     }    
@@ -64,9 +64,9 @@ public:
     }    
     virtual ConvolutionalMaker *clone() const {
         ConvolutionalMaker *thisClone = new ConvolutionalMaker();
-        memcpy( thisClone, this, sizeof( ConvolutionalMaker ) ); // this will copy the activationfunction pointer too
+        memcpy(thisClone, this, sizeof(ConvolutionalMaker) ); // this will copy the activationfunction pointer too
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

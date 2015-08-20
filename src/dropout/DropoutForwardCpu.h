@@ -19,9 +19,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutForwardCpu( EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
-    VIRTUAL void forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper );
-    VIRTUAL void forward( int batchSize, unsigned char *masks, float *input, float *output );
+    DropoutForwardCpu(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    VIRTUAL void forward(int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper);
+    VIRTUAL void forward(int batchSize, unsigned char *masks, float *input, float *output);
 
     // [[[end]]]
 };

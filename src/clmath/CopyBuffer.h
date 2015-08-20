@@ -30,9 +30,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void copy( int N, CLWrapper *in, CLWrapper *out );
+    VIRTUAL void copy(int N, CLWrapper *in, CLWrapper *out);
     VIRTUAL ~CopyBuffer();
-    CopyBuffer( EasyCL *cl );
+    CopyBuffer(EasyCL *cl);
 
     // [[[end]]]
 };

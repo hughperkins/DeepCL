@@ -19,9 +19,9 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ForwardCpu( EasyCL *cl, LayerDimensions dim );
-    VIRTUAL void forward( int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper );
-    VIRTUAL float *forward( int batchSize, float *inputData, float *weights, float *bias );
+    ForwardCpu(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void forward(int batchSize, CLWrapper *inputDataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper);
+    VIRTUAL float *forward(int batchSize, float *inputData, float *weights, float *bias);
 
     // [[[end]]]
 };

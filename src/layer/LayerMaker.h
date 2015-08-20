@@ -37,10 +37,10 @@ public:
         cl(0) {
     }
     virtual ~LayerMaker2() {}
-    void setCl( EasyCL *cl ) {
+    void setCl(EasyCL *cl) {
         this->cl = cl;
     }
-    virtual Layer *createLayer( Layer *previousLayer ) = 0;
+    virtual Layer *createLayer(Layer *previousLayer) = 0;
     virtual LayerMaker2 *clone() const = 0;
 };
 
@@ -54,16 +54,16 @@ public:
 //    virtual ActivationFunction const*getActivationFunction() const {
 //        throw std::runtime_error("getactivationfunction not impelmented for this maker type");
 //    }
-//    LayerMaker( NeuralNet *net, Layer *previousLayer ) :
-//        net( net ),
-//        previousLayer( previousLayer ) {
+//    LayerMaker(NeuralNet *net, Layer *previousLayer) :
+//        net(net),
+//        previousLayer(previousLayer) {
 //    }
-//    void setPreviousLayer( Layer *previousLayer ) {
+//    void setPreviousLayer(Layer *previousLayer) {
 //        this->previousLayer = previousLayer;
 //    }
 //    virtual Layer *insert();
 //    virtual Layer *instance() const = 0;
-//    virtual LayerMaker *clone( Layer *clonePreviousLayer ) const = 0;
+//    virtual LayerMaker *clone(Layer *clonePreviousLayer) const = 0;
 //};
 
 class DeepCL_EXPORT LossLayerMaker : public LayerMaker2 {
@@ -82,10 +82,10 @@ public:
     }
     virtual SquareLossMaker *clone() const {
         SquareLossMaker *thisClone = new SquareLossMaker();
-        memcpy( thisClone, this, sizeof( SquareLossMaker ) );
+        memcpy(thisClone, this, sizeof(SquareLossMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 
 class DeepCL_EXPORT CrossEntropyLossMaker : public LossLayerMaker {
@@ -97,10 +97,10 @@ public:
     }
     virtual CrossEntropyLossMaker *clone() const {
         CrossEntropyLossMaker *thisClone = new CrossEntropyLossMaker();
-        memcpy( thisClone, this, sizeof( CrossEntropyLossMaker ) );
+        memcpy(thisClone, this, sizeof(CrossEntropyLossMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 
 // by default, it will be per-plane
@@ -124,10 +124,10 @@ public:
     }
     virtual SoftMaxMaker *clone() const {
         SoftMaxMaker *thisClone = new SoftMaxMaker();
-        memcpy( thisClone, this, sizeof( SoftMaxMaker ) );
+        memcpy(thisClone, this, sizeof(SoftMaxMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 
 

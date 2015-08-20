@@ -18,34 +18,34 @@
 using namespace std;
 
 void BatchProcess::run(std::string filepath, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction) {
-    int numBatches = ( totalN + batchSize - 1 ) / batchSize;
+    int numBatches = (totalN + batchSize - 1) / batchSize;
     int thisBatchSize = batchSize;
 //    cout << "batchProcess::run batchsize " << batchSize << " startN " << startN << " totalN " << totalN << " numBatches " << numBatches << endl;
-    for( int batch = 0; batch < numBatches; batch++ ) {
+    for(int batch = 0; batch < numBatches; batch++) {
         int batchStart = batch * batchSize;
-        if( batch == numBatches - 1 ) {
+        if(batch == numBatches - 1) {
             thisBatchSize = totalN - batchStart;
 //            cout << "size of last batch: " << thisBatchSize << endl;
         }
 //        cout << "   batchStart " << batchStart << " thisBatchSize " << thisBatchSize << endl;
-        GenericLoader::load( filepath, batchAction->data, batchAction->labels, batchStart, thisBatchSize );
-        batchAction->processBatch( thisBatchSize, cubeSize );
+        GenericLoader::load(filepath, batchAction->data, batchAction->labels, batchStart, thisBatchSize);
+        batchAction->processBatch(thisBatchSize, cubeSize);
     }
 }
 
-void BatchProcessv2::run( GenericLoaderv2 *loader, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction) {
-    int numBatches = ( totalN + batchSize - 1 ) / batchSize;
+void BatchProcessv2::run(GenericLoaderv2 *loader, int startN, int batchSize, int totalN, int cubeSize, BatchAction *batchAction) {
+    int numBatches = (totalN + batchSize - 1) / batchSize;
     int thisBatchSize = batchSize;
 //    cout << "batchProcess::run batchsize " << batchSize << " startN " << startN << " totalN " << totalN << " numBatches " << numBatches << endl;
-    for( int batch = 0; batch < numBatches; batch++ ) {
+    for(int batch = 0; batch < numBatches; batch++) {
         int batchStart = batch * batchSize;
-        if( batch == numBatches - 1 ) {
+        if(batch == numBatches - 1) {
             thisBatchSize = totalN - batchStart;
 //            cout << "size of last batch: " << thisBatchSize << endl;
         }
 //        cout << "   batchStart " << batchStart << " thisBatchSize " << thisBatchSize << endl;
-        loader->load( batchAction->data, batchAction->labels, batchStart, thisBatchSize );
-        batchAction->processBatch( thisBatchSize, cubeSize );
+        loader->load(batchAction->data, batchAction->labels, batchStart, thisBatchSize);
+        batchAction->processBatch(thisBatchSize, cubeSize);
     }
 }
 

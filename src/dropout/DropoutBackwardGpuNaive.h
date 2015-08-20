@@ -26,8 +26,8 @@ public:
     int batchSize,
     CLWrapper *maskWrapper,
     CLWrapper *gradOutputWrapper,
-    CLWrapper *gradInputWrapper );
-    DropoutBackwardGpuNaive( EasyCL *cl, int numPlanes, int inputSize, float dropRatio );
+    CLWrapper *gradInputWrapper);
+    DropoutBackwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
 
     // [[[end]]]
 };
