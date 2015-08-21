@@ -4,7 +4,8 @@ cdef extern from "net/NeuralNet.h":
         NeuralNet( DeepCL *cl ) except +
         #void print()
         NeuralNet( DeepCL *cl, int numPlanes, int size ) except +
-        string asString() except +
+        #string asString() except +
+        const char *asNewCharStar() except +
         void setBatchSize( int batchSize ) except +
         void forward( const float *images) except +
         void backwardFromLabels( const int *labels) except +

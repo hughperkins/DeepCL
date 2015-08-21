@@ -12,9 +12,11 @@ cdef class NeuralNet:
         del self.thisptr 
 
     def asString(self):
-        cdef const char *result_charstar = self.thisptr.AsNewCharStar()
-        cdef str result = result_charstar
-        deepcl_deleteCharStar(result_charstar)
+        print('about to call asnewcharstar')
+        cdef const char *result_charstar = self.thisptr.asNewCharStar()
+        print('got char *result')
+        cdef str result = str(result_charstar.decode('UTF-8'))
+        CppRuntimeBoundary.deepcl_deleteCharStar(result_charstar)
         return result
 
 #    def myprint(self):

@@ -68,7 +68,7 @@ if osfamily == 'Windows':
     libraries.append('winmm')
 
 sources = ["PyDeepCL.cxx", 'CyWrappers.cpp']
-if building_dist and cython_present:
+if cython_present:
     sources = ["PyDeepCL.pyx", 'CyWrappers.cpp']
 ext_modules = [
     Extension("PyDeepCL",
@@ -81,7 +81,8 @@ ext_modules = [
     )
 ]
 
-if building_dist and cython_present:
+if cython_present:
+    print('cythonizing...')
     ext_modules = cythonize(ext_modules)
 
 def read_if_exists(filename):

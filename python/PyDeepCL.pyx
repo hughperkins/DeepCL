@@ -11,6 +11,8 @@ import threading
 from libcpp.string cimport string
 from libcpp cimport bool
 
+cimport CppRuntimeBoundary
+
 cimport cDeepCL
 
 include "DeepCL.pyx"
