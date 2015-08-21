@@ -17,4 +17,3 @@ cdef extern from "trainers/SGD.h":
             const float *input, const float *expectedOutput )
         BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
             const float *input, const int *labels )
-

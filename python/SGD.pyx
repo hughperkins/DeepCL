@@ -29,4 +29,3 @@ cdef class SGD:
         cdef cDeepCL.BatchResult result = self.thisptr.trainFromLabels(
             net.thisptr, context.thisptr, &inputdata[0], &labels[0])
         return ( result.getLoss(), result.getNumRight() )
-
