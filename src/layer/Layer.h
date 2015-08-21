@@ -53,6 +53,7 @@ public:
     PUBLICAPI VIRTUAL void setTraining(bool training);
     PUBLICAPI VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL const char *getClassNameAsCharStar() const;
     VIRTUAL float *getGradInput();
     VIRTUAL CLWrapper *getGradWeightsWrapper();
     VIRTUAL CLWrapper *getGradBiasWrapper();
@@ -89,7 +90,8 @@ public:
     VIRTUAL float *getWeights();
     VIRTUAL float *getBias();
     VIRTUAL float const*getBias() const;
-    PUBLICAPI VIRTUAL std::string asString() const;
+    VIRTUAL std::string asString() const;
+    VIRTUAL const char *asNewCharStar() const;
     VIRTUAL bool needsTrainerState  () const;
     VIRTUAL void setTrainerState(TrainerStateMaker *trainerMaker);
     VIRTUAL TrainerState *getTrainerState();

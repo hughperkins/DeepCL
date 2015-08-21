@@ -54,11 +54,11 @@ public:
     // generated, using cog:
     NeuralNet(EasyCL *cl);
     STATIC NeuralNet *instance(EasyCL *cl);
-    NeuralNet(EasyCL *cl, int numPlanes, int imageSize);
     STATIC NeuralNet *instance(EasyCL *cl, int numPlanes, int imageSize);
     STATIC NeuralNet *instance3(EasyCL *cl, int numPlanes, int imageSize);
-    ~NeuralNet();
     void deleteMe();
+    NeuralNet(EasyCL *cl, int numPlanes, int imageSize);
+    ~NeuralNet();
     STATIC NeuralNetMould *maker(EasyCL *cl);
     NeuralNet *clone();
     EasyCL *getCl();

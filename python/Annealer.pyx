@@ -4,7 +4,7 @@ cdef class Annealer:
         self.thisptr = new cDeepCL.Annealer(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
         self.thisptr.setAnneal(anneal)
-    def __dealloc(self):
+    def __dealloc__(self):
         del self.thisptr
     def setLearningRate(self, float learningRate):
         self.thisptr.setLearningRate(learningRate)

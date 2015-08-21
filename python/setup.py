@@ -17,11 +17,11 @@ from setuptools import Extension
 #import distutils.file_util
 
 cython_present = False
-try:
-    from Cython.Build import cythonize
-    cython_present = True
-except ImportError:
-    pass
+#try:
+#    from Cython.Build import cythonize
+#    cython_present = True
+#except ImportError:
+#    pass
 
 building_dist = False
 for arg in sys.argv:

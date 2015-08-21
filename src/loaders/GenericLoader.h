@@ -32,8 +32,8 @@ class DeepCL_EXPORT GenericLoader {
     // generated, using cog:
 
     public:
-    PUBLICAPI STATIC void getDimensions(const char *trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize);
-    PUBLICAPI STATIC void load(const char *imagesFilePath, float *images, int *labels, int startN, int numExamples);
+    PUBLICAPI STATIC void getDimensions(const char * trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize);
+    PUBLICAPI STATIC void load(const char * imagesFilePath, float *images, int *labels, int startN, int numExamples);
     STATIC void load(const char * trainFilepath, unsigned char *images, int *labels);
     STATIC void load(const char * trainFilepath, unsigned char *images, int *labels, int startN, int numExamples);
 

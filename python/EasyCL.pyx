@@ -8,6 +8,6 @@
 #        else:
 #            self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
 
-#    def __dealloc(self):
+#    def __dealloc__(self):
 #        del self.thisptr 
 

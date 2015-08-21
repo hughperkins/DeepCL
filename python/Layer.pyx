@@ -53,8 +53,10 @@ cdef class Layer:
         weightsArray.fromlist( weightsList )
         self.setWeights( weightsArray )
     def asString(self):
-        return self.thisptr.asString()
+        cdef const char *res_charstar = self.thisptr.asNewCharStar()
+        cdef str res = str(res_charstar.decode('UTF-8'))
+        CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
+        return res
     def getClassName(self):
-        return self.thisptr.getClassName()
-
+        return self.thisptr.getClassNameAsCharStar()
 

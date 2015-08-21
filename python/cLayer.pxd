@@ -12,7 +12,6 @@ cdef extern from "layer/Layer.h":
         int getPersistSize()
         void persistToArray(float *array)
         void unpersistFromArray(const float *array)
-        string asString()
-        string getClassName()
-
+        const char *asNewCharStar()
+        const char *getClassNameAsCharStar()
 

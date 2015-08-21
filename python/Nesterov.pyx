@@ -4,7 +4,7 @@ cdef class Nesterov:
         self.thisptr = new cDeepCL.Nesterov(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
         self.thisptr.setMomentum(momentum)
-    def __dealloc(self):
+    def __dealloc__(self):
         del self.thisptr
     def setLearningRate(self, float learningRate):
         self.thisptr.setLearningRate(learningRate)

@@ -1,5 +1,6 @@
 #include "layer/Layer.h"
 #include "weights/WeightsPersister.h"
+#include "CppRuntimeBoundary.h"
 
 using namespace std;
 
@@ -34,6 +35,9 @@ PUBLICAPI VIRTUAL void Layer::setBatchSize(int batchSize) {
 }
 VIRTUAL bool Layer::providesGradInputWrapper() const {
     return false;
+}
+VIRTUAL const char *Layer::getClassNameAsCharStar() const {
+    return deepcl_stringToCharStar(getClassName());
 }
 VIRTUAL float *Layer::getGradInput() {
     throw std::runtime_error("getGradInput not implemented for " + getClassName());
@@ -162,8 +166,11 @@ VIRTUAL float const*Layer::getBias() const {
     throw std::runtime_error("getBias const not implemented for " + getClassName());
 }
 /// \brief Get a string representation of the layer
-PUBLICAPI VIRTUAL std::string Layer::asString() const {
+VIRTUAL std::string Layer::asString() const {
     return "Layer{}";
+}
+VIRTUAL const char *Layer::asNewCharStar() const {
+    return deepcl_stringToCharStar(asString());
 }
 VIRTUAL bool Layer::needsTrainerState  () const {
     return false;

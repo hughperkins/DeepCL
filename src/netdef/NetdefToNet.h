@@ -33,7 +33,7 @@ public:
     // generated, using cog:
     STATIC bool parseSubstring(WeightsInitializer *weightsInitializer, NeuralNet *net, std::string substring, bool isLast);
     PUBLICAPI STATIC bool createNetFromNetdef(NeuralNet *net, std::string netdef);
-    PUBLICAPI STATIC bool createNetFromNetdefCharStar(NeuralNet *net, const char * netdef);
+    PUBLICAPI STATIC bool createNetFromNetdefCharStar(NeuralNet *net, const char *netdef);
     STATIC bool createNetFromNetdef(NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer);
 
     // [[[end]]]

@@ -3,7 +3,7 @@ cdef class Rmsprop:
     def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
         self.thisptr = new cDeepCL.Rmsprop(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
-    def __dealloc(self):
+    def __dealloc__(self):
         del self.thisptr
     def setLearningRate(self, float learningRate):
         self.thisptr.setLearningRate(learningRate)
