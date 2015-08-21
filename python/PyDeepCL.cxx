@@ -1457,6 +1457,8 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_flo
 
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_int(PyObject *);
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
 #ifndef __Pyx_CppExn2PyErr
 #include <new>
 #include <typeinfo>
@@ -1495,8 +1497,6 @@ static void __Pyx_CppExn2PyErr() {
   }
 }
 #endif
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 static PyObject *__pyx_memview_get_float(const char *itemp);
 static int __pyx_memview_set_float(const char *itemp, PyObject *obj);
@@ -1747,7 +1747,14 @@ static PyObject *__pyx_builtin_TypeError;
 static PyObject *__pyx_builtin_id;
 static PyObject *__pyx_builtin_IndexError;
 static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_2__dealloc(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static void __pyx_pf_8PyDeepCL_6DeepCL_2__dealloc__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_4setProfiling(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_profiling); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_6dumpProfiling(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_8getComputeUnits(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_10getLocalMemorySize(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_12getLocalMemorySizeKB(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_14getMaxWorkgroupSize(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_16getMaxAllocSizeMB(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
 static int __pyx_pf_8PyDeepCL_15TrainingContext___cinit__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self, int __pyx_v_epoch, int __pyx_v_batch); /* proto */
 static void __pyx_pf_8PyDeepCL_15TrainingContext_2__dealloc__(struct __pyx_obj_8PyDeepCL_TrainingContext *__pyx_v_self); /* proto */
 static int __pyx_pf_8PyDeepCL_3SGD___cinit__(struct __pyx_obj_8PyDeepCL_SGD *__pyx_v_self, struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_cl, PyObject *__pyx_v_learningRate, PyObject *__pyx_v_momentum); /* proto */
@@ -2390,7 +2397,7 @@ static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepC
  *         else:
  *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)             # <<<<<<<<<<<<<<
  * 
- *     def __dealloc(self):
+ *     def __dealloc__(self):
  */
     __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_gpuindex); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __pyx_v_self->thisptr = DeepCL::createForIndexedGpu(__pyx_t_3);
@@ -2419,47 +2426,466 @@ static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepC
 /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":11
  *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
  * 
- *     def __dealloc(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         self.thisptr.deleteMe()
  * 
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_3__dealloc(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static void __pyx_pw_8PyDeepCL_6DeepCL_3__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_8PyDeepCL_6DeepCL_3__dealloc__(PyObject *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
+  __pyx_pf_8PyDeepCL_6DeepCL_2__dealloc__(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+static void __pyx_pf_8PyDeepCL_6DeepCL_2__dealloc__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":12
+ * 
+ *     def __dealloc__(self):
+ *         self.thisptr.deleteMe()             # <<<<<<<<<<<<<<
+ * 
+ *     def setProfiling(self, profiling):
+ */
+  __pyx_v_self->thisptr->deleteMe();
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":11
+ *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         self.thisptr.deleteMe()
+ * 
+ */
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":14
+ *         self.thisptr.deleteMe()
+ * 
+ *     def setProfiling(self, profiling):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setProfiling(profiling)
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_5setProfiling(PyObject *__pyx_v_self, PyObject *__pyx_v_profiling); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_5setProfiling(PyObject *__pyx_v_self, PyObject *__pyx_v_profiling) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_2__dealloc(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+  __Pyx_RefNannySetupContext("setProfiling (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_4setProfiling(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self), ((PyObject *)__pyx_v_profiling));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_2__dealloc(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_4setProfiling(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_profiling) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__dealloc", 0);
+  bool __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("setProfiling", 0);
 
-  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":12
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":15
  * 
- *     def __dealloc(self):
- *         del self.thisptr             # <<<<<<<<<<<<<<
+ *     def setProfiling(self, profiling):
+ *         self.thisptr.setProfiling(profiling)             # <<<<<<<<<<<<<<
  * 
+ *     def dumpProfiling(self):
  */
-  delete __pyx_v_self->thisptr;
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_profiling); if (unlikely((__pyx_t_1 == (bool)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v_self->thisptr->setProfiling(__pyx_t_1);
 
-  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":11
- *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":14
+ *         self.thisptr.deleteMe()
  * 
- *     def __dealloc(self):             # <<<<<<<<<<<<<<
- *         del self.thisptr
+ *     def setProfiling(self, profiling):             # <<<<<<<<<<<<<<
+ *         self.thisptr.setProfiling(profiling)
  * 
  */
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.setProfiling", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":17
+ *         self.thisptr.setProfiling(profiling)
+ * 
+ *     def dumpProfiling(self):             # <<<<<<<<<<<<<<
+ *         self.thisptr.dumpProfiling()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_7dumpProfiling(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_7dumpProfiling(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("dumpProfiling (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_6dumpProfiling(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_6dumpProfiling(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("dumpProfiling", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":18
+ * 
+ *     def dumpProfiling(self):
+ *         self.thisptr.dumpProfiling()             # <<<<<<<<<<<<<<
+ * 
+ *     def getComputeUnits(self):
+ */
+  __pyx_v_self->thisptr->dumpProfiling();
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":17
+ *         self.thisptr.setProfiling(profiling)
+ * 
+ *     def dumpProfiling(self):             # <<<<<<<<<<<<<<
+ *         self.thisptr.dumpProfiling()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":20
+ *         self.thisptr.dumpProfiling()
+ * 
+ *     def getComputeUnits(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getComputeUnits()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_9getComputeUnits(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_9getComputeUnits(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("getComputeUnits (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_8getComputeUnits(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_8getComputeUnits(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("getComputeUnits", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":21
+ * 
+ *     def getComputeUnits(self):
+ *         return self.thisptr.getComputeUnits()             # <<<<<<<<<<<<<<
+ * 
+ *     def getLocalMemorySize(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getComputeUnits()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 21; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":20
+ *         self.thisptr.dumpProfiling()
+ * 
+ *     def getComputeUnits(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getComputeUnits()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.getComputeUnits", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":23
+ *         return self.thisptr.getComputeUnits()
+ * 
+ *     def getLocalMemorySize(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getLocalMemorySize()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_11getLocalMemorySize(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_11getLocalMemorySize(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("getLocalMemorySize (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_10getLocalMemorySize(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_10getLocalMemorySize(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("getLocalMemorySize", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":24
+ * 
+ *     def getLocalMemorySize(self):
+ *         return self.thisptr.getLocalMemorySize()             # <<<<<<<<<<<<<<
+ * 
+ *     def getLocalMemorySizeKB(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getLocalMemorySize()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 24; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":23
+ *         return self.thisptr.getComputeUnits()
+ * 
+ *     def getLocalMemorySize(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getLocalMemorySize()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.getLocalMemorySize", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":26
+ *         return self.thisptr.getLocalMemorySize()
+ * 
+ *     def getLocalMemorySizeKB(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getLocalMemorySizeKB()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_13getLocalMemorySizeKB(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_13getLocalMemorySizeKB(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("getLocalMemorySizeKB (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_12getLocalMemorySizeKB(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_12getLocalMemorySizeKB(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("getLocalMemorySizeKB", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":27
+ * 
+ *     def getLocalMemorySizeKB(self):
+ *         return self.thisptr.getLocalMemorySizeKB()             # <<<<<<<<<<<<<<
+ * 
+ *     def getMaxWorkgroupSize(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getLocalMemorySizeKB()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 27; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":26
+ *         return self.thisptr.getLocalMemorySize()
+ * 
+ *     def getLocalMemorySizeKB(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getLocalMemorySizeKB()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.getLocalMemorySizeKB", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":29
+ *         return self.thisptr.getLocalMemorySizeKB()
+ * 
+ *     def getMaxWorkgroupSize(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getMaxWorkgroupSize()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_15getMaxWorkgroupSize(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_15getMaxWorkgroupSize(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("getMaxWorkgroupSize (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_14getMaxWorkgroupSize(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_14getMaxWorkgroupSize(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("getMaxWorkgroupSize", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":30
+ * 
+ *     def getMaxWorkgroupSize(self):
+ *         return self.thisptr.getMaxWorkgroupSize()             # <<<<<<<<<<<<<<
+ * 
+ *     def getMaxAllocSizeMB(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getMaxWorkgroupSize()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":29
+ *         return self.thisptr.getLocalMemorySizeKB()
+ * 
+ *     def getMaxWorkgroupSize(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getMaxWorkgroupSize()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.getMaxWorkgroupSize", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":32
+ *         return self.thisptr.getMaxWorkgroupSize()
+ * 
+ *     def getMaxAllocSizeMB(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getMaxAllocSizeMB()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_17getMaxAllocSizeMB(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_6DeepCL_17getMaxAllocSizeMB(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("getMaxAllocSizeMB (wrapper)", 0);
+  __pyx_r = __pyx_pf_8PyDeepCL_6DeepCL_16getMaxAllocSizeMB(((struct __pyx_obj_8PyDeepCL_DeepCL *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_16getMaxAllocSizeMB(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("getMaxAllocSizeMB", 0);
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":33
+ * 
+ *     def getMaxAllocSizeMB(self):
+ *         return self.thisptr.getMaxAllocSizeMB()             # <<<<<<<<<<<<<<
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getMaxAllocSizeMB()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "../../../../../../home/user/git/DeepCL/python/DeepCL.pyx":32
+ *         return self.thisptr.getMaxWorkgroupSize()
+ * 
+ *     def getMaxAllocSizeMB(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.getMaxAllocSizeMB()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.DeepCL.getMaxAllocSizeMB", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -26990,11 +27416,25 @@ static void __pyx_tp_dealloc_8PyDeepCL_DeepCL(PyObject *o) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
   }
   #endif
+  {
+    PyObject *etype, *eval, *etb;
+    PyErr_Fetch(&etype, &eval, &etb);
+    ++Py_REFCNT(o);
+    __pyx_pw_8PyDeepCL_6DeepCL_3__dealloc__(o);
+    --Py_REFCNT(o);
+    PyErr_Restore(etype, eval, etb);
+  }
   (*Py_TYPE(o)->tp_free)(o);
 }
 
 static PyMethodDef __pyx_methods_8PyDeepCL_DeepCL[] = {
-  {"__dealloc", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_3__dealloc, METH_NOARGS, 0},
+  {"setProfiling", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_5setProfiling, METH_O, 0},
+  {"dumpProfiling", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_7dumpProfiling, METH_NOARGS, 0},
+  {"getComputeUnits", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_9getComputeUnits, METH_NOARGS, 0},
+  {"getLocalMemorySize", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_11getLocalMemorySize, METH_NOARGS, 0},
+  {"getLocalMemorySizeKB", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_13getLocalMemorySizeKB, METH_NOARGS, 0},
+  {"getMaxWorkgroupSize", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_15getMaxWorkgroupSize, METH_NOARGS, 0},
+  {"getMaxAllocSizeMB", (PyCFunction)__pyx_pw_8PyDeepCL_6DeepCL_17getMaxAllocSizeMB, METH_NOARGS, 0},
   {0, 0, 0, 0}
 };
 

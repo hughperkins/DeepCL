@@ -8,6 +8,27 @@ cdef class DeepCL:
         else:
             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
 
-    def __dealloc(self):
-        del self.thisptr 
+    def __dealloc__(self):
+        self.thisptr.deleteMe()
+
+    def setProfiling(self, profiling):
+        self.thisptr.setProfiling(profiling)
+
+    def dumpProfiling(self):
+        self.thisptr.dumpProfiling()
+
+    def getComputeUnits(self):
+        return self.thisptr.getComputeUnits()
+
+    def getLocalMemorySize(self):
+        return self.thisptr.getLocalMemorySize()
+
+    def getLocalMemorySizeKB(self):
+        return self.thisptr.getLocalMemorySizeKB()
+
+    def getMaxWorkgroupSize(self):
+        return self.thisptr.getMaxWorkgroupSize()
+
+    def getMaxAllocSizeMB(self):
+        return self.thisptr.getMaxAllocSizeMB()
 

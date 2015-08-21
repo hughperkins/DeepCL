@@ -14,6 +14,17 @@ cdef extern from "DeepCL.h":
         @staticmethod
         DeepCL *createForIndexedGpu( int gpu )
 
+        void deleteMe()
+
+        void setProfiling(bool profiling)
+        void dumpProfiling();
+
+        int getComputeUnits()
+        int getLocalMemorySize()
+        int getLocalMemorySizeKB()
+        int getMaxWorkgroupSize()
+        int getMaxAllocSizeMB()
+
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
 include "cSGD.pxd"

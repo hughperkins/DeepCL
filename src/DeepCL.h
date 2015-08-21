@@ -58,6 +58,7 @@ public:
     public:
     DeepCL(cl_platform_id platformId, cl_device_id deviceId);
     ~DeepCL();
+    void deleteMe();
     STATIC DeepCL *createForFirstGpu();
     STATIC DeepCL *createForFirstGpuOtherwiseCpu();
     STATIC DeepCL *createForIndexedDevice(int device);

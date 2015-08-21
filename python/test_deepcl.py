@@ -15,6 +15,13 @@ if len(sys.argv) != 2:
 mnistFilePath = sys.argv[1] + '/t10k-images-idx3-ubyte' 
 
 cl = PyDeepCL.DeepCL()
+
+print('compute units:', cl.getComputeUnits())
+print('local memory size, bytes:', cl.getLocalMemorySize())
+print('local memory size, KB:', cl.getLocalMemorySizeKB())
+print('max workgroup size:', cl.getMaxWorkgroupSize())
+print('max alloc size MB:', cl.getMaxAllocSizeMB())
+
 net = PyDeepCL.NeuralNet(cl, 1,28)
 print('created net')
 print( net.asString() )

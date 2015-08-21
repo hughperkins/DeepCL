@@ -18,6 +18,9 @@ PUBLIC DeepCL::DeepCL(cl_platform_id platformId, cl_device_id deviceId) :
 }
 PUBLIC DeepCL::~DeepCL() {
 }
+PUBLIC void DeepCL::deleteMe() {
+    delete this;
+}
 PUBLIC STATIC DeepCL *DeepCL::createForFirstGpu() {
     cl_platform_id platformId;
     cl_device_id deviceId;
