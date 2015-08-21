@@ -94,6 +94,7 @@ public:
     VIRTUAL void setTrainer(Trainer *trainer);
     void printParamStats();
     PUBLICAPI std::string asString();
+    PUBLICAPI const char * asNewCharStar();  // call deepcl_deleteCharStar to delete this
 
     // [[[end]]]
 };

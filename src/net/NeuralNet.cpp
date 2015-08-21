@@ -25,6 +25,7 @@
 #include "trainers/Trainer.h"
 #include "trainers/TrainerMaker.h"
 #include "weights/WeightsPersister.h"
+#include "CppRuntimeBoundary.h"
 
 #include "net/NeuralNet.h"
 
@@ -305,5 +306,14 @@ PUBLICAPI std::string NeuralNet::asString() {
         i++;
     }    
     return result;
+}
+PUBLICAPI const char * NeuralNet::asNewCharStar() { // call deepcl_deleteCharStar to delete this
+    std::string result = "";
+    int i = 0; 
+    for(std::vector< Layer* >::iterator it = layers.begin(); it != layers.end(); it++) {
+        result += "layer " + toString(i) + ":" + (*it)->asString() + "\n";
+        i++;
+    }
+    return deepcl_stringToCharStar(result);
 }
 

@@ -88,7 +88,7 @@ foreach(dir ${dirs})
         set( deepcl_sources ${deepcl_sources} src/${dir}/${source})
     endforeach()
 endforeach()
-set(deepcl_sources ${deepcl_sources} src/DeepCL.cpp)
+set(deepcl_sources ${deepcl_sources} src/DeepCL.cpp src/CppRuntimeBoundary.cpp)
 #message("deepcl_sources ${deepcl_sources}")
 
 #find_package(Lua51)

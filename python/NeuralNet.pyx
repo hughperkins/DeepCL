@@ -12,7 +12,10 @@ cdef class NeuralNet:
         del self.thisptr 
 
     def asString(self):
-        return self.thisptr.asString()
+        cdef const char *result_charstar = self.thisptr.AsNewCharStar()
+        cdef str result = result_charstar
+        deepcl_deleteCharStar(result_charstar)
+        return result
 
 #    def myprint(self):
 #        self.thisptr.print()
