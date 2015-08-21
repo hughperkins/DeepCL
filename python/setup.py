@@ -16,6 +16,13 @@ from setuptools import Extension
 #import distutils.dir_util
 #import distutils.file_util
 
+cython_present = False
+try:
+    from Cython.Build import cythonize
+    cython_present = True
+except ImportError:
+    pass
+
 building_dist = False
 for arg in sys.argv:
     if arg in ('sdist','bdist','bdist_egg','build_ext'):
@@ -60,9 +67,12 @@ if osfamily == 'Linux':
 if osfamily == 'Windows':
     libraries.append('winmm')
 
+sources = ["PyDeepCL.cxx", 'CyWrappers.cpp']
+if building_dist and cython_present:
+    sources = ["PyDeepCL.pyx", 'CyWrappers.cpp']
 ext_modules = [
     Extension("PyDeepCL",
-              sources=["PyDeepCL.cxx", 'CyWrappers.cpp'],
+              sources=sources,
               include_dirs = ['mysrc', 'mysrc/lua'],
               libraries= libraries,
               extra_compile_args=compile_options,
@@ -70,6 +80,9 @@ ext_modules = [
               language="c++"
     )
 ]
+
+if building_dist and cython_present:
+    ext_modules = cythonize(ext_modules)
 
 def read_if_exists(filename):
     filepath = os.path.join(os.path.dirname(__file__), filename)
