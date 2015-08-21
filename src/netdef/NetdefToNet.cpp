@@ -240,6 +240,10 @@ PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdef(NeuralNet *net, std::stri
     OriginalInitializer originalInitializer;
     return createNetFromNetdef(net, netdef, &originalInitializer);
 }
+PUBLICAPI STATIC bool NetdefToNet::createNetFromNetdefCharStar(NeuralNet *net, const char *netdef) {
+    OriginalInitializer originalInitializer;
+    return createNetFromNetdef(net, netdef, &originalInitializer);
+}
 
 STATIC bool NetdefToNet::createNetFromNetdef(NeuralNet *net, std::string netdef, WeightsInitializer *weightsInitializer) {
     string netDefLower = toLower(netdef);
@@ -264,4 +268,3 @@ STATIC bool NetdefToNet::createNetFromNetdef(NeuralNet *net, std::string netdef,
     net->addLayer(SoftMaxMaker::instance());
     return true;
 }
-

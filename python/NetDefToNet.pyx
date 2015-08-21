@@ -1,6 +1,5 @@
 cdef class NetdefToNet:
     @staticmethod
     def createNetFromNetdef( NeuralNet neuralnet, netdef ):
-        return cDeepCL.NetdefToNet.createNetFromNetdef( neuralnet.thisptr, toCppString( netdef ) )
-
-
+        cdef const char *netdef_charstar = netdef
+        return cDeepCL.NetdefToNet.createNetFromNetdefCharStar(neuralnet.thisptr, netdef_charstar)
