@@ -43,8 +43,20 @@ NeuralNet::NeuralNet(EasyCL *cl) :
     trainer = 0;
     isTraining = true;
 }
+STATIC NeuralNet *NeuralNet::instance(EasyCL *cl) {
+    return new NeuralNet(cl);
+}
+STATIC NeuralNet *NeuralNet::instance(EasyCL *cl, int numPlanes, int imageSize) {
+    return new NeuralNet(cl, numPlanes, imageSize);
+}
+STATIC NeuralNet *NeuralNet::instance3(EasyCL *cl, int numPlanes, int imageSize) {
+    return new NeuralNet(cl, numPlanes, imageSize);
+}
+void NeuralNet::deleteMe() {
+    delete this;
+}
 /// Constructor
-PUBLICAPI NeuralNet::NeuralNet(  EasyCL *cl, int numPlanes, int imageSize) :
+NeuralNet::NeuralNet(EasyCL *cl, int numPlanes, int imageSize) :
         cl(cl) {
     addLayer(InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize) );
     trainer = 0;

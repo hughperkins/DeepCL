@@ -29,11 +29,11 @@ int main( int argc, char *argv[] ) {
     int numExamples = atoi(argv[2]);
     
     int N, planes, size;
-    GenericLoader::getDimensions( mnistImagesFile, &N, &planes, &size );
+    GenericLoader::getDimensions( mnistImagesFile.c_str(), &N, &planes, &size );
     float *imageData = new float[ N * planes * size * size ];
     int *labels = new int[N]; // we'll just throw this away, but it keeps the genericloader happy
                               // probably want an option to not load this actually...
-    GenericLoader::load( mnistImagesFile, imageData, labels, 0, numExamples ); 
+    GenericLoader::load( mnistImagesFile.c_str(), imageData, labels, 0, numExamples ); 
 
     // now we've loaded the data, write it out to ... stdout?
     int linearLength = numExamples * planes * size * size;

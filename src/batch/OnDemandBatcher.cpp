@@ -99,7 +99,7 @@ PUBLICAPI bool OnDemandBatcher::tick(int epoch) {
     }
     netActionBatcher->setN(thisFileBatchSize);
 //    cout << "batchlearnerondemand, read data... filebatchstart=" << fileBatchStart << " filebatchsize=" << thisFileBatchSize << endl;
-    GenericLoader::load(filepath, dataBuffer, labelsBuffer, fileBatchStart, thisFileBatchSize);
+    GenericLoader::load(filepath.c_str(), dataBuffer, labelsBuffer, fileBatchStart, thisFileBatchSize);
     EpochResult epochResult = netActionBatcher->run(epoch);
     loss += epochResult.loss;
     numRight += epochResult.numRight;

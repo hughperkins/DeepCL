@@ -4,12 +4,12 @@ cdef class NeuralNet:
     def __cinit__(self, DeepCL cl, planes = None, size = None):
 #        print( '__cinit__(planes,size)')
         if planes == None and size == None:
-             self.thisptr = new cDeepCL.NeuralNet(cl.thisptr)
+            self.thisptr = cDeepCL.NeuralNet.instance(cl.thisptr)
         else:
-            self.thisptr = new cDeepCL.NeuralNet(cl.thisptr, planes, size)
+            self.thisptr = cDeepCL.NeuralNet.instance3(cl.thisptr, planes, size)
 
-    def __dealloc(self):
-        del self.thisptr 
+    def __dealloc__(self):
+        self.thisptr.deleteMe()
 
     def asString(self):
         print('about to call asnewcharstar')
@@ -59,4 +59,3 @@ cdef class NeuralNet:
                             # used for example by randomtranslations layer (for now,
                             # used only by randomtranslations layer)
         self.thisptr.setTraining( training )
-

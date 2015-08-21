@@ -25,7 +25,9 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLIC PUBLICAPI STATIC void GenericLoader::getDimensions(std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize) {
+PUBLIC PUBLICAPI STATIC void GenericLoader::getDimensions(const char * trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize) {
+    cout << "GenericLoader::getDimensions" << endl;
+    cout << "trainFilepath: " << trainFilepath << endl;
     char *headerBytes = FileHelper::readBinaryChunk(trainFilepath, 0, 1024);
     char type[1025];
     strncpy(type, headerBytes, 4);
@@ -42,12 +44,14 @@ PUBLIC PUBLICAPI STATIC void GenericLoader::getDimensions(std::string trainFilep
         MnistLoader::getDimensions(trainFilepath, p_numExamples, p_numPlanes, p_imageSize);
     } else {
         cout << "headstring" << type << endl;
-        throw runtime_error("Filetype of " + trainFilepath + " not recognised");
+        throw runtime_error(string("Filetype of ") + trainFilepath + " not recognised");
     }
 }
 
-PUBLIC PUBLICAPI STATIC void GenericLoader::load(std::string imagesFilePath, float *images, int *labels, int startN, int numExamples) {
+PUBLIC PUBLICAPI STATIC void GenericLoader::load(const char * imagesFilePath, float *images, int *labels, int startN, int numExamples) {
 //    cout << "GenericLoader::load " << numExamples << endl;
+    cout << "GenericLoader::load " << endl;
+    cout << imagesFilePath << endl;
     int N, planes, size;
     getDimensions(imagesFilePath, &N, &planes, &size);
     unsigned char *ucImages = new unsigned char[ numExamples * planes * size * size ];
@@ -60,11 +64,11 @@ PUBLIC PUBLICAPI STATIC void GenericLoader::load(std::string imagesFilePath, flo
     delete[] ucImages;
 }
 
-PUBLIC STATIC void GenericLoader::load(std::string trainFilepath, unsigned char *images, int *labels) {
+PUBLIC STATIC void GenericLoader::load(const char * trainFilepath, unsigned char *images, int *labels) {
     load(trainFilepath, images, labels, 0, 0);
 }
 // for now, if pass in 0 for labels, it wont read labels
-PUBLIC STATIC void GenericLoader::load(std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples) {
+PUBLIC STATIC void GenericLoader::load(const char * trainFilepath, unsigned char *images, int *labels, int startN, int numExamples) {
     StatefulTimer::timeCheck("GenericLoader::load start");
     char *headerBytes = FileHelper::readBinaryChunk(trainFilepath, 0, 1024);
     char type[1025];
@@ -82,7 +86,7 @@ PUBLIC STATIC void GenericLoader::load(std::string trainFilepath, unsigned char 
         MnistLoader::load(trainFilepath, images, labels, startN, numExamples);
     } else {
         cout << "headstring" << type << endl;
-        throw runtime_error("Filetype of " + trainFilepath + " not recognised");
+        throw runtime_error(string("Filetype of ") + trainFilepath + " not recognised");
     }
     StatefulTimer::timeCheck("GenericLoader::load end");
 }

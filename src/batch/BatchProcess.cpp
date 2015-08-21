@@ -28,7 +28,7 @@ void BatchProcess::run(std::string filepath, int startN, int batchSize, int tota
 //            cout << "size of last batch: " << thisBatchSize << endl;
         }
 //        cout << "   batchStart " << batchStart << " thisBatchSize " << thisBatchSize << endl;
-        GenericLoader::load(filepath, batchAction->data, batchAction->labels, batchStart, thisBatchSize);
+        GenericLoader::load(filepath.c_str(), batchAction->data, batchAction->labels, batchStart, thisBatchSize);
         batchAction->processBatch(thisBatchSize, cubeSize);
     }
 }

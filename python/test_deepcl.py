@@ -22,6 +22,8 @@ print('local memory size, KB:', cl.getLocalMemorySizeKB())
 print('max workgroup size:', cl.getMaxWorkgroupSize())
 print('max alloc size MB:', cl.getMaxAllocSizeMB())
 
+(N,planes,size) = PyDeepCL.GenericLoader.getDimensions(mnistFilePath)
+
 net = PyDeepCL.NeuralNet(cl, 1,28)
 print('created net')
 print( net.asString() )
@@ -38,15 +40,19 @@ N = 1280
 images = array.array( 'f', [0] * (N*planes*size*size) )
 labels = array.array('i',[0] * N )
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N )
+print('loaded data')
 
 sgd = PyDeepCL.SGD(cl, 0.002, 0.0 )
+print('created SGD')
 sgd.setWeightDecay(0.0001)
 netLearner = PyDeepCL.NetLearner(
     sgd, net,
     N, images, labels,
     N, images, labels,
     128 )
+print('created netLearner')
 netLearner.setSchedule( 12 )
-netLearner.run()
+# netLearner.run()
+print('done, cleaning up...')
  
 

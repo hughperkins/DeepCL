@@ -105,7 +105,7 @@ void go(Config config) {
             throw std::runtime_error("imageSize doesnt match imageSizeCheck, image not square");
         }
     } else {
-        GenericLoader::getDimensions(config.inputFile, &N, &numPlanes, &imageSize);
+        GenericLoader::getDimensions(config.inputFile.c_str(), &N, &numPlanes, &imageSize);
         if(verbose) cout << "N " << N << " planes " << numPlanes << " size " << imageSize << endl;
     }
 
@@ -204,7 +204,7 @@ void go(Config config) {
     } else {
         // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
         // now, after modifying GenericLoader to have this new behavior
-        GenericLoader::load(config.inputFile, inputData, 0, n, config.batchSize);
+        GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
     }
     while(more) {
         // no point in forwarding through all, so forward through each, one by one
@@ -256,7 +256,7 @@ void go(Config config) {
             more = !cin.eof();
         } else {
             if(n + config.batchSize < N) {
-                GenericLoader::load(config.inputFile, inputData, 0, n, config.batchSize);
+                GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
             } else {
                 more = false;
                 if(n != N) {
