@@ -63,7 +63,7 @@ def time_layer(num_epochs, label, batch_size, net_string):
     print('building network...')
     input_string, layer_string = net_string.split('-')
     input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
-    cl = PyDeepCL.EasyCL()
+    cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet( cl, input_planes, input_size )
     net.addLayer( PyDeepCL.ForceBackpropMaker() ) # this forces the next layer to backward gradients to
                           # this layer
@@ -142,7 +142,7 @@ def time_fullnet(num_epochs, label, batch_size, net_string):
     input_string = split_net_string[0]
     netdef = '-'.join(split_net_string[1:])
     input_planes, input_size = map(lambda x: int(x), input_string.split('i'))
-    cl = PyDeepCL.EasyCL()
+    cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet(cl, input_planes, input_size )
     PyDeepCL.NetdefToNet.createNetFromNetdef(net, netdef)
     print( net.asString() )

@@ -59,7 +59,7 @@ def writeResults( resultsLine ):
 
 def time_layer( numEpochs, batchSize, inputPlanes, inputSize, outputPlanes, filterSize ):
     print('building network...')
-    cl = PyDeepCL.EasyCL()
+    cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet(cl, inputPlanes, inputSize )
 #    net.addLayer( PyDeepCL.ConvolutionalMaker().numFilters(inputPlanes)
 #        .filterSize(1).padZeros().biased().linear() ) # this is just to make sure that gradient needs to be 
