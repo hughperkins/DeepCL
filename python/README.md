@@ -9,7 +9,7 @@ You must have first installed and activated DeepCL native libraries, see [Build.
 ## To install from pip
 
 ```bash
-pip install DeepCL==8.0.0-alpha
+pip install --pre --upgrade DeepCL
 ```
 
 * related pypi page: [https://pypi.python.org/pypi/DeepCL](https://pypi.python.org/pypi/DeepCL)
