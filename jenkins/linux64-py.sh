@@ -13,6 +13,8 @@ cd build
 cmake ..
 make -j 4 install
 cd ..
+pwd
+ls
 source dist/bin/activate.sh
 
 pwd
