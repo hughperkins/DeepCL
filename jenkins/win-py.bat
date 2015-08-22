@@ -16,7 +16,7 @@ mkdir build
 cd build
 set "generatorpostfix="
 if %bitness%==64 set "generatorpostfix= Win64"
-"c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010%generatorpostfix" ..
+"c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010%generatorpostfix%" ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
