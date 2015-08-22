@@ -119,6 +119,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-linux64-cpp-2
@@ -156,6 +161,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-linux32-py27-2
@@ -193,6 +203,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-linux64-py27-2
@@ -230,6 +245,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-linux32-py34-2
@@ -267,6 +287,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-linux64-py34-2
@@ -304,6 +329,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-win32-2
@@ -378,6 +408,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-win32-py27-2
@@ -415,6 +450,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-win32-py34-2
@@ -452,6 +492,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-win64-py27-2
@@ -489,6 +534,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-win64-py34-2
@@ -526,6 +576,11 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 - job:
     name: deepcl-linux64-cpp-unittests-2
@@ -559,5 +614,10 @@
     - workspace-cleanup:
         include:
         - '**'
+        clean-if:
+        - unstable: false
+        - failure: false
+        - aborted: false
+        - not-built: false
         dirmatch: true
 
