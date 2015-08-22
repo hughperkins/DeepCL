@@ -5,8 +5,19 @@ call \%1\scripts\activate
 python -c "from __future__ import print_function; import platform; print( platform.uname() )"
 python -c "from __future__ import print_function; import platform; print( platform.architecture() )"
 
-copy /y jenkins\version.txt python
+pwd
+rmdir /s /q build dist
+mkdir build
+cd build
+"c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010" ..
+C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
+if errorlevel 1 exit /B 1
+cd ..
+pwd
+dir
+call dist\bin\activate.bat
 
+copy /y jenkins\version.txt python
 cd python
 
 rmdir /s /q dist
