@@ -39,11 +39,6 @@ if building_dist:
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-def get_so_suffix():
-    if sysconfig.get_config_var('SOABI') != None:
-        return "." + sysconfig.get_config_var('SOABI')
-    return ""
-
 compile_options = []
 osfamily = platform.uname()[0]
 if osfamily == 'Windows':
@@ -57,9 +52,9 @@ else:
 
 runtime_library_dirs = []
 libraries = []
-libraries.append('clBLAS' + get_so_suffix())
-libraries.append('EasyCL' + get_so_suffix())
-libraries.append('DeepCL' + get_so_suffix())
+libraries.append('clBLAS')
+libraries.append('EasyCL')
+libraries.append('DeepCL')
 
 if osfamily == 'Linux':
     runtime_library_dirs= ['.']
