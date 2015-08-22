@@ -110,12 +110,12 @@
             bash jenkins/linux32-cpp.sh
     publishers:
     - archive:
-          artifacts: build/*.tar.bz2
+          artifacts: *.tar.bz2
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
                 - target: 'Downloads'
-                  source: build/*.tar.bz2
+                  source: *.tar.bz2
     - workspace-cleanup:
         include:
         - '**'
@@ -147,12 +147,12 @@
             bash jenkins/linux64-cpp.sh
     publishers:
     - archive:
-          artifacts: 'build/*.tar.bz2'
+          artifacts: '*.tar.bz2'
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
                 - target: 'Downloads'
-                  source: build/*.tar.bz2
+                  source: *.tar.bz2
     - workspace-cleanup:
         include:
         - '**'
@@ -332,12 +332,12 @@
             call jenkins\win32-cpp.bat
     publishers:
     - archive:
-          artifacts: build/Release/*.zip
+          artifacts: *.zip
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
                 - target: 'Downloads'
-                  source: build/Release/*.zip
+                  source: *.zip
     - workspace-cleanup:
         include:
         - '**'
@@ -369,12 +369,12 @@
             call jenkins\win64-cpp.bat
     publishers:
     - archive:
-          artifacts: build/Release/*.zip
+          artifacts: *.zip
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
                 - target: 'Downloads'
-                  source: build/Release/*.zip
+                  source: *.zip
     - workspace-cleanup:
         include:
         - '**'
