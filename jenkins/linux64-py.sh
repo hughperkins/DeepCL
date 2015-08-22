@@ -17,7 +17,7 @@ make -j 4 install || exit 1
 cd ..
 pwd
 ls
-source dist/bin/activate.sh
+. dist/bin/activate.sh
 
 pwd
 cp jenkins/version.txt python
