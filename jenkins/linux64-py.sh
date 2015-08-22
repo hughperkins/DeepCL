@@ -1,3 +1,5 @@
+set -x
+
 echo args: $1
 
 pyenv=$1
