@@ -12,8 +12,8 @@ pwd
 rm -Rf build dist
 mkdir build
 cd build
-cmake ..
-make -j 4 install
+cmake .. || exit 1
+make -j 4 install || exit 1
 cd ..
 pwd
 ls

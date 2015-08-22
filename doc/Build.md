@@ -28,6 +28,7 @@
 - make 
 - cmake
 - cmake-curses-gui
+- gfortran
 - g++ (should support c++0x; eg 4.4 or better)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
