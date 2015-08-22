@@ -12,6 +12,7 @@ mkdir build
 cd build
 "c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010" ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
+C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
 cd ..
 cd
