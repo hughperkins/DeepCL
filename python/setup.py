@@ -52,9 +52,9 @@ else:
 
 runtime_library_dirs = []
 libraries = []
-libraries.append('clBLAS')
-libraries.append('EasyCL')
-libraries.append('DeepCL')
+libraries.append('../dist/lib/import/clBLAS')
+libraries.append('../dist/lib/EasyCL')
+libraries.append('../dist/lib/DeepCL')
 
 if osfamily == 'Linux':
     runtime_library_dirs= ['.']
