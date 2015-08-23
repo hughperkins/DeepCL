@@ -39,6 +39,7 @@ if exist build goto :error
 if exist mysrc goto :error
 if exist src goto :error
 
+set
 python setup.py build_ext -i
 if errorlevel 1 goto :error
 
