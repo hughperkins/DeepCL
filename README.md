@@ -123,6 +123,16 @@ License
 Recent changes
 ==============
 
+* Aug 21st-24th:
+  * 8.x finally builds again on all supported configurations!
+    * ubuntu 14.04 32-bit Python 2.7
+    * ubuntu 14.04 32-bit Python 3.4
+    * ubuntu 14.04 64-bit Python 2.7
+    * ubuntu 14.04 64-bit Python 3.4
+    * visual studio 2010 32-bit python 2.7
+    * visual studio 2010 32-bit python 3.4
+    * visual studio 2010 64-bit python 2.7
+    * visual studio 2010 64-bit python 3.4
 * Aug 19th-20th:
   * Python wrappers now built using a very thin setup.py layer, on top of the standard native DeepCL build
 * Aug 18th:
