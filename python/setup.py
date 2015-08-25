@@ -52,12 +52,16 @@ else:
 
 runtime_library_dirs = []
 libraries = []
-libraries.append('../dist/lib/import/clBLAS')
-libraries.append('../dist/lib/EasyCL')
-libraries.append('../dist/lib/DeepCL')
+libraries.append('clBLAS')
+libraries.append('EasyCL')
+libraries.append('DeepCL')
+
+library_dirs = []
+library_dirs.append('../dist/lib')
+library_dirs.append('../dist/lib/import')
 
 if osfamily == 'Linux':
-    runtime_library_dirs= ['.']
+    runtime_library_dirs = ['.']
 
 if osfamily == 'Windows':
     libraries.append('winmm')
@@ -68,8 +72,9 @@ if cython_present:
 ext_modules = [
     Extension("PyDeepCL",
               sources=sources,
-              include_dirs = ['mysrc', 'mysrc/lua'],
-              libraries= libraries,
+              include_dirs=['mysrc', 'mysrc/lua'],
+              library_dirs=library_dirs,
+              libraries=libraries,
               extra_compile_args=compile_options,
               runtime_library_dirs=runtime_library_dirs,
               language="c++"
