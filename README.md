@@ -123,6 +123,19 @@ License
 Recent changes
 ==============
 
+* Aug 26th: installation of 8.x from binaries on linux works now, by doing, eg on 64-bit Ubuntu 14.04:
+```
+mkdir 8.0.0rc4
+cd 8.0.0rc4
+wget http://deepcl.hughperkins.com/Downloads/deepcl-linux64-v8.0.0rc4.tar.bz2
+tar -xf deepcl-linux64-v8.0.0rc4.tar.bz2
+virtualenv env
+source env/bin/activate
+source dist/bin/activate.sh
+pip install --pre DeepCL
+python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
+```
+(last line is just to check works ok)
 * Aug 21st-24th:
   * 8.x finally builds again on all supported configurations!
     * ubuntu 14.04 32-bit Python 2.7
