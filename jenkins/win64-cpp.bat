@@ -34,8 +34,8 @@ if errorlevel 1 exit /B 1
 
 copy vc2010redist\win64\* Release
 
-cd Release
-"c:\program files\7-Zip\7z.exe" a deepcl-win64-%version%.zip *
+cd ..
+"c:\program files\7-Zip\7z.exe" a deepcl-win64-%version%.zip dist
 if errorlevel 1 exit /B 1
 
 cd ..
