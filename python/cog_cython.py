@@ -30,15 +30,19 @@ import cog
 
 
 def upperFirst(word):
-    """helper method to capitalize the first letter of word"""
+    """
+    helper method to capitalize the first letter of word
+    """
     word = word[0].upper() + word[1:]
     return word
 
 
 def cpp_write_proxy_class(proxy_name, parent_name, defs):
-    """use to create a c++ class that inherits from a (possibly abstract) c++ class
+    """
+    use to create a c++ class that inherits from a (possibly abstract) c++ class
     and handles the c++ side of receiving callback functions into cython,
-    and calling these appropriately"""
+    and calling these appropriately
+    """
 
     cog.outl('// generated using cog (as far as the [[end]] bit:')
     cog.outl('class ' + proxy_name + ' : public ' + parent_name + ' {')
@@ -99,9 +103,11 @@ def cpp_write_proxy_class(proxy_name, parent_name, defs):
 
 
 def pxd_write_proxy_class(proxy_name, defs):
-    """writes the pxd declaration of the same class that was created using
+    """
+    writes the pxd declaration of the same class that was created using
     'cpp_write_proxy_class' for C++ above.
-    This should be used inside 'cdef extern from "somefile.h":' section"""
+    This should be used inside 'cdef extern from "somefile.h":' section
+    """
 
     cog.outl('# generated using cog (as far as the [[end]] bit:')
     for thisdef in defs:
@@ -126,10 +132,12 @@ def pxd_write_proxy_class(proxy_name, defs):
 
 def pyx_write_overrideable_class(
         pxd_module, pxd_class, pyx_class, defs, skip_names):
-    """writes the python class in the pyx file that the .py modules
+    """
+    writes the python class in the pyx file that the .py modules
     can override, and receives callbacks from
     any method names in skip_names will be skipped, and you can write them
-    manually before/after the cog block"""
+    manually before/after the cog block
+    """
 
     cog.outl('# generated using cog (as far as the [[end]] bit:')
     for thisdef in defs:
