@@ -4,25 +4,27 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-# functions to help wrap C++ callback classes in Cython, and more
-# There are three parts to wrapping C++ callback classes:
-#
-# - in C++, you need to override the C++-side abstract class
-#   => cpp_write_proxy_class
-#
-# - in the pxd, you need to declare the C++ proxy class
-#   => pxd_write_proxy_class
-#
-# - in the .pyx, you need to write a wrapper class, that can be
-#   overridden in the python files
-#   => pyx_write_overrideable_class
-#
-# in all cases, you need to provide a 'defs' file, which is a python
-# file with a list of method definitions, provided as tuples like:
-# defs.append(('act', 'float', [('int','index')]))
-# here: - act is the name of the method
-#       - float is the return type
-#       - there is one parameter 'index', of type 'int'
+"""
+functions to help wrap C++ callback classes in Cython, and more
+There are three parts to wrapping C++ callback classes:
+
+- in C++, you need to override the C++-side abstract class
+  => cpp_write_proxy_class
+
+- in the pxd, you need to declare the C++ proxy class
+  => pxd_write_proxy_class
+
+- in the .pyx, you need to write a wrapper class, that can be
+  overridden in the python files
+  => pyx_write_overrideable_class
+
+in all cases, you need to provide a 'defs' file, which is a python
+file with a list of method definitions, provided as tuples like:
+defs.append(('act', 'float', [('int','index')]))
+here: - act is the name of the method
+      - float is the return type
+      - there is one parameter 'index', of type 'int'
+"""
 
 import cog
 
