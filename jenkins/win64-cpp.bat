@@ -1,2 +1,2 @@
-call jenkins\win-cpp.bat 64
+call %~dp0win-cpp.bat 64
 
