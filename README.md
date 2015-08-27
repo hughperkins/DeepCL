@@ -116,7 +116,7 @@ Note that you need to "activate" the installatoin each time you open a new cmd p
 
 Note that you need to "activate" the installatoin each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
 
-## Python wrapper installation
+## Python wrappers
 
 * make sure you already installed the native library, and "activate"d it, by doing `call dist\bin\activate.bat`, or `source dist/bin/activate.sh`
 * run `pip install --pre DeepCL`
