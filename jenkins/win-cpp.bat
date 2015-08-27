@@ -1,3 +1,6 @@
+set WINBITS=%1
+echo WINBITS: %WINBITS%
+
 cd jenkins
 for /f "" %%i in (version.txt) do (
    set version=%%i
