@@ -6,6 +6,7 @@ cd ..
 
 powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32-static.zip', 'turbojpeg-win32.zip')
 if errorlevel 1 exit /B 1
+rmdir /s /q turbojpeg-win32
 mkdir turbojpeg-win32
 cd turbojpeg-win32
 "c:\program files\7-Zip\7z.exe" x ..\turbojpeg-win32.zip
