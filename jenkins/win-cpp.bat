@@ -5,8 +5,8 @@ cd %~dp0.
 for /f "" %%i in (version.txt) do (
    set version=%%i
 )
-cd ..
 
+cd %~dp0..
 if not exist turbogjpeg-win%WINBITS%.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win%WINBITS%-static.zip', 'turbojpeg-win%WINBITS%.zip')
 if errorlevel 1 exit /B 1
 rmdir /s /q turbojpeg-win%WINBITS%
@@ -14,12 +14,12 @@ mkdir turbojpeg-win%WINBITS%
 cd turbojpeg-win%WINBITS%
 "c:\program files\7-Zip\7z.exe" x ..\turbojpeg-win%WINBITS%.zip
 if errorlevel 1 exit /B 1
-cd ..
 
+cd %~dp0..
 dir
 rmdir /s /q build
 mkdir build
-cd build
+cd %~dp0..\build
 dir
 set "VS100COMNTOOLS=c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\"
 set "VS110COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\"
@@ -38,19 +38,21 @@ C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Con
 if errorlevel 1 exit /B 1
 
 rem copy down the redistributables (maybe they're on the server somewhere?)
+cd %~dp0..
 powershell Set-ExecutionPolicy unrestricted
-powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
+if not exist vc2010redist.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
 if errorlevel 1 exit /B 1
 
+rmdir /s /q vc2010redist
 "c:\program files\7-Zip\7z.exe" x vc2010redist.zip
 if errorlevel 1 exit /B 1
 
-copy vc2010redist\win%WINBITS%\* Release
+copy vc2010redist\win%WINBITS%\* dist\bin
 
-cd ..
+cd %~dp0..
 "c:\program files\7-Zip\7z.exe" a deepcl-win%WINBITS%-%version%.zip dist
 if errorlevel 1 exit /B 1
 
-cd ..
+cd %~dp0..
 echo %version%>latestUnstable.txt
 
