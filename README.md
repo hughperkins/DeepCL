@@ -82,7 +82,7 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 
 How to install the native DeepCL library.  You always need to do this part, even if you will use the Python wrappers.
 
-### Native installation on Windows
+### Windows
 
 #### Pre-requisites:
 
@@ -100,7 +100,7 @@ How to install the native DeepCL library.  You always need to do this part, even
 
 Note that you need to "activate" the installatoin each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
 
-### Native installation on linux
+### Linux
 
 #### Pre-requisites:
 
