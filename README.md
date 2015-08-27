@@ -96,6 +96,8 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
   * run `call dist\bin\activate.bat` (adjusting the path appropriately for wherever you downloaded deepcl binaries to)
   * now, eg try `deepcl_unittests`
 
+Note that you need to "activate" the installatoin each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
+
 ### Native installation on linux
 
 #### Pre-requisites:
@@ -107,8 +109,10 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 
 * Download latest tar file from http://deepcl.hughperkins.com/Downloads/
 * untar it, which creates the `dist` sub-folder
-* `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
-* test by doing eg `deepcl_unittests`
+* in a bash prompt, run `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
+* test by doing, from the same bash prompt, eg `deepcl_unittests`
+
+Note that you need to "activate" the installatoin each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
 
 ## Python wrapper installation
 
