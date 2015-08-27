@@ -362,12 +362,12 @@
             call jenkins\win32-cpp.bat
     publishers:
     - archive:
-          artifacts: *.zip
+          artifacts: deepcl*.zip
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
                 - target: 'Downloads'
-                  source: *.zip
+                  source: deepcl*.zip
     - workspace-cleanup:
         include:
         - '**'
@@ -399,12 +399,12 @@
             call jenkins\win64-cpp.bat
     publishers:
     - archive:
-          artifacts: *.zip
+          artifacts: deepcl*.zip
     - scp:
             site: 'deepcl.hughperkins.com'
             files:
                 - target: 'Downloads'
-                  source: *.zip
+                  source: deepcl*.zip
     - workspace-cleanup:
         include:
         - '**'
