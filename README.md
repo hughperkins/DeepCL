@@ -78,7 +78,9 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
  
 # Installation
 
-## Native library installation (needed also for python wrappers)
+## Native library installation
+
+How to install the native DeepCL library.  You always need to do this part, even if you will use the Python wrappers.
 
 ### Native installation on Windows
 
@@ -120,7 +122,9 @@ Note that you need to "activate" the installatoin each time you open a new bash 
 * run `pip install --pre DeepCL`
 * test by doing `python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"`
 
-## To build from source (only needed if installing from binaries doesn't work for your configuration, or if you want to modify DeepCL)
+## To build from source
+
+Building from source is only needed if installing from binaries doesn't work for your configuration, or if you want to modify DeepCL.
 
 See [Build.md](doc/Build.md)
 
