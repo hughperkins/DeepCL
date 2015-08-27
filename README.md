@@ -98,7 +98,7 @@ How to install the native DeepCL library.  You always need to do this part, even
   * run `call dist\bin\activate.bat` (adjusting the path appropriately for wherever you downloaded deepcl binaries to)
   * now, eg try `deepcl_unittests`
 
-Note that you need to "activate" the installatoin each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
+Note that you need to "activate" the installation each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
 
 ### Linux
 
@@ -114,7 +114,7 @@ Note that you need to "activate" the installatoin each time you open a new cmd p
 * in a bash prompt, run `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
 * test by doing, from the same bash prompt, eg `deepcl_unittests`
 
-Note that you need to "activate" the installatoin each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
+Note that you need to "activate" the installation each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
 
 ## Python wrappers
 
