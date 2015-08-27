@@ -27,7 +27,7 @@ echo set(JPEG_INCLUDE_DIR "${SOURCE_DIR}/turbojpeg-win32" CACHE PATH "JPEG_INCLU
 echo set(JPEG_LIBRARY "${SOURCE_DIR}/turbojpeg-win32/turbojpeg-static.lib" CACHE PATH "JPEG_LIBRARY")>>initcache.cmake
 if exist "c:\program files\cmake\bin\cmake.exe" set CMAKEEXE="c:\program files\cmake\bin\cmake.exe"
 if exist "c:\program files (x86)\cmake\bin\cmake.exe" set CMAKEEXE="c:\program files (x86)\cmake\bin\cmake.exe"
-"%CMAKEPATH%" -G "Visual Studio 10 2010" -C initcache.cmake ..
+"%CMAKEEXE%" -G "Visual Studio 10 2010" -C initcache.cmake ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
