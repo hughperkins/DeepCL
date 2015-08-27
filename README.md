@@ -76,9 +76,49 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n numepochs=20 multinet=6 learningrate=0.002`
    - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
  
-# To install
+# Installation
 
-8.x must be [built from source](doc/Build.md) for now.
+## Native library installation (needed also for python wrappers)
+
+### Native installation on Windows
+
+#### Pre-requisites:
+
+* OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed
+* Tested using Windows 7
+
+#### Procedure:
+
+* Download latest binary zip file from http://deepcl.hughperkins.com/Downloads/
+* unzip it, which creates the `dist` folder
+* To use it:
+  * open a cmd
+  * run `call dist\bin\activate.bat` (adjusting the path appropriately for wherever you downloaded deepcl binaries to)
+  * now, eg try `deepcl_unittests`
+
+### Native installation on linux
+
+#### Pre-requisites:
+
+* OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed (can check by running `clinfo`, which should show your desired GPU device)
+* Tested using Ubuntu 14.04 32-bit/64-bit
+
+#### Procedure:
+
+* Download latest tar file from http://deepcl.hughperkins.com/Downloads/
+* untar it, which creates the `dist` sub-folder
+* `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
+* test by doing eg `deepcl_unittests`
+
+## Python wrapper installation
+
+* make sure you already installed the native library, and "activate"d it, by doing `call dist\bin\activate.bat`, or `source dist/bin/activate.sh`
+* run `pip install --pre DeepCL`
+* test by doing `python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"`
+
+## To build from source (only needed if installing from binaries doesn't work for your configuration, or if you want to modify DeepCL)
+
+See [Build.md](doc/Build.md)
 
 ## What if it doesn't run?
 
