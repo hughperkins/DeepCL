@@ -27,6 +27,8 @@ echo set(JPEG_LIBRARY "${SOURCE_DIR}/turbojpeg-win32/turbojpeg-static.lib" CACHE
 "c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010" -C initcache.cmake ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
+C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
+if errorlevel 1 exit /B 1
 
 rem copy down the redistributables (maybe they're on the server somewhere?)
 powershell Set-ExecutionPolicy unrestricted
