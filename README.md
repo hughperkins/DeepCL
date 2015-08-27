@@ -123,6 +123,16 @@ License
 Recent changes
 ==============
 
+* Aug 28th: installatio nof 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (tested on py2.7 so far; assumes 7-zip is installed, in default location):
+```
+powershell Set-ExecutionPolicy unrestricted
+powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/deepcl-win32-v8.0.0rc8.zip', 'deepcl-win32-v8.0.0rc8.zip')
+"c:\program files\7-Zip\7z.exe" x deepcl-win32-v8.0.0rc8.zip
+call dist\bin\activate.bat
+pip install --pre DeepCL
+python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
+```
+(last line is just to check works ok)
 * Aug 26th: installation of 8.x from binaries on linux works now, by doing, eg on 64-bit Ubuntu 14.04:
 ```
 mkdir 8.0.0rc4
