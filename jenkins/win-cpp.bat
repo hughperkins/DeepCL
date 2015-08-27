@@ -4,7 +4,7 @@ for /f "" %%i in (version.txt) do (
 )
 cd ..
 
-powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win%WINBITS%-static.zip', 'turbojpeg-win%WINBITS%.zip')
+if not exist turbogjpeg-win%WINBITS%.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win%WINBITS%-static.zip', 'turbojpeg-win%WINBITS%.zip')
 if errorlevel 1 exit /B 1
 rmdir /s /q turbojpeg-win%WINBITS%
 mkdir turbojpeg-win%WINBITS%
