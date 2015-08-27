@@ -123,7 +123,7 @@ License
 Recent changes
 ==============
 
-* Aug 28th: installatio nof 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (assumes 7-zip is installed, in default location, otherwise do the unzip by hand):
+* Aug 28th: installation of 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (assumes 7-zip is installed, in default location, otherwise do the unzip by hand):
 ```
 powershell Set-ExecutionPolicy unrestricted
 rem following command is like `wget` in linux:
