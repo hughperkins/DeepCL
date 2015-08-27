@@ -12,6 +12,7 @@ python -c "from __future__ import print_function; import platform; print( platfo
 cd
 rmdir /s /q build
 rmdir /s /q dist
+dir
 mkdir build
 cd build
 set "generatorpostfix="
