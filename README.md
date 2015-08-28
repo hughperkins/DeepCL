@@ -91,7 +91,7 @@ This section installs the native libraries, and the command-line tools.  You alw
 
 #### Procedure:
 
-* Download latest binary zip file from http://deepcl.hughperkins.com/Downloads/
+* Download latest binary zip file from http://deepcl.hughperkins.com/Downloads/ (eg from v8.0.0rc8)
 * unzip it, which creates the `dist` folder
 * To use it:
   * open a cmd
@@ -109,7 +109,7 @@ Note that you need to "activate" the installation each time you open a new cmd p
 
 #### Procedure:
 
-* Download latest tar file from http://deepcl.hughperkins.com/Downloads/
+* Download latest tar file from http://deepcl.hughperkins.com/Downloads/ (eg from v8.0.0rc8)
 * untar it, which creates the `dist` sub-folder
 * in a bash prompt, run `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
 * test by doing, from the same bash prompt, eg `deepcl_unittests`
