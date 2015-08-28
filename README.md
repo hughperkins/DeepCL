@@ -185,6 +185,7 @@ python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
 ```
 (last line is just to check works ok)
   * merged 8.x branch to master, will release first version of 8.x shortly
+
 * Aug 26th: installation of 8.x from binaries on linux works now, by doing, eg on 64-bit Ubuntu 14.04:
 ```
 mkdir 8.0.0rc4
@@ -198,6 +199,7 @@ pip install --pre DeepCL
 python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
 ```
 (last line is just to check works ok)
+
 * Aug 21st-24th:
   * 8.x finally builds again on all supported configurations!
     * ubuntu 14.04 32-bit Python 2.7
