@@ -34,19 +34,19 @@ class ManifestLoaderv1 : public Loader {
     // generated, using cog:
 
     public:
-    STATIC bool isFormatFor( std::string imagesFilepath );
-    ManifestLoaderv1( std::string imagesFilepath );
-    ManifestLoaderv1( std::string imagesFilepath, bool includeLabels );
+    STATIC bool isFormatFor(std::string imagesFilepath);
+    ManifestLoaderv1(std::string imagesFilepath);
+    ManifestLoaderv1(std::string imagesFilepath, bool includeLabels);
     VIRTUAL std::string getType();
     VIRTUAL int getImageCubeSize();
     VIRTUAL int getN();
     VIRTUAL int getPlanes();
     VIRTUAL int getImageSize();
-    VIRTUAL void load( unsigned char *data, int *labels, int startRecord, int numRecords );
+    VIRTUAL void load(unsigned char *data, int *labels, int startRecord, int numRecords);
 
     private:
-    void init( std::string imagesFilepath, bool includeLabels );
-    int readIntValue( std::vector< std::string > splitLine, std::string key );
+    void init(std::string imagesFilepath, bool includeLabels);
+    int readIntValue(std::vector< std::string > splitLine, std::string key);
 
     // [[[end]]]
 };

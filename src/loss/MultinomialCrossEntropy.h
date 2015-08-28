@@ -26,12 +26,12 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    MultinomialCrossEntropy( Layer *previousLayer, MultinomialCrossEntropyMaker const*maker );
+    MultinomialCrossEntropy(Layer *previousLayer, MultinomialCrossEntropyMaker const*maker);
     VIRTUAL ~MultinomialCrossEntropy();
     VIRTUAL float*getGradInput();
-    VIRTUAL float calcLoss( float const *expected );
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL void calcGradInput( float const*expectedOutput );
+    VIRTUAL float calcLoss(float const *expected);
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL void calcGradInput(float const*expectedOutput);
 
     // [[[end]]]
 };

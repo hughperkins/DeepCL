@@ -22,8 +22,8 @@ VIRTUAL SGDState::~SGDState() {
     delete[] lastUpdate;
 }
 
-SGDState::SGDState( EasyCL *cl, int numWeights ) :
-        numWeights( numWeights )
+SGDState::SGDState(EasyCL *cl, int numWeights) :
+        numWeights(numWeights)
     { // should we handle bias separately?  maybe... not?
       // or each layer could have one trainer for biases, and one for the
       // non-biases?  Maybe kind of ok?
@@ -31,10 +31,10 @@ SGDState::SGDState( EasyCL *cl, int numWeights ) :
     // lastUpdate buffer never needs to change size,
     //  since number of weights is invariant with batchSize etc
     lastUpdate = new float[numWeights];
-    for( int i = 0; i < numWeights; i++ ) {
+    for(int i = 0; i < numWeights; i++) {
         lastUpdate[i] = 0.0f;
     }
-    lastUpdateWrapper = cl->wrap( numWeights, lastUpdate );
+    lastUpdateWrapper = cl->wrap(numWeights, lastUpdate);
     lastUpdateWrapper->copyToDevice();
 }
 

@@ -1,4 +1,4 @@
-call %~dp0win-py.bat env-27-64
+call %~dp0win-py.bat 64 27
 if errorlevel 1 goto :fail
 goto :eof
 

@@ -27,25 +27,25 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLIC GenericLoaderv2::GenericLoaderv2( std::string imagesFilepath ) {
+PUBLIC GenericLoaderv2::GenericLoaderv2(std::string imagesFilepath) {
     loader = 0;
     #ifdef LIBJPEG_FOUND
-    if( ManifestLoaderv1::isFormatFor( imagesFilepath ) ) {
-        loader = new ManifestLoaderv1( imagesFilepath );
+    if(ManifestLoaderv1::isFormatFor(imagesFilepath) ) {
+        loader = new ManifestLoaderv1(imagesFilepath);
     }
     #endif
-    if( loader == 0 ) {
-        loader = new GenericLoaderv1Wrapper( imagesFilepath );
+    if(loader == 0) {
+        loader = new GenericLoaderv1Wrapper(imagesFilepath);
     }
 }
 
-PUBLIC void GenericLoaderv2::load( float *images, int *labels, int startN, int numExamples ) {
+PUBLIC void GenericLoaderv2::load(float *images, int *labels, int startN, int numExamples) {
     int linearSize =  numExamples * loader->getImageCubeSize();
     unsigned char *ucImages = new unsigned char[ linearSize ];
 
-    load( ucImages, labels, startN, numExamples );
+    load(ucImages, labels, startN, numExamples);
 
-    for( int i = 0; i < linearSize; i++ ) {
+    for(int i = 0; i < linearSize; i++) {
         images[i] = ucImages[i];
     }
     delete[] ucImages;
@@ -59,14 +59,14 @@ PUBLIC int GenericLoaderv2::getPlanes() {
 PUBLIC int GenericLoaderv2::getImageSize() {
     return loader->getImageSize();
 }
-PUBLIC void GenericLoaderv2::load( unsigned char *images, int *labels ) {
-    load( images, labels, 0, 0 );
+PUBLIC void GenericLoaderv2::load(unsigned char *images, int *labels) {
+    load(images, labels, 0, 0);
 }
 
-PUBLIC void GenericLoaderv2::load( unsigned char *images, int *labels, int startN, int numExamples ) {
+PUBLIC void GenericLoaderv2::load(unsigned char *images, int *labels, int startN, int numExamples) {
     StatefulTimer::timeCheck("GenericLoaderv2::load start");
 
-    loader->load( images, labels, startN, numExamples );
+    loader->load(images, labels, startN, numExamples);
 
     StatefulTimer::timeCheck("GenericLoaderv2::load end");
 }

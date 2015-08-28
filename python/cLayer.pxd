@@ -6,13 +6,12 @@ cdef extern from "layer/Layer.h":
         bool getBiased()
         int getOutputCubeSize()
         int getOutputPlanes()
-        int getOutputImageSize()
-        float * getOutput()
         int getOutputSize()
+        float * getOutput()
+        int getOutputNumElements()
         int getPersistSize()
         void persistToArray(float *array)
         void unpersistFromArray(const float *array)
-        string asString()
-        string getClassName()
-
+        const char *asNewCharStar()
+        const char *getClassNameAsCharStar()
 

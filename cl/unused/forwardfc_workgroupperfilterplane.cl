@@ -11,7 +11,7 @@
 #ifdef TANH
     #define ACTIVATION_FUNCTION(output) (tanh(output))
 #elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
+    #define ACTIVATION_FUNCTION(output) (1.7159f * tanh(0.66667f * output))
 #elif SIGMOID
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
@@ -38,7 +38,7 @@
 // localid as [filterRow][filterCol]
 // output as [n][filterId][inputPlane]
 #if gFilterSize == gInputImagesize && gPadZeros == 0
-kernel void kernel1( const int batchSize, 
+kernel void kernel1(const int batchSize, 
     global float const * images,
     global float const * filters,
     global float *output1,
@@ -48,7 +48,7 @@ kernel void kernel1( const int batchSize,
     const int workgroupId = get_group_id(0);
     const int localId = get_local_id(0);
 
-    if( localId >= gFilterSizeSquared ) {
+    if (localId >= gFilterSizeSquared) {
         return;
     }
 
@@ -58,10 +58,10 @@ kernel void kernel1( const int batchSize,
     // first copy down our filter plane, assume we have exactly one thread per 
     // filter plane pixel
     global float *filterPlane = filters 
-        + ( filterId * gNumInputPlanes + inputPlane ) * gFilterSizeSquared;
+        + (filterId * gNumInputPlanes + inputPlane) * gFilterSizeSquared;
     _filterPlane[localId] = filterPlane[localId];
     barrier(CLK_LOCAL_MEM_FENCE);
-    for( int n = 0; n < batchSize; n++ ) {
+    for (int n = 0; n < batchSize; n++) {
         // copy down the example plane
         // oh, problem with this is, no sharing of this example across multiple filters....
     }

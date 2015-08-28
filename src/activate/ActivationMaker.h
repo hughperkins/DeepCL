@@ -19,7 +19,7 @@ class DeepCL_EXPORT ActivationMaker : public LayerMaker2 {
 public:
     ActivationFunction const *_activationFunction;
     ActivationMaker() :
-        _activationFunction( new ReluActivation() ) {
+        _activationFunction(new ReluActivation()) {
     }
     static ActivationMaker *instance() {
         return new ActivationMaker();
@@ -50,9 +50,9 @@ public:
     }
     virtual ActivationMaker *clone() const {
         ActivationMaker *thisClone = new ActivationMaker();
-        memcpy( thisClone, this, sizeof( ActivationMaker ) ); // this will copy the activationfunction pointer too
+        memcpy(thisClone, this, sizeof(ActivationMaker) ); // this will copy the activationfunction pointer too
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

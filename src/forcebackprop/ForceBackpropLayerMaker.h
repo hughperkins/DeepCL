@@ -20,9 +20,9 @@ public:
     }
     virtual ForceBackpropLayerMaker *clone() const {
         ForceBackpropLayerMaker *thisClone = new ForceBackpropLayerMaker();
-        memcpy( thisClone, this, sizeof( ForceBackpropLayerMaker ) );
+        memcpy(thisClone, this, sizeof(ForceBackpropLayerMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

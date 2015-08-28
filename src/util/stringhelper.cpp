@@ -11,67 +11,67 @@ using namespace std;
 
 #include "util/stringhelper.h"
 
-vector<string> split(const string &str, const string &separator ) {
+vector<string> split(const string &str, const string &separator) {
 	vector<string> splitstring;
 	int start = 0;
 	int npos = (int)str.find(separator);
-	while (npos != (int)str.npos ) {
-		splitstring.push_back( str.substr(start, npos-start) );
+	while (npos != (int)str.npos) {
+		splitstring.push_back(str.substr(start, npos-start));
 		start = npos + (int)separator.length();
 		npos = (int)str.find(separator, start);
 	}
-	splitstring.push_back( str.substr( start ) );
+	splitstring.push_back(str.substr(start) );
     return splitstring;
 }
 
-string trim( const string &target ) {
+string trim(const string &target) {
 
    int origlen = (int)target.size();
    int startpos = -1;
-   for( int i = 0; i < origlen; i++ ) {
-      if( target[i] != ' ' && target[i] != '\r' && target[i] != '\n' ) {
+   for(int i = 0; i < origlen; i++) {
+      if(target[i] != ' ' && target[i] != '\r' && target[i] != '\n') {
          startpos = i;
          break;
       }
    }
    int endpos = -1;
-   for( int i = origlen - 1; i >= 0; i-- ) {
-      if( target[i] != ' ' && target[i] != '\r' && target[i] != '\n' ) {
+   for(int i = origlen - 1; i >= 0; i--) {
+      if(target[i] != ' ' && target[i] != '\r' && target[i] != '\n') {
          endpos = i;
          break;
       }      
    }
-   if( startpos == -1 || endpos == -1 ) {
+   if(startpos == -1 || endpos == -1) {
       return "";
    }
-   return target.substr(startpos, endpos-startpos + 1 );
+   return target.substr(startpos, endpos-startpos + 1);
 }
 
-string replace( string targetString, string oldValue, string newValue ) {
-    size_t pos = targetString.find( oldValue );
-    if( pos == string::npos ) {
+string replace(string targetString, string oldValue, string newValue) {
+    size_t pos = targetString.find(oldValue);
+    if(pos == string::npos) {
         return targetString;
     }
-    return targetString.replace( pos, oldValue.length(), newValue );
+    return targetString.replace(pos, oldValue.length(), newValue);
 }
-string replaceGlobal( string targetString, string oldValue, string newValue ) {
+string replaceGlobal(string targetString, string oldValue, string newValue) {
     int pos = 0;
     string resultString = "";
-    size_t targetPos = targetString.find( oldValue, pos );
-    while( targetPos != string::npos ) {
-        string preOld = targetString.substr( pos, targetPos - pos );
+    size_t targetPos = targetString.find(oldValue, pos);
+    while(targetPos != string::npos) {
+        string preOld = targetString.substr(pos, targetPos - pos);
         resultString += preOld + newValue;
         pos = targetPos + oldValue.length();
-        targetPos = targetString.find( oldValue, pos );
+        targetPos = targetString.find(oldValue, pos);
     }
     resultString += targetString.substr(pos);
     return resultString;
 }
 
-std::string toLower(std::string in ) {
-     int len = static_cast<int>( in.size() );
+std::string toLower(std::string in) {
+     int len = static_cast<int>(in.size());
      char *buffer = new char[len + 1];
-     for( int i = 0; i < len; i++ ) {
+     for(int i = 0; i < len; i++) {
         char thischar = in[i];
         thischar = tolower(thischar);
         buffer[i] = thischar;
@@ -82,11 +82,11 @@ std::string toLower(std::string in ) {
     return result;
 }
 
-void strcpy_safe( char *destination, char const*source, int maxLength ) {
+void strcpy_safe(char *destination, char const*source, int maxLength) {
     int i = 0;
-    for( i = 0; i < maxLength; i++ ) {
+    for(i = 0; i < maxLength; i++) {
         destination[i] = source[i];
-        if( source[i] == 0 ) {
+        if(source[i] == 0) {
             break;
         }
     }

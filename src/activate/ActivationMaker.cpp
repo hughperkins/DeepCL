@@ -14,8 +14,8 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-Layer *ActivationMaker::createLayer( Layer *previousLayer ) {
-    Layer *layer = new ActivationLayer( cl, previousLayer, this );
+Layer *ActivationMaker::createLayer(Layer *previousLayer) {
+    Layer *layer = new ActivationLayer(cl, previousLayer, this);
     return layer;
 }
 

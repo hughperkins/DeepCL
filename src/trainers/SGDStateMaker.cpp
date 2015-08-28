@@ -16,11 +16,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainerState *SGDStateMaker::instance( EasyCL *cl, int numWeights ) {
-    SGDState *sgd = new SGDState( cl, numWeights );
+TrainerState *SGDStateMaker::instance(EasyCL *cl, int numWeights) {
+    SGDState *sgd = new SGDState(cl, numWeights);
     return sgd;
 }
-VIRTUAL bool SGDStateMaker::created( TrainerState *state ) {
+VIRTUAL bool SGDStateMaker::created(TrainerState *state) {
     return dynamic_cast< SGDState * >(state) != 0;
 }
 

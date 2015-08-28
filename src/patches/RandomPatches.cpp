@@ -20,49 +20,49 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-RandomPatches::RandomPatches( Layer *previousLayer, RandomPatchesMaker *maker ) :
-        Layer( previousLayer, maker ),
-        patchSize( maker->_patchSize ),
-        numPlanes ( previousLayer->getOutputPlanes() ),
-        inputImageSize( previousLayer->getOutputImageSize() ),
-        outputImageSize( maker->_patchSize ),
+RandomPatches::RandomPatches(Layer *previousLayer, RandomPatchesMaker *maker) :
+        Layer(previousLayer, maker),
+        patchSize(maker->_patchSize),
+        numPlanes (previousLayer->getOutputPlanes()),
+        inputSize(previousLayer->getOutputSize()),
+        outputSize(maker->_patchSize),
         output(0),
         batchSize(0),
         allocatedSize(0) {
-    if( inputImageSize == 0 ) {
+    if(inputSize == 0) {
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input image size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString(layerIndex) + ": input image size is 0");
     }
-    if( outputImageSize == 0 ) {
+    if(outputSize == 0) {
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString(layerIndex) + ": output image size is 0");
     }
-    if( previousLayer->needsBackProp() ) {
+    if(previousLayer->needsBackProp()) {
         throw runtime_error("Error: RandomPatches layer does not provide backprop currently, so you cannot put it after a layer that needs backprop");
     }
 }
 VIRTUAL RandomPatches::~RandomPatches() {
-    if( output != 0 ) {
+    if(output != 0) {
         delete[] output;
     }
 }
 VIRTUAL std::string RandomPatches::getClassName() const {
     return "RandomPatches";
 }
-VIRTUAL void RandomPatches::setBatchSize( int batchSize ) {
-    if( batchSize <= allocatedSize ) {
+VIRTUAL void RandomPatches::setBatchSize(int batchSize) {
+    if(batchSize <= allocatedSize) {
         this->batchSize = batchSize;
         return;
     }
-    if( output != 0 ) {
+    if(output != 0) {
         delete[] output;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ getOutputSize() ];
+    output = new float[ getOutputNumElements() ];
 }
-VIRTUAL int RandomPatches::getOutputSize() {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int RandomPatches::getOutputNumElements() {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL float *RandomPatches::getOutput() {
     return output;
@@ -70,16 +70,16 @@ VIRTUAL float *RandomPatches::getOutput() {
 VIRTUAL bool RandomPatches::needsBackProp() {
     return false;
 }
-VIRTUAL int RandomPatches::getOutputSize() const {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int RandomPatches::getOutputNumElements() const {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
-VIRTUAL int RandomPatches::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int RandomPatches::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int RandomPatches::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int RandomPatches::getPersistSize( int version ) const {
+VIRTUAL int RandomPatches::getPersistSize(int version) const {
     return 0;
 }
 VIRTUAL bool RandomPatches::providesGradInputWrapper() const {
@@ -90,19 +90,19 @@ VIRTUAL bool RandomPatches::hasOutputWrapper() const {
 }
 VIRTUAL void RandomPatches::forward() {
     float *upstreamOutput = previousLayer->getOutput();
-    for( int n = 0; n < batchSize; n++ ) {
-        int patchMargin = inputImageSize - outputImageSize;
+    for(int n = 0; n < batchSize; n++) {
+        int patchMargin = inputSize - outputSize;
         int patchRow = patchMargin / 2;
         int patchCol = patchMargin / 2;
-        if( training ) {
-            patchRow = RandomSingleton::instance()->uniformInt( 0, patchMargin );
-            patchCol = RandomSingleton::instance()->uniformInt( 0, patchMargin );
+        if(training) {
+            patchRow = RandomSingleton::instance()->uniformInt(0, patchMargin);
+            patchCol = RandomSingleton::instance()->uniformInt(0, patchMargin);
         }
-        PatchExtractor::extractPatch( n, numPlanes, inputImageSize, patchSize, patchRow, patchCol, upstreamOutput, output );
+        PatchExtractor::extractPatch(n, numPlanes, inputSize, patchSize, patchRow, patchCol, upstreamOutput, output);
     }
 }
 VIRTUAL std::string RandomPatches::asString() const {
-    return "RandomPatches{ inputPlanes=" + toString(numPlanes) + " inputImageSize=" + toString(inputImageSize) + " patchSize=" + toString( patchSize ) + " }";
+    return "RandomPatches{ inputPlanes=" + toString(numPlanes) + " inputSize=" + toString(inputSize) + " patchSize=" + toString(patchSize) + " }";
 }
 
 

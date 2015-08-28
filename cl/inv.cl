@@ -9,9 +9,9 @@
 
 kernel void array_inv(
         const int N,
-        global float *data ) {
+        global float *data) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
     data[globalId] = 1.0f / data[globalId];

@@ -145,6 +145,8 @@ def addv2(classname = '', default_access='private'):
                 fnheader = fnheader.strip().replace(';const', 'const;')
                 fnheader = fnheader.strip().replace('; const', ' const;')
                 # cog.outl(fnheader);
+                if thisdec != '' and not got_all_header:
+                    thisdec += '    '
                 thisdec += fnheader + '\n'
                 if got_all_header:
                     decs_by_acc[thisaccess].append(thisdec)

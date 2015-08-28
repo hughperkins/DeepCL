@@ -1,10 +1,10 @@
 cdef extern from "net/NeuralNet.h":
     cdef cppclass NeuralNet:
-        #pass
-        NeuralNet( EasyCL *cl ) except +
-        #void print()
-        NeuralNet( EasyCL *cl, int numPlanes, int size ) except +
-        string asString() except +
+        @staticmethod
+        NeuralNet *instance(DeepCL *cl) except +
+        @staticmethod
+        NeuralNet *instance3(DeepCL *cl, int numPlanes, int size) except +
+        const char *asNewCharStar() except +
         void setBatchSize( int batchSize ) except +
         void forward( const float *images) except +
         void backwardFromLabels( const int *labels) except +
@@ -14,7 +14,6 @@ cdef extern from "net/NeuralNet.h":
         Layer *getLayer( int index )
         int getNumLayers()
         const float *getOutput()
-        int getOutputSize()
+        int getOutputNumElements()
         void setTraining( bool training )
-
-
+        void deleteMe()

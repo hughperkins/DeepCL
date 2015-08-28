@@ -9,7 +9,7 @@ cdef extern from "trainers/TrainingContext.h":
 
 cdef extern from "trainers/SGD.h":
     cdef cppclass SGD:
-        SGD( EasyCL *cl ) except +
+        SGD( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         void setMomentum( float momentum )
         void setWeightDecay( float weightDecay )
@@ -17,4 +17,3 @@ cdef extern from "trainers/SGD.h":
             const float *input, const float *expectedOutput )
         BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
             const float *input, const int *labels )
-

@@ -37,7 +37,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~AdadeltaState();
-    AdadeltaState( EasyCL *cl, int numWeights );
+    AdadeltaState(EasyCL *cl, int numWeights);
 
     // [[[end]]]
 };

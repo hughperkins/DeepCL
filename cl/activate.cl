@@ -10,7 +10,7 @@
 #ifdef TANH
     #define ACTIVATION_FUNCTION(output) (tanh(output))
 #elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
+    #define ACTIVATION_FUNCTION(output) (1.7159f * tanh(0.66667f * output))
 #elif SIGMOID
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
@@ -20,22 +20,22 @@
 #endif
 
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void activate( const int N, global float *inout ) {
+kernel void activate(const int N, global float *inout) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
-    inout[globalId] = ACTIVATION_FUNCTION( inout[globalId] );
+    inout[globalId] = ACTIVATION_FUNCTION(inout[globalId]);
 }
 #endif
 
 #ifdef ACTIVATION_FUNCTION // protect against not defined
-kernel void forwardNaive( const int N, global float *out, global const float *in ) {
+kernel void forwardNaive(const int N, global float *out, global const float *in) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
-    out[globalId] = ACTIVATION_FUNCTION( in[globalId] );
+    out[globalId] = ACTIVATION_FUNCTION(in[globalId]);
 }
 #endif
 

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Layer *InputLayerMaker::createLayer( Layer *previousLayer ) {
-    return new InputLayer( this );
+Layer *InputLayerMaker::createLayer(Layer *previousLayer) {
+    return new InputLayer(this);
 }
 

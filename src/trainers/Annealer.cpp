@@ -24,19 +24,19 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-STATIC Annealer *Annealer::instance( EasyCL *cl, float learningRate, float anneal ) {
-    Annealer *annealer = new Annealer( cl );
-    annealer->setLearningRate( learningRate );
-    annealer->setAnneal( anneal );
+STATIC Annealer *Annealer::instance(EasyCL *cl, float learningRate, float anneal) {
+    Annealer *annealer = new Annealer(cl);
+    annealer->setLearningRate(learningRate);
+    annealer->setAnneal(anneal);
     return annealer;
 }
-Annealer::Annealer( EasyCL *cl ) :
-    Trainer( cl ) {
+Annealer::Annealer(EasyCL *cl) :
+    Trainer(cl) {
     anneal = 1.0f;
 //    epoch = -1;
-//    copyBuffer = new CopyBuffer( cl );
-//    gpuAdd = new GpuAdd( cl );
-//    multiplyInPlace = new MultiplyInPlace( cl );
+//    copyBuffer = new CopyBuffer(cl);
+//    gpuAdd = new GpuAdd(cl);
+//    multiplyInPlace = new MultiplyInPlace(cl);
 }
 VIRTUAL Annealer::~Annealer() {
 //    delete copyBuffer;
@@ -44,26 +44,26 @@ VIRTUAL Annealer::~Annealer() {
 //    delete multiplyInPlace;
 }
 VIRTUAL std::string Annealer::asString() {
-    return "Annealer{ learningRate=" + toString( learningRate ) + ", anneal=" + 
-        toString( anneal ) + " }";
+    return "Annealer{ learningRate=" + toString(learningRate) + ", anneal=" + 
+        toString(anneal) + " }";
 }
-VIRTUAL void Annealer::setAnneal( float anneal ) {
+VIRTUAL void Annealer::setAnneal(float anneal) {
     this->anneal = anneal;
 }
-VIRTUAL void Annealer::updateWeights( float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper ) {
+VIRTUAL void Annealer::updateWeights(float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper) {
     // hmmmm, so all we need to do is calculate:
-    // annealedLearningRate = learningRate * pow( anneal, epoch )
+    // annealedLearningRate = learningRate * pow(anneal, epoch)
     // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
 
     int numWeights = weightsWrapper->size();
 
     float *gradWeightsCopy = new float[ numWeights ];
-    CLWrapper *gradWeightsCopyWrapper = cl->wrap( numWeights, gradWeightsCopy );
+    CLWrapper *gradWeightsCopyWrapper = cl->wrap(numWeights, gradWeightsCopy);
     gradWeightsCopyWrapper->createOnDevice();
 
-    CLMathWrapper gradWeights_( gradWeightsWrapper );
-    CLMathWrapper gradWeightsCopy_( gradWeightsCopyWrapper );
-    CLMathWrapper weights_( weightsWrapper );
+    CLMathWrapper gradWeights_(gradWeightsWrapper);
+    CLMathWrapper gradWeightsCopy_(gradWeightsCopyWrapper);
+    CLMathWrapper weights_(weightsWrapper);
 
     // following all happens on gpu, via CLMathWrapper:
     gradWeightsCopy_ = gradWeights_;
@@ -75,60 +75,60 @@ VIRTUAL void Annealer::updateWeights( float annealedLearningRate, CLWrapper *wei
 }
 VIRTUAL BatchResult Annealer::train( 
         NeuralNet *net, TrainingContext *context,
-        float const *input, OutputData *outputData ) {
+        float const *input, OutputData *outputData) {
 
     // hmmmm, so all we need to do is calculate:
-    // annealedLearningRate = learningRate * pow( anneal, epoch )
+    // annealedLearningRate = learningRate * pow(anneal, epoch)
     // weightsWrapper = weightsWrapper - annealedLearningRate * gradWeightsWrapper
 //    cout << " epoch=" << epoch << " learningrate=" << learningRate << " anneal=" << anneal << endl;
 
-    float annealedLearningRate = learningRate * pow( anneal, context->epoch );
-    if( context->batch == 0 ) {
+    float annealedLearningRate = learningRate * pow(anneal, context->epoch);
+    if(context->batch == 0) {
         cout << "Annealer annealedLearningRate=" << annealedLearningRate << endl;
     }
 
-    bindState( net );
+    bindState(net);
 
-    net->forward( input );
-    int numRight = net->calcNumRight( outputData );
-    float loss = net->calcLoss( outputData );
-    net->backward( outputData );
+    net->forward(input);
+    int numRight = net->calcNumRight(outputData);
+    float loss = net->calcLoss(outputData);
+    net->backward(outputData);
 
     int numLayers = net->getNumLayers();
-    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( !layer->needsBackProp() ) {
+    for(int layerIdx = numLayers - 2; layerIdx > 0; layerIdx--) {
+        Layer *layer = net->getLayer(layerIdx);
+        if(!layer->needsBackProp()) {
             break;
         }
-        if( layer->needsTrainerState() ) {
-            updateWeights( annealedLearningRate, layer->getWeightsWrapper(), layer->getGradWeightsWrapper() );
-            if( layer->biased() ) {
-                updateWeights( annealedLearningRate, layer->getBiasWrapper(), layer->getGradBiasWrapper() );
+        if(layer->needsTrainerState()) {
+            updateWeights(annealedLearningRate, layer->getWeightsWrapper(), layer->getGradWeightsWrapper());
+            if(layer->biased()) {
+                updateWeights(annealedLearningRate, layer->getBiasWrapper(), layer->getGradBiasWrapper());
             }
         }
     }
-    return BatchResult( loss, numRight );
+    return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Annealer::train( NeuralNet *net, TrainingContext *context,
-        float const*input, float const*expectedOutput ) {
-    ExpectedData expectedData( net, expectedOutput );
-    return this->train( net, context, input, &expectedData );
+VIRTUAL BatchResult Annealer::train(NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput) {
+    ExpectedData expectedData(net, expectedOutput);
+    return this->train(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Annealer::trainFromLabels( NeuralNet *net, TrainingContext *context,
-        float const*input, int const*labels ) {
-    LabeledData labeledData( net, labels );
-    return this->train( net, context, input, &labeledData );
+VIRTUAL BatchResult Annealer::trainFromLabels(NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels) {
+    LabeledData labeledData(net, labels);
+    return this->train(net, context, input, &labeledData);
 }
-VIRTUAL void Annealer::bindState( NeuralNet *net ) {
+VIRTUAL void Annealer::bindState(NeuralNet *net) {
     // since we have no state, all we will do is strip any existing state,
     // so that if another trainer trains the net, it wont come across
     // some stale state
-    for( int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++ ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( layer->needsTrainerState() ) {
+    for(int layerIdx = 0; layerIdx < net->getNumLayers(); layerIdx++) {
+        Layer *layer = net->getLayer(layerIdx);
+        if(layer->needsTrainerState()) {
             TrainerState *state = layer->getTrainerState();
-            if( state != 0 ) {
-                layer->setTrainerState( 0 );
+            if(state != 0) {
+                layer->setTrainerState(0);
             }
         }
     }

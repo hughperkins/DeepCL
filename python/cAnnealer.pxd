@@ -1,6 +1,6 @@
 cdef extern from "trainers/Annealer.h":
     cdef cppclass Annealer:
-        Annealer( EasyCL *cl ) except +
+        Annealer( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         void setAnneal( float anneal )
         BatchResult train( NeuralNet *net, TrainingContext *context,

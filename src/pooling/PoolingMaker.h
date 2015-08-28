@@ -20,10 +20,10 @@ public:
     int _poolingSize;
     bool _padZeros;
     PUBLICAPI PoolingMaker() :
-        _poolingSize( 2 ),
-        _padZeros( false ) {
+        _poolingSize(2),
+        _padZeros(false) {
     }
-    PUBLICAPI PoolingMaker *poolingSize( int _poolingSize ) {
+    PUBLICAPI PoolingMaker *poolingSize(int _poolingSize) {
         this->_poolingSize = _poolingSize;
         return this;
     }
@@ -36,10 +36,10 @@ public:
     }
     virtual PoolingMaker *clone() const {
         PoolingMaker *thisClone = new PoolingMaker();
-        memcpy( thisClone, this, sizeof( PoolingMaker ) );
+        memcpy(thisClone, this, sizeof(PoolingMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 
 

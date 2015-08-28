@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Layer *DropoutMaker::createLayer( Layer *previousLayer ) {
-    return new DropoutLayer( cl, previousLayer, this );
+Layer *DropoutMaker::createLayer(Layer *previousLayer) {
+    return new DropoutLayer(cl, previousLayer, this);
 }
 

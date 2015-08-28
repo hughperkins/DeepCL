@@ -10,8 +10,8 @@
 
 #include "DeepCLDllExport.h"
 
-DeepCL_EXPORT void arrayCopy( float *dest, float const*src, int N );
-DeepCL_EXPORT void arrayZero( float *array, int N );
-DeepCL_EXPORT std::string toString( float const*array, int N );
+DeepCL_EXPORT void arrayCopy(float *dest, float const*src, int N);
+DeepCL_EXPORT void arrayZero(float *array, int N);
+DeepCL_EXPORT std::string toString(float const*array, int N);
 
 

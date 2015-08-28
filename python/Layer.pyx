@@ -17,16 +17,16 @@ cdef class Layer:
         return self.thisptr.getOutputCubeSize()
     def getOutputPlanes(self):
         return self.thisptr.getOutputPlanes()
-    def getOutputImageSize(self):
-        return self.thisptr.getOutputImageSize()
+    def getOutputSize(self):
+        return self.thisptr.getOutputSize()
     def getOutput(self):
         # the underlying c++ method returns a pointer
         # to a block of memory that we dont own
         # we should probably copy it I suppose
         cdef float *output = self.thisptr.getOutput()
-        cdef int outputSize = self.thisptr.getOutputSize()
-        cdef c_array.array outputArray = array('f', [0] * outputSize )
-        for i in range(outputSize):
+        cdef int outputNumElements = self.thisptr.getOutputNumElements()
+        cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+        for i in range(outputNumElements):
             outputArray[i] = output[i]
 #        cdef float[:] outputMv = output
 #        cdef float[:] outputArrayMv = outputArray
@@ -53,8 +53,10 @@ cdef class Layer:
         weightsArray.fromlist( weightsList )
         self.setWeights( weightsArray )
     def asString(self):
-        return self.thisptr.asString()
+        cdef const char *res_charstar = self.thisptr.asNewCharStar()
+        cdef str res = str(res_charstar.decode('UTF-8'))
+        CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
+        return res
     def getClassName(self):
-        return self.thisptr.getClassName()
-
+        return self.thisptr.getClassNameAsCharStar()
 

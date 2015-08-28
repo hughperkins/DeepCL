@@ -40,16 +40,17 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~CLMathWrapper();
-    VIRTUAL CLMathWrapper &operator*=( const float scalar );
-    VIRTUAL CLMathWrapper &operator+=( const float scalar );
-    VIRTUAL CLMathWrapper &operator*=( const CLMathWrapper &two );
-    VIRTUAL CLMathWrapper &operator+=( const CLMathWrapper &two );
-    VIRTUAL CLMathWrapper &operator=( const CLMathWrapper &rhs );
+    VIRTUAL CLMathWrapper &operator=(const float scalar);
+    VIRTUAL CLMathWrapper &operator*=(const float scalar);
+    VIRTUAL CLMathWrapper &operator+=(const float scalar);
+    VIRTUAL CLMathWrapper &operator*=(const CLMathWrapper &two);
+    VIRTUAL CLMathWrapper &operator+=(const CLMathWrapper &two);
+    VIRTUAL CLMathWrapper &operator=(const CLMathWrapper &rhs);
     VIRTUAL CLMathWrapper &sqrt();
     VIRTUAL CLMathWrapper &inv();
     VIRTUAL CLMathWrapper &squared();
-    VIRTUAL void runKernel( CLKernel *kernel );
-    CLMathWrapper( CLWrapper *wrapper );
+    VIRTUAL void runKernel(CLKernel *kernel);
+    CLMathWrapper(CLWrapper *wrapper);
 
     // [[[end]]]
 };

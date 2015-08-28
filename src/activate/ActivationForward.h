@@ -20,24 +20,24 @@ public:
     EasyCL *cl;
 
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
 
-    const int outputImageSize;
+    const int outputSize;
 
     ActivationFunction const*fn;
 
     virtual ~ActivationForward() {}
-    inline int getInputIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * inputImageSize + row )
-            * inputImageSize + col;
+    inline int getInputIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * inputSize + row)
+            * inputSize + col;
     }
-    inline int getResultIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * outputImageSize + row )
-            * outputImageSize + col;
+    inline int getResultIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * outputSize + row)
+            * outputSize + col;
     }
 
     // [[[cog
@@ -45,14 +45,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationForward( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instance( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instanceForTest( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    STATIC ActivationForward *instanceSpecific( int idx, EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn );
-    VIRTUAL void forward( int batchSize, CLWrapper *inputData, CLWrapper *outputData );
-    VIRTUAL void forward( int batchSize, float *input, float *output );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
+    ActivationForward(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instance(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    VIRTUAL void forward(int batchSize, CLWrapper *inputData, CLWrapper *outputData);
+    VIRTUAL void forward(int batchSize, float *input, float *output);
+    VIRTUAL int getInputNumElements(int batchSize);
+    VIRTUAL int getOutputNumElements(int batchSize);
 
     // [[[end]]]
 };

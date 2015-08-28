@@ -16,21 +16,21 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-void NetLearnLabeledAction::run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels ) {
+void NetLearnLabeledAction::run(Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels) {
 //    cout << "NetLearnLabeledBatch learningrate=" << learningRate << endl;
-    TrainingContext context( epoch, batch );
-    trainer->trainFromLabels( net, &context, batchData, batchLabels );
+    TrainingContext context(epoch, batch);
+    trainer->trainFromLabels(net, &context, batchData, batchLabels);
 }
 
-void NetForwardAction::run( Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels ) {
+void NetForwardAction::run(Trainable *net, int epoch, int batch, float const*const batchData, int const*const batchLabels) {
 //    cout << "NetForwardBatch" << endl;
-    net->forward( batchData );
-//    trainer->train( net, batchData, batchLabels );
+    net->forward(batchData);
+//    trainer->train(net, batchData, batchLabels);
 }
 
-//void NetBackpropAction::run( Trainable *net, float const*const batchData, int const*const batchLabels ) {
+//void NetBackpropAction::run(Trainable *net, float const*const batchData, int const*const batchLabels) {
 ////    cout << "NetBackpropBatch learningrate=" << learningRate << endl;
-//    net->backwardFromLabels( learningRate, batchLabels );
+//    net->backwardFromLabels(learningRate, batchLabels);
 //}
 
 

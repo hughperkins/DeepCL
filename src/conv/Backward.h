@@ -25,20 +25,22 @@ public:
 //    ActivationFunction const *upstreamFn;
 
     virtual ~Backward() {}
-    virtual void backward( int batchSize, 
+    virtual void backward(int batchSize, 
         CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
-        CLWrapper *gradInput ) = 0;
+        CLWrapper *gradInput) = 0;
 
     // [[[cog
     // import cog_addheaders    
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC Backward *instance(EasyCL *cl, LayerDimensions dim );
-    STATIC Backward *instanceForTest(EasyCL *cl, LayerDimensions layerDimensions );
-    STATIC Backward *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
-    Backward( EasyCL *cl, LayerDimensions layerDimensions );
-    VIRTUAL float * backward( int batchSize, float *input, float *gradOutput, float *filters );
+    STATIC Backward *instance(EasyCL *cl, LayerDimensions dim);
+    STATIC Backward *instanceForTest(EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC Backward *instanceSpecific(int idx, EasyCL *cl, LayerDimensions layerDimensions);
+    Backward(EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC int getNumImplementations();
+    STATIC bool plausiblyOptimal(int index, int batchSize, LayerDimensions dim);
+    VIRTUAL float * backward(int batchSize, float *input, float *gradOutput, float *filters);
 
     // [[[end]]]
 };

@@ -17,32 +17,32 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-VIRTUAL void CopyBuffer::copy( int N, CLWrapper *in, CLWrapper *out ) {
-    kernel  ->in( N )
-            ->in( in )
-//            ->in( inoffset )
-            ->out( out );
-//            ->in( outoffset );
+VIRTUAL void CopyBuffer::copy(int N, CLWrapper *in, CLWrapper *out) {
+    kernel  ->in(N)
+            ->in(in)
+//            ->in(inoffset)
+            ->out(out);
+//            ->in(outoffset);
 
     int globalSize = N;
     int workgroupSize = 64;
-    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    int numWorkgroups = (globalSize + workgroupSize - 1) / workgroupSize;
+    kernel->run_1d(numWorkgroups * workgroupSize, workgroupSize);
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("CopyBuffer::copy end" );
+    StatefulTimer::instance()->timeCheck("CopyBuffer::copy end");
 }
 
 VIRTUAL CopyBuffer::~CopyBuffer() {
 //    delete kernel;
 }
 
-CopyBuffer::CopyBuffer( EasyCL *cl ) :
-        cl( cl ) {
+CopyBuffer::CopyBuffer(EasyCL *cl) :
+        cl(cl) {
 
     std::string kernelName = "copy.copy";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernel = cl->getKernel( kernelName );
+    if(cl->kernelExists(kernelName) ) {
+        this->kernel = cl->getKernel(kernelName);
 //        cout << "CopyBuffer kernel already built => reusing" << endl;
         return;
     }
@@ -52,7 +52,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/copy.cl", "copy", 'options' )
+    // stringify.write_kernel2("kernel", "cl/copy.cl", "copy", 'options')
     // ]]]
     // generated using cog, from cl/copy.cl:
     const char * kernelSource =  
@@ -68,9 +68,9 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "kernel void copy(\n" 
     "        const int N,\n" 
     "        global const float *in,\n" 
-    "        global float *out ) {\n" 
+    "        global float *out) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId] = in[globalId];\n" 
@@ -81,9 +81,9 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "        global const float *in,\n" 
     "        const int inoffset,\n" 
     "        global float *out,\n" 
-    "        const int outoffset ) {\n" 
+    "        const int outoffset) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId + outoffset] = in[globalId + inoffset];\n" 
@@ -93,9 +93,9 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "        const int N,\n" 
     "        const float multiplier,\n" 
     "        global const float *in,\n" 
-    "        global float *out ) {\n" 
+    "        global float *out) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    out[globalId] = multiplier * in[globalId];\n" 
@@ -104,9 +104,9 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "kernel void multiplyInplace(\n" 
     "        const int N,\n" 
     "        const float multiplier,\n" 
-    "        global float *data ) {\n" 
+    "        global float *data) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    data[globalId] *= multiplier;\n" 
@@ -115,7 +115,7 @@ CopyBuffer::CopyBuffer( EasyCL *cl ) :
     "";
     kernel = cl->buildKernelFromString( kernelSource, "copy", options, "cl/copy.cl" );
     // [[[end]]]
-    cl->storeKernel( kernelName, kernel, true );
+    cl->storeKernel(kernelName, kernel, true);
     this->kernel = kernel;
 }
 

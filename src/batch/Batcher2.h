@@ -50,16 +50,16 @@ public:
     // generated, using cog:
     Batcher2(Trainable *net, NetAction2 *action,
     int batchSize, int N,
-    InputData *inputData, OutputData *outputData );
+    InputData *inputData, OutputData *outputData);
     VIRTUAL ~Batcher2();
     void reset();
     int getNextBatch();
     VIRTUAL int getN();
     VIRTUAL bool getEpochDone();
-    VIRTUAL void setN( int N );
-    bool tick( int epoch );
-    VIRTUAL void internalTick( int epoch, InputData *inputData, OutputData *outputData );
-    void run( int epoch );
+    VIRTUAL void setN(int N);
+    bool tick(int epoch);
+    VIRTUAL void internalTick(int epoch, InputData *inputData, OutputData *outputData);
+    void run(int epoch);
 
     // [[[end]]]
 };
@@ -73,10 +73,10 @@ public:
 
     LearnBatcher2(Trainable *net, Trainer *trainer, int batchSize, int N,
             InputData *inputData, OutputData *outputData) :
-        Batcher2( net, &action, batchSize, N, inputData, outputData ),
-        action( trainer ) {        
+        Batcher2(net, &action, batchSize, N, inputData, outputData),
+        action(trainer) {        
     }
-    void setBatchState( int nextBatch, int numRight, float loss ) {
+    void setBatchState(int nextBatch, int numRight, float loss) {
         this->nextBatch = nextBatch;
         this->epochNumRight = numRight;
         this->epochLoss = loss;

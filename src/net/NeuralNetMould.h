@@ -16,20 +16,20 @@ public:
     EasyCL *cl; // NOT delete
     int _numPlanes;
     int _imageSize;
-    NeuralNetMould( EasyCL *cl ) :
-            cl( cl ) {
+    NeuralNetMould(EasyCL *cl) :
+            cl(cl) {
         _numPlanes = 0;
         _imageSize = 0;
     }
-    NeuralNetMould( int planes, int imageSize ){
+    NeuralNetMould(int planes, int imageSize){
         this->_numPlanes = planes;
         this->_imageSize = imageSize;
     }
-    NeuralNetMould *planes(int planes ) {
+    NeuralNetMould *planes(int planes) {
         this->_numPlanes = planes;
         return this;
     }
-    NeuralNetMould *imageSize( int imageSize ) {
+    NeuralNetMould *imageSize(int imageSize) {
         this->_imageSize = imageSize;
         return this;
     }

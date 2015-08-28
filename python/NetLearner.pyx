@@ -9,7 +9,7 @@ cdef class NetLearner:
             Ntrain, &trainData[0], &trainLabels[0],
             Ntest, &testData[0], &testLabels[0],
             batchSize )
-    def __dealloc(self):
+    def __dealloc__(self):
         del self.thisptr
 #    def setTrainingData( self, Ntrain, float[:] trainData, int[:] trainLabels ):
 #        self.thisptr.setTrainingData( Ntrain, &trainData[0], &trainLabels[0] )
@@ -28,6 +28,6 @@ cdef class NetLearner:
         interruptableCall( self._run, [] ) 
 ##        with nogil:
 ##            thisptr._learn( learningRate )
-        checkException()
+        # checkException()
 
 

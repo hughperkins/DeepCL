@@ -10,16 +10,16 @@
 
 using namespace std;
 
-void PatchExtractor::extractPatch( int n, int numPlanes, int imageSize, int patchSize, int patchRow, int patchCol, float *source, float *destination ) {
+void PatchExtractor::extractPatch(int n, int numPlanes, int imageSize, int patchSize, int patchRow, int patchCol, float *source, float *destination) {
 //    int n = 0;
-    for( int plane = 0; plane < numPlanes; plane++ ) {
-        float *upstreamImage = source + ( n * numPlanes + plane ) * imageSize * imageSize;
-        float *outputImage = destination + ( n * numPlanes + plane ) * patchSize * patchSize;
-        for( int outRow = 0; outRow < patchSize; outRow++ ) {
+    for(int plane = 0; plane < numPlanes; plane++) {
+        float *upstreamImage = source + (n * numPlanes + plane) * imageSize * imageSize;
+        float *outputImage = destination + (n * numPlanes + plane) * patchSize * patchSize;
+        for(int outRow = 0; outRow < patchSize; outRow++) {
             const int inRow = outRow + patchRow;
-            memcpy( &(outputImage[ outRow * patchSize ]), 
+            memcpy(&(outputImage[ outRow * patchSize ]), 
                 &(upstreamImage[ inRow * imageSize + patchCol ]),
-                patchSize * sizeof(float) );
+                patchSize * sizeof(float));
         }        
     }
 }

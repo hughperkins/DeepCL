@@ -6,11 +6,11 @@
 
 kernel void array_sqrt(
         const int N,
-        global float *data ) {
+        global float *data) {
     const int globalId = get_global_id(0);
-    if( globalId >= N ) {
+    if (globalId >= N) {
         return;
     }
-    data[globalId] = native_sqrt( data[globalId] );
+    data[globalId] = native_sqrt(data[globalId]);
 }
 

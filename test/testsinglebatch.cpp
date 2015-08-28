@@ -12,6 +12,7 @@
 #include "net/NeuralNetMould.h"
 #include "layer/LayerMakers.h"
 #include "trainers/SGD.h"
+#include "clblas/ClBlasInstance.h"
 
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
@@ -129,9 +130,9 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net, flo
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
-    const int outputSize = net->getLastLayer()->getOutputSize();
-    float *expectedOutput = new float[outputSize];
-    for( int i = 0; i < outputSize; i++ ) {
+    const int outputNumElements = net->getLastLayer()->getOutputNumElements();
+    float *expectedOutput = new float[outputNumElements];
+    for( int i = 0; i < outputNumElements; i++ ) {
         expectedOutput[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
 
@@ -220,7 +221,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net, flo
     EXPECT_EQ( true, allOk );
 
 //    float *output = (float*)(net->getOutput());
-//    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
+//    Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output );
 
     delete sgd;
     delete[]currentWeights;
@@ -231,6 +232,7 @@ void test( float learningRate, int numEpochs, int batchSize, NeuralNet *net, flo
 
 void test( ActivationFunction *fn, TestArgs args, float tolerance = 1.3f ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased() );
@@ -321,6 +323,7 @@ void checkErrorsForLayer( int layerId, float lastLoss, NeuralNet *net, float *la
 
 void testLabelled( TestArgs args ) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for( int i = 0; i < args.numLayers; i++ ) {
         net->addLayer( ConvolutionalMaker::instance()->numFilters(args.numFilters)->filterSize(args.filterSize)->biased()->padZeros() );
@@ -341,7 +344,7 @@ void testLabelled( TestArgs args ) {
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)random.max() * 0.2f - 0.1f;
     }
-//    const int outputSize = net->getLastLayer()->getOutputSize();
+//    const int outputNumElements = net->getLastLayer()->getOutputNumElements();
     int *labels = new int[args.batchSize];
     for( int i = 0; i < args.batchSize; i++ ) {
         labels[i] = random() % args.numCats;
@@ -424,7 +427,7 @@ void testLabelled( TestArgs args ) {
     StatefulTimer::dump(true);
 
 //    float *output = (float*)(net->getOutput());
-//    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
+//    Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output );
 
     delete[]currentWeights;
     delete[]lastWeights;
@@ -471,14 +474,14 @@ TEST( testsinglebatch, detailedregression ) {
 
     mt19937 random;
     random.seed(0); // so always gives same output
-    const int inputsSize = net->getInputSizePerExample() * batchSize;
+    const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    const int outputSize = net->getLastLayer()->getOutputSize();
-    float *expectedOutput = new float[outputSize];
-    for( int i = 0; i < outputSize; i++ ) {
+    const int outputNumElements = net->getLastLayer()->getOutputNumElements();
+    float *expectedOutput = new float[outputNumElements];
+    for( int i = 0; i < outputNumElements; i++ ) {
         expectedOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
@@ -501,7 +504,7 @@ TEST( testsinglebatch, detailedregression ) {
         ConvolutionalLayer *layer = dynamic_cast<ConvolutionalLayer*>( net->layers[layerIndex] );
         float const*output = layer->getOutput();
         cout << "layer " << layerIndex << endl;
-        Sampler::printSamples( "output", outputSize, (float*)output, 3 );        
+        Sampler::printSamples( "output", outputNumElements, (float*)output, 3 );        
     }
 float *output = (float*)(net->layers[1]->getOutput());
 EXPECT_FLOAT_NEAR( 0.0767364, output[684] );
@@ -533,9 +536,9 @@ ExpectedValuesLayer *expectedValuesLayer = dynamic_cast<ExpectedValuesLayer*>(ne
 //ExpectedValuesLayer *expectedValuesLayer = (new ExpectedValuesLayerMaker(net, net->layers[3]))->instance();
 expectedValuesLayer->setBatchSize(batchSize);
 expectedValuesLayer->calcErrors( expectedOutput );
-int layer3OutputSize = layer3->getOutputSize();
+int layer3OutputNumElements = layer3->getOutputNumElements();
 float *layer3errors = expectedValuesLayer->errors;
-Sampler::printSamples( "layer3errors", layer3OutputSize, layer3errors, 3 );        
+Sampler::printSamples( "layer3errors", layer3OutputNumElements, layer3errors, 3 );        
 
 EXPECT_FLOAT_NEAR( -0.296495, layer3errors[684] );
 EXPECT_FLOAT_NEAR( 0.214934, layer3errors[559] );
@@ -544,11 +547,11 @@ EXPECT_FLOAT_NEAR( 0.1246, layer3errors[373] );
 cout << endl;
 
 ConvolutionalLayer *layer2 = dynamic_cast<ConvolutionalLayer*>( net->layers[2] );
-int layer2OutputSize = layer2->getOutputSize();
+int layer2OutputNumElements = layer2->getOutputNumElements();
 layer3->nextLayer = expectedValuesLayer;
 layer3->backward( learningRate );
 float *layer2errors = layer3->getDerivLossBySumForUpstream();
-Sampler::printSamples( "layer2errors", layer2OutputSize, layer2errors );
+Sampler::printSamples( "layer2errors", layer2OutputNumElements, layer2errors );
 
 //EXPECT_FLOAT_NEAR( -0.296495, layer2errors[684] );
 //EXPECT_FLOAT_NEAR( 0.214934, layer2errors[559] );
@@ -563,11 +566,11 @@ EXPECT_FLOAT_NEAR( 0.0361823, layer2errors[176963] );
 cout << endl;
 
 ConvolutionalLayer *layer1 = dynamic_cast<ConvolutionalLayer*>( net->layers[1] );
-int layer1OutputSize = layer1->getOutputSize();
+int layer1OutputNumElements = layer1->getOutputNumElements();
 layer2->nextLayer = layer3;
 layer2->backward( learningRate );
 float *layer1errors = layer2->getDerivLossBySumForUpstream();
-Sampler::printSamples( "layer1errors", layer1OutputSize, layer1errors );
+Sampler::printSamples( "layer1errors", layer1OutputNumElements, layer1errors );
 
 EXPECT_FLOAT_NEAR( -0.0137842, layer1errors[199340] );
 EXPECT_FLOAT_NEAR( -0.015897, layer1errors[567855] );
@@ -621,7 +624,7 @@ EXPECT_FLOAT_NEAR( -0.0601025, bias[15] );
 EXPECT_FLOAT_NEAR( 0.000941529, bias[21] );
 
 output = (float*)(net->getOutput());
-Sampler::printSamples( "net->getOutput()", outputSize, (float*)output, 3 );
+Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output, 3 );
 EXPECT_FLOAT_NEAR( -0.232493, net->getOutput()[684] );
 EXPECT_FLOAT_NEAR( 0.179215, net->getOutput()[559] );
 EXPECT_FLOAT_NEAR( 0.14498, net->getOutput()[373] );
@@ -630,7 +633,7 @@ EXPECT_FLOAT_NEAR( 0.14498, net->getOutput()[373] );
 
 net->forward( inputData );
 output = (float*)(net->getOutput());
-Sampler::printSamples( "net->getOutput()", outputSize, (float*)output, 3 );
+Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output, 3 );
 
 EXPECT_FLOAT_NEAR( 0.549084, net->getOutput()[684] );
 EXPECT_FLOAT_NEAR( -0.00702396, net->getOutput()[559] );
@@ -689,7 +692,7 @@ EXPECT_FLOAT_NEAR( 0.0122473, bias[21] );
     StatefulTimer::dump(true);
 
     output = (float*)(net->getOutput());
-    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
+    Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output );
 
 EXPECT_FLOAT_NEAR( -0.15081, net->getOutput()[684] );
 EXPECT_FLOAT_NEAR( -0.0236106, net->getOutput()[559] );
@@ -717,14 +720,14 @@ TEST( SLOW_testsinglebatch, perf ) {
 
     mt19937 random;
     random.seed(0); // so always gives same output
-    const int inputsSize = net->getInputSizePerExample() * batchSize;
+    const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    const int outputSize = net->getLastLayer()->getOutputSize();
-    float *expectedOutput = new float[outputSize];
-    for( int i = 0; i < outputSize; i++ ) {
+    const int outputNumElements = net->getLastLayer()->getOutputNumElements();
+    float *expectedOutput = new float[outputNumElements];
+    for( int i = 0; i < outputNumElements; i++ ) {
         expectedOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
@@ -749,7 +752,7 @@ TEST( SLOW_testsinglebatch, perf ) {
     StatefulTimer::dump(true);
 
     float *output = (float*)(net->getOutput());
-    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
+    Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output );
 
 EXPECT_FLOAT_NEAR( -0.121662, net->getOutput()[684] );
 EXPECT_FLOAT_NEAR( 0.0783329, net->getOutput()[559] );
@@ -778,14 +781,14 @@ TEST( testsinglebatch, perf19 ) {
 
     mt19937 random;
     random.seed(0); // so always gives same output
-    const int inputsSize = net->getInputSizePerExample() * batchSize;
+    const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    const int outputSize = net->getLastLayer()->getOutputSize();
-    float *expectedOutput = new float[outputSize];
-    for( int i = 0; i < outputSize; i++ ) {
+    const int outputNumElements = net->getLastLayer()->getOutputNumElements();
+    float *expectedOutput = new float[outputNumElements];
+    for( int i = 0; i < outputNumElements; i++ ) {
         expectedOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
@@ -810,7 +813,7 @@ TEST( testsinglebatch, perf19 ) {
     StatefulTimer::dump(true);
 
     float *output = (float*)(net->getOutput());
-    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
+    Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output );
 
 //EXPECT_FLOAT_NEAR( -0.121662, net->getOutput()[684] );
 //EXPECT_FLOAT_NEAR( 0.0783329, net->getOutput()[559] );
@@ -840,14 +843,14 @@ TEST( SLOW_testsinglebatch, perf19_depth12 ) {
 
     mt19937 random;
     random.seed(0); // so always gives same output
-    const int inputsSize = net->getInputSizePerExample() * batchSize;
+    const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for( int i = 0; i < inputsSize; i++ ) {
         inputData[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
-    const int outputSize = net->getLastLayer()->getOutputSize();
-    float *expectedOutput = new float[outputSize];
-    for( int i = 0; i < outputSize; i++ ) {
+    const int outputNumElements = net->getLastLayer()->getOutputNumElements();
+    float *expectedOutput = new float[outputNumElements];
+    for( int i = 0; i < outputNumElements; i++ ) {
         expectedOutput[i] = random() / (float)mt19937::max() * 0.2f - 0.1f;
     }
 
@@ -872,7 +875,7 @@ TEST( SLOW_testsinglebatch, perf19_depth12 ) {
     StatefulTimer::dump(true);
 
     float *output = (float*)(net->getOutput());
-    Sampler::printSamples( "net->getOutput()", outputSize, (float*)output );
+    Sampler::printSamples( "net->getOutput()", outputNumElements, (float*)output );
 
 //EXPECT_FLOAT_NEAR( -0.121662, net->getOutput()[684] );
 //EXPECT_FLOAT_NEAR( 0.0783329, net->getOutput()[559] );

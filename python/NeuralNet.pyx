@@ -1,18 +1,23 @@
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
 
-    def __cinit__(self, EasyCL cl, planes = None, size = None):
+    def __cinit__(self, DeepCL cl, planes = None, size = None):
 #        print( '__cinit__(planes,size)')
         if planes == None and size == None:
-             self.thisptr = new cDeepCL.NeuralNet(cl.thisptr)
+            self.thisptr = cDeepCL.NeuralNet.instance(cl.thisptr)
         else:
-            self.thisptr = new cDeepCL.NeuralNet(cl.thisptr, planes, size)
+            self.thisptr = cDeepCL.NeuralNet.instance3(cl.thisptr, planes, size)
 
-    def __dealloc(self):
-        del self.thisptr 
+    def __dealloc__(self):
+        self.thisptr.deleteMe()
 
     def asString(self):
-        return self.thisptr.asString()
+        print('about to call asnewcharstar')
+        cdef const char *result_charstar = self.thisptr.asNewCharStar()
+        print('got char *result')
+        cdef str result = str(result_charstar.decode('UTF-8'))
+        CppRuntimeBoundary.deepcl_deleteCharStar(result_charstar)
+        return result
 
 #    def myprint(self):
 #        self.thisptr.print()
@@ -45,13 +50,12 @@ cdef class NeuralNet:
         return self.thisptr.getNumLayers()
     def getOutput(self):
         cdef const float *output = self.thisptr.getOutput()
-        cdef int outputSize = self.thisptr.getOutputSize()
-        cdef c_array.array outputArray = array('f', [0] * outputSize )
-        for i in range(outputSize):
+        cdef int outputNumElements = self.thisptr.getOutputNumElements()
+        cdef c_array.array outputArray = array('f', [0] * outputNumElements )
+        for i in range(outputNumElements):
             outputArray[i] = output[i]
         return outputArray
     def setTraining(self, training): # 1 is, we are training net, 0 is we are not
                             # used for example by randomtranslations layer (for now,
                             # used only by randomtranslations layer)
         self.thisptr.setTraining( training )
-

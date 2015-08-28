@@ -19,11 +19,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropWeightsCpu( EasyCL *cl, LayerDimensions dim );
+    BackpropWeightsCpu(EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~BackpropWeightsCpu();
-    VIRTUAL void calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper );
-    VIRTUAL void calcGradWeights( int batchSize, float *gradOutput,
-    float *inputs, float *gradWeights, float *gradBias );
+    VIRTUAL void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper);
+    VIRTUAL void calcGradWeights(int batchSize, float *gradOutput,
+    float *inputs, float *gradWeights, float *gradBias);
 
     // [[[end]]]
 };

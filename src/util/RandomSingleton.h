@@ -35,11 +35,11 @@ class DeepCL_EXPORT RandomSingleton {
     private:
     // as long as myrandom stays as private, should be ok to disable the wanrings I think?
     #ifdef _WIN32
-    #pragma warning( disable: 4251 )
+    #pragma warning(disable: 4251)
     #endif
     MT19937 myrandom;
     #ifdef _WIN32
-    #pragma warning( default: 4251 )
+    #pragma warning(default: 4251)
     #endif
 
     // [[[cog
@@ -53,7 +53,7 @@ class DeepCL_EXPORT RandomSingleton {
     STATIC RandomSingleton *instance();
     VIRTUAL float _uniform();
     STATIC float uniform();
-    STATIC int uniformInt( int minValueInclusive, int maxValueInclusive );
+    STATIC int uniformInt(int minValueInclusive, int maxValueInclusive);
 
     // [[[end]]]
 };

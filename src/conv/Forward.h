@@ -17,7 +17,7 @@
 
 using namespace std;
 
-//inline float square( float value ) {
+//inline float square(float value) {
 //    return value * value;
 //}
 
@@ -30,24 +30,24 @@ public:
     LayerDimensions dim;
 
     virtual ~Forward() {}
-    virtual void forward( int batchSize, 
+    virtual void forward(int batchSize, 
         CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-        CLWrapper *outputWrapper ) = 0;
+        CLWrapper *outputWrapper) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Forward( EasyCL *cl, LayerDimensions layerDimensions );
-    STATIC Forward *instance(EasyCL *cl, LayerDimensions dim );
-    STATIC Forward *instanceTest(EasyCL *cl, LayerDimensions layerDimensions );
+    Forward(EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC Forward *instance(EasyCL *cl, LayerDimensions dim);
+    STATIC Forward *instanceTest(EasyCL *cl, LayerDimensions layerDimensions);
     STATIC int getNumImplementations();
-    STATIC bool plausiblyOptimal( int index, int batchSize, LayerDimensions dim );
-    STATIC Forward *instanceSpecific( int idx, EasyCL *cl, LayerDimensions layerDimensions );
-    STATIC Forward *instanceSpecific( std::string name, EasyCL *cl, LayerDimensions layerDimensions );
+    STATIC bool plausiblyOptimal(int index, int batchSize, LayerDimensions dim);
+    STATIC Forward *instanceSpecific(int idx, EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC Forward *instanceSpecific(std::string name, EasyCL *cl, LayerDimensions layerDimensions);
     VIRTUAL int getOutputTotalSize(int batchSize);
-    VIRTUAL void forward( int batchSize, float *inputData, float *filters, float *biases, float *output );
+    VIRTUAL void forward(int batchSize, float *inputData, float *filters, float *biases, float *output);
 
     // [[[end]]]
 

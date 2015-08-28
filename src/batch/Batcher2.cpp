@@ -21,7 +21,7 @@ using namespace std;
 /// \brief constructor: pass in data to process, along with labels, network, ...
 Batcher2::Batcher2(Trainable *net, NetAction2 *action,
              int batchSize, int N, 
-            InputData *inputData, OutputData *outputData ) :
+            InputData *inputData, OutputData *outputData) :
         net(net),
         action(action),
         batchSize(batchSize),
@@ -30,7 +30,7 @@ Batcher2::Batcher2(Trainable *net, NetAction2 *action,
         outputData(outputData)
             {
 //    inputCubeSize = net->getInputCubeSize();
-    numBatches = ( N + batchSize - 1 ) / batchSize;
+    numBatches = (N + batchSize - 1) / batchSize;
     reset();
 }
 VIRTUAL Batcher2::~Batcher2() {
@@ -44,7 +44,7 @@ void Batcher2::reset() {
 }
 /// \brief what is the index of the next batch to process?
 int Batcher2::getNextBatch() {
-    if( epochDone ) {
+    if(epochDone) {
         return 0;
     } else {
         return nextBatch;
@@ -66,9 +66,9 @@ VIRTUAL int Batcher2::getN() {
 VIRTUAL bool Batcher2::getEpochDone() {
     return epochDone;
 }
-VIRTUAL void Batcher2::setN( int N ) {
+VIRTUAL void Batcher2::setN(int N) {
     this->N = N;
-    this->numBatches = (N + batchSize - 1 ) / batchSize;
+    this->numBatches = (N + batchSize - 1) / batchSize;
 }
 
 /// \brief processes one single batch of data
@@ -77,57 +77,57 @@ VIRTUAL void Batcher2::setN( int N ) {
 ///
 /// if most recent epoch has finished, then resets, and starts a new
 /// set of learning
-bool Batcher2::tick( int epoch ) {
+bool Batcher2::tick(int epoch) {
 //    cout << "Batcher2::tick epochDone=" << epochDone << " batch=" <<  nextBatch << endl;
 //    updateVars();
-    if( epochDone ) {
+    if(epochDone) {
         reset();
     }
     int batch = nextBatch;
 //    std::cout << "BatchLearner.tick() batch=" << batch << std::endl;
     int batchStart = batch * batchSize;
     int thisBatchSize = batchSize;
-    if( batch == numBatches - 1 ) {
+    if(batch == numBatches - 1) {
         thisBatchSize = N - batchStart;
     }
 //    std::cout << "batchSize=" << batchSize << " thisBatchSize=" << thisBatchSize << " batch=" << batch <<
 //            " batchStart=" << batchStart << " data=" << (void *)data << " labels=" << labels << 
 //            std::endl;
-    net->setBatchSize( thisBatchSize );
-    internalTick( epoch, inputData->slice( batchStart ), outputData->slice( batchStart ) );
+    net->setBatchSize(thisBatchSize);
+    internalTick(epoch, inputData->slice(batchStart), outputData->slice(batchStart) );
 
-//    float thisLoss = net->calcLossFromLabels( &(labels[batchStart]) );
-//    int thisNumRight = net->calcNumRight( &(labels[batchStart]) );
+//    float thisLoss = net->calcLossFromLabels(&(labels[batchStart]));
+//    int thisNumRight = net->calcNumRight(&(labels[batchStart]));
 //        std::cout << "thisloss " << thisLoss << " thisnumright " << thisNumRight << std::endl; 
 //    loss += thisLoss;
 //    numRight += thisNumRight;
     nextBatch++;
-    if( nextBatch == numBatches ) {
+    if(nextBatch == numBatches) {
         epochDone = true;
     }
     return !epochDone;
 }
 
-VIRTUAL void Batcher2::internalTick( int epoch, InputData *inputData, OutputData *outputData ) {
-     action->run( net, epoch, nextBatch, inputData, outputData );
+VIRTUAL void Batcher2::internalTick(int epoch, InputData *inputData, OutputData *outputData) {
+     action->run(net, epoch, nextBatch, inputData, outputData);
 }
 
 /// \brief runs batch once, for currently loaded data
 ///
 /// could be one batch of learning, or one batch of forward propagation
 /// (for test/prediction), for example
-void Batcher2::run( int epoch ) {
-//    if( data == 0 ) {
+void Batcher2::run(int epoch) {
+//    if(data == 0) {
 //        throw runtime_error("Batcher2: no data set");
 //    }
-//    if( labels == 0 ) {
+//    if(labels == 0) {
 //        throw runtime_error("Batcher2: no labels set");
 //    }
-    if( epochDone ) {
+    if(epochDone) {
         reset();
     }
-    while( !epochDone ) {
-        tick( epoch );
+    while(!epochDone) {
+        tick(epoch);
     }
 }
 

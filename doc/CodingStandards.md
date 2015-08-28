@@ -31,4 +31,10 @@ classes that need to be overridden by the client script/code
 build the sources, but if you do have python installed, and you flip the `PYTHON_AVAILABLE`(note: might have changed names recently :-P ) switch in the 
 cmake configuration, then a lot of manual editing will no longer be necessary :-)
 
+## Formatting
+
+* whitespace:
+  * I've been using eg `foo( somearg, argtwo )`, but will probably change to `foo(somearg, argtwo)`, since that's same as pep8, and torch also uses this standard
+  * no whitespace in between functions in .cpp files (to reduce scrolling)
+* braces: `{` at end of previous line, like `if(foo) {`
 

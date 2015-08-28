@@ -4,11 +4,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-void copyLocal( local float *restrict target, global float const *restrict source, int N ) {
-    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);
-    for( int loop = 0; loop < numLoops; loop++ ) {
+void copyLocal(local float *restrict target, global float const *restrict source, int N) {
+    int numLoops = (N + get_local_size(0) - 1) / get_local_size(0);
+    for (int loop = 0; loop < numLoops; loop++) {
         int offset = loop * get_local_size(0) + get_local_id(0);
-        if( offset < N ) {
+        if (offset < N) {
             target[offset] = source[offset];
         }
     }
@@ -41,15 +41,15 @@ void copyLocal( local float *restrict target, global float const *restrict sourc
 //   filtersize == inputimagesize (mandatory)
 //   inputimagesize == 19
 //   filtersize == 19
-//   outputImageSize == 1
+//   outputSize == 1
 //   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361
 //   lots of inplanes, eg 32-128
 //   inputimagesize around 19, not too small
-#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)
-void kernel forward_fc_workgroup_perrow( const int batchSize,
+#if (gFilterSize == gInputSize) && (gPadZeros == 0)
+void kernel forward_fc_workgroup_perrow(const int batchSize,
     global const float *images, global const float *filters, 
     global float *output1,
-    local float *_imageRow, local float *_filterRows ) {
+    local float *_imageRow, local float *_filterRows) {
     const int globalId = get_global_id(0);
 
     const int workgroupId = get_group_id(0);
@@ -67,32 +67,32 @@ void kernel forward_fc_workgroup_perrow( const int batchSize,
         + inputPlaneId * gFilterSizeSquared
         + filterRowId * gFilterSize;
     local float *_threadFilterRow = _filterRows + localId * gFilterSize;
-    if( localId < gNumFilters ) {
-        for( int i = 0; i < gFilterSize; i++ ) {
+    if (localId < gNumFilters) {
+        for (int i = 0; i < gFilterSize; i++) {
             _threadFilterRow[i] = filterRow[i];
         }
     }
-    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;
+    const int loopsPerExample = (gInputSize + workgroupSize - 1) / workgroupSize;
     // now loop over examples...
-    for( int n = 0; n < batchSize; n++ ) {
+    for (int n = 0; n < batchSize; n++) {
         // copy down example row, which is global to all threads in workgroup
         // hopefully should be enough threads....
         // but we should check anyway really, since depends on number of filters configured,
         // not on relative size of filter and input image
         barrier(CLK_LOCAL_MEM_FENCE);
-        copyLocal( _imageRow,  images 
-            + ( ( n 
-                * gNumInputPlanes + inputPlaneId ) 
-                * gInputImageSize + filterRowId )
-                * gInputImageSize, 
-            gInputImageSize );
+        copyLocal(_imageRow,  images 
+            + (( n 
+                * gNumInputPlanes + inputPlaneId) 
+                * gInputSize + filterRowId)
+                * gInputSize, 
+            gInputSize);
         barrier(CLK_LOCAL_MEM_FENCE);
         // add up the values in our row...
         // note: dont activate yet, since need to reduce again
         // output structured as: [n][filter][inputplane][filterrow], need to reduce again after
-        if( localId < gNumFilters ) {
+        if (localId < gNumFilters) {
             float sum = 0;
-            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {
+            for (int filterCol = 0; filterCol < gFilterSize; filterCol++) {
                 sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];
             }
             output1[ n * gNumInputPlanes * gNumFilters * gFilterSize

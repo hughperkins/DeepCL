@@ -27,8 +27,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void initializeWeights( int numWeights, float *weights, int fanin );
-    VIRTUAL void initializeBias( int numBias, float *bias, int fanin );
+    VIRTUAL void initializeWeights(int numWeights, float *weights, int fanin);
+    VIRTUAL void initializeBias(int numBias, float *bias, int fanin);
 
     // [[[end]]]
 };

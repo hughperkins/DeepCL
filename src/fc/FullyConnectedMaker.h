@@ -27,7 +27,7 @@ public:
         _numPlanes(0),
         _imageSize(0),
         _biased(true),
-        _weightsInitializer( new OriginalInitializer() ) {
+        _weightsInitializer(new OriginalInitializer()) {
     }
     FullyConnectedMaker *weightsInitializer(WeightsInitializer *weightsInitializer) {
         this->_weightsInitializer = weightsInitializer;
@@ -54,10 +54,10 @@ public:
     }
     virtual FullyConnectedMaker *clone() const {
         FullyConnectedMaker *thisClone = new FullyConnectedMaker();
-        memcpy( thisClone, this, sizeof( FullyConnectedMaker ) );
+        memcpy(thisClone, this, sizeof(FullyConnectedMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 
 

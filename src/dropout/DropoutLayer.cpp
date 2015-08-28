@@ -24,14 +24,14 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-DropoutLayer::DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *maker ) :
-        Layer( previousLayer, maker ),
-        numPlanes ( previousLayer->getOutputPlanes() ),
-        inputImageSize( previousLayer->getOutputImageSize() ),
-        dropRatio( maker->_dropRatio ),
-        outputImageSize( previousLayer->getOutputImageSize() ),
-        random( RandomSingleton::instance() ),
-        cl( cl ),
+DropoutLayer::DropoutLayer(EasyCL *cl, Layer *previousLayer, DropoutMaker *maker) :
+        Layer(previousLayer, maker),
+        numPlanes (previousLayer->getOutputPlanes()),
+        inputSize(previousLayer->getOutputSize()),
+        dropRatio(maker->_dropRatio),
+        outputSize(previousLayer->getOutputSize()),
+        random(RandomSingleton::instance()),
+        cl(cl),
         masks(0),
         output(0),
         gradInput(0),
@@ -42,86 +42,86 @@ DropoutLayer::DropoutLayer( EasyCL *cl, Layer *previousLayer, DropoutMaker *make
 //        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0) {
-    if( inputImageSize == 0 ){
+    if(inputSize == 0){
 //        maker->net->print();
-        throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": input image size is 0" );
+        throw runtime_error("Error: Dropout layer " + toString(layerIndex) + ": input image size is 0");
     }
-    if( outputImageSize == 0 ){
+    if(outputSize == 0){
 //        maker->net->print();
-        throw runtime_error("Error: Dropout layer " + toString( layerIndex ) + ": output image size is 0" );
+        throw runtime_error("Error: Dropout layer " + toString(layerIndex) + ": output image size is 0");
     }
-    dropoutForwardImpl = DropoutForward::instance( cl, numPlanes, inputImageSize, dropRatio );
-    dropoutBackwardImpl = DropoutBackward::instance( cl, numPlanes, inputImageSize, dropRatio );
-    multiplyBuffer = new MultiplyBuffer( cl );
+    dropoutForwardImpl = DropoutForward::instance(cl, numPlanes, inputSize, dropRatio);
+    dropoutBackwardImpl = DropoutBackward::instance(cl, numPlanes, inputSize, dropRatio);
+    multiplyBuffer = new MultiplyBuffer(cl);
 }
 VIRTUAL DropoutLayer::~DropoutLayer() {
     delete multiplyBuffer;
     delete dropoutForwardImpl;
     delete dropoutBackwardImpl;
-    if( maskWrapper != 0 ) {
+    if(maskWrapper != 0) {
         delete maskWrapper;
     }
-    if( outputWrapper != 0 ) {
+    if(outputWrapper != 0) {
         delete outputWrapper;
     }
-    if( masks != 0 ) {
+    if(masks != 0) {
         delete[] masks;
     }
-    if( output != 0 ) {
+    if(output != 0) {
         delete[] output;
     }
-    if( gradInputWrapper != 0 ) {
+    if(gradInputWrapper != 0) {
         delete gradInputWrapper;
     }
-    if( gradInput != 0 ) {
+    if(gradInput != 0) {
         delete[] gradInput;
     }
 }
 VIRTUAL std::string DropoutLayer::getClassName() const {
     return "DropoutLayer";
 }
-VIRTUAL void DropoutLayer::fortesting_setRandomSingleton( RandomSingleton *random ) {
+VIRTUAL void DropoutLayer::fortesting_setRandomSingleton(RandomSingleton *random) {
     this->random = random;
 }
-VIRTUAL void DropoutLayer::setBatchSize( int batchSize ) {
+VIRTUAL void DropoutLayer::setBatchSize(int batchSize) {
 //    cout << "DropoutLayer::setBatchSize" << endl;
-    if( batchSize <= allocatedSize ) {
+    if(batchSize <= allocatedSize) {
         this->batchSize = batchSize;
         return;
     }
-    if( maskWrapper != 0 ) {
+    if(maskWrapper != 0) {
         delete maskWrapper;
     }
-    if( outputWrapper != 0 ) {
+    if(outputWrapper != 0) {
         delete outputWrapper;
     }
-    if( masks != 0 ) {
+    if(masks != 0) {
         delete[] masks;
     }
-    if( output != 0 ) {
+    if(output != 0) {
         delete[] output;
     }
-    if( gradInputWrapper != 0 ) {
+    if(gradInputWrapper != 0) {
         delete gradInputWrapper;
     }
-    if( gradInput != 0 ) {
+    if(gradInput != 0) {
         delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    masks = new unsigned char[ getOutputSize() ];
-    maskWrapper = cl->wrap( getOutputSize(), masks );
-    output = new float[ getOutputSize() ];
-    outputWrapper = cl->wrap( getOutputSize(), output );
-    gradInput = new float[ previousLayer->getOutputSize() ];
-    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    masks = new unsigned char[ getOutputNumElements() ];
+    maskWrapper = cl->wrap(getOutputNumElements(), masks);
+    output = new float[ getOutputNumElements() ];
+    outputWrapper = cl->wrap(getOutputNumElements(), output);
+    gradInput = new float[ previousLayer->getOutputNumElements() ];
+    gradInputWrapper = cl->wrap(previousLayer->getOutputNumElements(), gradInput);
     gradInputWrapper->createOnDevice();
 }
-VIRTUAL int DropoutLayer::getOutputSize() {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int DropoutLayer::getOutputNumElements() {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL float *DropoutLayer::getOutput() {
-    if( outputWrapper->isDeviceDirty() ) {
+    if(outputWrapper->isDeviceDirty()) {
         outputWrapper->copyToHost();
 //        outputCopiedToHost = true;
     }
@@ -132,17 +132,17 @@ VIRTUAL bool DropoutLayer::needsBackProp() {
                                            // but anyway, we dont have any weights ourselves
                                            // so just depends on upstream
 }
-VIRTUAL int DropoutLayer::getOutputSize() const {
-//    int outputImageSize = inputImageSize / dropoutSize;
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int DropoutLayer::getOutputNumElements() const {
+//    int outputSize = inputSize / dropoutSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
-VIRTUAL int DropoutLayer::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int DropoutLayer::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int DropoutLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int DropoutLayer::getPersistSize( int version ) const {
+VIRTUAL int DropoutLayer::getPersistSize(int version) const {
     return 0;
 }
 VIRTUAL bool DropoutLayer::providesGradInputWrapper() const {
@@ -164,14 +164,14 @@ VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
     return new LinearActivation();
 }
 //VIRTUAL void DropoutLayer::generateMasks() {
-//    int totalInputLinearSize = getOutputSize();
+//    int totalInputLinearSize = getOutputNumElements();
 ////    int numBytes = (totalInputLinearSize+8-1)/8;
 ////    unsigned char *bitsField = new unsigned char[numBytes];
 //    int idx = 0;
 //    unsigned char thisByte = 0;
 //    int bitsPacked = 0;
-//    for( int i = 0; i < totalInputLinearSize; i++ ) {
-//        //double value = ( (int)random() % 10000 ) / 20000.0f + 0.5f;
+//    for(int i = 0; i < totalInputLinearSize; i++) {
+//        //double value = ((int)random() % 10000) / 20000.0f + 0.5f;
 //        // 1 means we pass value through, 0 means we drop
 //        // dropRatio is probability that mask value is 0 therefore
 //        // so higher dropRatio => more likely to be 0
@@ -180,7 +180,7 @@ VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
 //        thisByte <<= 1;
 //        thisByte |= bit;
 //        bitsPacked++;
-//        if( bitsPacked >= 8 ) {
+//        if(bitsPacked >= 8) {
 //            masks[idx] = thisByte;
 //            idx++;
 //            bitsPacked = 0;
@@ -188,32 +188,32 @@ VIRTUAL ActivationFunction const *DropoutLayer::getActivationFunction() {
 //    }
 //}
 VIRTUAL void DropoutLayer::generateMasks() {
-    int totalInputLinearSize = getOutputSize();
-    for( int i = 0; i < totalInputLinearSize; i++ ) {
+    int totalInputLinearSize = getOutputNumElements();
+    for(int i = 0; i < totalInputLinearSize; i++) {
         masks[i] = random->_uniform() <= dropRatio ? 0 : 1;
     }
 }
 VIRTUAL void DropoutLayer::forward() {
     CLWrapper *upstreamOutputWrapper = 0;
-    if( previousLayer->hasOutputWrapper() ) {
+    if(previousLayer->hasOutputWrapper()) {
         upstreamOutputWrapper = previousLayer->getOutputWrapper();
     } else {
         float *upstreamOutput = previousLayer->getOutput();
-        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
+        upstreamOutputWrapper = cl->wrap(previousLayer->getOutputNumElements(), upstreamOutput);
         upstreamOutputWrapper->copyToDevice();
     }
 
 //    cout << "training: " << training << endl;
-    if( training ) {
+    if(training) {
         // create new masks...
         generateMasks();
         maskWrapper->copyToDevice();
-        dropoutForwardImpl->forward( batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper );
+        dropoutForwardImpl->forward(batchSize, maskWrapper, upstreamOutputWrapper, outputWrapper);
     } else {
         // if not training, then simply skip the dropout bit, copy the buffers directly
-        multiplyBuffer->multiply( getOutputSize(), dropRatio, upstreamOutputWrapper, outputWrapper );
+        multiplyBuffer->multiply(getOutputNumElements(), dropRatio, upstreamOutputWrapper, outputWrapper);
     }
-    if( !previousLayer->hasOutputWrapper() ) {
+    if(!previousLayer->hasOutputWrapper()) {
         delete upstreamOutputWrapper;
     }
 }
@@ -222,15 +222,15 @@ VIRTUAL void DropoutLayer::backward() {
 
     CLWrapper *gradOutputWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesGradInputWrapper() ) {
+    if(nextLayer->providesGradInputWrapper()) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper = cl->wrap(getOutputNumElements(), nextLayer->getGradInput());
         gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
-    dropoutBackwardImpl->backward( batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper );
-    if( weOwnErrorsWrapper ) {
+    dropoutBackwardImpl->backward(batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper);
+    if(weOwnErrorsWrapper) {
         delete gradOutputWrapper;
     }
 }

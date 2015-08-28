@@ -7,11 +7,11 @@ cdef class TrainingContext:
 
 cdef class SGD: 
     cdef cDeepCL.SGD *thisptr
-    def __cinit__( self, EasyCL cl, learningRate, momentum=0.0 ):
+    def __cinit__( self, DeepCL cl, learningRate, momentum=0.0 ):
         self.thisptr = new cDeepCL.SGD(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
         self.thisptr.setMomentum(momentum)
-    def __dealloc(self):
+    def __dealloc__(self):
         del self.thisptr
     def setLearningRate(self, float learningRate):
         self.thisptr.setLearningRate(learningRate)
@@ -29,4 +29,3 @@ cdef class SGD:
         cdef cDeepCL.BatchResult result = self.thisptr.trainFromLabels(
             net.thisptr, context.thisptr, &inputdata[0], &labels[0])
         return ( result.getLoss(), result.getNumRight() )
-

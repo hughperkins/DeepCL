@@ -23,17 +23,17 @@ public:
     float _scale;
     PUBLICAPI NormalizationLayerMaker() :
         _translate(0.0f),
-        _scale( 1.0f ) {
+        _scale(1.0f) {
     }
-//    NormalizationLayerMaker( float _translate, float _scale ) :
+//    NormalizationLayerMaker(float _translate, float _scale) :
 //        _translate(_translate),
-//        _scale( _scale ) {
+//        _scale(_scale) {
 //    }
-    PUBLICAPI NormalizationLayerMaker *translate( float _translate ) {
+    PUBLICAPI NormalizationLayerMaker *translate(float _translate) {
         this->_translate = _translate;
         return this;
     }
-    PUBLICAPI NormalizationLayerMaker *scale( float _scale ) {
+    PUBLICAPI NormalizationLayerMaker *scale(float _scale) {
         this->_scale = _scale;
         return this;
     }
@@ -42,9 +42,9 @@ public:
     }
     virtual NormalizationLayerMaker *clone() const {
         NormalizationLayerMaker *thisClone = new NormalizationLayerMaker();
-        memcpy( thisClone, this, sizeof( NormalizationLayerMaker ) );
+        memcpy(thisClone, this, sizeof(NormalizationLayerMaker) );
         return thisClone;
     }
-    virtual Layer *createLayer( Layer *previousLayer );
+    virtual Layer *createLayer(Layer *previousLayer);
 };
 

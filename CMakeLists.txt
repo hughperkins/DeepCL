@@ -13,12 +13,25 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-OPTION(LIBJPEG_AVAILABLE "Allows native loading of jpegs, via manifest file." ON)
-OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
-OPTION(PROTOTYPING "Only for devs." OFF)
-    mark_as_advanced( FORCE PROTOTYPING )
-OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
-    mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
+#OPTION(BUILD_PYTHON_WRAPPERS "Build Python wrappers.  Needs Python." ON)
+OPTION(BUILD_JPEG_SUPPORT "Allows native loading of jpegs, via manifest file." ON)
+OPTION(BUILD_INTERNAL_LUA "If using from Lua, set to 'OFF'" ON)
+OPTION(MAINTAINER_OPTIONS "Show maintainer options" OFF)
+
+if(MAINTAINER_OPTIONS)
+    OPTION(BUILD_PYTHON_WRAPPERS "Build python wrappers.  Maintainers only." OFF.)
+    OPTION(DEV_RUN_COG "DeepCL maintainers only, otherwise set to 'OFF'." OFF)
+    OPTION(PROTOTYPING "Only for devs." OFF)
+#    mark_as_advanced( FORCE PROTOTYPING )
+    OPTION(LIBPNGPP_AVAILABLE "Some toys/samples only." OFF)
+#    mark_as_advanced(FORCE LIBPNGPP_AVAILABLE)
+else()
+    unset(DEV_RUN_COG CACHE)
+    unset(DEV_RUN_CYTHON CACHE)
+    unset(BUILD_PYTHON_WRAPPERS CACHE)
+    unset(LIBPNGPP_AVAILABLE CACHE)
+    unset(PROTOTYPING CACHE)
+endif()
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   SET(CMAKE_INSTALL_PREFIX
@@ -27,9 +40,10 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 # remove old flags from the cache:
+unset(LIBJPEG_AVAILABLE CACHE)
+unset(PROVIDE_LUA_ENGINE CACHE)
 unset(BUILD_PYSWIG_WRAPPERS CACHE)
 unset(BUILD_LUA_WRAPPERS CACHE)
-unset(BUILD_PYTHON_WRAPPERS CACHE)
 unset(RUN_COG CACHE)
 unset(RUN_SWIG CACHE)
 unset(DEV_RUN_SWIG CACHE)
@@ -42,7 +56,7 @@ unset(LUA_INCLUDE_DIR CACHE)
 
 # SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
 
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 INCLUDE("${CMAKE_MODULE_PATH}/build_EasyCL.cmake")
 INCLUDE_DIRECTORIES(${EASYCL_INCLUDE_DIRS})
@@ -57,7 +71,6 @@ include_directories( src )
 include_directories( qlearning )
 
 if( ON_LINUX )
-#    target_link_libraries(EasyCL dl)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 endif()
 
@@ -65,7 +78,7 @@ if( ON_WINDOWS)
     link_libraries(winmm) # needed for timeGetTime
 endif()
 
-set(dirs activate batch clmath conv dropout fc forcebackprop input layer loaders
+set(dirs clblas activate batch clmath conv dropout fc forcebackprop input layer loaders
    loss net netdef normalize patches pooling trainers util weights qlearning
    )
 foreach(dir ${dirs})
@@ -75,6 +88,7 @@ foreach(dir ${dirs})
         set( deepcl_sources ${deepcl_sources} src/${dir}/${source})
     endforeach()
 endforeach()
+set(deepcl_sources ${deepcl_sources} src/DeepCL.cpp src/CppRuntimeBoundary.cpp)
 #message("deepcl_sources ${deepcl_sources}")
 
 #find_package(Lua51)
@@ -141,7 +155,7 @@ if( LIBPNGPP_AVAILABLE)
     target_link_libraries(deepcl_unittests ${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
-link_libraries(DeepCL)
+#link_libraries(DeepCL)
 
 if(DEV_RUN_COG)
     foreach( dir ${dirs} main)
@@ -149,7 +163,7 @@ if(DEV_RUN_COG)
     endforeach()
     add_custom_target(
         cog
-        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp
+        python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
     add_dependencies( DeepCL cog )
@@ -157,7 +171,9 @@ endif(DEV_RUN_COG)
 
 #ADD_DEPENDENCIES(DeepCL clBLAS)
 
-set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
+set( UNITTEST_SOURCES test/testClBlas.cpp
+ test/testDeepCL.cpp
+ test/testupdateweights.cpp test/testforward.cpp test/testfilehelper.cpp
  test/testsimpleconvolvenet.cpp test/testlogicaloperators.cpp 
  test/testbackward.cpp test/testsinglebatch.cpp 
  test/testpoolingforward.cpp test/testpoolingbackward.cpp test/testNorbLoader.cpp
@@ -173,6 +189,7 @@ set( UNITTEST_SOURCES test/testupdateweights.cpp test/testforward.cpp test/testf
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
     add_executable( mnist-to-jpegs test/mnist-to-jpegs.cpp src/util/stringhelper.cpp src/loaders/MnistLoader.cpp )
+    target_link_libraries(mnist-to-jpegs DeepCL)
 endif(LIBJPEG_AVAILABLE)
 
 add_executable( deepcl_train src/main/train.cpp src/util/stringhelper.cpp )
@@ -183,6 +200,10 @@ add_executable( prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp )
 add_executable( mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp )
 
+foreach(exe deepcl_train deepcl_predict cifar-to-mat prepare-norb mnist-to-floats mnist-to-pipe)
+    target_link_libraries(${exe} DeepCL)
+endforeach()
+
 #target_link_libraries( cifar-to-mat ${LUA_LIBRARIES} )
 
 if( LIBPNGPP_AVAILABLE)
@@ -190,6 +211,10 @@ if( LIBPNGPP_AVAILABLE)
     add_executable( testpatchextractor test/testPatchExtractor.cpp src/util/stringhelper.cpp src/patches/PatchExtractor.cpp )
     add_executable( testtranslator test/testTranslator.cpp src/util/stringhelper.cpp src/patches/Translator.cpp )
     add_executable( testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp )
+
+    foreach(exe testpatchextractor testtranslator testgenericloader)
+        target_link_libraries(${exe} DeepCL)
+    endforeach()
 endif(LIBPNGPP_AVAILABLE)
 
 if( ON_LINUX )
@@ -215,9 +240,17 @@ target_link_libraries( deepcl_unittests DeepCL )
 add_executable( testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc )
 target_link_libraries( testgtestsupp deepcl_gtest )
 
+if(BUILD_PYTHON_WRAPPERS)
+    add_subdirectory(python)
+#    add_dependencies(PyDeepCL DeepCL)
+#    target_link_libraries(PyDeepCL DeepCL)
+endif()
+
 INSTALL( DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h )
+INSTALL(PROGRAMS src/activate.sh DESTINATION bin)
+INSTALL(PROGRAMS src/activate.bat DESTINATION bin)
 #INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
-INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests
+INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib )

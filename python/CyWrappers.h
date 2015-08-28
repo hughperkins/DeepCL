@@ -6,8 +6,8 @@
 
 extern int exceptionRaised;
 extern std::string exceptionMessage;
-void raiseException( std::string message );
-void checkException( int *wasRaised, std::string *message );
+//void raiseException( std::string message );
+//void checkException( int *wasRaised, std::string *message );
 
 #include "batch/NetLearner.h"
 #include "trainers/SGD.h"

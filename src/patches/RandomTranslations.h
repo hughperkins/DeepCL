@@ -21,9 +21,9 @@ class RandomTranslations : public Layer {
 public:
     const int translateSize;
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
 
-    const int outputImageSize;
+    const int outputSize;
 
     float *output;
 
@@ -35,17 +35,17 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    RandomTranslations( Layer *previousLayer, RandomTranslationsMaker *maker );
+    RandomTranslations(Layer *previousLayer, RandomTranslationsMaker *maker);
     VIRTUAL ~RandomTranslations();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getOutputSize();
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL int getOutputNumElements();
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputSize() const;
-    VIRTUAL int getOutputImageSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL int getPersistSize(int version) const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL void forward();

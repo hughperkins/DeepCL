@@ -17,10 +17,10 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~BackwardGpuCached();
-    VIRTUAL void backward( int batchSize,
+    VIRTUAL void backward(int batchSize,
     CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *gradInputWrapper );
-    BackwardGpuCached( EasyCL *cl, LayerDimensions dim );
+    CLWrapper *gradInputWrapper);
+    BackwardGpuCached(EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

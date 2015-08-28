@@ -19,30 +19,30 @@ using namespace std;
 VIRTUAL AddBias::~AddBias() {
 }
 VIRTUAL void AddBias::forward(
-        int batchSize, int numFilters, int outputImageSize,
+        int batchSize, int numFilters, int outputSize,
         CLWrapper *outputWrapper,
         CLWrapper *biasWrapper
             ) {
     StatefulTimer::timeCheck("AddBias::forward begin");
 
-    kernel->in( batchSize * numFilters * outputImageSize * outputImageSize )
-        ->in( numFilters )
-        ->in( outputImageSize * outputImageSize )
-        ->inout( outputWrapper )->in( biasWrapper );
-    int globalSize = batchSize * numFilters * outputImageSize * outputImageSize;
+    kernel->in(batchSize * numFilters * outputSize * outputSize)
+        ->in(numFilters)
+        ->in(outputSize * outputSize)
+        ->inout(outputWrapper)->in(biasWrapper);
+    int globalSize = batchSize * numFilters * outputSize * outputSize;
     int workgroupSize = 64;
-    int numWorkgroups = ( globalSize + workgroupSize - 1 ) / workgroupSize;
-    kernel->run_1d( numWorkgroups * workgroupSize, workgroupSize );
+    int numWorkgroups = (globalSize + workgroupSize - 1) / workgroupSize;
+    kernel->run_1d(numWorkgroups * workgroupSize, workgroupSize);
     cl->finish();
 
     StatefulTimer::timeCheck("AddBias::forward after repeatedAdd");
 }
-AddBias::AddBias( EasyCL *cl ) :
-        cl( cl )
+AddBias::AddBias(EasyCL *cl) :
+        cl(cl)
             {
     string kernelName = "AddBias.per_element_add";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernel = cl->getKernel( kernelName );
+    if(cl->kernelExists(kernelName) ) {
+        this->kernel = cl->getKernel(kernelName);
         return;
     }
 
@@ -50,7 +50,7 @@ AddBias::AddBias( EasyCL *cl ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/per_element_add.cl", "repeated_add", 'options' )
+    // stringify.write_kernel2("kernel", "cl/per_element_add.cl", "repeated_add", 'options')
     // ]]]
     // generated using cog, from cl/per_element_add.cl:
     const char * kernelSource =  
@@ -60,9 +60,9 @@ AddBias::AddBias( EasyCL *cl ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "kernel void per_element_add( const int N, global float *target, global const float *source ) {\n" 
+    "kernel void per_element_add(const int N, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId];\n" 
@@ -70,26 +70,26 @@ AddBias::AddBias( EasyCL *cl ) :
     "\n" 
     "// adds source to target\n" 
     "// tiles source as necessary, according to tilingSize\n" 
-    "kernel void per_element_tiled_add( const int N, const int tilingSize, global float *target, global const float *source ) {\n" 
+    "kernel void per_element_tiled_add(const int N, const int tilingSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    target[globalId] += source[globalId % tilingSize];\n" 
     "}\n" 
     "\n" 
-    "kernel void repeated_add( const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source ) {\n" 
+    "kernel void repeated_add(const int N, const int sourceSize, const int repeatSize, global float *target, global const float *source) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
-    "    target[globalId] += source[ ( globalId / repeatSize ) % sourceSize ];\n" 
+    "    target[globalId] += source[ (globalId / repeatSize) % sourceSize ];\n" 
     "}\n" 
     "\n" 
     "";
     kernel = cl->buildKernelFromString( kernelSource, "repeated_add", options, "cl/per_element_add.cl" );
     // [[[end]]]
 
-    cl->storeKernel( kernelName, kernel, true );
+    cl->storeKernel(kernelName, kernel, true);
 }
 

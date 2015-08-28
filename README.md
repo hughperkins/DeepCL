@@ -76,34 +76,57 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n numepochs=20 multinet=6 learningrate=0.002`
    - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
 
-# Releases
+# Installation
 
-* Stable: here
-* Unstable/dev: please see [8.x](https://github.com/hughperkins/DeepCL/tree/8.x)
+## Native library installation
 
-Unstable/dev is working on adding im2col, which promises faster convolution for larger layers, ie layers 1 and 2 in [Soumith's benchmarks](https://github.com/soumith/convnet-benchmarks)
-
-# To install
-
-## Python
-
-* For python, please use [Python API](python/README.md), or use [pip](https://pypi.python.org/pypi/DeepCL)
-
-## Commandline tools, and c++ libraries
+This section installs the native libraries, and the command-line tools.  You always need to do this part, even if you will use the Python wrappers.
 
 ### Windows
 
-Pre-built binaries are available for Windows.  In order to use them you need:
-* An OpenCL driver for your GPU
-* A recent release with Windows binaries is [v5.5.0](https://github.com/hughperkins/DeepCL/releases/tag/v5.5.0) 
+#### Pre-requisites:
 
-### linux
+* OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed
+* Tested using Windows 7
 
-Pre-build binaries are available for linux.  In order to use them you need:
-* An OpenCL driver for your GPU
-* A recent release with linux binaries is [v5.5.0](https://github.com/hughperkins/DeepCL/releases/tag/v5.5.0) 
+#### Procedure:
 
-If the binaries dont work on your distribution, please [build from source](doc/Build.md)
+* Download latest binary zip file from http://deepcl.hughperkins.com/Downloads/
+* unzip it, which creates the `dist` folder
+* To use it:
+  * open a cmd
+  * run `call dist\bin\activate.bat` (adjusting the path appropriately for wherever you downloaded deepcl binaries to)
+  * now, eg try `deepcl_unittests`
+
+Note that you need to "activate" the installation each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
+
+### Linux
+
+#### Pre-requisites:
+
+* OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed (can check by running `clinfo`, which should show your desired GPU device)
+* Tested using Ubuntu 14.04 32-bit/64-bit
+
+#### Procedure:
+
+* Download latest tar file from http://deepcl.hughperkins.com/Downloads/
+* untar it, which creates the `dist` sub-folder
+* in a bash prompt, run `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
+* test by doing, from the same bash prompt, eg `deepcl_unittests`
+
+Note that you need to "activate" the installation each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
+
+## Python wrappers
+
+* make sure you already installed the native library, and "activate"d it, by doing `call dist\bin\activate.bat`, or `source dist/bin/activate.sh`
+* run `pip install --pre DeepCL`
+* test by doing `python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"`
+
+## To build from source
+
+Building from source is only needed if installing from binaries doesn't work for your configuration, or if you want to modify DeepCL.
+
+See [Build.md](doc/Build.md)
 
 ## What if it doesn't run?
 
@@ -137,11 +160,8 @@ Related projects
 ================
 
 * [kgsgo-dataset-preprocessor](https://github.com/hughperkins/kgsgo-dataset-preprocessor) Dataset based on kgsgo games; 33 million data points
-
-Credits
-=======
-
-* Tambet Matilsen has provided excellent suggestions and feedback on which functionalities to prioritize, and on how to make the website somewhat presentable
+* [cltorch](https://github.com/hughperkins/cltorch)
+* [clnn](https://github.com/hughperkins/clnn)
 
 License
 =======
@@ -151,6 +171,60 @@ License
 Recent changes
 ==============
 
+* Aug 28th:
+  * installation of 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (assumes 7-zip is installed, in default location, otherwise do the unzip by hand):
+```
+powershell Set-ExecutionPolicy unrestricted
+rem following command is like `wget` in linux:
+powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/deepcl-win32-v8.0.0rc8.zip', 'deepcl-win32-v8.0.0rc8.zip')
+rem following command is like `tar -xf` in linux:
+"c:\program files\7-Zip\7z.exe" x deepcl-win32-v8.0.0rc8.zip
+call dist\bin\activate.bat
+pip install --pre DeepCL
+python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
+```
+(last line is just to check works ok)
+  * merged 8.x branch to master, will release first version of 8.x shortly
+* Aug 26th: installation of 8.x from binaries on linux works now, by doing, eg on 64-bit Ubuntu 14.04:
+```
+mkdir 8.0.0rc4
+cd 8.0.0rc4
+wget http://deepcl.hughperkins.com/Downloads/deepcl-linux64-v8.0.0rc4.tar.bz2
+tar -xf deepcl-linux64-v8.0.0rc4.tar.bz2
+virtualenv env
+source env/bin/activate
+source dist/bin/activate.sh
+pip install --pre DeepCL
+python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
+```
+(last line is just to check works ok)
+* Aug 21st-24th:
+  * 8.x finally builds again on all supported configurations!
+    * ubuntu 14.04 32-bit Python 2.7
+    * ubuntu 14.04 32-bit Python 3.4
+    * ubuntu 14.04 64-bit Python 2.7
+    * ubuntu 14.04 64-bit Python 3.4
+    * visual studio 2010 32-bit python 2.7
+    * visual studio 2010 32-bit python 3.4
+    * visual studio 2010 64-bit python 2.7
+    * visual studio 2010 64-bit python 3.4
+* Aug 19th-20th:
+  * Python wrappers now built using a very thin setup.py layer, on top of the standard native DeepCL build
+* Aug 18th:
+  * added BackwardIm2Col layer, which uses im2col for backward propagation
+  * added BackpropWeightsIm2Col layer, which uses im2col for weight update
+  * added BackwardAuto layer, which automatically selects fastest Backward layer
+  * added BackpropWeightsAuto layer, which automatically selects faster weight update layer
+  * under the covers:
+    * created ClBlasHelper, to handle Gemm and Gemv
+    * factorized im2col into Im2Col class
+* week up to Aug 17th:
+  * added forward and backward im2col layer
+  * forward im2col automatically used during forward propagation, where appropriate
+  * backwards has yet to be integrated
+  * under the covers:
+    * added clBLAS
+    * migrated the Python build process to use cmake, rather than setup.py (whether this turns out to be good or bad is a bit up in the air for now)
 * June 22nd:
   * removed lua wrappers
   * if you want to use lua with OpenCL, please consider using [cltorch](http://github.com/hughperkins/cltorch) and [clnn](http://github.com/hughperkins/clnn)
@@ -158,5 +232,5 @@ Recent changes
 To get in contact
 =================
 
-There is a mailing list at http://lists.hughperkins.com/listinfo.cgi/deepcl-hughperkins.com for discussions, ideas, or just to say 'hi'.  You can also just create issues, in github, in the top right of this page.
+Just create an issues, in github, in the top right of this page.  Don't worry about whether you think the issue sounds silly or anything.  The more feedback the better!
 

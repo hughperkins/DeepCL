@@ -16,11 +16,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainerState *RmspropStateMaker::instance( EasyCL *cl, int numWeights ) {
-    RmspropState *state = new RmspropState( cl, numWeights );
+TrainerState *RmspropStateMaker::instance(EasyCL *cl, int numWeights) {
+    RmspropState *state = new RmspropState(cl, numWeights);
     return state;
 }
-VIRTUAL bool RmspropStateMaker::created( TrainerState *state ) {
+VIRTUAL bool RmspropStateMaker::created(TrainerState *state) {
     return dynamic_cast< RmspropState * >(state) != 0;
 }
 

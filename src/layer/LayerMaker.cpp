@@ -22,13 +22,13 @@
 
 using namespace std;
 
-Layer *SquareLossMaker::createLayer( Layer *previousLayer ) {
-    return new SquareLossLayer( previousLayer, this );
+Layer *SquareLossMaker::createLayer(Layer *previousLayer) {
+    return new SquareLossLayer(previousLayer, this);
 }
-Layer *CrossEntropyLossMaker::createLayer( Layer *previousLayer ) {
-    return new CrossEntropyLoss( previousLayer, this );
+Layer *CrossEntropyLossMaker::createLayer(Layer *previousLayer) {
+    return new CrossEntropyLoss(previousLayer, this);
 }
-Layer *SoftMaxMaker::createLayer( Layer *previousLayer ) {
-    return new SoftMaxLayer( previousLayer, this );
+Layer *SoftMaxMaker::createLayer(Layer *previousLayer) {
+    return new SoftMaxLayer(previousLayer, this);
 }
 

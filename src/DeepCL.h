@@ -37,3 +37,35 @@
 #include "loaders/GenericLoader.h"
 #include "loaders/GenericLoaderv2.h"
 
+#include "clblas/ClBlasInstance.h"
+
+#include "DeepCLDllExport.h"
+
+#define STATIC static
+#define VIRTUAL virtual
+
+class DeepCL_EXPORT DeepCL : public EasyCL {
+public:
+//    EasyCL *cl;
+    ClBlasInstance clBlasInstance;
+    
+    // [[[cog
+    // import cog_addheaders
+    // cog_addheaders.addv2()
+    // ]]]
+    // generated, using cog:
+
+    public:
+    DeepCL(cl_platform_id platformId, cl_device_id deviceId);
+    ~DeepCL();
+    void deleteMe();
+    STATIC DeepCL *createForFirstGpu();
+    STATIC DeepCL *createForFirstGpuOtherwiseCpu();
+    STATIC DeepCL *createForIndexedDevice(int device);
+    STATIC DeepCL *createForIndexedGpu(int gpu);
+    STATIC DeepCL *createForPlatformDeviceIndexes(int platformIndex, int deviceIndex);
+    STATIC DeepCL *createForPlatformDeviceIds(cl_platform_id platformId, cl_device_id deviceId);
+
+    // [[[end]]]
+};
+

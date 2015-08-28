@@ -25,7 +25,7 @@ VIRTUAL ForwardFc::~ForwardFc() {
     delete addBias;
     delete reduceSegments;
 }
-VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper ) {
+VIRTUAL void ForwardFc::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper) {
     StatefulTimer::timeCheck("ForwardFc::forward begin");
 
 //    const int maxWorkgroupSize = cl->getMaxWorkgroupSize();
@@ -36,38 +36,38 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
 
 //    const int output1Size = batchSize * dim.numFilters * dim.numInputPlanes * dim.filterSize;
     float *output1 = new float[ output1Size ];
-    CLWrapper *output1Wrapper = cl->wrap( output1Size, output1 );
+    CLWrapper *output1Wrapper = cl->wrap(output1Size, output1);
     output1Wrapper->createOnDevice();
 
 //    const int output2Size = batchSize * dim.numFilters * dim.numInputPlanes;
     float *output2 = new float[ output2Size ];
-    CLWrapper *output2Wrapper = cl->wrap( output2Size, output2 );
+    CLWrapper *output2Wrapper = cl->wrap(output2Size, output2);
     output2Wrapper->createOnDevice();
 
-    kernel1->in( batchSize );
-    kernel1->input( dataWrapper );
-    kernel1->input( weightsWrapper);
-    kernel1->output( output1Wrapper );
-    kernel1->localFloats( dim.inputImageSize );
-    kernel1->localFloats( dim.numFilters * dim.filterSize  );
+    kernel1->in(batchSize);
+    kernel1->input(dataWrapper);
+    kernel1->input(weightsWrapper);
+    kernel1->output(output1Wrapper);
+    kernel1->localFloats(dim.inputSize);
+    kernel1->localFloats(dim.numFilters * dim.filterSize  );
 
     int workgroupSize = dim.numFilters;
     // uncommenting next line causes out-of-bounds access currently:
-    workgroupSize = ( ( workgroupSize + 32 - 1 ) / 32 ) * 32; // round up to nearest 32
+    workgroupSize = (( workgroupSize + 32 - 1) / 32) * 32; // round up to nearest 32
     int numWorkgroups = dim.filterSize * dim.numInputPlanes;
 
-    kernel1->run_1d( workgroupSize * numWorkgroups, workgroupSize );
+    kernel1->run_1d(workgroupSize * numWorkgroups, workgroupSize);
     cl->finish();
     StatefulTimer::timeCheck("ForwardFc::forward after first kernel");
 
-    reduceSegments->reduce( output1Size, dim.filterSize, output1Wrapper, output2Wrapper );
-    reduceSegments->reduce( output2Size, dim.numInputPlanes, output2Wrapper, outputWrapper );
+    reduceSegments->reduce(output1Size, dim.filterSize, output1Wrapper, output2Wrapper);
+    reduceSegments->reduce(output2Size, dim.numInputPlanes, output2Wrapper, outputWrapper);
 
     // add bias...
-    if( dim.biased ) {
+    if(dim.biased) {
         addBias->forward(
-            batchSize, dim.numFilters, dim.outputImageSize,
-            outputWrapper, biasWrapper );
+            batchSize, dim.numFilters, dim.outputSize,
+            outputWrapper, biasWrapper);
     }
 
     delete output2Wrapper;
@@ -77,27 +77,27 @@ VIRTUAL void ForwardFc::forward( int batchSize, CLWrapper *dataWrapper, CLWrappe
     delete[] output1;
     StatefulTimer::timeCheck("ForwardFc::forward end");
 }
-ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
-        Forward( cl, dim )
+ForwardFc::ForwardFc(EasyCL *cl, LayerDimensions dim) :
+        Forward(cl, dim)
             {
 
-    if( dim.inputImageSize != dim.filterSize ) {
+    if(dim.inputSize != dim.filterSize) {
         throw runtime_error("For ForwardFc, filtersize and inputimagesize must be identical");
     }
-    if( dim.padZeros ) {
+    if(dim.padZeros) {
         throw runtime_error("For ForwardFc, padzeros must be disabled");
     }
 
-    this->addBias = new AddBias( cl );
-    this->reduceSegments = new ReduceSegments( cl );
+    this->addBias = new AddBias(cl);
+    this->reduceSegments = new ReduceSegments(cl);
 
     std::string options = "";
     options += dim.buildOptionsString();
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options' )
-    // # stringify.write_kernel2( "kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options' )
+    // stringify.write_kernel2("kernel1", "cl/forward_fc_wgperrow.cl", "forward_fc_workgroup_perrow", 'options')
+    // # stringify.write_kernel2("kernel_reduce", "cl/reduce_segments.cl", "reduce_segments", 'options')
     // ]]]
     // generated using cog, from cl/forward_fc_wgperrow.cl:
     const char * kernel1Source =  
@@ -107,11 +107,11 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "void copyLocal( local float *restrict target, global float const *restrict source, int N ) {\n" 
-    "    int numLoops = ( N + get_local_size(0) - 1 ) / get_local_size(0);\n" 
-    "    for( int loop = 0; loop < numLoops; loop++ ) {\n" 
+    "void copyLocal(local float *restrict target, global float const *restrict source, int N) {\n" 
+    "    int numLoops = (N + get_local_size(0) - 1) / get_local_size(0);\n" 
+    "    for (int loop = 0; loop < numLoops; loop++) {\n" 
     "        int offset = loop * get_local_size(0) + get_local_id(0);\n" 
-    "        if( offset < N ) {\n" 
+    "        if (offset < N) {\n" 
     "            target[offset] = source[offset];\n" 
     "        }\n" 
     "    }\n" 
@@ -144,15 +144,15 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "//   filtersize == inputimagesize (mandatory)\n" 
     "//   inputimagesize == 19\n" 
     "//   filtersize == 19\n" 
-    "//   outputImageSize == 1\n" 
+    "//   outputSize == 1\n" 
     "//   lots of outplanes/filters, hundreds, but less than max work groupsize, eg 350, 500, 361\n" 
     "//   lots of inplanes, eg 32-128\n" 
     "//   inputimagesize around 19, not too small\n" 
-    "#if (gFilterSize == gInputImageSize) && (gPadZeros == 0)\n" 
-    "void kernel forward_fc_workgroup_perrow( const int batchSize,\n" 
+    "#if (gFilterSize == gInputSize) && (gPadZeros == 0)\n" 
+    "void kernel forward_fc_workgroup_perrow(const int batchSize,\n" 
     "    global const float *images, global const float *filters,\n" 
     "    global float *output1,\n" 
-    "    local float *_imageRow, local float *_filterRows ) {\n" 
+    "    local float *_imageRow, local float *_filterRows) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "\n" 
     "    const int workgroupId = get_group_id(0);\n" 
@@ -170,32 +170,32 @@ ForwardFc::ForwardFc( EasyCL *cl, LayerDimensions dim ) :
     "        + inputPlaneId * gFilterSizeSquared\n" 
     "        + filterRowId * gFilterSize;\n" 
     "    local float *_threadFilterRow = _filterRows + localId * gFilterSize;\n" 
-    "    if( localId < gNumFilters ) {\n" 
-    "        for( int i = 0; i < gFilterSize; i++ ) {\n" 
+    "    if (localId < gNumFilters) {\n" 
+    "        for (int i = 0; i < gFilterSize; i++) {\n" 
     "            _threadFilterRow[i] = filterRow[i];\n" 
     "        }\n" 
     "    }\n" 
-    "    const int loopsPerExample = ( gInputImageSize + workgroupSize - 1 ) / workgroupSize;\n" 
+    "    const int loopsPerExample = (gInputSize + workgroupSize - 1) / workgroupSize;\n" 
     "    // now loop over examples...\n" 
-    "    for( int n = 0; n < batchSize; n++ ) {\n" 
+    "    for (int n = 0; n < batchSize; n++) {\n" 
     "        // copy down example row, which is global to all threads in workgroup\n" 
     "        // hopefully should be enough threads....\n" 
     "        // but we should check anyway really, since depends on number of filters configured,\n" 
     "        // not on relative size of filter and input image\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
-    "        copyLocal( _imageRow,  images\n" 
-    "            + ( ( n\n" 
-    "                * gNumInputPlanes + inputPlaneId )\n" 
-    "                * gInputImageSize + filterRowId )\n" 
-    "                * gInputImageSize,\n" 
-    "            gInputImageSize );\n" 
+    "        copyLocal(_imageRow,  images\n" 
+    "            + (( n\n" 
+    "                * gNumInputPlanes + inputPlaneId)\n" 
+    "                * gInputSize + filterRowId)\n" 
+    "                * gInputSize,\n" 
+    "            gInputSize);\n" 
     "        barrier(CLK_LOCAL_MEM_FENCE);\n" 
     "        // add up the values in our row...\n" 
     "        // note: dont activate yet, since need to reduce again\n" 
     "        // output structured as: [n][filter][inputplane][filterrow], need to reduce again after\n" 
-    "        if( localId < gNumFilters ) {\n" 
+    "        if (localId < gNumFilters) {\n" 
     "            float sum = 0;\n" 
-    "            for( int filterCol = 0; filterCol < gFilterSize; filterCol++ ) {\n" 
+    "            for (int filterCol = 0; filterCol < gFilterSize; filterCol++) {\n" 
     "                sum += _imageRow[ filterCol ] * _threadFilterRow[ filterCol ];\n" 
     "            }\n" 
     "            output1[ n * gNumInputPlanes * gNumFilters * gFilterSize\n" 

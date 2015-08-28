@@ -23,9 +23,9 @@ class ActivationMaker;
 class ActivationLayer : public Layer {
 public:
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
 
-    const int outputImageSize;
+    const int outputSize;
 
     ActivationFunction const *fn;
 
@@ -52,18 +52,18 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationLayer( EasyCL *cl, Layer *previousLayer, ActivationMaker *maker );
+    ActivationLayer(EasyCL *cl, Layer *previousLayer, ActivationMaker *maker);
     VIRTUAL ~ActivationLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL float getOutput( int n, int plane, int row, int col );
+    VIRTUAL float getOutput(int n, int plane, int row, int col);
     VIRTUAL void printOutput();
-    VIRTUAL void setBatchSize( int batchSize );
-    VIRTUAL int getOutputSize();
+    VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL int getOutputNumElements();
     VIRTUAL float *getOutput();
     VIRTUAL bool needsBackProp();
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
@@ -76,7 +76,7 @@ public:
     VIRTUAL void forward();
     VIRTUAL void backward();
     VIRTUAL std::string asString() const;
-    VIRTUAL int getPersistSize( int version ) const;
+    VIRTUAL int getPersistSize(int version) const;
 
     // [[[end]]]
 };

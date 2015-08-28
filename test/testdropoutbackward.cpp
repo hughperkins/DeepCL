@@ -33,7 +33,7 @@ TEST( testdropoutbackward, basic ) {
         2, -9, 2.1f,
         0, -1.1f, 3.5f
     };
-    int inputTotalSize = dropoutBackprop->getInputSize( batchSize );
+    int inputTotalSize = dropoutBackprop->getInputNumElements( batchSize );
     EXPECT_FLOAT_NEAR( batchSize * imageSize * imageSize, inputTotalSize );
     float *errorsForUpstream = new float[ inputTotalSize ];
 
@@ -77,12 +77,12 @@ TEST( testdropoutbackward, basic_2plane_batchsize2 ) {
         2, 
         9
     };
-    float *errorsForUpstream = new float[ dropoutBackprop->getInputSize( batchSize ) ];
+    float *errorsForUpstream = new float[ dropoutBackprop->getInputNumElements( batchSize ) ];
 
     dropoutBackprop->backward( batchSize, mask, errors, errorsForUpstream );
 
-//    float *expectedErrorsForUpstream = new float[ dropoutForward->getInputSize( batchSize ) ];
-//    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutForward->getInputSize( batchSize ) ];
+//    float *expectedErrorsForUpstream = new float[ dropoutForward->getInputNumElements( batchSize ) ];
+//    memset( expectedErrorsForUpstream, 0, sizeof(float) * dropoutForward->getInputNumElements( batchSize ) ];
     float expectedErrorsForUpstream[] = {
         3,
         5,
@@ -99,7 +99,7 @@ TEST( testdropoutbackward, basic_2plane_batchsize2 ) {
 }
 
 TEST( testdropoutbackward, compare_args ) {
-    int inputImageSize = 9;
+    int inputSize = 9;
     float dropRatio = 0.6f;
     int instance0 = 0;
     int instance1 = 1;
@@ -111,25 +111,25 @@ TEST( testdropoutbackward, compare_args ) {
     TestArgsParser::arg( "dropratio", &dropRatio );
 //    TestArgsParser::arg( "dropoutsize", &dropoutSize );
     TestArgsParser::arg( "numplanes", &numPlanes );
-    TestArgsParser::arg( "inputimagesize", &inputImageSize );
+    TestArgsParser::arg( "inputimagesize", &inputSize );
     TestArgsParser::arg( "instance0", &instance0 );
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
-    DropoutBackward *p0 = DropoutBackward::instanceSpecific( instance0, cl, numPlanes, inputImageSize, dropRatio );
-    DropoutBackward *p1 = DropoutBackward::instanceSpecific( instance1, cl, numPlanes, inputImageSize, dropRatio );
-    int outputImageSize = p1->outputImageSize;
-    int errorsSize = batchSize * outputImageSize * outputImageSize * numPlanes;
+    DropoutBackward *p0 = DropoutBackward::instanceSpecific( instance0, cl, numPlanes, inputSize, dropRatio );
+    DropoutBackward *p1 = DropoutBackward::instanceSpecific( instance1, cl, numPlanes, inputSize, dropRatio );
+    int outputSize = p1->outputSize;
+    int errorsSize = batchSize * outputSize * outputSize * numPlanes;
     float *errors = new float[ errorsSize ];
-    int inputSize = batchSize * inputImageSize * inputImageSize * numPlanes;
-    float *errorsForUpstream0 = new float[ inputSize ];
-    float *errorsForUpstream1 = new float[ inputSize ];
+    int inputNumElements = batchSize * inputSize * inputSize * numPlanes;
+    float *errorsForUpstream0 = new float[ inputNumElements ];
+    float *errorsForUpstream1 = new float[ inputNumElements ];
     
-    DropoutForward *forwardprop = DropoutForward::instanceSpecific( 0, cl, numPlanes, inputImageSize, dropRatio );
-    float *input = new float[inputSize];
+    DropoutForward *forwardprop = DropoutForward::instanceSpecific( 0, cl, numPlanes, inputSize, dropRatio );
+    float *input = new float[inputNumElements];
     float *output = new float[errorsSize];
-    uchar *mask = new uchar[inputSize];
+    uchar *mask = new uchar[inputNumElements];
     float *errorsForUpstream[2];
     errorsForUpstream[0] = errorsForUpstream0;
     errorsForUpstream[1] = errorsForUpstream1;
@@ -141,8 +141,8 @@ TEST( testdropoutbackward, compare_args ) {
         // easiest way to select valid selectors might be to just forwardforward first?
 
         WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputSize, -0.1f, 0.1f );
-        WeightRandomizer::randomizeInts( it, mask, inputSize, 0, 2 );    
+        WeightRandomizer::randomize( it, input, inputNumElements, -0.1f, 0.1f );
+        WeightRandomizer::randomizeInts( it, mask, inputNumElements, 0, 2 );    
         forwardprop->forward( batchSize, mask, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
@@ -150,7 +150,7 @@ TEST( testdropoutbackward, compare_args ) {
         }
         bool ok = true;
         int numErrors = 0;
-        for( int i = 0; i < inputSize; i++ ) {
+        for( int i = 0; i < inputNumElements; i++ ) {
             if( errorsForUpstream0[i] != errorsForUpstream1[i] ) {
                 cout << "diff: i=" << i << " " << errorsForUpstream0[i] << " != " << errorsForUpstream1[i] << endl;
                 ok = false;
@@ -199,9 +199,9 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
                      -1, -3.5f,
                     37.4f,5
     };
-    int outputSize = dropoutForward->getOutputSize( batchSize );
-    int *selectors = new int[outputSize];
-    float *output = new float[outputSize];
+    int outputNumElements = dropoutForward->getOutputNumElements( batchSize );
+    int *selectors = new int[outputNumElements];
+    float *output = new float[outputNumElements];
 
     dropoutForward->forward( batchSize, data, selectors, output );
 

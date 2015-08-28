@@ -15,20 +15,20 @@
 class DeepCL_EXPORT ActivationFunction {
 public:
     virtual ~ActivationFunction() {}
-    virtual float calc( float value ) const { throw std::runtime_error("calc not implemented"); };
-    virtual float calcDerivative( float output ) const { throw std::runtime_error("calcDerivative not implemented"); };
+    virtual float calc(float value) const { throw std::runtime_error("calc not implemented"); };
+    virtual float calcDerivative(float output) const { throw std::runtime_error("calcDerivative not implemented"); };
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
     virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
     virtual std::string getDefineName() const { throw std::runtime_error("getDefineName not implemented"); } 
-    static ActivationFunction *fromName( std::string name );
+    static ActivationFunction *fromName(std::string name);
 };
 
 class TanhActivation : public ActivationFunction {
 public:
-    virtual float calc( float value ) const {
-        return tanh( value );
+    virtual float calc(float value) const {
+        return tanh(value);
     }
-    virtual float calcDerivative( float output ) const {
+    virtual float calcDerivative(float output) const {
         return 1 - output * output;
     }
     virtual float getTrue() const {
@@ -44,11 +44,11 @@ public:
 
 class ScaledTanhActivation : public ActivationFunction {
 public:
-    virtual float calc( float value ) const {
-        return 1.7159f * tanh( value * 0.66667f );
+    virtual float calc(float value) const {
+        return 1.7159f * tanh(value * 0.66667f);
     }
-    virtual float calcDerivative( float output ) const {
-        return 0.66667f * ( 1.7159f - 1 / 1.7159f * output * output );
+    virtual float calcDerivative(float output) const {
+        return 0.66667f * (1.7159f - 1 / 1.7159f * output * output);
     }
     virtual float getTrue() const {
         return 1.0f;
@@ -63,11 +63,11 @@ public:
 
 class SigmoidActivation : public ActivationFunction {
 public:
-    virtual float calc( float value ) const {
-        return 1.0f / ( 1.0f + exp( - value ) );
+    virtual float calc(float value) const {
+        return 1.0f / (1.0f + exp(- value) );
     }
-    virtual float calcDerivative( float output ) const {
-        return output * ( 1 - output );
+    virtual float calcDerivative(float output) const {
+        return output * (1 - output);
     }
     virtual float getTrue() const {
         return 0.8f;
@@ -82,10 +82,10 @@ public:
 
 class LinearActivation : public ActivationFunction {
 public:
-    virtual float calc( float value ) const {
+    virtual float calc(float value) const {
         return value;
     }
-    virtual float calcDerivative( float output ) const {
+    virtual float calcDerivative(float output) const {
         return 1;
     }
     virtual float getTrue() const {
@@ -101,10 +101,10 @@ public:
 
 class ReluActivation : public ActivationFunction {
 public:
-    virtual float calc( float value ) const {
+    virtual float calc(float value) const {
         return value > 0 ? value : 0;
     }
-    virtual float calcDerivative( float output ) const {
+    virtual float calcDerivative(float output) const {
         return output > 0 ? 1.0f : 0.0f;
     }
     virtual float getTrue() const {

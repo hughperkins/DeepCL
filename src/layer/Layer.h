@@ -38,9 +38,9 @@ public:
     PUBLICAPI virtual float * getOutput() = 0;
 //    virtual Layer *clone() = 0;
     /// \brief Get the size of array needed for persisting to/from an array
-    PUBLICAPI virtual int getPersistSize( int version ) const = 0;
+    PUBLICAPI virtual int getPersistSize(int version) const = 0;
     /// \brief Get the size of the activated output from this layer
-    PUBLICAPI virtual int getOutputSize() const = 0;
+    PUBLICAPI virtual int getOutputNumElements() const = 0;
     virtual std::string getClassName() const = 0;
 
     // [[[cog
@@ -48,11 +48,12 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PUBLICAPI Layer( Layer *previousLayer, LayerMaker2 *maker );
+    PUBLICAPI Layer(Layer *previousLayer, LayerMaker2 *maker);
     VIRTUAL ~Layer();
-    PUBLICAPI VIRTUAL void setTraining( bool training );
-    PUBLICAPI VIRTUAL void setBatchSize( int batchSize );
+    PUBLICAPI VIRTUAL void setTraining(bool training);
+    PUBLICAPI VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL bool providesGradInputWrapper() const;
+    VIRTUAL const char *getClassNameAsCharStar() const;
     VIRTUAL float *getGradInput();
     VIRTUAL CLWrapper *getGradWeightsWrapper();
     VIRTUAL CLWrapper *getGradBiasWrapper();
@@ -64,12 +65,12 @@ public:
     PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
-    PUBLICAPI VIRTUAL int getOutputImageSize() const;
+    PUBLICAPI VIRTUAL int getOutputSize() const;
     VIRTUAL void forward();
     VIRTUAL bool needsBackProp();
     VIRTUAL void print();
-    VIRTUAL void initWeights( float const*weights );
-    VIRTUAL void initBias( float const *bias );
+    VIRTUAL void initWeights(float const*weights);
+    VIRTUAL void initBias(float const *bias);
     int getLayerIndex();
     VIRTUAL void printWeights();
     VIRTUAL void printOutput();
@@ -80,21 +81,22 @@ public:
     PUBLICAPI VIRTUAL int getWeightsSize() const;
     PUBLICAPI VIRTUAL int getBiasSize() const;
     PUBLICAPI VIRTUAL int getPersistSize() const;
-    PUBLICAPI VIRTUAL void persistToArray( float *array );
-    PUBLICAPI VIRTUAL void persistToArray( int version, float *array );
-    PUBLICAPI VIRTUAL void unpersistFromArray( float const*array );
-    PUBLICAPI VIRTUAL void unpersistFromArray( int version, float const*array );
+    PUBLICAPI VIRTUAL void persistToArray(float *array);
+    PUBLICAPI VIRTUAL void persistToArray(int version, float *array);
+    PUBLICAPI VIRTUAL void unpersistFromArray(float const*array);
+    PUBLICAPI VIRTUAL void unpersistFromArray(int version, float const*array);
     VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL float const *getWeights() const;
     VIRTUAL float *getWeights();
     VIRTUAL float *getBias();
     VIRTUAL float const*getBias() const;
-    PUBLICAPI VIRTUAL std::string asString() const;
+    VIRTUAL std::string asString() const;
+    VIRTUAL const char *asNewCharStar() const;
     VIRTUAL bool needsTrainerState  () const;
-    VIRTUAL void setTrainerState( TrainerStateMaker *trainerMaker );
+    VIRTUAL void setTrainerState(TrainerStateMaker *trainerMaker);
     VIRTUAL TrainerState *getTrainerState();
     VIRTUAL TrainerState *getBiasTrainerState();
-    VIRTUAL void updateWeights( CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper );
+    VIRTUAL void updateWeights(CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper);
 
     // [[[end]]]
 

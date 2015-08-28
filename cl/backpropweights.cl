@@ -9,7 +9,7 @@
 
 // globalId: [outPlane][inputPlane][filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-void kernel backprop_floats( const float learningRateMultiplier,
+void kernel backprop_floats(const float learningRateMultiplier,
         const int batchSize, 
          global const float *gradOutput, global const float *images, 
         global float *gradWeights
@@ -18,7 +18,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
         #endif
  ) {
     int globalId = get_global_id(0);
-    if( globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize ) {
+    if (globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize) {
         return;
     }
 
@@ -36,22 +36,22 @@ void kernel backprop_floats( const float learningRateMultiplier,
 #ifdef BIASED
     float thisbiaschange = 0;
 #endif
-    for( int n = 0; n < batchSize; n++ ) {
-        for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {
+    for (int n = 0; n < batchSize; n++) {
+        for (int outRow = 0; outRow < gOutputSize; outRow++) {
             int upstreamRow = outRow - gMargin + filterRow;
-            for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
+            for (int outCol = 0; outCol < gOutputSize; outCol++) {
                 int upstreamCol = outCol - gMargin + filterCol;
-                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize
-                    && upstreamCol < gInputImageSize;
-                if( proceed ) {
-                    int resultIndex = ( ( n * gNumFilters 
-                              + outPlane ) * gOutputImageSize
-                              + outRow ) * gOutputImageSize
+                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
+                    && upstreamCol < gInputSize;
+                if (proceed) {
+                    int resultIndex = (( n * gNumFilters 
+                              + outPlane) * gOutputSize
+                              + outRow) * gOutputSize
                               + outCol;
                     float error = gradOutput[resultIndex];
-                    int upstreamDataIndex = ( ( n * gInputPlanes 
-                                     + upstreamPlane ) * gInputImageSize
-                                     + upstreamRow ) * gInputImageSize
+                    int upstreamDataIndex = (( n * gInputPlanes 
+                                     + upstreamPlane) * gInputSize
+                                     + upstreamRow) * gInputSize
                                      + upstreamCol;
                     float upstreamResult = images[upstreamDataIndex];
                     float thisimagethiswchange = upstreamResult * error;
@@ -68,7 +68,7 @@ void kernel backprop_floats( const float learningRateMultiplier,
     gradWeights[ globalId ] = learningRateMultiplier * thiswchange;
 #ifdef BIASED
     bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
-    if( writeBias ) {
+    if (writeBias) {
         gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
     }
 #endif

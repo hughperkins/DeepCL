@@ -21,9 +21,9 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~Forward1();
-    VIRTUAL void forward( int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-    CLWrapper *outputWrapper );
-    Forward1( EasyCL *cl, LayerDimensions dim );
+    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
+    CLWrapper *outputWrapper);
+    Forward1(EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

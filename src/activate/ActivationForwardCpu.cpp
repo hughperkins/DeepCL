@@ -20,35 +20,35 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-ActivationForwardCpu::ActivationForwardCpu( EasyCL *cl, int numPlanes, int inputImageSize, ActivationFunction const*fn ) :
-        ActivationForward( cl, numPlanes, inputImageSize, fn ) {
+ActivationForwardCpu::ActivationForwardCpu(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn) :
+        ActivationForward(cl, numPlanes, inputSize, fn) {
 }
-VIRTUAL void ActivationForwardCpu::forward( int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << "ActivationForwardCpu::forward( CLWrapper * )" << endl;
+VIRTUAL void ActivationForwardCpu::forward(int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper) {
+//    cout << "ActivationForwardCpu::forward(CLWrapper *)" << endl;
 
     inputWrapper->copyToHost();
 
-    float *input = reinterpret_cast<float *>( inputWrapper->getHostArray() );
-    float *output = new float[ getOutputSize( batchSize ) ];
+    float *input = reinterpret_cast<float *>(inputWrapper->getHostArray());
+    float *output = new float[ getOutputNumElements(batchSize) ];
 
-    forward( batchSize, input, output );
+    forward(batchSize, input, output);
 
-    float *outputHostArray = reinterpret_cast<float *>( outputWrapper->getHostArray() );
-    memcpy( outputHostArray, output, sizeof(float) * getOutputSize( batchSize ) );
+    float *outputHostArray = reinterpret_cast<float *>(outputWrapper->getHostArray());
+    memcpy(outputHostArray, output, sizeof(float) * getOutputNumElements(batchSize) );
 
     outputWrapper->copyToDevice();
 
     delete[] output;
 }
-VIRTUAL void ActivationForwardCpu::forward( int batchSize, float *input, float *output ) {
-//    float *output = new float[ getOutputSize( batchSize ) ];
-//    cout << "ActivationForwardCpu::forward( float * )" << endl;
-    StatefulTimer::instance()->timeCheck("ActivationForwardCpu::forward start" );
-    int totalLinearSize = batchSize * numPlanes * inputImageSize * inputImageSize;
-    for( int i = 0; i < totalLinearSize; i++ ) {
-        output[i] = fn->calc( input[i] );
+VIRTUAL void ActivationForwardCpu::forward(int batchSize, float *input, float *output) {
+//    float *output = new float[ getOutputNumElements(batchSize) ];
+//    cout << "ActivationForwardCpu::forward(float *)" << endl;
+    StatefulTimer::instance()->timeCheck("ActivationForwardCpu::forward start");
+    int totalLinearSize = batchSize * numPlanes * inputSize * inputSize;
+    for(int i = 0; i < totalLinearSize; i++) {
+        output[i] = fn->calc(input[i]);
     }
-    StatefulTimer::instance()->timeCheck("ActivationForwardCpu::forward end" );
+    StatefulTimer::instance()->timeCheck("ActivationForwardCpu::forward end");
 //    return output;
 }
 

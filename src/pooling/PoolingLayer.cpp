@@ -22,14 +22,14 @@ using namespace std;
 #undef STATIC
 #define STATIC
 
-PoolingLayer::PoolingLayer( EasyCL *cl, Layer *previousLayer, PoolingMaker *maker ) :
-        Layer( previousLayer, maker ),
-        padZeros( maker->_padZeros ),
-        numPlanes ( previousLayer->getOutputPlanes() ),
-        inputImageSize( previousLayer->getOutputImageSize() ),
-        poolingSize( maker->_poolingSize ),
-        outputImageSize( maker->_padZeros ? ( previousLayer->getOutputImageSize() + maker->_poolingSize - 1 ) / maker->_poolingSize : previousLayer->getOutputImageSize() / maker->_poolingSize ),
-        cl( cl ),
+PoolingLayer::PoolingLayer(EasyCL *cl, Layer *previousLayer, PoolingMaker *maker) :
+        Layer(previousLayer, maker),
+        padZeros(maker->_padZeros),
+        numPlanes (previousLayer->getOutputPlanes()),
+        inputSize(previousLayer->getOutputSize()),
+        poolingSize(maker->_poolingSize),
+        outputSize(maker->_padZeros ? (previousLayer->getOutputSize() + maker->_poolingSize - 1) / maker->_poolingSize : previousLayer->getOutputSize() / maker->_poolingSize),
+        cl(cl),
         output(0),
         selectors(0),
         gradInput(0),
@@ -40,81 +40,81 @@ PoolingLayer::PoolingLayer( EasyCL *cl, Layer *previousLayer, PoolingMaker *make
 //        gradInputCopiedToHost(false),
         batchSize(0),
         allocatedSize(0){
-    if( inputImageSize == 0 ){
+    if(inputSize == 0){
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": input image size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString(layerIndex) + ": input image size is 0");
     }
-    if( outputImageSize == 0 ){
+    if(outputSize == 0){
 //        maker->net->print();
-        throw runtime_error("Error: Pooling layer " + toString( layerIndex ) + ": output image size is 0" );
+        throw runtime_error("Error: Pooling layer " + toString(layerIndex) + ": output image size is 0");
     }
-    poolingForwardImpl = PoolingForward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
-    poolingBackpropImpl = PoolingBackward::instance( cl, padZeros, numPlanes, inputImageSize, poolingSize );
+    poolingForwardImpl = PoolingForward::instance(cl, padZeros, numPlanes, inputSize, poolingSize);
+    poolingBackpropImpl = PoolingBackward::instance(cl, padZeros, numPlanes, inputSize, poolingSize);
 }
 VIRTUAL PoolingLayer::~PoolingLayer() {
     delete poolingForwardImpl;
     delete poolingBackpropImpl;
-    if( outputWrapper != 0 ) {
+    if(outputWrapper != 0) {
         delete outputWrapper;
     }
-    if( output != 0 ) {
+    if(output != 0) {
         delete[] output;
     }
-    if( selectorsWrapper != 0 ) {
+    if(selectorsWrapper != 0) {
         delete selectorsWrapper;
     }
-    if( selectors != 0 ) {
+    if(selectors != 0) {
         delete[] selectors;
     }
-    if( gradInputWrapper != 0 ) {
+    if(gradInputWrapper != 0) {
         delete gradInputWrapper;
     }
-    if( gradInput != 0 ) {
+    if(gradInput != 0) {
         delete[] gradInput;
     }
 }
 VIRTUAL std::string PoolingLayer::getClassName() const {
     return "PoolingLayer";
 }
-VIRTUAL void PoolingLayer::setBatchSize( int batchSize ) {
+VIRTUAL void PoolingLayer::setBatchSize(int batchSize) {
 //    cout << "PoolingLayer::setBatchSize" << endl;
-    if( batchSize <= allocatedSize ) {
+    if(batchSize <= allocatedSize) {
         this->batchSize = batchSize;
         return;
     }
-    if( outputWrapper != 0 ) {
+    if(outputWrapper != 0) {
         delete outputWrapper;
     }
-    if( output != 0 ) {
+    if(output != 0) {
         delete[] output;
     }
-    if( selectorsWrapper != 0 ) {
+    if(selectorsWrapper != 0) {
         delete selectorsWrapper;
     }
-    if( selectors != 0 ) {
+    if(selectors != 0) {
         delete[] selectors;
     }
-    if( gradInputWrapper != 0 ) {
+    if(gradInputWrapper != 0) {
         delete gradInputWrapper;
     }
-    if( gradInput != 0 ) {
+    if(gradInput != 0) {
         delete[] gradInput;
     }
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
-    output = new float[ getOutputSize() ];
-    outputWrapper = cl->wrap( getOutputSize(), output );
-    selectors = new int[ getOutputSize() ];
-    selectorsWrapper = cl->wrap( getOutputSize(), selectors );
-    gradInput = new float[ previousLayer->getOutputSize() ];
-    gradInputWrapper = cl->wrap( previousLayer->getOutputSize(), gradInput );
+    output = new float[ getOutputNumElements() ];
+    outputWrapper = cl->wrap(getOutputNumElements(), output);
+    selectors = new int[ getOutputNumElements() ];
+    selectorsWrapper = cl->wrap(getOutputNumElements(), selectors);
+    gradInput = new float[ previousLayer->getOutputNumElements() ];
+    gradInputWrapper = cl->wrap(previousLayer->getOutputNumElements(), gradInput);
     gradInputWrapper->createOnDevice();
 }
-VIRTUAL int PoolingLayer::getOutputSize() {
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int PoolingLayer::getOutputNumElements() {
+    return batchSize * numPlanes * outputSize * outputSize;
 }
 VIRTUAL float *PoolingLayer::getOutput() {
-    if( outputWrapper->isDeviceDirty() ) {
+    if(outputWrapper->isDeviceDirty()) {
         outputWrapper->copyToHost();
 //        outputCopiedToHost = true;
     }
@@ -123,20 +123,20 @@ VIRTUAL float *PoolingLayer::getOutput() {
 VIRTUAL bool PoolingLayer::needsBackProp() {
     return previousLayer->needsBackProp();
 }
-VIRTUAL int PoolingLayer::getOutputSize() const {
-//    int outputImageSize = inputImageSize / poolingSize;
-    return batchSize * numPlanes * outputImageSize * outputImageSize;
+VIRTUAL int PoolingLayer::getOutputNumElements() const {
+//    int outputSize = inputSize / poolingSize;
+    return batchSize * numPlanes * outputSize * outputSize;
 }
-VIRTUAL int PoolingLayer::getOutputImageSize() const {
-    return outputImageSize;
+VIRTUAL int PoolingLayer::getOutputSize() const {
+    return outputSize;
 }
 VIRTUAL int PoolingLayer::getOutputCubeSize() const {
-    return numPlanes * outputImageSize * outputImageSize;
+    return numPlanes * outputSize * outputSize;
 }
 VIRTUAL int PoolingLayer::getOutputPlanes() const {
     return numPlanes;
 }
-VIRTUAL int PoolingLayer::getPersistSize( int version ) const {
+VIRTUAL int PoolingLayer::getPersistSize(int version) const {
     return 0;
 }
 VIRTUAL bool PoolingLayer::providesGradInputWrapper() const {
@@ -160,58 +160,58 @@ VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
 }
 VIRTUAL void PoolingLayer::forward() {
     CLWrapper *upstreamOutputWrapper = 0;
-    if( previousLayer->hasOutputWrapper() ) {
+    if(previousLayer->hasOutputWrapper()) {
         upstreamOutputWrapper = previousLayer->getOutputWrapper();
     } else {
         float *upstreamOutput = previousLayer->getOutput();
-        upstreamOutputWrapper = cl->wrap( previousLayer->getOutputSize(), upstreamOutput );
+        upstreamOutputWrapper = cl->wrap(previousLayer->getOutputNumElements(), upstreamOutput);
         upstreamOutputWrapper->copyToDevice();
     }
-    poolingForwardImpl->forward( batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper );
-    if( !previousLayer->hasOutputWrapper() ) {
+    poolingForwardImpl->forward(batchSize, upstreamOutputWrapper, selectorsWrapper, outputWrapper);
+    if(!previousLayer->hasOutputWrapper()) {
         delete upstreamOutputWrapper;
     }
 
 //    cout << "PoolingLayer::forward() selectors after forward: " << endl;
-//    for( int i = 0; i < outputImageSize; i++ ) {
-//        for( int j = 0; j < outputImageSize; j++ ) {
-//            cout << selectors[ i * outputImageSize + j ] << " ";
+//    for(int i = 0; i < outputSize; i++) {
+//        for(int j = 0; j < outputSize; j++) {
+//            cout << selectors[ i * outputSize + j ] << " ";
 //        }
 //        cout << endl;
 //    }
 
 //    cout << "PoolingLayer::forward() selectorsWrapper after forward: " << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
+//    PrintBuffer::printInts(cl, selectorsWrapper, outputSize, outputSize);
 }
 VIRTUAL void PoolingLayer::backward() {
     // have no weights to backprop to, just need to backprop the errors
 
     CLWrapper *gradOutputWrapper = 0;
     bool weOwnErrorsWrapper = false;
-    if( nextLayer->providesGradInputWrapper() ) {
+    if(nextLayer->providesGradInputWrapper()) {
         gradOutputWrapper = nextLayer->getGradInputWrapper();
     } else {
-        gradOutputWrapper = cl->wrap( getOutputSize(), nextLayer->getGradInput() );
+        gradOutputWrapper = cl->wrap(getOutputNumElements(), nextLayer->getGradInput());
         gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
 
 //    cout << "PoolingLayer::backward selectorsWrapper:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
+//    PrintBuffer::printInts(cl, selectorsWrapper, outputSize, outputSize);
 
-//    int *selectors = reinterpret_cast< int * >( selectorsWrapper->getHostArray() );
+//    int *selectors = reinterpret_cast< int * >(selectorsWrapper->getHostArray());
 //    cout << "PoolingLayer::backward selectors before copy to host:" << endl;
-//    for( int i = 0; i < outputImageSize; i++ ) {
-//        for( int j = 0; j < outputImageSize; j++ ) {
-//            cout << " " << selectors[i * outputImageSize + j];
+//    for(int i = 0; i < outputSize; i++) {
+//        for(int j = 0; j < outputSize; j++) {
+//            cout << " " << selectors[i * outputSize + j];
 //        }
 //        cout << endl;
 //    }
 //    selectorsWrapper->copyToHost();
 //    cout << "PoolingLayer::backward selectors after copy to host:" << endl;
-//    for( int i = 0; i < outputImageSize; i++ ) {
-//        for( int j = 0; j < outputImageSize; j++ ) {
-//            cout << " " << selectors[i * outputImageSize + j];
+//    for(int i = 0; i < outputSize; i++) {
+//        for(int j = 0; j < outputSize; j++) {
+//            cout << " " << selectors[i * outputSize + j];
 //        }
 //        cout << endl;
 //    }
@@ -219,15 +219,15 @@ VIRTUAL void PoolingLayer::backward() {
 
 //    selectorsWrapper->copyToHost();
 
-    poolingBackpropImpl->backward( batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper );
+    poolingBackpropImpl->backward(batchSize, gradOutputWrapper, selectorsWrapper, gradInputWrapper);
 
 //    gradInputWrapper->copyToHost();
-//    float *gradInput = reinterpret_cast< float * >( gradInputWrapper->getHostArray() );
+//    float *gradInput = reinterpret_cast< float * >(gradInputWrapper->getHostArray());
 //    cout << "gradInput:" << endl;
-//    for( int i = 0; i < inputImageSize; i++ ) {
-//        for( int j = 0; j < inputImageSize; j++ ) {
-////            cout << " " << gradInput[i * inputImageSize + j];
-//            if( gradInput[i * inputImageSize + j] != 0 ) {
+//    for(int i = 0; i < inputSize; i++) {
+//        for(int j = 0; j < inputSize; j++) {
+////            cout << " " << gradInput[i * inputSize + j];
+//            if(gradInput[i * inputSize + j] != 0) {
 //                cout << " *";
 //            } else {
 //                cout << " .";
@@ -236,12 +236,12 @@ VIRTUAL void PoolingLayer::backward() {
 //        cout << endl;
 //    }
 
-    if( weOwnErrorsWrapper ) {
+    if(weOwnErrorsWrapper) {
         delete gradOutputWrapper;
     }
 }
 VIRTUAL std::string PoolingLayer::asString() const {
-    return "PoolingLayer{ inputPlanes=" + toString(numPlanes) + " inputImageSize=" + toString(inputImageSize) + " poolingSize=" + toString( poolingSize ) + " }";
+    return "PoolingLayer{ inputPlanes=" + toString(numPlanes) + " inputSize=" + toString(inputSize) + " poolingSize=" + toString(poolingSize) + " }";
 }
 
 

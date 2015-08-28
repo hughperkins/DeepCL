@@ -32,13 +32,13 @@ class DeepCL_EXPORT GenericLoaderv2 {
     // generated, using cog:
 
     public:
-    GenericLoaderv2( std::string imagesFilepath );
-    void load( float *images, int *labels, int startN, int numExamples );
+    GenericLoaderv2(std::string imagesFilepath);
+    void load(float *images, int *labels, int startN, int numExamples);
     int getN();
     int getPlanes();
     int getImageSize();
-    void load( unsigned char *images, int *labels );
-    void load( unsigned char *images, int *labels, int startN, int numExamples );
+    void load(unsigned char *images, int *labels);
+    void load(unsigned char *images, int *labels, int startN, int numExamples);
 
     // [[[end]]]
 };

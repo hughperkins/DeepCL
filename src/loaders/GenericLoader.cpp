@@ -25,64 +25,68 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-PUBLIC PUBLICAPI STATIC void GenericLoader::getDimensions( std::string trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize ) {
-    char *headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 1024 );
+PUBLIC PUBLICAPI STATIC void GenericLoader::getDimensions(const char * trainFilepath, int *p_numExamples, int *p_numPlanes, int *p_imageSize) {
+    cout << "GenericLoader::getDimensions" << endl;
+    cout << "trainFilepath: " << trainFilepath << endl;
+    char *headerBytes = FileHelper::readBinaryChunk(trainFilepath, 0, 1024);
     char type[1025];
-    strncpy( type, headerBytes, 4 );
+    strncpy(type, headerBytes, 4);
     type[4] = 0;
-    unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
+    unsigned int *headerInts = reinterpret_cast< unsigned int *>(headerBytes);
 
-    if( string(type) == "mlv2" ) {
+    if(string(type) == "mlv2") {
 //        cout << "Loading as a Kgsv2 file" << endl;
-        Kgsv2Loader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
-    } else if( headerInts[0] == 0x1e3d4c55 ) {
+        Kgsv2Loader::getDimensions(trainFilepath, p_numExamples, p_numPlanes, p_imageSize);
+    } else if(headerInts[0] == 0x1e3d4c55) {
 //        cout << "Loading as a Norb mat file" << endl;
-        NorbLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
-    } else if( headerInts[0] == 0x03080000 ) {
-        MnistLoader::getDimensions( trainFilepath, p_numExamples, p_numPlanes, p_imageSize );
+        NorbLoader::getDimensions(trainFilepath, p_numExamples, p_numPlanes, p_imageSize);
+    } else if(headerInts[0] == 0x03080000) {
+        MnistLoader::getDimensions(trainFilepath, p_numExamples, p_numPlanes, p_imageSize);
     } else {
         cout << "headstring" << type << endl;
-        throw runtime_error("Filetype of " + trainFilepath + " not recognised" );
+        throw runtime_error(string("Filetype of ") + trainFilepath + " not recognised");
     }
 }
 
-PUBLIC PUBLICAPI STATIC void GenericLoader::load( std::string imagesFilePath, float *images, int *labels, int startN, int numExamples ) {
+PUBLIC PUBLICAPI STATIC void GenericLoader::load(const char * imagesFilePath, float *images, int *labels, int startN, int numExamples) {
 //    cout << "GenericLoader::load " << numExamples << endl;
+    cout << "GenericLoader::load " << endl;
+    cout << imagesFilePath << endl;
     int N, planes, size;
-    getDimensions( imagesFilePath, &N, &planes, &size );
+    getDimensions(imagesFilePath, &N, &planes, &size);
     unsigned char *ucImages = new unsigned char[ numExamples * planes * size * size ];
-    load( imagesFilePath, ucImages, labels, startN, numExamples );
+    load(imagesFilePath, ucImages, labels, startN, numExamples);
     int linearSize =  numExamples * planes * size * size;
 
-    for( int i = 0; i < linearSize; i++ ) {
+    for(int i = 0; i < linearSize; i++) {
         images[i] = ucImages[i];
     }
     delete[] ucImages;
 }
 
-PUBLIC STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *images, int *labels ) {
-    load( trainFilepath, images, labels, 0, 0 );
+PUBLIC STATIC void GenericLoader::load(const char * trainFilepath, unsigned char *images, int *labels) {
+    load(trainFilepath, images, labels, 0, 0);
 }
 // for now, if pass in 0 for labels, it wont read labels
-PUBLIC STATIC void GenericLoader::load( std::string trainFilepath, unsigned char *images, int *labels, int startN, int numExamples ) {
+PUBLIC STATIC void GenericLoader::load(const char * trainFilepath, unsigned char *images, int *labels, int startN, int numExamples) {
     StatefulTimer::timeCheck("GenericLoader::load start");
-    char *headerBytes = FileHelper::readBinaryChunk( trainFilepath, 0, 1024 );
+    char *headerBytes = FileHelper::readBinaryChunk(trainFilepath, 0, 1024);
     char type[1025];
-    strncpy( type, headerBytes, 4 );
+    strncpy(type, headerBytes, 4);
     type[4] = 0;
-    unsigned int *headerInts = reinterpret_cast< unsigned int *>( headerBytes );
+    unsigned int *headerInts = reinterpret_cast< unsigned int *>(headerBytes);
 
-    if( string(type) == "mlv2" ) {
+    if(string(type) == "mlv2") {
 //        cout << "Loading as a Kgsv2 file" << endl;
-        Kgsv2Loader::load( trainFilepath, images, labels, startN, numExamples );
-    } else if( headerInts[0] == 0x1e3d4c55 ) {
+        Kgsv2Loader::load(trainFilepath, images, labels, startN, numExamples);
+    } else if(headerInts[0] == 0x1e3d4c55) {
 //        cout << "Loading as a Norb mat file" << endl;
-        NorbLoader::load( trainFilepath, images, labels, startN, numExamples );
-    } else if( headerInts[0] == 0x03080000 ) {
-        MnistLoader::load( trainFilepath, images, labels, startN, numExamples );
+        NorbLoader::load(trainFilepath, images, labels, startN, numExamples);
+    } else if(headerInts[0] == 0x03080000) {
+        MnistLoader::load(trainFilepath, images, labels, startN, numExamples);
     } else {
         cout << "headstring" << type << endl;
-        throw runtime_error("Filetype of " + trainFilepath + " not recognised" );
+        throw runtime_error(string("Filetype of ") + trainFilepath + " not recognised");
     }
     StatefulTimer::timeCheck("GenericLoader::load end");
 }

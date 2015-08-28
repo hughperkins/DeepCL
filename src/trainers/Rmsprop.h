@@ -35,17 +35,17 @@ public:
     // generated, using cog:
     VIRTUAL ~Rmsprop();
     VIRTUAL std::string asString();
-    VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-    RmspropState *trainerState );
-    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, OutputData *outputData );
-    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, float const*expectedOutput );
-    VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
-    float const*input, int const*labels );
-    VIRTUAL void bindState( NeuralNet *net );
-    STATIC Rmsprop *instance( EasyCL *cl, float learningRate );
-    Rmsprop( EasyCL *cl );
+    VIRTUAL void updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    RmspropState *trainerState);
+    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    float const*input, OutputData *outputData);
+    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput);
+    VIRTUAL BatchResult trainFromLabels(NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels);
+    VIRTUAL void bindState(NeuralNet *net);
+    STATIC Rmsprop *instance(EasyCL *cl, float learningRate);
+    Rmsprop(EasyCL *cl);
 
     // [[[end]]]
 };

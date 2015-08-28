@@ -8,12 +8,14 @@ from cython cimport view
 from cpython cimport array as c_array
 from array import array
 import threading
-from libcpp.string cimport string
 from libcpp cimport bool
+
+cimport CppRuntimeBoundary
 
 cimport cDeepCL
 
-include "EasyCL.pyx"
+include "DeepCL.pyx"
+#include "DeepCL.pyx"
 include "SGD.pyx"
 include "Annealer.pyx"
 include "Nesterov.pyx"
@@ -28,13 +30,13 @@ include "NetLearner.pyx"
 include "NetDefToNet.pyx"
 include "QLearning.pyx"
 
-def checkException():
-    cdef int threwException = 0
-    cdef string message = ""
-    cDeepCL.checkException( &threwException, &message)
-    # print('threwException: ' + str(threwException) + ' ' + message ) 
-    if threwException:
-        raise RuntimeError(message)
+#def checkException():
+#    cdef int threwException = 0
+#    cdef string message = ""
+#    cDeepCL.checkException( &threwException, &message)
+#    # print('threwException: ' + str(threwException) + ' ' + message ) 
+#    if threwException:
+#        raise RuntimeError(message)
 
 def interruptableCall( function, args ):
     mythread = threading.Thread( target=function, args = args )

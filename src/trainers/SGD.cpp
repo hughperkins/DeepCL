@@ -28,28 +28,28 @@ using namespace std;
 
 VIRTUAL SGD::~SGD() {
 }
-VIRTUAL void SGD::setMomentum( float momentum ) {
+VIRTUAL void SGD::setMomentum(float momentum) {
     this->momentum = momentum;
 }
-VIRTUAL void SGD::setWeightDecay( float weightDecay ) {
+VIRTUAL void SGD::setWeightDecay(float weightDecay) {
     this->weightDecay = weightDecay;
 }
 VIRTUAL std::string SGD::asString() {
-    return "SGD{ learningRate=" + toString( learningRate ) + ", momentum=" + 
-        toString( momentum ) + " }";
+    return "SGD{ learningRate=" + toString(learningRate) + ", momentum=" + 
+        toString(momentum) + " }";
 }
-VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-        SGDState *trainerState ) {
+VIRTUAL void SGD::updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+        SGDState *trainerState) {
     int numWeights = trainerState->numWeights;
     CLWrapper *lastUpdateWrapper = trainerState->lastUpdateWrapper;
     float *gradWeightsCopy = new float[ numWeights ];
-    CLWrapper *gradWeightsCopyWrapper = cl->wrap( numWeights, gradWeightsCopy );
+    CLWrapper *gradWeightsCopyWrapper = cl->wrap(numWeights, gradWeightsCopy);
     gradWeightsCopyWrapper->createOnDevice();
 
-    CLMathWrapper lastUpdates_( lastUpdateWrapper );
-    CLMathWrapper gradWeights_( gradWeightsWrapper );
-    CLMathWrapper gradWeightsCopy_( gradWeightsCopyWrapper );
-    CLMathWrapper weights_( weightsWrapper );
+    CLMathWrapper lastUpdates_(lastUpdateWrapper);
+    CLMathWrapper gradWeights_(gradWeightsWrapper);
+    CLMathWrapper gradWeightsCopy_(gradWeightsCopyWrapper);
+    CLMathWrapper weights_(weightsWrapper);
 
     // following all happens on gpu, via clmathwrapper:
     lastUpdates_ *= momentum;
@@ -58,7 +58,7 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
     lastUpdates_ += gradWeightsCopy_;
     weights_ += lastUpdates_;
 
-    if( weightDecay > 0 ) {
+    if(weightDecay > 0) {
         // apply weight decay, by multiplying the weights by (1.0f - weightDecay)
         // so weightDecay == 0 means no decay; and weightDecay == 1.0f means
         // weights go immediately to zero
@@ -68,63 +68,63 @@ VIRTUAL void SGD::updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeigh
     delete gradWeightsCopyWrapper;
     delete[] gradWeightsCopy;
 }
-VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
-    float const*input, OutputData *outputData ) {
+VIRTUAL BatchResult SGD::train(NeuralNet *net, TrainingContext *context,
+    float const*input, OutputData *outputData) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
     // or loading data, or anything like that
-    bindState( net );
+    bindState(net);
 
-    net->forward( input );
-    int numRight = net->calcNumRight( outputData );
-    float loss = net->calcLoss( outputData );
-    net->backward( outputData );
+    net->forward(input);
+    int numRight = net->calcNumRight(outputData);
+    float loss = net->calcLoss(outputData);
+    net->backward(outputData);
 
     int numLayers = net->getNumLayers();
-    for( int layerIdx = numLayers - 2; layerIdx > 0; layerIdx-- ) {
-        Layer *layer = net->getLayer( layerIdx );
-        if( !layer->needsBackProp() ) {
+    for(int layerIdx = numLayers - 2; layerIdx > 0; layerIdx--) {
+        Layer *layer = net->getLayer(layerIdx);
+        if(!layer->needsBackProp()) {
             break;
         }
-        if( layer->needsTrainerState() ) {
-            updateWeights( layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
-                dynamic_cast< SGDState * >( layer->getTrainerState() ) );
-            if( layer->biased() ) {
-                updateWeights( layer->getBiasWrapper(), layer->getGradBiasWrapper(),
-                    dynamic_cast< SGDState * >( layer->getBiasTrainerState() ) );
+        if(layer->needsTrainerState()) {
+            updateWeights(layer->getWeightsWrapper(), layer->getGradWeightsWrapper(), 
+                dynamic_cast< SGDState * >(layer->getTrainerState()) );
+            if(layer->biased()) {
+                updateWeights(layer->getBiasWrapper(), layer->getGradBiasWrapper(),
+                    dynamic_cast< SGDState * >(layer->getBiasTrainerState()) );
             }
         }
     }
-    return BatchResult( loss, numRight );
+    return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult SGD::train( NeuralNet *net, TrainingContext *context,
-        float const*input, float const*expectedOutput ) {
-    ExpectedData expectedData( net, expectedOutput );
-    return this->train( net, context, input, &expectedData );
+VIRTUAL BatchResult SGD::train(NeuralNet *net, TrainingContext *context,
+        float const*input, float const*expectedOutput) {
+    ExpectedData expectedData(net, expectedOutput);
+    return this->train(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult SGD::trainFromLabels( NeuralNet *net, TrainingContext *context,
-        float const*input, int const*labels ) {
-    LabeledData labeledData( net, labels );
-    return this->train( net, context, input, &labeledData );
+VIRTUAL BatchResult SGD::trainFromLabels(NeuralNet *net, TrainingContext *context,
+        float const*input, int const*labels) {
+    LabeledData labeledData(net, labels);
+    return this->train(net, context, input, &labeledData);
 }
-VIRTUAL void SGD::bindState( NeuralNet *net ) {
+VIRTUAL void SGD::bindState(NeuralNet *net) {
     SGDStateMaker stateMaker;
-    this->_bindState( net, &stateMaker );
+    this->_bindState(net, &stateMaker);
 }
-STATIC SGD *SGD::instance( EasyCL *cl, float learningRate ) {
-    SGD *sgd = new SGD( cl );
-    sgd->setLearningRate( learningRate );
+STATIC SGD *SGD::instance(EasyCL *cl, float learningRate) {
+    SGD *sgd = new SGD(cl);
+    sgd->setLearningRate(learningRate);
     return sgd;
 }
-STATIC SGD *SGD::instance( EasyCL *cl, float learningRate, float momentum ) {
-    SGD *sgd = new SGD( cl );
-    sgd->setLearningRate( learningRate );
-    sgd->setMomentum( momentum );
+STATIC SGD *SGD::instance(EasyCL *cl, float learningRate, float momentum) {
+    SGD *sgd = new SGD(cl);
+    sgd->setLearningRate(learningRate);
+    sgd->setMomentum(momentum);
     return sgd;
 }
-SGD::SGD( EasyCL *cl ) :
-        Trainer( cl ),
-        momentum( 0.0f ),
-        weightDecay( 0.0f ) {
+SGD::SGD(EasyCL *cl) :
+        Trainer(cl),
+        momentum(0.0f),
+        weightDecay(0.0f) {
 }
 

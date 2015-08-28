@@ -10,14 +10,14 @@
 
 using namespace std;
 
-Layer *ConvolutionalMaker::createLayer( Layer *previousLayer ) {
-    if( _numFilters == 0 ) {
+Layer *ConvolutionalMaker::createLayer(Layer *previousLayer) {
+    if(_numFilters == 0) {
         throw runtime_error("Must provide ->numFilters(numFilters)");
     }
-    if( _filterSize == 0 ) {
+    if(_filterSize == 0) {
         throw runtime_error("Must provide ->filterSize(filterSize)");
     }
-    Layer *layer = new ConvolutionalLayer( cl, previousLayer, this );
+    Layer *layer = new ConvolutionalLayer(cl, previousLayer, this);
     return layer;
 }
 

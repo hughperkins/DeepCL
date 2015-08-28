@@ -26,37 +26,37 @@ using namespace std;
 VIRTUAL DropoutForwardGpuNaive::~DropoutForwardGpuNaive() {
     delete kernel;
 }
-VIRTUAL void DropoutForwardGpuNaive::forward( int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper ) {
-//    cout << StatefulTimer::instance()->prefix << "DropoutForwardGpuNaive::forward( CLWrapper * )" << endl;
-    StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward start" );
+VIRTUAL void DropoutForwardGpuNaive::forward(int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper) {
+//    cout << StatefulTimer::instance()->prefix << "DropoutForwardGpuNaive::forward(CLWrapper *)" << endl;
+    StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward start");
 
-    kernel  ->input( batchSize * numPlanes * outputImageSize * outputImageSize )
-            ->input( masksWrapper )
-            ->input( inputWrapper )
-            ->output( outputWrapper );
-    int globalSize = batchSize * numPlanes * outputImageSize * outputImageSize;
+    kernel  ->input(batchSize * numPlanes * outputSize * outputSize)
+            ->input(masksWrapper)
+            ->input(inputWrapper)
+            ->output(outputWrapper);
+    int globalSize = batchSize * numPlanes * outputSize * outputSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    globalSize = (( globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize;
 //    cout << "DropoutForwardGpuNaive::forward batchsize=" << batchSize << " g=" << globalSize << " w=" << workgroupsize << endl;
     kernel->run_1d(globalSize, workgroupsize);
     cl->finish();
 
 //    cout << "DropoutForwardGpuNaive::forward selectorswrapper:" << endl;
-//    PrintBuffer::printInts( cl, selectorsWrapper, outputImageSize, outputImageSize );
+//    PrintBuffer::printInts(cl, selectorsWrapper, outputSize, outputSize);
 
-    StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward end" );
+    StatefulTimer::instance()->timeCheck("DropoutForwardGpuNaive::forward end");
 }
-DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int inputImageSize, float dropRatio ) :
-        DropoutForward( cl, numPlanes, inputImageSize, dropRatio ) {
+DropoutForwardGpuNaive::DropoutForwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, float dropRatio) :
+        DropoutForward(cl, numPlanes, inputSize, dropRatio) {
     string options = "";
-    options += " -DgOutputImageSize=" + toString( outputImageSize );
-    options += " -DgOutputImageSizeSquared=" + toString( outputImageSize * outputImageSize );
-    options += " -DgInputImageSize=" + toString( inputImageSize );
-    options += " -DgInputImageSizeSquared=" + toString( inputImageSize * inputImageSize );
-    options += " -DgNumPlanes=" + toString( numPlanes );
+    options += " -DgOutputSize=" + toString(outputSize);
+    options += " -DgOutputSizeSquared=" + toString(outputSize * outputSize);
+    options += " -DgInputSize=" + toString(inputSize);
+    options += " -DgInputSizeSquared=" + toString(inputSize * inputSize);
+    options += " -DgNumPlanes=" + toString(numPlanes);
 //    float inverseDropRatio = 1.0f / dropRatio;
-//    string inverseDropRatioString = toString( inverseDropRatio );
-//    if( inverseDropRatioString.find( "." ) == string::npos ) {
+//    string inverseDropRatioString = toString(inverseDropRatio);
+//    if(inverseDropRatioString.find(".") == string::npos) {
 //        inverseDropRatioString += ".0f";
 //    } else {
 //        inverseDropRatioString += "f";
@@ -66,7 +66,7 @@ DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int i
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/dropout.cl", "forwardNaive", 'options' )
+    // stringify.write_kernel2("kernel", "cl/dropout.cl", "forwardNaive", 'options')
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
@@ -80,9 +80,9 @@ DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int i
     "        const int N,\n" 
     "        global const unsigned char *mask,\n" 
     "        global const float *input,\n" 
-    "        global float *output ) {\n" 
+    "        global float *output) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
@@ -94,7 +94,7 @@ DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int i
     "        global const float *gradOutput,\n" 
     "        global float *output) {\n" 
     "    const int globalId = get_global_id(0);\n" 
-    "    if( globalId >= N ) {\n" 
+    "    if (globalId >= N) {\n" 
     "        return;\n" 
     "    }\n" 
     "    output[globalId] = mask[globalId] == 1 ? gradOutput[globalId] : 0.0f;\n" 
@@ -103,6 +103,6 @@ DropoutForwardGpuNaive::DropoutForwardGpuNaive( EasyCL *cl, int numPlanes, int i
     "";
     kernel = cl->buildKernelFromString( kernelSource, "forwardNaive", options, "cl/dropout.cl" );
     // [[[end]]]
-//    kernel = cl->buildKernel( "dropout.cl", "forwardNaive", options );
+//    kernel = cl->buildKernel("dropout.cl", "forwardNaive", options);
 }
 

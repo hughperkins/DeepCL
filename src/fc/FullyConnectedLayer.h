@@ -28,21 +28,21 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    FullyConnectedLayer( EasyCL *cl, Layer *previousLayer, FullyConnectedMaker *maker );
+    FullyConnectedLayer(EasyCL *cl, Layer *previousLayer, FullyConnectedMaker *maker);
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL std::string getClassName() const;
-    VIRTUAL void setBatchSize( int batchSize );
+    VIRTUAL void setBatchSize(int batchSize);
     VIRTUAL int getOutputCubeSize() const;
-    VIRTUAL int getOutputImageSize() const;
+    VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
-    VIRTUAL int getPersistSize( int version ) const;
-    VIRTUAL void persistToArray( int version, float *array );
-    VIRTUAL void unpersistFromArray( int version, float const*array );
-    VIRTUAL void setWeights( float *weights, float *bias );
+    VIRTUAL int getPersistSize(int version) const;
+    VIRTUAL void persistToArray(int version, float *array);
+    VIRTUAL void unpersistFromArray(int version, float const*array);
+    VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL float * getWeights();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
-    VIRTUAL int getOutputSize() const;
+    VIRTUAL int getOutputNumElements() const;
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
     VIRTUAL CLWrapper *getGradWeightsWrapper();
@@ -60,7 +60,7 @@ public:
     VIRTUAL bool needsTrainerState() const;
     VIRTUAL TrainerState *getTrainerState();
     VIRTUAL TrainerState *getBiasTrainerState();
-    VIRTUAL void setTrainerState( TrainerStateMaker *TrainerStateMaker );
+    VIRTUAL void setTrainerState(TrainerStateMaker *TrainerStateMaker);
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

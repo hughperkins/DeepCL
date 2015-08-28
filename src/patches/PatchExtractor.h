@@ -8,6 +8,6 @@
 
 class PatchExtractor {
 public:
-    static void extractPatch( int n, int numPlanes, int imageSize, int patchSize, int patchRow, int patchCol, float *source, float *destination );
+    static void extractPatch(int n, int numPlanes, int imageSize, int patchSize, int patchRow, int patchCol, float *source, float *destination);
 };
 

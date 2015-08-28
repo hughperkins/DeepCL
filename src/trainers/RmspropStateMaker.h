@@ -24,8 +24,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    TrainerState *instance( EasyCL *cl, int numWeights );
-    VIRTUAL bool created( TrainerState *state );
+    TrainerState *instance(EasyCL *cl, int numWeights);
+    VIRTUAL bool created(TrainerState *state);
 
     // [[[end]]]
 };

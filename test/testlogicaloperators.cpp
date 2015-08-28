@@ -16,6 +16,7 @@ using namespace std;
 #include "EasyCL.h"
 #include "batch/EpochMaker.h"
 #include "layer/LayerMakers.h"
+#include "clblas/ClBlasInstance.h"
 
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;
@@ -125,6 +126,7 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     LogicalDataCreator ldc;
     ldc.applyAndGate();
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
     SGD *sgd = SGD::instance( cl, 4.0f, 0 );
@@ -148,6 +150,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     LogicalDataCreator ldc;
     ldc.applyAndGate();
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
@@ -177,6 +180,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     LogicalDataCreator ldc;
     ldc.applyOrGate();
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( SquareLossMaker::instance() );;
@@ -257,6 +261,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
     };
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
     net->addLayer( ActivationMaker::instance()->relu() );

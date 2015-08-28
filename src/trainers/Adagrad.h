@@ -35,19 +35,19 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~Adagrad();
-    VIRTUAL void setFudgeFactor( float fudgeFactor );
+    VIRTUAL void setFudgeFactor(float fudgeFactor);
     VIRTUAL std::string asString();
-    VIRTUAL void updateWeights( CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
-    AdagradState *trainerState );
-    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, OutputData *outputData );
-    VIRTUAL BatchResult train( NeuralNet *net, TrainingContext *context,
-    float const*input, float const*expectedOutput );
-    VIRTUAL BatchResult trainFromLabels( NeuralNet *net, TrainingContext *context,
-    float const*input, int const*labels );
-    VIRTUAL void bindState( NeuralNet *net );
-    STATIC Adagrad *instance( EasyCL *cl, float learningRate );
-    Adagrad( EasyCL *cl );
+    VIRTUAL void updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    AdagradState *trainerState);
+    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    float const*input, OutputData *outputData);
+    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    float const*input, float const*expectedOutput);
+    VIRTUAL BatchResult trainFromLabels(NeuralNet *net, TrainingContext *context,
+    float const*input, int const*labels);
+    VIRTUAL void bindState(NeuralNet *net);
+    STATIC Adagrad *instance(EasyCL *cl, float learningRate);
+    Adagrad(EasyCL *cl);
 
     // [[[end]]]
 };

@@ -1,3 +1,9 @@
+Im2Col.cpp
+BackpropWeightsIm2Col.cpp
+BackpropWeightsAuto.cpp
+BackwardAuto.cpp
+BackwardIm2Col.cpp
+ForwardIm2Col.cpp
 ReduceSegments.cpp
 AddBias.cpp
 BackpropWeights.cpp
@@ -21,3 +27,4 @@ Forward.cpp
 ForwardCpu.cpp
 ForwardFc.cpp
 LayerDimensions.cpp
+

@@ -16,11 +16,11 @@ using namespace std;
 #define STATIC
 #define VIRTUAL
 
-TrainerState *NesterovStateMaker::instance( EasyCL *cl, int numWeights ) {
-    NesterovState *sgd = new NesterovState( cl, numWeights );
+TrainerState *NesterovStateMaker::instance(EasyCL *cl, int numWeights) {
+    NesterovState *sgd = new NesterovState(cl, numWeights);
     return sgd;
 }
-VIRTUAL bool NesterovStateMaker::created( TrainerState *state ) {
+VIRTUAL bool NesterovStateMaker::created(TrainerState *state) {
     return dynamic_cast< NesterovState * >(state) != 0;
 }
 

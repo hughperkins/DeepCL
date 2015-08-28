@@ -20,24 +20,24 @@ public:
 
     const bool padZeros;
     const int numPlanes;
-    const int inputImageSize;
+    const int inputSize;
     const int poolingSize;
 
-    const int outputImageSize;
+    const int outputSize;
 //    const int poolingSizeSquared;
 
     virtual ~PoolingBackward() {}
-    inline int getInputIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * inputImageSize + row )
-            * inputImageSize + col;
+    inline int getInputIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * inputSize + row)
+            * inputSize + col;
     }
-    inline int getResultIndex( int n, int plane, int row, int col ) {
-        return ( ( n
-            * numPlanes + plane )
-            * outputImageSize + row )
-            * outputImageSize + col;
+    inline int getResultIndex(int n, int plane, int row, int col) {
+        return (( n
+            * numPlanes + plane)
+            * outputSize + row)
+            * outputSize + col;
     }
 
     // [[[cog
@@ -45,14 +45,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC PoolingBackward *instance( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    STATIC PoolingBackward *instanceForTest( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize);
-    STATIC PoolingBackward *instanceSpecific( int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    PoolingBackward( EasyCL *cl, bool padZeros, int numPlanes, int inputImageSize, int poolingSize );
-    VIRTUAL int getInputSize( int batchSize );
-    VIRTUAL int getOutputSize(int batchSize);
-    VIRTUAL void backward( int batchSize, float *gradOutput, int *selectors, float *gradInput );
-    VIRTUAL void backward( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper );
+    STATIC PoolingBackward *instance(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingBackward *instanceForTest(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingBackward *instanceSpecific(int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    PoolingBackward(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    VIRTUAL int getInputNumElements(int batchSize);
+    VIRTUAL int getOutputNumElements(int batchSize);
+    VIRTUAL void backward(int batchSize, float *gradOutput, int *selectors, float *gradInput);
+    VIRTUAL void backward(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper, CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

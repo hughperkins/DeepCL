@@ -20,38 +20,38 @@ VIRTUAL BackpropWeightsNaive::~BackpropWeightsNaive() {
 //    cout << "~backpropgradWeights2naive: deleting kernel" << endl;
     delete kernel;
 }
-VIRTUAL void BackpropWeightsNaive::calcGradWeights( int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper ) {
-    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start" );
+VIRTUAL void BackpropWeightsNaive::calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper) {
+    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive start");
 
-    const float learningMultiplier = learningRateToMultiplier( batchSize );
+    const float learningMultiplier = learningRateToMultiplier(batchSize);
 
     kernel
        ->in(learningMultiplier)
-       ->in( batchSize )
-       ->in( gradOutputWrapper )
-        ->in( imagesWrapper )
-       ->inout( gradWeightsWrapper );
-    if( dim.biased ) {
-        kernel->inout( gradBiasWrapper );
+       ->in(batchSize)
+       ->in(gradOutputWrapper)
+        ->in(imagesWrapper)
+       ->inout(gradWeightsWrapper);
+    if(dim.biased) {
+        kernel->inout(gradBiasWrapper);
     }
 
     int globalSize = dim.filtersSize;
     int workgroupsize = cl->getMaxWorkgroupSize();
-    globalSize = ( ( globalSize + workgroupsize - 1 ) / workgroupsize ) * workgroupsize;
+    globalSize = ((globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize;
     kernel->run_1d(globalSize, workgroupsize);
 
     cl->finish();
 
-    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive end" );
+    StatefulTimer::instance()->timeCheck("BackpropWeightsNaive end");
 }
-BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
-        BackpropWeights( cl, dim )
+BackpropWeightsNaive::BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim) :
+        BackpropWeights(cl, dim)
             {
     std::string options = dim.buildOptionsString();
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/backpropweights.cl", "backprop_floats", 'options' )
+    // stringify.write_kernel2("kernel", "cl/backpropweights.cl", "backprop_floats", 'options')
     // ]]]
     // generated using cog, from cl/backpropweights.cl:
     const char * kernelSource =  
@@ -66,7 +66,7 @@ BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
     "\n" 
     "// globalId: [outPlane][inputPlane][filterRow][filterCol]\n" 
     "// per-thread iteration: [n][outputRow][outputCol]\n" 
-    "void kernel backprop_floats( const float learningRateMultiplier,\n" 
+    "void kernel backprop_floats(const float learningRateMultiplier,\n" 
     "        const int batchSize,\n" 
     "         global const float *gradOutput, global const float *images,\n" 
     "        global float *gradWeights\n" 
@@ -75,7 +75,7 @@ BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
     "        #endif\n" 
     " ) {\n" 
     "    int globalId = get_global_id(0);\n" 
-    "    if( globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize ) {\n" 
+    "    if (globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
@@ -93,22 +93,22 @@ BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
     "#ifdef BIASED\n" 
     "    float thisbiaschange = 0;\n" 
     "#endif\n" 
-    "    for( int n = 0; n < batchSize; n++ ) {\n" 
-    "        for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {\n" 
+    "    for (int n = 0; n < batchSize; n++) {\n" 
+    "        for (int outRow = 0; outRow < gOutputSize; outRow++) {\n" 
     "            int upstreamRow = outRow - gMargin + filterRow;\n" 
-    "            for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {\n" 
+    "            for (int outCol = 0; outCol < gOutputSize; outCol++) {\n" 
     "                int upstreamCol = outCol - gMargin + filterCol;\n" 
-    "                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize\n" 
-    "                    && upstreamCol < gInputImageSize;\n" 
-    "                if( proceed ) {\n" 
-    "                    int resultIndex = ( ( n * gNumFilters\n" 
-    "                              + outPlane ) * gOutputImageSize\n" 
-    "                              + outRow ) * gOutputImageSize\n" 
+    "                bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize\n" 
+    "                    && upstreamCol < gInputSize;\n" 
+    "                if (proceed) {\n" 
+    "                    int resultIndex = (( n * gNumFilters\n" 
+    "                              + outPlane) * gOutputSize\n" 
+    "                              + outRow) * gOutputSize\n" 
     "                              + outCol;\n" 
     "                    float error = gradOutput[resultIndex];\n" 
-    "                    int upstreamDataIndex = ( ( n * gInputPlanes\n" 
-    "                                     + upstreamPlane ) * gInputImageSize\n" 
-    "                                     + upstreamRow ) * gInputImageSize\n" 
+    "                    int upstreamDataIndex = (( n * gInputPlanes\n" 
+    "                                     + upstreamPlane) * gInputSize\n" 
+    "                                     + upstreamRow) * gInputSize\n" 
     "                                     + upstreamCol;\n" 
     "                    float upstreamResult = images[upstreamDataIndex];\n" 
     "                    float thisimagethiswchange = upstreamResult * error;\n" 
@@ -125,7 +125,7 @@ BackpropWeightsNaive::BackpropWeightsNaive( EasyCL *cl, LayerDimensions dim ) :
     "    gradWeights[ globalId ] = learningRateMultiplier * thiswchange;\n" 
     "#ifdef BIASED\n" 
     "    bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;\n" 
-    "    if( writeBias ) {\n" 
+    "    if (writeBias) {\n" 
     "        gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;\n" 
     "    }\n" 
     "#endif\n" 

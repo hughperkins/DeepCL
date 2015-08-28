@@ -11,7 +11,7 @@
 #ifdef TANH
     #define ACTIVATION_FUNCTION(output) (tanh(output))
 #elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) ( 1.7159f * tanh( 0.66667f * output))
+    #define ACTIVATION_FUNCTION(output) (1.7159f * tanh(0.66667f * output))
 #elif SIGMOID
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
@@ -20,28 +20,28 @@
     #define ACTIVATION_FUNCTION(output) (output)
 #endif
 
-void kernel convolve_ints( global const int *p_imageSize, global const int *p_filterSize,
-      global const int *image, global const int *filter, global int *result ) {
+void kernel convolve_ints(global const int *p_imageSize, global const int *p_filterSize,
+      global const int *image, global const int *filter, global int *result) {
     int id = get_global_id(0);
     int imageSize = p_imageSize[0];
     int filterSize = p_filterSize[0];
-    int imageOffset = id / (imageSize * imageSize ) * (imageSize * imageSize );
-    int localid = id % (imageSize * imageSize );
+    int imageOffset = id / (imageSize * imageSize) * (imageSize * imageSize);
+    int localid = id % (imageSize * imageSize);
     int row = localid / imageSize;
     int col = localid % imageSize;
     int halfFilterSize = filterSize >> 1;
     int sum = 0;
-    int minm = max( -halfFilterSize, -row );
-    int maxm = min( halfFilterSize, imageSize - 1 - row );
-    int minn = max( -halfFilterSize, -col );
-    int maxn = min( halfFilterSize, imageSize - 1 - col );
+    int minm = max(-halfFilterSize, -row);
+    int maxm = min(halfFilterSize, imageSize - 1 - row);
+    int minn = max(-halfFilterSize, -col);
+    int maxn = min(halfFilterSize, imageSize - 1 - col);
     int m = minm;
-    while( m <= maxm ) {
-        int x = ( row + m );
+    while(m <= maxm) {
+        int x = (row + m);
         int ximage = imageOffset + x * imageSize;
         int filterrowoffset = (m+halfFilterSize) * filterSize + halfFilterSize;
         int n = minn;
-        while( n <= maxn ) {
+        while(n <= maxn) {
             int y = col + n;
             sum += image[ ximage + y] * filter[ filterrowoffset + n ];
             n++;
@@ -51,28 +51,28 @@ void kernel convolve_ints( global const int *p_imageSize, global const int *p_fi
     result[id] = sum;
 }
 
-void kernel convolve_floats( global const int *p_imageSize, global const int *p_filterSize,
-      global const float *image, global const float *filter, global float *result ) {
+void kernel convolve_floats(global const int *p_imageSize, global const int *p_filterSize,
+      global const float *image, global const float *filter, global float *result) {
     int id = get_global_id(0);
     int imageSize = p_imageSize[0];
     int filterSize = p_filterSize[0];
-    int imageOffset = id / (imageSize * imageSize ) * (imageSize * imageSize );
-    int localid = id % (imageSize * imageSize );
+    int imageOffset = id / (imageSize * imageSize) * (imageSize * imageSize);
+    int localid = id % (imageSize * imageSize);
     int row = localid / imageSize;
     int col = localid % imageSize;
     int halfFilterSize = filterSize >> 1;
     float sum = 0;
-    int minm = max( -halfFilterSize, -row );
-    int maxm = min( halfFilterSize, imageSize - 1 - row );
-    int minn = max( -halfFilterSize, -col );
-    int maxn = min( halfFilterSize, imageSize - 1 - col );
+    int minm = max(-halfFilterSize, -row);
+    int maxm = min(halfFilterSize, imageSize - 1 - row);
+    int minn = max(-halfFilterSize, -col);
+    int maxn = min(halfFilterSize, imageSize - 1 - col);
     int m = minm;
-    while( m <= maxm ) {
-        int x = ( row + m );
+    while(m <= maxm) {
+        int x = (row + m);
         int ximage = imageOffset + x * imageSize;
         int filterrowoffset = (m+halfFilterSize) * filterSize + halfFilterSize;
         int n = minn;
-        while( n <= maxn ) {
+        while(n <= maxn) {
             int y = col + n;
             sum += image[ ximage + y] * filter[ filterrowoffset + n ];
             n++;
@@ -82,9 +82,9 @@ void kernel convolve_floats( global const int *p_imageSize, global const int *p_
     result[id] = sum;
 }
 
-void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global const int *p_numFilters, 
+void kernel convolve_imagecubes_int(global const int *p_numInputPlanes, global const int *p_numFilters, 
       global const int *p_imageSize, global const int *p_filterSize,
-      global const int *images, global const int *filters, global int *output ) {
+      global const int *images, global const int *filters, global int *output) {
     int globalId = get_global_id(0);
 
     int numInputPlanes = p_numInputPlanes[0];
@@ -107,21 +107,21 @@ void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global 
 
     int halfFilterSize = filterSize >> 1;
     int sum = 0;
-    int minm = max( -halfFilterSize, -row );
-    int maxm = min( halfFilterSize, imageSize - 1 - row );
-    int minn = max( -halfFilterSize, -col );
-    int maxn = min( halfFilterSize, imageSize - 1 - col );
+    int minm = max(-halfFilterSize, -row);
+    int maxm = min(halfFilterSize, imageSize - 1 - row);
+    int minn = max(-halfFilterSize, -col);
+    int maxn = min(halfFilterSize, imageSize - 1 - col);
     int plane = 0;
-    while( plane < numInputPlanes ) {
+    while(plane < numInputPlanes) {
         int inputImageOffset = inputImage3Offset + plane * imageSizeSquared;
         int filterPlaneOffset = filterOffset + plane * filterSize * filterSize;
         int m = minm;
-        while( m <= maxm ) {
+        while(m <= maxm) {
             int y = row + m;
             int inputimagerowoffset = inputImageOffset + y * imageSize;
             int filterrowoffset = filterPlaneOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
-            while( n <= maxn ) {
+            while(n <= maxn) {
                 int x = col + n;
                 sum += images[ inputimagerowoffset + x] * filters[ filterrowoffset + n ];
                 n++;
@@ -159,7 +159,7 @@ void kernel convolve_imagecubes_int( global const int *p_numInputPlanes, global 
 void kernel convolve_imagecubes_float( 
       const int numInputPlanes, const int numFilters, 
       const int imageSize, const int filterSize,
-      global const float *images, global const float *filters, global float *output ) {
+      global const float *images, global const float *filters, global float *output) {
     int globalId = get_global_id(0);
 
     int imageSizeSquared = imageSize * imageSize;
@@ -180,20 +180,20 @@ void kernel convolve_imagecubes_float(
     float sum = 0;
     // m should vary from -halfFilterSize through 0 to halfFilterSize 
     // n too...
-    int minm = max( -halfFilterSize, -row );
-    int maxm = min( halfFilterSize, imageSize - 1 - row );
-    int minn = max( -halfFilterSize, -col );
-    int maxn = min( halfFilterSize, imageSize - 1 - col );
+    int minm = max(-halfFilterSize, -row);
+    int maxm = min(halfFilterSize, imageSize - 1 - row);
+    int minn = max(-halfFilterSize, -col);
+    int maxn = min(halfFilterSize, imageSize - 1 - col);
     int inputPlane = 0;
-    while( inputPlane < numInputPlanes ) {
+    while(inputPlane < numInputPlanes) {
         int inputImageOffset = inputImage3Offset + inputPlane * imageSizeSquared;
         int m = minm;
-        while( m <= maxm ) {
+        while(m <= maxm) {
             int y = row + m;
             int inputimagerowoffset = inputImageOffset + y * imageSize;
             int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
-            while( n <= maxn ) {
+            while(n <= maxn) {
                 int x = col + n;
                 sum += images[ inputimagerowoffset + x] * filters[ filterrowoffset + n ];
                 n++;
@@ -208,25 +208,25 @@ void kernel convolve_imagecubes_float(
 
 void kernel convolve_imagecubes_float_nopadzeros( 
       const int numInputPlanes, const int numFilters, 
-      const int inputImageSize, const int filterSize,
-      global const float *images, global const float *filters, global float *output ) {
+      const int inputSize, const int filterSize,
+      global const float *images, global const float *filters, global float *output) {
     int globalId = get_global_id(0);
 
-    int inputImageSizeSquared = inputImageSize * inputImageSize;
-    int outputImageSize = inputImageSize - filterSize + 1;
-    int outputImageSizeSquared = outputImageSize * outputImageSize;
+    int inputSizeSquared = inputSize * inputSize;
+    int outputSize = inputSize - filterSize + 1;
+    int outputSizeSquared = outputSize * outputSize;
 
-    int outputImage2Id = globalId / outputImageSizeSquared;
+    int outputImage2Id = globalId / outputSizeSquared;
     int filterId = outputImage2Id % numFilters;
     int inputImage3Id = outputImage2Id / numFilters;
 
     int filterOffset = filterId * filterSize * filterSize;
-    int inputImage3Offset = inputImage3Id * numInputPlanes * inputImageSizeSquared;
+    int inputImage3Offset = inputImage3Id * numInputPlanes * inputSizeSquared;
 
     // intraimage coords
-    int localid = globalId % outputImageSizeSquared;
-    int outputRow = localid / outputImageSize;
-    int outputCol = localid % outputImageSize;
+    int localid = globalId % outputSizeSquared;
+    int outputRow = localid / outputSize;
+    int outputCol = localid % outputSize;
 
     int halfFilterSize = filterSize >> 1;
     float sum = 0;
@@ -235,15 +235,15 @@ void kernel convolve_imagecubes_float_nopadzeros(
     int minn = -halfFilterSize;
     int maxn = halfFilterSize;
     int inputPlane = 0;
-    while( inputPlane < numInputPlanes ) {
-        int inputImageOffset = inputImage3Offset + inputPlane * inputImageSizeSquared;
+    while(inputPlane < numInputPlanes) {
+        int inputImageOffset = inputImage3Offset + inputPlane * inputSizeSquared;
         int m = minm;
-        while( m <= maxm ) {
+        while(m <= maxm) {
             int inputRow = outputRow + m + halfFilterSize;
-            int inputimagerowoffset = inputImageOffset + inputRow * inputImageSize;
+            int inputimagerowoffset = inputImageOffset + inputRow * inputSize;
             int filterrowoffset = filterOffset + (m+halfFilterSize) * filterSize + halfFilterSize;
             int n = minn;
-            while( n <= maxn ) {
+            while(n <= maxn) {
                 int inputCol = outputCol + n + halfFilterSize;
                 sum += images[ inputimagerowoffset + inputCol] * filters[ filterrowoffset + n ];
                 n++;

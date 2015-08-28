@@ -16,6 +16,7 @@
 #include "layer/LayerMakers.h"
 #include "batch/EpochMaker.h"
 #include "batch/Batcher2.h"
+#include "clblas/ClBlasInstance.h"
 
 #include "test/NetTestHelper.h"
 
@@ -39,6 +40,7 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
@@ -94,6 +96,7 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
@@ -173,6 +176,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     expectedOutput[6] = -0.5f;
     expectedOutput[7] = 0.5f;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased() );
@@ -227,6 +231,7 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1 ) {
     expectedOutput[2] = 0;
     expectedOutput[3] = 1;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
@@ -307,6 +312,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     expectedOutput[6] = 0;
     expectedOutput[7] = 1;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
@@ -386,6 +392,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     expectedOutput[6] = 0;
     expectedOutput[7] = 1;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(3)->insert();
@@ -441,6 +448,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
@@ -509,6 +517,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
@@ -586,13 +595,13 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
                     0,0,0,0,0,
                     1,1,1,1,1,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -600,6 +609,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
@@ -683,13 +693,13 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
                     1,1,1,1,1,
                     0,0,0,0,0,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2, 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -697,6 +707,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
@@ -801,13 +812,13 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
                     1,1,1,1,1,
                     0,0,0,0,0,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2, 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -815,6 +826,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
@@ -990,15 +1002,15 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
                     1,1,1,0,0,
                     0,0,0,0,0,
 };
-    int inputSize = imageSize * imageSize * numInPlanes * N;
-    for( int i = 0; i < inputSize; i++ ) {
+    int inputNumElements = imageSize * imageSize * numInPlanes * N;
+    for( int i = 0; i < inputNumElements; i++ ) {
         data[i] -= 0.5f;
     }
     int labels[] = { 0, 1, 2, 0, 1, 2,
                     0, 1, 2, 0, 1, 2,
                     0, 1, 2, 0, 1, 2 };
-    int outputSize = numOutPlanes * N;
-    float *expectedOutput = new float[outputSize];
+    int outputNumElements = numOutPlanes * N;
+    float *expectedOutput = new float[outputNumElements];
     for( int n = 0; n < N; n++ ) {
         for( int plane = 0; plane < numOutPlanes; plane++ ) {
             expectedOutput[ n * numOutPlanes + plane] = -0.5f;
@@ -1006,6 +1018,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
 //    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();

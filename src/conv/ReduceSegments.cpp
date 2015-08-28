@@ -26,27 +26,27 @@ VIRTUAL void ReduceSegments::reduce(
             ) {
     StatefulTimer::timeCheck("ReduceSegments::reduce begin");
 
-    if( totalLength % segmentLength != 0 ) {
+    if(totalLength % segmentLength != 0) {
         throw runtime_error("ReduceSegments: totalLength should be multiple of segmentLength");
     }
     const int numSegments = totalLength / segmentLength;
     kernel
-        ->in( numSegments )
-        ->in( segmentLength )
-        ->in( inputWrapper )
-        ->out( outputWrapper );
-    int numWorkgroups = ( numSegments + 64 - 1 ) / 64;
-    kernel->run_1d( numWorkgroups * 64, 64 );
+        ->in(numSegments)
+        ->in(segmentLength)
+        ->in(inputWrapper)
+        ->out(outputWrapper);
+    int numWorkgroups = (numSegments + 64 - 1) / 64;
+    kernel->run_1d(numWorkgroups * 64, 64);
     cl->finish();
 
     StatefulTimer::timeCheck("ReduceSegments::reduce end");
 }
-ReduceSegments::ReduceSegments( EasyCL *cl ) :
-        cl( cl )
+ReduceSegments::ReduceSegments(EasyCL *cl) :
+        cl(cl)
             {
     string kernelName = "ReduceSegments.reduce_segments";
-    if( cl->kernelExists( kernelName ) ) {
-        this->kernel = cl->getKernel( kernelName );
+    if(cl->kernelExists(kernelName) ) {
+        this->kernel = cl->getKernel(kernelName);
         return;
     }
 
@@ -54,7 +54,7 @@ ReduceSegments::ReduceSegments( EasyCL *cl ) :
 
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kernel", "cl/reduce_segments.cl", "reduce_segments", 'options' )
+    // stringify.write_kernel2("kernel", "cl/reduce_segments.cl", "reduce_segments", 'options')
     // ]]]
     // generated using cog, from cl/reduce_segments.cl:
     const char * kernelSource =  
@@ -64,18 +64,18 @@ ReduceSegments::ReduceSegments( EasyCL *cl ) :
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
     "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
     "\n" 
-    "kernel void reduce_segments( const int numSegments, const int segmentLength,\n" 
-    "        global float const *in, global float* out ) {\n" 
+    "kernel void reduce_segments(const int numSegments, const int segmentLength,\n" 
+    "        global float const *in, global float* out) {\n" 
     "    const int globalId = get_global_id(0);\n" 
     "    const int segmentId = globalId;\n" 
     "\n" 
-    "    if( segmentId >= numSegments ) {\n" 
+    "    if (segmentId >= numSegments) {\n" 
     "        return;\n" 
     "    }\n" 
     "\n" 
     "    float sum = 0;\n" 
     "    global const float *segment = in + segmentId * segmentLength;\n" 
-    "    for( int i = 0; i < segmentLength; i++ ) {\n" 
+    "    for (int i = 0; i < segmentLength; i++) {\n" 
     "        sum += segment[i];\n" 
     "    }\n" 
     "    out[segmentId] = sum;\n" 
@@ -86,6 +86,6 @@ ReduceSegments::ReduceSegments( EasyCL *cl ) :
     kernel = cl->buildKernelFromString( kernelSource, "reduce_segments", options, "cl/reduce_segments.cl" );
     // [[[end]]]
 
-    cl->storeKernel( kernelName, kernel, true );
+    cl->storeKernel(kernelName, kernel, true);
 }
 

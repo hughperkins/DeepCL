@@ -34,7 +34,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~RmspropState();
-    RmspropState( EasyCL *cl, int numWeights );
+    RmspropState(EasyCL *cl, int numWeights);
 
     // [[[end]]]
 };

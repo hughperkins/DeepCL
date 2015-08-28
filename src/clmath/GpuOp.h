@@ -25,12 +25,6 @@ public:
     virtual std::string getOperationString() = 0;
     virtual std::string getName() = 0;
 };
-class DeepCL_EXPORT Op1Equal : public Op1 {
-    std::string getOperationString() {
-        return "val_one";
-    }
-    std::string getName(){ return "Op1_Equal"; }
-};
 class DeepCL_EXPORT Op1Inv : public Op1 {
     std::string getOperationString() {
         return "1.0f / val_one";
@@ -39,7 +33,7 @@ class DeepCL_EXPORT Op1Inv : public Op1 {
 };
 class DeepCL_EXPORT Op1Sqrt : public Op1 {
     std::string getOperationString() {
-        return "native_sqrt( val_one )";
+        return "native_sqrt(val_one)";
     }
     std::string getName(){ return "Op1_Sqrt"; }
 };
@@ -54,6 +48,12 @@ class DeepCL_EXPORT Op2 {
 public:
     virtual std::string getOperationString() = 0;
     virtual std::string getName() = 0;
+};
+class DeepCL_EXPORT Op2Equal : public Op2 {
+    std::string getOperationString() {
+        return "val_two";
+    }
+    std::string getName(){ return "Op2_Equal"; }
 };
 class DeepCL_EXPORT Op2Add : public Op2 {
 public:
@@ -97,16 +97,16 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void apply2_inplace( int N, CLWrapper*destinationWrapper, float scalar, Op2 *op );
-    VIRTUAL void apply2_inplace( int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op );
-    VIRTUAL void apply2_outofplace( int N, CLWrapper*destinationWrapper, CLWrapper*one, CLWrapper *two, Op2 *op );
-    VIRTUAL void apply1_inplace( int N, CLWrapper*destinationWrapper, Op1 *op );
-    VIRTUAL void apply1_outofplace( int N, CLWrapper*destinationWrapper, CLWrapper*one, Op1 *op );
+    VIRTUAL void apply2_inplace(int N, CLWrapper*destinationWrapper, float scalar, Op2 *op);
+    VIRTUAL void apply2_inplace(int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op);
+    VIRTUAL void apply2_outofplace(int N, CLWrapper*destinationWrapper, CLWrapper*one, CLWrapper *two, Op2 *op);
+    VIRTUAL void apply1_inplace(int N, CLWrapper*destinationWrapper, Op1 *op);
+    VIRTUAL void apply1_outofplace(int N, CLWrapper*destinationWrapper, CLWrapper*one, Op1 *op);
     VIRTUAL ~GpuOp();
-    GpuOp( EasyCL *cl );
-    void buildKernel( std::string name, Op2 *op, bool inPlace );
-    void buildKernel( std::string name, Op1 *op, bool inPlace );
-    void buildKernelScalar( std::string name, Op2 *op, bool inPlace );
+    GpuOp(EasyCL *cl);
+    void buildKernel(std::string name, Op2 *op, bool inPlace);
+    void buildKernel(std::string name, Op1 *op, bool inPlace);
+    void buildKernelScalar(std::string name, Op2 *op, bool inPlace);
 
     // [[[end]]]
 };

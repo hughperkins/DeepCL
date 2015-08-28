@@ -14,8 +14,8 @@
 // eg plane f from each output: 128 * 28 * 28 * 4 = 401KB
 // plane i from each input: 128 * 28 * 28 * 4 = 401KB
 // plane i from filter f: 5 * 5 * 4 = 100 bytes...
-// plane i from all filters: 5 * 5 * 4 * 8 = 800 bytes (ok :-) )
-// all planes from all filters eg: 5 * 5 * 4 * 8 * 1 = 800 bytes (ok :-) )
+// plane i from all filters: 5 * 5 * 4 * 8 = 800 bytes (ok :-))
+// all planes from all filters eg: 5 * 5 * 4 * 8 * 1 = 800 bytes (ok :-))
 //
 // in forward, filter plane i of filter f:
 // convolves with plane i from each input cube
@@ -33,8 +33,8 @@
 // workgroupId: [outBlockId][inBlockId]
 // localId: [filterId][inputPlane][filterRow][filterCol]
 // per-thread iteration: [n][outputRow][outputCol]
-// local: errorimage: outputImageSize * outputImageSize
-//        imageimage: inputImageSize * inputImageSize
+// local: errorimage: outputSize * outputSize
+//        imageimage: inputSize * inputSize
 void kernel backprop_floats_withscratch_dobias( 
         const float learningRateMultiplier, const int batchSize, 
          global const float *gradOutput, global const float *images, 
@@ -64,44 +64,44 @@ void kernel backprop_floats_withscratch_dobias(
     const int filterCol = localLinearPos % gFilterSize;
 
 
-    for( int outPlane = 
+    for (int outPlane = 
     // weights:     [outPlane][upstreamPlane][filterRow][filterCol]
     //       aggregate over:  [outRow][outCol][n]
     float thiswchange = 0;
 #ifdef BIASED
     float thisbiaschange = 0;
 #endif
-    for( int n = 0; n < batchSize; n++ ) {
-        int upstreamImageGlobalOffset = ( n * gInputPlanes + upstreamPlane ) * gInputImageSizeSquared;
+    for (int n = 0; n < batchSize; n++) {
+        int upstreamImageGlobalOffset = (n * gInputPlanes + upstreamPlane) * gInputSizeSquared;
         // need to fetch the image, but it's bigger than us, so will need to loop...
-        int numLoopsForUpstream = ( gInputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
+        int numLoopsForUpstream = (gInputSizeSquared + workgroupSize - 1) / workgroupSize;
         barrier(CLK_LOCAL_MEM_FENCE);
-        for( int i = 0; i < numLoopsForUpstream; i++ ) {
+        for (int i = 0; i < numLoopsForUpstream; i++) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gInputImageSizeSquared ) {
+            if (thisOffset < gInputSizeSquared) {
                 _imageImage[thisOffset] = images[ upstreamImageGlobalOffset + thisOffset ];
             }
         }
-        int resultImageGlobalOffset = ( n * gNumFilters + outPlane ) * gOutputImageSizeSquared;
-        int numLoopsForOutput = ( gOutputImageSizeSquared + workgroupSize - 1 ) / workgroupSize;
-        for( int i = 0; i < numLoopsForOutput; i++ ) {
+        int resultImageGlobalOffset = (n * gNumFilters + outPlane) * gOutputSizeSquared;
+        int numLoopsForOutput = (gOutputSizeSquared + workgroupSize - 1) / workgroupSize;
+        for (int i = 0; i < numLoopsForOutput; i++) {
             int thisOffset = i * workgroupSize + localId;
-            if( thisOffset < gOutputImageSizeSquared ) {
+            if (thisOffset < gOutputSizeSquared) {
                 _errorImage[thisOffset ] = gradOutput[resultImageGlobalOffset + thisOffset];
             }
         }
         barrier(CLK_LOCAL_MEM_FENCE);
-        if( localId < gFilterSizeSquared ) {
-            for( int outRow = 0; outRow < gOutputImageSize; outRow++ ) {
+        if (localId < gFilterSizeSquared) {
+            for (int outRow = 0; outRow < gOutputSize; outRow++) {
                 int upstreamRow = outRow - gMargin + filterRow;
-                for( int outCol = 0; outCol < gOutputImageSize; outCol++ ) {
+                for (int outCol = 0; outCol < gOutputSize; outCol++) {
                     int upstreamCol = outCol - gMargin + filterCol;
-                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputImageSize
-                        && upstreamCol < gInputImageSize;
-                    if( proceed ) {
-                        int resultIndex = outRow * gOutputImageSize + outCol;
+                    bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
+                        && upstreamCol < gInputSize;
+                    if (proceed) {
+                        int resultIndex = outRow * gOutputSize + outCol;
                         float error = _errorImage[resultIndex];
-                        int upstreamDataIndex = upstreamRow * gInputImageSize + upstreamCol;
+                        int upstreamDataIndex = upstreamRow * gInputSize + upstreamCol;
                         float upstreamResult = _imageImage[upstreamDataIndex];
                         thiswchange += upstreamResult * error;
     #ifdef BIASED
@@ -112,12 +112,12 @@ void kernel backprop_floats_withscratch_dobias(
             }
         }
     }
-    if( localId < gFilterSizeSquared ) {
+    if (localId < gFilterSizeSquared) {
         weights[ workgroupId * gFilterSizeSquared + localId ] -= learningRateMultiplier * thiswchange;
     }
 #ifdef BIASED
     bool writeBias = upstreamPlane == 0 && localId == 0;
-    if( writeBias ) {
+    if (writeBias) {
         biasWeights[outPlane] -= learningRateMultiplier * thisbiaschange;
     }
 #endif
