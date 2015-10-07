@@ -1,13 +1,13 @@
 // Copyright Hugh Perkins 2015 hughperkins at gmail
 //
-// This Source Code Form is subject to the terms of the Mozilla Public License, 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// This Source Code Form is subject to the terms of the Mozilla Public License,
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // used to test loading jpegs from imagenet etc
 // this will take mnist dataset, and generate jpegs, in directories, one
 // directory per category, and an appropriate manifest file
-// when we read the images, we will assume all images have the same 
+// when we read the images, we will assume all images have the same
 // dimensions
 
 // note that the labels are part of the manifest, which will have the following
@@ -34,12 +34,12 @@ int main( int argc, char *argv[] ) {
     string mnistImagesFile = argv[1];
     string outDirectory = argv[2];
     int numExamples = atoi(argv[3]);
-    
+
     int N, planes, size;
-    GenericLoader::getDimensions( mnistImagesFile, &N, &planes, &size );
+    GenericLoader::getDimensions( mnistImagesFile.c_str(), &N, &planes, &size );
     float *imageData = new float[ N * planes * size * size ];
     int *labels = new int[N];
-    GenericLoader::load( mnistImagesFile, imageData, labels, 0, numExamples ); 
+    GenericLoader::load( mnistImagesFile.c_str(), imageData, labels, 0, numExamples );
 
     // now we've loaded the data, write it out in deepcl-jpeg-list-v1 format
     // we need to do the following:

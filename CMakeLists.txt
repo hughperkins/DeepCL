@@ -54,6 +54,11 @@ unset(SWIG_EXECUTABLE CACHE)
 unset(SWIG_VERSION CACHE)
 unset(LUA_INCLUDE_DIR CACHE)
 
+if(BUILD_JPEG_SUPPORT)
+  set(LIBJPEG_AVAILABLE 1)
+  add_definitions( -DLIBJPEG_FOUND)
+endif(BUILD_JPEG_SUPPORT)
+
 # SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dist" CACHE STRING "Installation directory." FORCE)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -251,7 +256,43 @@ INSTALL(PROGRAMS src/activate.sh DESTINATION bin)
 INSTALL(PROGRAMS src/activate.bat DESTINATION bin)
 #INSTALL( DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h )
 INSTALL( TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest
+    EXPORT DeepCLTargets
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib )
 
+# Generate the project config file.
+export(TARGETS DeepCL
+  FILE "${PROJECT_BINARY_DIR}/DeepCLTargets.cmake")
+export(PACKAGE DeepCL)
+
+if(WIN32 AND NOT CYGWIN)
+  set(DEF_INSTALL_CMAKE_DIR CMake)
+else()
+  set(DEF_INSTALL_CMAKE_DIR lib/cmake/DeepCL)
+endif()
+set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR})
+ 
+file(RELATIVE_PATH REL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_CMAKE_DIR}"
+   "${CMAKE_INSTALL_PREFIX}/include")
+set(CONF_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/src/"
+  "${PROJECT_SOURCE_DIR}/EasyCL/"
+  "${PROJECT_SOURCE_DIR}/EasyCL/thirdparty/clew/include")
+set(ABS_LIBRARY_FILE "${PROJECT_BINARY_DIR}/libDeepCL.so" 
+  "${PROJECT_BINARY_DIR}/EasyCL/src/EasyCL-external-build/libEasyCL.so")
+if(APPLE)
+  set(ABS_LIBRARY_FILE "${PROJECT_BINARY_DIR}/libDeepCL.dylib" 
+    "${PROJECT_BINARY_DIR}/EasyCL/src/EasyCL-external-build/libEasyCL.dylib")
+endif(APPLE)
+configure_file(DeepCLConfig.cmake.in
+  "${PROJECT_BINARY_DIR}/DeepCLConfig.cmake" @ONLY)
+set(CONF_INCLUDE_DIRS "\${DEEPCL_CMAKE_DIR}/${REL_INCLUDE_DIR}"
+  "\${DEEPCL_CMAKE_DIR}/${REL_INCLUDE_DIR}/deepcl"
+  "\${DEEPCL_CMAKE_DIR}/${REL_INCLUDE_DIR}/easycl")
+set(ABS_LIBRARY_FILE "DeepCL" "EasyCL")
+configure_file(DeepCLConfig.cmake.in
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/DeepCLConfig.cmake" @ONLY)
+
+install(FILES
+  "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/DeepCLConfig.cmake"
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
