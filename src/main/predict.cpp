@@ -1,7 +1,7 @@
 // Copyright Hugh Perkins (hughperkins at gmail), Josef Moudrik 2015
 //
-// This Source Code Form is subject to the terms of the Mozilla Public License, 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// This Source Code Form is subject to the terms of the Mozilla Public License,
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 
@@ -95,6 +95,7 @@ void go(Config config) {
     int numPlanes;
     int imageSize;
     int imageSizeCheck;
+    GenericLoaderv2* loader = NULL;
     if(config.inputFile == "") {
         int dims[3];
         cin.read(reinterpret_cast< char * >(dims), 3 * 4l);
@@ -105,7 +106,11 @@ void go(Config config) {
             throw std::runtime_error("imageSize doesnt match imageSizeCheck, image not square");
         }
     } else {
-        GenericLoader::getDimensions(config.inputFile.c_str(), &N, &numPlanes, &imageSize);
+        loader = new GenericLoaderv2(config.inputFile);
+        N = loader->getN();
+        numPlanes = loader->getPlanes();
+        imageSize = loader->getImageSize();
+        // GenericLoader::getDimensions(config.inputFile.c_str(), &N, &numPlanes, &imageSize);
         if(verbose) cout << "N " << N << " planes " << numPlanes << " size " << imageSize << endl;
     }
 
@@ -168,7 +173,7 @@ void go(Config config) {
 
     //
     // ## All is set up now
-    // 
+    //
 
     float *inputData = new float[ inputCubeSize * config.batchSize];
 
@@ -182,7 +187,7 @@ void go(Config config) {
         // refs:
         // http://www.thecodingforums.com/threads/binary-output-to-stdout-in-windows.317367/
         // http://www.cplusplus.com/forum/windows/77812/
-        _setmode(_fileno(stdout), _O_BINARY); 
+        _setmode(_fileno(stdout), _O_BINARY);
         #endif
         outFile = &cout;
     } else {
@@ -204,12 +209,13 @@ void go(Config config) {
     } else {
         // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
         // now, after modifying GenericLoader to have this new behavior
-        GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
+        // GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
+        loader->load(inputData, 0, n, config.batchSize);
     }
     while(more) {
         // no point in forwarding through all, so forward through each, one by one
         if(config.outputLayer < 0 || config.outputLayer > net->getNumLayers()) {
-            throw runtime_error("outputLayer should be the layer number of one of the layers in the network");    
+            throw runtime_error("outputLayer should be the layer number of one of the layers in the network");
         }
         dynamic_cast<InputLayer *>(net->getLayer(0))->in(inputData);
         for(int layerId = 0; layerId <= config.outputLayer; layerId++) {
@@ -256,7 +262,8 @@ void go(Config config) {
             more = !cin.eof();
         } else {
             if(n + config.batchSize < N) {
-                GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
+                // GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
+                loader->load(inputData, 0, n, config.batchSize);
             } else {
                 more = false;
                 if(n != N) {
@@ -268,6 +275,7 @@ void go(Config config) {
     if(config.outputFile != "") {
         delete outFile;
     }
+    if(loader != NULL) delete loader;
 
     delete[] inputData;
     delete[] labels;
@@ -301,8 +309,8 @@ void printUsage(char *argv[], Config config) {
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
     cout << "    weightsfile=[file to read weights from] (" << config.weightsFile << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
-    cout << "" << endl; 
-    cout << "unstable, might change within major version:" << endl; 
+    cout << "" << endl;
+    cout << "unstable, might change within major version:" << endl;
     cout << "    inputfile=[file to read inputs from, if empty, read stdin (default)] (" << config.inputFile << ")" << endl;
     cout << "    outputfile=[file to write outputs to, if empty, write to stdout] (" << config.outputFile << ")" << endl;
     cout << "    outputlayer=[layer to write output from, default -1 means: last layer] (" << config.outputLayer << ")" << endl;
@@ -315,7 +323,7 @@ int main(int argc, char *argv[]) {
     Config config;
     if(argc == 2 && (string(argv[1]) == "--help" || string(argv[1]) == "--?" || string(argv[1]) == "-?" || string(argv[1]) == "-h") ) {
         printUsage(argv, config);
-    } 
+    }
     for(int i = 1; i < argc; i++) {
         vector<string> splitkeyval = split(argv[i], "=");
         if(splitkeyval.size() != 2) {
