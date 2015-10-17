@@ -118,7 +118,7 @@ Note that you need to "activate" the installation each time you open a new cmd p
 
 * Download latest tar file from http://deepcl.hughperkins.com/Downloads/ (eg from v8.0.0rc8)
 * untar it, which creates the `dist` sub-folder
-* in a bash prompt, run `source dist\bin\activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
+* in a bash prompt, run `source dist/bin/activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
 * test by doing, from the same bash prompt, eg `deepcl_unittests`
 
 Note that you need to "activate" the installation each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
@@ -242,4 +242,3 @@ To get in contact
 =================
 
 Just create an issues, in github, in the top right of this page.  Don't worry about whether you think the issue sounds silly or anything.  The more feedback the better!
-
