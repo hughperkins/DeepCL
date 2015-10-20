@@ -577,6 +577,10 @@ TEST( testforward, compare_1_n_biased_nopad ) {
 }
 
 TEST( testforward, compare_1_n_biased_pad ) {
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+    delete cl;
+
     LayerDimensions dim;
     int batchSize = 4;
     int N = 4;
@@ -587,6 +591,9 @@ TEST( testforward, compare_1_n_biased_pad ) {
     for( int instance = 2; instance <= 7; instance++ ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
+        }
+        if( instance == 2 && 19 * 19 > maxWorkgroupSize ) {
+            continue;  // cant use this kernel on AMD
         }
         cout << "instance: " << instance << endl;
         compareSpecific( false, N, batchSize, dim, 1, instance );
