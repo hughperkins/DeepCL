@@ -69,6 +69,10 @@ VIRTUAL void BackwardGpuCached::backward(int batchSize,
 BackwardGpuCached::BackwardGpuCached(EasyCL *cl, LayerDimensions dim) :
         Backward(cl, dim)
             {
+    if(square(dim.inputSize) > cl->getMaxWorkgroupSize()) {
+        throw runtime_error("cannot use BackwardGpuCached, since inputSize * inputSize > maxworkgroupsize");
+    }
+
     std::string options = dim.buildOptionsString();
     options += ""; // " -D " + upstreamFn->getDefineName();
     // [[[cog
