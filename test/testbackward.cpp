@@ -795,6 +795,10 @@ TEST(SLOW_testbackward, compare_specific_args) {
 }
 
 TEST(testbackward, compare_1_n_kgsgo_32c5) {
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    int maxWorkgroupSize = cl->getMaxWorkgroupSize();
+    delete cl;
+
     int batchSize = 8;
     LayerDimensions dim;
     dim.setInputPlanes(32).setInputSize(19).setNumFilters(32).setFilterSize(5)
@@ -803,8 +807,13 @@ TEST(testbackward, compare_1_n_kgsgo_32c5) {
 //    ActivationFunction *fn = new ReluActivation();
 
     compareSpecific(0, 1, 1, batchSize, dim);
-    for(int i=2; i < Backward::getNumImplementations(); i++) {
-        compareSpecific(1, i, 1, batchSize, dim);
+    for(int instance=2; instance < Backward::getNumImplementations(); instance++) {
+        cout << "instance " << instance << endl;
+        dim.setInputSize(19);
+        if(instance == 2 && maxWorkgroupSize < 19 * 19) {
+            dim.setInputSize(15);
+        }
+        compareSpecific(1, instance, 1, batchSize, dim);
     }
 }
 

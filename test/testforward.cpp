@@ -592,8 +592,12 @@ TEST( testforward, compare_1_n_biased_pad ) {
         if( instance == 5 ) {
             continue; // forwardfc, cant use for inputimagesize != filtersize
         }
-        if( instance == 2 && 19 * 19 > maxWorkgroupSize ) {
-            continue;  // cant use this kernel on AMD
+        dim.setInputSize(19);
+        if(instance == 2 && maxWorkgroupSize < 19 * 19) {
+            dim.setInputSize(15);
+        }
+        if(instance == 3 && maxWorkgroupSize < 19 * 19) {
+            dim.setInputSize(15);
         }
         cout << "instance: " << instance << endl;
         compareSpecific( false, N, batchSize, dim, 1, instance );
