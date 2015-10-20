@@ -55,6 +55,10 @@ VIRTUAL void BackpropWeightsScratchLarge::calcGradWeights(int batchSize, CLWrapp
 BackpropWeightsScratchLarge::BackpropWeightsScratchLarge(EasyCL *cl, LayerDimensions dim) :
         BackpropWeights(cl, dim)
             {
+    if(square(dim.filterSize) > cl->getMaxWorkgroupSize()) {
+        throw runtime_error("cannot use BackpropWeightsScratchLarge, since filterSize * filterSize > maxworkgroupsize");
+    }
+
     // [[[cog
     // import stringify
     // # stringify.write_kernel("kernelSource", "ClConvolve.cl")

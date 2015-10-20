@@ -60,6 +60,10 @@ VIRTUAL void BackpropWeightsScratch::calcGradWeights(int batchSize, CLWrapper *g
 BackpropWeightsScratch::BackpropWeightsScratch(EasyCL *cl, LayerDimensions dim) :
         BackpropWeights(cl, dim)
             {
+    if(square(dim.filterSize) > cl->getMaxWorkgroupSize()) {
+        throw runtime_error("cannot use BackpropWeightsScratch, since filterSize * filterSize > maxworkgroupsize");
+    }
+
     std::string options = dim.buildOptionsString();
     // [[[cog
     // import stringify
