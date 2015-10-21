@@ -3,10 +3,10 @@
 
 #include "ScenarioImage.h"
 
-#include "stringhelper.h"
+#include "util/stringhelper.h"
 #include "array_helper.h"
 
-#include "NeuralNet.h"
+#include "net/NeuralNet.h"
 
 using namespace std;
 

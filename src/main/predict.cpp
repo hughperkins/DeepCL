@@ -309,8 +309,8 @@ void printUsage(char *argv[], Config config) {
     cout << "    gpuindex=[gpu device index; default value is gpu if present, cpu otw.] (" << config.gpuIndex << ")" << endl;
     cout << "    weightsfile=[file to read weights from] (" << config.weightsFile << ")" << endl;
     cout << "    batchsize=[batch size] (" << config.batchSize << ")" << endl;
-    cout << "" << endl;
-    cout << "unstable, might change within major version:" << endl;
+    cout << "" << endl; 
+    cout << "unstable, might change within major version:" << endl; 
     cout << "    inputfile=[file to read inputs from, if empty, read stdin (default)] (" << config.inputFile << ")" << endl;
     cout << "    outputfile=[file to write outputs to, if empty, write to stdout] (" << config.outputFile << ")" << endl;
     cout << "    outputlayer=[layer to write output from, default -1 means: last layer] (" << config.outputLayer << ")" << endl;
