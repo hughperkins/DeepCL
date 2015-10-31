@@ -195,8 +195,8 @@ rem following command is like `tar -xf` in linux:
 call dist\bin\activate.bat
 pip install --pre DeepCL
 python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
+# (last line is just to check works ok)
 ```
-(last line is just to check works ok)
   * merged 8.x branch to master, will release first version of 8.x shortly
 
 * Aug 26th: installation of 8.x from binaries on linux works now, by doing, eg on 64-bit Ubuntu 14.04:
