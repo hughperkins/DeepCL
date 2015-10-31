@@ -94,7 +94,11 @@ This section installs the native libraries, and the command-line tools.  You alw
 #### Pre-requisites:
 
 * OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed
-* Tested using Windows 7
+* Tested using Windows 7, and Visual Studio 2010, this is how the CI builds run
+* Other versions of VS are supported, just not explicitly CI tested (so please go ahead and log issues for any VS versions you are using):
+  * Visual Studio 2008 is implicitly tested by the Python 2.7 builds, which are built with Visual Studio 2008
+  * Visual Studio 2012 seems to be largely backwards compatible with Visual Studio 2010, no known specific build/run issues for DeepCL
+  * Visual Studio 2015 needs a newer version of clBLAS, which you can get by using branch `clblas-2.8.0` of DeepCL, see thread at [VS2015 Build Errors](https://github.com/hughperkins/DeepCL/issues/31#issuecomment-152466047).
 
 #### Procedure:
 
@@ -178,6 +182,8 @@ License
 Recent changes
 ==============
 
+* Week of 26th October:
+  * created branch `clblas-2.8.0`, which works with Visual Studio 2015.  It uses the latest 2.8.x release of clBLAS.
 * Aug 28th:
   * installation of 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (assumes 7-zip is installed, in default location, otherwise do the unzip by hand):
 ```
