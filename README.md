@@ -185,6 +185,7 @@ Recent changes
 * Week of 26th October:
   * created branch `clblas-2.8.0`, which works with Visual Studio 2015.  It uses the latest 2.8.x release of clBLAS.
 * Aug 28th:
+  * merged 8.x branch to master, will release first version of 8.x shortly
   * installation of 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (assumes 7-zip is installed, in default location, otherwise do the unzip by hand):
 ```
 powershell Set-ExecutionPolicy unrestricted
@@ -197,8 +198,6 @@ pip install --pre DeepCL
 python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
 # (last line is just to check works ok)
 ```
-  * merged 8.x branch to master, will release first version of 8.x shortly
-
 * Aug 26th: installation of 8.x from binaries on linux works now, by doing, eg on 64-bit Ubuntu 14.04:
 ```
 mkdir 8.0.0rc4
