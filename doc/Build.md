@@ -40,7 +40,9 @@
 ```bash
 git clone --recursive https://github.com/hughperkins/DeepCL.git
 cd DeepCL
-# if you need to use a specific branch, then choose that now, ie `git checkout some-branch-name`
+# if you need to use a specific branch, then choose that now, ie:
+#    git checkout some-branch-name
+#    git submodule update --recursive
 mkdir build
 cd build
 ccmake ..
@@ -107,7 +109,9 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 - in git, do `git clone --recursive https://github.com/hughperkins/DeepCL.git`
   - note: recently, moved EasyCL/thirdparty/clew from submodule to simply copying in the files
   - hopefully this makes new clones easier, but for now, if you already have a clone, when you next update, you might need to first remove the EasyCL/thirdparty/clew directory
-- if you need to use a specific branch, then choose that now, ie `git checkout some-branch-name`
+- if you need to use a specific branch, then choose that now, ie:
+  - `git checkout some-branch-name`, and then
+  - `git submodule update --recursive`
 - create a subdirectory `build` in the git cloned `DeepCL` directory
 - open cmake, point at the `DeepCL` directory, and set to build in the `build` subdirectory
   - `configure`, select 'visual studio 2010' (or as appropriate)
