@@ -214,7 +214,7 @@ python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"
 (last line is just to check works ok)
 
 * Aug 21st-24th:
-  * 8.x finally builds again on all supported configurations!
+  * 8.x finally builds again on all CI tested configurations!
     * ubuntu 14.04 32-bit Python 2.7
     * ubuntu 14.04 32-bit Python 3.4
     * ubuntu 14.04 64-bit Python 2.7
