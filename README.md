@@ -183,7 +183,7 @@ Recent changes
 ==============
 
 * Week of 26th October:
-  * created branch `clblas-2.8.0`, which works with Visual Studio 2015.  It uses the latest 2.8.x release of clBLAS.
+  * created branch `clblas-2.8.0`, which works with Visual Studio 2015.  It uses the latest 2.8.x release of clBLAS.  Thank you to jakakonda for helping to test this and get it working.
 * Aug 28th:
   * merged 8.x branch to master, will release first version of 8.x shortly
   * installation of 8.x from binaries on Windows works now, by doing, eg on 32-bit Windows 7, and assuming you already activated an appropriate python environment (assumes 7-zip is installed, in default location, otherwise do the unzip by hand):
