@@ -98,7 +98,7 @@ This section installs the native libraries, and the command-line tools.  You alw
 * Other versions of VS are supported, just not explicitly CI tested (so please go ahead and log issues for any VS versions you are using):
   * Visual Studio 2008 is implicitly tested by the Python 2.7 builds, which are built with Visual Studio 2008
   * Visual Studio 2012 seems to be largely backwards compatible with Visual Studio 2010, no known specific build/run issues for DeepCL
-  * Visual Studio 2015 needs a newer version of clBLAS, which you can get by using branch `clblas-2.8.0` of DeepCL, see thread at [VS2015 Build Errors](https://github.com/hughperkins/DeepCL/issues/31#issuecomment-152466047).
+  * Visual Studio 2015 needs a newer version of clBLAS, which you can get by using branch `clblas-2.8.0` of DeepCL.  You'll need to [build from source](doc/Build.md)
 
 #### Procedure:
 
