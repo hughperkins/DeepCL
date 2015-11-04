@@ -35,8 +35,12 @@ compile_options = []
 osfamily = platform.uname()[0]
 if osfamily == 'Windows':
     compile_options.append('/EHsc')
-elif osfamily in ['Linux', 'Darwin']:
+elif osfamily == 'Linux':
     compile_options.append('-std=c++0x')
+    compile_options.append('-g')
+elif osfamily == 'Darwin':
+    compile_options.append('-mmacosx-version-min=10.7')
+    compile_options.append('-stdlib=libc++')
     compile_options.append('-g')
 else:
     print('WARNING: your osfamily "{os}" not recognized.'.format(
