@@ -61,4 +61,10 @@ for epoch in range(numEpochs):
             labels[batch * batchSize:])
         net.forward(images[batch * batchSize * planes * size * size:])
         numRight += net.calcNumRight(labels[batch * batchSize:])
+        # test new getLabels() method:
+        if batch == 0:
+            lastLayer = net.getLastLayer()
+            predictions = lastLayer.getLabels()
+            print('predictions', predictions)
     print('num right: ' + str(numRight))
+

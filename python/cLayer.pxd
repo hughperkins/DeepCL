@@ -15,3 +15,8 @@ cdef extern from "layer/Layer.h":
         const char *asNewCharStar()
         const char *getClassNameAsCharStar()
 
+cdef extern from "loss/SoftMaxLayer.h":
+    cdef cppclass SoftMaxLayer(Layer):
+        int getBatchSize()
+        void getLabels(int *labels)
+

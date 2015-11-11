@@ -60,7 +60,9 @@ VIRTUAL void SoftMaxLayer::setBatchSize(int batchSize) {
     gradInput = new float[ previousLayer-> getOutputNumElements() ];
     allocatedSize = batchSize;
 }
-
+VIRTUAL int SoftMaxLayer::getBatchSize() {
+    return this->batchSize;
+}
 // need to calculate multinomial logistic /cross-entropy loss
 VIRTUAL float SoftMaxLayer::calcLossFromLabels(int const *labels) {
 //    cout << "softmaxlayer::calcloss" << endl;

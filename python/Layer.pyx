@@ -60,3 +60,20 @@ cdef class Layer:
     def getClassName(self):
         return self.thisptr.getClassNameAsCharStar()
 
+cdef class SoftMax(Layer):
+    def __cinit__(self):
+        pass
+
+    def getBatchSize(self):
+        cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
+        cdef int batchSize = cSoftMax.getBatchSize()
+        return batchSize        
+
+    def getLabels(self):
+        cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
+        cdef int batchSize = cSoftMax.getBatchSize()
+        cdef c_array.array labelsArray = array('i', [0] * batchSize)
+        cdef int[:] labelsArray_view = labelsArray
+        cSoftMax.getLabels(&labelsArray_view[0])
+        return labelsArray
+

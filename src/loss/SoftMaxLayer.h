@@ -42,6 +42,7 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
     VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL int getBatchSize();
     VIRTUAL float calcLossFromLabels(int const *labels);
     VIRTUAL float calcLoss(float const *expectedValues);
     VIRTUAL void calcGradInputFromLabels(int const *labels);
