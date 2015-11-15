@@ -17,7 +17,7 @@
 
 using namespace std;
 
-TEST( SLOW_testNorbLoader, loadall ) {
+TEST(SLOW_testNorbLoader, loadall) {
     int N;
     int numPlanes;
     int imageSize;
@@ -27,38 +27,38 @@ TEST( SLOW_testNorbLoader, loadall ) {
     string trainingFilename = "training-shuffled";
 //    string trainingFilename = "testing-sampled";
 
-    NorbLoader::getDimensions( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &imageSize );
-    unsigned char *images = NorbLoader::loadImages( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &imageSize );
-    int *labels = NorbLoader::loadLabels( norbDataDir + "/" + trainingFilename + "-cat.mat", N );
+    NorbLoader::getDimensions(norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &imageSize);
+    unsigned char *images = NorbLoader::loadImages(norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &imageSize);
+    int *labels = NorbLoader::loadLabels(norbDataDir + "/" + trainingFilename + "-cat.mat", N);
     cout << "labels here, please open testNorbLoader.png, and compare" << endl;
-    for( int i = 0; i < 4; i++ ) {
+    for(int i = 0; i < 4; i++) {
         string thisRow = "";
-        for( int j = 0; j < 4; j++ ) {
-            thisRow += toString( labels[i*4+j] ) + " ";
+        for(int j = 0; j < 4; j++) {
+            thisRow += toString(labels[i*4+j]) + " ";
         }
         cout << thisRow << endl;
     }
 #ifdef PNG_AVAILABLE
-    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( imageSize * 8, imageSize * 4 );
-    for( int imageRow = 0; imageRow < 4; imageRow++ ) {
-        for( int imageCol = 0; imageCol < 4; imageCol++ ) {
-            for( int p = 0; p < 2; p++ ) {
-                for( int i = 0; i < imageSize; i++ ) {
-                    for( int j = 0; j < imageSize; j++ ) {
-                           int value = images[((imageRow*4+imageCol )*2 + p) * imageSize * imageSize + i*imageSize + j];
-                       (*image)[i + imageRow*imageSize][j + (imageCol*2+p)*imageSize] = png::rgb_pixel( value, value, value );
+    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >(imageSize * 8, imageSize * 4);
+    for(int imageRow = 0; imageRow < 4; imageRow++) {
+        for(int imageCol = 0; imageCol < 4; imageCol++) {
+            for(int p = 0; p < 2; p++) {
+                for(int i = 0; i < imageSize; i++) {
+                    for(int j = 0; j < imageSize; j++) {
+                           int value = images[((imageRow*4+imageCol)*2 + p) * imageSize * imageSize + i*imageSize + j];
+                       (*image)[i + imageRow*imageSize][j + (imageCol*2+p)*imageSize] = png::rgb_pixel(value, value, value);
                     }
                 }
             }
         }
     }
-    FileHelper::remove( "testNorbLoader.png" );
-    image->write( "testNorbLoader.png" );
+    FileHelper::remove("testNorbLoader.png");
+    image->write("testNorbLoader.png");
 #endif
     delete[] images;
 }
 
-TEST( testNorbLoader, load1000 ) {
+TEST(DATA_testNorbLoader, load1000) {
     int N;
     int numPlanes;
     int imageSize;
@@ -68,33 +68,33 @@ TEST( testNorbLoader, load1000 ) {
     string trainingFilename = "training-shuffled";
 //    string trainingFilename = "testing-sampled";
 
-    unsigned char *images = NorbLoader::loadImages( norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &imageSize, 1000 );
+    unsigned char *images = NorbLoader::loadImages(norbDataDir + "/" + trainingFilename + "-dat.mat", &N, &numPlanes, &imageSize, 1000);
     cout << "N: " << N << endl;
-    int *labels = NorbLoader::loadLabels( norbDataDir + "/" + trainingFilename + "-cat.mat", N );
+    int *labels = NorbLoader::loadLabels(norbDataDir + "/" + trainingFilename + "-cat.mat", N);
     cout << "labels here, please open testNorbLoader.png, and compare" << endl;
-    for( int i = 0; i < 4; i++ ) {
+    for(int i = 0; i < 4; i++) {
         string thisRow = "";
-        for( int j = 0; j < 4; j++ ) {
-            thisRow += toString( labels[i*4+j] ) + " ";
+        for(int j = 0; j < 4; j++) {
+            thisRow += toString(labels[i*4+j]) + " ";
         }
         cout << thisRow << endl;
     }
 #ifdef PNG_AVAILABLE
-    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >( imageSize * 8, imageSize * 4 );
-    for( int imageRow = 0; imageRow < 4; imageRow++ ) {
-        for( int imageCol = 0; imageCol < 4; imageCol++ ) {
-            for( int p = 0; p < 2; p++ ) {
-                for( int i = 0; i < imageSize; i++ ) {
-                    for( int j = 0; j < imageSize; j++ ) {
-                           int value = images[((imageRow*4+imageCol )*2 + p) * imageSize * imageSize + i*imageSize + j];
-                       (*image)[i + imageRow*imageSize][j + (imageCol*2+p)*imageSize] = png::rgb_pixel( value, value, value );
+    png::image< png::rgb_pixel > *image = new png::image< png::rgb_pixel >(imageSize * 8, imageSize * 4);
+    for(int imageRow = 0; imageRow < 4; imageRow++) {
+        for(int imageCol = 0; imageCol < 4; imageCol++) {
+            for(int p = 0; p < 2; p++) {
+                for(int i = 0; i < imageSize; i++) {
+                    for(int j = 0; j < imageSize; j++) {
+                           int value = images[((imageRow*4+imageCol)*2 + p) * imageSize * imageSize + i*imageSize + j];
+                       (*image)[i + imageRow*imageSize][j + (imageCol*2+p)*imageSize] = png::rgb_pixel(value, value, value);
                     }
                 }
             }
         }
     }
-    FileHelper::remove( "testNorbLoader.png" );
-    image->write( "testNorbLoader.png" );
+    FileHelper::remove("testNorbLoader.png");
+    image->write("testNorbLoader.png");
 #endif
     delete[] images;
 }
