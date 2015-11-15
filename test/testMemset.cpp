@@ -20,21 +20,21 @@ TEST( testMemset, basic ) {
     // ]]]
     // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void memset(global float *target, const float value, const int N) {\n" 
-    "    #define globalId get_global_id(0)\n" 
-    "    if (globalId < N) {\n" 
-    "        target[globalId] = value;\n" 
-    "    }\n" 
-    "}\n" 
-    "\n" 
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n"
+    "//\n"
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n"
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n"
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n"
+    "\n"
+    "kernel void memset(global float *target, const float value, const int N) {\n"
+    "    #define globalId get_global_id(0)\n"
+    "    if (globalId < N) {\n"
+    "        target[globalId] = value;\n"
+    "    }\n"
+    "}\n"
+    "\n"
     "";
-    kMemset = cl->buildKernelFromString( kMemsetSource, "memset", "", "cl/memset.cl" );
+    kMemset = cl->buildKernelFromString(kMemsetSource, "memset", "", "cl/memset.cl");
     // [[[end]]]
 
     int N = 10000;
