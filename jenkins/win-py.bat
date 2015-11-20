@@ -4,27 +4,30 @@ set pyversion=%2
 echo bitness: %bitness%
 echo pyversion: %pyversion%
 
+call %~dp0win-cpp.bat %bitness%
+
 call \env-%pyversion%-%bitness%\scripts\activate
 
 python -c "from __future__ import print_function; import platform; print( platform.uname() )"
 python -c "from __future__ import print_function; import platform; print( platform.architecture() )"
 
-cd
-rmdir /s /q build
-rmdir /s /q dist
-dir
-mkdir build
-cd build
-set "generatorpostfix="
-if %bitness%==64 set "generatorpostfix= Win64"
-"c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010%generatorpostfix%" ..
-C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
-if errorlevel 1 exit /B 1
-C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
-if errorlevel 1 exit /B 1
-cd ..
-cd
-dir
+rem  cd
+rem  rmdir /s /q build
+rem  rmdir /s /q dist
+rem  dir
+rem  mkdir build
+rem  cd build
+rem  set "generatorpostfix="
+rem  if %bitness%==64 set "generatorpostfix= Win64"
+rem  "c:\program files (x86)\cmake\bin\cmake" -G "Visual Studio 10 2010%generatorpostfix%" ..
+rem  C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
+rem  if errorlevel 1 exit /B 1
+rem  C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
+rem  if errorlevel 1 exit /B 1
+rem  cd ..
+rem  cd
+rem  dir
+cd %~dp0..
 call dist\bin\activate.bat
 
 copy /y jenkins\version.txt python
