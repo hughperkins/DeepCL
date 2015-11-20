@@ -49,6 +49,8 @@ else:
     pass
     # put other options etc here if necessary
 
+compile_options.append('-DUSE_CLEW')
+
 runtime_library_dirs = []
 libraries = []
 libraries.append('clBLAS')
