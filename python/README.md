@@ -41,11 +41,15 @@ For example of using q-learning, see [test_qlearning.py](https://github.com/hugh
 * on linux:
   * Python 2.7 or Python 3.4
   * g++, supporting c++0x, eg 4.4 or higher
+* have first already built the native libraries, see [Build.md](../doc/Build.md)
+* have activated the native library installation, ie called `dist/bin/activate.sh`, or `dist/bin/activate.bat`
 
 ### To install:
 
 ```bash
+
 cd python
 python setup.py install
 ```
+
 
