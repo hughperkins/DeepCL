@@ -25,7 +25,7 @@
 ```c++
 EasyCL *cl = new EasyCL();
 NeuralNet *net = new NeuralNet(cl);
-net->addLayer( InputMaker::instance()->numPlanes(1)->imageSize(28) );
+net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(28) );
 net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
 net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
 net->addLayer( PoolingMaker::instance()->poolingSize(2) );
