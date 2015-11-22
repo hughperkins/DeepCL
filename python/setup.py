@@ -73,7 +73,7 @@ if cython_present:
 ext_modules = [
     Extension("PyDeepCL",
               sources=sources,
-              include_dirs=['mysrc', 'mysrc/lua'],
+              include_dirs=['mysrc', 'mysrc/lua', '/usr/local/include/deepcl', '/usr/local/include/easycl'],
               library_dirs=library_dirs,
               libraries=libraries,
               extra_compile_args=compile_options,
