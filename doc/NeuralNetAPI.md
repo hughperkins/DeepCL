@@ -6,15 +6,19 @@
   - [Create a net](#create-a-net)
   - [Add an input layer](#add-an-input-layer)
   - [Normalization layer](#normalization-layer)
+  - [Dropout layer](#dropout-layer)
   - [Random patch layer](#random-patch-layer)
   - [Random translations layer](#random-translations-layer)
   - [Convolutional layers](#convolutional-layers)
+  - [Activation layers](#activation-layers)
   - [Fully connected layers](#fully-connected-layers)
   - [Max-pooling layers](#max-pooling-layers)
   - [Loss layer](#loss-layer)
   - [Data format](#data-format)
+  - [Create a Trainer](#create-a-trainer)
   - [Train](#train)
   - [Test](#test)
+  - [Weight initialization](#weight-initialization)
   - [More details](#more-details)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -26,14 +30,18 @@
 EasyCL *cl = new EasyCL();
 NeuralNet *net = new NeuralNet(cl);
 net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(28) );
-net->addLayer( NormalizationMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
-net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->relu()->biased() );
+net->addLayer( NormalizationLayerMaker::instance()->translate( -mean )->scale( 1.0f / standardDeviation ) );
+net->addLayer( ConvolutionalMaker::instance()->numFilters(8)->filterSize(5)->biased() );
+net->addLayer( ActivationMaker::instance()->relu() );
 net->addLayer( PoolingMaker::instance()->poolingSize(2) );
-net->addLayer( ConvolutionalMaker::instance()->numFilters(16)->filterSize(5)->relu()->biased() );
+net->addLayer( ConvolutionalMaker::instance()->numFilters(16)->filterSize(5)->biased() );
+net->addLayer( ActivationMaker::instance()->relu() );
 net->addLayer( PoolingMaker::instance()->poolingSize(3) );
-net->addLayer( FullyConnectedMaker::instance()->numPlanes(150)->imageSize(1)->tanh()->biased() );
-net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->imageSize(1)->linear()->biased() );
-net->addLayer( SoftMaxLossMaker::instance() );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(150)->imageSize(1)->biased() );
+net->addLayer( ActivationMaker::instance()->relu() );
+net->addLayer( FullyConnectedMaker::instance()->numPlanes(10)->imageSize(1)->biased() );
+net->addLayer( ActivationMaker::instance()->linear() );
+net->addLayer( SoftMaxMaker::instance() );
 net->print();
 ```
 * The following sections will detail the various layers available, and the options available for each layer type
@@ -112,12 +120,21 @@ net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->re
   * `->biased()` turn on bias
   * `->biased(1)` same as `->biased()`
   * `->biased(0)` turn off bias (default)
+* convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
+
+## Activation layers
+
+Eg:
+```c++
+net->addLayer( ActivationMaker::instance()->relu() );
+```
+
+* You can create one of the following activations to be applied on the previous layer.
   * `->linear()` choose linear activation
   * `->relu()` choose relu activation
   * `->sigmoid()` choose sigmoid activation
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
   * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`
-* convolutional layers forward-prop and backward-prop both run on GPU, via OpenCL
 
 ## Fully connected layers
 
@@ -155,7 +172,7 @@ net->addLayer( SquareLossMaker::instance() );
 net->addLayer( CrossEntropyMaker::instance() );
 net->addLayer( SoftMaxLayer::instance() );
 ```
-* if your outputs are categorial, 1-of-N, then softMaxLossLayer is probably what you want
+* if your outputs are categorial, 1-of-N, then softMaxLayer is probably what you want
 * otherwise, you can choose square loss, or cross-entropy loss:
   * squared loss works well with a `tanh` last layer
   * cross entropy loss works well with a `sigmoid` last layer
