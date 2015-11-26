@@ -15,6 +15,8 @@ ActivationFunction *ActivationFunction::fromName(std::string name) {
         return new LinearActivation();
     } else if(name == "relu") {
         return new ReluActivation();
+    } else if(name == "elu") {
+        return new EluActivation();
     } else {
         throw std::runtime_error("activation " + name + " not known");
     }
@@ -32,6 +34,11 @@ ostream &operator<<(ostream &os, TanhActivation const&act) {
 
 ostream &operator<<(ostream &os, ScaledTanhActivation const&act) {
     os << "ScaledTanhActivation{}";
+    return os;
+}
+
+ostream &operator<<(ostream &os, EluActivation const&act) {
+    os << "EluActivation{}";
     return os;
 }
 

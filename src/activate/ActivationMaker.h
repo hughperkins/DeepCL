@@ -34,6 +34,11 @@ public:
         this->_activationFunction = new ReluActivation();
         return this;
     }
+    ActivationMaker *elu() {
+        delete this->_activationFunction;
+        this->_activationFunction = new EluActivation();
+        return this;
+    }
     ActivationMaker *sigmoid() {
         delete this->_activationFunction;
         this->_activationFunction = new SigmoidActivation();

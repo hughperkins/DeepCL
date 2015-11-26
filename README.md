@@ -41,12 +41,12 @@ Loss layer types:
 * square loss
 
 Trainers:
-* SGD (including momentum)
-* Anneal (New!)
-* Nesterov (New!)
-* Adagrad (New!)
-* Rmsprop (New!)
-* Adadelta (New!)
+* SGD
+* Anneal
+* Nesterov
+* Adagrad
+* Rmsprop
+* Adadelta
 
 Activations:
 * tanh
@@ -54,6 +54,7 @@ Activations:
 * linear
 * sigmoid
 * relu
+* elu (new!)
 
 [Loader formats](doc/Loaders.md):
 * jpegs
@@ -182,6 +183,8 @@ License
 Recent changes
 ==============
 
+* 27th November:
+  * added [ELU](http://arxiv.org/pdf/1511.07289v1.pdf)
 * Week of 26th October:
   * created branch `clblas-2.8.0`, which works with Visual Studio 2015.  It uses the latest 2.8.x release of clBLAS.  Thank you to jakakonda for helping to test this and get it working.
 * Aug 28th:

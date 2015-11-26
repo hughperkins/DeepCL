@@ -5,7 +5,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 // expected defines:
-// one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH ]
+// one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH | ELU ]
 
 #ifdef TANH
     #define ACTIVATION_FUNCTION(output) (tanh(output))
@@ -15,6 +15,8 @@
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
     #define ACTIVATION_FUNCTION(output) (output> 0 ? output : 0)
+#elif defined ELU
+    #define ACTIVATION_FUNCTION(output) (output> 0 ? output : exp(output) - 1)
 #elif defined LINEAR
     #define ACTIVATION_FUNCTION(output) (output)
 #endif

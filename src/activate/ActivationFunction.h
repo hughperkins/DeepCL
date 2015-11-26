@@ -119,4 +119,22 @@ public:
 };
 
 
+class EluActivation : public ActivationFunction {
+public:
+    virtual float calc(float value) const {
+        return value > 0 ? value : exp(value);
+    }
+    virtual float calcDerivative(float output) const {
+        return output > 0 ? 1.0f : output;
+    }
+    virtual float getTrue() const {
+        return 0.8f;
+    }
+    virtual float getFalse() const {
+        return 0.2f;
+    }
+    virtual std::string getDefineName() const {
+        return "ELU";
+    } 
+};
 

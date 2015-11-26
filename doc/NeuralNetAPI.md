@@ -113,7 +113,8 @@ net->addLayer( ConvolutionalMaker::instance()->numFilters(32)->filterSize(5)->re
   * `->biased(1)` same as `->biased()`
   * `->biased(0)` turn off bias (default)
   * `->linear()` choose linear activation
-  * `->relu()` choose relu activation
+  * `->relu()` choose RELU activation
+  * `->elu()` choose ELU activation
   * `->sigmoid()` choose sigmoid activation
   * `->tanh()` choose tanh activation (current default, but defaults can change...)
   * `->scaledtanh()` `1.7159 * tanh(0.66667 * x )`

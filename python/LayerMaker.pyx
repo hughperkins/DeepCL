@@ -104,6 +104,9 @@ cdef class ActivationMaker(LayerMaker2):
     def relu(self):
         self.thisptr.relu()
         return self
+    def elu(self):
+        self.thisptr.elu()
+        return self
     def sigmoid(self):
         self.thisptr.sigmoid()
         return self
