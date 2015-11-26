@@ -122,7 +122,7 @@ public:
 class EluActivation : public ActivationFunction {
 public:
     virtual float calc(float value) const {
-        return value > 0 ? value : exp(value);
+        return value > 0 ? value : exp(value) - 1;
     }
     virtual float calcDerivative(float output) const {
         return output > 0 ? 1.0f : output;
