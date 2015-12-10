@@ -67,6 +67,9 @@ VIRTUAL void FullyConnectedLayer::setWeights(float *weights, float *bias) {
 VIRTUAL float * FullyConnectedLayer::getWeights() {
     return convolutionalLayer->getWeights();
 }
+VIRTUAL float * FullyConnectedLayer::getBias() {
+	return convolutionalLayer->getBias();
+}
 VIRTUAL int FullyConnectedLayer::getWeightsSize() const {
     return convolutionalLayer->getWeightsSize();
 }
