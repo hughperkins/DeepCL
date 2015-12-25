@@ -16,7 +16,7 @@
 #elif defined RELU
     #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)
 #elif defined ELU
-    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : output)
+    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : output + 1)
 #elif defined LINEAR
     #define ACTIVATION_DERIV(output) (1.0f)
 #endif
