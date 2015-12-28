@@ -83,7 +83,7 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes
     "#elif defined RELU\n"
     "    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : 0)\n"
     "#elif defined ELU\n"
-    "    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : output)\n"
+    "    #define ACTIVATION_DERIV(output) (output > 0 ? 1 : output + 1)\n"
     "#elif defined LINEAR\n"
     "    #define ACTIVATION_DERIV(output) (1.0f)\n"
     "#endif\n"
