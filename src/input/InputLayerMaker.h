@@ -40,9 +40,7 @@ public:
         return new InputLayerMaker();
     }    
     virtual InputLayerMaker *clone() const {
-        InputLayerMaker *thisClone = new InputLayerMaker();
-        memcpy(thisClone, this, sizeof(InputLayerMaker) );
-        return thisClone;
+        return new InputLayerMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

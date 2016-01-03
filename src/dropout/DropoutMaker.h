@@ -24,9 +24,7 @@ public:
         return new DropoutMaker();
     }
     virtual DropoutMaker *clone() const {
-        DropoutMaker *thisClone = new DropoutMaker();
-        memcpy(thisClone, this, sizeof(DropoutMaker) );
-        return thisClone;
+        return new DropoutMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

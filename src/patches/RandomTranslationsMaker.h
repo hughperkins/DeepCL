@@ -33,9 +33,7 @@ public:
         return this;
     }
     virtual RandomTranslationsMaker *clone() const {
-        RandomTranslationsMaker *thisClone = new RandomTranslationsMaker();
-        memcpy(thisClone, this, sizeof(RandomTranslationsMaker) );
-        return thisClone;
+        return new RandomTranslationsMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };
