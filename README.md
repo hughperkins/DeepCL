@@ -183,6 +183,8 @@ License
 Recent changes
 ==============
 
+* 3rd January 2016:
+  * create Mac OS X build on Travis, and fix the build, https://travis-ci.org/hughperkins/DeepCL
 * 27th November:
   * added [ELU](http://arxiv.org/pdf/1511.07289v1.pdf)
 * Week of 26th October:
