@@ -1,0 +1,31 @@
+language: objective-c
+matrix:
+  include:
+    - env: OSX=10.11
+      os: osx
+      osx_image: osx10.11
+      rvm: system
+
+before_install:
+  - if [ -f ".git/shallow" ]; then travis_retry git fetch --unshallow; fi
+  - whoami
+  - pwd
+  - ls
+  - git status
+  - ls ~
+  - echo $HOME
+  - env
+
+script:
+  - echo hello
+  - env
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j 4
+
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+
