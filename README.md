@@ -1,8 +1,6 @@
   DeepCL
 ==========
 
-[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
-
 - [Python API](python/README.md)
 - [Command line API](doc/Commandline.md)
 - [C++ API](doc/NeuralNetAPI.md)
@@ -137,6 +135,8 @@ Note that you need to "activate" the installation each time you open a new bash 
 * test by doing `python -c "import PyDeepCL; cl = PyDeepCL.DeepCL()"`
 
 ## To build from source
+
+[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
 
 Building from source is only needed if installing from binaries doesn't work for your configuration, or if you want to modify DeepCL.
 
