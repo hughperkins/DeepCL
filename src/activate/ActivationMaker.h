@@ -54,9 +54,7 @@ public:
         return this;
     }
     virtual ActivationMaker *clone() const {
-        ActivationMaker *thisClone = new ActivationMaker();
-        memcpy(thisClone, this, sizeof(ActivationMaker) ); // this will copy the activationfunction pointer too
-        return thisClone;
+        return new ActivationMaker(*this); // this will copy the activationfunction pointer too
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

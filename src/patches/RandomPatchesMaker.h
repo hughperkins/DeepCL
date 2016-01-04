@@ -35,9 +35,7 @@ public:
         return new RandomPatchesMaker();
     }
     virtual RandomPatchesMaker *clone() const {
-        RandomPatchesMaker *thisClone = new RandomPatchesMaker();
-        memcpy(thisClone, this, sizeof(RandomPatchesMaker) );
-        return thisClone;
+        return new RandomPatchesMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

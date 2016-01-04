@@ -35,9 +35,7 @@ public:
         return new PoolingMaker();
     }
     virtual PoolingMaker *clone() const {
-        PoolingMaker *thisClone = new PoolingMaker();
-        memcpy(thisClone, this, sizeof(PoolingMaker) );
-        return thisClone;
+        return new PoolingMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };
