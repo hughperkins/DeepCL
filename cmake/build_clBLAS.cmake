@@ -1,7 +1,5 @@
 INCLUDE(ExternalProject)
 
-message("CMAKE_SHARED_LIBRARY_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX}")
-
 if(WIN32)
 	set(CLBLAS_CLEW_LIB ${CMAKE_INSTALL_PREFIX}/lib/clew.lib)
 else()
