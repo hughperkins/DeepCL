@@ -25,6 +25,8 @@ script:
   - cmake ..
   - make -j 4
   - make install
+  - source ../dist/bin/activate.sh
+  - deepcl_unittests tests=-DATA*:SLOW*:testClBlas*:testDeepCL.basic:testupdateweights*:testforward*:testsimpleconvolvenet*:testlogicaloperators*:testbackward*:testsinglebatch*:EXCLUDED*:testpoolingforward*:testCopyBlock.basic:testCopyLocal.basic:testactivationforward*:testdropoutforward*:testsgd.basic:testCLMathWrapper.sqrt
 
 notifications:
   email:
