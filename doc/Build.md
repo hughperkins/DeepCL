@@ -15,6 +15,8 @@
 
 #To build
 
+[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
+
 ## Build options
 
 * If you want to be able to read training/testing data from jpeg files, then please choose `BUILD_JPEG_SUPPORT` = `ON`. You will need to provide turbojpeg library and headers, or compatible.  Otherwise set to `OFF`
