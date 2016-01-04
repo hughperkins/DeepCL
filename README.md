@@ -183,6 +183,8 @@ License
 Recent changes
 ==============
 
+* 4th January 2016:
+  * fixed a number of build warnings on Mac, both in OpenCL build, and C++ build
 * 3rd January 2016:
   * create Mac OS X build on Travis, and fix the build, https://travis-ci.org/hughperkins/DeepCL
 * 27th November:
