@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
-
   DeepCL
 ==========
+
+[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
 
 - [Python API](python/README.md)
 - [Command line API](doc/Commandline.md)
