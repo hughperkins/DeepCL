@@ -16,7 +16,7 @@ TEST( testMemset, basic ) {
     CLKernel *kMemset = 0;
     // [[[cog
     // import stringify
-    // stringify.write_kernel2( "kMemset", "cl/memset.cl", "memset", '""' )
+    // stringify.write_kernel2( "kMemset", "cl/memset.cl", "cl_memset", '""' )
     // ]]]
     // generated using cog, from cl/memset.cl:
     const char * kMemsetSource =  
@@ -26,15 +26,15 @@ TEST( testMemset, basic ) {
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n"
     "// obtain one at http://mozilla.org/MPL/2.0/.\n"
     "\n"
-    "kernel void memset(global float *target, const float value, const int N) {\n"
+    "kernel void cl_memset(global float *target, const float value, const int N) {\n"
     "    #define globalId get_global_id(0)\n"
-    "    if (globalId < N) {\n"
+    "    if ((int)globalId < N) {\n"
     "        target[globalId] = value;\n"
     "    }\n"
     "}\n"
     "\n"
     "";
-    kMemset = cl->buildKernelFromString(kMemsetSource, "memset", "", "cl/memset.cl");
+    kMemset = cl->buildKernelFromString(kMemsetSource, "cl_memset", "", "cl/memset.cl");
     // [[[end]]]
 
     int N = 10000;
@@ -47,7 +47,7 @@ TEST( testMemset, basic ) {
     cl->finish();
     myArrayWrapper->copyToHost();
     for( int i = 0; i < 10; i++ ) {
-        cout << "myArray[" << i << "]=" << myArray[i] << endl;
+//        cout << "myArray[" << i << "]=" << myArray[i] << endl;
     }
     for( int i = 0; i < N; i++ ) {
         EXPECT_EQ( 99.0f, myArray[i] );

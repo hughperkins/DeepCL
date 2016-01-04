@@ -272,7 +272,7 @@ TEST(testsinglebatch, imagesize28) {
 
 TEST(testsinglebatch, imagesize28_filtersize5) {
     test(new ReluActivation(), TestArgs::instance().BatchSize(2).LearningRate(0.001f).ImageSize(28).NumLayers(1)
-            .FilterSize(5).NumFilters(10).NumEpochs(100));
+            .FilterSize(5).NumFilters(10).NumEpochs(100), 1.5f);
 }
 
 float sumWeightChangesSquared(float *__restrict oldWeights, float * __restrict newWeights, NeuralNet *net) {

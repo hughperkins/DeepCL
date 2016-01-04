@@ -79,7 +79,7 @@ DropoutBackwardGpuNaive::DropoutBackwardGpuNaive(EasyCL *cl, int numPlanes, int 
     // [[[cog
     // import stringify
     // stringify.write_kernel2("kernel", "cl/dropout.cl", "backpropNaive", 'options')
-    // # stringify.write_kernel2("kMemset", "cl/memset.cl", "memset", '""')
+    // # stringify.write_kernel2("kMemset", "cl/memset.cl", "cl_memset", '""')
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
