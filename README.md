@@ -136,8 +136,6 @@ Note that you need to "activate" the installation each time you open a new bash 
 
 ## To build from source
 
-[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
-
 Building from source is only needed if installing from binaries doesn't work for your configuration, or if you want to modify DeepCL.
 
 See [Build.md](doc/Build.md)
