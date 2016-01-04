@@ -63,7 +63,7 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int 
     // [[[cog
     // import stringify
     // stringify.write_kernel2("kernel", "cl/PoolingBackwardGpuNaive.cl", "backward", 'options')
-    // stringify.write_kernel2("kMemset", "cl/memset.cl", "memset", '""')
+    // stringify.write_kernel2("kMemset", "cl/memset.cl", "cl_memset", '""')
     // ]]]
     // generated using cog, from cl/PoolingBackwardGpuNaive.cl:
     const char * kernelSource =  
@@ -125,15 +125,15 @@ PoolingBackwardGpuNaive::PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int 
     "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n"
     "// obtain one at http://mozilla.org/MPL/2.0/.\n"
     "\n"
-    "kernel void memset(global float *target, const float value, const int N) {\n"
+    "kernel void cl_memset(global float *target, const float value, const int N) {\n"
     "    #define globalId get_global_id(0)\n"
-    "    if (globalId < N) {\n"
+    "    if ((int)globalId < N) {\n"
     "        target[globalId] = value;\n"
     "    }\n"
     "}\n"
     "\n"
     "";
-    kMemset = cl->buildKernelFromString(kMemsetSource, "memset", "", "cl/memset.cl");
+    kMemset = cl->buildKernelFromString(kMemsetSource, "cl_memset", "", "cl/memset.cl");
     // [[[end]]]
 }
 

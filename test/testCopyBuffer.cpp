@@ -13,35 +13,35 @@
 
 using namespace std;
 
-TEST( testCopyBuffer, floats ) {
+TEST(testCopyBuffer, floats) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     const int N = 10;
     float *a = new float[N];
-    for( int i = 0; i < N; i++ ) {
+    for(int i = 0; i < N; i++) {
         a[i] = 3 + i;
     }
-    CLWrapper *aWrapper = cl->wrap( N, a );
+    CLWrapper *aWrapper = cl->wrap(N, a);
     aWrapper->copyToDevice();
-    memset( a, 0, sizeof(float) * N );
+    memset(a, 0, sizeof(float) * N);
 
     float *b = new float[N];
-    CopyBuffer::copy( cl, aWrapper, b );
+    CopyBuffer::copy(cl, aWrapper, b);
     
-    for( int i = 0; i < N; i++ ) {
-        cout << b[i] << endl;
-        EXPECT_EQ( 3 + i, b[i] );
+    for(int i = 0; i < N; i++) {
+//        cout << b[i] << endl;
+        EXPECT_EQ(3 + i, b[i]);
     }
 
-    memset( b, 0, sizeof(float) * N );
-    CopyBuffer::copy( cl, aWrapper, b );
+    memset(b, 0, sizeof(float) * N);
+    CopyBuffer::copy(cl, aWrapper, b);
     
-    for( int i = 0; i < N; i++ ) {
-        cout << b[i] << endl;
-        EXPECT_EQ( 3 + i, b[i] );
+    for(int i = 0; i < N; i++) {
+//        cout << b[i] << endl;
+        EXPECT_EQ(3 + i, b[i]);
     }
 
-    PrintBuffer::printFloats( cl, aWrapper, 10, 1 );
+    PrintBuffer::printFloats(cl, aWrapper, 10, 1);
     
     delete[] b;
     delete aWrapper;
@@ -50,35 +50,35 @@ TEST( testCopyBuffer, floats ) {
     delete cl;
 }
 
-TEST( testCopyBuffer, nits ) {
+TEST(testCopyBuffer, ints) {
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
 
     const int N = 10;
     int *a = new int[N];
-    for( int i = 0; i < N; i++ ) {
+    for(int i = 0; i < N; i++) {
         a[i] = 3 + i;
     }
-    CLWrapper *aWrapper = cl->wrap( N, a );
+    CLWrapper *aWrapper = cl->wrap(N, a);
     aWrapper->copyToDevice();
-    memset( a, 0, sizeof(int) * N );
+    memset(a, 0, sizeof(int) * N);
 
     int *b = new int[N];
-    CopyBuffer::copy( cl, aWrapper, b );
+    CopyBuffer::copy(cl, aWrapper, b);
     
-    for( int i = 0; i < N; i++ ) {
-        cout << b[i] << endl;
-        EXPECT_EQ( 3 + i, b[i] );
+    for(int i = 0; i < N; i++) {
+//        cout << b[i] << endl;
+        EXPECT_EQ(3 + i, b[i]);
     }
 
-    memset( b, 0, sizeof(int) * N );
-    CopyBuffer::copy( cl, aWrapper, b );
+    memset(b, 0, sizeof(int) * N);
+    CopyBuffer::copy(cl, aWrapper, b);
     
-    for( int i = 0; i < N; i++ ) {
-        cout << b[i] << endl;
-        EXPECT_EQ( 3 + i, b[i] );
+    for(int i = 0; i < N; i++) {
+//        cout << b[i] << endl;
+        EXPECT_EQ(3 + i, b[i]);
     }
 
-    PrintBuffer::printInts( cl, aWrapper, 10, 1 );
+    PrintBuffer::printInts(cl, aWrapper, 10, 1);
     
     delete[] b;
     delete aWrapper;
