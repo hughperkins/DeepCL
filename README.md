@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
+
   DeepCL
 ==========
 
