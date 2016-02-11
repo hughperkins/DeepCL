@@ -13,9 +13,9 @@
 #include <random>
 
 #include "DeepCL.h"
-#include "FullyConnectedLayer.h"
-#include "PoolingLayer.h"
-#include "SoftMaxLayer.h"
+#include "fc/FullyConnectedLayer.h"
+#include "pooling/PoolingLayer.h"
+#include "loss/SoftMaxLayer.h"
 
 using namespace std;
 
@@ -180,7 +180,7 @@ void go(Config config) {
     int testAllocateN = 0;
 
 //    int totalLinearSize;
-    GenericLoader::getDimensions( config.dataDir + "/" + config.trainFile, &Ntrain, &numPlanes, &imageSize );
+    GenericLoader::getDimensions((config.dataDir + "/" + config.trainFile).c_str(), &Ntrain, &numPlanes, &imageSize );
     Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
@@ -188,16 +188,16 @@ void go(Config config) {
     trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if( Ntrain > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.trainFile, trainData, trainLabels, 0, Ntrain );
+        GenericLoader::load((config.dataDir + "/" + config.trainFile).c_str(), trainData, trainLabels, 0, Ntrain );
     }
 
-    GenericLoader::getDimensions( config.dataDir + "/" + config.validateFile, &Ntest, &numPlanes, &imageSize );
+    GenericLoader::getDimensions((config.dataDir + "/" + config.validateFile).c_str(), &Ntest, &numPlanes, &imageSize );
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
     testAllocateN = Ntest;
     testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if( Ntest > 0 ) {
-        GenericLoader::load( config.dataDir + "/" + config.validateFile, testData, testLabels, 0, Ntest );
+        GenericLoader::load((config.dataDir + "/" + config.validateFile).c_str(), testData, testLabels, 0, Ntest );
     }
     
     timer.timeCheck("after load images");
@@ -316,12 +316,12 @@ void go(Config config) {
         if( conv != 0 ) {
             cout << "convolutional (or conv based, ie fc)" << endl;
             planes = conv->dim.numFilters;
-            imageSize = conv->dim.outputImageSize;
+            imageSize = conv->dim.outputSize;
           //  continue;
         } else if( pool != 0 ) {
             cout << "pooling" << endl;
             planes = pool->numPlanes;
-            imageSize = pool->outputImageSize;
+            imageSize = pool->outputSize;
         } else if( softMax != 0 ) {
             cout << "softmax" << endl;
             planes = softMax->numPlanes;

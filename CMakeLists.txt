@@ -239,6 +239,8 @@ if(PROTOTYPING)
     add_executable(clconvolve-fixedweights prototyping/clconvolve-fixedweights.cpp src/util/stringhelper.cpp)
     add_executable(learn_scenario_image prototyping/qlearning/learnScenarioImage.cpp 
         prototyping/qlearning/ScenarioImage.cpp)
+    target_link_libraries(clconvolve-fixedweights DeepCL)
+    target_link_libraries(learn_scenario_image DeepCL)
 endif(PROTOTYPING)
 
 target_link_libraries(deepcl_unittests DeepCL)
