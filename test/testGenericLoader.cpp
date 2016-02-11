@@ -8,9 +8,9 @@
 #include <string>
 
 //#include "NorbLoader.h"
-#include "ImagePng.h"
-#include "GenericLoader.h"
-#include "NormalizationHelper.h"
+#include "util/ImagePng.h"
+#include "loaders/GenericLoader.h"
+#include "normalize/NormalizationHelper.h"
 
 using namespace std;
 
@@ -19,11 +19,11 @@ void go( string trainFilepath, int startN, int numExamples ) {
     int numPlanes;
     int imageSize;
 //    int totalSize;
-    GenericLoader::getDimensions( trainFilepath, &N, &numPlanes, &imageSize );
+    GenericLoader::getDimensions(trainFilepath.c_str(), &N, &numPlanes, &imageSize );
     cout << "N " << N << " numplanes " << numPlanes << " imageSize " << imageSize << endl;
     float *images = new float[ numExamples * numPlanes * imageSize * imageSize ];
     int *labels = new int[ numExamples ];
-    GenericLoader::load( trainFilepath, images, labels, startN, numExamples );
+    GenericLoader::load(trainFilepath.c_str(), images, labels, startN, numExamples );
 //    float *images = new float[ N * numPlanes * imageSize * imageSize ];
 //    for( int i = 0; i < N * numPlanes * imageSize * imageSize; i++ ) {
 //        images[i] = imagesUchar[i];

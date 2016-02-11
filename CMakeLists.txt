@@ -219,7 +219,7 @@ if(LIBPNGPP_AVAILABLE)
     add_executable(testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp)
 
     foreach(exe testpatchextractor testtranslator testgenericloader)
-        target_link_libraries(${exe} DeepCL)
+        target_link_libraries(${exe} DeepCL ${PNG_LIBRARY})
     endforeach()
 endif(LIBPNGPP_AVAILABLE)
 

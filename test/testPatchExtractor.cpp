@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 
-#include "NorbLoader.h"
-#include "ImagePng.h"
-#include "PatchExtractor.h"
+#include "loaders/NorbLoader.h"
+#include "util/ImagePng.h"
+#include "patches/PatchExtractor.h"
 
 using namespace std;
 
