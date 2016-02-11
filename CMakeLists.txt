@@ -159,7 +159,6 @@ endif(LIBJPEG_AVAILABLE)
 
 if(LIBPNGPP_AVAILABLE)
     find_package(PNG REQUIRED)
-    target_link_libraries(deepcl_unittests ${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
 
 #link_libraries(DeepCL)
@@ -243,6 +242,10 @@ if(PROTOTYPING)
 endif(PROTOTYPING)
 
 target_link_libraries(deepcl_unittests DeepCL)
+
+if(LIBPNGPP_AVAILABLE)
+    target_link_libraries(deepcl_unittests ${PNG_LIBRARY})
+endif(LIBPNGPP_AVAILABLE)
 
 add_executable(testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc)
 target_link_libraries(testgtestsupp deepcl_gtest)

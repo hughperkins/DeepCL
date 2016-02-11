@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <random>
 
-#include "Scenario.h"
+#include "qlearning/Scenario.h"
 
 class NeuralNet;
 

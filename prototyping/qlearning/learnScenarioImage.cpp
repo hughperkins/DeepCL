@@ -6,8 +6,8 @@
 
 #include "ScenarioImage.h"
 #include "DeepCL.h"
-#include "array_helper.h"
-#include "QLearner.h"
+#include "qlearning/array_helper.h"
+#include "qlearning/QLearner.h"
 
 using namespace std;
 
