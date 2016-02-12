@@ -26,15 +26,16 @@ cdef extern from "DeepCL.h":
 
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
+include "cTrainer.pxd"
 include "cSGD.pxd"
 include "cAnnealer.pxd"
 include "cNesterov.pxd"
 include "cAdagrad.pxd"
 include "cRmsprop.pxd"
 include "cAdadelta.pxd"
+include "cNetLearner.pxd"
 include "cGenericLoader.pxd"
 include "cNetDefToNet.pxd"
-include "cNetLearner.pxd"
 include "cLayer.pxd"
 include "cQLearning.pxd"
 

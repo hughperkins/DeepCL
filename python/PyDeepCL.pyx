@@ -16,6 +16,7 @@ cimport cDeepCL
 
 include "DeepCL.pyx"
 #include "DeepCL.pyx"
+include "Trainer.pyx"
 include "SGD.pyx"
 include "Annealer.pyx"
 include "Nesterov.pyx"

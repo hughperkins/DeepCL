@@ -8,7 +8,7 @@ cdef extern from "trainers/TrainingContext.h":
         TrainingContext( int epoch, int batch )
 
 cdef extern from "trainers/SGD.h":
-    cdef cppclass SGD:
+    cdef cppclass SGD(Trainer):
         SGD( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         void setMomentum( float momentum )

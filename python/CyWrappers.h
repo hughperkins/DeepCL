@@ -6,8 +6,8 @@
 
 extern int exceptionRaised;
 extern std::string exceptionMessage;
-//void raiseException( std::string message );
-//void checkException( int *wasRaised, std::string *message );
+//void raiseException(std::string message);
+//void checkException(int *wasRaised, std::string *message);
 
 #include "batch/NetLearner.h"
 #include "trainers/SGD.h"
@@ -17,21 +17,21 @@ extern std::string exceptionMessage;
 // (which I *think* adding 'except +' requires?)
 class CyNetLearner : public NetLearner {
 public:
-    CyNetLearner(SGD *sgd, Trainable *neuralNet,
+    CyNetLearner(Trainer *trainer, Trainable *neuralNet,
             int Ntrain, float *trainData, int *trainLabels,
             int Ntest, float *testData, int *testLabels,
-            int batchSize ) :
-        NetLearner( sgd, neuralNet,
+            int batchSize) :
+        NetLearner(trainer, neuralNet,
             Ntrain, trainData, trainLabels,
             Ntest, testData, testLabels,
-            batchSize ) {
+            batchSize) {
     }
-//    void learn( float learningRate ) {
+//    void learn(float learningRate) {
 //        try {
 //            NetLearner::learn(learningRate);
-//        } catch( std::runtime_error &e ) {
+//        } catch(std::runtime_error &e) {
 //            std::cout << e.what() << std::endl;
-//            raiseException( e.what() );
+//            raiseException(e.what());
 //        }
 //    }
 };

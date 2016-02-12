@@ -1,9 +1,10 @@
-cdef class Annealer: 
+cdef class Annealer(Trainer):
     cdef cDeepCL.Annealer *thisptr
     def __cinit__( self, DeepCL cl, learningRate, anneal=1.0 ):
         self.thisptr = new cDeepCL.Annealer(cl.thisptr)
         self.thisptr.setLearningRate(learningRate)
         self.thisptr.setAnneal(anneal)
+        self.baseptr = self.thisptr
     def __dealloc__(self):
         del self.thisptr
     def setLearningRate(self, float learningRate):

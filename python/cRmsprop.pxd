@@ -1,5 +1,5 @@
 cdef extern from "trainers/Rmsprop.h":
-    cdef cppclass Rmsprop:
+    cdef cppclass Rmsprop(Trainer):
         Rmsprop( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         BatchResult train( NeuralNet *net, TrainingContext *context,
