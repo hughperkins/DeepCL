@@ -57,12 +57,16 @@ Pre-requisites:
 -  on linux:
 -  Python 2.7 or Python 3.4
 -  g++, supporting c++0x, eg 4.4 or higher
+-  have first already built the native libraries, see
+   `Build.md <../doc/Build.md>`__
+-  have activated the native library installation, ie called
+   ``dist/bin/activate.sh``, or ``dist/bin/activate.bat``
 
 To install:
 ~~~~~~~~~~~
 
 .. code:: bash
 
+
     cd python
     python setup.py install
-

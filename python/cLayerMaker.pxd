@@ -23,6 +23,7 @@ cdef extern from "activate/ActivationMaker.h":
         ActivationMaker *tanh() except +
         ActivationMaker *linear() except +
         ActivationMaker *sigmoid() except +
+        ActivationMaker *scaledTanh() except +
         @staticmethod
         ActivationMaker *instance() except +
 

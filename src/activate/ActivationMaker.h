@@ -29,6 +29,11 @@ public:
         this->_activationFunction = new TanhActivation();
         return this;
     }
+    ActivationMaker *scaledTanh() {
+        delete this->_activationFunction;
+        this->_activationFunction = new ScaledTanhActivation();
+        return this;
+    }
     ActivationMaker *relu() {
         delete this->_activationFunction;
         this->_activationFunction = new ReluActivation();

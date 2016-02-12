@@ -110,6 +110,9 @@ cdef class ActivationMaker(LayerMaker2):
     def sigmoid(self):
         self.thisptr.sigmoid()
         return self
+    def scaledTanh(self):
+        self.thisptr.scaledTanh()
+        return self
     def tanh(self):
         self.thisptr.tanh()
         return self
