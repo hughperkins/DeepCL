@@ -301,5 +301,8 @@ configure_file(DeepCLConfig.cmake.in
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/DeepCLConfig.cmake" @ONLY)
 
 install(FILES
+  "${PROJECT_BINARY_DIR}/DeepCLTargets.cmake"
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+install(FILES
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/DeepCLConfig.cmake"
   DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
