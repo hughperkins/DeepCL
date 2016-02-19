@@ -40,7 +40,7 @@ public:
     VIRTUAL void unpersistFromArray(int version, float const*array);
     VIRTUAL void setWeights(float *weights, float *bias);
     VIRTUAL float * getWeights();
-	VIRTUAL float * getBias();
+    VIRTUAL float * getBias();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
     VIRTUAL int getOutputNumElements() const;
