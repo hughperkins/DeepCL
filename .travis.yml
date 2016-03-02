@@ -35,7 +35,7 @@ script:
   - env
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DBUILD_PYTHON_WRAPPERS=ON ..
   - make -j 4
   - make install
   - source ../dist/bin/activate.sh
@@ -43,6 +43,7 @@ script:
   - cd ../python
   - source ~/env/bin/activate
   - python setup.py install
+  - python test_squaremax.py
 
 notifications:
   email:
