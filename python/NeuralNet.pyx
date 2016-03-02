@@ -12,9 +12,7 @@ cdef class NeuralNet:
         self.thisptr.deleteMe()
 
     def asString(self):
-        print('about to call asnewcharstar')
         cdef const char *result_charstar = self.thisptr.asNewCharStar()
-        print('got char *result')
         cdef str result = str(result_charstar.decode('UTF-8'))
         CppRuntimeBoundary.deepcl_deleteCharStar(result_charstar)
         return result
@@ -27,7 +25,7 @@ cdef class NeuralNet:
     def forward(self, const float[:] images):
         self.thisptr.forward(&images[0])
     def forwardList(self, imagesList):
-        cdef c_array.array imagesArray = array('f', imagesList)
+        cdef c_array.array imagesArray = array(floatArrayType, imagesList)
         cdef float[:] imagesArray_view = imagesArray
         self.thisptr.forward(&imagesArray_view[0])
     def backwardFromLabels(self, int[:] labels):
@@ -45,7 +43,10 @@ cdef class NeuralNet:
         layer = Layer()
         layer.set_thisptr(cLayer) # note: once neuralnet out of scope, these 
                                                     # are no longer valid
-        if layer.getClassName() == 'SoftMaxLayer':
+        # print('layer.getClassName()', layer.getClassName())
+        # print('type(layer.getClassName()', type(layer.getClassName()))
+        # print('type(layer.getClassName().decode("utf-8"))', type(layer.getClassName().decode('utf-8')))
+        if layer.getClassName().decode('utf-8') == 'SoftMaxLayer':
             layer.set_thisptr(<cDeepCL.Layer *>(0))
             layer = SoftMax()
             layer.set_thisptr(cLayer)
@@ -57,7 +58,7 @@ cdef class NeuralNet:
     def getOutput(self):
         cdef const float *output = self.thisptr.getOutput()
         cdef int outputNumElements = self.thisptr.getOutputNumElements()
-        cdef c_array.array outputArray = array('f', [0] * outputNumElements)
+        cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements)
         for i in range(outputNumElements):
             outputArray[i] = output[i]
         return outputArray

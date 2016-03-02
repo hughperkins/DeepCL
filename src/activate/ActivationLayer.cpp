@@ -75,7 +75,7 @@ VIRTUAL void ActivationLayer::printOutput() {
 //    float const*output = getOutput();
 //    int outPlanes = getOutputPlanes();
 //    int outputNumElements = getOutputSize();
-    std::cout << "  outputs: " << std::endl;
+    //std::cout << "  outputs: " << std::endl;
     getOutput();
 // output are organized like [imageid][filterid][row][col]
     for(int n = 0; n < std::min(5, batchSize); n++) {

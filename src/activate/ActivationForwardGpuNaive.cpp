@@ -49,7 +49,7 @@ VIRTUAL void ActivationForwardGpuNaive::forward(int batchSize, CLWrapper *inputW
 }
 ActivationForwardGpuNaive::ActivationForwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn) :
         ActivationForward(cl, numPlanes, inputSize, fn) {
-    cout << "fn->getDefintName() " << fn->getDefineName() << endl;
+    // cout << "fn->getDefintName() " << fn->getDefineName() << endl;
     string options = "";
     options += " -DgOutputSize=" + toString(outputSize);
     options += " -DgOutputSizeSquared=" + toString(outputSize * outputSize);
