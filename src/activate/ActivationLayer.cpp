@@ -229,7 +229,7 @@ VIRTUAL void ActivationLayer::backward() {
     }
 }
 VIRTUAL std::string ActivationLayer::asString() const {
-    return "ActivationLayer{ " + fn->getDefineName() + " }";
+    return std::string("ActivationLayer{ ") + fn->getDefineName() + " }";
 }
 VIRTUAL int ActivationLayer::getPersistSize(int version) const {
     // no weights, so:

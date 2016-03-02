@@ -57,7 +57,7 @@ ActivationBackwardGpuNaive::ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes
     options += " -D gInputSizeSquared=" + toString(inputSize * inputSize);
     options += " -D gOutputSize=" + toString(outputSize);
     options += " -D gOutputSizeSquared=" + toString(outputSize * outputSize);
-    options += " -D " + fn->getDefineName();
+    options += string(" -D ") + fn->getDefineName();
 
     // [[[cog
     // import stringify

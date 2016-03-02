@@ -72,7 +72,7 @@ cdef class SoftMax(Layer):
     def getLabels(self):
         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
         cdef int batchSize = cSoftMax.getBatchSize()
-        cdef c_array.array labelsArray = array('i', [0] * batchSize)
+        cdef c_array.array labelsArray = array('i'.encode('utf-8'), [0] * batchSize)
         cdef int[:] labelsArray_view = labelsArray
         cSoftMax.getLabels(&labelsArray_view[0])
         return labelsArray
