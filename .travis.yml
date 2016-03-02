@@ -16,6 +16,19 @@ before_install:
   - ls ~
   - echo $HOME
   - env
+  - BASEDIR=$(pwd)
+  - echo BASEDIR $BASEDIR
+  - wget https://www.python.org/ftp/python/3.4.4/python-3.4.4-macosx10.6.pkg
+  - sudo installer -pkg python-3.4.4-macosx10.6.pkg -target /
+  - python3 -V
+  - wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-14.0.6.tar.gz
+  - tar -xf virtualenv-14.0.6.tar.gz
+  - virtualenv-14.0.6/virtualenv.py -p python3 ~/env
+  - source ~/env/bin/activate
+  - pip install -U pip
+  - pip install -U setuptools
+  - pip install wheel
+  - pip install numpy
 
 script:
   - echo hello
@@ -27,6 +40,9 @@ script:
   - make install
   - source ../dist/bin/activate.sh
   - deepcl_unittests tests=-DATA*:SLOW*:testClBlas*:testDeepCL.basic:testupdateweights*:testforward*:testsimpleconvolvenet*:testlogicaloperators*:testbackward*:testsinglebatch*:EXCLUDED*:testpoolingforward*:testCopyBlock.basic:testCopyLocal.basic:testactivationforward*:testdropoutforward*:testsgd.basic:testCLMathWrapper.sqrt
+  - cd ../python
+  - source ~/env/bin/activate
+  - python setup.py install
 
 notifications:
   email:
