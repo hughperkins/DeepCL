@@ -43,6 +43,7 @@ script:
   - cd ../python
   - source ~/env/bin/activate
   - python setup.py install
+  - cd ..
   - python travis/simpletest.py
 
 notifications:
