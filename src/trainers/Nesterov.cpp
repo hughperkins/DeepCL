@@ -77,7 +77,7 @@ VIRTUAL void Nesterov::updateWeights(CLWrapper *weightsWrapper,
     clWeights = clOldWeights;
     clWeights += clLastUpdate;
 }
-VIRTUAL BatchResult Nesterov::train( 
+VIRTUAL BatchResult Nesterov::trainNet( 
     NeuralNet *net, TrainingContext *context,
     float const *input, OutputData *outputData) {
     // learns one batch, including updating weights
@@ -139,17 +139,17 @@ VIRTUAL BatchResult Nesterov::train(
 
     return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Nesterov::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Nesterov::trainNet(NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput) {
 
     ExpectedData expectedData(net, expectedOutput);
-    return this->train(net, context, input, &expectedData);
+    return this->trainNet(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Nesterov::trainFromLabels(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Nesterov::trainNetFromLabels(NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels) {
 
     LabeledData labeledData(net, labels);
-    return this->train(net, context, input, &labeledData);
+    return this->trainNet(net, context, input, &labeledData);
 }
 VIRTUAL void Nesterov::bindState(NeuralNet *net) {
     NesterovStateMaker stateMaker;

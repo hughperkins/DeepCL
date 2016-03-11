@@ -26,12 +26,5 @@ net.addLayer(PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(6))
 net.addLayer(PyDeepCL.NormalizationLayerMaker().translate(-0.5).scale(1/255.0))
 net.addLayer(PyDeepCL.ActivationMaker().relu())
 net.addLayer(PyDeepCL.PoolingMaker().poolingSize(2))
-
-inTensor = np.random.randn(batchSize * numPlanes * imageSize * imageSize).astype('float32')
-net.setBatchSize(batchSize)
-net.forward(inTensor)
-outTensor = net.getOutput()
-print('len(outTensor)', len(outTensor))
-assert(len(outTensor) == batchSize * numPlanes * (imageSize//2) * (imageSize//2))
-print('finished ok')
+print('net', net)
 

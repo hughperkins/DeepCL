@@ -65,7 +65,7 @@ VIRTUAL void Adagrad::updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWe
     delete workingWrapper;
     delete[] working;
 }
-VIRTUAL BatchResult Adagrad::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adagrad::trainNet(NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
@@ -94,15 +94,15 @@ VIRTUAL BatchResult Adagrad::train(NeuralNet *net, TrainingContext *context,
     }
     return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Adagrad::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adagrad::trainNet(NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput) {
     ExpectedData expectedData(net, expectedOutput);
-    return this->train(net, context, input, &expectedData);
+    return this->trainNet(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Adagrad::trainFromLabels(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adagrad::trainNetFromLabels(NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels) {
     LabeledData labeledData(net, labels);
-    return this->train(net, context, input, &labeledData);
+    return this->trainNet(net, context, input, &labeledData);
 }
 VIRTUAL void Adagrad::bindState(NeuralNet *net) {
     AdagradStateMaker stateMaker(fudgeFactor);

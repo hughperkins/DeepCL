@@ -76,7 +76,7 @@ VIRTUAL void Adadelta::updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradW
     delete workingWrapper;
     delete[] working;
 }
-VIRTUAL BatchResult Adadelta::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adadelta::trainNet(NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
@@ -105,15 +105,15 @@ VIRTUAL BatchResult Adadelta::train(NeuralNet *net, TrainingContext *context,
     }
     return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Adadelta::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adadelta::trainNet(NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput) {
     ExpectedData expectedData(net, expectedOutput);
-    return this->train(net, context, input, &expectedData);
+    return this->trainNet(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Adadelta::trainFromLabels(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Adadelta::trainNetFromLabels(NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels) {
     LabeledData labeledData(net, labels);
-    return this->train(net, context, input, &labeledData);
+    return this->trainNet(net, context, input, &labeledData);
 }
 VIRTUAL void Adadelta::bindState(NeuralNet *net) {
     AdadeltaStateMaker stateMaker;

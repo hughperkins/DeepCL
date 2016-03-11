@@ -63,7 +63,7 @@ VIRTUAL void Rmsprop::updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWe
     delete workingWrapper;
     delete[] working;
 }
-VIRTUAL BatchResult Rmsprop::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Rmsprop::trainNet(NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData) {
     // learns one batch, including updating weights
     // doesnt have to think about running multiple batches,
@@ -92,15 +92,15 @@ VIRTUAL BatchResult Rmsprop::train(NeuralNet *net, TrainingContext *context,
     }
     return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Rmsprop::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Rmsprop::trainNet(NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput) {
     ExpectedData expectedData(net, expectedOutput);
-    return this->train(net, context, input, &expectedData);
+    return this->trainNet(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Rmsprop::trainFromLabels(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Rmsprop::trainNetFromLabels(NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels) {
     LabeledData labeledData(net, labels);
-    return this->train(net, context, input, &labeledData);
+    return this->trainNet(net, context, input, &labeledData);
 }
 VIRTUAL void Rmsprop::bindState(NeuralNet *net) {
     RmspropStateMaker stateMaker;

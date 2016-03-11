@@ -73,7 +73,7 @@ VIRTUAL void Annealer::updateWeights(float annealedLearningRate, CLWrapper *weig
     delete gradWeightsCopyWrapper;
     delete[] gradWeightsCopy;
 }
-VIRTUAL BatchResult Annealer::train( 
+VIRTUAL BatchResult Annealer::trainNet( 
         NeuralNet *net, TrainingContext *context,
         float const *input, OutputData *outputData) {
 
@@ -109,15 +109,15 @@ VIRTUAL BatchResult Annealer::train(
     }
     return BatchResult(loss, numRight);
 }
-VIRTUAL BatchResult Annealer::train(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Annealer::trainNet(NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput) {
     ExpectedData expectedData(net, expectedOutput);
-    return this->train(net, context, input, &expectedData);
+    return this->trainNet(net, context, input, &expectedData);
 }
-VIRTUAL BatchResult Annealer::trainFromLabels(NeuralNet *net, TrainingContext *context,
+VIRTUAL BatchResult Annealer::trainNetFromLabels(NeuralNet *net, TrainingContext *context,
         float const*input, int const*labels) {
     LabeledData labeledData(net, labels);
-    return this->train(net, context, input, &labeledData);
+    return this->trainNet(net, context, input, &labeledData);
 }
 VIRTUAL void Annealer::bindState(NeuralNet *net) {
     // since we have no state, all we will do is strip any existing state,

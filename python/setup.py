@@ -35,19 +35,24 @@ compile_options = []
 osfamily = platform.uname()[0]
 if osfamily == 'Windows':
     compile_options.append('/EHsc')
-elif osfamily == 'Linux':
+
+if osfamily == 'Linux':
     compile_options.append('-std=c++0x')
-    compile_options.append('-g')
-elif osfamily == 'Darwin':
+
+if osfamily == 'Darwin':
     compile_options.append('-mmacosx-version-min=10.7')
     compile_options.append('-stdlib=libc++')
+
+if osfamily in ['Linux', 'Darwin']:
     compile_options.append('-g')
-else:
+    compile_options.append('-Wno-unused-function')
+    compile_options.append('-Wno-unneeded-internal-declaration')
+    compile_options.append('-Wno-strict-prototypes')
+
+if osfamily not in ['Windows', 'Linux', 'Darwin']:
     print('WARNING: your osfamily "{os}" not recognized.'.format(
         os=osfamily))
     print('Please raise an issue at https://github.com/hughperkins/DeepCL/issues/new')
-    pass
-    # put other options etc here if necessary
 
 compile_options.append('-DUSE_CLEW')
 

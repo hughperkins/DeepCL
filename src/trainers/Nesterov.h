@@ -48,12 +48,12 @@ public:
     VIRTUAL void updateWeights(CLWrapper *weightsWrapper,
     CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState);
-    VIRTUAL BatchResult train(
+    VIRTUAL BatchResult trainNet(
     NeuralNet *net, TrainingContext *context,
     float const *input, OutputData *outputData);
-    VIRTUAL BatchResult train(NeuralNet *net, TrainingContext *context,
+    VIRTUAL BatchResult trainNet(NeuralNet *net, TrainingContext *context,
     float const*input, float const*expectedOutput);
-    VIRTUAL BatchResult trainFromLabels(NeuralNet *net, TrainingContext *context,
+    VIRTUAL BatchResult trainNetFromLabels(NeuralNet *net, TrainingContext *context,
     float const*input, int const*labels);
     VIRTUAL void bindState(NeuralNet *net);
     STATIC Nesterov *instance(EasyCL *cl, float learningRate);
