@@ -75,7 +75,7 @@ VIRTUAL int LossLayer::calcNumRight(OutputData *outputData) {
         return 0; // how are we going to calculate num right, if not labeled?
     } else if(labeledData != 0) {
         IAcceptsLabels *labeled = dynamic_cast< IAcceptsLabels * >(this);
-        return labeled->calcNumRight(labeledData->labels);
+        return labeled->calcNumRightFromLabels(labeledData->labels);
     } else {
         throw runtime_error("OutputData child class not implemeneted in LossLayer::calcNumRight");
     }

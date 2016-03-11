@@ -201,7 +201,7 @@ VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
 VIRTUAL int SoftMaxLayer::getPersistSize(int version) const {
     return 0;
 }
-VIRTUAL int SoftMaxLayer::calcNumRight(int const*labels) {
+VIRTUAL int SoftMaxLayer::calcNumRightFromLabels(int const*labels) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
 //    float *input = previousLayer->getOutput(); // just retrieve as host-side array for now
     int numRight = 0;

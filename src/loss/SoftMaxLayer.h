@@ -49,7 +49,7 @@ public:
     VIRTUAL void calcGradInput(float const *expectedValues);
     VIRTUAL int getNumLabelsPerExample();
     VIRTUAL int getPersistSize(int version) const;
-    VIRTUAL int calcNumRight(int const*labels);
+    VIRTUAL int calcNumRightFromLabels(int const*labels);
     VIRTUAL void forward();
     VIRTUAL void getLabels(int *labels);  // need to allocate labels array first, and have called 'forward' first
     VIRTUAL std::string asString() const;
