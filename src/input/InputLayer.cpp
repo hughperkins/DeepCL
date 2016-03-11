@@ -95,8 +95,8 @@ VIRTUAL void InputLayer::forward() {
         output[i] = input[i];
     }
 }
-VIRTUAL void InputLayer::backward(float learningRate, float const *gradOutput) {
-}
+//VIRTUAL void InputLayer::backward(float learningRate, float const *gradOutput) {
+//}
 VIRTUAL int InputLayer::getOutputSize() const {
     return outputSize;
 }
