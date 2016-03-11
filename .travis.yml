@@ -43,7 +43,7 @@ script:
   - cd ../python
   - source ~/env/bin/activate
   - python setup.py install
-  - # python test_squaremax.py
+  - python travis/simpletest.py
 
 notifications:
   email:
