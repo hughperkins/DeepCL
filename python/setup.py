@@ -56,6 +56,8 @@ if osfamily not in ['Windows', 'Linux', 'Darwin']:
 
 compile_options.append('-DUSE_CLEW')
 
+include_dirs = []
+
 runtime_library_dirs = []
 libraries = []
 libraries.append('clBLAS')
@@ -78,7 +80,7 @@ if cython_present:
 ext_modules = [
     Extension("PyDeepCL",
               sources=sources,
-              include_dirs=['mysrc', 'mysrc/lua'],
+              include_dirs=include_dirs,
               library_dirs=library_dirs,
               libraries=libraries,
               extra_compile_args=compile_options,
