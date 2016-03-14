@@ -18,13 +18,28 @@ before_install:
   - env
   - BASEDIR=$(pwd)
   - echo BASEDIR $BASEDIR
+  - echo ===== virtualenv ===========
+  - cd ${BASEDIR}
+  - wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-14.0.6.tar.gz
+  - tar -xf virtualenv-14.0.6.tar.gz
+  - echo ====== python 3.4 ==============
+  - cd ${BASEDIR}
   - wget https://www.python.org/ftp/python/3.4.4/python-3.4.4-macosx10.6.pkg
   - sudo installer -pkg python-3.4.4-macosx10.6.pkg -target /
   - python3 -V
-  - wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-14.0.6.tar.gz
-  - tar -xf virtualenv-14.0.6.tar.gz
-  - virtualenv-14.0.6/virtualenv.py -p python3 ~/env
-  - source ~/env/bin/activate
+  - ${BASEDIR}/virtualenv-14.0.6/virtualenv.py -p python3 ~/env34
+  - source ~/env34/bin/activate
+  - pip install -U pip
+  - pip install -U setuptools
+  - pip install wheel
+  - pip install numpy
+  - echo ==== python 2.7 ================
+  - cd ${BASEDIR}
+  - wget https://www.python.org/ftp/python/2.7.11/python-2.7.11rc1-macosx10.6.pkg
+  - sudo installer -pkg python-2.7.11rc1-macosx10.6.pkg -target /
+  - python2.7 -V
+  - ${BASEDIR}/virtualenv-14.0.6/virtualenv.py -p python2.7 ~/env27
+  - source ~/env27/bin/activate
   - pip install -U pip
   - pip install -U setuptools
   - pip install wheel
@@ -41,7 +56,15 @@ script:
   - source ../dist/bin/activate.sh
   - deepcl_unittests tests=-DATA*:SLOW*:testClBlas*:testDeepCL.basic:testupdateweights*:testforward*:testsimpleconvolvenet*:testlogicaloperators*:testbackward*:testsinglebatch*:EXCLUDED*:testpoolingforward*:testCopyBlock.basic:testCopyLocal.basic:testactivationforward*:testdropoutforward*:testsgd.basic:testCLMathWrapper.sqrt
   - cd ../python
-  - source ~/env/bin/activate
+  - echo ====== python 3.4 ==============
+  - source ~/env34/bin/activate
+  - python -V
+  - python setup.py install
+  - cd ..
+  - python travis/simpletest.py
+  - echo ====== python 2.7 ==============
+  - source ~/env27/bin/activate
+  - python -V
   - python setup.py install
   - cd ..
   - python travis/simpletest.py
