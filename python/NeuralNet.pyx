@@ -17,8 +17,13 @@ cdef class NeuralNet:
         CppRuntimeBoundary.deepcl_deleteCharStar(result_charstar)
         return result
 
-#    def myprint(self):
-#        self.thisptr.print()
+    def __str__(self):
+#        print('__str__')
+        return self.asString()
+
+    def __unicode__(self):
+#        print('__unicode__')
+        return self.asString()
 
     def setBatchSize(self, int batchSize):
         self.thisptr.setBatchSize(batchSize) 

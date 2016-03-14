@@ -35,4 +35,5 @@ net.addLayer(PyDeepCL.NormalizationLayerMaker().translate(-0.5).scale(1/255.0))
 PyDeepCL.NetdefToNet.createNetFromNetdef(
     net, "rt2-8c5z-tanh-5n")
 print('net', net)
+print(net.__unicode__())
 

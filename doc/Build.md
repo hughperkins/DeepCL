@@ -160,3 +160,8 @@ If you want to use the DeepCL library from C++, you will need to link with the f
 - libclew.so / clew.dll
 - libclBLAS.so / clBLAS.dll
 
+## Some errors, and possible causes
+
+- during build, `fatal error: CppRuntimeBoundary.h: No such file or directory`
+  - make sure you ran `source ../dist/bin/activate.sh`, or similar (see above for exact command similar to this)
+
