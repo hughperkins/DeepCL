@@ -21,10 +21,18 @@ batchSize = 2
 numPlanes = 1
 imageSize = 6
 
+# test1
 net = PyDeepCL.NeuralNet(cl)
 net.addLayer(PyDeepCL.InputLayerMaker().numPlanes(1).imageSize(6))
 net.addLayer(PyDeepCL.NormalizationLayerMaker().translate(-0.5).scale(1/255.0))
 net.addLayer(PyDeepCL.ActivationMaker().relu())
 net.addLayer(PyDeepCL.PoolingMaker().poolingSize(2))
+print('net', net)
+
+# test2
+net = PyDeepCL.NeuralNet(cl, 1, 28)
+net.addLayer(PyDeepCL.NormalizationLayerMaker().translate(-0.5).scale(1/255.0))
+PyDeepCL.NetdefToNet.createNetFromNetdef(
+    net, "rt2-8c5z-tanh-5n")
 print('net', net)
 
