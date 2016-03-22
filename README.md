@@ -69,13 +69,6 @@ Weight initializers:
 
 Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 
-# Important news: 8.x is now merged to master!
-
-Important news: 8.x is now merged to master!  This brings a few big changes:
-* clblas is now integrated into the build
-* im2col convolution layers are now available, and automatically used where they bring a speed advantage
-* python wrappers now use the native libraries directly, rather than having their own separate native library build process
-
 # Example usages
 
 - obtained 37.2% test accuracy, on next move prediction task, using 33.6 million training examples from [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
