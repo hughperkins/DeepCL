@@ -109,15 +109,6 @@ set(deepcl_sources ${deepcl_sources} src/DeepCL.cpp src/CppRuntimeBoundary.cpp)
 #    set(lua_src ${lua_src} EasyCL/thirdparty/lua-5.1.5/src/${source})
 #endforeach()
 
-#set(EasyCL_sources EasyCL/EasyCL.cpp
-#    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp EasyCL/CLWrapper.cpp EasyCL/util/easycl_stringhelper.cpp
-#    EasyCL/templates/TemplatedKernel.cpp EasyCL/templates/LuaTemplater.cpp
-#    EasyCL/CLKernel.cpp EasyCL/thirdparty/clew/src/clew.c
-#    ${lua_src})
-#add_library(EasyCL SHARED ${EasyCL_sources})
-#link_libraries(EasyCL)
-#target_link_libraries(EasyCL ${LUA_LIBRARIES})
-
 #add_executable(gpuinfo EasyCL/gpuinfo.cpp EasyCL/thirdparty/clew/src/clew.c 
 #    EasyCL/deviceinfo_helper.cpp EasyCL/platforminfo_helper.cpp)
 #if(ON_LINUX)
@@ -140,7 +131,9 @@ target_link_libraries(DeepCL clBLAS)
 if(LIBJPEG_AVAILABLE)
     target_link_libraries(DeepCL ${JPEG_LIBRARY})
 endif(LIBJPEG_AVAILABLE)
-
+if(UNIX)
+    target_link_libraries(DeepCL pthread)
+endif()
 
 #if(ON_LINUX)
 #    execute_process(COMMAND git --version RESULT_VARIABLE git_test ERROR_QUIET)
@@ -208,6 +201,9 @@ add_executable(mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp)
 
 foreach(exe deepcl_train deepcl_predict cifar-to-mat prepare-norb mnist-to-floats mnist-to-pipe)
     target_link_libraries(${exe} DeepCL)
+#    if(UNIX)
+#        target_link_libraries(${exe} pthread)
+#    endif()
 endforeach()
 
 #target_link_libraries(cifar-to-mat ${LUA_LIBRARIES})
