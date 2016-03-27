@@ -56,7 +56,56 @@ TEST(testClBlas, basic) {
     cl->finish();
 
     delete cl;
-    clblasTeardown();
+//    clblasTeardown();
+}
+
+TEST(testClBlas, basicthrice) {
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+//    clblasSetup();
+
+    for(int i = 0; i < 3; i++) {
+        float A[] = {1, 3,
+                     2, 7,
+                     9, 5};
+        float B[] = {3,
+                     -1};
+
+        float C[3];
+        ClBlasInstance clblasInstance;
+        CLWrapper *AWrap = cl->wrap(6, A);
+        CLWrapper *BWrap = cl->wrap(2, B);
+        CLWrapper *CWrap = cl->wrap(3, C);
+        AWrap->copyToDevice();
+        BWrap->copyToDevice();
+        CWrap->createOnDevice();
+        ClBlasHelper::Gemm(
+            cl,
+            clblasRowMajor,
+            clblasNoTrans, clblasNoTrans,
+            3, 2, 1,
+            1,
+            AWrap, 0,
+            BWrap, 0,
+            0,
+            CWrap, 0
+        );
+        cl->finish();
+        CWrap->copyToHost();
+        EXPECT_EQ(0, C[0]);
+        EXPECT_EQ(-1, C[1]);
+        EXPECT_EQ(22, C[2]);
+
+        cl->finish();
+
+        delete CWrap;
+        delete BWrap;
+        delete AWrap;
+
+        cl->finish();
+    }
+
+//    clblasTeardown();
+    delete cl;
 }
 
 static void transpose(float *matrix, int rows, int cols) {
@@ -198,6 +247,10 @@ TEST(testClBlas, colMajor) {
     CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
+    CWrap->createOnDevice();
+    cout << "&AWrap->getBuffer()" << (long long)(void *)AWrap->getBuffer() << endl;
+    cout << "&BWrap->getBuffer()" << (long long)(void *)BWrap->getBuffer() << endl;
+    cout << "&CWrap->getBuffer()" << (long long)(void *)CWrap->getBuffer() << endl;
     ClBlasHelper::Gemm(
         cl,
         clblasColumnMajor,

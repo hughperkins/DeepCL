@@ -201,9 +201,6 @@ add_executable(mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp)
 
 foreach(exe deepcl_train deepcl_predict cifar-to-mat prepare-norb mnist-to-floats mnist-to-pipe)
     target_link_libraries(${exe} DeepCL)
-#    if(UNIX)
-#        target_link_libraries(${exe} pthread)
-#    endif()
 endforeach()
 
 #target_link_libraries(cifar-to-mat ${LUA_LIBRARIES})
