@@ -42,16 +42,16 @@ public:
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
     VIRTUAL void setBatchSize(int batchSize);
+    VIRTUAL int getBatchSize();
     VIRTUAL float calcLossFromLabels(int const *labels);
     VIRTUAL float calcLoss(float const *expectedValues);
     VIRTUAL void calcGradInputFromLabels(int const *labels);
     VIRTUAL void calcGradInput(float const *expectedValues);
     VIRTUAL int getNumLabelsPerExample();
     VIRTUAL int getPersistSize(int version) const;
-    VIRTUAL int calcNumRight(int const*labels);
+    VIRTUAL int calcNumRightFromLabels(int const*labels);
     VIRTUAL void forward();
     VIRTUAL void getLabels(int *labels);  // need to allocate labels array first, and have called 'forward' first
-    VIRTUAL void backward(float learningRate);
     VIRTUAL std::string asString() const;
 
     // [[[end]]]

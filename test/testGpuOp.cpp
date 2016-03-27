@@ -15,7 +15,7 @@
 using namespace std;
 
 TEST( testGpuOp, addinplace ) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
     CLWrapper *a = cl->wrap( 5,adat );
@@ -42,7 +42,7 @@ TEST( testGpuOp, addinplace ) {
 }
 
 TEST( testGpuOp, addoutofplace ) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
     float cdat[5];
@@ -80,7 +80,7 @@ TEST( testGpuOp, addoutofplace ) {
 }
 
 TEST( testGpuOp, inverse ) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a = cl->wrap( 5,adat );
     a->copyToDevice();
@@ -102,7 +102,7 @@ TEST( testGpuOp, inverse ) {
 }
 
 TEST( testGpuOp, addscalarinplace ) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a = cl->wrap( 5,adat );
     a->copyToDevice();

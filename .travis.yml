@@ -1,0 +1,75 @@
+language: objective-c
+matrix:
+  include:
+    - env: OSX=10.11
+      os: osx
+      osx_image: osx10.11
+      rvm: system
+
+before_install:
+  - if [ -f ".git/shallow" ]; then travis_retry git fetch --unshallow; fi
+  - git submodule update --init --recursive
+  - whoami
+  - pwd
+  - ls
+  - git status
+  - ls ~
+  - echo $HOME
+  - env
+  - BASEDIR=$(pwd)
+  - echo BASEDIR $BASEDIR
+  - echo ===== virtualenv ===========
+  - cd ${BASEDIR}
+  - wget https://pypi.python.org/packages/source/v/virtualenv/virtualenv-14.0.6.tar.gz
+  - tar -xf virtualenv-14.0.6.tar.gz
+  - echo ====== python 3.4 ==============
+  - cd ${BASEDIR}
+  - wget https://www.python.org/ftp/python/3.4.4/python-3.4.4-macosx10.6.pkg
+  - sudo installer -pkg python-3.4.4-macosx10.6.pkg -target /
+  - python3 -V
+  - ${BASEDIR}/virtualenv-14.0.6/virtualenv.py -p python3 ~/env34
+  - source ~/env34/bin/activate
+  - pip install -U pip
+  - pip install -U setuptools
+  - pip install wheel
+  - pip install numpy
+  - echo ==== python 2.7 ================
+  - cd ${BASEDIR}
+  - wget https://www.python.org/ftp/python/2.7.11/python-2.7.11rc1-macosx10.6.pkg
+  - sudo installer -pkg python-2.7.11rc1-macosx10.6.pkg -target /
+  - python2.7 -V
+  - ${BASEDIR}/virtualenv-14.0.6/virtualenv.py -p python2.7 ~/env27
+  - source ~/env27/bin/activate
+  - pip install -U pip
+  - pip install -U setuptools
+  - pip install wheel
+  - pip install numpy
+
+script:
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_PYTHON_WRAPPERS=ON ..
+  - make -j 4
+  - make install
+  - source ../dist/bin/activate.sh
+  - deepcl_unittests tests=-DATA*:SLOW*:testClBlas*:testDeepCL.basic:testupdateweights*:testforward*:testsimpleconvolvenet*:testlogicaloperators*:testbackward*:testsinglebatch*:EXCLUDED*:testpoolingforward*:testCopyBlock.basic:testCopyLocal.basic:testactivationforward*:testdropoutforward*:testsgd.basic:testCLMathWrapper.sqrt
+  - echo ====== python 3.4 ==============
+  - cd ${BASEDIR}/python
+  - source ~/env34/bin/activate
+  - python -V
+  - python setup.py install
+  - cd ${BASEDIR}
+  - python travis/simpletest.py
+  - echo ====== python 2.7 ==============
+  - cd ${BASEDIR}/python
+  - source ~/env27/bin/activate
+  - python -V
+  - python setup.py install
+  - cd ${BASEDIR}
+  - python travis/simpletest.py
+
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+

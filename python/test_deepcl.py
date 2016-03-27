@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-from __future__ import print_function
+# train on mnist, storing data in array.arrays
+# see test_deepcl_numpy.py for an example using numpy arrays
+
+from __future__ import print_function, division
 import array
 import PyDeepCL
 import sys

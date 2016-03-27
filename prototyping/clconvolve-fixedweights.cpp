@@ -180,10 +180,7 @@ void go(Config config) {
     int testAllocateN = 0;
 
 //    int totalLinearSize;
-    GenericLoaderv2 trainLoader(config.dataDir + "/" + config.trainFile);
-    Ntrain = trainLoader.getN();
-    numPlanes = trainLoader.getPlanes();
-    imageSize = trainLoader.getImageSize();
+    GenericLoader::getDimensions((config.dataDir + "/" + config.trainFile).c_str(), &Ntrain, &numPlanes, &imageSize);
     Ntrain = config.numTrain == -1 ? Ntrain : config.numTrain;
 //    long allocateSize = (long)Ntrain * numPlanes * imageSize * imageSize;
     cout << "Ntrain " << Ntrain << " numPlanes " << numPlanes << " imageSize " << imageSize << endl;
@@ -191,19 +188,16 @@ void go(Config config) {
     trainData = new float[ (long)trainAllocateN * numPlanes * imageSize * imageSize ];
     trainLabels = new int[trainAllocateN];
     if(Ntrain > 0) {
-        trainLoader.load(trainData, trainLabels, 0, Ntrain);
+        GenericLoader::load((config.dataDir + "/" + config.trainFile).c_str(), trainData, trainLabels, 0, Ntrain);
     }
 
-    GenericLoaderv2 testLoader(config.dataDir + "/" + config.validateFile);
-    Ntest = testLoader.getN();
-    numPlanes = testLoader.getPlanes();
-    imageSize = testLoader.getImageSize();
+    GenericLoader::getDimensions((config.dataDir + "/" + config.validateFile).c_str(), &Ntest, &numPlanes, &imageSize);
     Ntest = config.numTest == -1 ? Ntest : config.numTest;
     testAllocateN = Ntest;
     testData = new float[ (long)testAllocateN * numPlanes * imageSize * imageSize ];
     testLabels = new int[testAllocateN]; 
     if(Ntest > 0) {
-        testLoader.load(testData, testLabels, 0, Ntest);
+        GenericLoader::load((config.dataDir + "/" + config.validateFile).c_str(), testData, testLabels, 0, Ntest);
     }
     
     timer.timeCheck("after load images");
@@ -304,7 +298,7 @@ void go(Config config) {
         config.batchSize);
     netLearner.setSchedule(config.numEpochs, afterRestart ? restartEpoch : 1);
 //    netLearner.setBatchSize(config.batchSize);
-    netLearner.setDumpTimings(config.dumpTimings);  
+    netLearner.setDumpTimings(config.dumpTimings);
 //    netLearner.learn(config.learningRate, 1.0f);
 
     cout << "forward output" << endl;

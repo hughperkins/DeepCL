@@ -41,9 +41,7 @@ public:
         return new NormalizationLayerMaker();
     }
     virtual NormalizationLayerMaker *clone() const {
-        NormalizationLayerMaker *thisClone = new NormalizationLayerMaker();
-        memcpy(thisClone, this, sizeof(NormalizationLayerMaker) );
-        return thisClone;
+        return new NormalizationLayerMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

@@ -60,7 +60,9 @@ VIRTUAL void SoftMaxLayer::setBatchSize(int batchSize) {
     gradInput = new float[ previousLayer-> getOutputNumElements() ];
     allocatedSize = batchSize;
 }
-
+VIRTUAL int SoftMaxLayer::getBatchSize() {
+    return this->batchSize;
+}
 // need to calculate multinomial logistic /cross-entropy loss
 VIRTUAL float SoftMaxLayer::calcLossFromLabels(int const *labels) {
 //    cout << "softmaxlayer::calcloss" << endl;
@@ -199,7 +201,7 @@ VIRTUAL int SoftMaxLayer::getNumLabelsPerExample() {
 VIRTUAL int SoftMaxLayer::getPersistSize(int version) const {
     return 0;
 }
-VIRTUAL int SoftMaxLayer::calcNumRight(int const*labels) {
+VIRTUAL int SoftMaxLayer::calcNumRightFromLabels(int const*labels) {
     StatefulTimer::timeCheck("start SoftMaxLayer calcNumRight");
 //    float *input = previousLayer->getOutput(); // just retrieve as host-side array for now
     int numRight = 0;
@@ -318,10 +320,10 @@ VIRTUAL void SoftMaxLayer::getLabels(int *labels) { // need to allocate labels a
 // (cos this layer kind of combines loss layer and a 'normal' propagation layer)
 // certainly, we dont have any weights to update, and we already handled error
 // propagation in 'calcGradInput' method above
-VIRTUAL void SoftMaxLayer::backward(float learningRate) {
+//VIRTUAL void SoftMaxLayer::backward(float learningRate) {
 //    cout << "softmaxlayer::backproperrors" << endl;
     // nop, do nothing :-)
-}
+//}
 VIRTUAL std::string SoftMaxLayer::asString() const {
     return "SoftMaxLayer{ perPlane=" + toString(perPlane) + " numPlanes=" + toString(numPlanes)
         + " imageSize=" + toString(imageSize) + " }";

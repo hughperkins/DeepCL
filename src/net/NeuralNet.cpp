@@ -181,7 +181,7 @@ PUBLICAPI int NeuralNet::calcNumRight(int const *labels) {
     if(acceptsLabels == 0) {
         THROW("You need to add a IAcceptsLabels as the last layer, in order to use calcNumRight");
     }
-    return acceptsLabels->calcNumRight(labels);
+    return acceptsLabels->calcNumRightFromLabels(labels);
 }
 PUBLICAPI void NeuralNet::forward(float const*images) {
     // forward...

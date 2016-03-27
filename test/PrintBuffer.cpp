@@ -16,14 +16,14 @@
 
 using namespace std;
 
-void PrintBuffer::printFloats( EasyCL *cl, CLWrapper *buffer, int rows, int cols ) {
+void PrintBuffer::printFloats(EasyCL *cl, CLWrapper *buffer, int rows, int cols) {
     // first we will copy it to another buffer, so we can copy it out
 
     float *copiedBuffer = new float[ buffer->size() ];
-    CopyBuffer::copy( cl, buffer, copiedBuffer );
+    CopyBuffer::copy(cl, buffer, copiedBuffer);
 
-    for( int i = 0; i < rows; i++ ) {
-        for( int j = 0; j < cols; j++ ) {
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
             cout << " " << copiedBuffer[ i * cols + j ];
         }
         cout << endl;
@@ -32,14 +32,14 @@ void PrintBuffer::printFloats( EasyCL *cl, CLWrapper *buffer, int rows, int cols
     delete[] copiedBuffer;
 }
 
-void PrintBuffer::printInts( EasyCL *cl, CLWrapper *buffer, int rows, int cols ) {
+void PrintBuffer::printInts(EasyCL *cl, CLWrapper *buffer, int rows, int cols) {
     // first we will copy it to another buffer, so we can copy it out
 
     int *copiedBuffer = new int[ buffer->size() ];
-    CopyBuffer::copy( cl, buffer, copiedBuffer );
+    CopyBuffer::copy(cl, buffer, copiedBuffer);
 
-    for( int i = 0; i < rows; i++ ) {
-        for( int j = 0; j < cols; j++ ) {
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
             cout << " " << copiedBuffer[ i * cols + j ];
         }
         cout << endl;

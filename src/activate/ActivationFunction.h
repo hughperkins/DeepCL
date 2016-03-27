@@ -19,7 +19,7 @@ public:
     virtual float calcDerivative(float output) const { throw std::runtime_error("calcDerivative not implemented"); };
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
     virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
-    virtual std::string getDefineName() const { throw std::runtime_error("getDefineName not implemented"); } 
+    virtual const char * getDefineName() const { throw std::runtime_error("getDefineName not implemented"); } 
     static ActivationFunction *fromName(std::string name);
 };
 
@@ -37,7 +37,7 @@ public:
     virtual float getFalse() const {
         return -0.5f;
     }
-    virtual std::string getDefineName() const {
+    virtual const char * getDefineName() const {
         return "TANH";
     } 
 };
@@ -56,7 +56,7 @@ public:
     virtual float getFalse() const {
         return -1.0f;
     }
-    virtual std::string getDefineName() const {
+    virtual const char * getDefineName() const {
         return "SCALEDTANH";
     } 
 };
@@ -75,7 +75,7 @@ public:
     virtual float getFalse() const {
         return 0.2f;
     }
-    virtual std::string getDefineName() const {
+    virtual const char * getDefineName() const {
         return "SIGMOID";
     } 
 };
@@ -94,7 +94,7 @@ public:
     virtual float getFalse() const {
         return -0.5f;
     }
-    virtual std::string getDefineName() const {
+    virtual const char * getDefineName() const {
         return "LINEAR";
     } 
 };
@@ -113,10 +113,28 @@ public:
     virtual float getFalse() const {
         return 0.2f;
     }
-    virtual std::string getDefineName() const {
+    virtual const char * getDefineName() const {
         return "RELU";
     } 
 };
 
 
+class EluActivation : public ActivationFunction {
+public:
+    virtual float calc(float value) const {
+        return value > 0 ? value : exp(value) - 1;
+    }
+    virtual float calcDerivative(float output) const {
+        return output > 0 ? 1.0f : output + 1;
+    }
+    virtual float getTrue() const {
+        return 0.8f;
+    }
+    virtual float getFalse() const {
+        return 0.2f;
+    }
+    virtual const char * getDefineName() const {
+        return "ELU";
+    } 
+};
 

@@ -75,7 +75,7 @@ VIRTUAL void ActivationLayer::printOutput() {
 //    float const*output = getOutput();
 //    int outPlanes = getOutputPlanes();
 //    int outputNumElements = getOutputSize();
-    std::cout << "  outputs: " << std::endl;
+    //std::cout << "  outputs: " << std::endl;
     getOutput();
 // output are organized like [imageid][filterid][row][col]
     for(int n = 0; n < std::min(5, batchSize); n++) {
@@ -229,7 +229,7 @@ VIRTUAL void ActivationLayer::backward() {
     }
 }
 VIRTUAL std::string ActivationLayer::asString() const {
-    return "ActivationLayer{ " + fn->getDefineName() + " }";
+    return std::string("ActivationLayer{ ") + fn->getDefineName() + " }";
 }
 VIRTUAL int ActivationLayer::getPersistSize(int version) const {
     // no weights, so:

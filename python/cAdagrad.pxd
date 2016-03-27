@@ -1,5 +1,5 @@
 cdef extern from "trainers/Adagrad.h":
-    cdef cppclass Adagrad:
+    cdef cppclass Adagrad(Trainer):
         Adagrad( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         BatchResult train( NeuralNet *net, TrainingContext *context,

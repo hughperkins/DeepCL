@@ -63,9 +63,7 @@ public:
         return this;
     }    
     virtual ConvolutionalMaker *clone() const {
-        ConvolutionalMaker *thisClone = new ConvolutionalMaker();
-        memcpy(thisClone, this, sizeof(ConvolutionalMaker) ); // this will copy the activationfunction pointer too
-        return thisClone;
+        return new ConvolutionalMaker(*this); // this will copy the activationfunction pointer too
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

@@ -69,11 +69,17 @@ INCLUDE_DIRECTORIES(${EASYCL_INCLUDE_DIRS})
 
 INCLUDE("${CMAKE_MODULE_PATH}/build_clBLAS.cmake")
 INCLUDE_DIRECTORIES(${CLBLAS_INCLUDE_DIRS})
-# TARGET_link_LIBRARIES(clBLAS ${EASYCL_LIBRARIES})
+## TARGET_link_LIBRARIES(clBLAS ${EASYCL_LIBRARIES})
+
+ADD_DEPENDENCIES(clBLAS-external EasyCL)
 
 include_directories(.)
 include_directories(src)
+<<<<<<< HEAD
 include_directories(src/qlearning)
+=======
+include_directories(qlearning)
+>>>>>>> origin/master
 
 if(ON_LINUX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
@@ -152,7 +158,7 @@ endif()
 #        add_custom_command(
 #            OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/thirdparty/clew/src/clew.c ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/EasyCL.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLKernel.cpp ${CMAKE_CURRENT_SOURCE_DIR}/EasyCL/CLWrapper.cpp
 #            COMMAND git submodule update --init --force --recursive
-#       )
+#        )
 #        add_custom_target(git_submodules_update DEPENDS EasyCL/thirdparty/clew/src/clew.c)
 #        add_dependencies(DeepCL git_submodules_update)
 #    endif()
@@ -172,7 +178,7 @@ if(DEV_RUN_COG)
         cog
         python ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cogapp/cog.py -q -I ${CMAKE_CURRENT_SOURCE_DIR}/cog-batteries -r ${cog_dirs} ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h ${CMAKE_CURRENT_SOURCE_DIR}/prototyping/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-   )
+    )
     add_dependencies(DeepCL cog)
 endif(DEV_RUN_COG)
 
@@ -207,12 +213,6 @@ add_executable(prepare-norb test/prepare-norb.cpp src/util/stringhelper.cpp)
 add_executable(mnist-to-floats test/mnist-to-floats.cpp src/util/stringhelper.cpp)
 add_executable(mnist-to-pipe test/mnist-to-pipe.cpp src/util/stringhelper.cpp)
 
-#if(ON_LINUX)
-#    target_link_libraries(deepcl_train pthread)
-#    target_link_libraries(deepcl_predict pthread)
-#    target_link_libraries(cifar-to-mat pthread)
-#endif()
-
 foreach(exe deepcl_train deepcl_predict cifar-to-mat prepare-norb mnist-to-floats mnist-to-pipe)
     target_link_libraries(${exe} DeepCL)
 endforeach()
@@ -226,8 +226,7 @@ if(LIBPNGPP_AVAILABLE)
     add_executable(testgenericloader test/testGenericLoader.cpp src/util/stringhelper.cpp)
 
     foreach(exe testpatchextractor testtranslator testgenericloader)
-        target_link_libraries(${exe} DeepCL)
-        target_link_libraries(${exe} ${PNG_LIBRARY})
+        target_link_libraries(${exe} DeepCL ${PNG_LIBRARY})
     endforeach()
 endif(LIBPNGPP_AVAILABLE)
 
@@ -249,17 +248,13 @@ if(PROTOTYPING)
         prototyping/qlearning/ScenarioImage.cpp)
     target_link_libraries(clconvolve-fixedweights DeepCL)
     target_link_libraries(learn_scenario_image DeepCL)
-
-#   if(ON_LINUX)
-#      target_link_libraries(clconvolve-fixedweights pthread)
-#   endif()
 endif(PROTOTYPING)
+
+target_link_libraries(deepcl_unittests DeepCL)
 
 if(LIBPNGPP_AVAILABLE)
     target_link_libraries(deepcl_unittests ${PNG_LIBRARY})
 endif(LIBPNGPP_AVAILABLE)
-
-target_link_libraries(deepcl_unittests DeepCL)
 
 add_executable(testgtestsupp test/testgtestsupp.cpp thirdparty/gtest/gtest_main.cc)
 target_link_libraries(testgtestsupp deepcl_gtest)
@@ -312,6 +307,9 @@ set(ABS_LIBRARY_FILE "DeepCL" "EasyCL")
 configure_file(DeepCLConfig.cmake.in
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/DeepCLConfig.cmake" @ONLY)
 
+install(FILES
+  "${PROJECT_BINARY_DIR}/DeepCLTargets.cmake"
+  DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 install(FILES
   "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/DeepCLConfig.cmake"
   DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)

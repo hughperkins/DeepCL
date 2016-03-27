@@ -4,7 +4,7 @@
 #include "ScenarioImage.h"
 
 #include "util/stringhelper.h"
-#include "array_helper.h"
+#include "qlearning/array_helper.h"
 
 #include "net/NeuralNet.h"
 
@@ -15,7 +15,7 @@ using namespace std;
 #undef VIRTUAL
 #define VIRTUAL
 
-ScenarioImage::ScenarioImage( int size, bool appleMoves ) :
+ScenarioImage::ScenarioImage(int size, bool appleMoves) :
         net(0), // this is simply used by the showQRepresentation method
         size(size),
         appleMoves(appleMoves) {
@@ -31,7 +31,7 @@ ScenarioImage::ScenarioImage( int size, bool appleMoves ) :
     reset();
     print();
 }
-void ScenarioImage::setNet( NeuralNet *net ) {
+void ScenarioImage::setNet(NeuralNet *net) {
     this->net = net;
 }
 void ScenarioImage::printQRepresentation() {
@@ -39,29 +39,29 @@ void ScenarioImage::printQRepresentation() {
     cout << "q directions:" << endl;
     int size = scenario->getPerceptionSize();
     float *input = new float[ size * size * 2 ];
-    arrayZero( input, size * size * 2 );
+    arrayZero(input, size * size * 2);
     input[ scenario->appleY * size + scenario->appleX ] = 1;
-    for( int y = 0; y < size; y++ ) {
+    for(int y = 0; y < size; y++) {
         string thisLine = "";
-        for( int x = 0; x < size; x++ ) {
+        for(int x = 0; x < size; x++) {
             float highestQ = 0;
             int bestAction = 0;
             input[ size * size + y * size + x ] = 1;
-            net->forward( input );
+            net->forward(input);
             input[ size * size + y * size + x ] = 0;
             float const*output = net->getOutput();
-            for( int action = 0; action < 4; action++ ) {
+            for(int action = 0; action < 4; action++) {
                 float thisQ = output[action];
-                if( action == 0 || thisQ > highestQ ) {
+                if(action == 0 || thisQ > highestQ) {
                     highestQ = thisQ;
                     bestAction = action;
                 }
             }
-            if( bestAction == 0 ) {
+            if(bestAction == 0) {
                 thisLine += ">";
-            } else if( bestAction == 1 ) {  
+            } else if(bestAction == 1) {
                 thisLine += "<";
-            } else if( bestAction == 2 ) {
+            } else if(bestAction == 2) {
                 thisLine += "V";
             } else {
                 thisLine += "^";
@@ -73,12 +73,12 @@ void ScenarioImage::printQRepresentation() {
 }
 
 VIRTUAL void ScenarioImage::print() {
-    for( int y = 0; y < size; y++ ) {
+    for(int y = 0; y < size; y++) {
         string line = "";
-        for( int x = 0; x < size; x++ ) {
-            if( x == posX && y == posY ) {
+        for(int x = 0; x < size; x++) {
+            if(x == posX && y == posY) {
                 line += "X";
-            } else if( x == appleX && y == appleY ) {
+            } else if(x == appleX && y == appleY) {
                 line += "O";
             } else {
                 line += ".";
@@ -92,11 +92,11 @@ VIRTUAL ScenarioImage::~ScenarioImage() {
 VIRTUAL int ScenarioImage::getNumActions() {
     return 4;
 }
-VIRTUAL float ScenarioImage::act( int index ) { // returns reward
+VIRTUAL float ScenarioImage::act(int index) { // returns reward
     numMoves++;
     int dx = 0;
     int dy = 0;
-    switch( index ) {
+    switch(index) {
         case 0:
             dx = 1;
             break;
@@ -112,10 +112,10 @@ VIRTUAL float ScenarioImage::act( int index ) { // returns reward
     }
     int newX = posX + dx;
     int newY = posY + dy;
-    if( newX < 0 || newX >= size || newY < 0 || newY >= size ) {
+    if(newX < 0 || newX >= size || newY < 0 || newY >= size) {
         return -0.5f;
     }
-    if( newX == appleX && newY == appleY ) {
+    if(newX == appleX && newY == appleY) {
         finished = true;
         posX = newX;
         posY = newY;
@@ -135,8 +135,8 @@ VIRTUAL int ScenarioImage::getPerceptionSize() {
 VIRTUAL int ScenarioImage::getPerceptionPlanes() {
     return 2;
 }
-VIRTUAL void ScenarioImage::getPerception( float *perception ) {
-    for( int i = 0; i < size * size * 2; i++ ) {
+VIRTUAL void ScenarioImage::getPerception(float *perception) {
+    for(int i = 0; i < size * size * 2; i++) {
         perception[i] = 0;
     }
     perception[appleY * size + appleX] = 1;
@@ -146,12 +146,12 @@ VIRTUAL int ScenarioImage::getWorldSize() {
     return size;
 }
 VIRTUAL void ScenarioImage::reset() {
-    if( net != 0 ) {
+    if(net != 0) {
         this->print();
         this->printQRepresentation();
         cout << "game: " << game << " moves: " << numMoves << endl;
     }
-    if( appleMoves ) {
+    if(appleMoves) {
         appleX = myrand() % size;
         appleY = myrand() % size;
     } else {
@@ -159,7 +159,7 @@ VIRTUAL void ScenarioImage::reset() {
     }
     finished = false;
     bool sampledOnce = false;
-    while( !sampledOnce || ( posX == appleX && posY == appleY ) ) {
+    while(!sampledOnce || (posX == appleX && posY == appleY)) {
         posX = myrand() % size;
         posY = myrand() % size;
         sampledOnce = true;

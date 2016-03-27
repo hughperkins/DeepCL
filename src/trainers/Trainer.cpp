@@ -49,7 +49,7 @@ VIRTUAL BatchResult Trainer::train(Trainable *trainable,
         }
     } else {
         NeuralNet *net = dynamic_cast< NeuralNet * > (trainable);
-        return this->train(net, context, input, expectedOutput);
+        return this->trainNet(net, context, input, expectedOutput);
     }
     return BatchResult(loss, 0);
 }
@@ -68,7 +68,7 @@ VIRTUAL BatchResult Trainer::trainFromLabels(Trainable *trainable,
         }
     } else {
         NeuralNet *net = dynamic_cast< NeuralNet * > (trainable);
-        return this->trainFromLabels(net, context, input, labels);
+        return this->trainNetFromLabels(net, context, input, labels);
     }
     return BatchResult(loss, numRight);
 }

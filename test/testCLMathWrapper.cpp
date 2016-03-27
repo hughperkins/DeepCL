@@ -15,7 +15,7 @@
 using namespace std;
 
 TEST(testCLMathWrapper, assign) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
     CLWrapper *a_ = cl->wrap(5,adat);
@@ -42,7 +42,7 @@ TEST(testCLMathWrapper, assign) {
 }
 
 TEST(testCLMathWrapper, assignScalar) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
@@ -62,7 +62,7 @@ TEST(testCLMathWrapper, assignScalar) {
 }
 
 TEST(testCLMathWrapper, addinplace) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
     CLWrapper *a_ = cl->wrap(5,adat);
@@ -90,7 +90,7 @@ TEST(testCLMathWrapper, addinplace) {
 }
 
 TEST(testCLMathWrapper, multiplyinplace) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
 //    float bdat[] = { 4,2.1f, 5,3,9.2f };
     CLWrapper *a_ = cl->wrap(5,adat);
@@ -119,7 +119,7 @@ TEST(testCLMathWrapper, multiplyinplace) {
 }
 
 TEST(testCLMathWrapper, addscalar) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
@@ -140,7 +140,7 @@ TEST(testCLMathWrapper, addscalar) {
 }
 
 TEST(testCLMathWrapper, sqrt) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
@@ -162,7 +162,7 @@ TEST(testCLMathWrapper, sqrt) {
 }
 
 TEST(testCLMathWrapper, squared) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
@@ -184,7 +184,7 @@ TEST(testCLMathWrapper, squared) {
 }
 
 TEST(testCLMathWrapper, inverse) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
@@ -206,7 +206,7 @@ TEST(testCLMathWrapper, inverse) {
 }
 
 TEST(testCLMathWrapper, perelementmult) {
-    EasyCL *cl = new EasyCL();
+    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
     CLWrapper *a_ = cl->wrap(5,adat);

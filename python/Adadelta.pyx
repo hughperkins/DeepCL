@@ -1,7 +1,8 @@
-cdef class Adadelta: 
+cdef class Adadelta(Trainer): 
     cdef cDeepCL.Adadelta *thisptr
     def __cinit__( self, DeepCL cl, rho=0.9 ):
         self.thisptr = new cDeepCL.Adadelta(cl.thisptr, rho)
+        self.baseptr = self.thisptr
     def __dealloc__(self):
         del self.thisptr
     def train(self, NeuralNet net, TrainingContext context,

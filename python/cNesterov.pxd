@@ -1,5 +1,5 @@
 cdef extern from "trainers/Nesterov.h":
-    cdef cppclass Nesterov:
+    cdef cppclass Nesterov(Trainer):
         Nesterov( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         void setMomentum( float momentum )

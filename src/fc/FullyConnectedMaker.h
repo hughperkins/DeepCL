@@ -53,9 +53,7 @@ public:
         return new FullyConnectedMaker();
     }
     virtual FullyConnectedMaker *clone() const {
-        FullyConnectedMaker *thisClone = new FullyConnectedMaker();
-        memcpy(thisClone, this, sizeof(FullyConnectedMaker) );
-        return thisClone;
+        return new FullyConnectedMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

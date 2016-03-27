@@ -141,7 +141,7 @@ VIRTUAL int MultiNet::calcNumRight(int const *labels) {
     if(softMaxLayer == 0) {
         throw runtime_error("trying to call multinet::calcNumRight, but model networks dont have a SoftMax loss layer");
     }
-    return softMaxLayer->calcNumRight(labels);
+    return softMaxLayer->calcNumRightFromLabels(labels);
 }
 void MultiNet::forwardToOurselves() {
     // now forward to ourselves :-)

@@ -1,5 +1,5 @@
 cdef extern from "trainers/Annealer.h":
-    cdef cppclass Annealer:
+    cdef cppclass Annealer(Trainer):
         Annealer( DeepCL *cl ) except +
         void setLearningRate( float learningRate )
         void setAnneal( float anneal )

@@ -26,7 +26,7 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target ) {
     const string kernelSource = "\n"
         "kernel void copy( int N, global float const *source, global float *dest ) {\n"
             "#define globalId ( get_global_id(0) )\n"
-            "if( globalId < N ) {\n"
+            "if( (int)globalId < N ) {\n"
              "   dest[globalId] = source[globalId];\n"
             "}\n"
         "}\n";
@@ -54,7 +54,7 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, int *target ) {
     const string kernelSource = "\n"
         "kernel void copy( int N, global int const *source, global int *dest ) {\n"
           "  #define globalId ( get_global_id(0) )\n"
-          "  if( globalId < N ) {\n"
+          "  if( (int)globalId < N ) {\n"
           "      dest[globalId] = source[globalId];\n"
           "  }\n"
        " }\n";

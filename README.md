@@ -41,12 +41,12 @@ Loss layer types:
 * square loss
 
 Trainers:
-* SGD (including momentum)
-* Anneal (New!)
-* Nesterov (New!)
-* Adagrad (New!)
-* Rmsprop (New!)
-* Adadelta (New!)
+* SGD
+* Anneal
+* Nesterov
+* Adagrad
+* Rmsprop
+* Adadelta
 
 Activations:
 * tanh
@@ -54,6 +54,7 @@ Activations:
 * linear
 * sigmoid
 * relu
+* elu (new!)
 
 [Loader formats](doc/Loaders.md):
 * jpegs
@@ -67,13 +68,6 @@ Weight initializers:
 * more possible...
 
 Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
-
-# Important news: 8.x is now merged to master!
-
-Important news: 8.x is now merged to master!  This brings a few big changes:
-* clblas is now integrated into the build
-* im2col convolution layers are now available, and automatically used where they bring a speed advantage
-* python wrappers now use the native libraries directly, rather than having their own separate native library build process
 
 # Example usages
 
@@ -182,6 +176,12 @@ License
 Recent changes
 ==============
 
+* 4th January 2016:
+  * fixed a number of build warnings on Mac, both in OpenCL build, and C++ build
+* 3rd January 2016:
+  * create Mac OS X build on Travis, and fix the build, https://travis-ci.org/hughperkins/DeepCL
+* 27th November:
+  * added [ELU](http://arxiv.org/pdf/1511.07289v1.pdf)
 * Week of 26th October:
   * created branch `clblas-2.8.0`, which works with Visual Studio 2015.  It uses the latest 2.8.x release of clBLAS.  Thank you to jakakonda for helping to test this and get it working.
 * Aug 28th:

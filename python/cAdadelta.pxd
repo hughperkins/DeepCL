@@ -1,5 +1,5 @@
 cdef extern from "trainers/Adadelta.h":
-    cdef cppclass Adadelta:
+    cdef cppclass Adadelta(Trainer):
         Adadelta( DeepCL *cl, float rho ) except +
         BatchResult train( NeuralNet *net, TrainingContext *context,
             const float *input, const float *expectedOutput )

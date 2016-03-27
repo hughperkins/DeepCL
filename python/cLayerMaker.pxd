@@ -19,9 +19,11 @@ cdef extern from "dropout/DropoutMaker.h":
 cdef extern from "activate/ActivationMaker.h":
     cdef cppclass ActivationMaker(LayerMaker2):
         ActivationMaker *relu() except +
+        ActivationMaker *elu() except +
         ActivationMaker *tanh() except +
         ActivationMaker *linear() except +
         ActivationMaker *sigmoid() except +
+        ActivationMaker *scaledTanh() except +
         @staticmethod
         ActivationMaker *instance() except +
 

@@ -29,9 +29,19 @@ public:
         this->_activationFunction = new TanhActivation();
         return this;
     }
+    ActivationMaker *scaledTanh() {
+        delete this->_activationFunction;
+        this->_activationFunction = new ScaledTanhActivation();
+        return this;
+    }
     ActivationMaker *relu() {
         delete this->_activationFunction;
         this->_activationFunction = new ReluActivation();
+        return this;
+    }
+    ActivationMaker *elu() {
+        delete this->_activationFunction;
+        this->_activationFunction = new EluActivation();
         return this;
     }
     ActivationMaker *sigmoid() {
@@ -49,9 +59,7 @@ public:
         return this;
     }
     virtual ActivationMaker *clone() const {
-        ActivationMaker *thisClone = new ActivationMaker();
-        memcpy(thisClone, this, sizeof(ActivationMaker) ); // this will copy the activationfunction pointer too
-        return thisClone;
+        return new ActivationMaker(*this); // this will copy the activationfunction pointer too
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

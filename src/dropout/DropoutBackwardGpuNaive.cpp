@@ -79,42 +79,42 @@ DropoutBackwardGpuNaive::DropoutBackwardGpuNaive(EasyCL *cl, int numPlanes, int 
     // [[[cog
     // import stringify
     // stringify.write_kernel2("kernel", "cl/dropout.cl", "backpropNaive", 'options')
-    // # stringify.write_kernel2("kMemset", "cl/memset.cl", "memset", '""')
+    // # stringify.write_kernel2("kMemset", "cl/memset.cl", "cl_memset", '""')
     // ]]]
     // generated using cog, from cl/dropout.cl:
     const char * kernelSource =  
-    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n" 
-    "//\n" 
-    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n" 
-    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n" 
-    "// obtain one at http://mozilla.org/MPL/2.0/.\n" 
-    "\n" 
-    "kernel void forwardNaive(\n" 
-    "        const int N,\n" 
-    "        global const unsigned char *mask,\n" 
-    "        global const float *input,\n" 
-    "        global float *output) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if (globalId >= N) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n" 
-    "}\n" 
-    "\n" 
-    "kernel void backpropNaive(\n" 
-    "        const int N,\n" 
-    "        global const unsigned char *mask,\n" 
-    "        global const float *gradOutput,\n" 
-    "        global float *output) {\n" 
-    "    const int globalId = get_global_id(0);\n" 
-    "    if (globalId >= N) {\n" 
-    "        return;\n" 
-    "    }\n" 
-    "    output[globalId] = mask[globalId] == 1 ? gradOutput[globalId] : 0.0f;\n" 
-    "}\n" 
-    "\n" 
+    "// Copyright Hugh Perkins 2015 hughperkins at gmail\n"
+    "//\n"
+    "// This Source Code Form is subject to the terms of the Mozilla Public License,\n"
+    "// v. 2.0. If a copy of the MPL was not distributed with this file, You can\n"
+    "// obtain one at http://mozilla.org/MPL/2.0/.\n"
+    "\n"
+    "kernel void forwardNaive(\n"
+    "        const int N,\n"
+    "        global const unsigned char *mask,\n"
+    "        global const float *input,\n"
+    "        global float *output) {\n"
+    "    const int globalId = get_global_id(0);\n"
+    "    if (globalId >= N) {\n"
+    "        return;\n"
+    "    }\n"
+    "    output[globalId] = mask[globalId] == 1 ? input[globalId] : 0.0f;\n"
+    "}\n"
+    "\n"
+    "kernel void backpropNaive(\n"
+    "        const int N,\n"
+    "        global const unsigned char *mask,\n"
+    "        global const float *gradOutput,\n"
+    "        global float *output) {\n"
+    "    const int globalId = get_global_id(0);\n"
+    "    if (globalId >= N) {\n"
+    "        return;\n"
+    "    }\n"
+    "    output[globalId] = mask[globalId] == 1 ? gradOutput[globalId] : 0.0f;\n"
+    "}\n"
+    "\n"
     "";
-    kernel = cl->buildKernelFromString( kernelSource, "backpropNaive", options, "cl/dropout.cl" );
+    kernel = cl->buildKernelFromString(kernelSource, "backpropNaive", options, "cl/dropout.cl");
     // [[[end]]]
 }
 

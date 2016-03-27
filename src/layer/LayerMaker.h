@@ -41,6 +41,9 @@ public:
         this->cl = cl;
     }
     virtual Layer *createLayer(Layer *previousLayer) = 0;
+
+    // see http://stackoverflow.com/questions/5148706/copying-a-polymorphic-object-in-c/5148751#5148751
+    // apparently this is ok...
     virtual LayerMaker2 *clone() const = 0;
 };
 
@@ -71,6 +74,7 @@ public:
 //    Layer *previousLayer;
     LossLayerMaker() {
     }
+    virtual LossLayerMaker *clone() const = 0;
 };
 
 class DeepCL_EXPORT SquareLossMaker : public LossLayerMaker {
@@ -81,9 +85,7 @@ public:
         return new SquareLossMaker();
     }
     virtual SquareLossMaker *clone() const {
-        SquareLossMaker *thisClone = new SquareLossMaker();
-        memcpy(thisClone, this, sizeof(SquareLossMaker) );
-        return thisClone;
+        return new SquareLossMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };
@@ -96,9 +98,7 @@ public:
         return new CrossEntropyLossMaker();
     }
     virtual CrossEntropyLossMaker *clone() const {
-        CrossEntropyLossMaker *thisClone = new CrossEntropyLossMaker();
-        memcpy(thisClone, this, sizeof(CrossEntropyLossMaker) );
-        return thisClone;
+        return new CrossEntropyLossMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };
@@ -123,9 +123,7 @@ public:
         return new SoftMaxMaker();
     }
     virtual SoftMaxMaker *clone() const {
-        SoftMaxMaker *thisClone = new SoftMaxMaker();
-        memcpy(thisClone, this, sizeof(SoftMaxMaker) );
-        return thisClone;
+        return new SoftMaxMaker(*this);
     }
     virtual Layer *createLayer(Layer *previousLayer);
 };

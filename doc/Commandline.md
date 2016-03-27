@@ -68,6 +68,7 @@ Use `train` to run training (`deepclrun` in v5.8.3 and below).
   * `-tanh`
   * `-sigmoid`
   * `-relu`
+  * `-elu`
 
 #### Random patches
 

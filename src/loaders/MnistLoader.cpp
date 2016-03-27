@@ -52,6 +52,7 @@ STATIC void MnistLoader::load(std::string imagesFilePath, unsigned char *images,
         return;
     }
     string labelsFilePath = replace(imagesFilePath, "-images-idx3-ubyte", "-labels-idx1-ubyte");
+    labelsFilePath = replace(labelsFilePath, "-images.idx3-ubyte", "-labels.idx1-ubyte");
 //    cout << "labelsfilepath: " << labelsFilePath << endl;
     
     fileStartPos = 2 * 4 + (long)startN;

@@ -15,6 +15,8 @@
 
 #To build
 
+[![Build Status](https://travis-ci.org/hughperkins/DeepCL.svg?branch=master)](https://travis-ci.org/hughperkins/DeepCL)
+
 ## Build options
 
 * If you want to be able to read training/testing data from jpeg files, then please choose `BUILD_JPEG_SUPPORT` = `ON`. You will need to provide turbojpeg library and headers, or compatible.  Otherwise set to `OFF`
@@ -157,4 +159,9 @@ If you want to use the DeepCL library from C++, you will need to link with the f
 - libEasyCL.so (or EasyCL.dll, on Windows)
 - libclew.so / clew.dll
 - libclBLAS.so / clBLAS.dll
+
+## Some errors, and possible causes
+
+- during build, `fatal error: CppRuntimeBoundary.h: No such file or directory`
+  - make sure you ran `source ../dist/bin/activate.sh`, or similar (see above for exact command similar to this)
 

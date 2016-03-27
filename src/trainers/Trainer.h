@@ -59,10 +59,9 @@ public:
 
     float learningRate;
 
-    virtual BatchResult train(NeuralNet *net, 
-        TrainingContext *context,
+    virtual BatchResult trainNet(NeuralNet *net, TrainingContext *context,
         float const*input, float const*expectedOutput) = 0;
-    virtual BatchResult trainFromLabels(NeuralNet *net, 
+    virtual BatchResult trainNetFromLabels(NeuralNet *net, 
         TrainingContext *context,
         float const*input, int const*labels) = 0;
 

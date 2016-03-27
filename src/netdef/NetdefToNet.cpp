@@ -146,6 +146,8 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
                     fn = new SigmoidActivation();
                 } else if(optionName == "relu") {
                     fn = new ReluActivation();
+                } else if(optionName == "elu") {
+                    fn = new EluActivation();
                 } else if(optionName == "linear") {
                     fn = new LinearActivation();
                 } else if(optionName == "padzeros") {
@@ -173,6 +175,8 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
         net->addLayer(DropoutMaker::instance()->dropRatio(0.5f));
     } else if(baseLayerDef.find("relu") != string::npos) {
         net->addLayer(ActivationMaker::instance()->relu());
+    } else if(baseLayerDef.find("elu") != string::npos) {
+        net->addLayer(ActivationMaker::instance()->elu());
     } else if(baseLayerDef.find("tanh") != string::npos) {
         net->addLayer(ActivationMaker::instance()->tanh());
     } else if(baseLayerDef.find("sigmoid") != string::npos) {
