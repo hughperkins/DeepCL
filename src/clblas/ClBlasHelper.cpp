@@ -63,7 +63,7 @@ PUBLIC STATIC void ClBlasHelper::Gemm(
    );
    if (err != CL_SUCCESS) {
        throw runtime_error("clblasSgemm() failed with " + toString(err));
-   }    
+   }
 }
 
 PUBLIC STATIC void ClBlasHelper::Gemv(
@@ -103,6 +103,6 @@ PUBLIC STATIC void ClBlasHelper::Gemv(
    );
    if (err != CL_SUCCESS) {
        throw runtime_error("clblasSgemv() failed with " + toString(err));
-   }        
+   }
 }
 
