@@ -432,9 +432,6 @@ VIRTUAL void ConvolutionalLayer::backward() {
     backpropWeightsImpl->calcGradWeights(batchSize, gradOutputWrapper, inputWrapper,  gradWeightsWrapper, gradBiasWrapper);
     StatefulTimer::instance()->timeCheck("backproperrors(): done calc gradWeights, layer " + ::toString(layerIndex) );
 
-//    gradWeightsCopiedToHost = false;
-//    gradBiasCopiedToHost = false;
-
     if(!previousLayer->hasOutputWrapper()) {
         delete inputWrapper;
     }

@@ -18,7 +18,8 @@ using namespace std;
 SquareLossLayer::SquareLossLayer(Layer *previousLayer, SquareLossMaker *maker) :
         LossLayer(previousLayer, maker),
         gradInput(0),
-        allocatedSize(0) {
+        allocatedSize(0),
+        batchSize(0) {
 }
 VIRTUAL SquareLossLayer::~SquareLossLayer(){
     if(gradInput != 0) {

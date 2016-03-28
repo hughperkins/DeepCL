@@ -156,6 +156,7 @@ void test(int imageSize, int filterSize, int numPlanes, int batchSize) {
     float learningRate = 0.01f;
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer(InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize));
     net->addLayer(ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0));
@@ -521,6 +522,7 @@ TEST(testupdateweights, backprop_instance3_smaller2) {
 //    const float learningRate = 1;
 
     EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    ClBlasInstance blasInstance;
 
     int outputNumElements = batchSize * dim.outputCubeSize;
     int inputNumElements = batchSize * dim.inputCubeSize;

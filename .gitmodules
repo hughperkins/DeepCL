@@ -3,4 +3,4 @@
 	url = https://github.com/hughperkins/EasyCL.git
 [submodule "clMathLibraries/clBLAS"]
 	path = clMathLibraries/clBLAS
-	url = https://github.com/clMathLibraries/clBLAS.git
+	url = https://github.com/hughperkins/clBLAS.git

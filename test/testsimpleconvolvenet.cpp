@@ -234,7 +234,6 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1 ) {
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
-//    net->inputMaker<float>()->numPlanes(1)->imageSize(1)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased() );
 //    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
@@ -612,12 +611,12 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
-//    net->inputMaker<float>()->numPlanes(1)->imageSize(5)->insert();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(2)->biased() );
     net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(3)->filterSize(4)->biased() );
 //    net->addLayer( ActivationMaker::instance()->relu() );
     net->addLayer( SquareLossMaker::instance() );
+    net->setBatchSize(N);
 //    net->print();
     SGD *sgd = SGD::instance( cl, 0.01f, 0 );
     for( int epoch = 0; epoch < 1000; epoch++ ) {
