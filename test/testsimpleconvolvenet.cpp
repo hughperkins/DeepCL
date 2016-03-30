@@ -732,10 +732,12 @@ double _weights2[] = {0.207138, -0.106497, -0.1228, -0.162173, 0.1822, -0.100027
 0.0528438, 0.0157539, 0.161637, -0.199882, 0.171727, 0.171146, -0.237469, -0.226088, 0.2026, -0.131614, 0.0631847, -0.0949208, -0.137853, -0.177839, -0.237589, -0.229862, 0.202094, 0.0531539, -0.0467284, 0.125544, 
 -0.0750956, 0.225228, 0.255915, 0.076901, -0.0596187, 0.16937, -0.104811, -0.0815879, -0.196806, 0.0526821, 0.136622, -0.12163, 0.170657, -0.0956968, -0.00985565, 0.0455411, 0.0242914, 0.107953, -0.0594324, 0.124928, 
 0.0875922, -0.100952, 0.155045};
-vector<float> vweights1( _weights1, _weights1 + sizeof(_weights1) / sizeof(_weights1[0] ) );
-float *weights1 = &vweights1[0];
-vector<float> vweights2( _weights2, _weights2 + sizeof(_weights2) / sizeof(_weights2[0] ) );
-float *weights2 = &vweights2[0];
+const int weights1_size = sizeof(_weights1) / sizeof(_weights1[0]);
+const int weights2_size = sizeof(_weights2) / sizeof(_weights2[0]);
+float weights1[weights1_size];
+float weights2[weights2_size];
+doublesToFloats(_weights1, weights1, weights1_size);
+doublesToFloats(_weights2, weights2, weights2_size);
 float bias1[] = {0.0998941f, -0.365008f, 0.188937f};
 float bias2[] = {0.232961f, 0.141537f, 0.159074f};
     net->initWeights(1, weights1, bias1 );
