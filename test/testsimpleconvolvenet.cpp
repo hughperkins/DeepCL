@@ -24,6 +24,12 @@
 
 using namespace std;
 
+static void doublesToFloats(double *src, float *dest, int N) {
+  for(int i = 0; i < N; i++) {
+    dest[i] = src[i];
+  }
+}
+
 TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     Timer timer;
     const float learningRate = 0.1f;
@@ -320,8 +326,9 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     net->addLayer( SquareLossMaker::instance() );
     float const*output = 0;
     double _weights1[] = {0.0113327, 0.280063, -0.0584702, -0.503431, -0.37286, -0.457257, 0.29226, -0.360089, -0.273977, 0.530185, -0.460167, 0.489126, 0.141883, 0.179525, -0.18084, 0.412117, 0.0866731, -0.247958};
-    vector<float> __weights1( _weights1, _weights1 + sizeof( _weights1 ) / sizeof(double) );
-    float *weights1 = &__weights1[0];
+    const int N = sizeof(_weights1) / sizeof(_weights1[0]);
+    float weights1[N];
+    doublesToFloats(_weights1, weights1, N);
     float bias1[] = {0.0418723f, 0.158733f};
     net->getLayer(1)->setWeights( weights1, bias1 );
 //    BatchLearner batchLearner( net );

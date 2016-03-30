@@ -25,7 +25,7 @@ GTEST_API_ int main(int argc, char **argv) {
             // replace with "--gtest_filter=..."
             string newarg = string("--gtest_filter=") + split( string( argv[i] ), "=" )[1];
             char *newargchar = new char[ newarg.length() + 1 ];
-            strcpy_safe( newargchar, newarg.c_str(), newarg.length() );
+            strcpy_safe( newargchar, newarg.c_str(), (int)newarg.length() );
             argv[i] = newargchar;
         }
     }

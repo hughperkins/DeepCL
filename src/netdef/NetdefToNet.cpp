@@ -26,9 +26,9 @@ using namespace std;
 // or:
 // prefix-nn*inner-postfix
 STATIC std::string expandMultipliers(std::string netdef) {
-    int starPos = netdef.find("*");
+    int starPos = (int)netdef.find("*");
     if(starPos != (int)string::npos) {
-        int prefixEnd = netdef.rfind("-", starPos);
+        int prefixEnd = (int)netdef.rfind("-", starPos);
         string prefix = "";
         string nnString = "";
         if(prefixEnd == (int)string::npos) {
@@ -49,7 +49,7 @@ STATIC std::string expandMultipliers(std::string netdef) {
         string postfix = "";
         if(remainderString.substr(0, 1) == "(") {
             // need to find other ')', assume not nested for now...
-            int rhBracket = remainderString.find(")");
+            int rhBracket = (int)remainderString.find(")");
             if(rhBracket == (int)string::npos) {
                 throw runtime_error("matching bracket not found in " + remainderString);
 //                return false;
@@ -67,9 +67,9 @@ STATIC std::string expandMultipliers(std::string netdef) {
                 cout << "postfix [" << postfix << "]" << endl;
             }
         } else {
-            int innerEnd = remainderString.find("-");
+            int innerEnd = (int)remainderString.find("-");
             if(innerEnd == (int)string::npos) {
-                innerEnd = remainderString.length();
+                innerEnd = (int)remainderString.length();
             } else {
 //                innerEnd;
                 postfix = remainderString.substr(innerEnd + 1);
@@ -163,7 +163,7 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
                 return false;
             }
         }
-        net->addLayer(ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->padZeros(padZeros)->biased()->weightsInitializer(weightsInitializer) );
+        net->addLayer(ConvolutionalMaker::instance()->numFilters(numFilters)->filterSize(filterSize)->padZeros(padZeros == 1)->biased()->weightsInitializer(weightsInitializer) );
         if(fn != 0) {
             net->addLayer(ActivationMaker::instance()->fn(fn) );
         }
@@ -229,7 +229,7 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
             cout << "Last fullyconnectedlayer must be linear (because softmax is the 'activationlayer' for this layer)" << endl;
             return false;
         }
-        net->addLayer(FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->biased(biased)->weightsInitializer(weightsInitializer) );
+        net->addLayer(FullyConnectedMaker::instance()->numPlanes(numPlanes)->imageSize(1)->biased(biased == 1)->weightsInitializer(weightsInitializer) );
         if(fn != 0) {
             net->addLayer(ActivationMaker::instance()->fn(fn) );
         }
