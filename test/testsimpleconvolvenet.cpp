@@ -26,7 +26,7 @@ using namespace std;
 
 static void doublesToFloats(double *src, float *dest, int N) {
   for(int i = 0; i < N; i++) {
-    dest[i] = src[i];
+    dest[i] = (float)src[i];
   }
 }
 
