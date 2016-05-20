@@ -15,13 +15,13 @@
 //29     int globalSize = workgroupsize * numWorkgroups; 
 //30     globalSize = (( globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize; 
 
-#define 	gNumFilters 	8
-#define 	gInputPlanes	4
-#define   gFilterSize   3 
-#define   gFilterSizeSquared (gFilterSize*gFilterSize)
-//#define   gOutputSize   128 
-#define   gInputSize    128 
-#define   gMargin        0
+//#define 	gNumFilters 	8
+//#define 	gInputPlanes	4
+//#define   gFilterSize   3 
+//#define   gFilterSizeSquared (gFilterSize*gFilterSize)
+////#define   gOutputSize   128 
+//#define   gInputSize    128 
+//#define   gMargin        0
 #define   FIXED_WORKGROUPSIZE 64 
 #define   FIXED_WORKGROUPSIZE_SHIFT 6
 
@@ -30,10 +30,10 @@ void  backprop_floats_fast_valid_thread(
 				global const float *images, 
 				float *thiswchange,
 				#ifdef BIASED  
-				  float*  thisbiaschange,	
+				  private float*  thisbiaschange,	
 				#endif 
 				const int batchSize,
-				const int gOutputSize,
+//				const int gOutputSize,
 				int localId,
 				int globalId	
  ) 
@@ -179,7 +179,7 @@ __global const float* filter,
         #endif						
 						__global float* gradWeights,
 						const int batchSize,  
-						const int gOutputSize,  
+//						const int gOutputSize,  
 						const int const3,  
 						const int const4,  
 						const int const5,  
@@ -207,7 +207,7 @@ void __kernel backprop_floats_fast(
 	  float thiswchange = 0;
 	  __local float thiswchanges[FIXED_WORKGROUPSIZE];	
 #ifdef BIASED
-	 thisbiaschange  = 0;
+	 float thisbiaschange  = 0;
 #endif
 	  
 	 //It does not include any Invalid Threads since the FIXED_WORKGROUPSIZE is 64)
@@ -222,7 +222,7 @@ void __kernel backprop_floats_fast(
 																					 &thisbiaschange,	
 																	#endif 
 																					batchSize,
-																					gOutputSize,
+//																					gOutputSize,
 																					globalId,
 																					localId
 																					
@@ -236,7 +236,7 @@ void __kernel backprop_floats_fast(
 				
 					#ifdef BIASED  
 					&thisbiaschange,	
-					thisbiaschanges,
+//					thisbiaschanges,
 					#endif
 					localId,
 					globalId
@@ -264,7 +264,7 @@ void __kernel backprop_floats_fast(
 						bool writeBias = upstreamPlane == 0 && filterRow == gMargin && filterCol == gMargin;
 						if (writeBias) {
 								//gradBiasWeights[outPlane] = learningRateMultiplier * thisbiaschange;
-								*source = gradBiasWeights + outPlane;
+								*source = gradBiasWeights[outPlane];
 								AtomicAdd(source, learningRateMultiplier * thisbiaschange);
 						}
 #endif
