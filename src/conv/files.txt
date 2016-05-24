@@ -11,6 +11,7 @@ BackpropWeightsCpu.cpp
 BackpropWeightsNaive.cpp
 BackpropWeightsScratch.cpp
 BackpropWeightsScratchLarge.cpp
+BackpropWeightsFsword73.cpp
 Backward.cpp
 BackwardCpu.cpp
 BackwardGpuCached.cpp

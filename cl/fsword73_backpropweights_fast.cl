@@ -167,24 +167,16 @@ inline void AtomicAdd(volatile __global float *source, const float operand) {
 
 #if 1 
 void __kernel test_kernel(				
-__global const float* filter,
-						__global const float* gradOutput,
-						__global float* images,	
-						__global const float* dataBuf3,
-						__global const float* dataBuf4,
-        #ifdef BIASED
-             __global float *gradBiasWeights,
-				#else 
-					 __global const float* dataBuf5, 
-        #endif						
-						__global float* gradWeights,
 						const int batchSize,  
-//						const int gOutputSize,  
-						const int const3,  
-						const int const4,  
-						const int const5,  
-						const int const6
- ) 
+						const float learningRateMultiplier,
+						__global float* images,	
+//						__global const float* filter,
+						__global const float* gradOutput,
+						__global float* gradWeights
+                #ifdef BIASED
+                     , __global float *gradBiasWeights
+                #endif
+ )
 
 #else 
 void __kernel backprop_floats_fast(				
@@ -201,7 +193,7 @@ void __kernel backprop_floats_fast(
  #endif
  {	 
 	 
-	 const float learningRateMultiplier = 0.0001f;
+//	 const float learningRateMultiplier = 0.0001f;
 	 int globalId = get_global_id(0);				
 	 int localId  = get_local_id(0);
 	  float thiswchange = 0;

@@ -16,6 +16,7 @@
 #include "BackpropWeightsScratch.h"
 #include "BackpropWeightsScratchLarge.h"
 #include "BackpropWeightsIm2Col.h"
+#include "BackpropWeightsFsword73.h"
 #include "BackpropWeightsAuto.h"
 
 using namespace std;
@@ -32,7 +33,8 @@ BackpropWeights::BackpropWeights(EasyCL *cl, LayerDimensions layerDimensions) :
         debug(false) {
 }
 STATIC BackpropWeights *BackpropWeights::instance(EasyCL *cl, LayerDimensions dim) {
-    return new BackpropWeightsAuto(cl, dim);
+    return new BackpropWeightsFsword73(cl, dim);
+//    return new BackpropWeightsAuto(cl, dim);
 //    if(dim.inputSize - dim.filterSize < 4) {
 //        return new BackpropWeightsNaive(cl, dim);
 //    }
