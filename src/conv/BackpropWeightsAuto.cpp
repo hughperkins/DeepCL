@@ -29,15 +29,17 @@ BackpropWeightsAuto::BackpropWeightsAuto(EasyCL *cl, LayerDimensions dim) :
         instances(0)
          {
     num = BackpropWeights::getNumImplementations();
-    milliseconds = new int[ num];
+    milliseconds = new int[num];
+    numTries = new int[num];
     valid = new bool[ num ];
     instances = new BackpropWeights *[ num ];
     for(int i = 0; i < num; i++) {
         instances[i] = 0;
         valid[i] = false;
+        numTries[i] = 0;
         milliseconds[i] = -1;
     }
-    nextIndex = 0;
+    currentIndex = 0;
 }
 VIRTUAL BackpropWeightsAuto::~BackpropWeightsAuto() {
     for(int i = 0; i < num; i++) {
@@ -49,39 +51,46 @@ VIRTUAL BackpropWeightsAuto::~BackpropWeightsAuto() {
 VIRTUAL void BackpropWeightsAuto::calcGradWeights(
         int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
         CLWrapper *gradInput) {
-    while(chosenIndex == -1 && nextIndex < num) {
-        int thisIndex = nextIndex;
-        nextIndex++;
-        cout << "calcGradWeights try kernel " << thisIndex << endl;
-        if(BackpropWeights::plausiblyOptimal(thisIndex, batchSize, dim)) {
-            BackpropWeights *candidate = 0;
+    while(chosenIndex == -1 && currentIndex < num) {
+        BackpropWeights *candidate = instances[currentIndex];
+        if(candidate == 0) {
+            cout << "calcGradWeights try kernel " << currentIndex << endl;
+            if(!BackpropWeights::plausiblyOptimal(currentIndex, batchSize, dim)) {
+                cout << "  ... not plausibly optimal, skipping" << endl;
+                valid[currentIndex] = false;
+                currentIndex++;
+                continue;
+            }
             try {
-                candidate = BackpropWeights::instanceSpecific(thisIndex, cl, dim);
-                instances[thisIndex] = candidate;
-                valid[thisIndex] = true;
+                candidate = BackpropWeights::instanceSpecific(currentIndex, cl, dim);
+                instances[currentIndex] = candidate;
+                valid[currentIndex] = true;
                 cout << "   ... seems valid" << endl;
             } catch(runtime_error &e) {
-                cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << thisIndex << ": this instance cant be used: " << e.what() << endl;
-                valid[thisIndex] = false;
-            }
-            if(valid[thisIndex]) {
-                Timer timer;
-                try {
-                    candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
-                    milliseconds[thisIndex] = (int)timer.lap();
-                    cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
-                    return;
-                } catch(runtime_error &e) {
-                    cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
-                    valid[thisIndex] = false;
-                    delete instances[thisIndex];
-                    instances[thisIndex] = 0;
-                }
-            } else {
                 cout << "   ... not valid" << endl;
+                cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << ": this instance cant be used: " << e.what() << endl;
+                valid[currentIndex] = false;
+                currentIndex++;
+                continue;
             }
-        } else {
-            cout << "  ... not plausibly optimal, skipping" << endl;
+        }
+        Timer timer;
+        try {
+            candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
+            milliseconds[currentIndex] = (int)timer.lap();
+            cout << "  try " << (numTries[currentIndex]+ 1) << " of kernel " << currentIndex << " time " << milliseconds[currentIndex] << endl;
+            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << milliseconds[currentIndex] << "ms" << endl;
+            numTries[currentIndex]++;
+            if(numTries[currentIndex] >= 3) {  // we already tried this kernel 3 times, try next kernel
+                 currentIndex++;
+            }
+            return;
+        } catch(runtime_error &e) {
+            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " this instance cant be used: " << e.what() << endl;
+            valid[currentIndex] = false;
+            delete instances[currentIndex];
+            instances[currentIndex] = 0;
+            continue;
         }
     }
     if(chosenIndex == -1) {

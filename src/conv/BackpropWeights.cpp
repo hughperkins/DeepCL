@@ -33,8 +33,8 @@ BackpropWeights::BackpropWeights(EasyCL *cl, LayerDimensions layerDimensions) :
         debug(false) {
 }
 STATIC BackpropWeights *BackpropWeights::instance(EasyCL *cl, LayerDimensions dim) {
-    return new BackpropWeightsFsword73(cl, dim);
-//    return new BackpropWeightsAuto(cl, dim);
+//    return new BackpropWeightsFsword73(cl, dim);
+    return new BackpropWeightsAuto(cl, dim);
 //    if(dim.inputSize - dim.filterSize < 4) {
 //        return new BackpropWeightsNaive(cl, dim);
 //    }
@@ -48,13 +48,13 @@ STATIC BackpropWeights *BackpropWeights::instance(EasyCL *cl, LayerDimensions di
 //    }
 }
 STATIC int BackpropWeights::getNumImplementations() {
-    return 5;
+    return 6;
 }
 STATIC bool BackpropWeights::plausiblyOptimal(int index, int batchSize, LayerDimensions dim) {
     if(index == 0) { 
         return false;
     }
-    if(index >= 5) {
+    if(index >= 6) {
         return false;
     }
     return true;
@@ -80,6 +80,10 @@ STATIC BackpropWeights *BackpropWeights::instanceSpecific(int idx, EasyCL *cl, L
     }
     if(idx == 4) {
         return new BackpropWeightsIm2Col(cl, layerDimensions);
+    }
+    if(idx == 5) {
+        cout << "fword73 kernel" << endl;
+        return new BackpropWeightsFsword73(cl, layerDimensions);
     }
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx));
 }
