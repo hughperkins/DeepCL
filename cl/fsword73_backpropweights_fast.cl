@@ -19,9 +19,10 @@
 //#define 	gInputPlanes	4
 //#define   gFilterSize   3 
 //#define   gFilterSizeSquared (gFilterSize*gFilterSize)
-////#define   gOutputSize   128 
+//#define   gOutputSize   128 
 //#define   gInputSize    128 
 //#define   gMargin        0
+
 #define   FIXED_WORKGROUPSIZE 64 
 #define   FIXED_WORKGROUPSIZE_SHIFT 6
 
@@ -34,8 +35,13 @@ void  backprop_floats_fast_valid_thread(
 				#endif 
 				const int batchSize,
 //				const int gOutputSize,
+				int globalId,
 				int localId,
-				int globalId	
+				__global float* gradWeights
+                #ifdef BIASED
+                     , __global float *gradBiasWeights
+                #endif
+				
  ) 
  {	
 			  *thiswchange = 0;	      
@@ -50,7 +56,14 @@ void  backprop_floats_fast_valid_thread(
 				int outPlane = filter2Id / gInputPlanes;
 				int upstreamPlane = filter2Id % gInputPlanes;	 
 				int n = batchId;
-	 
+				
+				if(batchId == 0 && localId)
+				{
+					#ifdef BIASED
+					gradBiasWeights[outPlane] = 0;
+					#endif
+					gradWeights[ globalIdOutput ] = 0;					
+				} 				
 	 
 			  int iterations = (gOutputSize * gOutputSize + FIXED_WORKGROUPSIZE -1) >> FIXED_WORKGROUPSIZE_SHIFT;
 	 
@@ -95,8 +108,8 @@ void  backprop_floats_fast_valid_thread(
 				#ifdef BIASED  
 				 float*  thisbiaschange,	
 				#endif
-			  int localId,
-				int globalId)
+				int globalId,
+ 			  int localId)
  {
 		  
 			//store into local 	 
@@ -115,6 +128,7 @@ void  backprop_floats_fast_valid_thread(
 			{
 				*thiswchange = 	sdata[0];
 			}
+			barrier(CLK_LOCAL_MEM_FENCE);
 #ifdef BIASED  
 			sdata[localId] = *thisbiaschange;
 			barrier(CLK_LOCAL_MEM_FENCE);
@@ -131,6 +145,7 @@ void  backprop_floats_fast_valid_thread(
 			{
 				*thisbiaschange = 	sdata[0];
 			}
+			barrier(CLK_LOCAL_MEM_FENCE);
 #endif
 }
 			
@@ -197,41 +212,42 @@ void __kernel backprop_floats_fast(
 	 int globalId = get_global_id(0);				
 	 int localId  = get_local_id(0);
 	  float thiswchange = 0;
-	  __local float thiswchanges[FIXED_WORKGROUPSIZE];	
+	  __local float sdata[FIXED_WORKGROUPSIZE];	
 #ifdef BIASED
 	 float thisbiaschange  = 0;
 #endif
 	  
 	 //It does not include any Invalid Threads since the FIXED_WORKGROUPSIZE is 64)
-   // if (globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize *  batchSize * FIXED_WORKGROUPSIZE) {
-   //     //Do nothing	 
-   // }
+
+	 
 	backprop_floats_fast_valid_thread(
-																					gradOutput, 
-																					images,         
-																					&thiswchange,
-																	#ifdef BIASED  
-																					 &thisbiaschange,	
-																	#endif 
-																					batchSize,
-//																					gOutputSize,
-																					globalId,
-																					localId
-																					
-		);
+								gradOutput, 
+								images,         
+								&thiswchange,
+				#ifdef BIASED  
+								 &thisbiaschange,	
+				#endif 
+								batchSize,
+//							gOutputSize,
+								globalId,
+								localId,
+								gradWeights
+								#ifdef BIASED
+									 , gradBiasWeights
+								#endif	
+);
 
 		
 		//aggregate Data to Thread0
 		Reduction_of_Weights( 
 					&thiswchange,
-					thiswchanges, 
-				
+					sdata, 				
 					#ifdef BIASED  
 					&thisbiaschange,	
 //					thisbiaschanges,
-					#endif
-					localId,
-					globalId
+					#endif					
+					globalId,
+					localId
 			);
 
 		//Thread0 Atomics into 
@@ -278,3 +294,4 @@ void __kernel backprop_floats_fast(
 	//          FilterSize =3,  
 	//         -constant1 = batchSize 128
 	//         -constant2 = gOutputSize 128
+
