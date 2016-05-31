@@ -77,9 +77,9 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
         Timer timer;
         try {
             candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
-            milliseconds[currentIndex] = (int)timer.lap();
+            milliseconds[currentIndex] = (int)timer.ellaspedMicroseconds();
             cout << "  try " << (numTries[currentIndex]+ 1) << " of kernel " << currentIndex << " time " << milliseconds[currentIndex] << endl;
-            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << milliseconds[currentIndex] << "ms" << endl;
+            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << milliseconds[currentIndex] << " microsecond" << endl;
             numTries[currentIndex]++;
             if(numTries[currentIndex] >= 3) {  // we already tried this kernel 3 times, try next kernel
                  currentIndex++;
@@ -102,7 +102,7 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
                 cout << "   calcGradWeights kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-            cout << "   calcGradWeights kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
+            cout << "   calcGradWeights kernel " << i << " time: " << milliseconds[i] << " microsecond" << endl;
             if(bestIndex == -1) {
                 bestIndex = i;
                 bestTime = milliseconds[i];
