@@ -161,6 +161,13 @@ Third-party libraries
 * lua
 * cogapp
 
+Hardware/driver specific issues
+===============================
+
+* If you're using Clover, you might want to look at:
+  * this thread [https://github.com/hughperkins/DeepCL/issues/35](https://github.com/hughperkins/DeepCL/issues/35)
+  * this branch [https://github.com/hughperkins/DeepCL/tree/clover-compatibility](https://github.com/hughperkins/DeepCL/tree/clover-compatibility)
+
 Related projects
 ================
 
