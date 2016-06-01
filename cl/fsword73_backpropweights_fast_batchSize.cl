@@ -15,13 +15,13 @@
 //29     int globalSize = workgroupsize * numWorkgroups; 
 //30     globalSize = (( globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize; 
 
-//#define 	gNumFilters 	150
-//#define 	gInputPlanes	10
-//#define   gFilterSize   5 
-//#define   gFilterSizeSquared (gFilterSize*gFilterSize)
-//#define   gOutputSize     128
-//#define   gInputSize      128 
-//#define   gMargin         0
+#define 	gNumFilters 	16
+#define 	gInputPlanes	8
+#define   gFilterSize   14 
+#define   gFilterSizeSquared (gFilterSize*gFilterSize)
+#define   gOutputSize     14
+#define   gInputSize      14 
+#define   gMargin         0
 
 #define   FIXED_WORKGROUPSIZE 64 
 #define   FIXED_WORKGROUPSIZE_SHIFT 6
@@ -38,9 +38,11 @@ void  calc_backprop_floats_batchSize(
 				int localId				
  ) 
  {	
-			  *thiswchange = 0;	      
+			  *thiswchange = 0;	      			  	 
+	      
 			  int globalIdOutput = (globalId >> FIXED_WORKGROUPSIZE_SHIFT);	    
 	 
+				
 				int IntraFilterOffset =  globalIdOutput % gFilterSizeSquared;
 				int filterRow = IntraFilterOffset / gFilterSize;
 				int filterCol = IntraFilterOffset % gFilterSize;
@@ -56,22 +58,47 @@ void  calc_backprop_floats_batchSize(
 				if( n >= batchSize)
 					break;
 
-				for (int outRow = 0; outRow < gOutputSize; outRow++) {
-					int upstreamRow = outRow - gMargin + filterRow;
-					for (int outCol = 0; outCol < gOutputSize; outCol++) {
-						int upstreamCol = outCol - gMargin + filterCol;
-						bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
-								&& upstreamCol < gInputSize;
+				int upstreamRow = 0 - gMargin + filterRow;
+				for (int outRow = 0; outRow < gOutputSize; outRow++,upstreamRow++) {
+					
+					bool proceed0 = upstreamRow >= 0 && upstreamRow < gInputSize;
+					if(	proceed0 == false)
+					{
+						 continue;
+					}
+					
+					
+					int resultIndex = (( n * gNumFilters 
+										+ outPlane) * gOutputSize
+										+ outRow) * gOutputSize
+					          + 0;
+					
+					int upstreamCol =  0 - gMargin + filterCol; 
+					int upstreamDataIndex= (( n * gInputPlanes 
+													 + upstreamPlane) * gInputSize
+													 + upstreamRow) * gInputSize
+													 + upstreamCol;					
+					
+					for (int outCol = 0; outCol < gOutputSize; outCol++,	upstreamCol++, upstreamDataIndex++, resultIndex++){
+						//int upstreamCol = outCol - gMargin + filterCol;
+						//bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
+						//		&& upstreamCol < gInputSize;
+						
+						bool proceed  = upstreamCol >=0 && upstreamCol < gInputSize && proceed0;					
+						
+
 						if (proceed) {
-							int resultIndex = (( n * gNumFilters 
-												+ outPlane) * gOutputSize
-												+ outRow) * gOutputSize
-												+ outCol;
+							//int resultIndex = (( n * gNumFilters 
+							//					+ outPlane) * gOutputSize
+							//					+ outRow) * gOutputSize
+							//					+ outCol;
+							//int resultIndex = resultIndex0 + outCol;
 							float error = gradOutput[resultIndex];
-							int upstreamDataIndex = (( n * gInputPlanes 
-															 + upstreamPlane) * gInputSize
-															 + upstreamRow) * gInputSize
-															 + upstreamCol;
+							//int upstreamDataIndex = (( n * gInputPlanes 
+							//								 + upstreamPlane) * gInputSize
+							//								 + upstreamRow) * gInputSize
+							//								 + upstreamCol;
+							//int upstreamDataIndex = upstreamDataIndex0 + upstreamCol;
 							float upstreamResult = images[upstreamDataIndex];
 							float thisimagethiswchange = upstreamResult * error;
 							*thiswchange += thisimagethiswchange;
@@ -79,7 +106,9 @@ void  calc_backprop_floats_batchSize(
 							*thisbiaschange += error;
 							#endif
 						}
+			
 					}
+					
 				}
 			}		
 
