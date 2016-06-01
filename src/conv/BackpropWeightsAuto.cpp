@@ -77,7 +77,7 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
         Timer timer;
         try {
             candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
-            milliseconds[currentIndex] = (int)timer.ellaspedMicroseconds();
+            milliseconds[currentIndex] = (int)timer.elapsedMicroseconds();
             cout << "  try " << (numTries[currentIndex]+ 1) << " of kernel " << currentIndex << " time " << milliseconds[currentIndex] << endl;
             cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << milliseconds[currentIndex] << " microsecond" << endl;
             numTries[currentIndex]++;
