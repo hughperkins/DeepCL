@@ -15,13 +15,13 @@
 //29     int globalSize = workgroupsize * numWorkgroups; 
 //30     globalSize = (( globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize; 
 
-//#define 	gNumFilters 	8
-//#define 	gInputPlanes	4
-//#define   gFilterSize   3 
+//#define 	gNumFilters 	16
+//#define 	gInputPlanes	8
+//#define   gFilterSize   14 
 //#define   gFilterSizeSquared (gFilterSize*gFilterSize)
-//#define   gOutputSize   128 
-//#define   gInputSize    128 
-//#define   gMargin        0
+//#define   gOutputSize     14
+//#define   gInputSize      14 
+//#define   gMargin         0
 
 #define   FIXED_WORKGROUPSIZE 64 
 #define   FIXED_WORKGROUPSIZE_SHIFT 6
@@ -45,8 +45,8 @@ void  backprop_floats_fast_valid_thread(
  ) 
  {	
 			  *thiswchange = 0;	      
-				int batchId     =  (globalId >> FIXED_WORKGROUPSIZE_SHIFT) % batchSize  ;
-			  int globalIdOutput = (globalId >> FIXED_WORKGROUPSIZE_SHIFT) / batchSize ;
+				int batchId     	 = get_group_id(0) % batchSize  ;
+			  int globalIdOutput = get_group_id(0) / batchSize ;
 	 
 				int IntraFilterOffset =  globalIdOutput % gFilterSizeSquared;
 				int filterRow = IntraFilterOffset / gFilterSize;
@@ -57,7 +57,7 @@ void  backprop_floats_fast_valid_thread(
 				int upstreamPlane = filter2Id % gInputPlanes;	 
 				int n = batchId;
 				
-				if(batchId == 0 && localId)
+				if(batchId == 0 && localId ==0 )
 				{
 					#ifdef BIASED
 					gradBiasWeights[outPlane] = 0;
@@ -253,7 +253,7 @@ void __kernel backprop_floats_fast(
 		//Thread0 Atomics into 
 		if(localId == 0)
 		{
-					int globalIdOutput = (globalId >> FIXED_WORKGROUPSIZE_SHIFT) / batchSize ;
+					int globalIdOutput = get_group_id(0) / batchSize ;
 
 						// gradWeights:     [outPlane][upstreamPlane][filterRow][filterCol]
 						//       aggregate over:  [outRow][outCol][n]
