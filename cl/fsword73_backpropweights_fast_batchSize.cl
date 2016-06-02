@@ -20,7 +20,7 @@
 //#define   gFilterSize   14 
 //#define   gFilterSizeSquared (gFilterSize*gFilterSize)
 //#define   gOutputSize     14
-//#define   gInputSize      14 
+//#define   gInputSize      14
 //#define   gMargin         0
 
 #define   FIXED_WORKGROUPSIZE 64 
@@ -38,9 +38,8 @@ void  calc_backprop_floats_batchSize(
 				int localId				
  ) 
  {	
-			  *thiswchange = 0;	      			  	 
-	      
-				
+			  *thiswchange = 0;	      			  	       
+
 				int IntraFilterOffset =  globalIdOutput % gFilterSizeSquared;
 				int filterRow = IntraFilterOffset / gFilterSize;
 				int filterCol = IntraFilterOffset % gFilterSize;
@@ -106,6 +105,146 @@ void  calc_backprop_floats_batchSize(
 					}					
 				}
 			}		
+
+ } 
+ 
+ void  calc_backprop_floats_batchSize_v2(
+        global const float *gradOutput, 
+				global const float *images, 
+				float *thiswchange,
+				#ifdef BIASED  
+				float*  thisbiaschange,	
+				#endif 
+				const int batchSize,
+				int globalIdOutput,	
+				int localId				
+ ) 
+ {	
+			  *thiswchange = 0;	
+	 
+				int IntraFilterOffset =  globalIdOutput % gFilterSizeSquared;
+				int filterRow = IntraFilterOffset / gFilterSize;
+				int filterCol = IntraFilterOffset % gFilterSize;
+
+				int filter2Id = globalIdOutput / gFilterSizeSquared;
+				int outPlane = filter2Id / gInputPlanes;
+				int upstreamPlane = filter2Id % gInputPlanes;	 					 
+ 
+			  int iterations = (gOutputSize * gOutputSize * batchSize + FIXED_WORKGROUPSIZE -1) >> FIXED_WORKGROUPSIZE_SHIFT;
+	 
+	      for(int i = 0; i < iterations; i++)
+				{
+						int index  = i*FIXED_WORKGROUPSIZE + localId;
+					  int n = index / (gOutputSize * gOutputSize);
+					  int offsetofOutput = index % (gOutputSize * gOutputSize);
+						
+						if( offsetofOutput < (gOutputSize * gOutputSize) && n < batchSize)
+						{
+								int outRow = offsetofOutput / gOutputSize;						  
+								int upstreamRow = outRow - gMargin + filterRow;
+								int outCol = offsetofOutput % gOutputSize;
+								int upstreamCol = outCol - gMargin + filterCol;
+								bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
+										 && upstreamCol < gInputSize;
+									
+								if (proceed) {
+											int resultIndex = (( n * gNumFilters 
+																+ outPlane) * gOutputSize
+																+ outRow) * gOutputSize
+																+ outCol;
+											float error = gradOutput[resultIndex];
+											int upstreamDataIndex = (( n * gInputPlanes 
+																			 + upstreamPlane) * gInputSize
+																			 + upstreamRow) * gInputSize
+																			 + upstreamCol;
+											float upstreamResult = images[upstreamDataIndex];
+											float thisimagethiswchange = upstreamResult * error;
+											*thiswchange += thisimagethiswchange;
+			#ifdef BIASED
+											*thisbiaschange += error;
+			#endif
+									}								
+						}					
+				}	//for loop 
+
+ } 
+ 
+ 
+  void  calc_backprop_floats_batchSize_v3(
+        global const float *gradOutput, 
+				global const float *images, 
+				float *thiswchange,
+				#ifdef BIASED  
+				float*  thisbiaschange,	
+				#endif 
+				const int batchSize,
+				int globalIdOutput,	
+				int localId				
+ ) 
+ {	
+			  *thiswchange = 0;	      			  	 
+	      
+			
+				int IntraFilterOffset =  globalIdOutput % gFilterSizeSquared;
+				int filterRow = IntraFilterOffset / gFilterSize;
+				int filterCol = IntraFilterOffset % gFilterSize;
+
+				int filter2Id = globalIdOutput / gFilterSizeSquared;
+				int outPlane = filter2Id / gInputPlanes;
+				int upstreamPlane = filter2Id % gInputPlanes;	 					 
+ 
+			  int iterations = (gOutputSize * gOutputSize  + FIXED_WORKGROUPSIZE -1) >> FIXED_WORKGROUPSIZE_SHIFT;
+	 
+	      for(int i = 0; i < iterations; i++)
+				{
+						int index = (i*FIXED_WORKGROUPSIZE + localId) ;
+					  int offsetofOutput = index % (gOutputSize * gOutputSize);			
+
+						if( index < (gOutputSize * gOutputSize))
+						{
+								int outRow = offsetofOutput / gOutputSize;						  
+								int upstreamRow = outRow - gMargin + filterRow;
+								int outCol = offsetofOutput % gOutputSize;
+								int upstreamCol = outCol - gMargin + filterCol;
+								bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
+										 && upstreamCol < gInputSize;
+									
+								int resultIndex = (( 0 * gNumFilters 
+																	+ outPlane) * gOutputSize
+																	+ outRow) * gOutputSize
+																	+ outCol;
+								int upstreamDataIndex = (( 0 * gInputPlanes 
+																	 + upstreamPlane) * gInputSize
+																	 + upstreamRow) * gInputSize
+																	 + upstreamCol;
+								if (proceed) {
+											for(int n =0; n < batchSize; n+=2){
+													float error = gradOutput[resultIndex];
+													float upstreamResult = images[upstreamDataIndex];
+													float thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+											
+													//2nd batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+
+
+											}//for n		
+									}	//if proceed							
+						}					
+				}	//for loop 
 
  } 
  
@@ -228,8 +367,9 @@ void __kernel backprop_floats_fast(
    // if (globalId >= gNumFilters * gInputPlanes * gFilterSize * gFilterSize *  batchSize * FIXED_WORKGROUPSIZE) {
    //     //Do nothing	 
    // }
-	 
-	 calc_backprop_floats_batchSize(
+	 if( (gOutputSize * gOutputSize) >= FIXED_WORKGROUPSIZE)
+	 {
+		 calc_backprop_floats_batchSize_v3(
         gradOutput, 
 				images, 
 				&thiswchange,
@@ -239,6 +379,20 @@ void __kernel backprop_floats_fast(
 				batchSize,
 				globalIdOutput,	
 				localId);	
+	 }
+	 else
+	 {
+	 		 calc_backprop_floats_batchSize_v2(
+        gradOutput, 
+				images, 
+				&thiswchange,
+				#ifdef BIASED  
+				&thisbiaschange,	
+				#endif 
+				batchSize,
+				globalIdOutput,	
+				localId);	
+	 }		 
 
 
 	//aggregate Data to Thread0
