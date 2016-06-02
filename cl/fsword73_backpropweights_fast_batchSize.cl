@@ -15,13 +15,13 @@
 //29     int globalSize = workgroupsize * numWorkgroups; 
 //30     globalSize = (( globalSize + workgroupsize - 1) / workgroupsize) * workgroupsize; 
 
-#define 	gNumFilters 	16
-#define 	gInputPlanes	8
-#define   gFilterSize   14 
-#define   gFilterSizeSquared (gFilterSize*gFilterSize)
-#define   gOutputSize     14
-#define   gInputSize      14 
-#define   gMargin         0
+//#define 	gNumFilters 	16
+//#define 	gInputPlanes	8
+//#define   gFilterSize   14 
+//#define   gFilterSizeSquared (gFilterSize*gFilterSize)
+//#define   gOutputSize     14
+//#define   gInputSize      14 
+//#define   gMargin         0
 
 #define   FIXED_WORKGROUPSIZE 64 
 #define   FIXED_WORKGROUPSIZE_SHIFT 6
@@ -34,14 +34,12 @@ void  calc_backprop_floats_batchSize(
 				float*  thisbiaschange,	
 				#endif 
 				const int batchSize,
-				int globalId,	
+				int globalIdOutput,	
 				int localId				
  ) 
  {	
 			  *thiswchange = 0;	      			  	 
 	      
-			  int globalIdOutput = (globalId >> FIXED_WORKGROUPSIZE_SHIFT);	    
-	 
 				
 				int IntraFilterOffset =  globalIdOutput % gFilterSizeSquared;
 				int filterRow = IntraFilterOffset / gFilterSize;
@@ -59,6 +57,7 @@ void  calc_backprop_floats_batchSize(
 					break;
 
 				int upstreamRow = 0 - gMargin + filterRow;
+
 				for (int outRow = 0; outRow < gOutputSize; outRow++,upstreamRow++) {
 					
 					bool proceed0 = upstreamRow >= 0 && upstreamRow < gInputSize;
@@ -71,7 +70,7 @@ void  calc_backprop_floats_batchSize(
 					int resultIndex = (( n * gNumFilters 
 										+ outPlane) * gOutputSize
 										+ outRow) * gOutputSize
-					          + 0;
+					          + 0;  //OutCol start from 0
 					
 					int upstreamCol =  0 - gMargin + filterCol; 
 					int upstreamDataIndex= (( n * gInputPlanes 
@@ -84,31 +83,27 @@ void  calc_backprop_floats_batchSize(
 						//bool proceed = upstreamRow >= 0 && upstreamCol >= 0 && upstreamRow < gInputSize
 						//		&& upstreamCol < gInputSize;
 						
-						bool proceed  = upstreamCol >=0 && upstreamCol < gInputSize && proceed0;					
-						
+						bool proceed  = upstreamCol >=0 && upstreamCol < gInputSize ;		
 
 						if (proceed) {
 							//int resultIndex = (( n * gNumFilters 
 							//					+ outPlane) * gOutputSize
 							//					+ outRow) * gOutputSize
 							//					+ outCol;
-							//int resultIndex = resultIndex0 + outCol;
 							float error = gradOutput[resultIndex];
 							//int upstreamDataIndex = (( n * gInputPlanes 
 							//								 + upstreamPlane) * gInputSize
 							//								 + upstreamRow) * gInputSize
 							//								 + upstreamCol;
-							//int upstreamDataIndex = upstreamDataIndex0 + upstreamCol;
+
 							float upstreamResult = images[upstreamDataIndex];
 							float thisimagethiswchange = upstreamResult * error;
 							*thiswchange += thisimagethiswchange;
 							#ifdef BIASED
 							*thisbiaschange += error;
 							#endif
-						}
-			
-					}
-					
+						}			
+					}					
 				}
 			}		
 
@@ -120,7 +115,6 @@ void  calc_backprop_floats_batchSize(
 				#ifdef BIASED  
 				 float*  thisbiaschange,	
 				#endif			  
-				int globalId,
 				int localId)
  {
 		  
@@ -222,7 +216,7 @@ void __kernel backprop_floats_fast(
  {	 
 	 
 //	 const float learningRateMultiplier = 0.0001f;
-	 int globalId = get_global_id(0);				
+	 int globalIdOutput = get_group_id(0);				
 	 int localId  = get_local_id(0);
 	  float thiswchange = 0;
 	  __local float sdata[FIXED_WORKGROUPSIZE];	
@@ -243,7 +237,7 @@ void __kernel backprop_floats_fast(
 				&thisbiaschange,	
 				#endif 
 				batchSize,
-				globalId,	
+				globalIdOutput,	
 				localId);	
 
 
@@ -254,13 +248,11 @@ void __kernel backprop_floats_fast(
 #ifdef BIASED  
 				&thisbiaschange,	
 #endif				
-				globalId,
 				localId
 	);
 		
 	if(localId == 0)
 	{
-		int globalIdOutput = (globalId >> FIXED_WORKGROUPSIZE_SHIFT);
 		gradWeights[ globalIdOutput ] = thiswchange;
 		
 #ifdef BIASED  
