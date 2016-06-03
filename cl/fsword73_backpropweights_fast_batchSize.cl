@@ -218,7 +218,7 @@ void  calc_backprop_floats_batchSize(
 																	 + upstreamRow) * gInputSize
 																	 + upstreamCol;
 								if (proceed) {
-											for(int n =0; n < batchSize; n+=2){
+											for(int n =0; n < batchSize; n+=8){
 													float error = gradOutput[resultIndex];
 													float upstreamResult = images[upstreamDataIndex];
 													float thisimagethiswchange = upstreamResult * error;
@@ -240,6 +240,75 @@ void  calc_backprop_floats_batchSize(
 												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
 													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
 
+
+													//3rd batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+
+
+													//4th batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+
+													//5th batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+
+
+													//6th batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+
+													//7th batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
+
+
+													//8th batchID
+													error = gradOutput[resultIndex];
+													upstreamResult = images[upstreamDataIndex];
+ 												  thisimagethiswchange = upstreamResult * error;
+													*thiswchange += thisimagethiswchange;
+					#ifdef BIASED
+													*thisbiaschange += error;	
+					#endif
+												   resultIndex 			+= gNumFilters  *  gOutputSize * gOutputSize;
+													 upstreamDataIndex += gInputPlanes *  gInputSize  * gInputSize;
 
 											}//for n		
 									}	//if proceed							
