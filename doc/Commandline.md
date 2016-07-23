@@ -32,16 +32,16 @@ Use `train` to run training (`deepclrun` in v5.8.3 and below).
   * `tanh` means a tanh layer
 * Thus, you can do, for example:
 ```bash
-./train netdef=8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n learningrate=0.002 dataset=mnist
+deepcl_train netdef=8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n learningrate=0.002 dataset=mnist
 ```
 ... in order to learn mnist, using the same neural net architecture as used in the [convnetjs mnist demo](http://cs.stanford.edu/people/karpathy/convnetjs/demo/mnist.html)
 * Similarly, you can learn NORB, using approximately the architecture specified in [lecun-04](http://yann.lecun.com/exdb/publis/pdf/lecun-04.pdf), by doing:
 ```bash
-./train netdef=8c5-relu-mp4-24c6-relu-mp3-80c6-relu-5n learningrate=0.0001 dataset=norb
+deepcl_train netdef=8c5-relu-mp4-24c6-relu-mp3-80c6-relu-5n learningrate=0.0001 dataset=norb
 ```
 * Or, you can train NORB using the very deep, broad architecture specified by Ciresan et al in [Flexible, High Performance Convolutional Neural Networks for Image Classification](http://ijcai.org/papers11/Papers/IJCAI11-210.pdf):
 ```bash
-./train netdef=MP3-300C6-RELU-MP2-500C4-RELU-MP4-500N-TANH-5N learningrate=0.0001 dataset=norb
+deepcl_train netdef=MP3-300C6-RELU-MP2-500C4-RELU-MP4-500N-TANH-5N learningrate=0.0001 dataset=norb
 ```
 
 ### Convolutional
@@ -90,16 +90,16 @@ Use `train` to run training (`deepclrun` in v5.8.3 and below).
 
 * simply prefix a layer with eg `3*` to repeat it.  `3*` will repeat the layer 3 times, and similar for other numbers, eg:
 ```
-./train netdef=6*(32c5z-relu)-500n-361n learningrate=0.0001 dataset=kgsgoall
+deepcl_train netdef=6*(32c5z-relu)-500n-361n learningrate=0.0001 dataset=kgsgoall
 ```
 ... will create 6 convolutional layers of 32 5x5 filters each.
 * you can also use parentheses `(...)` to repeat multiple layers, eg:
 ```
-./train netdef=3*(32c5z-relu-mp2)-150n-10n
+deepcl_train netdef=3*(32c5z-relu-mp2)-150n-10n
 ```
 ... will be expanded to:
 ```
-./train netdef=32c5z-relu-mp2-32c5z-relu-mp2-32c5z-relu-mp2-150n-10n
+deepcl_train netdef=32c5z-relu-mp2-32c5z-relu-mp2-32c5z-relu-mp2-150n-10n
 ```
 
 ### File types
