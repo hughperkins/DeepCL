@@ -152,6 +152,6 @@ deepcl_train netdef=32c5z-relu-mp2-32c5z-relu-mp2-32c5z-relu-mp2-150n-10n
 
 ## Prediction
 
-Use `predict to run prediction  (`deepclexec` in v5.8.3 and below)
+Use `deepcl_predict` to run prediction  (`deepclexec` in v5.8.3 and below)
 
 
