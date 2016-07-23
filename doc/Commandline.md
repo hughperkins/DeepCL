@@ -106,7 +106,7 @@ Use `train` to run training (`deepclrun` in v5.8.3 and below).
 
 * Simply pass in the filename of the data file with the images in
 * Filetype will be detected automatically
-* See [Loaders](loaders.md) for information on available loaders
+* See [Loaders](Loaders.md) for information on available loaders
 
 ### Weight persistence
 
