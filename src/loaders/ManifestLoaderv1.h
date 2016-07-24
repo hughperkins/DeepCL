@@ -18,12 +18,12 @@
 
 class ManifestLoaderv1 : public Loader {
     private:
-    bool includeLabels;
     std::string imagesFilepath;
     int N;
     int planes;
     int size;
 
+    bool hasLabels;
     std::string *files;
     int *labels;
 
@@ -36,7 +36,6 @@ class ManifestLoaderv1 : public Loader {
     public:
     STATIC bool isFormatFor(std::string imagesFilepath);
     ManifestLoaderv1(std::string imagesFilepath);
-    ManifestLoaderv1(std::string imagesFilepath, bool includeLabels);
     VIRTUAL std::string getType();
     VIRTUAL int getImageCubeSize();
     VIRTUAL int getN();
@@ -45,7 +44,7 @@ class ManifestLoaderv1 : public Loader {
     VIRTUAL void load(unsigned char *data, int *labels, int startRecord, int numRecords);
 
     private:
-    void init(std::string imagesFilepath, bool includeLabels);
+    void init(std::string imagesFilepath);
     int readIntValue(std::vector< std::string > splitLine, std::string key);
 
     // [[[end]]]

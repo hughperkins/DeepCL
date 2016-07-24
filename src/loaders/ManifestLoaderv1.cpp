@@ -34,13 +34,9 @@ PUBLIC STATIC bool ManifestLoaderv1::isFormatFor(std::string imagesFilepath) {
     return matched;
 }
 PUBLIC ManifestLoaderv1::ManifestLoaderv1(std::string imagesFilepath) {
-    init(imagesFilepath, true);    
+    init(imagesFilepath);
 }
-PUBLIC ManifestLoaderv1::ManifestLoaderv1(std::string imagesFilepath, bool includeLabels) {
-    init(imagesFilepath, includeLabels);
-}
-PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath, bool includeLabels) {
-    this->includeLabels = includeLabels;
+PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
     this->imagesFilepath = imagesFilepath;
     // by reading the number of lines in the manifest, we can get the number of examples, *p_N
     // number of planes is .... 1
@@ -66,9 +62,10 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath, bool includeLabe
     // now we should load into memory, since the file is not fixed-size records, and cannot be loaded partially easily
 
     files = new string[N];
-    labels = new int[N];
+    labels = 0;
 
     int n = 0;
+    hasLabels = false;
     while(infile) {
         infile.getline(lineChars, 1024);
         if(!infile) {
@@ -82,7 +79,17 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath, bool includeLabe
         if((int)splitLine.size() == 0) {
             continue;
         }
-        if(includeLabels && (int)splitLine.size() != 2) { 
+        if(n == 0) {
+            int lineSize = (int)splitLine.size();
+            if(lineSize == 2) {
+                hasLabels = true;
+                labels = new int[N];
+            }
+        }
+        if(!hasLabels && (int)splitLine.size() != 1) { 
+            throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
+        }
+        if(hasLabels && (int)splitLine.size() != 2) { 
             throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
         }
         string jpegFile = splitLine[0];
@@ -94,16 +101,16 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath, bool includeLabe
         }
         #endif
         files[n] = jpegFile;
-        if(includeLabels) {
+        if(hasLabels) {
             int label = atoi(splitLine[1]);
-        labels[n] = label;
+            labels[n] = label;
         }
 //        cout << "file " << jpegFile << " label=" << label << endl;
         n++;
     }
     infile.close();
 
-    cout << "manifest " << imagesFilepath << " read. N=" << N << " planes=" << planes << " size=" << size << endl;
+    cout << "manifest " << imagesFilepath << " read. N=" << N << " planes=" << planes << " size=" << size << " labels? " << hasLabels << endl;
 }
 PUBLIC VIRTUAL std::string ManifestLoaderv1::getType() {
     return "ManifestLoaderv1";
@@ -138,8 +145,8 @@ PUBLIC VIRTUAL void ManifestLoaderv1::load(unsigned char *data, int *labels, int
         int globalN = localN + startRecord;
         JpegHelper::read(files[globalN], planes, size, size, data + localN * imageCubeSize);
         if(labels != 0) {
-            if(!includeLabels) {
-                throw runtime_error("ManifestLoaderv1: labels reqested in load() method, but not activated in constructor");
+            if(!hasLabels) {
+                throw runtime_error("ManifestLoaderv1: labels reqested in load() method, but none found in file");
             }
             labels[localN] = this->labels[globalN];
         }
