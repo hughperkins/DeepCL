@@ -41,7 +41,7 @@ if osfamily == 'Linux':
 
 if osfamily == 'Darwin':
     compile_options.append('-mmacosx-version-min=10.7')
-    # compile_options.append('-stdlib=libc++')
+    compile_options.append('-stdlib=libc++')
 
 if osfamily in ['Linux', 'Darwin']:
     compile_options.append('-g')
