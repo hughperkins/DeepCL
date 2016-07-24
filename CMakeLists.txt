@@ -262,11 +262,18 @@ INSTALL(DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h)
 INSTALL(PROGRAMS src/activate.sh DESTINATION bin)
 INSTALL(PROGRAMS src/activate.bat DESTINATION bin)
 #INSTALL(DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h)
-INSTALL(TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest
+INSTALL(TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest mnist-to-floats
+        mnist-to-pipe cifar-to-mat
     EXPORT DeepCLTargets
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib)
+if(LIBJPEG_AVAILABLE)
+    INSTALL(TARGETS mnist-to-jpegs
+        RUNTIME DESTINATION bin
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib)
+endif()
 
 # Generate the project config file.
 export(TARGETS DeepCL
