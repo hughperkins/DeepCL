@@ -44,7 +44,7 @@ void run(string mnistImagesFile, string outDirectory, int numExamples) {
     int inputCubeSize = planes * size * size;
     uchar *ucharValues = new uchar[ inputCubeSize ];
     for( int i = 0; i < 10; i++ ) {
-        myrandom.seed((unsigned int)i);
+        myrandom.seed((unsigned int)(i + 1));
         int thisref = myrandom() % 10000;
         string folderPath = outDirectory + "/R131" + toString( thisref ); // make the name a bit imagenet-like
         if( !FileHelper::folderExists( folderPath ) ) {
@@ -56,7 +56,7 @@ void run(string mnistImagesFile, string outDirectory, int numExamples) {
     manifest << "# format=deepcl-jpeg-list-v1 N=" << numExamples << " planes=" << planes << " width=" << size << " height=" << size << endl;
     for( int n = 0; n < numExamples; n++ ) {
         int label = labels[n];
-        myrandom.seed((unsigned int)label);
+        myrandom.seed((unsigned int)(label + 1));
         int thisref = myrandom() % 10000;
         string folderPath = outDirectory + "/R131" + toString( thisref ); // make the name a bit imagenet-like
         float *inputCube = imageData + n * inputCubeSize;
