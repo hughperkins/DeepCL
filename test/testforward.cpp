@@ -436,9 +436,9 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
 ////    filters[1] = 5.0f;
 //    filters[4] = 5.0f;
 
-    WeightRandomizer::randomize( 0, inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 1, filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 2, biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 1, inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 2, filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 3, biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
     for( int i = 0; i < 8; i++ ) {
         if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }

@@ -61,8 +61,8 @@ TEST(testbackward, squareloss) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
 
-    WeightRandomizer::randomize(0, input, inputTotalSize, -2.0f, 2.0f);
-    WeightRandomizer::randomize(1, expectedOutput, outputTotalSize, -2.0f, 2.0f);
+    WeightRandomizer::randomize(1, input, inputTotalSize, -2.0f, 2.0f);
+    WeightRandomizer::randomize(2, expectedOutput, outputTotalSize, -2.0f, 2.0f);
     
     // now, forward prop
 //    net->input(input);
@@ -81,7 +81,7 @@ TEST(testbackward, squareloss) {
     const int numSamples = 10;
     for(int i = 0; i < numSamples; i++) {
         int inputIndex;
-        WeightRandomizer::randomizeInts(i, &inputIndex, 1, 0, inputTotalSize);
+        WeightRandomizer::randomizeInts(i + 1, &inputIndex, 1, 0, inputTotalSize);
 //        cout << "i=" << i << " index " << inputIndex << endl;
         float oldValue = input[inputIndex];
         // grad for this index is....
@@ -138,8 +138,8 @@ TEST(testbackward, crossentropyloss) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
 
-    WeightRandomizer::randomize(0, input, inputTotalSize, 0.0f, 1.0f);
-    WeightRandomizer::randomize(1, expectedOutput, outputTotalSize, 0.0f, 1.0f);
+    WeightRandomizer::randomize(1, input, inputTotalSize, 0.0f, 1.0f);
+    WeightRandomizer::randomize(2, expectedOutput, outputTotalSize, 0.0f, 1.0f);
     
     // now, forward prop
 //    net->input(input);
@@ -158,7 +158,7 @@ TEST(testbackward, crossentropyloss) {
     const int numSamples = 10;
     for(int i = 0; i < numSamples; i++) {
         int inputIndex;
-        WeightRandomizer::randomizeInts(i, &inputIndex, 1, 0, inputTotalSize);
+        WeightRandomizer::randomizeInts(i + 1, &inputIndex, 1, 0, inputTotalSize);
 //        cout << "i=" << i << " index " << inputIndex << endl;
         float oldValue = input[inputIndex];
         // grad for this index is....
@@ -231,8 +231,8 @@ TEST(testbackward, softmaxloss) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
 
-    WeightRandomizer::randomize(0, input, inputTotalSize, 0.0f, 1.0f);
-    WeightRandomizer::randomize(1, expectedOutput, outputTotalSize, 0.0f, 1.0f);
+    WeightRandomizer::randomize(1, input, inputTotalSize, 0.0f, 1.0f);
+    WeightRandomizer::randomize(2, expectedOutput, outputTotalSize, 0.0f, 1.0f);
 
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
@@ -269,7 +269,7 @@ TEST(testbackward, softmaxloss) {
     const int numSamples = 10;
     for(int i = 0; i < numSamples; i++) {
         int inputIndex;
-        WeightRandomizer::randomizeInts(i, &inputIndex, 1, 0, inputTotalSize);
+        WeightRandomizer::randomizeInts(i + 1, &inputIndex, 1, 0, inputTotalSize);
 //        cout << "i=" << i << " index " << inputIndex << endl;
         float oldValue = input[inputIndex];
         // grad for this index is....
@@ -341,8 +341,8 @@ void checkLayer(NeuralNet *net, int targetLayerIndex) {
 //    }
 
     cout << "layer " << layer->asString() << endl;
-    WeightRandomizer::randomize(0, input, inputTotalSize, -1.0f, 1.0f);
-    WeightRandomizer::randomize(1, expectedOutput, outputTotalSize, 0.0f, 1.0f);
+    WeightRandomizer::randomize(1, input, inputTotalSize, -1.0f, 1.0f);
+    WeightRandomizer::randomize(2, expectedOutput, outputTotalSize, 0.0f, 1.0f);
 
     // we should make the input and output a probability distribution I think
     // so: add up the input, and divide each by that.  do same for expectedoutput (?)
@@ -368,7 +368,7 @@ void checkLayer(NeuralNet *net, int targetLayerIndex) {
     const int numSamples = 10;
     for(int i = 0; i < numSamples; i++) {
         int inputIndex;
-        WeightRandomizer::randomizeInts(i, &inputIndex, 1, 0, inputTotalSize);
+        WeightRandomizer::randomizeInts(i + 1, &inputIndex, 1, 0, inputTotalSize);
 //        cout << "i=" << i << " index " << inputIndex << endl;
         float oldValue = input[inputIndex];
         // grad for this index is....
@@ -691,9 +691,9 @@ void compareSpecific(int instance0, int instance1, int numIts, int batchSize, La
     float *errorsForUpstream0 = new float[errorsForUpstreamSize];
     float *errorsForUpstream1 = new float[errorsForUpstreamSize];
 
-    WeightRandomizer::randomize(0, input, inputNumElements, -0.1f, 0.1f);
-    WeightRandomizer::randomize(1, errors, errorsSize, -0.1f, 0.1f);
-    WeightRandomizer::randomize(2, weights, weightsSize, -0.1f, 0.1f);
+    WeightRandomizer::randomize(1, input, inputNumElements, -0.1f, 0.1f);
+    WeightRandomizer::randomize(2, errors, errorsSize, -0.1f, 0.1f);
+    WeightRandomizer::randomize(3, weights, weightsSize, -0.1f, 0.1f);
 
     CLWrapper *inputWrapper = cl->wrap(inputNumElements, input);
     CLWrapper *errorsWrapper = cl->wrap(errorsSize, errors);

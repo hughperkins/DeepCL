@@ -51,8 +51,8 @@ TEST( testsgd, basic ) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
 
-    WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
-    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 1, input, inputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 2, expectedOutput, outputTotalSize, 0.0f, 1.0f );
 
     SGD *sgd = new SGD( cl );
     sgd->setLearningRate( 0.002f );

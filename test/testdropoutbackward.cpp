@@ -140,9 +140,9 @@ TEST( testdropoutbackward, compare_args ) {
         // selectors might go over the edge if we just choose random ints
         // easiest way to select valid selectors might be to just forwardforward first?
 
-        WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputNumElements, -0.1f, 0.1f );
-        WeightRandomizer::randomizeInts( it, mask, inputNumElements, 0, 2 );    
+        WeightRandomizer::randomize( it + 1, errors, errorsSize, -0.1f, 0.1f );
+        WeightRandomizer::randomize( it + 1, input, inputNumElements, -0.1f, 0.1f );
+        WeightRandomizer::randomizeInts( it + 1, mask, inputNumElements, 0, 2 );
         forwardprop->forward( batchSize, mask, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {
