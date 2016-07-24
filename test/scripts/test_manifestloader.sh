@@ -15,9 +15,7 @@ mkdir /tmp/testmanifest
 
 source ../dist/bin/activate.sh
 
-if [[ ! -v MNISTDIR ]]; then {
-    MNISTDIR=../data/mnist
-} fi
+MNISTDIR=${MNISTDIR-../data/mnist}
 
 mnist-to-jpegs $MNISTDIR/train-images-idx3-ubyte /tmp/testmanifest 1280
 
