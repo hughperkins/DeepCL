@@ -115,6 +115,9 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
         n++;
     }
     infile.close();
+    if(n != N) {
+        throw runtime_error("Error: number of images declared in manifest " + to_string(N) + " doesnt match number actually in manifest " + to_string(n));
+    }
 
     cout << "manifest " << imagesFilepath << " read. N=" << N << " planes=" << planes << " size=" << size << " labels? " << hasLabels << endl;
 }
@@ -149,6 +152,9 @@ PUBLIC VIRTUAL void ManifestLoaderv1::load(unsigned char *data, int *labels, int
 //    cout << "ManifestLoaderv1, loading " << numRecords << " jpegs" << endl;
     for(int localN = 0; localN < numRecords; localN++) {
         int globalN = localN + startRecord;
+        if(globalN >= N) {
+            return;
+        }
         JpegHelper::read(files[globalN], planes, size, size, data + localN * imageCubeSize);
         if(labels != 0) {
             if(!hasLabels) {
