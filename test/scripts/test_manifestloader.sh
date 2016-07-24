@@ -32,3 +32,6 @@ head -n 1 /tmp/testmanifest/manifest.txt > /tmp/testmanifest/test.txt
 tail -n +2 /tmp/testmanifest/manifest.txt | awk '{print $1}' >> /tmp/testmanifest/test.txt
 deepcl_predict writelabels=1 inputfile=/tmp/testmanifest/test.txt outputfile=/tmp/testmanifest/out.txt
 
+head -n 10 /tmp/testmanifest/test.txt > /tmp/testmanifest/test_short.txt
+deepcl_predict writelabels=1 inputfile=/tmp/testmanifest/test_short.txt outputfile=/tmp/testmanifest/out_short.txt
+
