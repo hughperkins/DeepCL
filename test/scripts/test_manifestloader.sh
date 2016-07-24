@@ -8,8 +8,8 @@ set -e
 
 if [[ -d /tmp/testmanifest ]]; then {
     rm -Rf /tmp/testmanifest
+    sync
 } fi
-sync
 
 mkdir /tmp/testmanifest
 
