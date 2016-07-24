@@ -116,7 +116,7 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
     }
     infile.close();
     if(n != N) {
-        throw runtime_error("Error: number of images declared in manifest " + to_string(N) + " doesnt match number actually in manifest " + to_string(n));
+        throw runtime_error("Error: number of images declared in manifest " + toString(N) + " doesnt match number actually in manifest " + to_string(n));
     }
 
     cout << "manifest " << imagesFilepath << " read. N=" << N << " planes=" << planes << " size=" << size << " labels? " << hasLabels << endl;
