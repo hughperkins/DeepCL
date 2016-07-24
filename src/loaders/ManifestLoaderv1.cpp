@@ -26,8 +26,8 @@ using namespace std;
 
 PUBLIC STATIC bool ManifestLoaderv1::isFormatFor(std::string imagesFilepath) {
     cout << "ManifestLoaderv1 checking format for " << imagesFilepath << endl;
-    char *headerBytes = FileHelper::readBinaryChunk(imagesFilepath, 0, 1024);
     string sigString = "# format=deepcl-jpeg-list-v1 ";
+    char *headerBytes = FileHelper::readBinaryChunk(imagesFilepath, 0, sigString.length() + 1);
     headerBytes[sigString.length()] = 0;
     bool matched = string(headerBytes) == sigString;
     cout << "matched: " << matched << endl;
