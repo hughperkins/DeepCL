@@ -93,7 +93,13 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
             throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
         }
         string jpegFile = splitLine[0];
-        #ifndef _WIN32
+        #ifdef _WIN32
+        if(jpegFile[1] != ':' && jpegFile[0] != '\\') {  // I guess this means its a relative path?
+            vector<string> splitManifestPath = split(imagesFilepath, "\\");
+            string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
+            jpegFile = dirPath + jpegFile;
+        }
+        #else
         if(jpegFile[0] != '/') {  // this is a bit hacky, but at least handles linux and mac for now...
             vector<string> splitManifestPath = split(imagesFilepath, "/");
             string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
