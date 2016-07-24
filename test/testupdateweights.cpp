@@ -57,18 +57,18 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
     Layer *layer = net->getLayer(targetLayerIndex);
 
     cout << "layer " << layer->asString() << endl;
-    WeightRandomizer::randomize(0, input, inputTotalSize, -1.0f, 1.0f);
-    WeightRandomizer::randomize(1, expectedOutput, outputTotalSize, -1.0f, 1.0f);
+    WeightRandomizer::randomize(1, input, inputTotalSize, -1.0f, 1.0f);
+    WeightRandomizer::randomize(2, expectedOutput, outputTotalSize, -1.0f, 1.0f);
 
     int weightsSize = layer->getWeightsSize();
     int biasSize = layer->getBiasSize();
     cout << "weightsize=" << weightsSize << " biassize=" << biasSize << endl;
     float *weights = new float[weightsSize];
-    WeightRandomizer::randomize(2, weights, weightsSize, -0.1f, 0.1f);
+    WeightRandomizer::randomize(3, weights, weightsSize, -0.1f, 0.1f);
     float *bias = 0;
     if(layer->biased()) {
         bias = new float[biasSize];
-        WeightRandomizer::randomize(3, bias, biasSize, -0.1f, 0.1f);
+        WeightRandomizer::randomize(4, bias, biasSize, -0.1f, 0.1f);
     }
     if(weightsSize > 0 || biasSize > 0) {
         layer->setWeights(weights, bias);
@@ -93,7 +93,7 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
     const int numSamples = 10;
     for(int i = 0; i < numSamples; i++) {
         int weightIndex;
-        WeightRandomizer::randomizeInts(i, &weightIndex, 1, 0, weightsSize);
+        WeightRandomizer::randomizeInts(i + 1, &weightIndex, 1, 0, weightsSize);
 //        cout << "i=" << i << " index " << inputIndex << endl;
         float oldValue = weights[weightIndex];
         // grad for this index is....
