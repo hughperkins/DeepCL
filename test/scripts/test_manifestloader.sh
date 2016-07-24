@@ -16,8 +16,12 @@ mkdir /tmp/testmanifest
 source ../dist/bin/activate.sh
 
 MNISTDIR=${MNISTDIR-../data/mnist}
+MNISTFILE=$MNISTDIR/train-images-idx3-ubyte
+if [ -f $MNISTDIR/train-images.idx3-ubyte ]; then {
+    MNISTFILE=$MNISTDIR/train-images.idx3-ubyte
+} fi
 
-mnist-to-jpegs $MNISTDIR/train-images-idx3-ubyte /tmp/testmanifest 1280
+mnist-to-jpegs $MNISTFILE /tmp/testmanifest 1280
 
 deepcl_train datadir=/tmp/testmanifest trainfile=manifest.txt validatefile=manifest.txt numtrain=1280 numtest=1280 learningrate=0.002 numepochs=3
 
