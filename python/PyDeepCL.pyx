@@ -28,6 +28,7 @@ else:
   floatArrayType = 'f'
 
 include "DeepCL.pyx"
+include "RandomSingleton.pyx"
 #include "DeepCL.pyx"
 include "Trainer.pyx"
 include "SGD.pyx"

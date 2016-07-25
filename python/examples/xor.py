@@ -26,8 +26,11 @@ def go():
     planes = 2
     size = 1
     learningRate = 0.1
-    numEpochs = 4000
+    numEpochs = 3000
 
+    # seed just makes it repeatable.  Normally you wouldnt want this (except for unit tests, or for
+    # comparing with other networks etc, for correctness checking)
+    PyDeepCL.RandomSingleton.seed(1234)
     cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet(cl, planes, size)
     net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(2).filterSize(1).padZeros().biased())

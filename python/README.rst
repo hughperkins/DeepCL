@@ -29,11 +29,15 @@ for an example of:
 -  loading mnist data
 -  training the network using a higher-level interface (``NetLearner``)
 
+The same example, using numpy arrays:
+`test\_deepcl\_numpy.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl_numpy.py>`__
+
 For examples of using lower-level entrypoints, see
 `test\_lowlevel.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_lowlevel.py>`__:
 
 -  creating layers directly
 -  running epochs and forward/backprop directly
+-  note that you need ``numpy`` installed to run this example
 
 For example of using q-learning, see
 `test\_qlearning.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py>`__.

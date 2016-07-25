@@ -13,6 +13,11 @@ from setuptools import setup
 from setuptools import Extension
 
 cython_present = False
+try:
+    from Cython.Build import cythonize
+    cython_present = True
+except ImportError:
+    pass
 
 building_dist = False
 for arg in sys.argv:
@@ -86,6 +91,11 @@ ext_modules = [
               extra_compile_args=compile_options,
               runtime_library_dirs=runtime_library_dirs,
               language="c++")]
+
+
+if cython_present:
+    print('cythonizing...')
+    ext_modules = cythonize(ext_modules)
 
 
 def read_if_exists(filename):

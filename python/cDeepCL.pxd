@@ -24,6 +24,7 @@ cdef extern from "DeepCL.h":
         int getMaxWorkgroupSize()
         int getMaxAllocSizeMB()
 
+include "cRandomSingleton.pxd"
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
 include "cTrainer.pxd"
