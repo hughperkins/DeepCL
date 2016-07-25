@@ -55,4 +55,9 @@ cd python
 python setup.py install
 ```
 
+## Changes
+
+* 25 July 2016:
+  * added RandomSingleton class, to set the seed for weights initialization
+  * added [xor.py](examples/xor.py) example
 
