@@ -1,34 +1,18 @@
-# Copyright Hugh Perkins 2015
+# Copyright Hugh Perkins 2016
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License, 
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 # obtain one at http://mozilla.org/MPL/2.0/.
-
+"""
+Simple example of xor
+"""
 from __future__ import print_function
-
-# import sys
-# import array
 import PyDeepCL
 import random
 import numpy as np
 
 def go():
     print('xor')
-
-    random.seed(1)
-    cl = PyDeepCL.DeepCL()
-    net = PyDeepCL.NeuralNet(cl, 2, 1)
-    # net.addLayer(PyDeepCL.InputLayerMaker().numPlanes(2).imageSize(1))
-    net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(2).filterSize(1).padZeros().biased())
-    net.addLayer(PyDeepCL.ActivationMaker().sigmoid())
-    net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(2).filterSize(1).padZeros().biased())
-    net.addLayer(PyDeepCL.ActivationMaker().sigmoid())
-    # net.addLayer(PyDeepCL.FullyConnectedMaker().numPlanes(2).imageSize(1).biased().relu())
-    # net.addLayer(PyDeepCL.FullyConnectedMaker().numPlanes(2).imageSize(1).biased().relu())
-    # net.addLayer( PyDeepCL.FullyConnectedMaker().numPlanes(10).imageSize(1).biased().linear() )
-    #net.addLayer( PyDeepCL.SquareLossMaker() )
-    net.addLayer(PyDeepCL.SoftMaxMaker())
-    print(net.asString())
 
     data = [
         {'data': [-1, -1], 'label': 0},
@@ -38,22 +22,35 @@ def go():
     ]
 
     N = len(data)
+    batchSize = N
     planes = 2
     size = 1
+    learningRate = 0.1
+    numEpochs = 4000
+
+    cl = PyDeepCL.DeepCL()
+    net = PyDeepCL.NeuralNet(cl, planes, size)
+    net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(2).filterSize(1).padZeros().biased())
+    net.addLayer(PyDeepCL.ActivationMaker().sigmoid())
+    net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(2).filterSize(1).padZeros().biased())
+    net.addLayer(PyDeepCL.ActivationMaker().sigmoid())
+    net.addLayer(PyDeepCL.SoftMaxMaker())
+    print(net.asString())
+
     images = np.zeros((N, planes, size, size), dtype=np.float32)
     labels = np.zeros((N,), dtype=np.int32)
     for n in range(N):
-        images[n,0,0,0] = data[n]['data'][0]
-        images[n,1,0,0] = data[n]['data'][1]
+        for plane in range(planes):
+            images[n,plane,0,0] = data[n]['data'][plane]
         labels[n] = data[n]['label']
 
-    sgd = PyDeepCL.SGD(cl, 0.1, 0.0)
+    sgd = PyDeepCL.SGD(cl, learningRate, 0.0)
     netLearner = PyDeepCL.NetLearner(
         sgd, net,
         N, images.reshape((images.size,)), labels,
         N, images.reshape((images.size,)), labels,
-        N)
-    netLearner.setSchedule(2000)
+        batchSize)
+    netLearner.setSchedule(numEpochs)
     netLearner.run()
 
 if __name__ == '__main__':
