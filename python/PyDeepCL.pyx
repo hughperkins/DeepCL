@@ -17,13 +17,10 @@ cimport CppRuntimeBoundary
 cimport cDeepCL
 
 major_version = platform.python_version_tuple()[0]
-print('major_version', major_version)
 if major_version == '2':
-  print('major vresion 2')
   intArrayType = b'i'
   floatArrayType = b'f'
 else:
-  print('major vresion 3')
   intArrayType = 'i'
   floatArrayType = 'f'
 
