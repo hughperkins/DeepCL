@@ -1,3 +1,5 @@
+set -x
+echo $PATH
 pwd
 version=$(cat jenkins/version.txt)
 rm -Rf build dist
