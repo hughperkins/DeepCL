@@ -10,7 +10,7 @@
 
 #include "gtest/gtest.h"
 
-#include "test/GtestGlobals.h"
+#include "test/DeepCLGtestGlobals.h"
 
 using namespace std;
 
@@ -19,6 +19,7 @@ string cmdline;
 GTEST_API_ int main(int argc, char **argv) {
     // add filter away slow and data by default
     bool deleteargv = false;
+    DeepCLGtestGlobals::instance()->gpuindex = 0;
     // add filter= option, easier to type than --gtest_filter= ...
     for( int i = 1; i < argc; i++ ) {
         if( split( string( argv[i] ), "=" )[0] == "tests" ) {
@@ -27,6 +28,10 @@ GTEST_API_ int main(int argc, char **argv) {
             char *newargchar = new char[ newarg.length() + 1 ];
             strcpy_safe( newargchar, newarg.c_str(), newarg.length() );
             argv[i] = newargchar;
+        }
+        else if( split( string( argv[i] ), "=" )[0] == "gpuindex" ) {
+            DeepCLGtestGlobals::instance()->gpuindex = atoi(split( string( argv[i] ), "=" )[1]);
+            cout << "Using gpu " << DeepCLGtestGlobals::instance()->gpuindex << endl;
         }
     }
     // default to -DATA*:SLOW*
@@ -51,8 +56,8 @@ GTEST_API_ int main(int argc, char **argv) {
     }
     cout << endl;
     testing::InitGoogleTest(&argc, argv);
-    GtestGlobals::instance()->argc = argc;
-    GtestGlobals::instance()->argv = argv;
+    DeepCLGtestGlobals::instance()->argc = argc;
+    DeepCLGtestGlobals::instance()->argv = argv;
     int retValue = RUN_ALL_TESTS();
     if( deleteargv ) {
         for( int i = 0; i < argc; i++ ) {

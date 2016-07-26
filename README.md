@@ -98,10 +98,11 @@ This section installs the native libraries, and the command-line tools.  You alw
 
 * Download latest binary zip file from http://deepcl.hughperkins.com/Downloads/ (eg from v8.0.0rc8)
 * unzip it, which creates the `dist` folder
-* To use it:
+* To test it:
   * open a cmd
   * run `call dist\bin\activate.bat` (adjusting the path appropriately for wherever you downloaded deepcl binaries to)
   * now, eg try `deepcl_unittests`
+  * (New!), you can choose which gpu to run tests on now, eg: `deepcl_unittests gpuindex=1`
 
 Note that you need to "activate" the installation each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
 
@@ -118,6 +119,7 @@ Note that you need to "activate" the installation each time you open a new cmd p
 * untar it, which creates the `dist` sub-folder
 * in a bash prompt, run `source dist/bin/activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
 * test by doing, from the same bash prompt, eg `deepcl_unittests`
+  * (New!), you can choose which gpu to run tests on now, eg: `deepcl_unittests gpuindex=1`
 
 Note that you need to "activate" the installation each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
 
@@ -186,6 +188,7 @@ Recent changes
 * 26th July 2016:
   * fixed some bugs in manifest loader
   * no longer need to specify the number of images in the first line of the manifest file
+  * added `gpuindex=` option to `deepcl_unittests` (quite beta for now...)
 * 4th January 2016:
   * fixed a number of build warnings on Mac, both in OpenCL build, and C++ build
 * 3rd January 2016:

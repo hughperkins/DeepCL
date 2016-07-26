@@ -41,7 +41,7 @@ TEST(testbackward, squareloss) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 3, 5);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SquareLossMaker::instance());
@@ -118,7 +118,7 @@ TEST(testbackward, crossentropyloss) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 3, 5);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(CrossEntropyLossMaker::instance());
@@ -210,7 +210,7 @@ TEST(testbackward, softmaxloss) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SoftMaxMaker::instance());
@@ -394,7 +394,7 @@ void checkLayer(NeuralNet *net, int targetLayerIndex) {
 }
 
 TEST(testbackward, squareloss2) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SquareLossMaker::instance());
@@ -409,7 +409,7 @@ TEST(testbackward, squareloss2) {
 }
 
 TEST(testbackward, crossentropy2) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(CrossEntropyLossMaker::instance());
@@ -424,7 +424,7 @@ TEST(testbackward, crossentropy2) {
 }
 
 TEST(testbackward, softmax2) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SoftMaxMaker::instance());
@@ -439,7 +439,7 @@ TEST(testbackward, softmax2) {
 }
 
 TEST(testbackward, conv1) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 4);
     net->addLayer(ForceBackpropLayerMaker::instance());
@@ -457,7 +457,7 @@ TEST(testbackward, conv1) {
 }
 
 TEST(testbackward, fc1) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 4);
     net->addLayer(ForceBackpropLayerMaker::instance());
@@ -475,7 +475,7 @@ TEST(testbackward, fc1) {
 }
 
 TEST(testbackward, act1) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 1, 2);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(ActivationMaker::instance()->relu());
@@ -494,7 +494,7 @@ TEST(testbackward, act1) {
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically(float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance clblasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer(ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros));
@@ -616,7 +616,7 @@ TEST(testbackward, checknumerically_imagesize5_filter3_relu) {
 }
 
 void measurePerf(int instance, int batchSize, LayerDimensions dim) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     int inputNumElements = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
@@ -677,7 +677,7 @@ TEST(SLOW_testbackward, perf_kgsgo_32c5) {
 
 void compareSpecific(int instance0, int instance1, int numIts, int batchSize, LayerDimensions dim) {
     cout << "batchsize=" << batchSize << " " << dim << endl;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance clblasInstance;
 
     int inputNumElements = dim.inputCubeSize * batchSize;
@@ -795,7 +795,7 @@ TEST(SLOW_testbackward, compare_specific_args) {
 }
 
 TEST(testbackward, compare_1_n_kgsgo_32c5) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     delete cl;
 

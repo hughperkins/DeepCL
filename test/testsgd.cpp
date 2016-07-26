@@ -30,7 +30,7 @@ using namespace std;
 
 TEST( testsgd, basic ) {
     // this is mostly to help me figure out how to design the SGD and Trainer classes
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet( cl, 1, 5 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );

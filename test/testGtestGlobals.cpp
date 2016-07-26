@@ -9,14 +9,14 @@
 #include "gtest/gtest.h"
 #include "test/gtest_supp.h"
 
-#include "GtestGlobals.h"
+#include "DeepCLGtestGlobals.h"
 
 using namespace std;
 
-TEST( testGtestGlobals, basic ) {
-    cout << "There are " << GtestGlobals::instance()->argc << " parameters: " << endl;
-    for( int i = 0; i < GtestGlobals::instance()->argc; i++ ) {
-        cout << "   argv[" << i << "]=" << GtestGlobals::instance()->argv[i] << endl;
+TEST( testDeepCLGtestGlobals, basic ) {
+    cout << "There are " << DeepCLGtestGlobals::instance()->argc << " parameters: " << endl;
+    for( int i = 0; i < DeepCLGtestGlobals::instance()->argc; i++ ) {
+        cout << "   argv[" << i << "]=" << DeepCLGtestGlobals::instance()->argv[i] << endl;
     }
 }
 

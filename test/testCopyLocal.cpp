@@ -20,7 +20,7 @@ namespace testCopyLocal{
 CLKernel *makeKernel( EasyCL *cl );
 
 TEST( testCopyLocal, basic ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float a[] = { 1,2,3,4,
                   5,6,7,8,

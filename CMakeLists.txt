@@ -76,6 +76,7 @@ ADD_DEPENDENCIES(clBLAS-external EasyCL)
 include_directories(.)
 include_directories(src)
 include_directories(qlearning)
+# include_directories(test)
 
 if(ON_LINUX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
@@ -231,7 +232,7 @@ else()
 endif()
 include_directories(thirdparty/gtest)
 
-add_executable(deepcl_unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
+add_executable(deepcl_unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/DeepCLGtestGlobals.cpp
     test/TestArgsParser.cpp)
 target_link_libraries(deepcl_unittests deepcl_gtest)
 

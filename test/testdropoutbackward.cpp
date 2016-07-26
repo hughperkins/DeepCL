@@ -21,7 +21,7 @@ TEST( testdropoutbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutBackward *dropoutBackprop = DropoutBackward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     uchar mask[] = {
         1,1,0,
@@ -63,7 +63,7 @@ TEST( testdropoutbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutBackward *dropoutBackprop = DropoutBackward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     uchar mask[] = {
         1,
@@ -116,7 +116,7 @@ TEST( testdropoutbackward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutBackward *p0 = DropoutBackward::instanceSpecific( instance0, cl, numPlanes, inputSize, dropRatio );
     DropoutBackward *p1 = DropoutBackward::instanceSpecific( instance1, cl, numPlanes, inputSize, dropRatio );
     int outputSize = p1->outputSize;
