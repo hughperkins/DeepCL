@@ -183,6 +183,9 @@ License
 Recent changes
 ==============
 
+* 26th July 2016:
+  * fixed some bugs in manifest loader
+  * no longer need to specify the number of images in the first line of the manifest file
 * 4th January 2016:
   * fixed a number of build warnings on Mac, both in OpenCL build, and C++ build
 * 3rd January 2016:
