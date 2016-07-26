@@ -39,7 +39,7 @@ PUBLIC STATIC RandomSingleton *RandomSingleton::instance() {
 PUBLIC VIRTUAL float RandomSingleton::_uniform() {
     return myrandom() / (float)myrandom.max();
 }
-PUBLIC STATIC void RandomSingleton::seed(unsigned int seed) {
+PUBLIC STATIC void RandomSingleton::seed(unsigned long seed) {
     instance()->myrandom.seed(seed);
 }
 PUBLIC STATIC float RandomSingleton::uniform() {
