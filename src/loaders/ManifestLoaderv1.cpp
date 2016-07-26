@@ -46,77 +46,94 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
         throw runtime_error("file " + imagesFilepath + " is not a deepcl-jpeg-list-v1 manifest file");
     }
 
-    ifstream infile(imagesFilepath);
-    char lineChars[1024];
-    infile.getline(lineChars, 1024); // skip first, header, line
-    string firstLine = string(lineChars);
-//    cout << "firstline: [" << firstLine << "]" << endl;
-    vector<string> splitLine = split(firstLine, " ");
-    N = readIntValue(splitLine, "N");
-    planes = readIntValue(splitLine, "planes");
-    size = readIntValue(splitLine, "width");
-    int imageSizeRepeated = readIntValue(splitLine, "height");
-    if(size != imageSizeRepeated) {
-        throw runtime_error("file " + imagesFilepath + " contains non-square images.  Not handled for now.");
-    }
-    // now we should load into memory, since the file is not fixed-size records, and cannot be loaded partially easily
-
-    files = new string[N];
+    N = 0;
     labels = 0;
-
-    int n = 0;
     hasLabels = false;
-    while(infile) {
-        infile.getline(lineChars, 1024);
-        if(!infile) {
-            break;
+    for(int it=0; it < 2; it++) {
+        int n = 0;
+        bool dryrun = true;
+        if(it == 0) {
+        } else {
+            dryrun = false;
         }
-        string line = string(lineChars);
-        if(line == "") {
-            continue;
+        cout << "read file it=" << it << endl;
+        ifstream infile(imagesFilepath);
+        char lineChars[1024];
+        infile.getline(lineChars, 1024); // skip first, header, line
+        string firstLine = string(lineChars);
+        vector<string> splitLine = split(firstLine, " ");
+        planes = readIntValue(splitLine, "planes");
+        size = readIntValue(splitLine, "width");
+        int imageSizeRepeated = readIntValue(splitLine, "height");
+        if(size != imageSizeRepeated) {
+            throw runtime_error("file " + imagesFilepath + " contains non-square images.  Not handled for now.");
         }
-        vector<string> splitLine = split(line, " ");
-        if((int)splitLine.size() == 0) {
-            continue;
-        }
-        if(n == 0) {
-            int lineSize = (int)splitLine.size();
-            if(lineSize == 2) {
-                hasLabels = true;
+
+        if(!dryrun) {
+            cout << "doing alloc N=" << N << endl;
+            files = new string[N];
+            if(hasLabels) {
                 labels = new int[N];
             }
         }
-        if(!hasLabels && (int)splitLine.size() != 1) { 
-            throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
+        // now we should load into memory, since the file is not fixed-size records, and cannot be loaded partially easily        
+        // we are going to read the file twice:
+        // - first time, we just count how many examples
+        // - second time, we allocate space, and read in the examples
+        while(infile) {
+            infile.getline(lineChars, 1024);
+            if(!infile) {
+                break;
+            }
+            string line = string(lineChars);
+            if(line == "") {
+                continue;
+            }
+            vector<string> splitLine = split(line, " ");
+            if((int)splitLine.size() == 0) {
+                continue;
+            }
+            if(n == 0) {
+                int lineSize = (int)splitLine.size();
+                if(lineSize == 2) {
+                    hasLabels = true;
+                }
+            }
+            if(!hasLabels && (int)splitLine.size() != 1) { 
+                throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
+            }
+            if(hasLabels && (int)splitLine.size() != 2) { 
+                throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
+            }
+            if(!dryrun) {
+                string jpegFile = splitLine[0];
+                #ifdef _WIN32
+                if(jpegFile[1] != ':' && jpegFile[0] != '\\') {  // I guess this means its a relative path?
+                    vector<string> splitManifestPath = split(imagesFilepath, "\\");
+                    string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
+                    jpegFile = dirPath + jpegFile;
+                }
+                #else
+                if(jpegFile[0] != '/') {  // this is a bit hacky, but at least handles linux and mac for now...
+                    vector<string> splitManifestPath = split(imagesFilepath, "/");
+                    string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
+                    jpegFile = dirPath + jpegFile;
+                }
+                #endif
+                files[n] = jpegFile;
+                if(hasLabels) {
+                    int label = atoi(splitLine[1]);
+                    labels[n] = label;
+                }
+            }
+    //        cout << "file " << jpegFile << " label=" << label << endl;
+            n++;
         }
-        if(hasLabels && (int)splitLine.size() != 2) { 
-            throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
+        infile.close();
+        if(dryrun) {
+            N = n;
+            cout << "N is: " << N << endl;
         }
-        string jpegFile = splitLine[0];
-        #ifdef _WIN32
-        if(jpegFile[1] != ':' && jpegFile[0] != '\\') {  // I guess this means its a relative path?
-            vector<string> splitManifestPath = split(imagesFilepath, "\\");
-            string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
-            jpegFile = dirPath + jpegFile;
-        }
-        #else
-        if(jpegFile[0] != '/') {  // this is a bit hacky, but at least handles linux and mac for now...
-            vector<string> splitManifestPath = split(imagesFilepath, "/");
-            string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
-            jpegFile = dirPath + jpegFile;
-        }
-        #endif
-        files[n] = jpegFile;
-        if(hasLabels) {
-            int label = atoi(splitLine[1]);
-            labels[n] = label;
-        }
-//        cout << "file " << jpegFile << " label=" << label << endl;
-        n++;
-    }
-    infile.close();
-    if(n != N) {
-        throw runtime_error("Error: number of images declared in manifest " + toString(N) + " doesnt match number actually in manifest " + toString(n));
     }
 
     cout << "manifest " << imagesFilepath << " read. N=" << N << " planes=" << planes << " size=" << size << " labels? " << hasLabels << endl;

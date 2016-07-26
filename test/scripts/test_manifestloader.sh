@@ -8,7 +8,9 @@ set -e
 
 if [[ -d /tmp/testmanifest ]]; then {
     rm -Rf /tmp/testmanifest
-    sync
+    if [[ -f /bin/sync ]]; then {
+        sync
+    } fi
 } fi
 
 mkdir /tmp/testmanifest
@@ -34,5 +36,8 @@ deepcl_predict writelabels=1 inputfile=/tmp/testmanifest/test.txt outputfile=/tm
 
 head -n 10 /tmp/testmanifest/test.txt > /tmp/testmanifest/test_short.txt
 sed -i -e 's/N=1280/N=9/' /tmp/testmanifest/test_short.txt
+deepcl_predict writelabels=1 inputfile=/tmp/testmanifest/test_short.txt outputfile=/tmp/testmanifest/out_short.txt
+
+sed -i -e 's/N=9/N=1/' /tmp/testmanifest/test_short.txt
 deepcl_predict writelabels=1 inputfile=/tmp/testmanifest/test_short.txt outputfile=/tmp/testmanifest/out_short.txt
 

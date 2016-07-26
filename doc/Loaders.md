@@ -31,7 +31,7 @@ This page documents available file format loaders.
 * RGB and greyscale are both ok: simply change `planes=` parameter to `planes=1`(greyscale) or `planes=3`(RGB)
 * manifest format looks like this:
 ```
-# format=deepcl-jpeg-list-v1 planes=1 width=28 height=28 N=1280 relto=cwd
+# format=deepcl-jpeg-list-v1 planes=1 width=28 height=28
 /norep/data/mnist/imagenet/R1313411/0.JPEG 5
 /norep/data/mnist/imagenet/R1316044/1.JPEG 0
 /norep/data/mnist/imagenet/R1311530/2.JPEG 4
