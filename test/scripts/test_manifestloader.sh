@@ -27,7 +27,7 @@ mnist-to-jpegs $MNISTFILE /tmp/testmanifest 1280
 
 deepcl_train datadir=/tmp/testmanifest trainfile=manifest.txt validatefile=manifest.txt numtrain=1280 numtest=1280 learningrate=0.002 numepochs=3
 
-sed -i -e "s%/tmp/testmanifest/%%g" /tmp/testmanifest/manifest.txt
+sed -i -e "s%.*testmanifest/%%g" /tmp/testmanifest/manifest.txt
 deepcl_train datadir=/tmp/testmanifest trainfile=manifest.txt validatefile=manifest.txt numtrain=1280 numtest=1280 learningrate=0.002 numepochs=3
 
 head -n 1 /tmp/testmanifest/manifest.txt > /tmp/testmanifest/test.txt
