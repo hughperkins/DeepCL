@@ -108,8 +108,9 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
             if(!dryrun) {
                 string jpegFile = splitLine[0];
                 #ifdef _WIN32
-                if(jpegFile[1] != ':' && jpegFile[0] != '\\') {  // I guess this means its a relative path?
-                    vector<string> splitManifestPath = split(imagesFilepath, "\\");
+                jpegFile = replace(jpegFile, "\\", "/");
+                if(jpegFile[1] != ':' && jpegFile[0] != '/') {  // I guess this means its a relative path?
+                    vector<string> splitManifestPath = split(imagesFilepath, "/");
                     string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
                     jpegFile = dirPath + jpegFile;
                 }
