@@ -315,13 +315,13 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include "pythread.h"
 #include "CppRuntimeBoundary.h"
 #include "DeepCL.h"
-#include "util/RandomSingleton.h"
-#include "layer/LayerMaker.h"
-#include "input/InputLayerMaker.h"
 #include "ios"
 #include "new"
 #include "stdexcept"
 #include "typeinfo"
+#include "util/RandomSingleton.h"
+#include "layer/LayerMaker.h"
+#include "input/InputLayerMaker.h"
 #include "dropout/DropoutMaker.h"
 #include "activate/ActivationMaker.h"
 #include "normalize/NormalizationLayerMaker.h"
@@ -1822,9 +1822,6 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_flo
 /* ObjectToMemviewSlice.proto */
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_int(PyObject *);
 
-/* CIntToPy.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
-
 /* CppExceptionConversion.proto */
 #ifndef __Pyx_CppExn2PyErr
 #include <new>
@@ -1864,6 +1861,9 @@ static void __Pyx_CppExn2PyErr() {
   }
 }
 #endif
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 /* MemviewDtypeToObject.proto */
 static CYTHON_INLINE PyObject *__pyx_memview_get_float(const char *itemp);
@@ -2784,7 +2784,8 @@ static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepC
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
-  int __pyx_t_3;
+  DeepCL *__pyx_t_3;
+  int __pyx_t_4;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
   /* "DeepCL.pyx":6
@@ -2805,7 +2806,13 @@ static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepC
  *         else:
  *             self.thisptr = cDeepCL.DeepCL.createForIndexedGpu(gpuindex)
  */
-    __pyx_v_self->thisptr = DeepCL::createForFirstGpuOtherwiseCpu();
+    try {
+      __pyx_t_3 = DeepCL::createForFirstGpuOtherwiseCpu();
+    } catch(...) {
+      __Pyx_CppExn2PyErr();
+      __PYX_ERR(3, 7, __pyx_L1_error)
+    }
+    __pyx_v_self->thisptr = __pyx_t_3;
 
     /* "DeepCL.pyx":6
  *     def __cinit__(self, gpuindex=None ):
@@ -2825,8 +2832,14 @@ static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepC
  *     def __dealloc__(self):
  */
   /*else*/ {
-    __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_gpuindex); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(3, 9, __pyx_L1_error)
-    __pyx_v_self->thisptr = DeepCL::createForIndexedGpu(__pyx_t_3);
+    __pyx_t_4 = __Pyx_PyInt_As_int(__pyx_v_gpuindex); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(3, 9, __pyx_L1_error)
+    try {
+      __pyx_t_3 = DeepCL::createForIndexedGpu(__pyx_t_4);
+    } catch(...) {
+      __Pyx_CppExn2PyErr();
+      __PYX_ERR(3, 9, __pyx_L1_error)
+    }
+    __pyx_v_self->thisptr = __pyx_t_3;
   }
   __pyx_L3:;
 
