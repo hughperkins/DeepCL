@@ -14,7 +14,7 @@ To install from pip
 
 .. code:: bash
 
-    pip install --pre --upgrade DeepCL
+    pip install --upgrade DeepCL
 
 -  related pypi page: https://pypi.python.org/pypi/DeepCL
 
