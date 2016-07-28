@@ -79,7 +79,7 @@ if osfamily == 'Linux':
 if osfamily == 'Windows':
     libraries.append('winmm')
 
-sources = ["PyDeepCL.cxx", 'CyWrappers.cpp']
+sources = ["PyDeepCL.cpp", 'CyWrappers.cpp']
 if cython_present:
     sources = ["PyDeepCL.pyx", 'CyWrappers.cpp']
 ext_modules = [
