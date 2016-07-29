@@ -10,10 +10,10 @@ using namespace std;
 ostream &operator<<(ostream &os, const LayerDimensions &dim) {
     os << "LayerDimensions{";
     os << " inputPlanes=" << dim.inputPlanes;
-    os << " inputSize=" << dim.inputSize;
+    os << " iH=" << dim.iH << " iW=" << dim.iW;
     os << " numFilters=" << dim.numFilters;
     os << " filterSize=" << dim.filterSize;
-    os << " outputSize=" << dim.outputSize;
+    os << " oH=" << dim.oH << " oW=" << dim.oW;
     os << " padZeros=" << dim.padZeros;
     os << " biased=" << dim.biased;
     os << " skip=" << dim.skip;
@@ -24,13 +24,16 @@ ostream &operator<<(ostream &os, const LayerDimensions &dim) {
 void LayerDimensions::deriveOthers() {
     this->numInputPlanes = inputPlanes;
     this->isEven = filterSize % 2 == 0;
-    this->outputSize = padZeros ? 
-            (filterSize % 2 == 0 ? inputSize / (skip + 1) + 1 : inputSize / (skip + 1) ) :
-            (inputSize - filterSize) / (skip + 1) + 1;
+    this->oH = padZeros ? 
+            (filterSize % 2 == 0 ? iH / (skip + 1) + 1 : iH / (skip + 1) ) :
+            (iH - filterSize) / (skip + 1) + 1;
+    this->oW = padZeros ? 
+            (filterSize % 2 == 0 ? iW / (skip + 1) + 1 : iW / (skip + 1) ) :
+            (iW - filterSize) / (skip + 1) + 1;
 
-    this->inputSizeSquared = inputSize * inputSize;
+    this->inputSizeSquared = iH * iW;
     this->filterSizeSquared = filterSize * filterSize;
-    this->outputSizeSquared = outputSize * outputSize;
+    this->outputSizeSquared = oH * oW;
 
     this->inputCubeSize = inputPlanes * inputSizeSquared;
     this->filtersSize = inputPlanes * numFilters * filterSizeSquared;
@@ -48,6 +51,8 @@ string LayerDimensions::buildOptionsString() {
     options += " -D gNumInputPlanes=" + toString(inputPlanes);
     options += " -D gInputPlanes=" + toString(inputPlanes);
     options += " -D gInputSize=" + toString(inputSize);
+    options += " -D gIH=" + toString(iH);
+    options += " -D gIW=" + toString(iW);
     options += " -D gInputSizeSquared=" + toString(square(inputSize));
     options += " -D gNumFilters=" + toString(numFilters);
     options += " -D gFilterSize=" + toString(filterSize);

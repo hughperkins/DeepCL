@@ -11,7 +11,7 @@ inline int square(int value) {
 
 class DeepCL_EXPORT LayerDimensions {
 public:
-    int inputPlanes, inputSize, numFilters, filterSize, outputSize;
+    int inputPlanes, iH, iW, numFilters, filterSize, oH, oW;
     bool padZeros, isEven;
     bool biased;
     int skip;
@@ -30,11 +30,12 @@ public:
     LayerDimensions() {
         memset(this, 0, sizeof(LayerDimensions) );
     }
-    LayerDimensions(int inputPlanes, int inputSize, 
+    LayerDimensions(int inputPlanes, int iH, int iW, 
                 int numFilters, int filterSize, 
                 bool padZeros, bool biased) :
             inputPlanes(inputPlanes),
-            inputSize(inputSize),
+            iH(iH),
+            iW(iW),
             numFilters(numFilters),
             filterSize(filterSize),
             padZeros(padZeros),
@@ -55,8 +56,8 @@ public:
         deriveOthers();
         return *this;
     }
-    LayerDimensions &setInputSize(int inputSize) {
-        this->inputSize = inputSize;
+    LayerDimensions &setIH(int iH) {
+        this->iH = iH;
         deriveOthers();
         return *this;
     }
