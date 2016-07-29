@@ -126,7 +126,7 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
     ],
-    install_requires=[],
+    install_requires=['numpy'],
     scripts=['test_deepcl.py', 'test_lowlevel.py'],
     ext_modules=ext_modules,
 )
