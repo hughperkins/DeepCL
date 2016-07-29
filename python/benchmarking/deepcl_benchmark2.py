@@ -9,7 +9,8 @@ from __future__ import print_function
 import os
 import sys
 import time
-import array
+# import array
+import numpy as np
 import random
 import json
 import subprocess
@@ -83,13 +84,9 @@ def time_layer(num_epochs, label, batch_size, net_string):
     net.addLayer( PyDeepCL.SoftMaxMaker() )
     print( net.asString() )
 
-    images = array.array( 'f', [0] * (batch_size*input_planes*input_size*input_size) )
-    for i in range( batch_size*input_planes*input_size*input_size ):
-        images[i] = random.random() - 0.5
-#    grad = array.array('f',[0] * batch_size * outputPlanes * (input_size - filterSize + 1) )
-#    for i in range( batch_size * outputPlanes * (input_size - filterSize + 1) ):
-#        grad[i] = random.random() - 0.5
-    labels = array.array('i',[0] * batch_size )
+    images = np.zeros((batch_size, input_planes, input_size, input_size), dtype=np.float32)
+    images[:] = np.random.uniform(-0.5, 0.5, images.shape)
+    labels = np.zeros((batch_size,), dtype=np.int32)
     
     print('warming up...')
     #try:
