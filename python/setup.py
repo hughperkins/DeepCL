@@ -12,26 +12,27 @@ import platform
 from setuptools import setup
 from setuptools import Extension
 
-cython_present = False
-try:
-    from Cython.Build import cythonize
-    cython_present = True
-except ImportError:
-    pass
-
 building_dist = False
+cython_present = False
+#try:
+#    from Cython.Build import cythonize
+#    cython_present = True
+#except ImportError:
+#    pass
+
+cythonizing = 'CYTHONIZE' in os.environ
 for arg in sys.argv:
     if arg in ('sdist', 'bdist', 'bdist_egg', 'build_ext'):
         building_dist = True
+        cythonizing = True
         break
 
-if building_dist:
-    try:
-        import pypandoc
-        pypandoc.convert('README.md', 'rst', outputfile='README.rst')
-    except:
-        print('WARNING: pypandoc not installed, cannot update README.rst')
+if cythonizing:
+    from Cython.Build import cythonize
+    # cython_present = True
 
+    import pypandoc
+    pypandoc.convert('README.md', 'rst', outputfile='README.rst')
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -80,7 +81,7 @@ if osfamily == 'Windows':
     libraries.append('winmm')
 
 sources = ["PyDeepCL.cpp", 'CyWrappers.cpp']
-if cython_present:
+if cythonizing:
     sources = ["PyDeepCL.pyx", 'CyWrappers.cpp']
 ext_modules = [
     Extension("PyDeepCL",
@@ -93,7 +94,7 @@ ext_modules = [
               language="c++")]
 
 
-if cython_present:
+if cythonizing:
     print('cythonizing...')
     ext_modules = cythonize(ext_modules)
 
