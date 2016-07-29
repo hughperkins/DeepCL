@@ -17,7 +17,7 @@ pip install --upgrade DeepCL
 
 ## How to use
 
-See [test_deepcl_numpy.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl_numpy.py) for an example of:
+See [test_deepcl.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl.py) for an example of:
 
 * creating a network, with several layers
 * loading mnist data

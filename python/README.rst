@@ -6,8 +6,10 @@ Python wrapper for `DeepCL <https://github.com/hughperkins/DeepCL>`__
 Pre-requisites
 --------------
 
-You must have first installed and activated DeepCL native libraries, see
-`Build.md <https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md>`__
+-  You must have first installed and activated DeepCL native libraries,
+   see
+   `Build.md <https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md>`__
+-  ``numpy``
 
 To install from pip
 -------------------
@@ -22,7 +24,7 @@ How to use
 ----------
 
 See
-`test\_deepcl.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl_numpy.py>`__
+`test\_deepcl.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl.py>`__
 for an example of:
 
 -  creating a network, with several layers
@@ -34,7 +36,6 @@ For examples of using lower-level entrypoints, see
 
 -  creating layers directly
 -  running epochs and forward/backprop directly
--  note that you need ``numpy`` installed to run these examples
 
 For example of using q-learning, see
 `test\_qlearning.py <https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py>`__.
@@ -62,6 +63,7 @@ Pre-requisites:
    `Build.md <../doc/Build.md>`__
 -  have activated the native library installation, ie called
    ``dist/bin/activate.sh``, or ``dist/bin/activate.bat``
+-  ``numpy`` installed
 
 To install:
 ~~~~~~~~~~~
@@ -71,3 +73,17 @@ To install:
 
     cd python
     python setup.py install
+
+Changes
+-------
+
+-  29 July 2016:
+-  New feature: can provide image tensor as 4d tensor now ,instead of 1d
+   tensor (1d tensor ok too)
+-  CHANGE: all image and label tensors must be provided as numpy tensors
+   now, ``array.array`` no longer valid input
+-  bug fix: qlearning works again :-)
+-  25 July 2016:
+-  added RandomSingleton class, to set the seed for weights
+   initialization
+-  added `xor.py <examples/xor.py>`__ example
