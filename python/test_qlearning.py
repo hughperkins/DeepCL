@@ -3,6 +3,7 @@
 from __future__ import print_function
 import array
 import random
+import time
 import PyDeepCL
 
 
@@ -22,6 +23,7 @@ class ScenarioImage(PyDeepCL.Scenario):
         self.appleMoves = apple_moves
         self.finished = False
         self.game = 0
+        self.last = time.time()
         self.reset()
 
     def getPerceptionSize(self):
@@ -52,6 +54,11 @@ class ScenarioImage(PyDeepCL.Scenario):
         perception[
             self.size * self.size +
             self.posY * self.size + self.posX] = 1
+        if time.time() - self.last > 1.0:
+            print('round: %s' % self.game)
+            self._show()
+            self._showQ()
+            self.last = time.time()
         return perception
 
     def act(self, index):
@@ -200,15 +207,15 @@ def go():
 
     cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet(cl)
-    sgd = PyDeepCL.SGD(cl, 0.1, 0.0)
+    sgd = PyDeepCL.SGD(cl, 0.02, 0.0)
     net.addLayer(PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size))
     net.addLayer(
         PyDeepCL.ConvolutionalMaker()
-        .numFilters(8).filterSize(5).padZeros().biased())
+        .numFilters(8).filterSize(3).padZeros().biased())
     net.addLayer(PyDeepCL.ActivationMaker().relu())
     net.addLayer(
         PyDeepCL.ConvolutionalMaker()
-        .numFilters(8).filterSize(5).padZeros().biased())
+        .numFilters(8).filterSize(3).padZeros().biased())
     net.addLayer(PyDeepCL.ActivationMaker().relu())
     net.addLayer(
         PyDeepCL.FullyConnectedMaker().numPlanes(100).imageSize(1).biased())
@@ -223,13 +230,11 @@ def go():
 
     qlearner = PyDeepCL.QLearner(sgd, scenario, net)
     # sets decay of the eligibility trace decay rate
-    # qlearner.setLambda(0.9)
+    qlearner.setLambda(0.9)
     # how many samples to learn from after each move
-    # qlearner.setMaxSamples(32)
+    qlearner.setMaxSamples(32)
     # probability of exploring, instead of exploiting
-    # qlearner.setEpsilon(0.1)
-    # learning rate of the neural net
-    # qlearner.setLearningRate(0.1)
+    qlearner.setEpsilon(0.1)
     qlearner.run()
 
 if __name__ == '__main__':
