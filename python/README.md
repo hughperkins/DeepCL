@@ -57,6 +57,10 @@ python setup.py install
 
 ## Changes
 
+* 29 July 2016:
+  * New feature: can provide image tensor as 4d tensor now ,instead of 1d tensor (1d tensor ok too)
+  * CHANGE: all image and label tensors must be provided as numpy tensors now, `array.array` no longer valid input
+  * bug fix: qlearning works again :-)
 * 25 July 2016:
   * added RandomSingleton class, to set the seed for weights initialization
   * added [xor.py](examples/xor.py) example
