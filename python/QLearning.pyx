@@ -29,7 +29,7 @@ cdef class QLearner:
 #    scenario.showQ(scenario.net)
 
 cdef void Scenario_getPerception( float *perception, void *pyObject ):
-    pyPerception = (<object>pyObject).getPerception()
+    pyPerception = (<object>pyObject).getPerception().reshape(-1)
     for i in range(len(pyPerception)):
         perception[i] = pyPerception[i]
 

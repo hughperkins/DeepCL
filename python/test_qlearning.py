@@ -4,6 +4,7 @@ from __future__ import print_function
 # import array
 import numpy as np
 import random
+import time
 import PyDeepCL
 
 
@@ -24,6 +25,8 @@ class ScenarioImage(PyDeepCL.Scenario):
         self.finished = False
         self.game = 0
         self.reset()
+        self.last = time.time()
+        self.perception = np.zeros((2, size, size), dtype=np.float32)
         self.netinput = np.zeros((2, size, size), dtype=np.float32)
 
     def getPerceptionSize(self):
@@ -49,12 +52,17 @@ class ScenarioImage(PyDeepCL.Scenario):
         Need to provide the current perception to the qlearning module,
         which should be of size numPlanes * size * size
         """
-        perception = [0] * 2 * self.size * self.size
-        perception[self.appleY * self.size + self.appleX] = 1
-        perception[
-            self.size * self.size +
-            self.posY * self.size + self.posX] = 1
-        return perception
+        # perception = [0] * 2 * self.size * self.size
+        self.perception.fill(0)
+        self.perception[0, self.appleY, self.appleX] = 1
+        self.perception[1, self.posY, self.posX] = 1
+        # print(self.appleY, self.appleX, self.posY, self.posX)
+        if time.time() - self.last > 1.0:
+            print('round: %s' % self.game)
+            self._show()
+            self._showQ()
+            self.last = time.time()
+        return self.perception
 
     def act(self, index):
         """
