@@ -13,7 +13,7 @@ from setuptools import setup
 from setuptools import Extension
 
 building_dist = False
-cython_present = False
+# cython_present = False
 #try:
 #    from Cython.Build import cythonize
 #    cython_present = True
@@ -24,7 +24,6 @@ cythonizing = 'CYTHONIZE' in os.environ
 for arg in sys.argv:
     if arg in ('sdist', 'bdist', 'bdist_egg', 'build_ext'):
         building_dist = True
-        cythonizing = True
         break
 
 if cythonizing:
