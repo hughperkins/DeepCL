@@ -2,7 +2,8 @@
 
 from __future__ import print_function
 import sys
-import array
+# import array
+import numpy as np
 import PyDeepCL
 
 if len(sys.argv) != 2:
@@ -32,8 +33,10 @@ N = 1280
 batchSize = 128
 numEpochs = 30
 
-images = array.array('f', [0] * (N*planes*size*size))
-labels = array.array('i', [0] * N)
+images = np.zeros((N, planes, size, size), dtype=np.float32)
+labels = np.zeros((N,), dtype=np.int32)
+#images = array.array('f', [0] * (N*planes*size*size))
+#labels = array.array('i', [0] * N)
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N)
 
 sgd = PyDeepCL.SGD(cl, 0.002, 0)
@@ -47,10 +50,10 @@ for epoch in range(numEpochs):
         sgd.trainFromLabels(
             net,
             context,
-            images[batch * batchSize * planes * size * size:],
-            labels[batch * batchSize:])
-        net.forward(images[batch * batchSize * planes * size * size:])
-        numRight += net.calcNumRight(labels[batch * batchSize:])
+            images[batch * batchSize:(batch + 1) * batchSize],
+            labels[batch * batchSize:(batch + 1) * batchSize])
+        net.forward(images[batch * batchSize:(batch + 1) * batchSize])
+        numRight += net.calcNumRight(labels[batch * batchSize:(batch + 1) * batchSize])
         # test new getLabels() method:
         if batch == 0:
             lastLayer = net.getLastLayer()

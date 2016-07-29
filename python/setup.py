@@ -127,6 +127,6 @@ setup(
         'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
     ],
     install_requires=[],
-    scripts=['test_deepcl.py', 'test_lowlevel.py'],
+    scripts=['test_deepcl_numpy.py', 'test_lowlevel.py'],
     ext_modules=ext_modules,
 )

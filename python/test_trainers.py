@@ -2,7 +2,8 @@
 
 from __future__ import print_function
 import sys
-import array
+import numpy as np
+# import array
 import PyDeepCL
 
 if len(sys.argv) != 2:
@@ -31,8 +32,8 @@ N = 1280
 batchSize = 128
 numEpochs = 30
 
-images = array.array('f', [0] * (N*planes*size*size))
-labels = array.array('i', [0] * N)
+images = np.zeros((N, planes, size, size), dtype=np.float32)
+labels = np.zeros((N,), dtype=np.int32)
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N)
 
 sgd = PyDeepCL.SGD(cl, 0.002, 0)

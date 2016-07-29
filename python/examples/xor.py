@@ -31,7 +31,7 @@ def go():
     # seed just makes it repeatable.  Normally you wouldnt want this (except for unit tests, or for
     # comparing with other networks etc, for correctness checking)
     PyDeepCL.RandomSingleton.seed(1234)
-    cl = PyDeepCL.DeepCL()
+    cl = PyDeepCL.DeepCL(gpuindex=1)
     net = PyDeepCL.NeuralNet(cl, planes, size)
     net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(2).filterSize(1).padZeros().biased())
     net.addLayer(PyDeepCL.ActivationMaker().sigmoid())
@@ -50,8 +50,8 @@ def go():
     sgd = PyDeepCL.SGD(cl, learningRate, 0.0)
     netLearner = PyDeepCL.NetLearner(
         sgd, net,
-        N, images.reshape((images.size,)), labels,
-        N, images.reshape((images.size,)), labels,
+        N, images, labels,
+        N, images, labels,
         batchSize)
     netLearner.setSchedule(numEpochs)
     netLearner.run()

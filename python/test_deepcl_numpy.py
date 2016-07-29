@@ -38,8 +38,8 @@ print(net.asString())
 print((N, planes, size))
 
 N = 1280
-images = np.empty(N * planes * size * size, dtype=np.float32)
-labels = np.empty(N, dtype=np.int32)
+images = np.zeros((N, planes, size, size), dtype=np.float32)
+labels = np.zeros((N,), dtype=np.int32)
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N)
 print('loaded data')
 

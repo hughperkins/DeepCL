@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-import array
+# import array
+import numpy as np
 import random
 import PyDeepCL
 
@@ -23,6 +24,7 @@ class ScenarioImage(PyDeepCL.Scenario):
         self.finished = False
         self.game = 0
         self.reset()
+        self.netinput = np.zeros((2, size, size), dtype=np.float32)
 
     def getPerceptionSize(self):
         """
@@ -130,16 +132,20 @@ class ScenarioImage(PyDeepCL.Scenario):
         net = self.net
         print("q directions:")
         size = self.size
-        netinput = array.array('f', [0] * (2*size*size))
-        netinput[self.appleY * size + self .appleX] = 1
+        self.netinput.fill(0)
+        self.netinput[0, self.appleY, self.appleX] = 1
+        # netinput = array.array('f', [0] * (2*size*size))
+        # netinput[self.appleY * size + self .appleX] = 1
         for y in range(size):
             thisLine = ''
             for x in range(size):
                 highestQ = 0
                 bestAction = 0
-                netinput[size * size + y * size + x] = 1
-                net.forward(netinput)
-                netinput[size * size + y * size + x] = 0
+                self.netinput[1, y, x] = 1
+                # netinput[size * size + y * size + x] = 1
+                net.forward(self.netinput)
+                self.netinput[1, y, x] = 0
+                # netinput[size * size + y * size + x] = 0
                 output = net.getOutput()
                 for action in range(4):
                     thisQ = output[action]

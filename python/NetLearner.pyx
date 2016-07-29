@@ -1,13 +1,15 @@
 cdef class NetLearner: 
     cdef cDeepCL.CyNetLearner *thisptr
     def __cinit__(self, Trainer trainer, NeuralNet neuralnet,
-            Ntrain, float[:] trainData, int[:] trainLabels,
-            Ntest, float[:] testData, int[:] testLabels,
+            Ntrain, trainData, int[:] trainLabels,
+            Ntest, testData, int[:] testLabels,
             batchSize):
+        cdef float[:] trainData_ = trainData.reshape(-1)
+        cdef float[:] testData_ = testData.reshape(-1)
         self.thisptr = new cDeepCL.CyNetLearner(
             trainer.baseptr, neuralnet.thisptr,
-            Ntrain, &trainData[0], &trainLabels[0],
-            Ntest, &testData[0], &testLabels[0],
+            Ntrain, &trainData_[0], &trainLabels[0],
+            Ntest, &testData_[0], &testLabels[0],
             batchSize)
     def __dealloc__(self):
         del self.thisptr

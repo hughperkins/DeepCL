@@ -4,7 +4,8 @@ Python wrapper for  [DeepCL](https://github.com/hughperkins/DeepCL)
 
 ## Pre-requisites
 
-You must have first installed and activated DeepCL native libraries, see [Build.md](https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md)
+* You must have first installed and activated DeepCL native libraries, see [Build.md](https://github.com/hughperkins/DeepCL/blob/8.x/doc/Build.md)
+* `numpy`
 
 ## To install from pip
 
@@ -16,19 +17,16 @@ pip install --upgrade DeepCL
 
 ## How to use
 
-See [test_deepcl.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl.py) for an example of:
+See [test_deepcl_numpy.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl_numpy.py) for an example of:
 
 * creating a network, with several layers
 * loading mnist data
 * training the network using a higher-level interface (`NetLearner`)
 
-The same example, using numpy arrays: [test_deepcl_numpy.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_deepcl_numpy.py)
-
 For examples of using lower-level entrypoints, see [test_lowlevel.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_lowlevel.py):
 
 * creating layers directly
 * running epochs and forward/backprop directly
-* note that you need `numpy` installed to run this example
 
 For example of using q-learning, see [test_qlearning.py](https://github.com/hughperkins/DeepCL/blob/master/python/test_qlearning.py).
 
@@ -46,6 +44,7 @@ For example of using q-learning, see [test_qlearning.py](https://github.com/hugh
   * g++, supporting c++0x, eg 4.4 or higher
 * have first already built the native libraries, see [Build.md](../doc/Build.md)
 * have activated the native library installation, ie called `dist/bin/activate.sh`, or `dist/bin/activate.bat`
+* `numpy` installed
 
 ### To install:
 
