@@ -185,6 +185,11 @@ License
 Recent changes
 ==============
 
+* 29th July 2016:
+  * python fixes:
+    * CHANGE: must use numpy tensors now, `array.array` no longer accepted
+    * New feature: can provide numpy tensors as 4d tensors now, no longer have to be 1d tensors
+    * Bug fix: q-learning working again now (hopefully)
 * 26th July 2016:
   * fixed some bugs in manifest loader
   * no longer need to specify the number of images in the first line of the manifest file
