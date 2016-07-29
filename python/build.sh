@@ -6,5 +6,5 @@
 rm -Rf build dist *.egg-info PyDeepCL.cxx *.so
 (cd ../build; make -j 4 install)
 pip uninstall -y DeepCL
-python setup.py install || exit 1
+CYTHONIZE=1 python setup.py install || exit 1
 
