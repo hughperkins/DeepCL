@@ -168,3 +168,18 @@ def test_getoutputcubesize():
         caught = True
     assert caught
 
+def test_getweights():
+    batchSize = 32
+    planes = 3
+    size = 28
+    cl = PyDeepCL.DeepCL()
+    net = PyDeepCL.NeuralNet(cl)
+    net.addLayer(PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size))
+    net.addLayer(PyDeepCL.RandomTranslationsMaker().translateSize(3))
+    net.addLayer(PyDeepCL.ConvolutionalMaker().numFilters(4).filterSize(3).padZeros().biased())
+    net.setBatchSize(batchSize)
+    images = np.zeros((batchSize, planes, size, size), dtype=np.float32)
+    net.forward(images)
+    print('net.getLayer(1).getWeights()', net.getLayer(1).getWeights())
+    print('net.getLayer(2).getWeights().shape', net.getLayer(2).getWeights().shape)
+

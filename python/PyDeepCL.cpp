@@ -846,7 +846,9 @@ struct __pyx_obj_8PyDeepCL_NeuralNet {
 };
 
 
-/* "Layer.pyx":1
+/* "Layer.pyx":4
+ * 
+ * 
  * cdef class Layer:             # <<<<<<<<<<<<<<
  *     cdef cDeepCL.Layer *thisptr
  * 
@@ -858,7 +860,7 @@ struct __pyx_obj_8PyDeepCL_Layer {
 };
 
 
-/* "Layer.pyx":63
+/* "Layer.pyx":70
  *         return self.thisptr.getClassNameAsCharStar()
  * 
  * cdef class SoftMax(Layer):             # <<<<<<<<<<<<<<
@@ -1157,7 +1159,9 @@ struct __pyx_memoryviewslice_obj {
 
 
 
-/* "Layer.pyx":1
+/* "Layer.pyx":4
+ * 
+ * 
  * cdef class Layer:             # <<<<<<<<<<<<<<
  *     cdef cDeepCL.Layer *thisptr
  * 
@@ -1169,7 +1173,7 @@ struct __pyx_vtabstruct_8PyDeepCL_Layer {
 static struct __pyx_vtabstruct_8PyDeepCL_Layer *__pyx_vtabptr_8PyDeepCL_Layer;
 
 
-/* "Layer.pyx":63
+/* "Layer.pyx":70
  *         return self.thisptr.getClassNameAsCharStar()
  * 
  * cdef class SoftMax(Layer):             # <<<<<<<<<<<<<<
@@ -2143,6 +2147,7 @@ static const char __pyx_k_f[] = "f";
 static const char __pyx_k_i[] = "i";
 static const char __pyx_k_cl[] = "cl";
 static const char __pyx_k_id[] = "id";
+static const char __pyx_k_np[] = "np";
 static const char __pyx_k_act[] = "act";
 static const char __pyx_k_net[] = "net";
 static const char __pyx_k_obj[] = "obj";
@@ -2169,16 +2174,19 @@ static const char __pyx_k_Ntest[] = "Ntest";
 static const char __pyx_k_array[] = "array";
 static const char __pyx_k_batch[] = "batch";
 static const char __pyx_k_class[] = "__class__";
+static const char __pyx_k_dtype[] = "dtype";
 static const char __pyx_k_epoch[] = "epoch";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
 static const char __pyx_k_layer[] = "layer ";
+static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_reset[] = "reset";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
 static const char __pyx_k_utf_8[] = "utf-8";
+static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_Ntrain[] = "Ntrain";
 static const char __pyx_k_Thread[] = "Thread";
 static const char __pyx_k_anneal[] = "anneal";
@@ -2197,6 +2205,7 @@ static const char __pyx_k_struct[] = "struct";
 static const char __pyx_k_target[] = "target";
 static const char __pyx_k_unpack[] = "unpack";
 static const char __pyx_k_context[] = "context";
+static const char __pyx_k_float32[] = "float32";
 static const char __pyx_k_fortran[] = "fortran";
 static const char __pyx_k_isAlive[] = "isAlive";
 static const char __pyx_k_memview[] = "memview";
@@ -2355,6 +2364,7 @@ static PyObject *__pyx_kp_s_data_norep_git_DeepCL_python_Ne;
 static PyObject *__pyx_kp_s_data_norep_git_DeepCL_python_Py;
 static PyObject *__pyx_kp_s_data_norep_git_DeepCL_python_Ra;
 static PyObject *__pyx_n_s_decode;
+static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_dtype_is_object;
 static PyObject *__pyx_n_s_encode;
 static PyObject *__pyx_n_s_encodedString;
@@ -2366,6 +2376,7 @@ static PyObject *__pyx_n_b_f;
 static PyObject *__pyx_n_s_f;
 static PyObject *__pyx_kp_s_finished_calling;
 static PyObject *__pyx_n_s_flags;
+static PyObject *__pyx_n_s_float32;
 static PyObject *__pyx_n_s_floatArrayType;
 static PyObject *__pyx_n_s_format;
 static PyObject *__pyx_n_s_fortran;
@@ -2415,7 +2426,9 @@ static PyObject *__pyx_n_s_netdef;
 static PyObject *__pyx_n_s_netdef_charstar;
 static PyObject *__pyx_n_s_neuralnet;
 static PyObject *__pyx_kp_s_not_found;
+static PyObject *__pyx_n_s_np;
 static PyObject *__pyx_n_s_numExamples;
+static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_n_s_obj;
 static PyObject *__pyx_n_s_pack;
 static PyObject *__pyx_n_s_planes;
@@ -2463,6 +2476,7 @@ static PyObject *__pyx_n_s_uniform;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_utf8;
 static PyObject *__pyx_kp_s_utf_8;
+static PyObject *__pyx_n_s_zeros;
 static int __pyx_pf_8PyDeepCL_6DeepCL___cinit__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_gpuindex); /* proto */
 static void __pyx_pf_8PyDeepCL_6DeepCL_2__dealloc__(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_6DeepCL_4setProfiling(struct __pyx_obj_8PyDeepCL_DeepCL *__pyx_v_self, PyObject *__pyx_v_profiling); /* proto */
@@ -9499,7 +9513,7 @@ static PyObject *__pyx_pf_8PyDeepCL_9NeuralNet_32setTraining(struct __pyx_obj_8P
   return __pyx_r;
 }
 
-/* "Layer.pyx":4
+/* "Layer.pyx":7
  *     cdef cDeepCL.Layer *thisptr
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -9534,7 +9548,7 @@ static int __pyx_pf_8PyDeepCL_5Layer___cinit__(CYTHON_UNUSED struct __pyx_obj_8P
   return __pyx_r;
 }
 
-/* "Layer.pyx":6
+/* "Layer.pyx":9
  *     def __cinit__(self):
  *         pass
  *     cdef set_thisptr(self, cDeepCL.Layer *thisptr):             # <<<<<<<<<<<<<<
@@ -9547,7 +9561,7 @@ static PyObject *__pyx_f_8PyDeepCL_5Layer_set_thisptr(struct __pyx_obj_8PyDeepCL
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("set_thisptr", 0);
 
-  /* "Layer.pyx":7
+  /* "Layer.pyx":10
  *         pass
  *     cdef set_thisptr(self, cDeepCL.Layer *thisptr):
  *         self.thisptr = thisptr             # <<<<<<<<<<<<<<
@@ -9556,7 +9570,7 @@ static PyObject *__pyx_f_8PyDeepCL_5Layer_set_thisptr(struct __pyx_obj_8PyDeepCL
  */
   __pyx_v_self->thisptr = __pyx_v_thisptr;
 
-  /* "Layer.pyx":6
+  /* "Layer.pyx":9
  *     def __cinit__(self):
  *         pass
  *     cdef set_thisptr(self, cDeepCL.Layer *thisptr):             # <<<<<<<<<<<<<<
@@ -9571,7 +9585,7 @@ static PyObject *__pyx_f_8PyDeepCL_5Layer_set_thisptr(struct __pyx_obj_8PyDeepCL
   return __pyx_r;
 }
 
-/* "Layer.pyx":8
+/* "Layer.pyx":11
  *     cdef set_thisptr(self, cDeepCL.Layer *thisptr):
  *         self.thisptr = thisptr
  *     def forward(self):             # <<<<<<<<<<<<<<
@@ -9597,7 +9611,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2forward(struct __pyx_obj_8PyDeepCL_L
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("forward", 0);
 
-  /* "Layer.pyx":9
+  /* "Layer.pyx":12
  *         self.thisptr = thisptr
  *     def forward(self):
  *         self.thisptr.forward()             # <<<<<<<<<<<<<<
@@ -9606,7 +9620,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2forward(struct __pyx_obj_8PyDeepCL_L
  */
   __pyx_v_self->thisptr->forward();
 
-  /* "Layer.pyx":8
+  /* "Layer.pyx":11
  *     cdef set_thisptr(self, cDeepCL.Layer *thisptr):
  *         self.thisptr = thisptr
  *     def forward(self):             # <<<<<<<<<<<<<<
@@ -9621,7 +9635,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2forward(struct __pyx_obj_8PyDeepCL_L
   return __pyx_r;
 }
 
-/* "Layer.pyx":10
+/* "Layer.pyx":13
  *     def forward(self):
  *         self.thisptr.forward()
  *     def backward(self):             # <<<<<<<<<<<<<<
@@ -9647,7 +9661,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_4backward(struct __pyx_obj_8PyDeepCL_
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("backward", 0);
 
-  /* "Layer.pyx":11
+  /* "Layer.pyx":14
  *         self.thisptr.forward()
  *     def backward(self):
  *         self.thisptr.backward()             # <<<<<<<<<<<<<<
@@ -9656,7 +9670,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_4backward(struct __pyx_obj_8PyDeepCL_
  */
   __pyx_v_self->thisptr->backward();
 
-  /* "Layer.pyx":10
+  /* "Layer.pyx":13
  *     def forward(self):
  *         self.thisptr.forward()
  *     def backward(self):             # <<<<<<<<<<<<<<
@@ -9671,7 +9685,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_4backward(struct __pyx_obj_8PyDeepCL_
   return __pyx_r;
 }
 
-/* "Layer.pyx":12
+/* "Layer.pyx":15
  *     def backward(self):
  *         self.thisptr.backward()
  *     def needsBackProp(self):             # <<<<<<<<<<<<<<
@@ -9698,7 +9712,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_6needsBackProp(struct __pyx_obj_8PyDe
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("needsBackProp", 0);
 
-  /* "Layer.pyx":13
+  /* "Layer.pyx":16
  *         self.thisptr.backward()
  *     def needsBackProp(self):
  *         return self.thisptr.needsBackProp()             # <<<<<<<<<<<<<<
@@ -9706,13 +9720,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_6needsBackProp(struct __pyx_obj_8PyDe
  * #        return self.thisptr.getBiased()
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->thisptr->needsBackProp()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 13, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->thisptr->needsBackProp()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":12
+  /* "Layer.pyx":15
  *     def backward(self):
  *         self.thisptr.backward()
  *     def needsBackProp(self):             # <<<<<<<<<<<<<<
@@ -9731,7 +9745,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_6needsBackProp(struct __pyx_obj_8PyDe
   return __pyx_r;
 }
 
-/* "Layer.pyx":16
+/* "Layer.pyx":19
  * #    def getBiased( self ):
  * #        return self.thisptr.getBiased()
  *     def getOutputCubeSize(self):             # <<<<<<<<<<<<<<
@@ -9759,7 +9773,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8getOutputCubeSize(struct __pyx_obj_8
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("getOutputCubeSize", 0);
 
-  /* "Layer.pyx":17
+  /* "Layer.pyx":20
  * #        return self.thisptr.getBiased()
  *     def getOutputCubeSize(self):
  *         return self.thisptr.getOutputCubeSize()             # <<<<<<<<<<<<<<
@@ -9771,15 +9785,15 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8getOutputCubeSize(struct __pyx_obj_8
     __pyx_t_1 = __pyx_v_self->thisptr->getOutputCubeSize();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(10, 17, __pyx_L1_error)
+    __PYX_ERR(10, 20, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 17, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":16
+  /* "Layer.pyx":19
  * #    def getBiased( self ):
  * #        return self.thisptr.getBiased()
  *     def getOutputCubeSize(self):             # <<<<<<<<<<<<<<
@@ -9798,7 +9812,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8getOutputCubeSize(struct __pyx_obj_8
   return __pyx_r;
 }
 
-/* "Layer.pyx":18
+/* "Layer.pyx":21
  *     def getOutputCubeSize(self):
  *         return self.thisptr.getOutputCubeSize()
  *     def getOutputPlanes(self):             # <<<<<<<<<<<<<<
@@ -9825,7 +9839,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_10getOutputPlanes(struct __pyx_obj_8P
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getOutputPlanes", 0);
 
-  /* "Layer.pyx":19
+  /* "Layer.pyx":22
  *         return self.thisptr.getOutputCubeSize()
  *     def getOutputPlanes(self):
  *         return self.thisptr.getOutputPlanes()             # <<<<<<<<<<<<<<
@@ -9833,13 +9847,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_10getOutputPlanes(struct __pyx_obj_8P
  *         return self.thisptr.getOutputSize()
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputPlanes()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 19, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputPlanes()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":18
+  /* "Layer.pyx":21
  *     def getOutputCubeSize(self):
  *         return self.thisptr.getOutputCubeSize()
  *     def getOutputPlanes(self):             # <<<<<<<<<<<<<<
@@ -9858,7 +9872,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_10getOutputPlanes(struct __pyx_obj_8P
   return __pyx_r;
 }
 
-/* "Layer.pyx":20
+/* "Layer.pyx":23
  *     def getOutputPlanes(self):
  *         return self.thisptr.getOutputPlanes()
  *     def getOutputSize(self):             # <<<<<<<<<<<<<<
@@ -9885,7 +9899,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_12getOutputSize(struct __pyx_obj_8PyD
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getOutputSize", 0);
 
-  /* "Layer.pyx":21
+  /* "Layer.pyx":24
  *         return self.thisptr.getOutputPlanes()
  *     def getOutputSize(self):
  *         return self.thisptr.getOutputSize()             # <<<<<<<<<<<<<<
@@ -9893,13 +9907,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_12getOutputSize(struct __pyx_obj_8PyD
  *         # the underlying c++ method returns a pointer
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputSize()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 21, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputSize()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":20
+  /* "Layer.pyx":23
  *     def getOutputPlanes(self):
  *         return self.thisptr.getOutputPlanes()
  *     def getOutputSize(self):             # <<<<<<<<<<<<<<
@@ -9918,7 +9932,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_12getOutputSize(struct __pyx_obj_8PyD
   return __pyx_r;
 }
 
-/* "Layer.pyx":22
+/* "Layer.pyx":25
  *     def getOutputSize(self):
  *         return self.thisptr.getOutputSize()
  *     def getOutput(self):             # <<<<<<<<<<<<<<
@@ -9957,7 +9971,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
   int __pyx_t_9;
   __Pyx_RefNannySetupContext("getOutput", 0);
 
-  /* "Layer.pyx":26
+  /* "Layer.pyx":29
  *         # to a block of memory that we dont own
  *         # we should probably copy it I suppose
  *         cdef float *output = self.thisptr.getOutput()             # <<<<<<<<<<<<<<
@@ -9966,7 +9980,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
  */
   __pyx_v_output = __pyx_v_self->thisptr->getOutput();
 
-  /* "Layer.pyx":27
+  /* "Layer.pyx":30
  *         # we should probably copy it I suppose
  *         cdef float *output = self.thisptr.getOutput()
  *         cdef int outputNumElements = self.thisptr.getOutputNumElements()             # <<<<<<<<<<<<<<
@@ -9975,18 +9989,18 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
  */
   __pyx_v_outputNumElements = __pyx_v_self->thisptr->getOutputNumElements();
 
-  /* "Layer.pyx":28
+  /* "Layer.pyx":31
  *         cdef float *output = self.thisptr.getOutput()
  *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
  *         cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )             # <<<<<<<<<<<<<<
  *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 28, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 31, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_floatArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 28, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_floatArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 31, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyList_New(1 * ((__pyx_v_outputNumElements<0) ? 0:__pyx_v_outputNumElements)); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 28, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(1 * ((__pyx_v_outputNumElements<0) ? 0:__pyx_v_outputNumElements)); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 31, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   { Py_ssize_t __pyx_temp;
     for (__pyx_temp=0; __pyx_temp < __pyx_v_outputNumElements; __pyx_temp++) {
@@ -10007,7 +10021,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
       __pyx_t_6 = 1;
     }
   }
-  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(10, 28, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(10, 31, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (__pyx_t_5) {
     __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -10018,15 +10032,15 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
   PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
   __pyx_t_3 = 0;
   __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 28, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 31, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 28, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 31, __pyx_L1_error)
   __pyx_v_outputArray = ((arrayobject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":29
+  /* "Layer.pyx":32
  *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
  *         cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
  *         for i in range(outputNumElements):             # <<<<<<<<<<<<<<
@@ -10037,20 +10051,20 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "Layer.pyx":30
+    /* "Layer.pyx":33
  *         cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
  *         for i in range(outputNumElements):
  *             outputArray[i] = output[i]             # <<<<<<<<<<<<<<
  * #        cdef float[:] outputMv = output
  * #        cdef float[:] outputArrayMv = outputArray
  */
-    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_output[__pyx_v_i])); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 30, __pyx_L1_error)
+    __pyx_t_1 = PyFloat_FromDouble((__pyx_v_output[__pyx_v_i])); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 33, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_outputArray), __pyx_v_i, __pyx_t_1, int, 1, __Pyx_PyInt_From_int, 0, 1, 1) < 0)) __PYX_ERR(10, 30, __pyx_L1_error)
+    if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_outputArray), __pyx_v_i, __pyx_t_1, int, 1, __Pyx_PyInt_From_int, 0, 1, 1) < 0)) __PYX_ERR(10, 33, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "Layer.pyx":35
+  /* "Layer.pyx":38
  * #        outputArrayMv[:] = outputMv
  * #        outputArrayMv = self.thisptr.getOutput()
  *         return outputArray             # <<<<<<<<<<<<<<
@@ -10062,7 +10076,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
   __pyx_r = ((PyObject *)__pyx_v_outputArray);
   goto __pyx_L0;
 
-  /* "Layer.pyx":22
+  /* "Layer.pyx":25
  *     def getOutputSize(self):
  *         return self.thisptr.getOutputSize()
  *     def getOutput(self):             # <<<<<<<<<<<<<<
@@ -10087,12 +10101,12 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutput(struct __pyx_obj_8PyDeepC
   return __pyx_r;
 }
 
-/* "Layer.pyx":36
+/* "Layer.pyx":39
  * #        outputArrayMv = self.thisptr.getOutput()
  *         return outputArray
  *     def getWeights(self):             # <<<<<<<<<<<<<<
  *         cdef int weightsSize = self.thisptr.getPersistSize()
- *         cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )
+ *         if weightsSize == 0:
  */
 
 /* Python wrapper */
@@ -10110,115 +10124,135 @@ static PyObject *__pyx_pw_8PyDeepCL_5Layer_17getWeights(PyObject *__pyx_v_self, 
 
 static PyObject *__pyx_pf_8PyDeepCL_5Layer_16getWeights(struct __pyx_obj_8PyDeepCL_Layer *__pyx_v_self) {
   int __pyx_v_weightsSize;
-  arrayobject *__pyx_v_weightsArray = 0;
+  PyObject *__pyx_v_weightsArray = NULL;
   __Pyx_memviewslice __pyx_v_weightsArray_view = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
+  int __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
-  Py_ssize_t __pyx_t_6;
-  PyObject *__pyx_t_7 = NULL;
-  __Pyx_memviewslice __pyx_t_8 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_9;
-  int __pyx_t_10;
+  PyObject *__pyx_t_6 = NULL;
+  __Pyx_memviewslice __pyx_t_7 = { 0, 0, { 0 }, { 0 }, { 0 } };
+  Py_ssize_t __pyx_t_8;
+  int __pyx_t_9;
   __Pyx_RefNannySetupContext("getWeights", 0);
 
-  /* "Layer.pyx":37
+  /* "Layer.pyx":40
  *         return outputArray
  *     def getWeights(self):
  *         cdef int weightsSize = self.thisptr.getPersistSize()             # <<<<<<<<<<<<<<
- *         cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )
- *         cdef float[:] weightsArray_view = weightsArray
+ *         if weightsSize == 0:
+ *             return None
  */
   __pyx_v_weightsSize = __pyx_v_self->thisptr->getPersistSize();
 
-  /* "Layer.pyx":38
+  /* "Layer.pyx":41
  *     def getWeights(self):
  *         cdef int weightsSize = self.thisptr.getPersistSize()
- *         cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )             # <<<<<<<<<<<<<<
- *         cdef float[:] weightsArray_view = weightsArray
- *         self.thisptr.persistToArray( &weightsArray_view[0] )
+ *         if weightsSize == 0:             # <<<<<<<<<<<<<<
+ *             return None
+ * 
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 38, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_floatArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 38, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyList_New(1 * ((__pyx_v_weightsSize<0) ? 0:__pyx_v_weightsSize)); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 38, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  { Py_ssize_t __pyx_temp;
-    for (__pyx_temp=0; __pyx_temp < __pyx_v_weightsSize; __pyx_temp++) {
-      __Pyx_INCREF(__pyx_int_0);
-      __Pyx_GIVEREF(__pyx_int_0);
-      PyList_SET_ITEM(__pyx_t_4, __pyx_temp, __pyx_int_0);
-    }
-  }
-  __pyx_t_5 = NULL;
-  __pyx_t_6 = 0;
-  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_5)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_5);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-      __pyx_t_6 = 1;
-    }
-  }
-  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(10, 38, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  if (__pyx_t_5) {
-    __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
-  }
-  __Pyx_GIVEREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_6, __pyx_t_3);
-  __Pyx_GIVEREF(__pyx_t_4);
-  PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
-  __pyx_t_3 = 0;
-  __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 38, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 38, __pyx_L1_error)
-  __pyx_v_weightsArray = ((arrayobject *)__pyx_t_1);
-  __pyx_t_1 = 0;
+  __pyx_t_1 = ((__pyx_v_weightsSize == 0) != 0);
+  if (__pyx_t_1) {
 
-  /* "Layer.pyx":39
+    /* "Layer.pyx":42
  *         cdef int weightsSize = self.thisptr.getPersistSize()
- *         cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )
+ *         if weightsSize == 0:
+ *             return None             # <<<<<<<<<<<<<<
+ * 
+ *         weightsArray = np.zeros((weightsSize,), dtype=np.float32)
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_None);
+    __pyx_r = Py_None;
+    goto __pyx_L0;
+
+    /* "Layer.pyx":41
+ *     def getWeights(self):
+ *         cdef int weightsSize = self.thisptr.getPersistSize()
+ *         if weightsSize == 0:             # <<<<<<<<<<<<<<
+ *             return None
+ * 
+ */
+  }
+
+  /* "Layer.pyx":44
+ *             return None
+ * 
+ *         weightsArray = np.zeros((weightsSize,), dtype=np.float32)             # <<<<<<<<<<<<<<
+ *         # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
+ *         cdef float[:] weightsArray_view = weightsArray
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_weightsSize); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
+  __pyx_t_2 = 0;
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
+  __pyx_t_4 = 0;
+  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float32); if (unlikely(!__pyx_t_6)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(10, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_v_weightsArray = __pyx_t_6;
+  __pyx_t_6 = 0;
+
+  /* "Layer.pyx":46
+ *         weightsArray = np.zeros((weightsSize,), dtype=np.float32)
+ *         # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
  *         cdef float[:] weightsArray_view = weightsArray             # <<<<<<<<<<<<<<
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_float(((PyObject *)__pyx_v_weightsArray));
-  if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(10, 39, __pyx_L1_error)
-  __pyx_v_weightsArray_view = __pyx_t_8;
-  __pyx_t_8.memview = NULL;
-  __pyx_t_8.data = NULL;
+  __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_v_weightsArray);
+  if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(10, 46, __pyx_L1_error)
+  __pyx_v_weightsArray_view = __pyx_t_7;
+  __pyx_t_7.memview = NULL;
+  __pyx_t_7.data = NULL;
 
-  /* "Layer.pyx":40
- *         cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )
+  /* "Layer.pyx":47
+ *         # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
  *         cdef float[:] weightsArray_view = weightsArray
  *         self.thisptr.persistToArray( &weightsArray_view[0] )             # <<<<<<<<<<<<<<
  *         return weightsArray
  *     def setWeights(self, float[:] weights):
  */
-  __pyx_t_9 = 0;
-  __pyx_t_10 = -1;
-  if (__pyx_t_9 < 0) {
-    __pyx_t_9 += __pyx_v_weightsArray_view.shape[0];
-    if (unlikely(__pyx_t_9 < 0)) __pyx_t_10 = 0;
-  } else if (unlikely(__pyx_t_9 >= __pyx_v_weightsArray_view.shape[0])) __pyx_t_10 = 0;
-  if (unlikely(__pyx_t_10 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_10);
-    __PYX_ERR(10, 40, __pyx_L1_error)
+  __pyx_t_8 = 0;
+  __pyx_t_9 = -1;
+  if (__pyx_t_8 < 0) {
+    __pyx_t_8 += __pyx_v_weightsArray_view.shape[0];
+    if (unlikely(__pyx_t_8 < 0)) __pyx_t_9 = 0;
+  } else if (unlikely(__pyx_t_8 >= __pyx_v_weightsArray_view.shape[0])) __pyx_t_9 = 0;
+  if (unlikely(__pyx_t_9 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_9);
+    __PYX_ERR(10, 47, __pyx_L1_error)
   }
-  __pyx_v_self->thisptr->persistToArray((&(*((float *) ( /* dim=0 */ (__pyx_v_weightsArray_view.data + __pyx_t_9 * __pyx_v_weightsArray_view.strides[0]) )))));
+  __pyx_v_self->thisptr->persistToArray((&(*((float *) ( /* dim=0 */ (__pyx_v_weightsArray_view.data + __pyx_t_8 * __pyx_v_weightsArray_view.strides[0]) )))));
 
-  /* "Layer.pyx":41
+  /* "Layer.pyx":48
  *         cdef float[:] weightsArray_view = weightsArray
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray             # <<<<<<<<<<<<<<
@@ -10226,38 +10260,37 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_16getWeights(struct __pyx_obj_8PyDeep
  *         cdef int weightsSize = self.thisptr.getPersistSize()
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)__pyx_v_weightsArray));
-  __pyx_r = ((PyObject *)__pyx_v_weightsArray);
+  __Pyx_INCREF(__pyx_v_weightsArray);
+  __pyx_r = __pyx_v_weightsArray;
   goto __pyx_L0;
 
-  /* "Layer.pyx":36
+  /* "Layer.pyx":39
  * #        outputArrayMv = self.thisptr.getOutput()
  *         return outputArray
  *     def getWeights(self):             # <<<<<<<<<<<<<<
  *         cdef int weightsSize = self.thisptr.getPersistSize()
- *         cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )
+ *         if weightsSize == 0:
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_7);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
+  __Pyx_XDECREF(__pyx_t_6);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
   __Pyx_AddTraceback("PyDeepCL.Layer.getWeights", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
-  __Pyx_XDECREF((PyObject *)__pyx_v_weightsArray);
+  __Pyx_XDECREF(__pyx_v_weightsArray);
   __PYX_XDEC_MEMVIEW(&__pyx_v_weightsArray_view, 1);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "Layer.pyx":42
+/* "Layer.pyx":49
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray
  *     def setWeights(self, float[:] weights):             # <<<<<<<<<<<<<<
@@ -10273,7 +10306,7 @@ static PyObject *__pyx_pw_8PyDeepCL_5Layer_19setWeights(PyObject *__pyx_v_self, 
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("setWeights (wrapper)", 0);
   assert(__pyx_arg_weights); {
-    __pyx_v_weights = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_arg_weights); if (unlikely(!__pyx_v_weights.memview)) __PYX_ERR(10, 42, __pyx_L3_error)
+    __pyx_v_weights = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_arg_weights); if (unlikely(!__pyx_v_weights.memview)) __PYX_ERR(10, 49, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -10298,7 +10331,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18setWeights(struct __pyx_obj_8PyDeep
   int __pyx_t_4;
   __Pyx_RefNannySetupContext("setWeights", 0);
 
-  /* "Layer.pyx":43
+  /* "Layer.pyx":50
  *         return weightsArray
  *     def setWeights(self, float[:] weights):
  *         cdef int weightsSize = self.thisptr.getPersistSize()             # <<<<<<<<<<<<<<
@@ -10307,7 +10340,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18setWeights(struct __pyx_obj_8PyDeep
  */
   __pyx_v_weightsSize = __pyx_v_self->thisptr->getPersistSize();
 
-  /* "Layer.pyx":44
+  /* "Layer.pyx":51
  *     def setWeights(self, float[:] weights):
  *         cdef int weightsSize = self.thisptr.getPersistSize()
  *         assert weightsSize == len(weights)             # <<<<<<<<<<<<<<
@@ -10316,18 +10349,18 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18setWeights(struct __pyx_obj_8PyDeep
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_weights, 1, (PyObject *(*)(char *)) __pyx_memview_get_float, (int (*)(char *, PyObject *)) __pyx_memview_set_float, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 44, __pyx_L1_error)
+    __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_weights, 1, (PyObject *(*)(char *)) __pyx_memview_get_float, (int (*)(char *, PyObject *)) __pyx_memview_set_float, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 51, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(10, 44, __pyx_L1_error)
+    __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(10, 51, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!((__pyx_v_weightsSize == __pyx_t_2) != 0))) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(10, 44, __pyx_L1_error)
+      __PYX_ERR(10, 51, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "Layer.pyx":46
+  /* "Layer.pyx":53
  *         assert weightsSize == len(weights)
  * #        cdef c_array.array weightsArray = array('f', [0] * weightsSize )
  *         self.thisptr.unpersistFromArray( &weights[0] )             # <<<<<<<<<<<<<<
@@ -10342,11 +10375,11 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18setWeights(struct __pyx_obj_8PyDeep
   } else if (unlikely(__pyx_t_3 >= __pyx_v_weights.shape[0])) __pyx_t_4 = 0;
   if (unlikely(__pyx_t_4 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_4);
-    __PYX_ERR(10, 46, __pyx_L1_error)
+    __PYX_ERR(10, 53, __pyx_L1_error)
   }
   __pyx_v_self->thisptr->unpersistFromArray((&(*((float *) ( /* dim=0 */ (__pyx_v_weights.data + __pyx_t_3 * __pyx_v_weights.strides[0]) )))));
 
-  /* "Layer.pyx":42
+  /* "Layer.pyx":49
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray
  *     def setWeights(self, float[:] weights):             # <<<<<<<<<<<<<<
@@ -10368,7 +10401,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18setWeights(struct __pyx_obj_8PyDeep
   return __pyx_r;
 }
 
-/* "Layer.pyx":51
+/* "Layer.pyx":58
  * #        void persistToArray(float *array)
  * #        void unpersistFromArray(const float *array)
  *     def setWeightsList(self, weightsList):             # <<<<<<<<<<<<<<
@@ -10400,16 +10433,16 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20setWeightsList(struct __pyx_obj_8Py
   PyObject *__pyx_t_5 = NULL;
   __Pyx_RefNannySetupContext("setWeightsList", 0);
 
-  /* "Layer.pyx":52
+  /* "Layer.pyx":59
  * #        void unpersistFromArray(const float *array)
  *     def setWeightsList(self, weightsList):
  *         cdef c_array.array weightsArray = array(floatArrayType)             # <<<<<<<<<<<<<<
  *         weightsArray.fromlist( weightsList )
  *         self.setWeights( weightsArray )
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 52, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 59, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_floatArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 52, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_floatArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 59, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -10422,33 +10455,33 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20setWeightsList(struct __pyx_obj_8Py
     }
   }
   if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 52, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 59, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 52, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 59, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __pyx_t_4 = NULL;
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 52, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 59, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 52, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 59, __pyx_L1_error)
   __pyx_v_weightsArray = ((arrayobject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":53
+  /* "Layer.pyx":60
  *     def setWeightsList(self, weightsList):
  *         cdef c_array.array weightsArray = array(floatArrayType)
  *         weightsArray.fromlist( weightsList )             # <<<<<<<<<<<<<<
  *         self.setWeights( weightsArray )
  *     def asString(self):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_weightsArray), __pyx_n_s_fromlist); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 53, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_weightsArray), __pyx_n_s_fromlist); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 60, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_5 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10461,30 +10494,30 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20setWeightsList(struct __pyx_obj_8Py
     }
   }
   if (!__pyx_t_5) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_weightsList); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_weightsList); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 60, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 53, __pyx_L1_error)
+    __pyx_t_3 = PyTuple_New(1+1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 60, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_5); __pyx_t_5 = NULL;
     __Pyx_INCREF(__pyx_v_weightsList);
     __Pyx_GIVEREF(__pyx_v_weightsList);
     PyTuple_SET_ITEM(__pyx_t_3, 0+1, __pyx_v_weightsList);
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 60, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Layer.pyx":54
+  /* "Layer.pyx":61
  *         cdef c_array.array weightsArray = array(floatArrayType)
  *         weightsArray.fromlist( weightsList )
  *         self.setWeights( weightsArray )             # <<<<<<<<<<<<<<
  *     def asString(self):
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_setWeights); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 54, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_setWeights); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -10497,23 +10530,23 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20setWeightsList(struct __pyx_obj_8Py
     }
   }
   if (!__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, ((PyObject *)__pyx_v_weightsArray)); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 54, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, ((PyObject *)__pyx_v_weightsArray)); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 54, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3); __pyx_t_3 = NULL;
     __Pyx_INCREF(((PyObject *)__pyx_v_weightsArray));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_weightsArray));
     PyTuple_SET_ITEM(__pyx_t_5, 0+1, ((PyObject *)__pyx_v_weightsArray));
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 54, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Layer.pyx":51
+  /* "Layer.pyx":58
  * #        void persistToArray(float *array)
  * #        void unpersistFromArray(const float *array)
  *     def setWeightsList(self, weightsList):             # <<<<<<<<<<<<<<
@@ -10539,7 +10572,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20setWeightsList(struct __pyx_obj_8Py
   return __pyx_r;
 }
 
-/* "Layer.pyx":55
+/* "Layer.pyx":62
  *         weightsArray.fromlist( weightsList )
  *         self.setWeights( weightsArray )
  *     def asString(self):             # <<<<<<<<<<<<<<
@@ -10569,7 +10602,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22asString(struct __pyx_obj_8PyDeepCL
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("asString", 0);
 
-  /* "Layer.pyx":56
+  /* "Layer.pyx":63
  *         self.setWeights( weightsArray )
  *     def asString(self):
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()             # <<<<<<<<<<<<<<
@@ -10578,28 +10611,28 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22asString(struct __pyx_obj_8PyDeepCL
  */
   __pyx_v_res_charstar = __pyx_v_self->thisptr->asNewCharStar();
 
-  /* "Layer.pyx":57
+  /* "Layer.pyx":64
  *     def asString(self):
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))             # <<<<<<<<<<<<<<
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  */
-  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 57, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 57, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 57, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 57, __pyx_L1_error)
+  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 64, __pyx_L1_error)
   __pyx_v_res = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":58
+  /* "Layer.pyx":65
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)             # <<<<<<<<<<<<<<
@@ -10608,7 +10641,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22asString(struct __pyx_obj_8PyDeepCL
  */
   deepcl_deleteCharStar(__pyx_v_res_charstar);
 
-  /* "Layer.pyx":59
+  /* "Layer.pyx":66
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res             # <<<<<<<<<<<<<<
@@ -10620,7 +10653,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22asString(struct __pyx_obj_8PyDeepCL
   __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
-  /* "Layer.pyx":55
+  /* "Layer.pyx":62
  *         weightsArray.fromlist( weightsList )
  *         self.setWeights( weightsArray )
  *     def asString(self):             # <<<<<<<<<<<<<<
@@ -10641,7 +10674,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22asString(struct __pyx_obj_8PyDeepCL
   return __pyx_r;
 }
 
-/* "Layer.pyx":60
+/* "Layer.pyx":67
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  *     def getClassName(self):             # <<<<<<<<<<<<<<
@@ -10668,7 +10701,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24getClassName(struct __pyx_obj_8PyDe
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getClassName", 0);
 
-  /* "Layer.pyx":61
+  /* "Layer.pyx":68
  *         return res
  *     def getClassName(self):
  *         return self.thisptr.getClassNameAsCharStar()             # <<<<<<<<<<<<<<
@@ -10676,13 +10709,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24getClassName(struct __pyx_obj_8PyDe
  * cdef class SoftMax(Layer):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBytes_FromString(__pyx_v_self->thisptr->getClassNameAsCharStar()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 61, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBytes_FromString(__pyx_v_self->thisptr->getClassNameAsCharStar()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 68, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":60
+  /* "Layer.pyx":67
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  *     def getClassName(self):             # <<<<<<<<<<<<<<
@@ -10701,7 +10734,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24getClassName(struct __pyx_obj_8PyDe
   return __pyx_r;
 }
 
-/* "Layer.pyx":64
+/* "Layer.pyx":71
  * 
  * cdef class SoftMax(Layer):
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -10736,7 +10769,7 @@ static int __pyx_pf_8PyDeepCL_7SoftMax___cinit__(CYTHON_UNUSED struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "Layer.pyx":67
+/* "Layer.pyx":74
  *         pass
  * 
  *     def getBatchSize(self):             # <<<<<<<<<<<<<<
@@ -10765,7 +10798,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getBatchSize", 0);
 
-  /* "Layer.pyx":68
+  /* "Layer.pyx":75
  * 
  *     def getBatchSize(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -10774,7 +10807,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
  */
   __pyx_v_cSoftMax = ((SoftMaxLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":69
+  /* "Layer.pyx":76
  *     def getBatchSize(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()             # <<<<<<<<<<<<<<
@@ -10783,7 +10816,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
  */
   __pyx_v_batchSize = __pyx_v_cSoftMax->getBatchSize();
 
-  /* "Layer.pyx":70
+  /* "Layer.pyx":77
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()
  *         return batchSize             # <<<<<<<<<<<<<<
@@ -10791,13 +10824,13 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
  *     def getLabels(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_batchSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 70, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_batchSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":67
+  /* "Layer.pyx":74
  *         pass
  * 
  *     def getBatchSize(self):             # <<<<<<<<<<<<<<
@@ -10816,7 +10849,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
   return __pyx_r;
 }
 
-/* "Layer.pyx":72
+/* "Layer.pyx":79
  *         return batchSize
  * 
  *     def getLabels(self):             # <<<<<<<<<<<<<<
@@ -10856,7 +10889,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   int __pyx_t_10;
   __Pyx_RefNannySetupContext("getLabels", 0);
 
-  /* "Layer.pyx":73
+  /* "Layer.pyx":80
  * 
  *     def getLabels(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -10865,7 +10898,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
  */
   __pyx_v_cSoftMax = ((SoftMaxLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":74
+  /* "Layer.pyx":81
  *     def getLabels(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()             # <<<<<<<<<<<<<<
@@ -10874,18 +10907,18 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
  */
   __pyx_v_batchSize = __pyx_v_cSoftMax->getBatchSize();
 
-  /* "Layer.pyx":75
+  /* "Layer.pyx":82
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()
  *         cdef c_array.array labelsArray = array(intArrayType, [0] * batchSize)             # <<<<<<<<<<<<<<
  *         cdef int[:] labelsArray_view = labelsArray
  *         cSoftMax.getLabels(&labelsArray_view[0])
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 75, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_array); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_intArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 75, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_intArrayType); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyList_New(1 * ((__pyx_v_batchSize<0) ? 0:__pyx_v_batchSize)); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 75, __pyx_L1_error)
+  __pyx_t_4 = PyList_New(1 * ((__pyx_v_batchSize<0) ? 0:__pyx_v_batchSize)); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   { Py_ssize_t __pyx_temp;
     for (__pyx_temp=0; __pyx_temp < __pyx_v_batchSize; __pyx_temp++) {
@@ -10906,7 +10939,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
       __pyx_t_6 = 1;
     }
   }
-  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(10, 75, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(10, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   if (__pyx_t_5) {
     __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -10917,15 +10950,15 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
   __pyx_t_3 = 0;
   __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 75, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 82, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 75, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_7cpython_5array_array))))) __PYX_ERR(10, 82, __pyx_L1_error)
   __pyx_v_labelsArray = ((arrayobject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":76
+  /* "Layer.pyx":83
  *         cdef int batchSize = cSoftMax.getBatchSize()
  *         cdef c_array.array labelsArray = array(intArrayType, [0] * batchSize)
  *         cdef int[:] labelsArray_view = labelsArray             # <<<<<<<<<<<<<<
@@ -10933,12 +10966,12 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
  *         return labelsArray
  */
   __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(((PyObject *)__pyx_v_labelsArray));
-  if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(10, 76, __pyx_L1_error)
+  if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(10, 83, __pyx_L1_error)
   __pyx_v_labelsArray_view = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "Layer.pyx":77
+  /* "Layer.pyx":84
  *         cdef c_array.array labelsArray = array(intArrayType, [0] * batchSize)
  *         cdef int[:] labelsArray_view = labelsArray
  *         cSoftMax.getLabels(&labelsArray_view[0])             # <<<<<<<<<<<<<<
@@ -10953,11 +10986,11 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   } else if (unlikely(__pyx_t_9 >= __pyx_v_labelsArray_view.shape[0])) __pyx_t_10 = 0;
   if (unlikely(__pyx_t_10 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_10);
-    __PYX_ERR(10, 77, __pyx_L1_error)
+    __PYX_ERR(10, 84, __pyx_L1_error)
   }
   __pyx_v_cSoftMax->getLabels((&(*((int *) ( /* dim=0 */ (__pyx_v_labelsArray_view.data + __pyx_t_9 * __pyx_v_labelsArray_view.strides[0]) )))));
 
-  /* "Layer.pyx":78
+  /* "Layer.pyx":85
  *         cdef int[:] labelsArray_view = labelsArray
  *         cSoftMax.getLabels(&labelsArray_view[0])
  *         return labelsArray             # <<<<<<<<<<<<<<
@@ -10968,7 +11001,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   __pyx_r = ((PyObject *)__pyx_v_labelsArray);
   goto __pyx_L0;
 
-  /* "Layer.pyx":72
+  /* "Layer.pyx":79
  *         return batchSize
  * 
  *     def getLabels(self):             # <<<<<<<<<<<<<<
@@ -32916,6 +32949,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_k_data_norep_git_DeepCL_python_Py, sizeof(__pyx_k_data_norep_git_DeepCL_python_Py), 0, 0, 1, 0},
   {&__pyx_kp_s_data_norep_git_DeepCL_python_Ra, __pyx_k_data_norep_git_DeepCL_python_Ra, sizeof(__pyx_k_data_norep_git_DeepCL_python_Ra), 0, 0, 1, 0},
   {&__pyx_n_s_decode, __pyx_k_decode, sizeof(__pyx_k_decode), 0, 0, 1, 1},
+  {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
   {&__pyx_n_s_encodedString, __pyx_k_encodedString, sizeof(__pyx_k_encodedString), 0, 0, 1, 1},
@@ -32927,6 +32961,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_f, __pyx_k_f, sizeof(__pyx_k_f), 0, 0, 1, 1},
   {&__pyx_kp_s_finished_calling, __pyx_k_finished_calling, sizeof(__pyx_k_finished_calling), 0, 0, 1, 0},
   {&__pyx_n_s_flags, __pyx_k_flags, sizeof(__pyx_k_flags), 0, 0, 1, 1},
+  {&__pyx_n_s_float32, __pyx_k_float32, sizeof(__pyx_k_float32), 0, 0, 1, 1},
   {&__pyx_n_s_floatArrayType, __pyx_k_floatArrayType, sizeof(__pyx_k_floatArrayType), 0, 0, 1, 1},
   {&__pyx_n_s_format, __pyx_k_format, sizeof(__pyx_k_format), 0, 0, 1, 1},
   {&__pyx_n_s_fortran, __pyx_k_fortran, sizeof(__pyx_k_fortran), 0, 0, 1, 1},
@@ -32976,7 +33011,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_netdef_charstar, __pyx_k_netdef_charstar, sizeof(__pyx_k_netdef_charstar), 0, 0, 1, 1},
   {&__pyx_n_s_neuralnet, __pyx_k_neuralnet, sizeof(__pyx_k_neuralnet), 0, 0, 1, 1},
   {&__pyx_kp_s_not_found, __pyx_k_not_found, sizeof(__pyx_k_not_found), 0, 0, 1, 0},
+  {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
   {&__pyx_n_s_numExamples, __pyx_k_numExamples, sizeof(__pyx_k_numExamples), 0, 0, 1, 1},
+  {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
   {&__pyx_n_s_obj, __pyx_k_obj, sizeof(__pyx_k_obj), 0, 0, 1, 1},
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
   {&__pyx_n_s_planes, __pyx_k_planes, sizeof(__pyx_k_planes), 0, 0, 1, 1},
@@ -33024,6 +33061,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
   {&__pyx_n_s_utf8, __pyx_k_utf8, sizeof(__pyx_k_utf8), 0, 0, 1, 1},
   {&__pyx_kp_s_utf_8, __pyx_k_utf_8, sizeof(__pyx_k_utf_8), 0, 0, 1, 0},
+  {&__pyx_n_s_zeros, __pyx_k_zeros, sizeof(__pyx_k_zeros), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
@@ -33889,18 +33927,18 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_ptype_8PyDeepCL_NeuralNet = &__pyx_type_8PyDeepCL_NeuralNet;
   __pyx_vtabptr_8PyDeepCL_Layer = &__pyx_vtable_8PyDeepCL_Layer;
   __pyx_vtable_8PyDeepCL_Layer.set_thisptr = (PyObject *(*)(struct __pyx_obj_8PyDeepCL_Layer *, Layer *))__pyx_f_8PyDeepCL_5Layer_set_thisptr;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_Layer) < 0) __PYX_ERR(10, 1, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_Layer) < 0) __PYX_ERR(10, 4, __pyx_L1_error)
   __pyx_type_8PyDeepCL_Layer.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_Layer.tp_dict, __pyx_vtabptr_8PyDeepCL_Layer) < 0) __PYX_ERR(10, 1, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "Layer", (PyObject *)&__pyx_type_8PyDeepCL_Layer) < 0) __PYX_ERR(10, 1, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_Layer.tp_dict, __pyx_vtabptr_8PyDeepCL_Layer) < 0) __PYX_ERR(10, 4, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "Layer", (PyObject *)&__pyx_type_8PyDeepCL_Layer) < 0) __PYX_ERR(10, 4, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_Layer = &__pyx_type_8PyDeepCL_Layer;
   __pyx_vtabptr_8PyDeepCL_SoftMax = &__pyx_vtable_8PyDeepCL_SoftMax;
   __pyx_vtable_8PyDeepCL_SoftMax.__pyx_base = *__pyx_vtabptr_8PyDeepCL_Layer;
   __pyx_type_8PyDeepCL_SoftMax.tp_base = __pyx_ptype_8PyDeepCL_Layer;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 63, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 70, __pyx_L1_error)
   __pyx_type_8PyDeepCL_SoftMax.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_SoftMax.tp_dict, __pyx_vtabptr_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 63, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "SoftMax", (PyObject *)&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 63, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_SoftMax.tp_dict, __pyx_vtabptr_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 70, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "SoftMax", (PyObject *)&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 70, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_SoftMax = &__pyx_type_8PyDeepCL_SoftMax;
   if (PyType_Ready(&__pyx_type_8PyDeepCL_LayerMaker2) < 0) __PYX_ERR(11, 1, __pyx_L1_error)
   __pyx_type_8PyDeepCL_LayerMaker2.tp_print = 0;
@@ -34287,6 +34325,16 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_RandomSingleton->tp_dict, __pyx_n_s_uniform, __pyx_t_3) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_8PyDeepCL_RandomSingleton);
+
+  /* "Layer.pyx":1
+ * import numpy as np             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_3 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_3) < 0) __PYX_ERR(10, 1, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
   /* "LayerMaker.pyx":18
  *         return self

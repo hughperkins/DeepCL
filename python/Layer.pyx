@@ -1,3 +1,6 @@
+import numpy as np
+
+
 cdef class Layer:
     cdef cDeepCL.Layer *thisptr
 
@@ -35,7 +38,11 @@ cdef class Layer:
         return outputArray
     def getWeights(self):
         cdef int weightsSize = self.thisptr.getPersistSize()
-        cdef c_array.array weightsArray = array(floatArrayType, [0] * weightsSize )
+        if weightsSize == 0:
+            return None
+
+        weightsArray = np.zeros((weightsSize,), dtype=np.float32)
+        # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
         cdef float[:] weightsArray_view = weightsArray
         self.thisptr.persistToArray( &weightsArray_view[0] )
         return weightsArray
