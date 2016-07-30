@@ -7,7 +7,7 @@
 from __future__ import print_function
 from cython cimport view
 from cpython cimport array as c_array
-from array import array
+# from array import array
 import threading
 from libcpp cimport bool
 import platform

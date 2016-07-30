@@ -3,7 +3,7 @@ cdef extern from "layer/Layer.h":
         void forward()
         void backward()
         bool needsBackProp()
-        bool getBiased()
+        bool biased() except+
         int getOutputCubeSize() except+
         int getOutputPlanes()
         int getOutputSize()

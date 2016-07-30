@@ -30,10 +30,10 @@ cdef class NeuralNet:
     def forward(self, images):
         cdef float[:] images_ = images.reshape(-1)
         self.thisptr.forward(&images_[0])
-    def forwardList(self, imagesList):
-        cdef c_array.array imagesArray = array(floatArrayType, imagesList)
-        cdef float[:] imagesArray_view = imagesArray
-        self.thisptr.forward(&imagesArray_view[0])
+    #def forwardList(self, imagesList):
+    #    cdef c_array.array imagesArray = array(floatArrayType, imagesList)
+    #    cdef float[:] imagesArray_view = imagesArray
+    #    self.thisptr.forward(&imagesArray_view[0])
     def backwardFromLabels(self, int[:] labels):
         return self.thisptr.backwardFromLabels(&labels[0]) 
     def backward(self, expectedOutput):
@@ -65,9 +65,19 @@ cdef class NeuralNet:
     def getOutput(self):
         cdef const float *output = self.thisptr.getOutput()
         cdef int outputNumElements = self.thisptr.getOutputNumElements()
-        cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements)
+        lastLayer = self.getLastLayer()
+        planes = lastLayer.getOutputPlanes()
+        size = lastLayer.getOutputSize()
+        batchSize = outputNumElements // planes // size // size
+        outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
+        # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
+        outreshape = outputArray.reshape(-1)
+        # outreshape = output
         for i in range(outputNumElements):
-            outputArray[i] = output[i]
+            outreshape[i] = output[i]
+        # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements)
+        #for i in range(outputNumElements):
+        #    outputArray[i] = output[i]
         return outputArray
     def setTraining(self, training): # 1 is, we are training net, 0 is we are not
                             # used for example by randomtranslations layer (for now,

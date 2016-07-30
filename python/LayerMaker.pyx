@@ -60,10 +60,10 @@ cdef class ConvolutionalMaker(LayerMaker2):
     def padZeros(self, bint _padZeros):
         self.thisptr.padZeros( _padZeros )
         return self
-    def biased(self):
-        self.thisptr.biased()
-        return self
-    def biased(self, bint _biased):
+    #def biased(self):
+    #    self.thisptr.biased()
+    #    return self
+    def biased(self, bint _biased=True):
         self.thisptr.biased( _biased )
         return self
     @staticmethod
