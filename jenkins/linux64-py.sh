@@ -6,7 +6,7 @@ pyenv=$1
 echo pyenv: $pyenv
 
 . $HOME/${pyenv}/bin/activate
-pip install cython pypandoc pytest || exit 1
+pip install cython pypandoc pytest numpy || exit 1
 
 pwd
 rm -Rf build dist
@@ -26,8 +26,8 @@ pwd
 rm -Rf dist build DeepCL.egg-info
 ls
 pwd
-python setup.py install
-py.test -sv test
+python setup.py install || exit 1
+py.test -sv test || exit 1
 python setup.py build_ext -i || exit 1
 python setup.py bdist_egg || exit 1
 
