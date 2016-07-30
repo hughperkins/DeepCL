@@ -34,7 +34,7 @@ TEST( testdropoutbackward, basic ) {
         0, -1.1f, 3.5f
     };
     int inputTotalSize = dropoutBackprop->getInputNumElements( batchSize );
-    EXPECT_FLOAT_NEAR( batchSize * imageSize * imageSize, inputTotalSize );
+    EXPECT_EQ( batchSize * imageSize * imageSize, inputTotalSize );
     float *errorsForUpstream = new float[ inputTotalSize ];
 
     dropoutBackprop->backward( batchSize, mask, errors, errorsForUpstream );

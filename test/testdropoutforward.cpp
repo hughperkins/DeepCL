@@ -55,7 +55,7 @@ TEST( testdropoutforward, basic ) {
                      3, -33.1f, 14.2f,
     };
     int outputNumElements = dropoutForward->getOutputNumElements( batchSize );
-    EXPECT_FLOAT_NEAR( outputNumElements, imageSize * imageSize );
+    EXPECT_EQ( outputNumElements, imageSize * imageSize );
     float *output = new float[outputNumElements];
 
     dropoutForward->forward( batchSize, mask, data, output );
@@ -316,7 +316,7 @@ void compareSpecific( CompareSpecificArgs args ) {
             break;
         }
     }
-    EXPECT_FLOAT_NEAR( 0, numErrors );
+    EXPECT_EQ( 0, numErrors );
     if( numErrors > 0 ) {
         int num2dPlanes = inputNumElements / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {
