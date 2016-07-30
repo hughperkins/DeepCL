@@ -28,7 +28,9 @@ rm -Rf dist build DeepCL.egg-info
 pwd
 pip uninstall -y DeepCL
 python setup.py install || exit 1
-py.test -sv test || exit 1
+if [[ $(uname -p) == x86_64 ]]; then {
+    py.test -sv test || exit 1
+} fi
 python setup.py build_ext -i || exit 1
 python setup.py bdist_egg || exit 1
 
