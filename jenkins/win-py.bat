@@ -38,13 +38,12 @@ rmdir /s /q dist
 rmdir /s /q build
 rmdir /s /q mysrc
 rmdir /s /q src
-dir
+
 if exist dist goto :error
 if exist build goto :error
 if exist mysrc goto :error
 if exist src goto :error
 
-set
 python setup.py build_ext -i
 if errorlevel 1 goto :error
 

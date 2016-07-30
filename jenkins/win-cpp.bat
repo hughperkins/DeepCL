@@ -16,11 +16,11 @@ cd turbojpeg-win%WINBITS%
 if errorlevel 1 exit /B 1
 
 cd %~dp0..
-dir
+rem dir
 rmdir /s /q build
 mkdir build
 cd %~dp0..\build
-dir
+rem dir
 set "VS100COMNTOOLS=c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\"
 set "VS110COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\Tools\"
 set "VS120COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\"

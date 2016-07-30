@@ -16,7 +16,7 @@ cmake .. || exit 1
 make -j 4 install || exit 1
 cd ..
 pwd
-ls
+# ls
 . dist/bin/activate.sh
 
 pwd
@@ -24,8 +24,9 @@ cp jenkins/version.txt python
 cd python
 pwd
 rm -Rf dist build DeepCL.egg-info
-ls
+# ls
 pwd
+pip uninstall -y DeepCL
 python setup.py install || exit 1
 py.test -sv test || exit 1
 python setup.py build_ext -i || exit 1
