@@ -29,6 +29,7 @@ rem  cd
 rem  dir
 cd %~dp0..
 call dist\bin\activate.bat
+pip install pytest
 
 copy /y jenkins\version.txt python
 cd python
@@ -51,6 +52,8 @@ python setup.py bdist_egg
 if errorlevel 1 goto :error
 
 set HOME=%HOMEPATH%
+python setup.py install
+py.test -sv test
 python setup.py bdist_egg upload
 rem ignore any error?
 rem if errorlevel 1 goto :error
