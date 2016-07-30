@@ -61,8 +61,6 @@ TEST(testClBlas, basic) {
 
 static void transpose(float *matrix, int rows, int cols) {
     float *tempMatrix = new float[rows * cols];
-    int newRows = cols;
-    int newCols = rows;
     for(int row = 0; row < rows; row++) {
         for(int col = 0; col < cols; col++) {
             int pos1 = row * cols + col;
