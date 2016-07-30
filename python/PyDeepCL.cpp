@@ -329,6 +329,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include "conv/ConvolutionalMaker.h"
 #include "pooling/PoolingMaker.h"
 #include "forcebackprop/ForceBackpropLayerMaker.h"
+#include "patches/RandomTranslationsMaker.h"
 #include "net/NeuralNet.h"
 #include "trainers/Trainer.h"
 #include "trainers/TrainingContext.h"
@@ -708,6 +709,7 @@ struct __pyx_obj_8PyDeepCL_DropoutMaker;
 struct __pyx_obj_8PyDeepCL_ActivationMaker;
 struct __pyx_obj_8PyDeepCL_ForceBackpropMaker;
 struct __pyx_obj_8PyDeepCL_SquareLossMaker;
+struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker;
 struct __pyx_obj_8PyDeepCL_SoftMaxMaker;
 struct __pyx_obj_8PyDeepCL_InputLayerMaker;
 struct __pyx_obj_8PyDeepCL_GenericLoader;
@@ -983,8 +985,21 @@ struct __pyx_obj_8PyDeepCL_SquareLossMaker {
 };
 
 
-/* "LayerMaker.pyx":148
- *         return SquareLossMaker()
+/* "LayerMaker.pyx":149
+ * 
+ * 
+ * cdef class RandomTranslationsMaker(LayerMaker2):             # <<<<<<<<<<<<<<
+ *     cdef cDeepCL.RandomTranslationsMaker *thisptr
+ * 
+ */
+struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker {
+  struct __pyx_obj_8PyDeepCL_LayerMaker2 __pyx_base;
+  RandomTranslationsMaker *thisptr;
+};
+
+
+/* "LayerMaker.pyx":165
+ * 
  * 
  * cdef class SoftMaxMaker(LayerMaker2):             # <<<<<<<<<<<<<<
  *     cdef cDeepCL.SoftMaxMaker *thisptr
@@ -996,7 +1011,7 @@ struct __pyx_obj_8PyDeepCL_SoftMaxMaker {
 };
 
 
-/* "LayerMaker.pyx":159
+/* "LayerMaker.pyx":176
  *         return SoftMaxMaker()
  * 
  * cdef class InputLayerMaker(LayerMaker2):             # <<<<<<<<<<<<<<
@@ -2045,6 +2060,7 @@ static PyTypeObject *__pyx_ptype_8PyDeepCL_DropoutMaker = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_ActivationMaker = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_ForceBackpropMaker = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_SquareLossMaker = 0;
+static PyTypeObject *__pyx_ptype_8PyDeepCL_RandomTranslationsMaker = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_SoftMaxMaker = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_InputLayerMaker = 0;
 static PyTypeObject *__pyx_ptype_8PyDeepCL_GenericLoader = 0;
@@ -2562,6 +2578,9 @@ static int __pyx_pf_8PyDeepCL_18ForceBackpropMaker___cinit__(struct __pyx_obj_8P
 static PyObject *__pyx_pf_8PyDeepCL_18ForceBackpropMaker_2instance(); /* proto */
 static int __pyx_pf_8PyDeepCL_15SquareLossMaker___cinit__(struct __pyx_obj_8PyDeepCL_SquareLossMaker *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_15SquareLossMaker_2instance(); /* proto */
+static int __pyx_pf_8PyDeepCL_23RandomTranslationsMaker___cinit__(struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_23RandomTranslationsMaker_2instance(); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_23RandomTranslationsMaker_4translateSize(struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker *__pyx_v_self, int __pyx_v__translateSize); /* proto */
 static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepCL_SoftMaxMaker *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_12SoftMaxMaker_2instance(); /* proto */
 static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDeepCL_InputLayerMaker *__pyx_v_self); /* proto */
@@ -2650,6 +2669,7 @@ static PyObject *__pyx_tp_new_8PyDeepCL_DropoutMaker(PyTypeObject *t, PyObject *
 static PyObject *__pyx_tp_new_8PyDeepCL_ActivationMaker(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_ForceBackpropMaker(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_SquareLossMaker(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8PyDeepCL_RandomTranslationsMaker(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_SoftMaxMaker(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_InputLayerMaker(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_8PyDeepCL_GenericLoader(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -2709,16 +2729,16 @@ static PyObject *__pyx_tuple__35;
 static PyObject *__pyx_tuple__36;
 static PyObject *__pyx_tuple__40;
 static PyObject *__pyx_tuple__41;
-static PyObject *__pyx_tuple__54;
-static PyObject *__pyx_tuple__56;
-static PyObject *__pyx_tuple__58;
-static PyObject *__pyx_tuple__60;
-static PyObject *__pyx_tuple__62;
-static PyObject *__pyx_tuple__64;
+static PyObject *__pyx_tuple__55;
+static PyObject *__pyx_tuple__57;
+static PyObject *__pyx_tuple__59;
+static PyObject *__pyx_tuple__61;
+static PyObject *__pyx_tuple__63;
 static PyObject *__pyx_tuple__65;
 static PyObject *__pyx_tuple__66;
 static PyObject *__pyx_tuple__67;
 static PyObject *__pyx_tuple__68;
+static PyObject *__pyx_tuple__69;
 static PyObject *__pyx_codeobj__42;
 static PyObject *__pyx_codeobj__43;
 static PyObject *__pyx_codeobj__44;
@@ -2731,11 +2751,12 @@ static PyObject *__pyx_codeobj__50;
 static PyObject *__pyx_codeobj__51;
 static PyObject *__pyx_codeobj__52;
 static PyObject *__pyx_codeobj__53;
-static PyObject *__pyx_codeobj__55;
-static PyObject *__pyx_codeobj__57;
-static PyObject *__pyx_codeobj__59;
-static PyObject *__pyx_codeobj__61;
-static PyObject *__pyx_codeobj__63;
+static PyObject *__pyx_codeobj__54;
+static PyObject *__pyx_codeobj__56;
+static PyObject *__pyx_codeobj__58;
+static PyObject *__pyx_codeobj__60;
+static PyObject *__pyx_codeobj__62;
+static PyObject *__pyx_codeobj__64;
 
 /* "DeepCL.pyx":4
  *     cdef cDeepCL.DeepCL *thisptr
@@ -9734,7 +9755,8 @@ static PyObject *__pyx_pw_8PyDeepCL_5Layer_9getOutputCubeSize(PyObject *__pyx_v_
 static PyObject *__pyx_pf_8PyDeepCL_5Layer_8getOutputCubeSize(struct __pyx_obj_8PyDeepCL_Layer *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("getOutputCubeSize", 0);
 
   /* "Layer.pyx":17
@@ -9745,10 +9767,16 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8getOutputCubeSize(struct __pyx_obj_8
  *         return self.thisptr.getOutputPlanes()
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputCubeSize()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 17, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  try {
+    __pyx_t_1 = __pyx_v_self->thisptr->getOutputCubeSize();
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    __PYX_ERR(10, 17, __pyx_L1_error)
+  }
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 17, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
   goto __pyx_L0;
 
   /* "Layer.pyx":16
@@ -9761,7 +9789,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8getOutputCubeSize(struct __pyx_obj_8
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_AddTraceback("PyDeepCL.Layer.getOutputCubeSize", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -13553,7 +13581,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15SquareLossMaker_2instance() {
  *     def instance():
  *         return SquareLossMaker()             # <<<<<<<<<<<<<<
  * 
- * cdef class SoftMaxMaker(LayerMaker2):
+ * 
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_8PyDeepCL_SquareLossMaker), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(11, 146, __pyx_L1_error)
@@ -13581,7 +13609,225 @@ static PyObject *__pyx_pf_8PyDeepCL_15SquareLossMaker_2instance() {
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":150
+/* "LayerMaker.pyx":152
+ *     cdef cDeepCL.RandomTranslationsMaker *thisptr
+ * 
+ *     def __cinit__(self):             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.RandomTranslationsMaker()
+ *         self.baseptr = self.thisptr
+ */
+
+/* Python wrapper */
+static int __pyx_pw_8PyDeepCL_23RandomTranslationsMaker_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_8PyDeepCL_23RandomTranslationsMaker_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
+  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
+    __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
+  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__cinit__", 0))) return -1;
+  __pyx_r = __pyx_pf_8PyDeepCL_23RandomTranslationsMaker___cinit__(((struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_8PyDeepCL_23RandomTranslationsMaker___cinit__(struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  RandomTranslationsMaker *__pyx_t_1;
+  __Pyx_RefNannySetupContext("__cinit__", 0);
+
+  /* "LayerMaker.pyx":153
+ * 
+ *     def __cinit__(self):
+ *         self.thisptr = new cDeepCL.RandomTranslationsMaker()             # <<<<<<<<<<<<<<
+ *         self.baseptr = self.thisptr
+ * 
+ */
+  try {
+    __pyx_t_1 = new RandomTranslationsMaker();
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    __PYX_ERR(11, 153, __pyx_L1_error)
+  }
+  __pyx_v_self->thisptr = __pyx_t_1;
+
+  /* "LayerMaker.pyx":154
+ *     def __cinit__(self):
+ *         self.thisptr = new cDeepCL.RandomTranslationsMaker()
+ *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
+ * 
+ *     @staticmethod
+ */
+  __pyx_t_1 = __pyx_v_self->thisptr;
+  __pyx_v_self->__pyx_base.baseptr = __pyx_t_1;
+
+  /* "LayerMaker.pyx":152
+ *     cdef cDeepCL.RandomTranslationsMaker *thisptr
+ * 
+ *     def __cinit__(self):             # <<<<<<<<<<<<<<
+ *         self.thisptr = new cDeepCL.RandomTranslationsMaker()
+ *         self.baseptr = self.thisptr
+ */
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("PyDeepCL.RandomTranslationsMaker.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "LayerMaker.pyx":157
+ * 
+ *     @staticmethod
+ *     def instance():             # <<<<<<<<<<<<<<
+ *         return RandomTranslationsMaker()
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_3instance(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_8PyDeepCL_23RandomTranslationsMaker_3instance = {"instance", (PyCFunction)__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_3instance, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_3instance(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("instance (wrapper)", 0);
+  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
+    __Pyx_RaiseArgtupleInvalid("instance", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return NULL;}
+  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "instance", 0))) return NULL;
+  __pyx_r = __pyx_pf_8PyDeepCL_23RandomTranslationsMaker_2instance();
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_23RandomTranslationsMaker_2instance() {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("instance", 0);
+
+  /* "LayerMaker.pyx":158
+ *     @staticmethod
+ *     def instance():
+ *         return RandomTranslationsMaker()             # <<<<<<<<<<<<<<
+ * 
+ *     def translateSize(self, int _translateSize):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_8PyDeepCL_RandomTranslationsMaker), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(11, 158, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "LayerMaker.pyx":157
+ * 
+ *     @staticmethod
+ *     def instance():             # <<<<<<<<<<<<<<
+ *         return RandomTranslationsMaker()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("PyDeepCL.RandomTranslationsMaker.instance", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "LayerMaker.pyx":160
+ *         return RandomTranslationsMaker()
+ * 
+ *     def translateSize(self, int _translateSize):             # <<<<<<<<<<<<<<
+ *         self.thisptr.translateSize(_translateSize)
+ *         return self
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_5translateSize(PyObject *__pyx_v_self, PyObject *__pyx_arg__translateSize); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_5translateSize(PyObject *__pyx_v_self, PyObject *__pyx_arg__translateSize) {
+  int __pyx_v__translateSize;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("translateSize (wrapper)", 0);
+  assert(__pyx_arg__translateSize); {
+    __pyx_v__translateSize = __Pyx_PyInt_As_int(__pyx_arg__translateSize); if (unlikely((__pyx_v__translateSize == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 160, __pyx_L3_error)
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("PyDeepCL.RandomTranslationsMaker.translateSize", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8PyDeepCL_23RandomTranslationsMaker_4translateSize(((struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker *)__pyx_v_self), ((int)__pyx_v__translateSize));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8PyDeepCL_23RandomTranslationsMaker_4translateSize(struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker *__pyx_v_self, int __pyx_v__translateSize) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("translateSize", 0);
+
+  /* "LayerMaker.pyx":161
+ * 
+ *     def translateSize(self, int _translateSize):
+ *         self.thisptr.translateSize(_translateSize)             # <<<<<<<<<<<<<<
+ *         return self
+ * 
+ */
+  try {
+    __pyx_v_self->thisptr->translateSize(__pyx_v__translateSize);
+  } catch(...) {
+    __Pyx_CppExn2PyErr();
+    __PYX_ERR(11, 161, __pyx_L1_error)
+  }
+
+  /* "LayerMaker.pyx":162
+ *     def translateSize(self, int _translateSize):
+ *         self.thisptr.translateSize(_translateSize)
+ *         return self             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(((PyObject *)__pyx_v_self));
+  __pyx_r = ((PyObject *)__pyx_v_self);
+  goto __pyx_L0;
+
+  /* "LayerMaker.pyx":160
+ *         return RandomTranslationsMaker()
+ * 
+ *     def translateSize(self, int _translateSize):             # <<<<<<<<<<<<<<
+ *         self.thisptr.translateSize(_translateSize)
+ *         return self
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("PyDeepCL.RandomTranslationsMaker.translateSize", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "LayerMaker.pyx":167
  * cdef class SoftMaxMaker(LayerMaker2):
  *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
@@ -13611,7 +13857,7 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
   SoftMaxMaker *__pyx_t_1;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "LayerMaker.pyx":151
+  /* "LayerMaker.pyx":168
  *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):
  *         self.thisptr = new cDeepCL.SoftMaxMaker()             # <<<<<<<<<<<<<<
@@ -13622,11 +13868,11 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
     __pyx_t_1 = new SoftMaxMaker();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(11, 151, __pyx_L1_error)
+    __PYX_ERR(11, 168, __pyx_L1_error)
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "LayerMaker.pyx":152
+  /* "LayerMaker.pyx":169
  *     def __cinit__( self ):
  *         self.thisptr = new cDeepCL.SoftMaxMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
@@ -13636,7 +13882,7 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
   __pyx_t_1 = __pyx_v_self->thisptr;
   __pyx_v_self->__pyx_base.baseptr = __pyx_t_1;
 
-  /* "LayerMaker.pyx":150
+  /* "LayerMaker.pyx":167
  * cdef class SoftMaxMaker(LayerMaker2):
  *     cdef cDeepCL.SoftMaxMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
@@ -13655,7 +13901,7 @@ static int __pyx_pf_8PyDeepCL_12SoftMaxMaker___cinit__(struct __pyx_obj_8PyDeepC
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":156
+/* "LayerMaker.pyx":173
  * #        del self.thisptr
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
@@ -13686,7 +13932,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12SoftMaxMaker_2instance() {
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("instance", 0);
 
-  /* "LayerMaker.pyx":157
+  /* "LayerMaker.pyx":174
  *     @staticmethod
  *     def instance():
  *         return SoftMaxMaker()             # <<<<<<<<<<<<<<
@@ -13694,13 +13940,13 @@ static PyObject *__pyx_pf_8PyDeepCL_12SoftMaxMaker_2instance() {
  * cdef class InputLayerMaker(LayerMaker2):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(11, 157, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(11, 174, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "LayerMaker.pyx":156
+  /* "LayerMaker.pyx":173
  * #        del self.thisptr
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
@@ -13719,7 +13965,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12SoftMaxMaker_2instance() {
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":161
+/* "LayerMaker.pyx":178
  * cdef class InputLayerMaker(LayerMaker2):
  *     cdef cDeepCL.InputLayerMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
@@ -13749,7 +13995,7 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
   InputLayerMaker *__pyx_t_1;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "LayerMaker.pyx":162
+  /* "LayerMaker.pyx":179
  *     cdef cDeepCL.InputLayerMaker *thisptr
  *     def __cinit__( self ):
  *         self.thisptr = new cDeepCL.InputLayerMaker()             # <<<<<<<<<<<<<<
@@ -13760,11 +14006,11 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
     __pyx_t_1 = new InputLayerMaker();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(11, 162, __pyx_L1_error)
+    __PYX_ERR(11, 179, __pyx_L1_error)
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "LayerMaker.pyx":163
+  /* "LayerMaker.pyx":180
  *     def __cinit__( self ):
  *         self.thisptr = new cDeepCL.InputLayerMaker()
  *         self.baseptr = self.thisptr             # <<<<<<<<<<<<<<
@@ -13774,7 +14020,7 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
   __pyx_t_1 = __pyx_v_self->thisptr;
   __pyx_v_self->__pyx_base.baseptr = __pyx_t_1;
 
-  /* "LayerMaker.pyx":161
+  /* "LayerMaker.pyx":178
  * cdef class InputLayerMaker(LayerMaker2):
  *     cdef cDeepCL.InputLayerMaker *thisptr
  *     def __cinit__( self ):             # <<<<<<<<<<<<<<
@@ -13793,7 +14039,7 @@ static int __pyx_pf_8PyDeepCL_15InputLayerMaker___cinit__(struct __pyx_obj_8PyDe
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":166
+/* "LayerMaker.pyx":183
  * #    def __dealloc__(self):
  * #        del self.thisptr
  *     def numPlanes( self, int _numPlanes ):             # <<<<<<<<<<<<<<
@@ -13809,7 +14055,7 @@ static PyObject *__pyx_pw_8PyDeepCL_15InputLayerMaker_3numPlanes(PyObject *__pyx
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("numPlanes (wrapper)", 0);
   assert(__pyx_arg__numPlanes); {
-    __pyx_v__numPlanes = __Pyx_PyInt_As_int(__pyx_arg__numPlanes); if (unlikely((__pyx_v__numPlanes == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 166, __pyx_L3_error)
+    __pyx_v__numPlanes = __Pyx_PyInt_As_int(__pyx_arg__numPlanes); if (unlikely((__pyx_v__numPlanes == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 183, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -13829,7 +14075,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_2numPlanes(struct __pyx_ob
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("numPlanes", 0);
 
-  /* "LayerMaker.pyx":167
+  /* "LayerMaker.pyx":184
  * #        del self.thisptr
  *     def numPlanes( self, int _numPlanes ):
  *         self.thisptr.numPlanes( _numPlanes )             # <<<<<<<<<<<<<<
@@ -13840,10 +14086,10 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_2numPlanes(struct __pyx_ob
     __pyx_v_self->thisptr->numPlanes(__pyx_v__numPlanes);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(11, 167, __pyx_L1_error)
+    __PYX_ERR(11, 184, __pyx_L1_error)
   }
 
-  /* "LayerMaker.pyx":168
+  /* "LayerMaker.pyx":185
  *     def numPlanes( self, int _numPlanes ):
  *         self.thisptr.numPlanes( _numPlanes )
  *         return self             # <<<<<<<<<<<<<<
@@ -13855,7 +14101,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_2numPlanes(struct __pyx_ob
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "LayerMaker.pyx":166
+  /* "LayerMaker.pyx":183
  * #    def __dealloc__(self):
  * #        del self.thisptr
  *     def numPlanes( self, int _numPlanes ):             # <<<<<<<<<<<<<<
@@ -13873,7 +14119,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_2numPlanes(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":169
+/* "LayerMaker.pyx":186
  *         self.thisptr.numPlanes( _numPlanes )
  *         return self
  *     def imageSize( self, int _imageSize ):             # <<<<<<<<<<<<<<
@@ -13889,7 +14135,7 @@ static PyObject *__pyx_pw_8PyDeepCL_15InputLayerMaker_5imageSize(PyObject *__pyx
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("imageSize (wrapper)", 0);
   assert(__pyx_arg__imageSize); {
-    __pyx_v__imageSize = __Pyx_PyInt_As_int(__pyx_arg__imageSize); if (unlikely((__pyx_v__imageSize == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 169, __pyx_L3_error)
+    __pyx_v__imageSize = __Pyx_PyInt_As_int(__pyx_arg__imageSize); if (unlikely((__pyx_v__imageSize == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 186, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -13909,7 +14155,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_4imageSize(struct __pyx_ob
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("imageSize", 0);
 
-  /* "LayerMaker.pyx":170
+  /* "LayerMaker.pyx":187
  *         return self
  *     def imageSize( self, int _imageSize ):
  *         self.thisptr.imageSize( _imageSize )             # <<<<<<<<<<<<<<
@@ -13920,10 +14166,10 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_4imageSize(struct __pyx_ob
     __pyx_v_self->thisptr->imageSize(__pyx_v__imageSize);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(11, 170, __pyx_L1_error)
+    __PYX_ERR(11, 187, __pyx_L1_error)
   }
 
-  /* "LayerMaker.pyx":171
+  /* "LayerMaker.pyx":188
  *     def imageSize( self, int _imageSize ):
  *         self.thisptr.imageSize( _imageSize )
  *         return self             # <<<<<<<<<<<<<<
@@ -13935,7 +14181,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_4imageSize(struct __pyx_ob
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "LayerMaker.pyx":169
+  /* "LayerMaker.pyx":186
  *         self.thisptr.numPlanes( _numPlanes )
  *         return self
  *     def imageSize( self, int _imageSize ):             # <<<<<<<<<<<<<<
@@ -13953,7 +14199,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_4imageSize(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":173
+/* "LayerMaker.pyx":190
  *         return self
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
@@ -13984,7 +14230,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_6instance() {
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("instance", 0);
 
-  /* "LayerMaker.pyx":174
+  /* "LayerMaker.pyx":191
  *     @staticmethod
  *     def instance():
  *         return InputLayerMaker()             # <<<<<<<<<<<<<<
@@ -13992,13 +14238,13 @@ static PyObject *__pyx_pf_8PyDeepCL_15InputLayerMaker_6instance() {
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(11, 174, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker), __pyx_empty_tuple, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(11, 191, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "LayerMaker.pyx":173
+  /* "LayerMaker.pyx":190
  *         return self
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
@@ -31255,6 +31501,79 @@ static PyTypeObject __pyx_type_8PyDeepCL_SquareLossMaker = {
   #endif
 };
 
+static PyObject *__pyx_tp_new_8PyDeepCL_RandomTranslationsMaker(PyTypeObject *t, PyObject *a, PyObject *k) {
+  PyObject *o = __pyx_tp_new_8PyDeepCL_LayerMaker2(t, a, k);
+  if (unlikely(!o)) return 0;
+  if (unlikely(__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_1__cinit__(o, __pyx_empty_tuple, NULL) < 0)) {
+    Py_DECREF(o); o = 0;
+  }
+  return o;
+}
+
+static PyMethodDef __pyx_methods_8PyDeepCL_RandomTranslationsMaker[] = {
+  {"instance", (PyCFunction)__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_3instance, METH_VARARGS|METH_KEYWORDS, 0},
+  {"translateSize", (PyCFunction)__pyx_pw_8PyDeepCL_23RandomTranslationsMaker_5translateSize, METH_O, 0},
+  {0, 0, 0, 0}
+};
+
+static PyTypeObject __pyx_type_8PyDeepCL_RandomTranslationsMaker = {
+  PyVarObject_HEAD_INIT(0, 0)
+  "PyDeepCL.RandomTranslationsMaker", /*tp_name*/
+  sizeof(struct __pyx_obj_8PyDeepCL_RandomTranslationsMaker), /*tp_basicsize*/
+  0, /*tp_itemsize*/
+  __pyx_tp_dealloc_8PyDeepCL_LayerMaker2, /*tp_dealloc*/
+  0, /*tp_print*/
+  0, /*tp_getattr*/
+  0, /*tp_setattr*/
+  #if PY_MAJOR_VERSION < 3
+  0, /*tp_compare*/
+  #endif
+  #if PY_MAJOR_VERSION >= 3
+  0, /*tp_as_async*/
+  #endif
+  0, /*tp_repr*/
+  0, /*tp_as_number*/
+  0, /*tp_as_sequence*/
+  0, /*tp_as_mapping*/
+  0, /*tp_hash*/
+  0, /*tp_call*/
+  0, /*tp_str*/
+  0, /*tp_getattro*/
+  0, /*tp_setattro*/
+  0, /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+  0, /*tp_doc*/
+  0, /*tp_traverse*/
+  0, /*tp_clear*/
+  0, /*tp_richcompare*/
+  0, /*tp_weaklistoffset*/
+  0, /*tp_iter*/
+  0, /*tp_iternext*/
+  __pyx_methods_8PyDeepCL_RandomTranslationsMaker, /*tp_methods*/
+  0, /*tp_members*/
+  0, /*tp_getset*/
+  0, /*tp_base*/
+  0, /*tp_dict*/
+  0, /*tp_descr_get*/
+  0, /*tp_descr_set*/
+  0, /*tp_dictoffset*/
+  0, /*tp_init*/
+  0, /*tp_alloc*/
+  __pyx_tp_new_8PyDeepCL_RandomTranslationsMaker, /*tp_new*/
+  0, /*tp_free*/
+  0, /*tp_is_gc*/
+  0, /*tp_bases*/
+  0, /*tp_mro*/
+  0, /*tp_cache*/
+  0, /*tp_subclasses*/
+  0, /*tp_weaklist*/
+  0, /*tp_del*/
+  0, /*tp_version_tag*/
+  #if PY_VERSION_HEX >= 0x030400a1
+  0, /*tp_finalize*/
+  #endif
+};
+
 static PyObject *__pyx_tp_new_8PyDeepCL_SoftMaxMaker(PyTypeObject *t, PyObject *a, PyObject *k) {
   PyObject *o = __pyx_tp_new_8PyDeepCL_LayerMaker2(t, a, k);
   if (unlikely(!o)) return 0;
@@ -33263,23 +33582,32 @@ static int __Pyx_InitCachedConstants(void) {
  */
   __pyx_codeobj__51 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 145, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__51)) __PYX_ERR(11, 145, __pyx_L1_error)
 
-  /* "LayerMaker.pyx":156
+  /* "LayerMaker.pyx":157
+ * 
+ *     @staticmethod
+ *     def instance():             # <<<<<<<<<<<<<<
+ *         return RandomTranslationsMaker()
+ * 
+ */
+  __pyx_codeobj__52 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 157, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__52)) __PYX_ERR(11, 157, __pyx_L1_error)
+
+  /* "LayerMaker.pyx":173
  * #        del self.thisptr
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
  *         return SoftMaxMaker()
  * 
  */
-  __pyx_codeobj__52 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 156, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__52)) __PYX_ERR(11, 156, __pyx_L1_error)
+  __pyx_codeobj__53 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 173, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__53)) __PYX_ERR(11, 173, __pyx_L1_error)
 
-  /* "LayerMaker.pyx":173
+  /* "LayerMaker.pyx":190
  *         return self
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
  *         return InputLayerMaker()
  * 
  */
-  __pyx_codeobj__53 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 173, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__53)) __PYX_ERR(11, 173, __pyx_L1_error)
+  __pyx_codeobj__54 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_La, __pyx_n_s_instance, 190, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__54)) __PYX_ERR(11, 190, __pyx_L1_error)
 
   /* "GenericLoader.pyx":3
  * cdef class GenericLoader:
@@ -33288,10 +33616,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         print('GenericLoader.py getDimensions ', trainFilepath)
  *         cdef int N
  */
-  __pyx_tuple__54 = PyTuple_Pack(6, __pyx_n_s_trainFilepath, __pyx_n_s_N, __pyx_n_s_planes, __pyx_n_s_size, __pyx_n_s_trainFilepath_charstar, __pyx_n_s_trainFilepath_bytes); if (unlikely(!__pyx_tuple__54)) __PYX_ERR(2, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__54);
-  __Pyx_GIVEREF(__pyx_tuple__54);
-  __pyx_codeobj__55 = (PyObject*)__Pyx_PyCode_New(1, 0, 6, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__54, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_getDimensions, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__55)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __pyx_tuple__55 = PyTuple_Pack(6, __pyx_n_s_trainFilepath, __pyx_n_s_N, __pyx_n_s_planes, __pyx_n_s_size, __pyx_n_s_trainFilepath_charstar, __pyx_n_s_trainFilepath_bytes); if (unlikely(!__pyx_tuple__55)) __PYX_ERR(2, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__55);
+  __Pyx_GIVEREF(__pyx_tuple__55);
+  __pyx_codeobj__56 = (PyObject*)__Pyx_PyCode_New(1, 0, 6, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__55, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_getDimensions, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__56)) __PYX_ERR(2, 3, __pyx_L1_error)
 
   /* "GenericLoader.pyx":15
  *         return (N,planes,size)
@@ -33300,10 +33628,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         cdef const char *trainFilepath_charstar
  *         cdef float[:] images_ = images.reshape(-1)
  */
-  __pyx_tuple__56 = PyTuple_Pack(8, __pyx_n_s_trainFilepath, __pyx_n_s_images, __pyx_n_s_labels, __pyx_n_s_startN, __pyx_n_s_numExamples, __pyx_n_s_trainFilepath_charstar, __pyx_n_s_images_2, __pyx_n_s_trainFilepath_bytes); if (unlikely(!__pyx_tuple__56)) __PYX_ERR(2, 15, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__56);
-  __Pyx_GIVEREF(__pyx_tuple__56);
-  __pyx_codeobj__57 = (PyObject*)__Pyx_PyCode_New(5, 0, 8, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__56, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_load, 15, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__57)) __PYX_ERR(2, 15, __pyx_L1_error)
+  __pyx_tuple__57 = PyTuple_Pack(8, __pyx_n_s_trainFilepath, __pyx_n_s_images, __pyx_n_s_labels, __pyx_n_s_startN, __pyx_n_s_numExamples, __pyx_n_s_trainFilepath_charstar, __pyx_n_s_images_2, __pyx_n_s_trainFilepath_bytes); if (unlikely(!__pyx_tuple__57)) __PYX_ERR(2, 15, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__57);
+  __Pyx_GIVEREF(__pyx_tuple__57);
+  __pyx_codeobj__58 = (PyObject*)__Pyx_PyCode_New(5, 0, 8, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__57, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ge, __pyx_n_s_load, 15, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__58)) __PYX_ERR(2, 15, __pyx_L1_error)
 
   /* "NetDefToNet.pyx":3
  * cdef class NetdefToNet:
@@ -33312,10 +33640,10 @@ static int __Pyx_InitCachedConstants(void) {
  *         cdef const char *netdef_charstar
  *         encodedString = toCppString(netdef)
  */
-  __pyx_tuple__58 = PyTuple_Pack(5, __pyx_n_s_neuralnet, __pyx_n_s_netdef, __pyx_n_s_netdef_charstar, __pyx_n_s_encodedString, __pyx_n_s_net); if (unlikely(!__pyx_tuple__58)) __PYX_ERR(13, 3, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__58);
-  __Pyx_GIVEREF(__pyx_tuple__58);
-  __pyx_codeobj__59 = (PyObject*)__Pyx_PyCode_New(2, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__58, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ne, __pyx_n_s_createNetFromNetdef, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__59)) __PYX_ERR(13, 3, __pyx_L1_error)
+  __pyx_tuple__59 = PyTuple_Pack(5, __pyx_n_s_neuralnet, __pyx_n_s_netdef, __pyx_n_s_netdef_charstar, __pyx_n_s_encodedString, __pyx_n_s_net); if (unlikely(!__pyx_tuple__59)) __PYX_ERR(13, 3, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__59);
+  __Pyx_GIVEREF(__pyx_tuple__59);
+  __pyx_codeobj__60 = (PyObject*)__Pyx_PyCode_New(2, 0, 5, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__59, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Ne, __pyx_n_s_createNetFromNetdef, 3, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__60)) __PYX_ERR(13, 3, __pyx_L1_error)
 
   /* "PyDeepCL.pyx":53
  * #        raise RuntimeError(message)
@@ -33324,10 +33652,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     mythread = threading.Thread( target=function, args = args )
  *     mythread.daemon = True
  */
-  __pyx_tuple__60 = PyTuple_Pack(3, __pyx_n_s_function, __pyx_n_s_args, __pyx_n_s_mythread); if (unlikely(!__pyx_tuple__60)) __PYX_ERR(15, 53, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__60);
-  __Pyx_GIVEREF(__pyx_tuple__60);
-  __pyx_codeobj__61 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__60, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_interruptableCall, 53, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__61)) __PYX_ERR(15, 53, __pyx_L1_error)
+  __pyx_tuple__61 = PyTuple_Pack(3, __pyx_n_s_function, __pyx_n_s_args, __pyx_n_s_mythread); if (unlikely(!__pyx_tuple__61)) __PYX_ERR(15, 53, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__61);
+  __Pyx_GIVEREF(__pyx_tuple__61);
+  __pyx_codeobj__62 = (PyObject*)__Pyx_PyCode_New(2, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__61, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_interruptableCall, 53, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__62)) __PYX_ERR(15, 53, __pyx_L1_error)
 
   /* "PyDeepCL.pyx":61
  *         #print('join timed out')
@@ -33336,10 +33664,10 @@ static int __Pyx_InitCachedConstants(void) {
  *     if isinstance( pyString, unicode ):
  *         return pyString.encode('utf8')
  */
-  __pyx_tuple__62 = PyTuple_Pack(1, __pyx_n_s_pyString); if (unlikely(!__pyx_tuple__62)) __PYX_ERR(15, 61, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__62);
-  __Pyx_GIVEREF(__pyx_tuple__62);
-  __pyx_codeobj__63 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__62, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_toCppString, 61, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__63)) __PYX_ERR(15, 61, __pyx_L1_error)
+  __pyx_tuple__63 = PyTuple_Pack(1, __pyx_n_s_pyString); if (unlikely(!__pyx_tuple__63)) __PYX_ERR(15, 61, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__63);
+  __Pyx_GIVEREF(__pyx_tuple__63);
+  __pyx_codeobj__64 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__63, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_data_norep_git_DeepCL_python_Py, __pyx_n_s_toCppString, 61, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__64)) __PYX_ERR(15, 61, __pyx_L1_error)
 
   /* "View.MemoryView":282
  *         return self.name
@@ -33348,9 +33676,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__64 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__64)) __PYX_ERR(17, 282, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__64);
-  __Pyx_GIVEREF(__pyx_tuple__64);
+  __pyx_tuple__65 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__65)) __PYX_ERR(17, 282, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__65);
+  __Pyx_GIVEREF(__pyx_tuple__65);
 
   /* "View.MemoryView":283
  * 
@@ -33359,9 +33687,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__65 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__65)) __PYX_ERR(17, 283, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__65);
-  __Pyx_GIVEREF(__pyx_tuple__65);
+  __pyx_tuple__66 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__66)) __PYX_ERR(17, 283, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__66);
+  __Pyx_GIVEREF(__pyx_tuple__66);
 
   /* "View.MemoryView":284
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -33370,9 +33698,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__66 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__66)) __PYX_ERR(17, 284, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__66);
-  __Pyx_GIVEREF(__pyx_tuple__66);
+  __pyx_tuple__67 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__67)) __PYX_ERR(17, 284, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__67);
+  __Pyx_GIVEREF(__pyx_tuple__67);
 
   /* "View.MemoryView":287
  * 
@@ -33381,9 +33709,9 @@ static int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__67 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__67)) __PYX_ERR(17, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__67);
-  __Pyx_GIVEREF(__pyx_tuple__67);
+  __pyx_tuple__68 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__68)) __PYX_ERR(17, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__68);
+  __Pyx_GIVEREF(__pyx_tuple__68);
 
   /* "View.MemoryView":288
  * 
@@ -33392,9 +33720,9 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__68 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__68)) __PYX_ERR(17, 288, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__68);
-  __Pyx_GIVEREF(__pyx_tuple__68);
+  __pyx_tuple__69 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__69)) __PYX_ERR(17, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__69);
+  __Pyx_GIVEREF(__pyx_tuple__69);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -33618,15 +33946,20 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_type_8PyDeepCL_SquareLossMaker.tp_print = 0;
   if (PyObject_SetAttrString(__pyx_m, "SquareLossMaker", (PyObject *)&__pyx_type_8PyDeepCL_SquareLossMaker) < 0) __PYX_ERR(11, 137, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_SquareLossMaker = &__pyx_type_8PyDeepCL_SquareLossMaker;
+  __pyx_type_8PyDeepCL_RandomTranslationsMaker.tp_base = __pyx_ptype_8PyDeepCL_LayerMaker2;
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_RandomTranslationsMaker) < 0) __PYX_ERR(11, 149, __pyx_L1_error)
+  __pyx_type_8PyDeepCL_RandomTranslationsMaker.tp_print = 0;
+  if (PyObject_SetAttrString(__pyx_m, "RandomTranslationsMaker", (PyObject *)&__pyx_type_8PyDeepCL_RandomTranslationsMaker) < 0) __PYX_ERR(11, 149, __pyx_L1_error)
+  __pyx_ptype_8PyDeepCL_RandomTranslationsMaker = &__pyx_type_8PyDeepCL_RandomTranslationsMaker;
   __pyx_type_8PyDeepCL_SoftMaxMaker.tp_base = __pyx_ptype_8PyDeepCL_LayerMaker2;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_SoftMaxMaker) < 0) __PYX_ERR(11, 148, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_SoftMaxMaker) < 0) __PYX_ERR(11, 165, __pyx_L1_error)
   __pyx_type_8PyDeepCL_SoftMaxMaker.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "SoftMaxMaker", (PyObject *)&__pyx_type_8PyDeepCL_SoftMaxMaker) < 0) __PYX_ERR(11, 148, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "SoftMaxMaker", (PyObject *)&__pyx_type_8PyDeepCL_SoftMaxMaker) < 0) __PYX_ERR(11, 165, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_SoftMaxMaker = &__pyx_type_8PyDeepCL_SoftMaxMaker;
   __pyx_type_8PyDeepCL_InputLayerMaker.tp_base = __pyx_ptype_8PyDeepCL_LayerMaker2;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_InputLayerMaker) < 0) __PYX_ERR(11, 159, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_InputLayerMaker) < 0) __PYX_ERR(11, 176, __pyx_L1_error)
   __pyx_type_8PyDeepCL_InputLayerMaker.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "InputLayerMaker", (PyObject *)&__pyx_type_8PyDeepCL_InputLayerMaker) < 0) __PYX_ERR(11, 159, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "InputLayerMaker", (PyObject *)&__pyx_type_8PyDeepCL_InputLayerMaker) < 0) __PYX_ERR(11, 176, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_InputLayerMaker = &__pyx_type_8PyDeepCL_InputLayerMaker;
   if (PyType_Ready(&__pyx_type_8PyDeepCL_GenericLoader) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
   __pyx_type_8PyDeepCL_GenericLoader.tp_print = 0;
@@ -34419,80 +34752,80 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_8PyDeepCL_SquareLossMaker);
 
-  /* "LayerMaker.pyx":156
- * #        del self.thisptr
+  /* "LayerMaker.pyx":157
+ * 
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
- *         return SoftMaxMaker()
+ *         return RandomTranslationsMaker()
  * 
  */
-  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_12SoftMaxMaker_3instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 156, __pyx_L1_error)
+  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_23RandomTranslationsMaker_3instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "LayerMaker.pyx":155
- * #    def __dealloc__(self):
- * #        del self.thisptr
+  /* "LayerMaker.pyx":156
+ *         self.baseptr = self.thisptr
+ * 
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
- *         return SoftMaxMaker()
+ *         return RandomTranslationsMaker()
  */
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 155, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 155, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 156, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_RandomTranslationsMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 157, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  PyType_Modified(__pyx_ptype_8PyDeepCL_SoftMaxMaker);
+  PyType_Modified(__pyx_ptype_8PyDeepCL_RandomTranslationsMaker);
 
-  /* "LayerMaker.pyx":156
- * #        del self.thisptr
+  /* "LayerMaker.pyx":157
+ * 
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
- *         return SoftMaxMaker()
+ *         return RandomTranslationsMaker()
  * 
  */
-  __pyx_t_3 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker, __pyx_n_s_instance); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 156, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_8PyDeepCL_RandomTranslationsMaker, __pyx_n_s_instance); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 157, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "LayerMaker.pyx":155
- * #    def __dealloc__(self):
- * #        del self.thisptr
+  /* "LayerMaker.pyx":156
+ *         self.baseptr = self.thisptr
+ * 
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
- *         return SoftMaxMaker()
+ *         return RandomTranslationsMaker()
  */
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 155, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 155, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 156, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_RandomTranslationsMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 157, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  PyType_Modified(__pyx_ptype_8PyDeepCL_SoftMaxMaker);
+  PyType_Modified(__pyx_ptype_8PyDeepCL_RandomTranslationsMaker);
 
   /* "LayerMaker.pyx":173
- *         return self
+ * #        del self.thisptr
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
- *         return InputLayerMaker()
+ *         return SoftMaxMaker()
  * 
  */
-  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_15InputLayerMaker_7instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 173, __pyx_L1_error)
+  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_12SoftMaxMaker_3instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 173, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
   /* "LayerMaker.pyx":172
- *         self.thisptr.imageSize( _imageSize )
- *         return self
+ * #    def __dealloc__(self):
+ * #        del self.thisptr
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
- *         return InputLayerMaker()
+ *         return SoftMaxMaker()
  */
   __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 172, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -34502,36 +34835,94 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 172, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 173, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 173, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  PyType_Modified(__pyx_ptype_8PyDeepCL_SoftMaxMaker);
+
+  /* "LayerMaker.pyx":173
+ * #        del self.thisptr
+ *     @staticmethod
+ *     def instance():             # <<<<<<<<<<<<<<
+ *         return SoftMaxMaker()
+ * 
+ */
+  __pyx_t_3 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker, __pyx_n_s_instance); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 173, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+
+  /* "LayerMaker.pyx":172
+ * #    def __dealloc__(self):
+ * #        del self.thisptr
+ *     @staticmethod             # <<<<<<<<<<<<<<
+ *     def instance():
+ *         return SoftMaxMaker()
+ */
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 172, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
+  __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 172, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_SoftMaxMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 173, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  PyType_Modified(__pyx_ptype_8PyDeepCL_SoftMaxMaker);
+
+  /* "LayerMaker.pyx":190
+ *         return self
+ *     @staticmethod
+ *     def instance():             # <<<<<<<<<<<<<<
+ *         return InputLayerMaker()
+ * 
+ */
+  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_15InputLayerMaker_7instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 190, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+
+  /* "LayerMaker.pyx":189
+ *         self.thisptr.imageSize( _imageSize )
+ *         return self
+ *     @staticmethod             # <<<<<<<<<<<<<<
+ *     def instance():
+ *         return InputLayerMaker()
+ */
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 189, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
+  __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 189, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 190, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_8PyDeepCL_InputLayerMaker);
 
-  /* "LayerMaker.pyx":173
+  /* "LayerMaker.pyx":190
  *         return self
  *     @staticmethod
  *     def instance():             # <<<<<<<<<<<<<<
  *         return InputLayerMaker()
  * 
  */
-  __pyx_t_3 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker, __pyx_n_s_instance); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 173, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetNameInClass((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker, __pyx_n_s_instance); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 190, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "LayerMaker.pyx":172
+  /* "LayerMaker.pyx":189
  *         self.thisptr.imageSize( _imageSize )
  *         return self
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def instance():
  *         return InputLayerMaker()
  */
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 172, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(11, 189, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 172, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_staticmethod, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 189, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 173, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_8PyDeepCL_InputLayerMaker->tp_dict, __pyx_n_s_instance, __pyx_t_3) < 0) __PYX_ERR(11, 190, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_8PyDeepCL_InputLayerMaker);
 
@@ -34759,7 +35150,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__64, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 282, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__65, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_3);
@@ -34773,7 +35164,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__65, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 283, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__66, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_3);
@@ -34787,7 +35178,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * 
  * 
  */
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__66, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 284, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__67, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_3);
@@ -34801,7 +35192,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__67, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 287, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__68, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_3);
@@ -34815,7 +35206,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  * 
  * 
  */
-  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__68, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 288, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__69, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(17, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_3);

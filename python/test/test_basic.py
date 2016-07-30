@@ -7,7 +7,7 @@
 from __future__ import print_function
 
 import sys
-import array
+import numpy as np
 import PyDeepCL
 
 def test_buildnet():
@@ -149,4 +149,22 @@ def test_forcebackprop():
     print( net.getLayer(1).asString() )
     print( net.getLayer(1).getClassName() )
     assert "ForceBackpropMaker", net.getLayer(1).getClassName() 
+
+def test_getoutputcubesize():
+    batchSize = 32
+    planes = 3
+    size = 28
+    cl = PyDeepCL.DeepCL()
+    net = PyDeepCL.NeuralNet(cl)
+    net.addLayer( PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size) )
+    net.addLayer( PyDeepCL.RandomTranslationsMaker().translateSize(3) )
+    net.setBatchSize(batchSize)
+    images = np.zeros((batchSize, planes, size, size), dtype=np.float32)
+    net.forward(images)
+    caught = False
+    try:
+        print('net.getOutputCubeSize()', net.getLayer(1).getOutputCubeSize())
+    except Exception as e:
+        caught = True
+    assert caught
 

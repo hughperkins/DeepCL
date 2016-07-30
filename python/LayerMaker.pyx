@@ -145,6 +145,23 @@ cdef class SquareLossMaker(LayerMaker2):
     def instance():
         return SquareLossMaker()
 
+
+cdef class RandomTranslationsMaker(LayerMaker2):
+    cdef cDeepCL.RandomTranslationsMaker *thisptr
+
+    def __cinit__(self):
+        self.thisptr = new cDeepCL.RandomTranslationsMaker()
+        self.baseptr = self.thisptr
+
+    @staticmethod
+    def instance():
+        return RandomTranslationsMaker()
+
+    def translateSize(self, int _translateSize):
+        self.thisptr.translateSize(_translateSize)
+        return self
+
+
 cdef class SoftMaxMaker(LayerMaker2):
     cdef cDeepCL.SoftMaxMaker *thisptr
     def __cinit__( self ):
