@@ -8,6 +8,36 @@ cdef class Layer:
         pass
     cdef set_thisptr(self, cDeepCL.Layer *thisptr):
         self.thisptr = thisptr
+    def getNetdefString(self):
+        className = self.getClassName()
+        # print('className', className)
+        if className == 'ConvolutionalLayer':
+            numFilters = self.getOutputPlanes()
+            filterSize = self.getFilterSize()
+            padZerosString = 'z' if self.getPadZeros() else ''
+            return "%sc%s%s" % (numFilters, filterSize, padZerosString)
+        elif className == 'ActivationLayer':
+            activation = self.getActivation()
+            return activation
+        elif className == 'RandomTranslations':
+            translationSize = self.getTranslationSize()
+            return 'rt%s' % translationSize
+        elif className == 'PoolingLayer':
+            poolingSize = self.getPoolingSize()
+            padZerosString = 'z' if self.getPadZeros() else ''
+            return 'mp%s%s' % (poolingSize, padZerosString)
+        elif className == 'SoftMaxLayer':
+            return ''
+        elif className == 'NormalizationLayer':
+            return ''
+        elif className == 'InputLayer':
+            return ''
+        elif className == 'FullyConnectedLayer':
+            numNeurons = self.getOutputPlanes()
+            return '%sn' % numNeurons
+        else:
+            # raise Exception('getNetdefString not implemented for %s' % className)
+            pass
     def forward(self):
         self.thisptr.forward()
     def backward(self):
@@ -67,7 +97,54 @@ cdef class Layer:
         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
         return res
     def getClassName(self):
-        return self.thisptr.getClassNameAsCharStar()
+        cdef const char *res_charstar = self.thisptr.getClassNameAsCharStar()
+        cdef str res = str(res_charstar.decode('UTF-8'))
+        CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
+        return res
+
+cdef class RandomTranslations(Layer):
+    def __cinit__(self):
+        pass
+
+    def getTranslationSize(self):
+        cdef cDeepCL.RandomTranslations *cRandomTranslations = <cDeepCL.RandomTranslations *>(self.thisptr)
+        cdef int translationSize = cRandomTranslations.getTranslationSize()
+        return translationSize
+
+cdef class PoolingLayer(Layer):
+    def __cinit__(self):
+        pass
+
+    def getPoolingSize(self):
+        cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
+        cdef int poolingSize = cPoolingLayer.getPoolingSize()
+        return poolingSize
+    def getPadZeros(self):
+        cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
+        cdef bool padZeros = cPoolingLayer.getPadZeros()
+        return padZeros
+
+cdef class ConvolutionalLayer(Layer):
+    def __cinit__(self):
+        pass
+    def getFilterSize(self):
+        cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
+        cdef int filterSize = cConvolutionalLayer.getFilterSize()
+        return filterSize
+    def getPadZeros(self):
+        cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
+        cdef bool padZeros = cConvolutionalLayer.getPadZeros()
+        return padZeros
+
+cdef class ActivationLayer(Layer):
+    def __cinit__(self):
+        pass
+    def getActivation(self):
+        cdef cDeepCL.ActivationLayer *cActivationLayer = <cDeepCL.ActivationLayer *>(self.thisptr)
+        cdef const char *res_charstar = cActivationLayer.getActivationAsCharStar()
+        cdef str res = str(res_charstar.decode('UTF-8'))
+        CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
+        return res
 
 cdef class SoftMax(Layer):
     def __cinit__(self):

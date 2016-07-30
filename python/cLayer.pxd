@@ -20,3 +20,21 @@ cdef extern from "loss/SoftMaxLayer.h":
         int getBatchSize()
         void getLabels(int *labels)
 
+cdef extern from "patches/RandomTranslations.h":
+    cdef cppclass RandomTranslations(Layer):
+        int getTranslationSize()
+
+cdef extern from "conv/ConvolutionalLayer.h":
+    cdef cppclass ConvolutionalLayer(Layer):
+        int getFilterSize()
+        bool getPadZeros()
+
+cdef extern from "pooling/PoolingLayer.h":
+    cdef cppclass PoolingLayer(Layer):
+        int getPoolingSize()
+        bool getPadZeros()
+
+cdef extern from "activate/ActivationLayer.h":
+    cdef cppclass ActivationLayer(Layer):
+        const char *getActivationAsCharStar()
+

@@ -77,6 +77,9 @@ To install:
 Changes
 -------
 
+-  30 July 2016:
+-  Added ``net.getNetdef()``. Note that this is only an approximate
+   representation of the network
 -  29 July 2016:
 -  New feature: can provide image tensor as 4d tensor now ,instead of 1d
    tensor (1d tensor ok too)

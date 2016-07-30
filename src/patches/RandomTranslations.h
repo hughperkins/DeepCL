@@ -45,6 +45,7 @@ public:
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputSize() const;
     VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getTranslationSize() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getPersistSize(int version) const;
     VIRTUAL bool providesGradInputWrapper() const;

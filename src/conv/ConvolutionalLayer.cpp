@@ -187,6 +187,12 @@ VIRTUAL int ConvolutionalLayer::getOutputNumElements() const {
 VIRTUAL int ConvolutionalLayer::getOutputPlanes() const {
     return dim.numFilters;
 }
+VIRTUAL int ConvolutionalLayer::getFilterSize() const {
+    return dim.filterSize;
+}
+VIRTUAL bool ConvolutionalLayer::getPadZeros() const {
+    return dim.padZeros;
+}
 VIRTUAL int ConvolutionalLayer::getOutputSize() const {
     return dim.outputSize;
 }

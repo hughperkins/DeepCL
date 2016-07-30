@@ -53,11 +53,36 @@ cdef class NeuralNet:
         # print('layer.getClassName()', layer.getClassName())
         # print('type(layer.getClassName()', type(layer.getClassName()))
         # print('type(layer.getClassName().decode("utf-8"))', type(layer.getClassName().decode('utf-8')))
-        if layer.getClassName().decode('utf-8') == 'SoftMaxLayer':
+        className = layer.getClassName()
+        if className == 'SoftMaxLayer':
             layer.set_thisptr(<cDeepCL.Layer *>(0))
             layer = SoftMax()
             layer.set_thisptr(cLayer)
+        elif className == 'RandomTranslations':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = RandomTranslations()
+            layer.set_thisptr(cLayer)
+        elif className == 'ConvolutionalLayer':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = ConvolutionalLayer()
+            layer.set_thisptr(cLayer)
+        elif className == 'PoolingLayer':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = PoolingLayer()
+            layer.set_thisptr(cLayer)
+        elif className == 'ActivationLayer':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = ActivationLayer()
+            layer.set_thisptr(cLayer)
         return layer
+    def getNetdef(self):
+        netdefBits = []
+        for i in range(self.getNumLayers()):
+            layer = self.getLayer(i)
+            layerNetdef = layer.getNetdefString()
+            if layerNetdef != '':
+                netdefBits.append(layerNetdef)
+        return '-'.join(netdefBits)
     def getLastLayer(self):
         return self.getLayer(self.getNumLayers() - 1)
     def getNumLayers(self):

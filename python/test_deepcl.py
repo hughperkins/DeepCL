@@ -33,6 +33,8 @@ print('added layer ')
 PyDeepCL.NetdefToNet.createNetFromNetdef(
     net, "rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n")
 print(net.asString())
+print(net.getNetdef())
+print('')
 
 (N, planes, size) = PyDeepCL.GenericLoader.getDimensions(mnistFilePath)
 print((N, planes, size))

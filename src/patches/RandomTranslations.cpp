@@ -79,6 +79,9 @@ VIRTUAL int RandomTranslations::getOutputSize() const {
 VIRTUAL int RandomTranslations::getOutputPlanes() const {
     return numPlanes;
 }
+VIRTUAL int RandomTranslations::getTranslationSize() const {
+    return translateSize;
+}
 VIRTUAL int RandomTranslations::getOutputCubeSize() const {
     return numPlanes * outputSize * outputSize * batchSize;
 }

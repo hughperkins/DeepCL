@@ -139,6 +139,9 @@ VIRTUAL int PoolingLayer::getOutputPlanes() const {
 VIRTUAL int PoolingLayer::getPersistSize(int version) const {
     return 0;
 }
+VIRTUAL int PoolingLayer::getPoolingSize() const {
+    return poolingSize;
+}
 VIRTUAL bool PoolingLayer::providesGradInputWrapper() const {
     return true;
 }
@@ -153,6 +156,9 @@ VIRTUAL CLWrapper *PoolingLayer::getOutputWrapper() {
 }
 VIRTUAL float *PoolingLayer::getGradInput() {
     return gradInput;
+}
+VIRTUAL bool PoolingLayer::getPadZeros() const {
+    return padZeros;
 }
 VIRTUAL ActivationFunction const *PoolingLayer::getActivationFunction() {
     //return previousLayer->getActivationFunction(); // I guess???
