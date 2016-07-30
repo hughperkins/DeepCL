@@ -36,8 +36,7 @@ cdef class Layer:
             numNeurons = self.getOutputPlanes()
             return '%sn' % numNeurons
         else:
-            # raise Exception('getNetdefString not implemented for %s' % className)
-            pass
+            raise Exception('getNetdefString not implemented for %s' % className)
     def forward(self):
         self.thisptr.forward()
     def backward(self):
