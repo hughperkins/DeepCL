@@ -171,12 +171,8 @@ def test_getoutputcubesize():
     net.setBatchSize(batchSize)
     images = np.zeros((batchSize, planes, size, size), dtype=np.float32)
     net.forward(images)
-    caught = False
-    try:
-        print('net.getOutputCubeSize()', net.getLayer(1).getOutputCubeSize())
-    except Exception as e:
-        caught = True
-    assert caught
+    print('net.getOutputCubeSize()', net.getLayer(1).getOutputCubeSize())
+    assert net.getLayer(1).getOutputCubeSize() == batchSize * planes * size * size
 
 def test_getweights():
     batchSize = 32
