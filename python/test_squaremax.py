@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 import numpy as np
-#import array
 import PyDeepCL
 import sys
 print('imports done')
@@ -28,8 +27,6 @@ numEpochs = 3
 
 images = np.zeros((N, planes, size, size), dtype=np.float32)
 targets = np.zeros((N,), dtype=np.float32)
-#images = array.array('f', [0] * (N*planes*size*size))
-#targets = array.array('f', [0] * N)
 
 net.setBatchSize(batchSize)
 for epoch in range(numEpochs):

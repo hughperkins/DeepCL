@@ -3,7 +3,6 @@
 from __future__ import print_function
 import sys
 import numpy as np
-# import array
 import PyDeepCL
 
 if len(sys.argv) != 2:

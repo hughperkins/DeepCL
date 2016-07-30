@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-# import array
 import numpy as np
 import random
 import time
@@ -53,7 +52,6 @@ class ScenarioImage(PyDeepCL.Scenario):
         Need to provide the current perception to the qlearning module,
         which should be of size numPlanes * size * size
         """
-        # perception = [0] * 2 * self.size * self.size
         self.perception.fill(0)
         self.perception[0, self.appleY, self.appleX] = 1
         self.perception[1, self.posY, self.posX] = 1
@@ -143,8 +141,6 @@ class ScenarioImage(PyDeepCL.Scenario):
         size = self.size
         self.netinput.fill(0)
         self.netinput[0, self.appleY, self.appleX] = 1
-        # netinput = array.array('f', [0] * (2*size*size))
-        # netinput[self.appleY * size + self .appleX] = 1
         for y in range(size):
             thisLine = ''
             for x in range(size):

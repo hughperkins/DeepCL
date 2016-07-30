@@ -2,7 +2,6 @@
 
 from __future__ import print_function
 import sys
-# import array
 import numpy as np
 import PyDeepCL
 
@@ -35,8 +34,6 @@ numEpochs = 30
 
 images = np.zeros((N, planes, size, size), dtype=np.float32)
 labels = np.zeros((N,), dtype=np.int32)
-#images = array.array('f', [0] * (N*planes*size*size))
-#labels = array.array('i', [0] * N)
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N)
 
 sgd = PyDeepCL.SGD(cl, 0.002, 0)

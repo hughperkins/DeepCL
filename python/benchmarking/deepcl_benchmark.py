@@ -8,7 +8,6 @@ from __future__ import print_function
 import os
 import sys
 import time
-# import array
 import numpy as np
 import random
 import PyDeepCL

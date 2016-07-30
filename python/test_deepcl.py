@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# as test_deepcl, but uses numpy arrays
+# as test_deepcl, but uses numpy tensors
 
 from __future__ import print_function, division
 import PyDeepCL
