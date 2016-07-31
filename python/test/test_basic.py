@@ -143,6 +143,12 @@ def test_getsetweights():
     assert len(weights) == 5 # since not biased
     assert weights.tolist() == [2.5,1,3,2,7]
 
+def test_convmaker():
+    convmaker = PyDeepCL.ConvolutionalMaker()
+    convmaker.padZeros()
+    convmaker.padZeros(True)
+    convmaker.padZeros(False)
+
 def test_forcebackprop():
     # check can be instantiated ok
     # not sure how we check if it forces backprop...

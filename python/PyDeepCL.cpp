@@ -868,7 +868,7 @@ struct __pyx_obj_8PyDeepCL_Layer {
 };
 
 
-/* "Layer.pyx":105
+/* "Layer.pyx":104
  *         return res
  * 
  * cdef class RandomTranslations(Layer):             # <<<<<<<<<<<<<<
@@ -880,7 +880,7 @@ struct __pyx_obj_8PyDeepCL_RandomTranslations {
 };
 
 
-/* "Layer.pyx":114
+/* "Layer.pyx":113
  *         return translationSize
  * 
  * cdef class PoolingLayer(Layer):             # <<<<<<<<<<<<<<
@@ -892,7 +892,7 @@ struct __pyx_obj_8PyDeepCL_PoolingLayer {
 };
 
 
-/* "Layer.pyx":127
+/* "Layer.pyx":126
  *         return padZeros
  * 
  * cdef class ConvolutionalLayer(Layer):             # <<<<<<<<<<<<<<
@@ -904,7 +904,7 @@ struct __pyx_obj_8PyDeepCL_ConvolutionalLayer {
 };
 
 
-/* "Layer.pyx":139
+/* "Layer.pyx":138
  *         return padZeros
  * 
  * cdef class ActivationLayer(Layer):             # <<<<<<<<<<<<<<
@@ -916,7 +916,7 @@ struct __pyx_obj_8PyDeepCL_ActivationLayer {
 };
 
 
-/* "Layer.pyx":149
+/* "Layer.pyx":148
  *         return res
  * 
  * cdef class SoftMax(Layer):             # <<<<<<<<<<<<<<
@@ -1229,7 +1229,7 @@ struct __pyx_vtabstruct_8PyDeepCL_Layer {
 static struct __pyx_vtabstruct_8PyDeepCL_Layer *__pyx_vtabptr_8PyDeepCL_Layer;
 
 
-/* "Layer.pyx":105
+/* "Layer.pyx":104
  *         return res
  * 
  * cdef class RandomTranslations(Layer):             # <<<<<<<<<<<<<<
@@ -1243,7 +1243,7 @@ struct __pyx_vtabstruct_8PyDeepCL_RandomTranslations {
 static struct __pyx_vtabstruct_8PyDeepCL_RandomTranslations *__pyx_vtabptr_8PyDeepCL_RandomTranslations;
 
 
-/* "Layer.pyx":114
+/* "Layer.pyx":113
  *         return translationSize
  * 
  * cdef class PoolingLayer(Layer):             # <<<<<<<<<<<<<<
@@ -1257,7 +1257,7 @@ struct __pyx_vtabstruct_8PyDeepCL_PoolingLayer {
 static struct __pyx_vtabstruct_8PyDeepCL_PoolingLayer *__pyx_vtabptr_8PyDeepCL_PoolingLayer;
 
 
-/* "Layer.pyx":127
+/* "Layer.pyx":126
  *         return padZeros
  * 
  * cdef class ConvolutionalLayer(Layer):             # <<<<<<<<<<<<<<
@@ -1271,7 +1271,7 @@ struct __pyx_vtabstruct_8PyDeepCL_ConvolutionalLayer {
 static struct __pyx_vtabstruct_8PyDeepCL_ConvolutionalLayer *__pyx_vtabptr_8PyDeepCL_ConvolutionalLayer;
 
 
-/* "Layer.pyx":139
+/* "Layer.pyx":138
  *         return padZeros
  * 
  * cdef class ActivationLayer(Layer):             # <<<<<<<<<<<<<<
@@ -1285,7 +1285,7 @@ struct __pyx_vtabstruct_8PyDeepCL_ActivationLayer {
 static struct __pyx_vtabstruct_8PyDeepCL_ActivationLayer *__pyx_vtabptr_8PyDeepCL_ActivationLayer;
 
 
-/* "Layer.pyx":149
+/* "Layer.pyx":148
  *         return res
  * 
  * cdef class SoftMax(Layer):             # <<<<<<<<<<<<<<
@@ -2360,6 +2360,7 @@ static const char __pyx_k_instance[] = "instance";
 static const char __pyx_k_itemsize[] = "itemsize";
 static const char __pyx_k_momentum[] = "momentum";
 static const char __pyx_k_mythread[] = "mythread";
+static const char __pyx_k_padZeros[] = "_padZeros";
 static const char __pyx_k_platform[] = "platform";
 static const char __pyx_k_pyString[] = "pyString";
 static const char __pyx_k_scenario[] = "scenario";
@@ -2441,6 +2442,7 @@ static const char __pyx_k_data_norep_git_DeepCL_python_La[] = "/data/norep/git/D
 static const char __pyx_k_data_norep_git_DeepCL_python_Ne[] = "/data/norep/git/DeepCL/python/NetDefToNet.pyx";
 static const char __pyx_k_data_norep_git_DeepCL_python_Py[] = "/data/norep/git/DeepCL/python/PyDeepCL.pyx";
 static const char __pyx_k_data_norep_git_DeepCL_python_Ra[] = "/data/norep/git/DeepCL/python/RandomSingleton.pyx";
+static const char __pyx_k_getNetdefString_not_implemented[] = "getNetdefString not implemented for %s";
 static const char __pyx_k_Buffer_view_does_not_expose_stri[] = "Buffer view does not expose strides";
 static const char __pyx_k_Can_only_create_a_buffer_that_is[] = "Can only create a buffer that is contiguous in memory.";
 static const char __pyx_k_Empty_shape_tuple_for_cython_arr[] = "Empty shape tuple for cython.array";
@@ -2548,6 +2550,7 @@ static PyObject *__pyx_n_s_getFilterSize;
 static PyObject *__pyx_n_s_getLastLayer;
 static PyObject *__pyx_n_s_getLayer;
 static PyObject *__pyx_n_s_getNetdefString;
+static PyObject *__pyx_kp_s_getNetdefString_not_implemented;
 static PyObject *__pyx_n_s_getNumActions;
 static PyObject *__pyx_n_s_getNumLayers;
 static PyObject *__pyx_n_s_getOutputPlanes;
@@ -2600,6 +2603,7 @@ static PyObject *__pyx_n_s_numExamples;
 static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_n_s_obj;
 static PyObject *__pyx_n_s_pack;
+static PyObject *__pyx_n_s_padZeros;
 static PyObject *__pyx_n_s_planes;
 static PyObject *__pyx_n_s_platform;
 static PyObject *__pyx_n_s_print;
@@ -2751,10 +2755,9 @@ static PyObject *__pyx_pf_8PyDeepCL_19FullyConnectedMaker_10instance(); /* proto
 static int __pyx_pf_8PyDeepCL_18ConvolutionalMaker___cinit__(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_2numFilters(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__numFilters); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_4filterSize(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__filterSize); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_6padZeros(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8padZeros(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__padZeros); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_10biased(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__biased); /* proto */
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_12instance(); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_6padZeros(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__padZeros); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8biased(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__biased); /* proto */
+static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_10instance(); /* proto */
 static int __pyx_pf_8PyDeepCL_12PoolingMaker___cinit__(struct __pyx_obj_8PyDeepCL_PoolingMaker *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_12PoolingMaker_2poolingSize(struct __pyx_obj_8PyDeepCL_PoolingMaker *__pyx_v_self, int __pyx_v__poolingSize); /* proto */
 static PyObject *__pyx_pf_8PyDeepCL_12PoolingMaker_4instance(); /* proto */
@@ -10840,7 +10843,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2getNetdefString(struct __pyx_obj_8Py
  *             numNeurons = self.getOutputPlanes()
  *             return '%sn' % numNeurons             # <<<<<<<<<<<<<<
  *         else:
- *             # raise Exception('getNetdefString not implemented for %s' % className)
+ *             raise Exception('getNetdefString not implemented for %s' % className)
  */
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_sn, __pyx_v_numNeurons); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 37, __pyx_L1_error)
@@ -10858,14 +10861,27 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2getNetdefString(struct __pyx_obj_8Py
  */
   }
 
-  /* "Layer.pyx":40
+  /* "Layer.pyx":39
+ *             return '%sn' % numNeurons
  *         else:
- *             # raise Exception('getNetdefString not implemented for %s' % className)
- *             pass             # <<<<<<<<<<<<<<
+ *             raise Exception('getNetdefString not implemented for %s' % className)             # <<<<<<<<<<<<<<
  *     def forward(self):
  *         self.thisptr.forward()
  */
   /*else*/ {
+    __pyx_t_1 = __Pyx_PyString_Format(__pyx_kp_s_getNetdefString_not_implemented, __pyx_v_className); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 39, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 39, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_1);
+    PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
+    __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_Exception, __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 39, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(10, 39, __pyx_L1_error)
   }
 
   /* "Layer.pyx":11
@@ -10877,8 +10893,6 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2getNetdefString(struct __pyx_obj_8Py
  */
 
   /* function exit code */
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
@@ -10900,9 +10914,9 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_2getNetdefString(struct __pyx_obj_8Py
   return __pyx_r;
 }
 
-/* "Layer.pyx":41
- *             # raise Exception('getNetdefString not implemented for %s' % className)
- *             pass
+/* "Layer.pyx":40
+ *         else:
+ *             raise Exception('getNetdefString not implemented for %s' % className)
  *     def forward(self):             # <<<<<<<<<<<<<<
  *         self.thisptr.forward()
  *     def backward(self):
@@ -10926,8 +10940,8 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_4forward(struct __pyx_obj_8PyDeepCL_L
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("forward", 0);
 
-  /* "Layer.pyx":42
- *             pass
+  /* "Layer.pyx":41
+ *             raise Exception('getNetdefString not implemented for %s' % className)
  *     def forward(self):
  *         self.thisptr.forward()             # <<<<<<<<<<<<<<
  *     def backward(self):
@@ -10935,9 +10949,9 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_4forward(struct __pyx_obj_8PyDeepCL_L
  */
   __pyx_v_self->thisptr->forward();
 
-  /* "Layer.pyx":41
- *             # raise Exception('getNetdefString not implemented for %s' % className)
- *             pass
+  /* "Layer.pyx":40
+ *         else:
+ *             raise Exception('getNetdefString not implemented for %s' % className)
  *     def forward(self):             # <<<<<<<<<<<<<<
  *         self.thisptr.forward()
  *     def backward(self):
@@ -10950,7 +10964,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_4forward(struct __pyx_obj_8PyDeepCL_L
   return __pyx_r;
 }
 
-/* "Layer.pyx":43
+/* "Layer.pyx":42
  *     def forward(self):
  *         self.thisptr.forward()
  *     def backward(self):             # <<<<<<<<<<<<<<
@@ -10976,7 +10990,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_6backward(struct __pyx_obj_8PyDeepCL_
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("backward", 0);
 
-  /* "Layer.pyx":44
+  /* "Layer.pyx":43
  *         self.thisptr.forward()
  *     def backward(self):
  *         self.thisptr.backward()             # <<<<<<<<<<<<<<
@@ -10985,7 +10999,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_6backward(struct __pyx_obj_8PyDeepCL_
  */
   __pyx_v_self->thisptr->backward();
 
-  /* "Layer.pyx":43
+  /* "Layer.pyx":42
  *     def forward(self):
  *         self.thisptr.forward()
  *     def backward(self):             # <<<<<<<<<<<<<<
@@ -11000,7 +11014,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_6backward(struct __pyx_obj_8PyDeepCL_
   return __pyx_r;
 }
 
-/* "Layer.pyx":45
+/* "Layer.pyx":44
  *     def backward(self):
  *         self.thisptr.backward()
  *     def needsBackProp(self):             # <<<<<<<<<<<<<<
@@ -11027,7 +11041,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8needsBackProp(struct __pyx_obj_8PyDe
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("needsBackProp", 0);
 
-  /* "Layer.pyx":46
+  /* "Layer.pyx":45
  *         self.thisptr.backward()
  *     def needsBackProp(self):
  *         return self.thisptr.needsBackProp()             # <<<<<<<<<<<<<<
@@ -11035,13 +11049,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8needsBackProp(struct __pyx_obj_8PyDe
  *         return self.thisptr.biased()
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->thisptr->needsBackProp()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 46, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->thisptr->needsBackProp()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":45
+  /* "Layer.pyx":44
  *     def backward(self):
  *         self.thisptr.backward()
  *     def needsBackProp(self):             # <<<<<<<<<<<<<<
@@ -11060,7 +11074,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_8needsBackProp(struct __pyx_obj_8PyDe
   return __pyx_r;
 }
 
-/* "Layer.pyx":47
+/* "Layer.pyx":46
  *     def needsBackProp(self):
  *         return self.thisptr.needsBackProp()
  *     def getBiased( self ):             # <<<<<<<<<<<<<<
@@ -11088,7 +11102,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_10getBiased(struct __pyx_obj_8PyDeepC
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("getBiased", 0);
 
-  /* "Layer.pyx":48
+  /* "Layer.pyx":47
  *         return self.thisptr.needsBackProp()
  *     def getBiased( self ):
  *         return self.thisptr.biased()             # <<<<<<<<<<<<<<
@@ -11100,15 +11114,15 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_10getBiased(struct __pyx_obj_8PyDeepC
     __pyx_t_1 = __pyx_v_self->thisptr->biased();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(10, 48, __pyx_L1_error)
+    __PYX_ERR(10, 47, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 48, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":47
+  /* "Layer.pyx":46
  *     def needsBackProp(self):
  *         return self.thisptr.needsBackProp()
  *     def getBiased( self ):             # <<<<<<<<<<<<<<
@@ -11127,7 +11141,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_10getBiased(struct __pyx_obj_8PyDeepC
   return __pyx_r;
 }
 
-/* "Layer.pyx":49
+/* "Layer.pyx":48
  *     def getBiased( self ):
  *         return self.thisptr.biased()
  *     def getOutputCubeSize(self):             # <<<<<<<<<<<<<<
@@ -11155,7 +11169,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_12getOutputCubeSize(struct __pyx_obj_
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("getOutputCubeSize", 0);
 
-  /* "Layer.pyx":50
+  /* "Layer.pyx":49
  *         return self.thisptr.biased()
  *     def getOutputCubeSize(self):
  *         return self.thisptr.getOutputCubeSize()             # <<<<<<<<<<<<<<
@@ -11167,15 +11181,15 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_12getOutputCubeSize(struct __pyx_obj_
     __pyx_t_1 = __pyx_v_self->thisptr->getOutputCubeSize();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(10, 50, __pyx_L1_error)
+    __PYX_ERR(10, 49, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 50, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 49, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":49
+  /* "Layer.pyx":48
  *     def getBiased( self ):
  *         return self.thisptr.biased()
  *     def getOutputCubeSize(self):             # <<<<<<<<<<<<<<
@@ -11194,7 +11208,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_12getOutputCubeSize(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "Layer.pyx":51
+/* "Layer.pyx":50
  *     def getOutputCubeSize(self):
  *         return self.thisptr.getOutputCubeSize()
  *     def getOutputPlanes(self):             # <<<<<<<<<<<<<<
@@ -11221,7 +11235,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutputPlanes(struct __pyx_obj_8P
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getOutputPlanes", 0);
 
-  /* "Layer.pyx":52
+  /* "Layer.pyx":51
  *         return self.thisptr.getOutputCubeSize()
  *     def getOutputPlanes(self):
  *         return self.thisptr.getOutputPlanes()             # <<<<<<<<<<<<<<
@@ -11229,13 +11243,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutputPlanes(struct __pyx_obj_8P
  *         return self.thisptr.getOutputSize()
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputPlanes()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 52, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputPlanes()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":51
+  /* "Layer.pyx":50
  *     def getOutputCubeSize(self):
  *         return self.thisptr.getOutputCubeSize()
  *     def getOutputPlanes(self):             # <<<<<<<<<<<<<<
@@ -11254,7 +11268,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_14getOutputPlanes(struct __pyx_obj_8P
   return __pyx_r;
 }
 
-/* "Layer.pyx":53
+/* "Layer.pyx":52
  *     def getOutputPlanes(self):
  *         return self.thisptr.getOutputPlanes()
  *     def getOutputSize(self):             # <<<<<<<<<<<<<<
@@ -11281,7 +11295,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_16getOutputSize(struct __pyx_obj_8PyD
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getOutputSize", 0);
 
-  /* "Layer.pyx":54
+  /* "Layer.pyx":53
  *         return self.thisptr.getOutputPlanes()
  *     def getOutputSize(self):
  *         return self.thisptr.getOutputSize()             # <<<<<<<<<<<<<<
@@ -11289,13 +11303,13 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_16getOutputSize(struct __pyx_obj_8PyD
  *         # the underlying c++ method returns a pointer
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputSize()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 54, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->thisptr->getOutputSize()); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":53
+  /* "Layer.pyx":52
  *     def getOutputPlanes(self):
  *         return self.thisptr.getOutputPlanes()
  *     def getOutputSize(self):             # <<<<<<<<<<<<<<
@@ -11314,7 +11328,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_16getOutputSize(struct __pyx_obj_8PyD
   return __pyx_r;
 }
 
-/* "Layer.pyx":55
+/* "Layer.pyx":54
  *     def getOutputSize(self):
  *         return self.thisptr.getOutputSize()
  *     def getOutput(self):             # <<<<<<<<<<<<<<
@@ -11355,7 +11369,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   int __pyx_t_7;
   __Pyx_RefNannySetupContext("getOutput", 0);
 
-  /* "Layer.pyx":59
+  /* "Layer.pyx":58
  *         # to a block of memory that we dont own
  *         # we should probably copy it I suppose
  *         cdef float *output = self.thisptr.getOutput()             # <<<<<<<<<<<<<<
@@ -11364,7 +11378,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
  */
   __pyx_v_output = __pyx_v_self->thisptr->getOutput();
 
-  /* "Layer.pyx":60
+  /* "Layer.pyx":59
  *         # we should probably copy it I suppose
  *         cdef float *output = self.thisptr.getOutput()
  *         cdef int outputNumElements = self.thisptr.getOutputNumElements()             # <<<<<<<<<<<<<<
@@ -11373,14 +11387,44 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
  */
   __pyx_v_outputNumElements = __pyx_v_self->thisptr->getOutputNumElements();
 
-  /* "Layer.pyx":61
+  /* "Layer.pyx":60
  *         cdef float *output = self.thisptr.getOutput()
  *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
  *         planes = self.getOutputPlanes()             # <<<<<<<<<<<<<<
  *         size = self.getOutputSize()
  *         batchSize = outputNumElements // planes // size // size
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_getOutputPlanes); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 61, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_getOutputPlanes); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 60, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 60, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 60, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_planes = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "Layer.pyx":61
+ *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
+ *         planes = self.getOutputPlanes()
+ *         size = self.getOutputSize()             # <<<<<<<<<<<<<<
+ *         batchSize = outputNumElements // planes // size // size
+ *         outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_getOutputSize); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
@@ -11400,73 +11444,43 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   }
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_v_planes = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "Layer.pyx":62
- *         cdef int outputNumElements = self.thisptr.getOutputNumElements()
- *         planes = self.getOutputPlanes()
- *         size = self.getOutputSize()             # <<<<<<<<<<<<<<
- *         batchSize = outputNumElements // planes // size // size
- *         outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
- */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_getOutputSize); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-    }
-  }
-  if (__pyx_t_3) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 62, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  } else {
-    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 62, __pyx_L1_error)
-  }
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_size = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":63
+  /* "Layer.pyx":62
  *         planes = self.getOutputPlanes()
  *         size = self.getOutputSize()
  *         batchSize = outputNumElements // planes // size // size             # <<<<<<<<<<<<<<
  *         outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
  *         # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_outputNumElements); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 63, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_outputNumElements); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyNumber_FloorDivide(__pyx_t_1, __pyx_v_planes); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 63, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_FloorDivide(__pyx_t_1, __pyx_v_planes); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyNumber_FloorDivide(__pyx_t_2, __pyx_v_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 63, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_FloorDivide(__pyx_t_2, __pyx_v_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_FloorDivide(__pyx_t_1, __pyx_v_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 63, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_FloorDivide(__pyx_t_1, __pyx_v_size); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_batchSize = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "Layer.pyx":64
+  /* "Layer.pyx":63
  *         size = self.getOutputSize()
  *         batchSize = outputNumElements // planes // size // size
  *         outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)             # <<<<<<<<<<<<<<
  *         # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
  *         outreshape = outputArray.reshape(-1)
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(4); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(4); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v_batchSize);
   __Pyx_GIVEREF(__pyx_v_batchSize);
@@ -11480,21 +11494,21 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   __Pyx_INCREF(__pyx_v_size);
   __Pyx_GIVEREF(__pyx_v_size);
   PyTuple_SET_ITEM(__pyx_t_2, 3, __pyx_v_size);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float32); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float32); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(10, 64, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 64, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -11502,22 +11516,22 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   __pyx_v_outputArray = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "Layer.pyx":66
+  /* "Layer.pyx":65
  *         outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
  *         # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
  *         outreshape = outputArray.reshape(-1)             # <<<<<<<<<<<<<<
  *         # outreshape = output
  *         for i in range(outputNumElements):
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_outputArray, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 66, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_outputArray, __pyx_n_s_reshape); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 66, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_v_outreshape = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "Layer.pyx":68
+  /* "Layer.pyx":67
  *         outreshape = outputArray.reshape(-1)
  *         # outreshape = output
  *         for i in range(outputNumElements):             # <<<<<<<<<<<<<<
@@ -11528,20 +11542,20 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i = __pyx_t_7;
 
-    /* "Layer.pyx":69
+    /* "Layer.pyx":68
  *         # outreshape = output
  *         for i in range(outputNumElements):
  *             outreshape[i] = output[i]             # <<<<<<<<<<<<<<
  *         return outputArray
  *     def getWeights(self):
  */
-    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_output[__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 69, __pyx_L1_error)
+    __pyx_t_2 = PyFloat_FromDouble((__pyx_v_output[__pyx_v_i])); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 68, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    if (unlikely(__Pyx_SetItemInt(__pyx_v_outreshape, __pyx_v_i, __pyx_t_2, int, 1, __Pyx_PyInt_From_int, 0, 1, 1) < 0)) __PYX_ERR(10, 69, __pyx_L1_error)
+    if (unlikely(__Pyx_SetItemInt(__pyx_v_outreshape, __pyx_v_i, __pyx_t_2, int, 1, __Pyx_PyInt_From_int, 0, 1, 1) < 0)) __PYX_ERR(10, 68, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
 
-  /* "Layer.pyx":70
+  /* "Layer.pyx":69
  *         for i in range(outputNumElements):
  *             outreshape[i] = output[i]
  *         return outputArray             # <<<<<<<<<<<<<<
@@ -11553,7 +11567,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   __pyx_r = __pyx_v_outputArray;
   goto __pyx_L0;
 
-  /* "Layer.pyx":55
+  /* "Layer.pyx":54
  *     def getOutputSize(self):
  *         return self.thisptr.getOutputSize()
  *     def getOutput(self):             # <<<<<<<<<<<<<<
@@ -11581,7 +11595,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_18getOutput(struct __pyx_obj_8PyDeepC
   return __pyx_r;
 }
 
-/* "Layer.pyx":71
+/* "Layer.pyx":70
  *             outreshape[i] = output[i]
  *         return outputArray
  *     def getWeights(self):             # <<<<<<<<<<<<<<
@@ -11619,7 +11633,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
   int __pyx_t_9;
   __Pyx_RefNannySetupContext("getWeights", 0);
 
-  /* "Layer.pyx":72
+  /* "Layer.pyx":71
  *         return outputArray
  *     def getWeights(self):
  *         cdef int weightsSize = self.thisptr.getPersistSize()             # <<<<<<<<<<<<<<
@@ -11628,7 +11642,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
  */
   __pyx_v_weightsSize = __pyx_v_self->thisptr->getPersistSize();
 
-  /* "Layer.pyx":73
+  /* "Layer.pyx":72
  *     def getWeights(self):
  *         cdef int weightsSize = self.thisptr.getPersistSize()
  *         if weightsSize == 0:             # <<<<<<<<<<<<<<
@@ -11638,7 +11652,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
   __pyx_t_1 = ((__pyx_v_weightsSize == 0) != 0);
   if (__pyx_t_1) {
 
-    /* "Layer.pyx":74
+    /* "Layer.pyx":73
  *         cdef int weightsSize = self.thisptr.getPersistSize()
  *         if weightsSize == 0:
  *             return None             # <<<<<<<<<<<<<<
@@ -11650,7 +11664,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
     __pyx_r = Py_None;
     goto __pyx_L0;
 
-    /* "Layer.pyx":73
+    /* "Layer.pyx":72
  *     def getWeights(self):
  *         cdef int weightsSize = self.thisptr.getPersistSize()
  *         if weightsSize == 0:             # <<<<<<<<<<<<<<
@@ -11659,40 +11673,40 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
  */
   }
 
-  /* "Layer.pyx":76
+  /* "Layer.pyx":75
  *             return None
  * 
  *         weightsArray = np.zeros((weightsSize,), dtype=np.float32)             # <<<<<<<<<<<<<<
  *         # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
  *         cdef float[:] weightsArray_view = weightsArray
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_weightsSize); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_weightsSize); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float32); if (unlikely(!__pyx_t_6)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float32); if (unlikely(!__pyx_t_6)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(10, 76, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(10, 76, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(10, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -11700,7 +11714,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
   __pyx_v_weightsArray = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "Layer.pyx":78
+  /* "Layer.pyx":77
  *         weightsArray = np.zeros((weightsSize,), dtype=np.float32)
  *         # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
  *         cdef float[:] weightsArray_view = weightsArray             # <<<<<<<<<<<<<<
@@ -11708,12 +11722,12 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
  *         return weightsArray
  */
   __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_v_weightsArray);
-  if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(10, 78, __pyx_L1_error)
+  if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(10, 77, __pyx_L1_error)
   __pyx_v_weightsArray_view = __pyx_t_7;
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "Layer.pyx":79
+  /* "Layer.pyx":78
  *         # cdef c_array.array weightsArray = weightsArray # array(floatArrayType, [0] * weightsSize )
  *         cdef float[:] weightsArray_view = weightsArray
  *         self.thisptr.persistToArray( &weightsArray_view[0] )             # <<<<<<<<<<<<<<
@@ -11728,11 +11742,11 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
   } else if (unlikely(__pyx_t_8 >= __pyx_v_weightsArray_view.shape[0])) __pyx_t_9 = 0;
   if (unlikely(__pyx_t_9 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_9);
-    __PYX_ERR(10, 79, __pyx_L1_error)
+    __PYX_ERR(10, 78, __pyx_L1_error)
   }
   __pyx_v_self->thisptr->persistToArray((&(*((float *) ( /* dim=0 */ (__pyx_v_weightsArray_view.data + __pyx_t_8 * __pyx_v_weightsArray_view.strides[0]) )))));
 
-  /* "Layer.pyx":80
+  /* "Layer.pyx":79
  *         cdef float[:] weightsArray_view = weightsArray
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray             # <<<<<<<<<<<<<<
@@ -11744,7 +11758,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
   __pyx_r = __pyx_v_weightsArray;
   goto __pyx_L0;
 
-  /* "Layer.pyx":71
+  /* "Layer.pyx":70
  *             outreshape[i] = output[i]
  *         return outputArray
  *     def getWeights(self):             # <<<<<<<<<<<<<<
@@ -11770,7 +11784,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_20getWeights(struct __pyx_obj_8PyDeep
   return __pyx_r;
 }
 
-/* "Layer.pyx":81
+/* "Layer.pyx":80
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray
  *     def setWeights(self, float[:] weights):             # <<<<<<<<<<<<<<
@@ -11786,7 +11800,7 @@ static PyObject *__pyx_pw_8PyDeepCL_5Layer_23setWeights(PyObject *__pyx_v_self, 
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("setWeights (wrapper)", 0);
   assert(__pyx_arg_weights); {
-    __pyx_v_weights = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_arg_weights); if (unlikely(!__pyx_v_weights.memview)) __PYX_ERR(10, 81, __pyx_L3_error)
+    __pyx_v_weights = __Pyx_PyObject_to_MemoryviewSlice_ds_float(__pyx_arg_weights); if (unlikely(!__pyx_v_weights.memview)) __PYX_ERR(10, 80, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -11811,7 +11825,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22setWeights(struct __pyx_obj_8PyDeep
   int __pyx_t_4;
   __Pyx_RefNannySetupContext("setWeights", 0);
 
-  /* "Layer.pyx":82
+  /* "Layer.pyx":81
  *         return weightsArray
  *     def setWeights(self, float[:] weights):
  *         cdef int weightsSize = self.thisptr.getPersistSize()             # <<<<<<<<<<<<<<
@@ -11820,7 +11834,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22setWeights(struct __pyx_obj_8PyDeep
  */
   __pyx_v_weightsSize = __pyx_v_self->thisptr->getPersistSize();
 
-  /* "Layer.pyx":83
+  /* "Layer.pyx":82
  *     def setWeights(self, float[:] weights):
  *         cdef int weightsSize = self.thisptr.getPersistSize()
  *         assert weightsSize == len(weights)             # <<<<<<<<<<<<<<
@@ -11829,18 +11843,18 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22setWeights(struct __pyx_obj_8PyDeep
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_weights, 1, (PyObject *(*)(char *)) __pyx_memview_get_float, (int (*)(char *, PyObject *)) __pyx_memview_set_float, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 83, __pyx_L1_error)
+    __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_weights, 1, (PyObject *(*)(char *)) __pyx_memview_get_float, (int (*)(char *, PyObject *)) __pyx_memview_set_float, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 82, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(10, 83, __pyx_L1_error)
+    __pyx_t_2 = PyObject_Length(__pyx_t_1); if (unlikely(__pyx_t_2 == -1)) __PYX_ERR(10, 82, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!((__pyx_v_weightsSize == __pyx_t_2) != 0))) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(10, 83, __pyx_L1_error)
+      __PYX_ERR(10, 82, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "Layer.pyx":85
+  /* "Layer.pyx":84
  *         assert weightsSize == len(weights)
  * #        cdef c_array.array weightsArray = array('f', [0] * weightsSize )
  *         self.thisptr.unpersistFromArray( &weights[0] )             # <<<<<<<<<<<<<<
@@ -11855,11 +11869,11 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22setWeights(struct __pyx_obj_8PyDeep
   } else if (unlikely(__pyx_t_3 >= __pyx_v_weights.shape[0])) __pyx_t_4 = 0;
   if (unlikely(__pyx_t_4 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_4);
-    __PYX_ERR(10, 85, __pyx_L1_error)
+    __PYX_ERR(10, 84, __pyx_L1_error)
   }
   __pyx_v_self->thisptr->unpersistFromArray((&(*((float *) ( /* dim=0 */ (__pyx_v_weights.data + __pyx_t_3 * __pyx_v_weights.strides[0]) )))));
 
-  /* "Layer.pyx":81
+  /* "Layer.pyx":80
  *         self.thisptr.persistToArray( &weightsArray_view[0] )
  *         return weightsArray
  *     def setWeights(self, float[:] weights):             # <<<<<<<<<<<<<<
@@ -11881,7 +11895,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_22setWeights(struct __pyx_obj_8PyDeep
   return __pyx_r;
 }
 
-/* "Layer.pyx":94
+/* "Layer.pyx":93
  *         #weightsArray.fromlist( weightsList )
  *         #self.setWeights( weightsArray )
  *     def asString(self):             # <<<<<<<<<<<<<<
@@ -11911,7 +11925,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24asString(struct __pyx_obj_8PyDeepCL
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("asString", 0);
 
-  /* "Layer.pyx":95
+  /* "Layer.pyx":94
  *         #self.setWeights( weightsArray )
  *     def asString(self):
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()             # <<<<<<<<<<<<<<
@@ -11920,28 +11934,28 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24asString(struct __pyx_obj_8PyDeepCL
  */
   __pyx_v_res_charstar = __pyx_v_self->thisptr->asNewCharStar();
 
-  /* "Layer.pyx":96
+  /* "Layer.pyx":95
  *     def asString(self):
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))             # <<<<<<<<<<<<<<
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  */
-  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 96, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 95, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 96, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 95, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 96, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 95, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 96, __pyx_L1_error)
+  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 95, __pyx_L1_error)
   __pyx_v_res = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":97
+  /* "Layer.pyx":96
  *         cdef const char *res_charstar = self.thisptr.asNewCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)             # <<<<<<<<<<<<<<
@@ -11950,7 +11964,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24asString(struct __pyx_obj_8PyDeepCL
  */
   deepcl_deleteCharStar(__pyx_v_res_charstar);
 
-  /* "Layer.pyx":98
+  /* "Layer.pyx":97
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res             # <<<<<<<<<<<<<<
@@ -11962,7 +11976,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24asString(struct __pyx_obj_8PyDeepCL
   __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
-  /* "Layer.pyx":94
+  /* "Layer.pyx":93
  *         #weightsArray.fromlist( weightsList )
  *         #self.setWeights( weightsArray )
  *     def asString(self):             # <<<<<<<<<<<<<<
@@ -11983,7 +11997,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_24asString(struct __pyx_obj_8PyDeepCL
   return __pyx_r;
 }
 
-/* "Layer.pyx":99
+/* "Layer.pyx":98
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  *     def getClassName(self):             # <<<<<<<<<<<<<<
@@ -12013,7 +12027,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_26getClassName(struct __pyx_obj_8PyDe
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("getClassName", 0);
 
-  /* "Layer.pyx":100
+  /* "Layer.pyx":99
  *         return res
  *     def getClassName(self):
  *         cdef const char *res_charstar = self.thisptr.getClassNameAsCharStar()             # <<<<<<<<<<<<<<
@@ -12022,28 +12036,28 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_26getClassName(struct __pyx_obj_8PyDe
  */
   __pyx_v_res_charstar = __pyx_v_self->thisptr->getClassNameAsCharStar();
 
-  /* "Layer.pyx":101
+  /* "Layer.pyx":100
  *     def getClassName(self):
  *         cdef const char *res_charstar = self.thisptr.getClassNameAsCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))             # <<<<<<<<<<<<<<
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  */
-  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 101, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 100, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 101, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 100, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 101, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 100, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 101, __pyx_L1_error)
+  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 100, __pyx_L1_error)
   __pyx_v_res = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":102
+  /* "Layer.pyx":101
  *         cdef const char *res_charstar = self.thisptr.getClassNameAsCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)             # <<<<<<<<<<<<<<
@@ -12052,7 +12066,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_26getClassName(struct __pyx_obj_8PyDe
  */
   deepcl_deleteCharStar(__pyx_v_res_charstar);
 
-  /* "Layer.pyx":103
+  /* "Layer.pyx":102
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res             # <<<<<<<<<<<<<<
@@ -12064,7 +12078,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_26getClassName(struct __pyx_obj_8PyDe
   __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
-  /* "Layer.pyx":99
+  /* "Layer.pyx":98
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  *     def getClassName(self):             # <<<<<<<<<<<<<<
@@ -12085,7 +12099,7 @@ static PyObject *__pyx_pf_8PyDeepCL_5Layer_26getClassName(struct __pyx_obj_8PyDe
   return __pyx_r;
 }
 
-/* "Layer.pyx":106
+/* "Layer.pyx":105
  * 
  * cdef class RandomTranslations(Layer):
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -12120,7 +12134,7 @@ static int __pyx_pf_8PyDeepCL_18RandomTranslations___cinit__(CYTHON_UNUSED struc
   return __pyx_r;
 }
 
-/* "Layer.pyx":109
+/* "Layer.pyx":108
  *         pass
  * 
  *     def getTranslationSize(self):             # <<<<<<<<<<<<<<
@@ -12149,7 +12163,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18RandomTranslations_2getTranslationSize(str
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getTranslationSize", 0);
 
-  /* "Layer.pyx":110
+  /* "Layer.pyx":109
  * 
  *     def getTranslationSize(self):
  *         cdef cDeepCL.RandomTranslations *cRandomTranslations = <cDeepCL.RandomTranslations *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12158,7 +12172,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18RandomTranslations_2getTranslationSize(str
  */
   __pyx_v_cRandomTranslations = ((RandomTranslations *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":111
+  /* "Layer.pyx":110
  *     def getTranslationSize(self):
  *         cdef cDeepCL.RandomTranslations *cRandomTranslations = <cDeepCL.RandomTranslations *>(self.thisptr)
  *         cdef int translationSize = cRandomTranslations.getTranslationSize()             # <<<<<<<<<<<<<<
@@ -12167,7 +12181,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18RandomTranslations_2getTranslationSize(str
  */
   __pyx_v_translationSize = __pyx_v_cRandomTranslations->getTranslationSize();
 
-  /* "Layer.pyx":112
+  /* "Layer.pyx":111
  *         cdef cDeepCL.RandomTranslations *cRandomTranslations = <cDeepCL.RandomTranslations *>(self.thisptr)
  *         cdef int translationSize = cRandomTranslations.getTranslationSize()
  *         return translationSize             # <<<<<<<<<<<<<<
@@ -12175,13 +12189,13 @@ static PyObject *__pyx_pf_8PyDeepCL_18RandomTranslations_2getTranslationSize(str
  * cdef class PoolingLayer(Layer):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_translationSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 112, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_translationSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 111, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":109
+  /* "Layer.pyx":108
  *         pass
  * 
  *     def getTranslationSize(self):             # <<<<<<<<<<<<<<
@@ -12200,7 +12214,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18RandomTranslations_2getTranslationSize(str
   return __pyx_r;
 }
 
-/* "Layer.pyx":115
+/* "Layer.pyx":114
  * 
  * cdef class PoolingLayer(Layer):
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -12235,7 +12249,7 @@ static int __pyx_pf_8PyDeepCL_12PoolingLayer___cinit__(CYTHON_UNUSED struct __py
   return __pyx_r;
 }
 
-/* "Layer.pyx":118
+/* "Layer.pyx":117
  *         pass
  * 
  *     def getPoolingSize(self):             # <<<<<<<<<<<<<<
@@ -12264,7 +12278,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_2getPoolingSize(struct __pyx_
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getPoolingSize", 0);
 
-  /* "Layer.pyx":119
+  /* "Layer.pyx":118
  * 
  *     def getPoolingSize(self):
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12273,7 +12287,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_2getPoolingSize(struct __pyx_
  */
   __pyx_v_cPoolingLayer = ((PoolingLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":120
+  /* "Layer.pyx":119
  *     def getPoolingSize(self):
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
  *         cdef int poolingSize = cPoolingLayer.getPoolingSize()             # <<<<<<<<<<<<<<
@@ -12282,7 +12296,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_2getPoolingSize(struct __pyx_
  */
   __pyx_v_poolingSize = __pyx_v_cPoolingLayer->getPoolingSize();
 
-  /* "Layer.pyx":121
+  /* "Layer.pyx":120
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
  *         cdef int poolingSize = cPoolingLayer.getPoolingSize()
  *         return poolingSize             # <<<<<<<<<<<<<<
@@ -12290,13 +12304,13 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_2getPoolingSize(struct __pyx_
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_poolingSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 121, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_poolingSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 120, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":118
+  /* "Layer.pyx":117
  *         pass
  * 
  *     def getPoolingSize(self):             # <<<<<<<<<<<<<<
@@ -12315,7 +12329,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_2getPoolingSize(struct __pyx_
   return __pyx_r;
 }
 
-/* "Layer.pyx":122
+/* "Layer.pyx":121
  *         cdef int poolingSize = cPoolingLayer.getPoolingSize()
  *         return poolingSize
  *     def getPadZeros(self):             # <<<<<<<<<<<<<<
@@ -12344,7 +12358,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_4getPadZeros(struct __pyx_obj
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getPadZeros", 0);
 
-  /* "Layer.pyx":123
+  /* "Layer.pyx":122
  *         return poolingSize
  *     def getPadZeros(self):
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12353,7 +12367,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_4getPadZeros(struct __pyx_obj
  */
   __pyx_v_cPoolingLayer = ((PoolingLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":124
+  /* "Layer.pyx":123
  *     def getPadZeros(self):
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
  *         cdef bool padZeros = cPoolingLayer.getPadZeros()             # <<<<<<<<<<<<<<
@@ -12362,7 +12376,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_4getPadZeros(struct __pyx_obj
  */
   __pyx_v_padZeros = __pyx_v_cPoolingLayer->getPadZeros();
 
-  /* "Layer.pyx":125
+  /* "Layer.pyx":124
  *         cdef cDeepCL.PoolingLayer *cPoolingLayer = <cDeepCL.PoolingLayer *>(self.thisptr)
  *         cdef bool padZeros = cPoolingLayer.getPadZeros()
  *         return padZeros             # <<<<<<<<<<<<<<
@@ -12370,13 +12384,13 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_4getPadZeros(struct __pyx_obj
  * cdef class ConvolutionalLayer(Layer):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_padZeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 125, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_padZeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 124, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":122
+  /* "Layer.pyx":121
  *         cdef int poolingSize = cPoolingLayer.getPoolingSize()
  *         return poolingSize
  *     def getPadZeros(self):             # <<<<<<<<<<<<<<
@@ -12395,7 +12409,7 @@ static PyObject *__pyx_pf_8PyDeepCL_12PoolingLayer_4getPadZeros(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "Layer.pyx":128
+/* "Layer.pyx":127
  * 
  * cdef class ConvolutionalLayer(Layer):
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -12430,7 +12444,7 @@ static int __pyx_pf_8PyDeepCL_18ConvolutionalLayer___cinit__(CYTHON_UNUSED struc
   return __pyx_r;
 }
 
-/* "Layer.pyx":130
+/* "Layer.pyx":129
  *     def __cinit__(self):
  *         pass
  *     def getFilterSize(self):             # <<<<<<<<<<<<<<
@@ -12459,7 +12473,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_2getFilterSize(struct _
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getFilterSize", 0);
 
-  /* "Layer.pyx":131
+  /* "Layer.pyx":130
  *         pass
  *     def getFilterSize(self):
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12468,7 +12482,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_2getFilterSize(struct _
  */
   __pyx_v_cConvolutionalLayer = ((ConvolutionalLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":132
+  /* "Layer.pyx":131
  *     def getFilterSize(self):
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
  *         cdef int filterSize = cConvolutionalLayer.getFilterSize()             # <<<<<<<<<<<<<<
@@ -12477,7 +12491,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_2getFilterSize(struct _
  */
   __pyx_v_filterSize = __pyx_v_cConvolutionalLayer->getFilterSize();
 
-  /* "Layer.pyx":133
+  /* "Layer.pyx":132
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
  *         cdef int filterSize = cConvolutionalLayer.getFilterSize()
  *         return filterSize             # <<<<<<<<<<<<<<
@@ -12485,13 +12499,13 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_2getFilterSize(struct _
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_filterSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 133, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_filterSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 132, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":130
+  /* "Layer.pyx":129
  *     def __cinit__(self):
  *         pass
  *     def getFilterSize(self):             # <<<<<<<<<<<<<<
@@ -12510,7 +12524,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_2getFilterSize(struct _
   return __pyx_r;
 }
 
-/* "Layer.pyx":134
+/* "Layer.pyx":133
  *         cdef int filterSize = cConvolutionalLayer.getFilterSize()
  *         return filterSize
  *     def getPadZeros(self):             # <<<<<<<<<<<<<<
@@ -12539,7 +12553,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_4getPadZeros(struct __p
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getPadZeros", 0);
 
-  /* "Layer.pyx":135
+  /* "Layer.pyx":134
  *         return filterSize
  *     def getPadZeros(self):
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12548,7 +12562,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_4getPadZeros(struct __p
  */
   __pyx_v_cConvolutionalLayer = ((ConvolutionalLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":136
+  /* "Layer.pyx":135
  *     def getPadZeros(self):
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
  *         cdef bool padZeros = cConvolutionalLayer.getPadZeros()             # <<<<<<<<<<<<<<
@@ -12557,7 +12571,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_4getPadZeros(struct __p
  */
   __pyx_v_padZeros = __pyx_v_cConvolutionalLayer->getPadZeros();
 
-  /* "Layer.pyx":137
+  /* "Layer.pyx":136
  *         cdef cDeepCL.ConvolutionalLayer *cConvolutionalLayer = <cDeepCL.ConvolutionalLayer *>(self.thisptr)
  *         cdef bool padZeros = cConvolutionalLayer.getPadZeros()
  *         return padZeros             # <<<<<<<<<<<<<<
@@ -12565,13 +12579,13 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_4getPadZeros(struct __p
  * cdef class ActivationLayer(Layer):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_padZeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 137, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_padZeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 136, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":134
+  /* "Layer.pyx":133
  *         cdef int filterSize = cConvolutionalLayer.getFilterSize()
  *         return filterSize
  *     def getPadZeros(self):             # <<<<<<<<<<<<<<
@@ -12590,7 +12604,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalLayer_4getPadZeros(struct __p
   return __pyx_r;
 }
 
-/* "Layer.pyx":140
+/* "Layer.pyx":139
  * 
  * cdef class ActivationLayer(Layer):
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -12625,7 +12639,7 @@ static int __pyx_pf_8PyDeepCL_15ActivationLayer___cinit__(CYTHON_UNUSED struct _
   return __pyx_r;
 }
 
-/* "Layer.pyx":142
+/* "Layer.pyx":141
  *     def __cinit__(self):
  *         pass
  *     def getActivation(self):             # <<<<<<<<<<<<<<
@@ -12656,7 +12670,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15ActivationLayer_2getActivation(struct __py
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("getActivation", 0);
 
-  /* "Layer.pyx":143
+  /* "Layer.pyx":142
  *         pass
  *     def getActivation(self):
  *         cdef cDeepCL.ActivationLayer *cActivationLayer = <cDeepCL.ActivationLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12665,7 +12679,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15ActivationLayer_2getActivation(struct __py
  */
   __pyx_v_cActivationLayer = ((ActivationLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":144
+  /* "Layer.pyx":143
  *     def getActivation(self):
  *         cdef cDeepCL.ActivationLayer *cActivationLayer = <cDeepCL.ActivationLayer *>(self.thisptr)
  *         cdef const char *res_charstar = cActivationLayer.getActivationAsCharStar()             # <<<<<<<<<<<<<<
@@ -12674,28 +12688,28 @@ static PyObject *__pyx_pf_8PyDeepCL_15ActivationLayer_2getActivation(struct __py
  */
   __pyx_v_res_charstar = __pyx_v_cActivationLayer->getActivationAsCharStar();
 
-  /* "Layer.pyx":145
+  /* "Layer.pyx":144
  *         cdef cDeepCL.ActivationLayer *cActivationLayer = <cDeepCL.ActivationLayer *>(self.thisptr)
  *         cdef const char *res_charstar = cActivationLayer.getActivationAsCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))             # <<<<<<<<<<<<<<
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res
  */
-  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 145, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_decode_c_string(__pyx_v_res_charstar, 0, strlen(__pyx_v_res_charstar), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 145, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 145, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(((PyObject *)(&PyString_Type)), __pyx_t_2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 144, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 145, __pyx_L1_error)
+  if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "str", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(10, 144, __pyx_L1_error)
   __pyx_v_res = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Layer.pyx":146
+  /* "Layer.pyx":145
  *         cdef const char *res_charstar = cActivationLayer.getActivationAsCharStar()
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)             # <<<<<<<<<<<<<<
@@ -12704,7 +12718,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15ActivationLayer_2getActivation(struct __py
  */
   deepcl_deleteCharStar(__pyx_v_res_charstar);
 
-  /* "Layer.pyx":147
+  /* "Layer.pyx":146
  *         cdef str res = str(res_charstar.decode('UTF-8'))
  *         CppRuntimeBoundary.deepcl_deleteCharStar(res_charstar)
  *         return res             # <<<<<<<<<<<<<<
@@ -12716,7 +12730,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15ActivationLayer_2getActivation(struct __py
   __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
-  /* "Layer.pyx":142
+  /* "Layer.pyx":141
  *     def __cinit__(self):
  *         pass
  *     def getActivation(self):             # <<<<<<<<<<<<<<
@@ -12737,7 +12751,7 @@ static PyObject *__pyx_pf_8PyDeepCL_15ActivationLayer_2getActivation(struct __py
   return __pyx_r;
 }
 
-/* "Layer.pyx":150
+/* "Layer.pyx":149
  * 
  * cdef class SoftMax(Layer):
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -12772,7 +12786,7 @@ static int __pyx_pf_8PyDeepCL_7SoftMax___cinit__(CYTHON_UNUSED struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "Layer.pyx":153
+/* "Layer.pyx":152
  *         pass
  * 
  *     def getBatchSize(self):             # <<<<<<<<<<<<<<
@@ -12801,7 +12815,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("getBatchSize", 0);
 
-  /* "Layer.pyx":154
+  /* "Layer.pyx":153
  * 
  *     def getBatchSize(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12810,7 +12824,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
  */
   __pyx_v_cSoftMax = ((SoftMaxLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":155
+  /* "Layer.pyx":154
  *     def getBatchSize(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()             # <<<<<<<<<<<<<<
@@ -12819,7 +12833,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
  */
   __pyx_v_batchSize = __pyx_v_cSoftMax->getBatchSize();
 
-  /* "Layer.pyx":156
+  /* "Layer.pyx":155
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()
  *         return batchSize             # <<<<<<<<<<<<<<
@@ -12827,13 +12841,13 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
  *     def getLabels(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_batchSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 156, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_batchSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "Layer.pyx":153
+  /* "Layer.pyx":152
  *         pass
  * 
  *     def getBatchSize(self):             # <<<<<<<<<<<<<<
@@ -12852,7 +12866,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_2getBatchSize(struct __pyx_obj_8PyD
   return __pyx_r;
 }
 
-/* "Layer.pyx":158
+/* "Layer.pyx":157
  *         return batchSize
  * 
  *     def getLabels(self):             # <<<<<<<<<<<<<<
@@ -12890,7 +12904,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   int __pyx_t_8;
   __Pyx_RefNannySetupContext("getLabels", 0);
 
-  /* "Layer.pyx":159
+  /* "Layer.pyx":158
  * 
  *     def getLabels(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)             # <<<<<<<<<<<<<<
@@ -12899,7 +12913,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
  */
   __pyx_v_cSoftMax = ((SoftMaxLayer *)__pyx_v_self->__pyx_base.thisptr);
 
-  /* "Layer.pyx":160
+  /* "Layer.pyx":159
  *     def getLabels(self):
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()             # <<<<<<<<<<<<<<
@@ -12908,35 +12922,35 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
  */
   __pyx_v_batchSize = __pyx_v_cSoftMax->getBatchSize();
 
-  /* "Layer.pyx":161
+  /* "Layer.pyx":160
  *         cdef cDeepCL.SoftMaxLayer *cSoftMax = <cDeepCL.SoftMaxLayer *>(self.thisptr)
  *         cdef int batchSize = cSoftMax.getBatchSize()
  *         labelsArray = np.zeros((batchSize), dtype=np.int32)             # <<<<<<<<<<<<<<
  *         # cdef c_array.array labelsArray = array(intArrayType, [0] * batchSize)
  *         cdef int[:] labelsArray_view = labelsArray
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_batchSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_batchSize); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_int32); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(10, 161, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 161, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(10, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -12944,7 +12958,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   __pyx_v_labelsArray = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "Layer.pyx":163
+  /* "Layer.pyx":162
  *         labelsArray = np.zeros((batchSize), dtype=np.int32)
  *         # cdef c_array.array labelsArray = array(intArrayType, [0] * batchSize)
  *         cdef int[:] labelsArray_view = labelsArray             # <<<<<<<<<<<<<<
@@ -12952,12 +12966,12 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
  *         return labelsArray
  */
   __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_ds_int(__pyx_v_labelsArray);
-  if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(10, 163, __pyx_L1_error)
+  if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(10, 162, __pyx_L1_error)
   __pyx_v_labelsArray_view = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "Layer.pyx":164
+  /* "Layer.pyx":163
  *         # cdef c_array.array labelsArray = array(intArrayType, [0] * batchSize)
  *         cdef int[:] labelsArray_view = labelsArray
  *         cSoftMax.getLabels(&labelsArray_view[0])             # <<<<<<<<<<<<<<
@@ -12972,11 +12986,11 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   } else if (unlikely(__pyx_t_7 >= __pyx_v_labelsArray_view.shape[0])) __pyx_t_8 = 0;
   if (unlikely(__pyx_t_8 != -1)) {
     __Pyx_RaiseBufferIndexError(__pyx_t_8);
-    __PYX_ERR(10, 164, __pyx_L1_error)
+    __PYX_ERR(10, 163, __pyx_L1_error)
   }
   __pyx_v_cSoftMax->getLabels((&(*((int *) ( /* dim=0 */ (__pyx_v_labelsArray_view.data + __pyx_t_7 * __pyx_v_labelsArray_view.strides[0]) )))));
 
-  /* "Layer.pyx":165
+  /* "Layer.pyx":164
  *         cdef int[:] labelsArray_view = labelsArray
  *         cSoftMax.getLabels(&labelsArray_view[0])
  *         return labelsArray             # <<<<<<<<<<<<<<
@@ -12987,7 +13001,7 @@ static PyObject *__pyx_pf_8PyDeepCL_7SoftMax_4getLabels(struct __pyx_obj_8PyDeep
   __pyx_r = __pyx_v_labelsArray;
   goto __pyx_L0;
 
-  /* "Layer.pyx":158
+  /* "Layer.pyx":157
  *         return batchSize
  * 
  *     def getLabels(self):             # <<<<<<<<<<<<<<
@@ -13954,7 +13968,7 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_4filterSize(struct __py
  *     def filterSize( self, int _filterSize ):
  *         self.thisptr.filterSize( _filterSize )             # <<<<<<<<<<<<<<
  *         return self
- *     def padZeros(self):
+ *     #def padZeros(self):
  */
   try {
     __pyx_v_self->thisptr->filterSize(__pyx_v__filterSize);
@@ -13967,8 +13981,8 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_4filterSize(struct __py
  *     def filterSize( self, int _filterSize ):
  *         self.thisptr.filterSize( _filterSize )
  *         return self             # <<<<<<<<<<<<<<
- *     def padZeros(self):
- *         self.thisptr.padZeros()
+ *     #def padZeros(self):
+ *     #    self.thisptr.padZeros()
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_self));
@@ -13993,116 +14007,80 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_4filterSize(struct __py
   return __pyx_r;
 }
 
-/* "LayerMaker.pyx":57
- *         self.thisptr.filterSize( _filterSize )
- *         return self
- *     def padZeros(self):             # <<<<<<<<<<<<<<
- *         self.thisptr.padZeros()
- *         return self
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_7padZeros(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_7padZeros(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("padZeros (wrapper)", 0);
-  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_6padZeros(((struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_6padZeros(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("padZeros", 0);
-
-  /* "LayerMaker.pyx":58
- *         return self
- *     def padZeros(self):
- *         self.thisptr.padZeros()             # <<<<<<<<<<<<<<
- *         return self
- *     def padZeros(self, bint _padZeros):
- */
-  try {
-    __pyx_v_self->thisptr->padZeros();
-  } catch(...) {
-    __Pyx_CppExn2PyErr();
-    __PYX_ERR(11, 58, __pyx_L1_error)
-  }
-
-  /* "LayerMaker.pyx":59
- *     def padZeros(self):
- *         self.thisptr.padZeros()
- *         return self             # <<<<<<<<<<<<<<
- *     def padZeros(self, bint _padZeros):
- *         self.thisptr.padZeros( _padZeros )
- */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)__pyx_v_self));
-  __pyx_r = ((PyObject *)__pyx_v_self);
-  goto __pyx_L0;
-
-  /* "LayerMaker.pyx":57
- *         self.thisptr.filterSize( _filterSize )
- *         return self
- *     def padZeros(self):             # <<<<<<<<<<<<<<
- *         self.thisptr.padZeros()
- *         return self
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_AddTraceback("PyDeepCL.ConvolutionalMaker.padZeros", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
 /* "LayerMaker.pyx":60
- *         self.thisptr.padZeros()
- *         return self
- *     def padZeros(self, bint _padZeros):             # <<<<<<<<<<<<<<
- *         self.thisptr.padZeros( _padZeros )
+ *     #    self.thisptr.padZeros()
+ *     #    return self
+ *     def padZeros(self, bint _padZeros = True):             # <<<<<<<<<<<<<<
+ *         self.thisptr.padZeros(_padZeros)
  *         return self
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_9padZeros(PyObject *__pyx_v_self, PyObject *__pyx_arg__padZeros); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_9padZeros(PyObject *__pyx_v_self, PyObject *__pyx_arg__padZeros) {
+static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_7padZeros(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_7padZeros(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   int __pyx_v__padZeros;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("padZeros (wrapper)", 0);
-  assert(__pyx_arg__padZeros); {
-    __pyx_v__padZeros = __Pyx_PyObject_IsTrue(__pyx_arg__padZeros); if (unlikely((__pyx_v__padZeros == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 60, __pyx_L3_error)
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_padZeros,0};
+    PyObject* values[1] = {0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (kw_args > 0) {
+          PyObject* value = PyDict_GetItem(__pyx_kwds, __pyx_n_s_padZeros);
+          if (value) { values[0] = value; kw_args--; }
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "padZeros") < 0)) __PYX_ERR(11, 60, __pyx_L3_error)
+      }
+    } else {
+      switch (PyTuple_GET_SIZE(__pyx_args)) {
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+    }
+    if (values[0]) {
+      __pyx_v__padZeros = __Pyx_PyObject_IsTrue(values[0]); if (unlikely((__pyx_v__padZeros == (int)-1) && PyErr_Occurred())) __PYX_ERR(11, 60, __pyx_L3_error)
+    } else {
+      __pyx_v__padZeros = ((int)1);
+    }
   }
   goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("padZeros", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(11, 60, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("PyDeepCL.ConvolutionalMaker.padZeros", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_8padZeros(((struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *)__pyx_v_self), ((int)__pyx_v__padZeros));
+  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_6padZeros(((struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *)__pyx_v_self), __pyx_v__padZeros);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8padZeros(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__padZeros) {
+static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_6padZeros(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__padZeros) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("padZeros", 0);
 
   /* "LayerMaker.pyx":61
- *         return self
- *     def padZeros(self, bint _padZeros):
- *         self.thisptr.padZeros( _padZeros )             # <<<<<<<<<<<<<<
+ *     #    return self
+ *     def padZeros(self, bint _padZeros = True):
+ *         self.thisptr.padZeros(_padZeros)             # <<<<<<<<<<<<<<
  *         return self
  *     #def biased(self):
  */
@@ -14114,8 +14092,8 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8padZeros(struct __pyx_
   }
 
   /* "LayerMaker.pyx":62
- *     def padZeros(self, bint _padZeros):
- *         self.thisptr.padZeros( _padZeros )
+ *     def padZeros(self, bint _padZeros = True):
+ *         self.thisptr.padZeros(_padZeros)
  *         return self             # <<<<<<<<<<<<<<
  *     #def biased(self):
  *     #    self.thisptr.biased()
@@ -14126,10 +14104,10 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8padZeros(struct __pyx_
   goto __pyx_L0;
 
   /* "LayerMaker.pyx":60
- *         self.thisptr.padZeros()
- *         return self
- *     def padZeros(self, bint _padZeros):             # <<<<<<<<<<<<<<
- *         self.thisptr.padZeros( _padZeros )
+ *     #    self.thisptr.padZeros()
+ *     #    return self
+ *     def padZeros(self, bint _padZeros = True):             # <<<<<<<<<<<<<<
+ *         self.thisptr.padZeros(_padZeros)
  *         return self
  */
 
@@ -14152,8 +14130,8 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8padZeros(struct __pyx_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11biased(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11biased(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_9biased(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_9biased(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   int __pyx_v__biased;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -14201,14 +14179,14 @@ static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11biased(PyObject *__py
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_10biased(((struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *)__pyx_v_self), __pyx_v__biased);
+  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_8biased(((struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *)__pyx_v_self), __pyx_v__biased);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_10biased(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__biased) {
+static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_8biased(struct __pyx_obj_8PyDeepCL_ConvolutionalMaker *__pyx_v_self, int __pyx_v__biased) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("biased", 0);
@@ -14266,23 +14244,23 @@ static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_10biased(struct __pyx_o
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_13instance(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_8PyDeepCL_18ConvolutionalMaker_13instance = {"instance", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_13instance, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_13instance(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11instance(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_8PyDeepCL_18ConvolutionalMaker_11instance = {"instance", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11instance, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11instance(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("instance (wrapper)", 0);
   if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
     __Pyx_RaiseArgtupleInvalid("instance", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return NULL;}
   if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "instance", 0))) return NULL;
-  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_12instance();
+  __pyx_r = __pyx_pf_8PyDeepCL_18ConvolutionalMaker_10instance();
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_12instance() {
+static PyObject *__pyx_pf_8PyDeepCL_18ConvolutionalMaker_10instance() {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -33356,10 +33334,9 @@ static PyObject *__pyx_tp_new_8PyDeepCL_ConvolutionalMaker(PyTypeObject *t, PyOb
 static PyMethodDef __pyx_methods_8PyDeepCL_ConvolutionalMaker[] = {
   {"numFilters", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_3numFilters, METH_O, 0},
   {"filterSize", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_5filterSize, METH_O, 0},
-  {"padZeros", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_7padZeros, METH_NOARGS, 0},
-  {"padZeros", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_9padZeros, METH_O, 0},
-  {"biased", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11biased, METH_VARARGS|METH_KEYWORDS, 0},
-  {"instance", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_13instance, METH_VARARGS|METH_KEYWORDS, 0},
+  {"padZeros", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_7padZeros, METH_VARARGS|METH_KEYWORDS, 0},
+  {"biased", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_9biased, METH_VARARGS|METH_KEYWORDS, 0},
+  {"instance", (PyCFunction)__pyx_pw_8PyDeepCL_18ConvolutionalMaker_11instance, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -35237,6 +35214,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_getLastLayer, __pyx_k_getLastLayer, sizeof(__pyx_k_getLastLayer), 0, 0, 1, 1},
   {&__pyx_n_s_getLayer, __pyx_k_getLayer, sizeof(__pyx_k_getLayer), 0, 0, 1, 1},
   {&__pyx_n_s_getNetdefString, __pyx_k_getNetdefString, sizeof(__pyx_k_getNetdefString), 0, 0, 1, 1},
+  {&__pyx_kp_s_getNetdefString_not_implemented, __pyx_k_getNetdefString_not_implemented, sizeof(__pyx_k_getNetdefString_not_implemented), 0, 0, 1, 0},
   {&__pyx_n_s_getNumActions, __pyx_k_getNumActions, sizeof(__pyx_k_getNumActions), 0, 0, 1, 1},
   {&__pyx_n_s_getNumLayers, __pyx_k_getNumLayers, sizeof(__pyx_k_getNumLayers), 0, 0, 1, 1},
   {&__pyx_n_s_getOutputPlanes, __pyx_k_getOutputPlanes, sizeof(__pyx_k_getOutputPlanes), 0, 0, 1, 1},
@@ -35289,6 +35267,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
   {&__pyx_n_s_obj, __pyx_k_obj, sizeof(__pyx_k_obj), 0, 0, 1, 1},
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
+  {&__pyx_n_s_padZeros, __pyx_k_padZeros, sizeof(__pyx_k_padZeros), 0, 0, 1, 1},
   {&__pyx_n_s_planes, __pyx_k_planes, sizeof(__pyx_k_planes), 0, 0, 1, 1},
   {&__pyx_n_s_platform, __pyx_k_platform, sizeof(__pyx_k_platform), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
@@ -35503,14 +35482,14 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__15);
   __Pyx_GIVEREF(__pyx_tuple__15);
 
-  /* "Layer.pyx":66
+  /* "Layer.pyx":65
  *         outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
  *         # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
  *         outreshape = outputArray.reshape(-1)             # <<<<<<<<<<<<<<
  *         # outreshape = output
  *         for i in range(outputNumElements):
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_int_neg_1); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(10, 66, __pyx_L1_error)
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_int_neg_1); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(10, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__16);
   __Pyx_GIVEREF(__pyx_tuple__16);
 
@@ -36221,42 +36200,42 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
   __pyx_vtabptr_8PyDeepCL_RandomTranslations = &__pyx_vtable_8PyDeepCL_RandomTranslations;
   __pyx_vtable_8PyDeepCL_RandomTranslations.__pyx_base = *__pyx_vtabptr_8PyDeepCL_Layer;
   __pyx_type_8PyDeepCL_RandomTranslations.tp_base = __pyx_ptype_8PyDeepCL_Layer;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_RandomTranslations) < 0) __PYX_ERR(10, 105, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_RandomTranslations) < 0) __PYX_ERR(10, 104, __pyx_L1_error)
   __pyx_type_8PyDeepCL_RandomTranslations.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_RandomTranslations.tp_dict, __pyx_vtabptr_8PyDeepCL_RandomTranslations) < 0) __PYX_ERR(10, 105, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "RandomTranslations", (PyObject *)&__pyx_type_8PyDeepCL_RandomTranslations) < 0) __PYX_ERR(10, 105, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_RandomTranslations.tp_dict, __pyx_vtabptr_8PyDeepCL_RandomTranslations) < 0) __PYX_ERR(10, 104, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "RandomTranslations", (PyObject *)&__pyx_type_8PyDeepCL_RandomTranslations) < 0) __PYX_ERR(10, 104, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_RandomTranslations = &__pyx_type_8PyDeepCL_RandomTranslations;
   __pyx_vtabptr_8PyDeepCL_PoolingLayer = &__pyx_vtable_8PyDeepCL_PoolingLayer;
   __pyx_vtable_8PyDeepCL_PoolingLayer.__pyx_base = *__pyx_vtabptr_8PyDeepCL_Layer;
   __pyx_type_8PyDeepCL_PoolingLayer.tp_base = __pyx_ptype_8PyDeepCL_Layer;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_PoolingLayer) < 0) __PYX_ERR(10, 114, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_PoolingLayer) < 0) __PYX_ERR(10, 113, __pyx_L1_error)
   __pyx_type_8PyDeepCL_PoolingLayer.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_PoolingLayer.tp_dict, __pyx_vtabptr_8PyDeepCL_PoolingLayer) < 0) __PYX_ERR(10, 114, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "PoolingLayer", (PyObject *)&__pyx_type_8PyDeepCL_PoolingLayer) < 0) __PYX_ERR(10, 114, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_PoolingLayer.tp_dict, __pyx_vtabptr_8PyDeepCL_PoolingLayer) < 0) __PYX_ERR(10, 113, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "PoolingLayer", (PyObject *)&__pyx_type_8PyDeepCL_PoolingLayer) < 0) __PYX_ERR(10, 113, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_PoolingLayer = &__pyx_type_8PyDeepCL_PoolingLayer;
   __pyx_vtabptr_8PyDeepCL_ConvolutionalLayer = &__pyx_vtable_8PyDeepCL_ConvolutionalLayer;
   __pyx_vtable_8PyDeepCL_ConvolutionalLayer.__pyx_base = *__pyx_vtabptr_8PyDeepCL_Layer;
   __pyx_type_8PyDeepCL_ConvolutionalLayer.tp_base = __pyx_ptype_8PyDeepCL_Layer;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_ConvolutionalLayer) < 0) __PYX_ERR(10, 127, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_ConvolutionalLayer) < 0) __PYX_ERR(10, 126, __pyx_L1_error)
   __pyx_type_8PyDeepCL_ConvolutionalLayer.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_ConvolutionalLayer.tp_dict, __pyx_vtabptr_8PyDeepCL_ConvolutionalLayer) < 0) __PYX_ERR(10, 127, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "ConvolutionalLayer", (PyObject *)&__pyx_type_8PyDeepCL_ConvolutionalLayer) < 0) __PYX_ERR(10, 127, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_ConvolutionalLayer.tp_dict, __pyx_vtabptr_8PyDeepCL_ConvolutionalLayer) < 0) __PYX_ERR(10, 126, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "ConvolutionalLayer", (PyObject *)&__pyx_type_8PyDeepCL_ConvolutionalLayer) < 0) __PYX_ERR(10, 126, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_ConvolutionalLayer = &__pyx_type_8PyDeepCL_ConvolutionalLayer;
   __pyx_vtabptr_8PyDeepCL_ActivationLayer = &__pyx_vtable_8PyDeepCL_ActivationLayer;
   __pyx_vtable_8PyDeepCL_ActivationLayer.__pyx_base = *__pyx_vtabptr_8PyDeepCL_Layer;
   __pyx_type_8PyDeepCL_ActivationLayer.tp_base = __pyx_ptype_8PyDeepCL_Layer;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_ActivationLayer) < 0) __PYX_ERR(10, 139, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_ActivationLayer) < 0) __PYX_ERR(10, 138, __pyx_L1_error)
   __pyx_type_8PyDeepCL_ActivationLayer.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_ActivationLayer.tp_dict, __pyx_vtabptr_8PyDeepCL_ActivationLayer) < 0) __PYX_ERR(10, 139, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "ActivationLayer", (PyObject *)&__pyx_type_8PyDeepCL_ActivationLayer) < 0) __PYX_ERR(10, 139, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_ActivationLayer.tp_dict, __pyx_vtabptr_8PyDeepCL_ActivationLayer) < 0) __PYX_ERR(10, 138, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "ActivationLayer", (PyObject *)&__pyx_type_8PyDeepCL_ActivationLayer) < 0) __PYX_ERR(10, 138, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_ActivationLayer = &__pyx_type_8PyDeepCL_ActivationLayer;
   __pyx_vtabptr_8PyDeepCL_SoftMax = &__pyx_vtable_8PyDeepCL_SoftMax;
   __pyx_vtable_8PyDeepCL_SoftMax.__pyx_base = *__pyx_vtabptr_8PyDeepCL_Layer;
   __pyx_type_8PyDeepCL_SoftMax.tp_base = __pyx_ptype_8PyDeepCL_Layer;
-  if (PyType_Ready(&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 149, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 148, __pyx_L1_error)
   __pyx_type_8PyDeepCL_SoftMax.tp_print = 0;
-  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_SoftMax.tp_dict, __pyx_vtabptr_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 149, __pyx_L1_error)
-  if (PyObject_SetAttrString(__pyx_m, "SoftMax", (PyObject *)&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 149, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_8PyDeepCL_SoftMax.tp_dict, __pyx_vtabptr_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 148, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "SoftMax", (PyObject *)&__pyx_type_8PyDeepCL_SoftMax) < 0) __PYX_ERR(10, 148, __pyx_L1_error)
   __pyx_ptype_8PyDeepCL_SoftMax = &__pyx_type_8PyDeepCL_SoftMax;
   if (PyType_Ready(&__pyx_type_8PyDeepCL_LayerMaker2) < 0) __PYX_ERR(11, 1, __pyx_L1_error)
   __pyx_type_8PyDeepCL_LayerMaker2.tp_print = 0;
@@ -36756,7 +36735,7 @@ PyMODINIT_FUNC PyInit_PyDeepCL(void)
  *         return ConvolutionalMaker()
  * 
  */
-  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_18ConvolutionalMaker_13instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 70, __pyx_L1_error)
+  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_8PyDeepCL_18ConvolutionalMaker_11instance, NULL, __pyx_n_s_PyDeepCL); if (unlikely(!__pyx_t_3)) __PYX_ERR(11, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
   /* "LayerMaker.pyx":69

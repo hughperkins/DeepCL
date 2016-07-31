@@ -54,11 +54,11 @@ cdef class ConvolutionalMaker(LayerMaker2):
     def filterSize( self, int _filterSize ):
         self.thisptr.filterSize( _filterSize )
         return self
-    def padZeros(self):
-        self.thisptr.padZeros()
-        return self
-    def padZeros(self, bint _padZeros):
-        self.thisptr.padZeros( _padZeros )
+    #def padZeros(self):
+    #    self.thisptr.padZeros()
+    #    return self
+    def padZeros(self, bint _padZeros = True):
+        self.thisptr.padZeros(_padZeros)
         return self
     #def biased(self):
     #    self.thisptr.biased()
