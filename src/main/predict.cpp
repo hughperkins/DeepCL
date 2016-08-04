@@ -204,8 +204,21 @@ void go(Config config) {
     }
     if(verbose) cout << "inputFile: '" << config.inputFile << "'"<< endl;
     if(config.inputFile == "") {
-        cin.read(reinterpret_cast< char * >(inputData), inputCubeSize * config.batchSize * 4l);
-        more = !cin.eof();
+		const int size = inputCubeSize * config.batchSize * 4l;
+		char *bytes = new char[size];
+
+		cin.read(bytes, size);
+		float *bytes_as_float_pointer = (float*)bytes;
+
+		for (int i = 0; i < size / 4, i++;)
+		{
+			inputData[i] = bytes_as_float_pointer[i];
+		}
+
+		delete[] bytes_as_float_pointer;
+		delete[] bytes;
+
+		more = !cin.eof();
     } else {
         // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
         // now, after modifying GenericLoader to have this new behavior
@@ -266,8 +279,21 @@ void go(Config config) {
         outFile->flush();
         n += config.batchSize;
         if(config.inputFile == "") {
-            cin.read(reinterpret_cast< char * >(inputData), inputCubeSize * config.batchSize * 4l);
-            more = !cin.eof();
+			const int size = inputCubeSize * config.batchSize * 4l;
+			char *bytes = new char[size];
+
+			cin.read(bytes, size);
+			float *bytes_as_float_pointer = (float*)bytes;
+
+			for (int i = 0; i < size / 4, i++;)
+			{
+				inputData[i] = bytes_as_float_pointer[i];
+			}
+
+			delete[] bytes_as_float_pointer;
+			delete[] bytes;
+
+			more = !cin.eof();
         } else {
             if(n < N) {
                 // GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
