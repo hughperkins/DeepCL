@@ -204,8 +204,26 @@ void go(Config config) {
     }
     if(verbose) cout << "inputFile: '" << config.inputFile << "'"<< endl;
     if(config.inputFile == "") {
-        cin.read(reinterpret_cast< char * >(inputData), inputCubeSize * config.batchSize * 4l);
-        more = !cin.eof();
+        char command[128];
+        int pos = 0;
+        // 3 bytes contain the command, BAT or not
+        while(pos < 3) {
+            cin.read(command, 3 - pos);
+            pos += cin.gcount();
+        }
+        command[4] = 0;
+        cout << "command: [" << command << endl;
+        if(string(command) == "BAT") {
+            more = true;
+            long pos = 0;
+            long linearsize = inputCubeSize * config.batchSize * 4l;
+            while(pos < linearsize) {
+                cin.read(reinterpret_cast< char * >(inputData) + pos, linearsize - pos);
+                pos += cin.gcount();
+            }
+        } else {
+            more = false;
+        }
     } else {
         // pass 0 for labels, and this will cause GenericLoader to simply not try to load any labels
         // now, after modifying GenericLoader to have this new behavior
@@ -266,8 +284,26 @@ void go(Config config) {
         outFile->flush();
         n += config.batchSize;
         if(config.inputFile == "") {
-            cin.read(reinterpret_cast< char * >(inputData), inputCubeSize * config.batchSize * 4l);
-            more = !cin.eof();
+            char command[128];
+            int pos = 0;
+            // 3 bytes contain the command, BAT or not
+            while(pos < 3) {
+                cin.read(command, 3 - pos);
+                pos += cin.gcount();
+            }
+            command[4] = 0;
+            cout << "command: [" << command << endl;
+            if(string(command) == "BAT") {
+                more = true;
+                long pos = 0;
+                long linearsize = inputCubeSize * config.batchSize * 4l;
+                while(pos < linearsize) {
+                    cin.read(reinterpret_cast< char * >(inputData) + pos, linearsize - pos);
+                    pos += cin.gcount();
+                }
+            } else {
+                more = false;
+            }
         } else {
             if(n < N) {
                 // GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
