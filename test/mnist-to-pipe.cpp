@@ -49,8 +49,10 @@ int main( int argc, char *argv[] ) {
     dims[1] = size;
     dims[2] = size;
     cout.write( reinterpret_cast< char * >( dims ), 3 * 4l );
+    cout.write( "BAT", 3 );
     cout.write( reinterpret_cast< char * >( imageData ), linearLength * 4l );
 //    FileHelper::writeBinary( outFile, reinterpret_cast< char * >(imageData), linearLength * 4l );
+    cout.write( "END", 3 );
 
     delete[] labels;
     delete[] imageData;

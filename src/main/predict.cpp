@@ -212,7 +212,7 @@ void go(Config config) {
             pos += cin.gcount();
         }
         command[3] = 0;
-        cout << "command: [" << command << endl;
+        cout << "command: [" << command << "]" << endl;
         if(string(command) == "BAT") {
             more = true;
             long pos = 0;
