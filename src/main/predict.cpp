@@ -211,7 +211,7 @@ void go(Config config) {
             cin.read(command, 3 - pos);
             pos += cin.gcount();
         }
-        command[4] = 0;
+        command[3] = 0;
         cout << "command: [" << command << endl;
         if(string(command) == "BAT") {
             more = true;
@@ -291,7 +291,7 @@ void go(Config config) {
                 cin.read(command, 3 - pos);
                 pos += cin.gcount();
             }
-            command[4] = 0;
+            command[3] = 0;
             cout << "command: [" << command << endl;
             if(string(command) == "BAT") {
                 more = true;
