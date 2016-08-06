@@ -208,7 +208,7 @@ void go(Config config) {
         int pos = 0;
         // 3 bytes contain the command, BAT or not
         while(pos < 3) {
-            cin.read(command, 3 - pos);
+            cin.read(command + pos, 3 - pos);
             pos += cin.gcount();
         }
         command[3] = 0;
@@ -288,7 +288,7 @@ void go(Config config) {
             int pos = 0;
             // 3 bytes contain the command, BAT or not
             while(pos < 3) {
-                cin.read(command, 3 - pos);
+                cin.read(command + pos, 3 - pos);
                 pos += cin.gcount();
             }
             command[3] = 0;
