@@ -31,7 +31,7 @@ if exist "c:\program files\cmake\bin\cmake.exe" set "CMAKEEXE=c:\program files\c
 if exist "c:\program files (x86)\cmake\bin\cmake.exe" set "CMAKEEXE=c:\program files (x86)\cmake\bin\cmake.exe"
 set "generatorpostfix="
 if x%WINBITS%==x64 set "generatorpostfix= Win64"
-"%CMAKEEXE%" -G "Visual Studio 10 2010%generatorpostfix%" -C initcache.cmake ..
+"%CMAKEEXE%" -G "Visual Studio 14 2015%generatorpostfix%" -C initcache.cmake ..
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ALL_BUILD.vcxproj /p:Configuration=Release
 if errorlevel 1 exit /B 1
 C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe INSTALL.vcxproj /p:Configuration=Release
@@ -40,14 +40,14 @@ if errorlevel 1 exit /B 1
 rem copy down the redistributables (maybe they're on the server somewhere?)
 cd %~dp0..
 powershell Set-ExecutionPolicy unrestricted
-if not exist vc2010redist.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
+rem if not exist vc2010redist.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
 if errorlevel 1 exit /B 1
 
-rmdir /s /q vc2010redist
-"c:\program files\7-Zip\7z.exe" x vc2010redist.zip
-if errorlevel 1 exit /B 1
+rem rmdir /s /q vc2010redist
+rem "c:\program files\7-Zip\7z.exe" x vc2010redist.zip
+rem if errorlevel 1 exit /B 1
 
-copy vc2010redist\win%WINBITS%\* dist\bin
+rem copy vc2010redist\win%WINBITS%\* dist\bin
 
 cd %~dp0..
 "c:\program files\7-Zip\7z.exe" a deepcl-win%WINBITS%-%version%.zip dist
@@ -55,4 +55,3 @@ if errorlevel 1 exit /B 1
 
 cd %~dp0..
 echo %version%>latestUnstable.txt
-

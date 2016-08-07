@@ -6,7 +6,7 @@ echo pyversion: %pyversion%
 
 call %~dp0win-cpp.bat %bitness%
 
-call \env-%pyversion%-%bitness%\scripts\activate
+call \py%pyversion%-%bitness%\scripts\activate
 
 python -c "from __future__ import print_function; import platform; print( platform.uname() )"
 python -c "from __future__ import print_function; import platform; print( platform.architecture() )"
@@ -29,6 +29,7 @@ rem  cd
 rem  dir
 cd %~dp0..
 call dist\bin\activate.bat
+pip install numpy
 pip install pytest
 
 copy /y jenkins\version.txt python
@@ -64,4 +65,3 @@ goto :eof
 :error
 echo Error occurred
 exit /B 1
-

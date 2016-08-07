@@ -88,11 +88,7 @@ This section installs the native libraries, and the command-line tools.  You alw
 #### Pre-requisites:
 
 * OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed
-* Tested using Windows 7, and Visual Studio 2010, this is how the CI builds run
-* Other versions of VS are supported, just not explicitly CI tested (so please go ahead and log issues for any VS versions you are using):
-  * Visual Studio 2008 is implicitly tested by the Python 2.7 builds, which are built with Visual Studio 2008
-  * Visual Studio 2012 seems to be largely backwards compatible with Visual Studio 2010, no known specific build/run issues for DeepCL
-  * Visual Studio 2015 needs a newer version of clBLAS, which you can get by using branch `clblas-2.8.0` of DeepCL.  You'll need to [build from source](doc/Build.md)
+* Tested using Windows 2012 RC2, and (New!) Visual Studio 2015, this is how the CI builds run
 
 #### Procedure:
 
@@ -185,6 +181,9 @@ License
 Recent changes
 ==============
 
+* 7th August 2016:
+  * "standard" version of windows compiler changed from msvc2010 to msvc2015 update 3  (no change to linux/mac)
+  * "standard" version of python 3.x on windows changed from 3.4 to 3.5  (no change to linux/mac)
 * 29th July 2016:
   * python fixes:
     * CHANGE: must use numpy tensors now, `array.array` no longer accepted

@@ -96,7 +96,7 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 *Required:*
 - git
 - cmake
-- Visual Studio (current 'standard' build system is: Visual Studio 2010 Express, but should also work on Visual Studio 2008 for Python 2.7, and Visual Studio Express 2013)
+- Visual Studio 2015
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 *Optional:*
@@ -104,7 +104,7 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
   - if you want, I made a fresh build of libjpeg-turbo 1.4.0:
     - dynamic library (doesnt work for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64.zip)
     - static library (works ok for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32-static.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64-static.zip)
-- Python 2.7 or Python 3.4 (needs python, and also the development library and include files)
+- Python 2.7 or Python 3.5
 
 ### Procedure
 
@@ -116,7 +116,7 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
   - `git submodule update --recursive`
 - create a subdirectory `build` in the git cloned `DeepCL` directory
 - open cmake, point at the `DeepCL` directory, and set to build in the `build` subdirectory
-  - `configure`, select 'visual studio 2010' (or as appropriate)
+  - `configure`, select 'visual studio 2015' (or as appropriate)
 - choose the options you want, eg turn python on/off, jpeg on/off
 - click `generate`
 - open visual studio, and load any of the projects in the `build` directory
