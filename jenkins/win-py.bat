@@ -55,7 +55,7 @@ python setup.py install
 if errorlevel 1 goto :error
 py.test -sv test
 if errorlevel 1 goto :error
-set HOME=%HOMEPATH%
+set HOME=c:\Users\Administrator
 echo HOME: %HOME%
 python setup.py bdist_egg upload
 rem ignore any error?
