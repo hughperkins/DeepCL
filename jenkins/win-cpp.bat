@@ -46,7 +46,7 @@ rem "c:\program files\7-Zip\7z.exe" x vc2010redist.zip
 rem if errorlevel 1 exit /B 1
 
 rem copy vc2010redist\win%WINBITS%\* dist\bin
-copy "${SOURCE_DIR}\jpegturbo-1.5-%WINBITS%\jpeg62.dll" dist\bin
+copy "jpegturbo-1.5-%WINBITS%\jpeg62.dll" dist\bin
 
 cd %~dp0..
 "c:\program files\7-Zip\7z.exe" a deepcl-win%WINBITS%-%version%.zip dist
