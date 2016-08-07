@@ -35,13 +35,13 @@ For example of using q-learning, see [test_qlearning.py](https://github.com/hugh
 ### Pre-requisites:
 
 * on Windows:
-  * Python 2.7 or Python 3.4
+  * Python 2.7 or Python 3.5
   * A compiler:
     * Python 2.7 build: need [Visual Studio 2008 for Python 2.7](http://www.microsoft.com/en-us/download/details.aspx?id=44266) from Microsoft
-    * Python 3.4 build: need Visual Studio 2010, eg [Visual C++ 2010 Express](https://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
+    * Python 3.5 build: need Visual Studio 2015, (https://www.visualstudio.com/downloads)
 * on linux:
-  * Python 2.7 or Python 3.4
-  * g++, supporting c++0x, eg 4.4 or higher
+  * Python 2.7 or Python 3.4/3.5
+  * g++, supporting c++11, eg 4.6 or higher
 * have first already built the native libraries, see [Build.md](../doc/Build.md)
 * have activated the native library installation, ie called `dist/bin/activate.sh`, or `dist/bin/activate.bat`
 * `numpy` installed

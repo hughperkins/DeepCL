@@ -31,7 +31,7 @@
 - cmake
 - cmake-curses-gui
 - gfortran
-- g++ (should support c++0x; eg 4.4 or better)
+- g++ (should support c++11; eg 4.6 or better)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 *Optional:*
@@ -102,7 +102,7 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 *Optional:*
 - (new) libjpeg62, or compatible, eg [libjpeg-turbo](http://www.libjpeg-turbo.org/Documentation/OfficialBinaries)  (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
   - the CI builds use http://deepcl.hughperkins.com/Downloads/jpegturbo-1.5-64.zip and http://deepcl.hughperkins.com/Downloads/jpegturbo-1.5-32.zip
-- Python 2.7 or Python 3.5 (note: python 3.4 not supported, on Windows. sorry)
+- Python 2.7 or Python 3.5 (note: python 3.4 no longer supported, on Windows)
 
 ### Procedure
 
