@@ -184,6 +184,7 @@ Recent changes
 * 7th August 2016:
   * "standard" version of windows compiler changed from msvc2010 to msvc2015 update 3  (no change to linux/mac)
   * "standard" version of python 3.x on windows changed from 3.4 to 3.5  (no change to linux/mac)
+  * (note: python2.7 continues to work as before on all of Windows 32/64, linux, Mac)
 * 29th July 2016:
   * python fixes:
     * CHANGE: must use numpy tensors now, `array.array` no longer accepted
