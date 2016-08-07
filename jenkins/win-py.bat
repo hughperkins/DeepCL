@@ -53,7 +53,9 @@ if errorlevel 1 goto :error
 
 set HOME=%HOMEPATH%
 python setup.py install
+if errorlevel 1 goto :error
 py.test -sv test
+if errorlevel 1 goto :error
 python setup.py bdist_egg upload
 rem ignore any error?
 rem if errorlevel 1 goto :error
