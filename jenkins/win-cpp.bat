@@ -38,15 +38,24 @@ if errorlevel 1 exit /B 1
 rem copy down the redistributables (maybe they're on the server somewhere?)
 cd %~dp0..
 powershell Set-ExecutionPolicy unrestricted
-rem if not exist vc2010redist.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
 if errorlevel 1 exit /B 1
 
-rem rmdir /s /q vc2010redist
-rem "c:\program files\7-Zip\7z.exe" x vc2010redist.zip
-rem if errorlevel 1 exit /B 1
+if not exist vc2010redist.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/vc2010redist.zip', 'vc2010redist.zip')
+if errorlevel 1 exit /B 1
 
-rem copy vc2010redist\win%WINBITS%\* dist\bin
+rmdir /s /q vc2010redist
+"c:\program files\7-Zip\7z.exe" x vc2010redist.zip
+if errorlevel 1 exit /B 1
+
+copy vc2010redist\win%WINBITS%\* dist\bin
 copy "jpegturbo-1.5-%WINBITS%\jpeg62.dll" dist\bin
+
+if not exist msvc2015-win%WINBITS%.zip powershell.exe -Command (new-object System.Net.WebClient).DownloadFile('http://deepcl.hughperkins.com/Downloads/msvc2015-win%WINBITS%.zip', 'msvc2015-win%WINBITS%.zip')
+if errorlevel 1 exit /B 1
+rmdir /s /q msvc2015-win%WINBITS%
+"c:\program files\7-Zip\7z.exe" x msvc2015-win%WINBITS%.zip
+if errorlevel 1 exit /B 1
+copy msvc2015-win%WINBITS%\* dist\bin
 
 cd %~dp0..
 "c:\program files\7-Zip\7z.exe" a deepcl-win%WINBITS%-%version%.zip dist
