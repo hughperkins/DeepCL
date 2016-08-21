@@ -163,3 +163,20 @@ If you want to use the DeepCL library from C++, you will need to link with the f
 - during build, `fatal error: CppRuntimeBoundary.h: No such file or directory`
   - make sure you ran `source ../dist/bin/activate.sh`, or similar (see above for exact command similar to this)
 
+# Building libjpeg
+
+Using instructoins at https://stackoverflow.com/questions/12652178/compiling-libjpeg/19045485#19045485
+- downloaded http://www.ijg.org/files/jpegsr9b.zip , unzipped
+- downloaded http://www.bvbcode.com/code/f2kivdrh-395674-down , copied to unzipped jpeg-9b directory
+- open cmd
+- run `call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"`
+- run `nmake /f makefile.vc setup-v10`
+- open `jpeg.sln` in msvc2015, and build
+- (dont need `apps.sln`, ignore it)
+- you've built win32, into `release` directory
+  - copy `jpeg.lib` somewhere
+- now, redo, but selecting `x64` in the dropdown, in the menubar, at hte top of msvc ui
+  - you have to do something like right-click, 'add configuration', and select architecture 'x64' to do this
+  - this will build into `x64\release`, instead of simply `release`
+
+This builds as a static library, so no need to distribute dlls and stuff

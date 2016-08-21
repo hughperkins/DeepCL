@@ -77,4 +77,4 @@ python/results.txt
 lua/*-*.rock
 lua/*.rockspec
 
-
+~*
