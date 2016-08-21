@@ -94,7 +94,7 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
 					continue; // There are no spaces so no reason to check if final item is a valid number
 				
 				char* p;
-				strtol(splitLine[splitSize - 1].c_str(), &p, 10); // If convertion from string to number is successful p will point to null/0
+				strtol(splitLine[splitSize - 1].c_str(), &p, 10); // If conversion from string to number is successful p will point to null/0
 
 				if (n == 0)
 					hasLabels = *p == 0 ? true : false; // If p points to null/0 we have labels
