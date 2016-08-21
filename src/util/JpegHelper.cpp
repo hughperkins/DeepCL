@@ -12,6 +12,7 @@ extern "C" {
 #include <stdexcept>
 
 #include "util/stringhelper.h"
+#include "util/FileHelper.h"
 #include "util/JpegHelper.h"
 
 using namespace std;
@@ -45,7 +46,7 @@ PUBLIC STATIC void JpegHelper::write(std::string filename, int planes, int width
 
 //    string filename = "foo.jpeg";
     FILE * outfile;
-    if ((outfile = fopen(filename.c_str(), "wb")) == NULL) {
+    if ((outfile = fopen(FileHelper::localizePath(filename).c_str(), "wb")) == NULL) {
         throw runtime_error("can't open "  + filename);
     }
     jpeg_stdio_dest(&cinfo, outfile);
@@ -93,7 +94,7 @@ PUBLIC STATIC void JpegHelper::read(std::string filename, int planes, int width,
 
 //    string filename = "foo.jpeg";
     FILE * infile;
-    if ((infile = fopen(filename.c_str(), "rb")) == NULL) {
+    if ((infile = fopen(FileHelper::localizePath(filename).c_str(), "rb")) == NULL) {
         throw runtime_error("can't open "  + filename);
     }
     jpeg_stdio_src(&cinfo, infile);
