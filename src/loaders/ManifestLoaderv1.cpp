@@ -51,12 +51,9 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
     hasLabels = false;
     for(int it=0; it < 2; it++) {
         int n = 0;
-        bool dryrun = true;
-        if(it == 0) {
-        } else {
-            dryrun = false;
-        }
-        cout << "read file it=" << it << endl;
+        bool dryrun = it == 0 ? true : false;
+
+        cout << "read file int=" << it << endl;
         ifstream infile(imagesFilepath);
         char lineChars[1024];
         infile.getline(lineChars, 1024); // skip first, header, line
@@ -82,33 +79,41 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
         // - second time, we allocate space, and read in the examples
         while(infile) {
             infile.getline(lineChars, 1024);
-            if(!infile) {
+            if(!infile)
                 break;
-            }
+
             string line = string(lineChars);
-            if(line == "") {
-                continue;
-            }
+			if(line == "") 
+				continue;
+
             vector<string> splitLine = split(line, " ");
-            if((int)splitLine.size() == 0) {
-                continue;
-            }
-            if(n == 0) {
-                int lineSize = (int)splitLine.size();
-                if(lineSize == 2) {
-                    hasLabels = true;
-                }
-            }
-            if(!hasLabels && (int)splitLine.size() != 1) { 
-                throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
-            }
-            if(hasLabels && (int)splitLine.size() != 2) { 
-                throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
-            }
-            if(!dryrun) {
-                string jpegFile = splitLine[0];
+			int splitSize = (int)splitLine.size();
+
+			if (dryrun) {
+				if (splitSize == 0)
+					continue; // There are no spaces so no reason to check if final item is a valid number
+				
+				char* p;
+				strtol(splitLine[splitSize - 1].c_str(), &p, 10); // If convertion from string to number is successful p will point to null/0
+
+				if (n == 0)
+					hasLabels = *p == 0 ? true : false; // If p points to null/0 we have labels
+				
+				if (hasLabels && *p != 0) // We were expecting labels but found none
+					throw runtime_error("Error reading " + imagesFilepath + ".  Following line not parseable:\n" + line);
+			}
+			else {
+				string jpegFile = line;
+
+				if (hasLabels) {
+					string tempValue = splitLine[splitSize - 1];
+					labels[n] = atoi(tempValue);
+					jpegFile = line.substr(0, line.size() - tempValue.size());
+				}
+				
                 #ifdef _WIN32
                 jpegFile = replace(jpegFile, "\\", "/");
+
                 if(jpegFile[1] != ':' && jpegFile[0] != '/') {  // I guess this means its a relative path?
                     vector<string> splitManifestPath = split(imagesFilepath, "/");
                     string dirPath = replace(imagesFilepath, splitManifestPath[splitManifestPath.size()-1], "");
@@ -122,12 +127,8 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
                 }
                 #endif
                 files[n] = jpegFile;
-                if(hasLabels) {
-                    int label = atoi(splitLine[1]);
-                    labels[n] = label;
-                }
             }
-    //        cout << "file " << jpegFile << " label=" << label << endl;
+
             n++;
         }
         infile.close();
@@ -182,4 +183,3 @@ PUBLIC VIRTUAL void ManifestLoaderv1::load(unsigned char *data, int *labels, int
         }
     }
 }
-
