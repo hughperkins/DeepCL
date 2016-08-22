@@ -53,7 +53,7 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
         int n = 0;
         bool dryrun = it == 0 ? true : false;
 
-        cout << "read file int=" << it << endl;
+        cout << "read file it=" << it << endl;
         ifstream infile(imagesFilepath);
         char lineChars[1024];
         infile.getline(lineChars, 1024); // skip first, header, line
