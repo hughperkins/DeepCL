@@ -108,7 +108,7 @@ PRIVATE void ManifestLoaderv1::init(std::string imagesFilepath) {
 				if (hasLabels) {
 					string tempValue = splitLine[splitSize - 1];
 					labels[n] = atoi(tempValue);
-					jpegFile = line.substr(0, line.size() - tempValue.size());
+					jpegFile = line.substr(0, line.size() - tempValue.size() - 1);
 				}
 				
                 #ifdef _WIN32
