@@ -122,10 +122,8 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
         int filterSize = atoi(splitConvDef1[0]);
         int skip = 0;
         ActivationFunction *fn = 0;
-        int padZeros = 0;
-        if(splitConvDef1.size() == 2) {
-            padZeros = 1;
-        }
+        bool padZeros = splitConvDef1.size() == 2 ? true : false;
+
         for(int i = 0; i < (int)splitOptionsDef.size(); i++) {
             string optionDef = splitOptionsDef[i];
 //            cout << "optionDef [" << optionDef << "]" << endl;
@@ -150,10 +148,8 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
                     fn = new EluActivation();
                 } else if(optionName == "linear") {
                     fn = new LinearActivation();
-                } else if(optionName == "padzeros") {
-                    padZeros = 1;
-                } else if(optionName == "z") {
-                    padZeros = 1;
+                } else if(optionName == "padzeros" || optionName == "z") {
+                    padZeros = true;
                 } else {
                     cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
                     return false;
@@ -197,7 +193,7 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
 //            fn = new LinearActivation();
 //        }
 //        int padZeros = 0;
-        int biased = 1;
+        bool biased = true;
         for(int i = 0; i < (int)splitOptionsDef.size(); i++) {
             string optionDef = splitOptionsDef[i];
 //                cout << "optionDef: " << optionDef << endl;
@@ -213,7 +209,7 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
                 } else if(optionName == "relu") {
                     fn = new ReluActivation();
                 } else if(optionName == "nobias") {
-                    biased = 0;
+                    biased = false;
                 } else if(optionName == "linear") {
                     fn = new LinearActivation();
                 } else {
