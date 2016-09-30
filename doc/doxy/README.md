@@ -8,6 +8,7 @@ sudo apt-get install doxygen
 
 ## To run
 
+From this directory, run:
 ```
 doxygen
 ```
