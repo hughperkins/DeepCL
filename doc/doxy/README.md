@@ -14,7 +14,7 @@ doxygen
 
 ## To view
 
-- open doxygen/html/index.html with a web browser
+- open doxygen/html/annotated.html with a web browser
 
 ## To upload to my website (notes to myself)
 
