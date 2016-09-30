@@ -78,3 +78,5 @@ lua/*-*.rock
 lua/*.rockspec
 
 ~*
+
+doc/doxy/doxygen/
