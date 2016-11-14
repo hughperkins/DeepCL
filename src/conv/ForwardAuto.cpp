@@ -71,6 +71,10 @@ VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapp
                     candidate->forward(batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper);
                     milliseconds[thisIndex] = (int)timer.lap();
                     cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+                    if (milliseconds[thisIndex] == 0) { //we can't get better time, use this instance
+                        cout << "   forward layer selected kernel with zero time" << thisIndex << endl;
+                        this->chosenIndex = thisIndex;
+                    }
                     return;
                 } catch(runtime_error &e) {
                     cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
