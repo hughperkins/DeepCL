@@ -266,3 +266,5 @@ To get in contact
 =================
 
 Just create an issues, in github, in the top right of this page.  Don't worry about whether you think the issue sounds silly or anything.  The more feedback the better!
+
+Note that I'm currently focused 100.000% on [cuda-on-cl](https://github.com/hughperkins/cuda-on-cl), so please be patient during this period.
