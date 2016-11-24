@@ -70,6 +70,10 @@ VIRTUAL void BackwardAuto::backward(
                     candidate->backward(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
                     milliseconds[thisIndex] = (int)timer.lap();
                     cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+                    if (milliseconds[thisIndex] == 0) { //we can't get better time, use this instance
+                        cout << "   backward layer selected kernel with zero time" << thisIndex << endl;
+                        this->chosenIndex = thisIndex;
+                    }
                     return;
                 } catch(runtime_error &e) {
                     cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
