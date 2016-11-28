@@ -113,6 +113,7 @@ VIRTUAL void DropoutLayer::setBatchSize(int batchSize) {
     maskWrapper = cl->wrap(getOutputNumElements(), masks);
     output = new float[ getOutputNumElements() ];
     outputWrapper = cl->wrap(getOutputNumElements(), output);
+    outputWrapper->createOnDevice();
     gradInput = new float[ previousLayer->getOutputNumElements() ];
     gradInputWrapper = cl->wrap(previousLayer->getOutputNumElements(), gradInput);
     gradInputWrapper->createOnDevice();
@@ -229,6 +230,7 @@ VIRTUAL void DropoutLayer::backward() {
         gradOutputWrapper->copyToDevice();
         weOwnErrorsWrapper = true;
     }
+    maskWrapper->copyToDevice();
     dropoutBackwardImpl->backward(batchSize, maskWrapper, gradOutputWrapper, gradInputWrapper);
     if(weOwnErrorsWrapper) {
         delete gradOutputWrapper;

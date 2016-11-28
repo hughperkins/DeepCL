@@ -59,8 +59,9 @@ VIRTUAL void DropoutForward::forward(int batchSize, unsigned char *masks, float 
 
     masksWrapper->copyToDevice();
     inputWrapper->copyToDevice();
+    outputWrapper->createOnDevice();
     forward(batchSize, masksWrapper, inputWrapper, outputWrapper);
-    outputWrapper->copyToHost();    
+    outputWrapper->copyToHost();
 
     delete outputWrapper;
     delete inputWrapper;
