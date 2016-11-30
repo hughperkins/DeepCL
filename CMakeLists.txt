@@ -192,6 +192,7 @@ set(UNITTEST_SOURCES test/testClBlas.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  test/NetTestHelper.cpp test/testGpuOp.cpp
+ test/testdroplayer.cpp
 )
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
