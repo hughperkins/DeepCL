@@ -12,12 +12,15 @@
 #define STATIC static
 
 class ActivationFunction;
+
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 
 class DeepCL_EXPORT ActivationForward {
 public:
-    EasyCL *cl;
+    easycl::EasyCL *cl;
 
     const int numPlanes;
     const int inputSize;
@@ -45,11 +48,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationForward(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
-    STATIC ActivationForward *instance(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
-    STATIC ActivationForward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
-    STATIC ActivationForward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
-    VIRTUAL void forward(int batchSize, CLWrapper *inputData, CLWrapper *outputData);
+    ActivationForward(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instance(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instanceForTest(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    STATIC ActivationForward *instanceSpecific(int idx, easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *inputData, easycl::CLWrapper *outputData);
     VIRTUAL void forward(int batchSize, float *input, float *output);
     VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);

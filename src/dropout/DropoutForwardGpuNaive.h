@@ -11,11 +11,13 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class CLKernel;
+}
 
 class DropoutForwardGpuNaive : public DropoutForward {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
@@ -23,8 +25,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~DropoutForwardGpuNaive();
-    VIRTUAL void forward(int batchSize, CLWrapper *masksWrapper, CLWrapper *inputWrapper, CLWrapper *outputWrapper);
-    DropoutForwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *masksWrapper, easycl::CLWrapper *inputWrapper, easycl::CLWrapper *outputWrapper);
+    DropoutForwardGpuNaive(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
 
     // [[[end]]]
 };

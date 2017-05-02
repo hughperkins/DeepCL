@@ -13,8 +13,10 @@
 
 #include "trainers/TrainerState.h"
 
+namespace easycl {
 class EasyCL;
 class CLKernel;
+}
 
 #include "DeepCLDllExport.h"
 
@@ -36,7 +38,7 @@ public:
 
     // should store last weights
     float *lastUpdate;
-    CLWrapper *lastUpdateWrapper;
+    easycl::CLWrapper *lastUpdateWrapper;
 
     // [[[cog
     // import cog_addheaders
@@ -44,7 +46,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~SGDState();
-    SGDState(EasyCL *cl, int numWeights);
+    SGDState(easycl::EasyCL *cl, int numWeights);
 
     // [[[end]]]
 };

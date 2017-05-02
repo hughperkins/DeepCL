@@ -7,7 +7,7 @@
 
 class BackpropWeightsScratch : public BackpropWeights {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
@@ -15,8 +15,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~BackpropWeightsScratch();
-    VIRTUAL void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper);
-    BackpropWeightsScratch(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void calcGradWeights(int batchSize, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *imagesWrapper, easycl::CLWrapper *gradWeightsWrapper, easycl::CLWrapper *gradBiasWrapper);
+    BackpropWeightsScratch(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

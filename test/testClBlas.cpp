@@ -14,7 +14,7 @@ using namespace std;
 #include "test/gtest_supp.h"
 
 TEST(testClBlas, basic) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -24,9 +24,9 @@ TEST(testClBlas, basic) {
 
     float C[3];
     ClBlasInstance clblasInstance;
-    CLWrapper *AWrap = cl->wrap(6, A);
-    CLWrapper *BWrap = cl->wrap(2, B);
-    CLWrapper *CWrap = cl->wrap(3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(6, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2, B);
+    easycl::CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     CWrap->createOnDevice();
@@ -76,7 +76,7 @@ static void transpose(float *matrix, int rows, int cols) {
 }
 
 TEST(testClBlas, transA) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -94,9 +94,9 @@ TEST(testClBlas, transA) {
     }
     ClBlasInstance clblasInstance;
 //    ClBlasInstance::initializeIfNecessary();
-    CLWrapper *AWrap = cl->wrap(6, A);
-    CLWrapper *BWrap = cl->wrap(2, B);
-    CLWrapper *CWrap = cl->wrap(3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(6, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2, B);
+    easycl::CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     ClBlasHelper::Gemm(
@@ -124,7 +124,7 @@ TEST(testClBlas, transA) {
 }
 
 TEST(testClBlas, transB) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -142,9 +142,9 @@ TEST(testClBlas, transB) {
     }
     ClBlasInstance clblasInstance;
 //    ClBlasInstance::initializeIfNecessary();
-    CLWrapper *AWrap = cl->wrap(6, A);
-    CLWrapper *BWrap = cl->wrap(2, B);
-    CLWrapper *CWrap = cl->wrap(3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(6, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2, B);
+    easycl::CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     ClBlasHelper::Gemm(
@@ -172,7 +172,7 @@ TEST(testClBlas, transB) {
 }
 
 TEST(testClBlas, colMajor) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -191,9 +191,9 @@ TEST(testClBlas, colMajor) {
 //    }
     ClBlasInstance clblasInstance;
 //    ClBlasInstance::initializeIfNecessary();
-    CLWrapper *AWrap = cl->wrap(6, A);
-    CLWrapper *BWrap = cl->wrap(2, B);
-    CLWrapper *CWrap = cl->wrap(3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(6, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2, B);
+    easycl::CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     ClBlasHelper::Gemm(
@@ -221,7 +221,7 @@ TEST(testClBlas, colMajor) {
     delete cl;
 }
 TEST(testClBlas, colMajor2) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -241,9 +241,9 @@ TEST(testClBlas, colMajor2) {
 //    }
     ClBlasInstance clblasInstance;
 //    ClBlasInstance::initializeIfNecessary();
-    CLWrapper *AWrap = cl->wrap(4*2, A);
-    CLWrapper *BWrap = cl->wrap(2*3, B);
-    CLWrapper *CWrap = cl->wrap(4*3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(4*2, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2*3, B);
+    easycl::CLWrapper *CWrap = cl->wrap(4*3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     ClBlasHelper::Gemm(
@@ -272,7 +272,7 @@ TEST(testClBlas, colMajor2) {
     delete cl;
 }
 TEST(testClBlas, colMajorTransA) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -291,9 +291,9 @@ TEST(testClBlas, colMajorTransA) {
 //    }
     ClBlasInstance clblasInstance;
 //    ClBlasInstance::initializeIfNecessary();
-    CLWrapper *AWrap = cl->wrap(6, A);
-    CLWrapper *BWrap = cl->wrap(2, B);
-    CLWrapper *CWrap = cl->wrap(3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(6, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2, B);
+    easycl::CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     ClBlasHelper::Gemm(
@@ -321,7 +321,7 @@ TEST(testClBlas, colMajorTransA) {
     delete cl;
 }
 TEST(testClBlas, colMajorTransB) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -340,9 +340,9 @@ TEST(testClBlas, colMajorTransB) {
 //    }
     ClBlasInstance clblasInstance;
 //    ClBlasInstance::initializeIfNecessary();
-    CLWrapper *AWrap = cl->wrap(6, A);
-    CLWrapper *BWrap = cl->wrap(2, B);
-    CLWrapper *CWrap = cl->wrap(3, C);
+    easycl::CLWrapper *AWrap = cl->wrap(6, A);
+    easycl::CLWrapper *BWrap = cl->wrap(2, B);
+    easycl::CLWrapper *CWrap = cl->wrap(3, C);
     AWrap->copyToDevice();
     BWrap->copyToDevice();
     ClBlasHelper::Gemm(

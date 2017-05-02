@@ -12,7 +12,9 @@
 #include <algorithm>
 
 class Trainer;
+namespace easycl {
 class EasyCL;
+}
 class NeuralNet;
 
 #define VIRTUAL virtual
@@ -20,7 +22,7 @@ class NeuralNet;
 
 class TrainerMaker {
 public:
-    virtual Trainer *instance(EasyCL *cl, NeuralNet *net) = 0;
+    virtual Trainer *instance(easycl::EasyCL *cl, NeuralNet *net) = 0;
 
     // [[[cog
     // import cog_addheaders

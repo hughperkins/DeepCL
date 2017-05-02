@@ -14,7 +14,9 @@
 
 #include "DeepCLDllExport.h"
 
+namespace easycl {
 class EasyCL;
+}
 class ConvolutionalMaker;
 class LayerMaker;
 class RandomTranslatorMaker;
@@ -41,7 +43,7 @@ protected:
 #ifdef _WIN32
 #pragma warning(default: 4251)
 #endif
-    EasyCL *cl; // NOT owned by us, dont delete
+    easycl::EasyCL *cl; // NOT owned by us, dont delete
     Trainer *trainer; // NOT owned by us, dont delete
 
 public:
@@ -52,16 +54,16 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    NeuralNet(EasyCL *cl);
-    STATIC NeuralNet *instance(EasyCL *cl);
-    STATIC NeuralNet *instance(EasyCL *cl, int numPlanes, int imageSize);
-    STATIC NeuralNet *instance3(EasyCL *cl, int numPlanes, int imageSize);
+    NeuralNet(easycl::EasyCL *cl);
+    STATIC NeuralNet *instance(easycl::EasyCL *cl);
+    STATIC NeuralNet *instance(easycl::EasyCL *cl, int numPlanes, int imageSize);
+    STATIC NeuralNet *instance3(easycl::EasyCL *cl, int numPlanes, int imageSize);
     void deleteMe();
-    NeuralNet(EasyCL *cl, int numPlanes, int imageSize);
+    NeuralNet(easycl::EasyCL *cl, int numPlanes, int imageSize);
     ~NeuralNet();
-    STATIC NeuralNetMould *maker(EasyCL *cl);
+    STATIC NeuralNetMould *maker(easycl::EasyCL *cl);
     NeuralNet *clone();
-    EasyCL *getCl();
+    easycl::EasyCL *getCl();
     PUBLICAPI void addLayer(LayerMaker2 *maker);
     PUBLICAPI void initWeights(int layerIndex, float *weights, float *bias);
     PUBLICAPI void initWeights(int layerIndex, float *weights);

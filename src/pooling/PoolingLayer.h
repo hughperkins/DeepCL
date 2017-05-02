@@ -11,8 +11,10 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class CLKernel;
 class CLWrapper;
+}
 class PoolingForward;
 class PoolingBackward;
 
@@ -27,7 +29,7 @@ public:
 
     const int outputSize;
 
-    EasyCL *const cl; // NOT owned by us
+    easycl::EasyCL *const cl; // NOT owned by us
     PoolingForward *poolingForwardImpl;
     PoolingBackward *poolingBackpropImpl;
 
@@ -35,9 +37,9 @@ public:
     int *selectors;
     float *gradInput;
 
-    CLWrapper *outputWrapper;
-    CLWrapper *selectorsWrapper;
-    CLWrapper *gradInputWrapper;
+    easycl::CLWrapper *outputWrapper;
+    easycl::CLWrapper *selectorsWrapper;
+    easycl::CLWrapper *gradInputWrapper;
 
 //    bool outputCopiedToHost;
 //    bool gradInputCopiedToHost;
@@ -50,7 +52,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingLayer(EasyCL *cl, Layer *previousLayer, PoolingMaker *maker);
+    PoolingLayer(easycl::EasyCL *cl, Layer *previousLayer, PoolingMaker *maker);
     VIRTUAL ~PoolingLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize(int batchSize);
@@ -64,9 +66,9 @@ public:
     VIRTUAL int getPersistSize(int version) const;
     VIRTUAL int getPoolingSize() const;
     VIRTUAL bool providesGradInputWrapper() const;
-    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL easycl::CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
-    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL easycl::CLWrapper *getOutputWrapper();
     VIRTUAL float *getGradInput();
     VIRTUAL bool getPadZeros() const;
     VIRTUAL ActivationFunction const *getActivationFunction();

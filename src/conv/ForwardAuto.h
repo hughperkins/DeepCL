@@ -43,10 +43,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ForwardAuto(EasyCL *cl, LayerDimensions dim);
+    ForwardAuto(easycl::EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~ForwardAuto();
-    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *biasWrapper, CLWrapper *outputWrapper);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *dataWrapper, easycl::CLWrapper *weightsWrapper,
+    easycl::CLWrapper *biasWrapper, easycl::CLWrapper *outputWrapper);
 
     // [[[end]]]
 

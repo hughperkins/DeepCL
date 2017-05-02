@@ -16,6 +16,7 @@
 #include "PoolingBackwardGpuNaive.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #define VIRTUAL 

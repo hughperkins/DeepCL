@@ -15,9 +15,11 @@
 #define STATIC static
 
 class GpuOp;
+namespace easycl {
 class CLFloatBuffer;
 class EasyCL;
 class CLKernel;
+}
 
 #include "DeepCLDllExport.h"
 
@@ -26,11 +28,11 @@ class CLKernel;
 // a bit basic for now.  can extend gradually :-)
 // something to consider: pros/cons of using eg clBLAS instead?
 class DeepCL_EXPORT CLMathWrapper {
-    EasyCL *cl; // dont delete
+    easycl::EasyCL *cl; // dont delete
     GpuOp *gpuOp;
 
     int N;
-    CLFloatWrapper *wrapper; // dont delete
+    easycl::CLFloatWrapper *wrapper; // dont delete
 
 public:
     
@@ -49,8 +51,8 @@ public:
     VIRTUAL CLMathWrapper &sqrt();
     VIRTUAL CLMathWrapper &inv();
     VIRTUAL CLMathWrapper &squared();
-    VIRTUAL void runKernel(CLKernel *kernel);
-    CLMathWrapper(CLWrapper *wrapper);
+    VIRTUAL void runKernel(easycl::CLKernel *kernel);
+    CLMathWrapper(easycl::CLWrapper *wrapper);
 
     // [[[end]]]
 };

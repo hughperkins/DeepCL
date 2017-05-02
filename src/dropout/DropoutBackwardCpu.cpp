@@ -15,6 +15,7 @@
 #include "DropoutBackwardCpu.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #define VIRTUAL 

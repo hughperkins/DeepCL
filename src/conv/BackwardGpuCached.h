@@ -8,7 +8,7 @@
 
 class BackwardGpuCached : public Backward {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 //    CLKernel *applyActivationDeriv;
 
     // [[[cog
@@ -18,9 +18,9 @@ public:
     // generated, using cog:
     VIRTUAL ~BackwardGpuCached();
     VIRTUAL void backward(int batchSize,
-    CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *gradInputWrapper);
-    BackwardGpuCached(EasyCL *cl, LayerDimensions dim);
+    easycl::CLWrapper *inputDataWrapper, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *weightsWrapper,
+    easycl::CLWrapper *gradInputWrapper);
+    BackwardGpuCached(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

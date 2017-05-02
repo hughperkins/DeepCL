@@ -7,7 +7,7 @@
 
 class BackpropWeightsScratchLarge : public BackpropWeights {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
     int numStripes;
     int inputStripeOuterSize;
     int outputStripeSize;
@@ -18,8 +18,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~BackpropWeightsScratchLarge();
-    VIRTUAL void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper);
-    BackpropWeightsScratchLarge(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void calcGradWeights(int batchSize, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *imagesWrapper, easycl::CLWrapper *gradWeightsWrapper, easycl::CLWrapper *gradBiasWrapper);
+    BackpropWeightsScratchLarge(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

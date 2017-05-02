@@ -11,8 +11,10 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class CLKernel;
 class CLWrapper;
+}
 class DropoutForward;
 class DropoutBackward;
 class RandomSingleton;
@@ -29,7 +31,7 @@ public:
 
     RandomSingleton *random;
 
-    EasyCL *const cl; // NOT owned by us
+    easycl::EasyCL *const cl; // NOT owned by us
     DropoutForward *dropoutForwardImpl;
     DropoutBackward *dropoutBackwardImpl;
     MultiplyBuffer *multiplyBuffer; // for skipping dropout...
@@ -38,9 +40,9 @@ public:
     float *output;
     float *gradInput;
 
-    CLWrapper *maskWrapper;
-    CLWrapper *outputWrapper;
-    CLWrapper *gradInputWrapper;
+    easycl::CLWrapper *maskWrapper;
+    easycl::CLWrapper *outputWrapper;
+    easycl::CLWrapper *gradInputWrapper;
 
 //    bool outputCopiedToHost;
 //    bool gradInputCopiedToHost;
@@ -53,7 +55,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutLayer(EasyCL *cl, Layer *previousLayer, DropoutMaker *maker);
+    DropoutLayer(easycl::EasyCL *cl, Layer *previousLayer, DropoutMaker *maker);
     VIRTUAL ~DropoutLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void fortesting_setRandomSingleton(RandomSingleton *random);
@@ -66,9 +68,9 @@ public:
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize(int version) const;
     VIRTUAL bool providesGradInputWrapper() const;
-    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL easycl::CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
-    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL easycl::CLWrapper *getOutputWrapper();
     VIRTUAL float *getGradInput();
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void generateMasks();

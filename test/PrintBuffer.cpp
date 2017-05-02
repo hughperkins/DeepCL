@@ -15,8 +15,9 @@
 #include <algorithm>
 
 using namespace std;
+using namespace easycl;
 
-void PrintBuffer::printFloats(EasyCL *cl, CLWrapper *buffer, int rows, int cols) {
+void PrintBuffer::printFloats(easycl::EasyCL *cl, easycl::CLWrapper *buffer, int rows, int cols) {
     // first we will copy it to another buffer, so we can copy it out
 
     float *copiedBuffer = new float[ buffer->size() ];
@@ -32,7 +33,7 @@ void PrintBuffer::printFloats(EasyCL *cl, CLWrapper *buffer, int rows, int cols)
     delete[] copiedBuffer;
 }
 
-void PrintBuffer::printInts(EasyCL *cl, CLWrapper *buffer, int rows, int cols) {
+void PrintBuffer::printInts(easycl::EasyCL *cl, easycl::CLWrapper *buffer, int rows, int cols) {
     // first we will copy it to another buffer, so we can copy it out
 
     int *copiedBuffer = new int[ buffer->size() ];

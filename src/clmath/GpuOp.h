@@ -11,9 +11,11 @@
 #include <iostream>
 #include <algorithm>
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
 class CLKernel;
+}
 
 #include "DeepCLDllExport.h"
 
@@ -89,21 +91,21 @@ public:
 // not thread-safe
 class DeepCL_EXPORT GpuOp {
 public:
-    EasyCL *cl; // NOT belong to us, dont delete
-    CLKernel *kernel;
+    easycl::EasyCL *cl; // NOT belong to us, dont delete
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void apply2_inplace(int N, CLWrapper*destinationWrapper, float scalar, Op2 *op);
-    VIRTUAL void apply2_inplace(int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper, Op2 *op);
-    VIRTUAL void apply2_outofplace(int N, CLWrapper*destinationWrapper, CLWrapper*one, CLWrapper *two, Op2 *op);
-    VIRTUAL void apply1_inplace(int N, CLWrapper*destinationWrapper, Op1 *op);
-    VIRTUAL void apply1_outofplace(int N, CLWrapper*destinationWrapper, CLWrapper*one, Op1 *op);
+    VIRTUAL void apply2_inplace(int N, easycl::CLWrapper*destinationWrapper, float scalar, Op2 *op);
+    VIRTUAL void apply2_inplace(int N, easycl::CLWrapper*destinationWrapper, easycl::CLWrapper *deltaWrapper, Op2 *op);
+    VIRTUAL void apply2_outofplace(int N, easycl::CLWrapper*destinationWrapper, easycl::CLWrapper*one, easycl::CLWrapper *two, Op2 *op);
+    VIRTUAL void apply1_inplace(int N, easycl::CLWrapper*destinationWrapper, Op1 *op);
+    VIRTUAL void apply1_outofplace(int N, easycl::CLWrapper*destinationWrapper, easycl::CLWrapper*one, Op1 *op);
     VIRTUAL ~GpuOp();
-    GpuOp(EasyCL *cl);
+    GpuOp(easycl::EasyCL *cl);
     void buildKernel(std::string name, Op2 *op, bool inPlace);
     void buildKernel(std::string name, Op1 *op, bool inPlace);
     void buildKernelScalar(std::string name, Op2 *op, bool inPlace);

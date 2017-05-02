@@ -22,8 +22,8 @@
 // but before activation etc
 class DeepCL_EXPORT ReduceSegments {
 public:
-    EasyCL *cl; // NOT delete
-    CLKernel *kernel; // NOT delete
+    easycl::EasyCL *cl; // NOT delete
+    easycl::CLKernel *kernel; // NOT delete
 
     // [[[cog
     // import cog_addheaders
@@ -34,10 +34,10 @@ public:
     VIRTUAL void reduce(
     int totalLength,
     int segmentLength,
-    CLWrapper *inputWrapper,
-    CLWrapper *outputWrapper
+    easycl::CLWrapper *inputWrapper,
+    easycl::CLWrapper *outputWrapper
     );
-    ReduceSegments(EasyCL *cl);
+    ReduceSegments(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

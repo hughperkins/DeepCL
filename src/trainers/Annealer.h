@@ -13,8 +13,10 @@
 
 #include "trainers/Trainer.h"
 
+namespace easycl {
 class CLWrapper;
 class EasyCL;
+}
 class NeuralNet;
 class OutputData;
 
@@ -40,12 +42,12 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC Annealer *instance(EasyCL *cl, float learningRate, float anneal);
-    Annealer(EasyCL *cl);
+    STATIC Annealer *instance(easycl::EasyCL *cl, float learningRate, float anneal);
+    Annealer(easycl::EasyCL *cl);
     VIRTUAL ~Annealer();
     VIRTUAL std::string asString();
     VIRTUAL void setAnneal(float anneal);
-    VIRTUAL void updateWeights(float annealedLearningRate, CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper);
+    VIRTUAL void updateWeights(float annealedLearningRate, easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *gradWeightsWrapper);
     VIRTUAL BatchResult trainNet(
     NeuralNet *net, TrainingContext *context,
     float const *input, OutputData *outputData);

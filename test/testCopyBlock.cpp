@@ -17,11 +17,11 @@ using namespace std;
 
 namespace testCopyBlock{
 
-CLKernel *makeTestPosKernel( EasyCL *cl );
-CLKernel *makeBasicKernel( EasyCL *cl );
+easycl::CLKernel *makeTestPosKernel( easycl::EasyCL *cl );
+easycl::CLKernel *makeBasicKernel( easycl::EasyCL *cl );
 
 TEST( testCopyBlock, testPos ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float in[12];
     float res[12];
@@ -33,7 +33,7 @@ TEST( testCopyBlock, testPos ) {
         cout << "in[" << i << "]=" << in[i] << endl;
     }
     
-    CLKernel *kernel = makeTestPosKernel( cl );
+    easycl::CLKernel *kernel = makeTestPosKernel( cl );
     kernel->in( 12, in )->out( 12, res );
     kernel->run_1d(1,1); 
     cl->finish();
@@ -60,7 +60,7 @@ TEST( testCopyBlock, testPos ) {
 //}
 
 TEST( testCopyBlock, basic ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float a[] = { 1,2,3,4,
                   5,6,7,8,
@@ -68,7 +68,7 @@ TEST( testCopyBlock, basic ) {
     float b[10];
     memset(b, 0, sizeof(float)*10);
 
-    CLKernel *kernel = makeBasicKernel( cl );
+    easycl::CLKernel *kernel = makeBasicKernel( cl );
     kernel->in( 12, a )->out( 6, b )->in( ( 3<<10)|4)->in( (0<<10)|1)->in((2<<10)|3);
     kernel->localFloats( 2 * 3 );
     kernel->run_1d(12,4);
@@ -117,8 +117,8 @@ TEST( testCopyBlock, basic ) {
     delete cl;
 }
 
-CLKernel *makeTestPosKernel( EasyCL *cl ) {
-    CLKernel *kernel = 0;
+easycl::CLKernel *makeTestPosKernel( easycl::EasyCL *cl ) {
+    easycl::CLKernel *kernel = 0;
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "test/testCopyBlock.cl", "testPos", '""' )
@@ -242,8 +242,8 @@ CLKernel *makeTestPosKernel( EasyCL *cl ) {
     return kernel;
 }
 
-CLKernel *makeBasicKernel( EasyCL *cl ) {
-    CLKernel *kernel = 0;
+easycl::CLKernel *makeBasicKernel( easycl::EasyCL *cl ) {
+    easycl::CLKernel *kernel = 0;
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "test/testCopyBlock.cl", "run", '""' )

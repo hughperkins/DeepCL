@@ -11,12 +11,14 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 
 class DeepCL_EXPORT DropoutForward {
 public:
-    EasyCL *cl;
+    easycl::EasyCL *cl;
 
     const int numPlanes;
     const int inputSize;
@@ -43,11 +45,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutForward(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    STATIC DropoutForward *instance(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    STATIC DropoutForward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    STATIC DropoutForward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    VIRTUAL void forward(int batchSize, CLWrapper *masksWrapper, CLWrapper *inputData, CLWrapper *outputData);
+    DropoutForward(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    STATIC DropoutForward *instance(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    STATIC DropoutForward *instanceForTest(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    STATIC DropoutForward *instanceSpecific(int idx, easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *masksWrapper, easycl::CLWrapper *inputData, easycl::CLWrapper *outputData);
     VIRTUAL void forward(int batchSize, unsigned char *masks, float *input, float *output);
     VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);

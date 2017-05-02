@@ -29,7 +29,7 @@ public:
 
     ActivationFunction const *fn;
 
-    EasyCL *const cl; // NOT owned by us
+    easycl::EasyCL *const cl; // NOT owned by us
     ActivationForward *activationForwardImpl;
     ActivationBackward *activationBackpropImpl;
 
@@ -38,8 +38,8 @@ public:
     float *gradInput; // this is not guaranteed to be up to date
                 // unless gradInputCopiedToHost is true
 
-    CLWrapper *outputWrapper; // this is guaranteed to be up to date
-    CLWrapper *gradInputWrapper; // this is guaranteed to be up to date
+    easycl::CLWrapper *outputWrapper; // this is guaranteed to be up to date
+    easycl::CLWrapper *gradInputWrapper; // this is guaranteed to be up to date
 
 //    bool outputCopiedToHost;
 //    bool gradInputCopiedToHost;
@@ -52,7 +52,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ActivationLayer(EasyCL *cl, Layer *previousLayer, ActivationMaker *maker);
+    ActivationLayer(easycl::EasyCL *cl, Layer *previousLayer, ActivationMaker *maker);
     VIRTUAL ~ActivationLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float getOutput(int n, int plane, int row, int col);
@@ -67,9 +67,9 @@ public:
     VIRTUAL const char *getActivationAsCharStar() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL bool providesGradInputWrapper() const;
-    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL easycl::CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
-    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL easycl::CLWrapper *getOutputWrapper();
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
     VIRTUAL float *getGradInput();

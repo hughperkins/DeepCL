@@ -30,7 +30,7 @@ class WeightsInitializer;
 
 class ConvolutionalLayer : public Layer {
 public:
-    EasyCL *const cl; // NOT owned by us
+    easycl::EasyCL *const cl; // NOT owned by us
     TrainerState *trainerState; // OWNED by us, we should delete (if non-zero)
     TrainerState *biasTrainerState; // OWNED by us, we should delete (if non-zero)
 
@@ -52,12 +52,12 @@ public:
 //    const int filterSizeSquared;
 //    const bool padZeros;
 
-    CLWrapper *weightsWrapper;
-    CLWrapper *biasWrapper;
-    CLWrapper *outputWrapper;
-    CLWrapper *gradInputWrapper;
-    CLWrapper *gradWeightsWrapper;
-    CLWrapper *gradBiasWrapper;
+    easycl::CLWrapper *weightsWrapper;
+    easycl::CLWrapper *biasWrapper;
+    easycl::CLWrapper *outputWrapper;
+    easycl::CLWrapper *gradInputWrapper;
+    easycl::CLWrapper *gradWeightsWrapper;
+    easycl::CLWrapper *gradBiasWrapper;
 
     int batchSize;
     int allocatedSpaceNumExamples;
@@ -111,20 +111,20 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    ConvolutionalLayer(EasyCL *cl, Layer *previousLayer, ConvolutionalMaker *maker);
+    ConvolutionalLayer(easycl::EasyCL *cl, Layer *previousLayer, ConvolutionalMaker *maker);
     VIRTUAL ~ConvolutionalLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL float *getGradInput();
     VIRTUAL float *getGradWeights();
     VIRTUAL float *getGradBias();
     VIRTUAL bool providesGradInputWrapper() const;
-    VIRTUAL CLWrapper *getGradInputWrapper();
-    VIRTUAL CLWrapper *getWeightsWrapper();
-    VIRTUAL CLWrapper *getBiasWrapper();
-    VIRTUAL CLWrapper *getGradWeightsWrapper();
-    VIRTUAL CLWrapper *getGradBiasWrapper();
+    VIRTUAL easycl::CLWrapper *getGradInputWrapper();
+    VIRTUAL easycl::CLWrapper *getWeightsWrapper();
+    VIRTUAL easycl::CLWrapper *getBiasWrapper();
+    VIRTUAL easycl::CLWrapper *getGradWeightsWrapper();
+    VIRTUAL easycl::CLWrapper *getGradBiasWrapper();
     VIRTUAL bool hasOutputWrapper() const;
-    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL easycl::CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;

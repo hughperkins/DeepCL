@@ -15,14 +15,14 @@ DeepCLGtestGlobals *DeepCLGtestGlobals::instance() {
     return thisInstance;
 }
 
-EasyCL *DeepCLGtestGlobals_createEasyCL() {
+easycl::EasyCL *DeepCLGtestGlobals_createEasyCL() {
     int gpuindex = DeepCLGtestGlobals::instance()->gpuindex;
     if(gpuindex == 0) {
-        EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+        easycl::EasyCL *cl = easycl::EasyCL::createForFirstGpuOtherwiseCpu();
         // cout << "got cl, returning..." << endl;
         return cl;
     } else {
-        return EasyCL::createForIndexedGpu(gpuindex);
+        return easycl::EasyCL::createForIndexedGpu(gpuindex);
     }
 }
 

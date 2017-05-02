@@ -22,7 +22,7 @@ TEST( testpoolingforward, basic ) {
     int numPlanes = 1;
     int imageSize = 4;
     int poolingSize = 2;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
@@ -56,7 +56,7 @@ TEST( testpoolingforward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int poolingSize = 2;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     PoolingForward *poolingForward = PoolingForward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float data[] = { 1, 2, 
                     5, 3,
@@ -97,7 +97,7 @@ TEST( testpoolingforward, fromwrappers ) {
     int numPlanes = 1;
     int imageSize = 4;
     int poolingSize = 2;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     PoolingForward *poolingForward = PoolingForward::instanceSpecific( 1, cl, false, numPlanes, imageSize, poolingSize );
     float input[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
@@ -109,9 +109,9 @@ TEST( testpoolingforward, fromwrappers ) {
     float *output = new float[outputNumElements];
 
     const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
-    CLWrapper *selectorsWrapper = cl->wrap( outputNumElements, selectors );
-    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
+    easycl::CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    easycl::CLWrapper *selectorsWrapper = cl->wrap( outputNumElements, selectors );
+    easycl::CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     inputWrapper->copyToDevice();
 
@@ -209,7 +209,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int imageSize = args._imageSize;
     int poolingSize = args._poolingSize;
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     PoolingForward *poolingForward0 = PoolingForward::instanceSpecific( args._instance0, cl, args._padZeros, numPlanes, imageSize, poolingSize );
     PoolingForward *poolingForward1 = PoolingForward::instanceSpecific( args._instance1, cl, args._padZeros, numPlanes, imageSize, poolingSize );
@@ -221,9 +221,9 @@ void compareSpecific( CompareSpecificArgs args ) {
     int *selectors = new int[ outputNumElements ];
     float *output = new float[ outputNumElements ];
 
-    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
-    CLWrapper *selectorsWrapper = cl->wrap( outputNumElements, selectors );
-    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
+    easycl::CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    easycl::CLWrapper *selectorsWrapper = cl->wrap( outputNumElements, selectors );
+    easycl::CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     WeightRandomizer::randomize( input, inputNumElements, -0.1f, 0.1f );
 

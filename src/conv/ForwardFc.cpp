@@ -13,6 +13,7 @@
 #include "conv/ReduceSegments.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #undef STATIC

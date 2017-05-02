@@ -12,7 +12,7 @@ class AddBias;
 
 class Forward2 : public Forward {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
     AddBias *addBias;
     int workgroupSize;
     int numWorkgroups;
@@ -24,9 +24,9 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~Forward2();
-    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-    CLWrapper *outputWrapper);
-    Forward2(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *dataWrapper, easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *biasWrapper,
+    easycl::CLWrapper *outputWrapper);
+    Forward2(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 

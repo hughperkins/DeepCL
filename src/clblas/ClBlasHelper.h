@@ -6,8 +6,10 @@
 #include "clBLAS.h"
 #include "DeepCLDllExport.h"
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 
 class DeepCL_EXPORT ClBlasHelper {
     public:
@@ -21,24 +23,24 @@ class DeepCL_EXPORT ClBlasHelper {
     public:
     ClBlasHelper();
     STATIC void Gemm(
-        EasyCL *cl,
+        easycl::EasyCL *cl,
         clblasOrder order, clblasTranspose aTrans, clblasTranspose bTrans,
         int64 m, int64 k, int64 n,
         float alpha,
-        CLWrapper *AWrapper, int64 aOffset,
-        CLWrapper *BWrapper, int64 bOffset,
+        easycl::CLWrapper *AWrapper, int64 aOffset,
+        easycl::CLWrapper *BWrapper, int64 bOffset,
         float beta,
-        CLWrapper *CWrapper, int64 cOffset
+        easycl::CLWrapper *CWrapper, int64 cOffset
     );
     STATIC void Gemv(
-        EasyCL *cl,
+        easycl::EasyCL *cl,
         clblasOrder order, clblasTranspose trans,
         int64 m, int64 n,
         float alpha,
-        CLWrapper *AWrapper, int64 aOffset,
-        CLWrapper *BWrapper, int64 bOffset,
+        easycl::CLWrapper *AWrapper, int64 aOffset,
+        easycl::CLWrapper *BWrapper, int64 bOffset,
         float beta,
-        CLWrapper *CWrapper, int64 cOffset
+        easycl::CLWrapper *CWrapper, int64 cOffset
     );
 
     // [[[end]]]

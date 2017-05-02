@@ -7,9 +7,9 @@
 
 class BackpropWeightsByRow : public BackpropWeights {
 public:
-    CLKernel *kernel;
-    CLKernel *reduce;
-    CLKernel *perElementAdd;
+    easycl::CLKernel *kernel;
+    easycl::CLKernel *reduce;
+    easycl::CLKernel *perElementAdd;
 
     int workgroupSize;
     int numWorkgroups;
@@ -20,8 +20,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~BackpropWeightsByRow();
-    VIRTUAL void backpropWeights(int batchSize, float learningRate,  CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper);
-    BackpropWeightsByRow(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void backpropWeights(int batchSize, float learningRate,  easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *imagesWrapper, easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *biasWrapper);
+    BackpropWeightsByRow(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

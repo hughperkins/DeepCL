@@ -11,6 +11,7 @@
 #include "trainers/AdadeltaState.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef STATIC
 #undef VIRTUAL

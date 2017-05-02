@@ -15,11 +15,11 @@
 using namespace std;
 
 TEST(testCLMathWrapper, assign) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
-    CLWrapper *a_ = cl->wrap(5,adat);
-    CLWrapper *b_ = cl->wrap(5,bdat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *b_ = cl->wrap(5,bdat);
     a_->copyToDevice();
     b_->copyToDevice();
 
@@ -42,9 +42,9 @@ TEST(testCLMathWrapper, assign) {
 }
 
 TEST(testCLMathWrapper, assignScalar) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
 
     CLMathWrapper a(a_);
@@ -62,11 +62,11 @@ TEST(testCLMathWrapper, assignScalar) {
 }
 
 TEST(testCLMathWrapper, addinplace) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
-    CLWrapper *a_ = cl->wrap(5,adat);
-    CLWrapper *b_ = cl->wrap(5,bdat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *b_ = cl->wrap(5,bdat);
     a_->copyToDevice();
     b_->copyToDevice();
 
@@ -90,11 +90,11 @@ TEST(testCLMathWrapper, addinplace) {
 }
 
 TEST(testCLMathWrapper, multiplyinplace) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
 //    float bdat[] = { 4,2.1f, 5,3,9.2f };
-    CLWrapper *a_ = cl->wrap(5,adat);
-//    CLWrapper *b_ = cl->wrap(5,bdat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
+//    easycl::CLWrapper *b_ = cl->wrap(5,bdat);
     a_->copyToDevice();
 //    b_->copyToDevice();
 
@@ -119,9 +119,9 @@ TEST(testCLMathWrapper, multiplyinplace) {
 }
 
 TEST(testCLMathWrapper, addscalar) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
 
     CLMathWrapper a(a_);
@@ -140,9 +140,9 @@ TEST(testCLMathWrapper, addscalar) {
 }
 
 TEST(testCLMathWrapper, sqrt) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
 
     CLMathWrapper a(a_);
@@ -162,9 +162,9 @@ TEST(testCLMathWrapper, sqrt) {
 }
 
 TEST(testCLMathWrapper, squared) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
 
     CLMathWrapper a(a_);
@@ -184,9 +184,9 @@ TEST(testCLMathWrapper, squared) {
 }
 
 TEST(testCLMathWrapper, inverse) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
     a_->copyToDevice();
 
     CLMathWrapper a(a_);
@@ -206,11 +206,11 @@ TEST(testCLMathWrapper, inverse) {
 }
 
 TEST(testCLMathWrapper, perelementmult) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
-    CLWrapper *a_ = cl->wrap(5,adat);
-    CLWrapper *b_ = cl->wrap(5,bdat);
+    easycl::CLWrapper *a_ = cl->wrap(5,adat);
+    easycl::CLWrapper *b_ = cl->wrap(5,bdat);
     a_->copyToDevice();
     b_->copyToDevice();
 

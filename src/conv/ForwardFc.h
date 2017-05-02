@@ -16,7 +16,7 @@ class ReduceSegments;
 
 class ForwardFc : public Forward {
 public:
-    CLKernel *kernel1;
+    easycl::CLKernel *kernel1;
 //    CLKernel *kernel_reduce;
     AddBias *addBias;
     ReduceSegments *reduceSegments;
@@ -27,8 +27,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ForwardFc();
-    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper, CLWrapper *outputWrapper);
-    ForwardFc(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *dataWrapper, easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *biasWrapper, easycl::CLWrapper *outputWrapper);
+    ForwardFc(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

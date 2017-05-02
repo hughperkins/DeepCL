@@ -55,14 +55,14 @@ public:
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL const char *getClassNameAsCharStar() const;
     VIRTUAL float *getGradInput();
-    VIRTUAL CLWrapper *getGradWeightsWrapper();
-    VIRTUAL CLWrapper *getGradBiasWrapper();
-    VIRTUAL CLWrapper *getWeightsWrapper();
-    VIRTUAL CLWrapper *getBiasWrapper();
-    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL easycl::CLWrapper *getGradWeightsWrapper();
+    VIRTUAL easycl::CLWrapper *getGradBiasWrapper();
+    VIRTUAL easycl::CLWrapper *getWeightsWrapper();
+    VIRTUAL easycl::CLWrapper *getBiasWrapper();
+    VIRTUAL easycl::CLWrapper *getGradInputWrapper();
     PUBLICAPI VIRTUAL bool getBiased() const;
     PUBLICAPI VIRTUAL bool hasOutputWrapper() const;
-    PUBLICAPI VIRTUAL CLWrapper *getOutputWrapper();
+    PUBLICAPI VIRTUAL easycl::CLWrapper *getOutputWrapper();
     PUBLICAPI VIRTUAL int getOutputCubeSize() const;
     PUBLICAPI VIRTUAL int getOutputPlanes() const;
     PUBLICAPI VIRTUAL int getOutputSize() const;
@@ -96,7 +96,7 @@ public:
     VIRTUAL void setTrainerState(TrainerStateMaker *trainerMaker);
     VIRTUAL TrainerState *getTrainerState();
     VIRTUAL TrainerState *getBiasTrainerState();
-    VIRTUAL void updateWeights(CLWrapper *weightChangesWrapper, CLWrapper *biasChangesWrapper);
+    VIRTUAL void updateWeights(easycl::CLWrapper *weightChangesWrapper, easycl::CLWrapper *biasChangesWrapper);
 
     // [[[end]]]
 

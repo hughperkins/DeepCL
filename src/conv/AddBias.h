@@ -20,8 +20,8 @@
 // but before activation etc
 class AddBias {
 public:
-    EasyCL *cl; // NOT delete
-    CLKernel *kernel; // NOT delete
+    easycl::EasyCL *cl; // NOT delete
+    easycl::CLKernel *kernel; // NOT delete
 
     // [[[cog
     // import cog_addheaders
@@ -31,10 +31,10 @@ public:
     VIRTUAL ~AddBias();
     VIRTUAL void forward(
     int batchSize, int numFilters, int outputSize,
-    CLWrapper *outputWrapper,
-    CLWrapper *biasWrapper
+    easycl::CLWrapper *outputWrapper,
+    easycl::CLWrapper *biasWrapper
     );
-    AddBias(EasyCL *cl);
+    AddBias(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

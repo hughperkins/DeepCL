@@ -13,7 +13,7 @@
 
 class ActivationBackwardGpuNaive : public ActivationBackward {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
@@ -21,10 +21,10 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ActivationBackwardGpuNaive();
-    VIRTUAL void backward(int batchSize, CLWrapper *inputWrapper,
-    CLWrapper *gradOutputWrapper,
-    CLWrapper *gradInputWrapper);
-    ActivationBackwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    VIRTUAL void backward(int batchSize, easycl::CLWrapper *inputWrapper,
+    easycl::CLWrapper *gradOutputWrapper,
+    easycl::CLWrapper *gradInputWrapper);
+    ActivationBackwardGpuNaive(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
 
     // [[[end]]]
 };

@@ -41,7 +41,7 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_unbiased_tanh ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
@@ -97,7 +97,7 @@ TEST( testsimpleconvolvenet, imagesize1_planes2_filters2_tanh ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
@@ -177,7 +177,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_tanh ) {
     expectedOutput[5] = -0.5f;
     expectedOutput[6] = -0.5f;
     expectedOutput[7] = 0.5f;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
@@ -232,7 +232,7 @@ TEST( testsimpleconvolvenet, imagesize1_2planes_filtersize1 ) {
     expectedOutput[1] = 0;
     expectedOutput[2] = 0;
     expectedOutput[3] = 1;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
@@ -313,7 +313,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_relu ) {
     expectedOutput[5] = 0;
     expectedOutput[6] = 0;
     expectedOutput[7] = 1;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
@@ -393,7 +393,7 @@ TEST( testsimpleconvolvenet, imagesize3_n4_filtersize3_linear ) {
     expectedOutput[5] = 0;
     expectedOutput[6] = 0;
     expectedOutput[7] = 1;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(3) );
@@ -449,7 +449,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_unbiased ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
@@ -518,7 +518,7 @@ TEST( testsimpleconvolvenet, imagesize1_n2_2layers_biased ) {
     expectedOutput[1] = -0.5f;
     expectedOutput[2] = -0.5f;
     expectedOutput[3] = 0.5f;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(1) );
@@ -553,7 +553,7 @@ float bias2[] = {-0.071288f, 0.443919f};
     }
 //    net->print();
 
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
     cout << "loss, E, " << net->calcLoss(expectedOutput) << endl;
     float const*output = net->getOutput();
@@ -610,7 +610,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n3 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
@@ -708,7 +708,7 @@ TEST( testsimpleconvolvenet, imagesize_5_4_2layers_filtersize_2_4_biased_n6 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
@@ -827,7 +827,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n6 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );
@@ -1019,7 +1019,7 @@ TEST( testsimpleconvolvenet, imagesize_5_3_2layers_filtersize_3_3_biased_n18 ) {
         }
         expectedOutput[ n * numOutPlanes + labels[n]] = +0.5f;
     }
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(5) );

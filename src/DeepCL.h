@@ -44,7 +44,7 @@
 #define STATIC static
 #define VIRTUAL virtual
 
-class DeepCL_EXPORT DeepCL : public EasyCL {
+class DeepCL_EXPORT DeepCL : public easycl::EasyCL {
 public:
 //    EasyCL *cl;
     ClBlasInstance clBlasInstance;

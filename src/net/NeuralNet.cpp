@@ -30,6 +30,7 @@
 #include "net/NeuralNet.h"
 
 using namespace std;
+using namespace easycl;
 
 //static std::mt19937 random;
 

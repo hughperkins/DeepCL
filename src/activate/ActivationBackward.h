@@ -11,13 +11,15 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 class ActivationFunction;
 
 class DeepCL_EXPORT ActivationBackward {
 public:
-    EasyCL *cl;
+    easycl::EasyCL *cl;
 
     const int numPlanes;
     const int inputSize;
@@ -44,14 +46,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC ActivationBackward *instance(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
-    STATIC ActivationBackward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
-    STATIC ActivationBackward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
-    ActivationBackward(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instance(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceForTest(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    STATIC ActivationBackward *instanceSpecific(int idx, easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
+    ActivationBackward(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const *fn);
     VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);
     VIRTUAL void backward(int batchSize, float *inputs, float *gradOutput, float *gradInput);
-    VIRTUAL void backward(int batchSize, CLWrapper *inputsWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper);
+    VIRTUAL void backward(int batchSize, easycl::CLWrapper *inputsWrapper, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

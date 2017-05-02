@@ -43,10 +43,10 @@ public:
     VIRTUAL void setMomentum(float momentum);
     VIRTUAL std::string asString();
     VIRTUAL void loadFutureWeights(
-    CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState);
-    VIRTUAL void updateWeights(CLWrapper *weightsWrapper,
-    CLWrapper *gradWeightsWrapper,
+    VIRTUAL void updateWeights(easycl::CLWrapper *weightsWrapper,
+    easycl::CLWrapper *gradWeightsWrapper,
     NesterovState *trainerState);
     VIRTUAL BatchResult trainNet(
     NeuralNet *net, TrainingContext *context,
@@ -56,9 +56,9 @@ public:
     VIRTUAL BatchResult trainNetFromLabels(NeuralNet *net, TrainingContext *context,
     float const*input, int const*labels);
     VIRTUAL void bindState(NeuralNet *net);
-    STATIC Nesterov *instance(EasyCL *cl, float learningRate);
-    STATIC Nesterov *instance(EasyCL *cl, float learningRate, float momentum);
-    Nesterov(EasyCL *cl);
+    STATIC Nesterov *instance(easycl::EasyCL *cl, float learningRate);
+    STATIC Nesterov *instance(easycl::EasyCL *cl, float learningRate, float momentum);
+    Nesterov(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

@@ -48,6 +48,7 @@ build5/
 dist/
 dist2/
 temp/
+mac/
 
 node_modules/
 data/

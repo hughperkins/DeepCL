@@ -11,6 +11,7 @@
 #include "EasyCL.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef STATIC
 #undef VIRTUAL

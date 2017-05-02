@@ -14,7 +14,7 @@
 #include "AccuracyHelper.h"
 #include "util/stringhelper.h"
 #include "util/FileHelper.h"
-#include "util/StatefulTimer.h"
+#include "util/easycl::StatefulTimer.h"
 #include "WeightsPersister.h"
 
 using namespace std;
@@ -162,7 +162,7 @@ void go(Config config) {
 //    }
 
     timer.timeCheck("before learning start");
-    StatefulTimer::timeCheck("START");
+    easycl::StatefulTimer::timeCheck("START");
     const int totalWeightsSize = WeightsPersister::getTotalNumWeights(net);
     cout << "totalweightssize: " << totalWeightsSize << endl;
     float *weightsCopy = new float[totalWeightsSize];
@@ -195,9 +195,9 @@ void go(Config config) {
                 net->setBatchSize( thisNodeBatchSize );
             }
             #ifdef MPI_AVAILABLE
-            StatefulTimer::timeCheck("copyNetWeightsToArray START");
+            easycl::StatefulTimer::timeCheck("copyNetWeightsToArray START");
             WeightsPersister::copyNetWeightsToArray( net, weightsCopy );
-            StatefulTimer::timeCheck("copyNetWeightsToArray END");
+            easycl::StatefulTimer::timeCheck("copyNetWeightsToArray END");
             #endif
             net->forward( &(imagesFloat[nodeBatchStart][0][0]) );
             net->backwardFromLabels( config.learningRate, &(labels[nodeBatchStart]) );
@@ -212,9 +212,9 @@ void go(Config config) {
             // we want: wnew = wold + dw1 + dw2 = wnew1 + wnew2 - wold
             // seems like we should keep a copy of the old weights, otherwise cannot compute
             #ifdef MPI_AVAILABLE
-            StatefulTimer::timeCheck("allreduce START");
+            easycl::StatefulTimer::timeCheck("allreduce START");
             WeightsPersister::copyNetWeightsToArray( net, newWeights );
-            StatefulTimer::timeCheck("allreduce done copyNetWeightsToArray");
+            easycl::StatefulTimer::timeCheck("allreduce done copyNetWeightsToArray");
             if( myrank == 0 ) {
                 for( int i = 0; i < totalWeightsSize; i++ ) {
                     weightsChange[i] = newWeights[i];
@@ -225,12 +225,12 @@ void go(Config config) {
                 }
             }
             MPI_Allreduce( weightsChange, weightsChangeReduced, totalWeightsSize, MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD );
-            StatefulTimer::timeCheck("allreduce done Allreduce");
+            easycl::StatefulTimer::timeCheck("allreduce done Allreduce");
             WeightsPersister::copyArrayToNetWeights( weightsChangeReduced, net );
-            StatefulTimer::timeCheck("allreduce END");
+            easycl::StatefulTimer::timeCheck("allreduce END");
             #endif            
         }
-        StatefulTimer::dump(true);
+        easycl::StatefulTimer::dump(true);
         if( myrank == 0 ) cout << "       loss L: " << loss << endl;
         if( myrank == 0 ) timer.timeCheck("after epoch " + toString(epoch) );
 //        net->print();

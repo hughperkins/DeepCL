@@ -6,12 +6,14 @@
 
 #pragma once
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 
 class CopyBuffer {
 public:
-    static void copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target );
-    static void copy( EasyCL *cl, CLWrapper *sourceWrapper, int *target );
+    static void copy( easycl::EasyCL *cl, easycl::CLWrapper *sourceWrapper, float *target );
+    static void copy( easycl::EasyCL *cl, easycl::CLWrapper *sourceWrapper, int *target );
 };
 

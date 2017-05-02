@@ -11,11 +11,13 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class CLKernel;
+}
 
 class ActivationForwardGpuNaive : public ActivationForward {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
@@ -23,8 +25,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ActivationForwardGpuNaive();
-    VIRTUAL void forward(int batchSize, CLWrapper *inputWrapper, CLWrapper *outputWrapper);
-    ActivationForwardGpuNaive(EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *inputWrapper, easycl::CLWrapper *outputWrapper);
+    ActivationForwardGpuNaive(easycl::EasyCL *cl, int numPlanes, int inputSize, ActivationFunction const*fn);
 
     // [[[end]]]
 };

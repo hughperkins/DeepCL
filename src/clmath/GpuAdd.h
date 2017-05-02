@@ -11,9 +11,11 @@
 #include <iostream>
 #include <algorithm>
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
 class CLKernel;
+}
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -22,17 +24,17 @@ class CLKernel;
 // not thread-safe
 class GpuAdd {
 public:
-    EasyCL *cl; // NOT belong to us, dont delete
-    CLKernel *kernel;
+    easycl::EasyCL *cl; // NOT belong to us, dont delete
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void add(int N, CLWrapper*destinationWrapper, CLWrapper *deltaWrapper);
+    VIRTUAL void add(int N, easycl::CLWrapper*destinationWrapper, easycl::CLWrapper *deltaWrapper);
     VIRTUAL ~GpuAdd();
-    GpuAdd(EasyCL *cl);
+    GpuAdd(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

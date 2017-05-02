@@ -14,12 +14,13 @@
 #include <algorithm>
 
 using namespace std;
+using namespace easycl;
 
-void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target ) {
+void CopyBuffer::copy( easycl::EasyCL *cl, easycl::CLWrapper *sourceWrapper, float *target ) {
     // first we will copy it to another buffer, so we can copy it out
     int bufferSize = sourceWrapper->size();
 //    float *copiedBuffer = new float[ bufferSize ];
-    CLWrapper *targetWrapper = cl->wrap( bufferSize, target );
+    easycl::CLWrapper *targetWrapper = cl->wrap( bufferSize, target );
     targetWrapper->createOnDevice();
 
     // now copy it, via a kernel
@@ -30,7 +31,7 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target ) {
              "   dest[globalId] = source[globalId];\n"
             "}\n"
         "}\n";
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "copy", "" );
+    easycl::CLKernel *kernel = cl->buildKernelFromString( kernelSource, "copy", "" );
     kernel->in( bufferSize )->in( sourceWrapper )->out( targetWrapper );
     int workgroupSize = 32;
     int numWorkgroups = ( bufferSize + workgroupSize - 1 ) / workgroupSize;
@@ -43,11 +44,11 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, float *target ) {
 //    delete[] copiedBuffer;
 }
 
-void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, int *target ) {
+void CopyBuffer::copy( easycl::EasyCL *cl, easycl::CLWrapper *sourceWrapper, int *target ) {
     // first we will copy it to another buffer, so we can copy it out
     int bufferSize = sourceWrapper->size();
 //    float *copiedBuffer = new float[ bufferSize ];
-    CLWrapper *targetWrapper = cl->wrap( bufferSize, target );
+    easycl::CLWrapper *targetWrapper = cl->wrap( bufferSize, target );
     targetWrapper->createOnDevice();
 
     // now copy it, via a kernel
@@ -58,7 +59,7 @@ void CopyBuffer::copy( EasyCL *cl, CLWrapper *sourceWrapper, int *target ) {
           "      dest[globalId] = source[globalId];\n"
           "  }\n"
        " }\n";
-    CLKernel *kernel = cl->buildKernelFromString( kernelSource, "copy", "" );
+    easycl::CLKernel *kernel = cl->buildKernelFromString( kernelSource, "copy", "" );
     kernel->in( bufferSize )->in( sourceWrapper )->out( targetWrapper );
     int workgroupSize = 32;
     int numWorkgroups = ( bufferSize + workgroupSize - 1 ) / workgroupSize;

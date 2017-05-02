@@ -11,6 +11,7 @@
 #include "util/stringhelper.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef STATIC
 #define STATIC 

@@ -14,6 +14,7 @@
 #include "net/NeuralNetMould.h"
 
 using namespace std;
+using namespace easycl;
 
 NeuralNet *NeuralNetMould::instance() {
 //    cout << "neuralnetmould::instance imagesize " << _imageSize << " numPlanes " << _numPlanes << endl;

@@ -123,7 +123,7 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
 }
 
 TEST(testupdateweights, conv1) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 5);
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0));
@@ -138,7 +138,7 @@ TEST(testupdateweights, conv1) {
 }
 
 TEST(testupdateweights, conv1z) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 3);
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(1));
@@ -155,7 +155,7 @@ TEST(testupdateweights, conv1z) {
 void test(int imageSize, int filterSize, int numPlanes, int batchSize) {
     float learningRate = 0.01f;
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer(InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize));
     net->addLayer(ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0));
@@ -294,7 +294,7 @@ void testBackpropWeights(LayerDimensions &dim, int batchSize, float learningMult
     memset(weights, 0, sizeof(float) * max(dim.filtersSize, 20));
     memset(bias, 0, sizeof(float) * 10);
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest(cl, dim);
     backpropWeightsImpl->calcGradWeights(batchSize, errors, data, weights, bias);
     delete backpropWeightsImpl;
@@ -520,7 +520,7 @@ TEST(testupdateweights, backprop_instance3_smaller2) {
     int batchSize = 1;
 //    const float learningRate = 1;
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     int outputNumElements = batchSize * dim.outputCubeSize;
     int inputNumElements = batchSize * dim.inputCubeSize;
@@ -539,10 +539,10 @@ TEST(testupdateweights, backprop_instance3_smaller2) {
     memset(weights0, 0, sizeof(float) * max(10000, weightsSize));
     memset(weights1, 0, sizeof(float) * max(10000, weightsSize));
 
-    CLWrapper *errorsWrap = cl->wrap(10000, errors);
-    CLWrapper *inputWrap = cl->wrap(10000, inputData);
-    CLWrapper *weights0Wrap = cl->wrap(10000, weights0);
-    CLWrapper *weights1Wrap = cl->wrap(10000, weights1);
+    easycl::CLWrapper *errorsWrap = cl->wrap(10000, errors);
+    easycl::CLWrapper *inputWrap = cl->wrap(10000, inputData);
+    easycl::CLWrapper *weights0Wrap = cl->wrap(10000, weights0);
+    easycl::CLWrapper *weights1Wrap = cl->wrap(10000, weights1);
 
     for(int i = 0 * dim.inputSize; i < dim.inputSize * dim.inputSize; i+= dim.inputSize * 4) {
         inputData[i] = 3;
@@ -734,7 +734,7 @@ void compareSpecific(bool debug, float learningRate, int its, int batchSize, Lay
 //    WeightRandomizer::randomizeInts(errors, outputAllocated, 0, 99);
 //    WeightRandomizer::randomizeInts(inputData, inputAllocated, 0, 99);
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     
     int instances[2];
     instances[0] = instance0;
@@ -933,7 +933,7 @@ void measurePerf(int batchSize, LayerDimensions dim, int instance) {
     WeightRandomizer::randomizeInts(gradOutput, outputAllocated, 0, 99);
     WeightRandomizer::randomizeInts(inputData, inputAllocated, 0, 99);
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceSpecific(instance, cl, dim);
     Timer timer;

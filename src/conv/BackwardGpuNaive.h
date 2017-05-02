@@ -8,7 +8,7 @@
 
 class BackwardGpuNaive : public Backward {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 //    CLKernel *broadcastMultiply;
 //    CLKernel *applyActivationDeriv;
 
@@ -19,9 +19,9 @@ public:
     // generated, using cog:
     VIRTUAL ~BackwardGpuNaive();
     VIRTUAL void backward(int batchSize,
-    CLWrapper *inputDataWrapper, CLWrapper *gradOutputWrapper, CLWrapper *weightsWrapper,
-    CLWrapper *gradInputWrapper);
-    BackwardGpuNaive(EasyCL *cl, LayerDimensions dim);
+    easycl::CLWrapper *inputDataWrapper, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *weightsWrapper,
+    easycl::CLWrapper *gradInputWrapper);
+    BackwardGpuNaive(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

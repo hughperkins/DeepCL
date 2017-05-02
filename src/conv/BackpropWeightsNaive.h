@@ -13,7 +13,7 @@
 
 class BackpropWeightsNaive : public BackpropWeights {
 public:
-    CLKernel *kernel;
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
@@ -21,8 +21,8 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~BackpropWeightsNaive();
-    VIRTUAL void calcGradWeights(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *imagesWrapper, CLWrapper *gradWeightsWrapper, CLWrapper *gradBiasWrapper);
-    BackpropWeightsNaive(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void calcGradWeights(int batchSize, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *imagesWrapper, easycl::CLWrapper *gradWeightsWrapper, easycl::CLWrapper *gradBiasWrapper);
+    BackpropWeightsNaive(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

@@ -23,7 +23,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL Trainer *instance(EasyCL *cl);
+    VIRTUAL Trainer *instance(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

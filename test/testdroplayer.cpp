@@ -21,7 +21,7 @@ using namespace std;
 namespace testdroplayer {
 
 TEST( testdroplayer, simple_exception ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = NeuralNet::maker(cl)->imageSize(1)->planes(4)->instance();
     net->addLayer( DropoutMaker::instance() );
     net->addLayer( SquareLossMaker::instance() );

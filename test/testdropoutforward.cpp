@@ -42,7 +42,7 @@ TEST( testdropoutforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
@@ -81,7 +81,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
@@ -131,7 +131,7 @@ TEST( testdropoutforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
@@ -148,9 +148,9 @@ TEST( testdropoutforward, fromwrappers ) {
     float *output = new float[outputNumElements];
 
     const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *maskWrapper = cl->wrap( inputNumElements, mask );
-    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
-    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
+    easycl::CLWrapper *maskWrapper = cl->wrap( inputNumElements, mask );
+    easycl::CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    easycl::CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     maskWrapper->copyToDevice();
     inputWrapper->copyToDevice();
@@ -240,7 +240,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int numPlanes = args._numPlanes;
     int imageSize = args._imageSize;
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     DropoutForward *dropoutForward0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
     DropoutForward *dropoutForward1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
@@ -252,9 +252,9 @@ void compareSpecific( CompareSpecificArgs args ) {
     float *input = new float[ inputNumElements ];
     float *output = new float[ outputNumElements ];
 
-    CLWrapper *maskWrapper = cl->wrap( inputNumElements, mask );
-    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
-    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
+    easycl::CLWrapper *maskWrapper = cl->wrap( inputNumElements, mask );
+    easycl::CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    easycl::CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     WeightRandomizer::randomizeInts( mask, inputNumElements, 0, 2 );
 //    for( int i = 0; i < inputNumElements; i++ ) {

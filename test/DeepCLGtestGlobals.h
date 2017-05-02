@@ -16,5 +16,5 @@ public:
 
 #include "EasyCL.h"
 
-EasyCL *DeepCLGtestGlobals_createEasyCL();
+easycl::EasyCL *DeepCLGtestGlobals_createEasyCL();
 

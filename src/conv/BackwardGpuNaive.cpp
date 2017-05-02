@@ -3,6 +3,7 @@
 #include "BackwardGpuNaive.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef STATIC
 #define STATIC 

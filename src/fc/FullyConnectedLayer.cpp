@@ -11,6 +11,7 @@
 #include "conv/ConvolutionalMaker.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #define VIRTUAL 

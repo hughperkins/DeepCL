@@ -16,7 +16,7 @@
 #include "layer/LayerMakers.h"
 
 TEST( testNetdefToNet, empty ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "" ) );
@@ -27,7 +27,7 @@ TEST( testNetdefToNet, empty ) {
 }
 
 TEST( testNetdefToNet, onefc ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n" ) );
@@ -44,7 +44,7 @@ TEST( testNetdefToNet, onefc ) {
 }
 
 TEST( testNetdefToNet, onefclinear ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n" ) );
@@ -61,7 +61,7 @@ TEST( testNetdefToNet, onefclinear ) {
 }
 
 TEST( testNetdefToNet, 150n_10n ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "150n-10n" ) );
@@ -84,7 +84,7 @@ TEST( testNetdefToNet, 150n_10n ) {
 }
 
 TEST( testNetdefToNet, 3xfclinear ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*150n" ) );
@@ -103,7 +103,7 @@ TEST( testNetdefToNet, 3xfclinear ) {
 }
 
 TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "mp2-3*32c5z-10n " ) );
@@ -124,7 +124,7 @@ TEST( testNetdefToNet, mp2_3x32c5z_10n ) {
 }
 
 TEST( testNetdefToNet, 3x32c5zmp2 ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(128) );
     ASSERT_EQ( true, NetdefToNet::createNetFromNetdef( net, "3*(32c5z-mp2)-10n" ) );
@@ -150,7 +150,7 @@ TEST( testNetdefToNet, 3x32c5zmp2 ) {
 }
 
 TEST( testNetdefToNet, 2x32c7_3x32c5z ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl);
     net->addLayer( InputLayerMaker::instance()->numPlanes(1)->imageSize(19) );
     EXPECT_EQ( true, NetdefToNet::createNetFromNetdef( net, "2*32c7z-3*32c5z-10n" ) );

@@ -11,9 +11,11 @@
 #include <iostream>
 #include <algorithm>
 
+namespace easycl {
 class EasyCL;
 class CLKernel;
 class CLWrapper;
+}
 
 #define VIRTUAL virtual
 #define STATIC static
@@ -22,17 +24,17 @@ class CLWrapper;
 // nothing complicated :-)
 class MultiplyInPlace {
 public:
-    EasyCL *cl;
-    CLKernel *kernel;
+    easycl::EasyCL *cl;
+    easycl::CLKernel *kernel;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    VIRTUAL void multiply(int N, float multiplier, CLWrapper *data);
+    VIRTUAL void multiply(int N, float multiplier, easycl::CLWrapper *data);
     VIRTUAL ~MultiplyInPlace();
-    MultiplyInPlace(EasyCL *cl);
+    MultiplyInPlace(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

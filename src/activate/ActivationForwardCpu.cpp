@@ -14,6 +14,7 @@
 #include "activate/ActivationForwardCpu.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #define VIRTUAL 

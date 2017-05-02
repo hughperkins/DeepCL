@@ -14,14 +14,14 @@
 using namespace std;
 
 TEST(testCopyBuffer, floats) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     const int N = 10;
     float *a = new float[N];
     for(int i = 0; i < N; i++) {
         a[i] = 3 + i;
     }
-    CLWrapper *aWrapper = cl->wrap(N, a);
+    easycl::CLWrapper *aWrapper = cl->wrap(N, a);
     aWrapper->copyToDevice();
     memset(a, 0, sizeof(float) * N);
 
@@ -51,14 +51,14 @@ TEST(testCopyBuffer, floats) {
 }
 
 TEST(testCopyBuffer, ints) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     const int N = 10;
     int *a = new int[N];
     for(int i = 0; i < N; i++) {
         a[i] = 3 + i;
     }
-    CLWrapper *aWrapper = cl->wrap(N, a);
+    easycl::CLWrapper *aWrapper = cl->wrap(N, a);
     aWrapper->copyToDevice();
     memset(a, 0, sizeof(int) * N);
 

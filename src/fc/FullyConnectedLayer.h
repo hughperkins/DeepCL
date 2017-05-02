@@ -28,7 +28,7 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    FullyConnectedLayer(EasyCL *cl, Layer *previousLayer, FullyConnectedMaker *maker);
+    FullyConnectedLayer(easycl::EasyCL *cl, Layer *previousLayer, FullyConnectedMaker *maker);
     VIRTUAL ~FullyConnectedLayer();
     VIRTUAL std::string getClassName() const;
     VIRTUAL void setBatchSize(int batchSize);
@@ -46,15 +46,15 @@ public:
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL float *getOutput();
     VIRTUAL float *getGradInput();
-    VIRTUAL CLWrapper *getGradWeightsWrapper();
-    VIRTUAL CLWrapper *getGradBiasWrapper();
-    VIRTUAL CLWrapper *getWeightsWrapper();
-    VIRTUAL CLWrapper *getBiasWrapper();
+    VIRTUAL easycl::CLWrapper *getGradWeightsWrapper();
+    VIRTUAL easycl::CLWrapper *getGradBiasWrapper();
+    VIRTUAL easycl::CLWrapper *getWeightsWrapper();
+    VIRTUAL easycl::CLWrapper *getBiasWrapper();
     VIRTUAL bool biased();
     VIRTUAL bool providesGradInputWrapper() const;
-    VIRTUAL CLWrapper *getGradInputWrapper();
+    VIRTUAL easycl::CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
-    VIRTUAL CLWrapper *getOutputWrapper();
+    VIRTUAL easycl::CLWrapper *getOutputWrapper();
     VIRTUAL bool needsBackProp();
     VIRTUAL void forward();
     VIRTUAL void backward();

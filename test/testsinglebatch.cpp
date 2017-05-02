@@ -216,7 +216,7 @@ void test(float learningRate, int numEpochs, int batchSize, NeuralNet *net, floa
 //        Sampler::sampleFloats("lastWeights", weightsTotalSize, lastWeights);
     }
     timer.timeCheck("batch time");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
     EXPECT_EQ(true, allOk);
 
@@ -231,7 +231,7 @@ void test(float learningRate, int numEpochs, int batchSize, NeuralNet *net, floa
 }
 
 void test(ActivationFunction *fn, TestArgs args, float tolerance = 1.3f) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for(int i = 0; i < args.numLayers; i++) {
@@ -322,7 +322,7 @@ void checkErrorsForLayer(int layerId, float lastLoss, NeuralNet *net, float *las
 }
 
 void testLabelled(TestArgs args) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for(int i = 0; i < args.numLayers; i++) {
@@ -424,7 +424,7 @@ void testLabelled(TestArgs args) {
         WeightsPersister::copyNetWeightsToArray(net, lastWeights);
     }
     timer.timeCheck("batch time");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
 //    float *output = (float*)(net->getOutput());
 //    Sampler::printSamples("net->getOutput()", outputNumElements, (float*)output);
@@ -519,7 +519,7 @@ EXPECT_FLOAT_NEAR(-0.232493, output[684]);
 EXPECT_FLOAT_NEAR(0.179215, output[559]);
 EXPECT_FLOAT_NEAR(0.14498, output[373]);
 
-StatefulTimer::dump(true);
+easycl::StatefulTimer::dump(true);
 
 float *weights = net->layers[3]->weights;
 int weightsSize = net->layers[3]->getWeightsSize();
@@ -689,7 +689,7 @@ EXPECT_FLOAT_NEAR(0.0122473, bias[21]);
         net->learnBatch(learningRate, inputData, expectedOutput);
     }
     timer.timeCheck("batch time");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
     output = (float*)(net->getOutput());
     Sampler::printSamples("net->getOutput()", outputNumElements, (float*)output);
@@ -749,7 +749,7 @@ TEST(SLOW_testsinglebatch, perf) {
         net->learnBatch(learningRate, inputData, expectedOutput);
     }
     timer.timeCheck("batch time");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
     float *output = (float*)(net->getOutput());
     Sampler::printSamples("net->getOutput()", outputNumElements, (float*)output);
@@ -810,7 +810,7 @@ TEST(testsinglebatch, perf19) {
         net->learnBatch(learningRate, inputData, expectedOutput);
     }
     timer.timeCheck("batch time");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
     float *output = (float*)(net->getOutput());
     Sampler::printSamples("net->getOutput()", outputNumElements, (float*)output);
@@ -872,7 +872,7 @@ TEST(SLOW_testsinglebatch, perf19_depth12) {
         net->learnBatch(learningRate, inputData, expectedOutput);
     }
     timer.timeCheck("batch time");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
 
     float *output = (float*)(net->getOutput());
     Sampler::printSamples("net->getOutput()", outputNumElements, (float*)output);

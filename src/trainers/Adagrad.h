@@ -14,8 +14,10 @@
 #include "trainers/Trainer.h"
 
 class AdagradState;
+namespace easycl {
 class CLWrapper;
 class EasyCL;
+}
 class OutputData;
 
 #include "DeepCLDllExport.h"
@@ -37,7 +39,7 @@ public:
     VIRTUAL ~Adagrad();
     VIRTUAL void setFudgeFactor(float fudgeFactor);
     VIRTUAL std::string asString();
-    VIRTUAL void updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    VIRTUAL void updateWeights(easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *gradWeightsWrapper,
     AdagradState *trainerState);
     VIRTUAL BatchResult trainNet(NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData);
@@ -46,8 +48,8 @@ public:
     VIRTUAL BatchResult trainNetFromLabels(NeuralNet *net, TrainingContext *context,
     float const*input, int const*labels);
     VIRTUAL void bindState(NeuralNet *net);
-    STATIC Adagrad *instance(EasyCL *cl, float learningRate);
-    Adagrad(EasyCL *cl);
+    STATIC Adagrad *instance(easycl::EasyCL *cl, float learningRate);
+    Adagrad(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

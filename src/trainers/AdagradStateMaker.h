@@ -26,7 +26,7 @@ public:
     // ]]]
     // generated, using cog:
     AdagradStateMaker(float fudgeFactor);
-    TrainerState *instance(EasyCL *cl, int numWeights);
+    TrainerState *instance(easycl::EasyCL *cl, int numWeights);
     VIRTUAL bool created(TrainerState *state);
 
     // [[[end]]]

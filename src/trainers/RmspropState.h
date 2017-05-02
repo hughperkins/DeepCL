@@ -13,8 +13,10 @@
 
 #include "trainers/TrainerState.h"
 
+namespace easycl {
 class EasyCL;
 class CLKernel;
+}
 
 #include "DeepCLDllExport.h"
 
@@ -26,7 +28,7 @@ public:
     const int numWeights;
 
     float *meanSquare;
-    CLWrapper *meanSquareWrapper;
+    easycl::CLWrapper *meanSquareWrapper;
 
     // [[[cog
     // import cog_addheaders
@@ -34,7 +36,7 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~RmspropState();
-    RmspropState(EasyCL *cl, int numWeights);
+    RmspropState(easycl::EasyCL *cl, int numWeights);
 
     // [[[end]]]
 };

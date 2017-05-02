@@ -18,6 +18,7 @@
 //#include "test/PrintBuffer.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #define VIRTUAL 

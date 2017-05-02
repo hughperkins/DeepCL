@@ -11,9 +11,9 @@
 using namespace std;
 
 TEST( testMemset, basic ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
-    CLKernel *kMemset = 0;
+    easycl::CLKernel *kMemset = 0;
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kMemset", "cl/memset.cl", "cl_memset", '""' )
@@ -39,7 +39,7 @@ TEST( testMemset, basic ) {
 
     int N = 10000;
     float *myArray = new float[N];
-    CLWrapper *myArrayWrapper = cl->wrap( N, myArray );
+    easycl::CLWrapper *myArrayWrapper = cl->wrap( N, myArray );
     myArrayWrapper->createOnDevice();
     kMemset->out( myArrayWrapper )->in( 99.0f )->in( N );
     int workgroupSize = 64;

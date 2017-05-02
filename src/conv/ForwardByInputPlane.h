@@ -4,9 +4,9 @@
 
 class ForwardByInputPlane : public Forward {
 public:
-    CLKernel *kernel;
-    CLKernel *reduceSegments;
-    CLKernel *repeatedAdd;
+    easycl::CLKernel *kernel;
+    easycl::CLKernel *reduceSegments;
+    easycl::CLKernel *repeatedAdd;
 //    CLKernel *activate;
 
     // [[[cog
@@ -15,9 +15,9 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~ForwardByInputPlane();
-    VIRTUAL void forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-    CLWrapper *outputWrapper);
-    ForwardByInputPlane(EasyCL *cl, LayerDimensions dim);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *dataWrapper, easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *biasWrapper,
+    easycl::CLWrapper *outputWrapper);
+    ForwardByInputPlane(easycl::EasyCL *cl, LayerDimensions dim);
 
     // [[[end]]]
 };

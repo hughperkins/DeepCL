@@ -19,10 +19,10 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    DropoutBackwardCpu(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    DropoutBackwardCpu(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
     VIRTUAL void backward(int batchSize, uchar *mask,  float *gradOutput, float *gradInput);
-    VIRTUAL void backward(int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper,
-    CLWrapper *gradInputWrapper);
+    VIRTUAL void backward(int batchSize, easycl::CLWrapper *maskWrapper, easycl::CLWrapper *gradOutputWrapper,
+    easycl::CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

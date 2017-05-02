@@ -11,12 +11,14 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 
 class DeepCL_EXPORT DropoutBackward {
 public:
-    EasyCL *cl;
+    easycl::EasyCL *cl;
 
     const int numPlanes;
     const int inputSize;
@@ -43,14 +45,14 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    STATIC DropoutBackward *instance(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    STATIC DropoutBackward *instanceForTest(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    STATIC DropoutBackward *instanceSpecific(int idx, EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
-    DropoutBackward(EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    STATIC DropoutBackward *instance(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    STATIC DropoutBackward *instanceForTest(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    STATIC DropoutBackward *instanceSpecific(int idx, easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
+    DropoutBackward(easycl::EasyCL *cl, int numPlanes, int inputSize, float dropRatio);
     VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);
     VIRTUAL void backward(int batchSize, uchar *mask, float *gradOutput, float *gradInput);
-    VIRTUAL void backward(int batchSize, CLWrapper *maskWrapper, CLWrapper *gradOutputWrapper, CLWrapper *gradInputWrapper);
+    VIRTUAL void backward(int batchSize, easycl::CLWrapper *maskWrapper, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *gradInputWrapper);
 
     // [[[end]]]
 };

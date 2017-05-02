@@ -20,6 +20,7 @@
 #include "layer/Layer.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #define VIRTUAL 

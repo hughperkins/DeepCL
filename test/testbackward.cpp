@@ -41,7 +41,7 @@ TEST(testbackward, squareloss) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 3, 5);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SquareLossMaker::instance());
@@ -118,7 +118,7 @@ TEST(testbackward, crossentropyloss) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 3, 5);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(CrossEntropyLossMaker::instance());
@@ -210,7 +210,7 @@ TEST(testbackward, softmaxloss) {
     // calculate gradInput
     // change some of the inputs, forward prop, recalculate loss, check corresponds
     // to the gradient
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SoftMaxMaker::instance());
@@ -394,7 +394,7 @@ void checkLayer(NeuralNet *net, int targetLayerIndex) {
 }
 
 TEST(testbackward, squareloss2) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SquareLossMaker::instance());
@@ -409,7 +409,7 @@ TEST(testbackward, squareloss2) {
 }
 
 TEST(testbackward, crossentropy2) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(CrossEntropyLossMaker::instance());
@@ -424,7 +424,7 @@ TEST(testbackward, crossentropy2) {
 }
 
 TEST(testbackward, softmax2) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 5, 1);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(SoftMaxMaker::instance());
@@ -439,7 +439,7 @@ TEST(testbackward, softmax2) {
 }
 
 TEST(testbackward, conv1) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 4);
     net->addLayer(ForceBackpropLayerMaker::instance());
@@ -457,7 +457,7 @@ TEST(testbackward, conv1) {
 }
 
 TEST(testbackward, fc1) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 4);
     net->addLayer(ForceBackpropLayerMaker::instance());
@@ -475,7 +475,7 @@ TEST(testbackward, fc1) {
 }
 
 TEST(testbackward, act1) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet(cl, 1, 2);
     net->addLayer(ForceBackpropLayerMaker::instance());
     net->addLayer(ActivationMaker::instance()->relu());
@@ -494,7 +494,7 @@ TEST(testbackward, act1) {
 // This file contains tests for calculating errors for the upstream layer
 
 void testNumerically(float learningRate, int batchSize, int imageSize, int filterSize, int numPlanes, ActivationFunction *fn, bool padZeros, int its = 20) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance clblasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(numPlanes)->imageSize(imageSize)->instance();
     net->addLayer(ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0)->padZeros(padZeros));
@@ -616,7 +616,7 @@ TEST(testbackward, checknumerically_imagesize5_filter3_relu) {
 }
 
 void measurePerf(int instance, int batchSize, LayerDimensions dim) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     int inputNumElements = dim.inputCubeSize * batchSize;
     int errorsSize = dim.outputCubeSize * batchSize;
@@ -631,24 +631,24 @@ void measurePerf(int instance, int batchSize, LayerDimensions dim) {
     WeightRandomizer::randomize(weights, weightsSize, -0.1f, 0.1f);
 
     float *errorsForUpstream = new float[errorsForUpstreamSize];
-    CLWrapper *inputWrapper = cl->wrap(inputNumElements, input);
-    CLWrapper *errorsWrapper = cl->wrap(errorsSize, errors);
-    CLWrapper *weightsWrapper = cl->wrap(weightsSize, weights);
-    CLWrapper *errorsForUpstreamWrapper = cl->wrap(errorsForUpstreamSize, errorsForUpstream);
+    easycl::CLWrapper *inputWrapper = cl->wrap(inputNumElements, input);
+    easycl::CLWrapper *errorsWrapper = cl->wrap(errorsSize, errors);
+    easycl::CLWrapper *weightsWrapper = cl->wrap(weightsSize, weights);
+    easycl::CLWrapper *errorsForUpstreamWrapper = cl->wrap(errorsForUpstreamSize, errorsForUpstream);
     inputWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
     weightsWrapper->copyToDevice();
     errorsForUpstreamWrapper->createOnDevice();
 
-    StatefulTimer::timeCheck("after init");
+    easycl::StatefulTimer::timeCheck("after init");
     Backward *backwardImpl = Backward::instanceSpecific(instance, cl, dim);
     for(int it = 0; it < 40; it++) {
         backwardImpl->backward(batchSize, 
             inputWrapper, errorsWrapper, weightsWrapper,
             errorsForUpstreamWrapper);
     }
-    StatefulTimer::timeCheck("after backprop");
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::timeCheck("after backprop");
+    easycl::StatefulTimer::dump(true);
 
     delete errorsForUpstreamWrapper;
     delete weightsWrapper;
@@ -677,7 +677,7 @@ TEST(SLOW_testbackward, perf_kgsgo_32c5) {
 
 void compareSpecific(int instance0, int instance1, int numIts, int batchSize, LayerDimensions dim) {
     cout << "batchsize=" << batchSize << " " << dim << endl;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance clblasInstance;
 
     int inputNumElements = dim.inputCubeSize * batchSize;
@@ -695,11 +695,11 @@ void compareSpecific(int instance0, int instance1, int numIts, int batchSize, La
     WeightRandomizer::randomize(2, errors, errorsSize, -0.1f, 0.1f);
     WeightRandomizer::randomize(3, weights, weightsSize, -0.1f, 0.1f);
 
-    CLWrapper *inputWrapper = cl->wrap(inputNumElements, input);
-    CLWrapper *errorsWrapper = cl->wrap(errorsSize, errors);
-    CLWrapper *weightsWrapper = cl->wrap(weightsSize, weights);
-    CLWrapper *errorsForUpstreamWrapper0 = cl->wrap(errorsForUpstreamSize, errorsForUpstream0);
-    CLWrapper *errorsForUpstreamWrapper1 = cl->wrap(errorsForUpstreamSize, errorsForUpstream1);
+    easycl::CLWrapper *inputWrapper = cl->wrap(inputNumElements, input);
+    easycl::CLWrapper *errorsWrapper = cl->wrap(errorsSize, errors);
+    easycl::CLWrapper *weightsWrapper = cl->wrap(weightsSize, weights);
+    easycl::CLWrapper *errorsForUpstreamWrapper0 = cl->wrap(errorsForUpstreamSize, errorsForUpstream0);
+    easycl::CLWrapper *errorsForUpstreamWrapper1 = cl->wrap(errorsForUpstreamSize, errorsForUpstream1);
 
     inputWrapper->copyToDevice();
     errorsWrapper->copyToDevice();
@@ -795,7 +795,7 @@ TEST(SLOW_testbackward, compare_specific_args) {
 }
 
 TEST(testbackward, compare_1_n_kgsgo_32c5) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     delete cl;
 
@@ -861,11 +861,11 @@ float *test(int imageSize) {
     WeightRandomizer::randomize(errors, max(10000, outputNumElements), -1, 1);
     WeightRandomizer::randomize(output, max(10000, outputNumElements), -1, 1);
 
-    EasyCL cl;
+    easycl::EasyCL cl;
     Backward *backwardImpl = Backward::instanceForTest(&cl, dim, new ReluActivation());
     Timer timer;
     float *errorsForUpstream = backwardImpl->backward(batchSize, output, weights, bias, errors);
-    StatefulTimer::dump(true);
+    easycl::StatefulTimer::dump(true);
     timer.timeCheck("after calcing errors");
 
     Sampler::printSamples("errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream);
@@ -923,11 +923,11 @@ float *test(int imageSize) {
 //    WeightRandomizer::randomize(errors, max(10000, outputNumElements), -1, 1);
 //    WeightRandomizer::randomize(output, max(10000, outputNumElements), -1, 1);
 
-//    EasyCL cl;
+//    easycl::EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest(&cl, dim, new ReluActivation());
 //    Timer timer;
 //    float *errorsForUpstream = backwardImpl->backward(batchSize, output, weights, bias, errors);
-//    StatefulTimer::dump(true);
+//    easycl::StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
 //    Sampler::printSamples("errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream);
@@ -958,11 +958,11 @@ float *test(int imageSize) {
 //    WeightRandomizer::randomize(errors, max(10000, outputNumElements), -1, 1);
 //    WeightRandomizer::randomize(output, max(10000, outputNumElements), -1, 1);
 
-//    EasyCL cl;
+//    easycl::EasyCL cl;
 //    BackpropErrors *backwardImpl = BackpropErrors::instanceForTest(&cl, dim, new ReluActivation());
 //    Timer timer;
 //    float *errorsForUpstream = backwardImpl->backward(batchSize, output, weights, bias, errors);
-//    StatefulTimer::dump(true);
+//    easycl::StatefulTimer::dump(true);
 //    timer.timeCheck("after calcing errors");
 
 //    Sampler::printSamples("errorsForUpstream", batchSize * dim.inputCubeSize, errorsForUpstream);
@@ -1031,7 +1031,7 @@ TEST(testbackward, comparespecific) {
 //    errors[4] = 8;
 //    errors[5] = 6;
 
-    EasyCL cl;
+    easycl::EasyCL cl;
     Backward *backwardImpl1 = Backward::instanceSpecific(0, &cl, dim, new ReluActivation());
     float *errorsForUpstream1 = backwardImpl1->backward(batchSize, output, weights, bias, errors);
     Backward *backwardImpl2 = Backward::instanceSpecific(1, &cl, dim, new ReluActivation());

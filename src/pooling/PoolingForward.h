@@ -11,12 +11,14 @@
 #define VIRTUAL virtual
 #define STATIC static
 
+namespace easycl {
 class EasyCL;
 class CLWrapper;
+}
 
 class DeepCL_EXPORT PoolingForward {
 public:
-    EasyCL *cl;
+    easycl::EasyCL *cl;
 
     const bool padZeros;
     const int numPlanes;
@@ -44,11 +46,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingForward(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
-    STATIC PoolingForward *instance(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
-    STATIC PoolingForward *instanceForTest(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
-    STATIC PoolingForward *instanceSpecific(int idx, EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
-    VIRTUAL void forward(int batchSize, CLWrapper *inputData, CLWrapper *selectors, CLWrapper *outputData);
+    PoolingForward(easycl::EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingForward *instance(easycl::EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingForward *instanceForTest(easycl::EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    STATIC PoolingForward *instanceSpecific(int idx, easycl::EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *inputData, easycl::CLWrapper *selectors, easycl::CLWrapper *outputData);
     VIRTUAL void forward(int batchSize, float *input, int *selectors, float *output);
     VIRTUAL int getInputNumElements(int batchSize);
     VIRTUAL int getOutputNumElements(int batchSize);

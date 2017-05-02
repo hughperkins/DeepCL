@@ -13,8 +13,8 @@
 
 class PoolingBackwardGpuNaive : public PoolingBackward {
 public:
-    CLKernel *kernel;
-    CLKernel *kMemset;
+    easycl::CLKernel *kernel;
+    easycl::CLKernel *kMemset;
 
     // [[[cog
     // import cog_addheaders
@@ -22,9 +22,9 @@ public:
     // ]]]
     // generated, using cog:
     VIRTUAL ~PoolingBackwardGpuNaive();
-    VIRTUAL void backward(int batchSize, CLWrapper *gradOutputWrapper, CLWrapper *selectorsWrapper,
-    CLWrapper *gradInputWrapper);
-    PoolingBackwardGpuNaive(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    VIRTUAL void backward(int batchSize, easycl::CLWrapper *gradOutputWrapper, easycl::CLWrapper *selectorsWrapper,
+    easycl::CLWrapper *gradInputWrapper);
+    PoolingBackwardGpuNaive(easycl::EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
 
     // [[[end]]]
 };

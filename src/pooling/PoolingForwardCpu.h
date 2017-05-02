@@ -19,8 +19,8 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    PoolingForwardCpu(EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
-    VIRTUAL void forward(int batchSize, CLWrapper *inputWrapper, CLWrapper *selectorsWrapper, CLWrapper *outputWrapper);
+    PoolingForwardCpu(easycl::EasyCL *cl, bool padZeros, int numPlanes, int inputSize, int poolingSize);
+    VIRTUAL void forward(int batchSize, easycl::CLWrapper *inputWrapper, easycl::CLWrapper *selectorsWrapper, easycl::CLWrapper *outputWrapper);
     VIRTUAL void forward(int batchSize, float *input, int *selectors, float *output);
 
     // [[[end]]]

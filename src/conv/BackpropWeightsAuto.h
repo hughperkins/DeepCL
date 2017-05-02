@@ -43,11 +43,11 @@ public:
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    BackpropWeightsAuto(EasyCL *cl, LayerDimensions dim);
+    BackpropWeightsAuto(easycl::EasyCL *cl, LayerDimensions dim);
     VIRTUAL ~BackpropWeightsAuto();
     VIRTUAL void calcGradWeights(
-    int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
-    CLWrapper *gradInput);
+    int batchSize, easycl::CLWrapper *inputDataWrapper, easycl::CLWrapper *gradOutput, easycl::CLWrapper *weightsWrapper,
+    easycl::CLWrapper *gradInput);
 
     // [[[end]]]
 

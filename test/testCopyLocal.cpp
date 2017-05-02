@@ -17,10 +17,10 @@ using namespace std;
 
 namespace testCopyLocal{
 
-CLKernel *makeKernel( EasyCL *cl );
+easycl::CLKernel *makeKernel( easycl::EasyCL *cl );
 
 TEST( testCopyLocal, basic ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float a[] = { 1,2,3,4,
                   5,6,7,8,
@@ -33,7 +33,7 @@ TEST( testCopyLocal, basic ) {
     }
     cout << endl;
 
-    CLKernel *kernel = makeKernel( cl );
+    easycl::CLKernel *kernel = makeKernel( cl );
     kernel->in( 12, a )->inout( 16, b )->in( 12 );
     kernel->localFloats( 12 );
     kernel->run_1d(12,12);
@@ -56,8 +56,8 @@ TEST( testCopyLocal, basic ) {
     delete cl;
 }
 
-CLKernel *makeKernel( EasyCL *cl ) {
-    CLKernel *kernel = 0;
+easycl::CLKernel *makeKernel( easycl::EasyCL *cl ) {
+    easycl::CLKernel *kernel = 0;
     // [[[cog
     // import stringify
     // stringify.write_kernel2( "kernel", "test/testCopyLocal.cl", "run", '""' )

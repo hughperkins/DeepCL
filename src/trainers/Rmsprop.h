@@ -14,8 +14,10 @@
 #include "trainers/Trainer.h"
 
 class RmspropState;
+namespace easycl {
 class CLWrapper;
 class EasyCL;
+}
 class OutputData;
 
 #include "DeepCLDllExport.h"
@@ -35,7 +37,7 @@ public:
     // generated, using cog:
     VIRTUAL ~Rmsprop();
     VIRTUAL std::string asString();
-    VIRTUAL void updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradWeightsWrapper,
+    VIRTUAL void updateWeights(easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *gradWeightsWrapper,
     RmspropState *trainerState);
     VIRTUAL BatchResult trainNet(NeuralNet *net, TrainingContext *context,
     float const*input, OutputData *outputData);
@@ -44,8 +46,8 @@ public:
     VIRTUAL BatchResult trainNetFromLabels(NeuralNet *net, TrainingContext *context,
     float const*input, int const*labels);
     VIRTUAL void bindState(NeuralNet *net);
-    STATIC Rmsprop *instance(EasyCL *cl, float learningRate);
-    Rmsprop(EasyCL *cl);
+    STATIC Rmsprop *instance(easycl::EasyCL *cl, float learningRate);
+    Rmsprop(easycl::EasyCL *cl);
 
     // [[[end]]]
 };

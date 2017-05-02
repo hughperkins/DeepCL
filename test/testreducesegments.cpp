@@ -18,7 +18,7 @@
 using namespace std;
 
 TEST( testreducesegments, basic ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     ReduceSegments *reduceSegments = new ReduceSegments( cl );
 
@@ -30,10 +30,10 @@ TEST( testreducesegments, basic ) {
     for( int i = 0; i < N * 2; i++ ) {
         data[i] = 15 + 2 * i;
     }
-    CLWrapper *inWrapper = cl->wrap( N, data );
+    easycl::CLWrapper *inWrapper = cl->wrap( N, data );
     inWrapper->copyToDevice();
     float *out = new float[ numSegments ];
-    CLWrapper *outWrapper = cl->wrap( numSegments, out );
+    easycl::CLWrapper *outWrapper = cl->wrap( numSegments, out );
     outWrapper->createOnDevice();
     reduceSegments->reduce( N, segmentLength, inWrapper, outWrapper );
     outWrapper->copyToHost();

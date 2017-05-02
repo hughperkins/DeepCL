@@ -26,26 +26,26 @@ using namespace std;
 
 class DeepCL_EXPORT Forward {
 public:
-    EasyCL *cl;
+    easycl::EasyCL *cl;
     LayerDimensions dim;
 
     virtual ~Forward() {}
     virtual void forward(int batchSize, 
-        CLWrapper *dataWrapper, CLWrapper *weightsWrapper, CLWrapper *biasWrapper,
-        CLWrapper *outputWrapper) = 0;
+        easycl::CLWrapper *dataWrapper, easycl::CLWrapper *weightsWrapper, easycl::CLWrapper *biasWrapper,
+        easycl::CLWrapper *outputWrapper) = 0;
 
     // [[[cog
     // import cog_addheaders
     // cog_addheaders.add()
     // ]]]
     // generated, using cog:
-    Forward(EasyCL *cl, LayerDimensions layerDimensions);
-    STATIC Forward *instance(EasyCL *cl, LayerDimensions dim);
-    STATIC Forward *instanceTest(EasyCL *cl, LayerDimensions layerDimensions);
+    Forward(easycl::EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC Forward *instance(easycl::EasyCL *cl, LayerDimensions dim);
+    STATIC Forward *instanceTest(easycl::EasyCL *cl, LayerDimensions layerDimensions);
     STATIC int getNumImplementations();
     STATIC bool plausiblyOptimal(int index, int batchSize, LayerDimensions dim);
-    STATIC Forward *instanceSpecific(int idx, EasyCL *cl, LayerDimensions layerDimensions);
-    STATIC Forward *instanceSpecific(std::string name, EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC Forward *instanceSpecific(int idx, easycl::EasyCL *cl, LayerDimensions layerDimensions);
+    STATIC Forward *instanceSpecific(std::string name, easycl::EasyCL *cl, LayerDimensions layerDimensions);
     VIRTUAL int getOutputTotalSize(int batchSize);
     VIRTUAL void forward(int batchSize, float *inputData, float *filters, float *biases, float *output);
 

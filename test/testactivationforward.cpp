@@ -21,7 +21,7 @@ TEST( testactivationforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 5, 3,
                      3, 8, 4, 1,
@@ -51,7 +51,7 @@ TEST( testactivationforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ActivationForward *activationForward = ActivationForward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float data[] = { 1, 2, 
                     5, 3,
@@ -87,7 +87,7 @@ TEST( testactivationforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ActivationForward *activationForward = ActivationForward::instanceSpecific( 1, cl, numPlanes, imageSize, new ReluActivation() );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
@@ -98,8 +98,8 @@ TEST( testactivationforward, fromwrappers ) {
     float *output = new float[outputNumElements];
 
     const int inputNumElements = batchSize * numPlanes * imageSize * imageSize;
-    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
-    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
+    easycl::CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    easycl::CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     inputWrapper->copyToDevice();
 
@@ -193,7 +193,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int numPlanes = args._numPlanes;
     int imageSize = args._imageSize;
 
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     ActivationForward *activationForward0 = ActivationForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
     ActivationForward *activationForward1 = ActivationForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, ActivationFunction::fromName( args._activation ) );
@@ -204,8 +204,8 @@ void compareSpecific( CompareSpecificArgs args ) {
     float *input = new float[ inputNumElements ];
     float *output = new float[ outputNumElements ];
 
-    CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
-    CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
+    easycl::CLWrapper *inputWrapper = cl->wrap( inputNumElements, input );
+    easycl::CLWrapper *outputWrapper = cl->wrap( outputNumElements, output );
 
     WeightRandomizer::randomize( input, inputNumElements, -0.1f, 0.1f );
 

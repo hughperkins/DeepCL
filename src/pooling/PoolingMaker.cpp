@@ -8,6 +8,7 @@
 #include "PoolingMaker.h"
 
 using namespace std;
+using namespace easycl;
 
 Layer *PoolingMaker::createLayer(Layer *previousLayer) {
     return new PoolingLayer(cl, previousLayer, this);

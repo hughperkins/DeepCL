@@ -17,6 +17,7 @@
 #include <string>
 
 using namespace std;
+using namespace easycl;
 
 #undef VIRTUAL
 #undef STATIC

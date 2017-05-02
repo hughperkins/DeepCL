@@ -15,11 +15,13 @@
 #define STATIC static
 
 class TrainerState;
+namespace easycl {
 class EasyCL;
+}
 
 class TrainerStateMaker {
 public:
-    virtual TrainerState *instance(EasyCL *cl, int numWeights) = 0;
+    virtual TrainerState *instance(easycl::EasyCL *cl, int numWeights) = 0;
 
     // [[[cog
     // import cog_addheaders

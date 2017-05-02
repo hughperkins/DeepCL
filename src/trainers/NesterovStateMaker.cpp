@@ -10,6 +10,7 @@
 #include "trainers/NesterovState.h"
 
 using namespace std;
+using namespace easycl;
 
 #undef STATIC
 #undef VIRTUAL

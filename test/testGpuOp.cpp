@@ -15,11 +15,11 @@
 using namespace std;
 
 TEST( testGpuOp, addinplace ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
-    CLWrapper *a = cl->wrap( 5,adat );
-    CLWrapper *b = cl->wrap( 5,bdat );
+    easycl::CLWrapper *a = cl->wrap( 5,adat );
+    easycl::CLWrapper *b = cl->wrap( 5,bdat );
     a->copyToDevice();
     b->copyToDevice();
 
@@ -42,13 +42,13 @@ TEST( testGpuOp, addinplace ) {
 }
 
 TEST( testGpuOp, addoutofplace ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
     float bdat[] = { 4,2.1f, 5,3,9.2f };
     float cdat[5];
-    CLWrapper *a = cl->wrap( 5,adat );
-    CLWrapper *b = cl->wrap( 5,bdat );
-    CLWrapper *c = cl->wrap( 5,cdat );
+    easycl::CLWrapper *a = cl->wrap( 5,adat );
+    easycl::CLWrapper *b = cl->wrap( 5,bdat );
+    easycl::CLWrapper *c = cl->wrap( 5,cdat );
     a->copyToDevice();
     b->copyToDevice();
     c->copyToDevice();
@@ -80,9 +80,9 @@ TEST( testGpuOp, addoutofplace ) {
 }
 
 TEST( testGpuOp, inverse ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a = cl->wrap( 5,adat );
+    easycl::CLWrapper *a = cl->wrap( 5,adat );
     a->copyToDevice();
 
     GpuOp gpuOp( cl );
@@ -102,9 +102,9 @@ TEST( testGpuOp, inverse ) {
 }
 
 TEST( testGpuOp, addscalarinplace ) {
-    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
+    easycl::EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     float adat[] = { 1,3,9,12.5f,2.5f };
-    CLWrapper *a = cl->wrap( 5,adat );
+    easycl::CLWrapper *a = cl->wrap( 5,adat );
     a->copyToDevice();
 
     GpuOp gpuOp( cl );
