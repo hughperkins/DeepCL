@@ -181,6 +181,12 @@ License
 Recent changes
 ==============
 
+* 2017 May 2nd:
+  * branch `update-easycl-mac` updated to latest EasyCL, and unit-tests tested on Mac Sierra against:
+    * Intel HD Graphics 530 GPU
+    * Radeon Pro 450 GPU
+  * This latest EasyCL lets you use environment variable `CL_GPUOFFSET` to select gpus, eg set to `1` for second GPU, or `2` for third
+  * Thank you to my employer [ASAPP](http://asapp.com) for providing me use of said Mac Sierra :-)
 * 7th August 2016:
   * "standard" version of windows compiler changed from msvc2010 to msvc2015 update 3  (no change to linux/mac)
   * "standard" version of python 3.x on windows changed from 3.4 to 3.5  (no change to linux/mac)
