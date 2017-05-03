@@ -7,10 +7,16 @@
 // expected defines:
 // one of: [ TANH | RELU | LINEAR | SIGMOID | SCALEDTANH | ELU ]
 
+float tanh_substitute(float output) {
+  float pos = exp(output);
+  float neg = exp(-output);
+  return ((pos - neg) / (pos + neg));
+}
+
 #ifdef TANH
-    #define ACTIVATION_FUNCTION(output) (tanh(output))
+    #define ACTIVATION_FUNCTION(output) (tanh_substitute(output))
 #elif defined SCALEDTANH
-    #define ACTIVATION_FUNCTION(output) (1.7159f * tanh(0.66667f * output))
+    #define ACTIVATION_FUNCTION(output) (1.7159f * tanh_substitute(0.66667f * output))
 #elif SIGMOID
     #define ACTIVATION_FUNCTION(output) (1.0f / (1 + exp(-output)))
 #elif defined RELU
