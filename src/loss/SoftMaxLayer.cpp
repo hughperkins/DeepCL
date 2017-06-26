@@ -73,7 +73,7 @@ VIRTUAL float SoftMaxLayer::calcLossFromLabels(int const *labels) {
             for(int plane = 0; plane < numPlanes; plane++) {
                 int label = labels[n * numPlanes + plane];
                 int imageOffset = (n * numPlanes + plane) * imageSizeSquared;
-                loss += - log(output[ imageOffset + label ]);
+                loss += - log(std::max(output[ imageOffset + label ], FLT_MIN));
             }
         }
     } else {
@@ -84,7 +84,7 @@ VIRTUAL float SoftMaxLayer::calcLossFromLabels(int const *labels) {
         for(int n = 0; n < batchSize; n++) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
-            loss += - log(output[imageOffset + label]);
+            loss += - log(std::max(output[imageOffset + label], FLT_MIN));
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcLossfromlabels");
@@ -100,7 +100,7 @@ VIRTUAL float SoftMaxLayer::calcLoss(float const *expectedValues) {
                 int imageOffset = (n * numPlanes + plane) * imageSizeSquared;
                 for(int i = 0; i < imageSizeSquared; i++) {
                     if(expectedValues[ imageOffset + i ] != 0) {
-                        float thisloss = - expectedValues[ imageOffset + i ] * log(output[ imageOffset + i ]);
+                        float thisloss = - expectedValues[ imageOffset + i ] * log(std::max(output[ imageOffset + i ], FLT_MIN));
                         loss += thisloss;
                     }
                 }
@@ -114,7 +114,7 @@ VIRTUAL float SoftMaxLayer::calcLoss(float const *expectedValues) {
         for(int n = 0; n < batchSize; n++) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             for(int plane = 0; plane < numPlanes; plane++) {
-                float thisloss = - expectedValues[imageOffset + plane] * log(output[imageOffset + plane]);
+                float thisloss = - expectedValues[imageOffset + plane] * log(std::max(output[imageOffset + plane], FLT_MIN));
                 loss += thisloss;
             }
         }
