@@ -8,6 +8,7 @@
 
 #include "layer/LayerMaker.h"
 #include "loss/SoftMaxLayer.h"
+#include <cfloat>
 
 using namespace std;
 
