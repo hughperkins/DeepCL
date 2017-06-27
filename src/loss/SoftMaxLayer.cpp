@@ -8,6 +8,7 @@
 
 #include "layer/LayerMaker.h"
 #include "loss/SoftMaxLayer.h"
+#include <cfloat>
 
 using namespace std;
 
@@ -73,7 +74,7 @@ VIRTUAL float SoftMaxLayer::calcLossFromLabels(int const *labels) {
             for(int plane = 0; plane < numPlanes; plane++) {
                 int label = labels[n * numPlanes + plane];
                 int imageOffset = (n * numPlanes + plane) * imageSizeSquared;
-                loss += - log(output[ imageOffset + label ]);
+                loss += - log(std::max(output[ imageOffset + label ], FLT_MIN));
             }
         }
     } else {
@@ -84,7 +85,7 @@ VIRTUAL float SoftMaxLayer::calcLossFromLabels(int const *labels) {
         for(int n = 0; n < batchSize; n++) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
-            loss += - log(output[imageOffset + label]);
+            loss += - log(std::max(output[imageOffset + label], FLT_MIN));
         }
     }
     StatefulTimer::timeCheck("end SoftMaxLayer calcLossfromlabels");
@@ -100,7 +101,7 @@ VIRTUAL float SoftMaxLayer::calcLoss(float const *expectedValues) {
                 int imageOffset = (n * numPlanes + plane) * imageSizeSquared;
                 for(int i = 0; i < imageSizeSquared; i++) {
                     if(expectedValues[ imageOffset + i ] != 0) {
-                        float thisloss = - expectedValues[ imageOffset + i ] * log(output[ imageOffset + i ]);
+                        float thisloss = - expectedValues[ imageOffset + i ] * log(std::max(output[ imageOffset + i ], FLT_MIN));
                         loss += thisloss;
                     }
                 }
@@ -114,7 +115,7 @@ VIRTUAL float SoftMaxLayer::calcLoss(float const *expectedValues) {
         for(int n = 0; n < batchSize; n++) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             for(int plane = 0; plane < numPlanes; plane++) {
-                float thisloss = - expectedValues[imageOffset + plane] * log(output[imageOffset + plane]);
+                float thisloss = - expectedValues[imageOffset + plane] * log(std::max(output[imageOffset + plane], FLT_MIN));
                 loss += thisloss;
             }
         }
@@ -134,7 +135,10 @@ VIRTUAL void SoftMaxLayer::calcGradInputFromLabels(int const *labels) {
                 int imageOffset = (n * numPlanes + plane) * imageSizeSquared;
                 int label = labels[n * numPlanes + plane];
                 for(int i = 0; i < imageSizeSquared; i++) {
-                    gradInput[imageOffset + i] = output[imageOffset + i];
+                    float value = output[imageOffset + i];
+                    if (std::isfinite(value) == false)
+                        throw runtime_error("Output is a non-finite number, this usually means the learning rate is too high");
+                    gradInput[imageOffset + i] = value;
                 }
                 gradInput[imageOffset + label] -= 1;
             }
@@ -148,7 +152,10 @@ VIRTUAL void SoftMaxLayer::calcGradInputFromLabels(int const *labels) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             int label = labels[n];
             for(int plane = 0; plane < numPlanes; plane++) {
-                gradInput[imageOffset + plane] = output[imageOffset + plane];
+                float value = output[imageOffset + plane];
+                if (std::isfinite(value) == false)
+                    throw runtime_error("Output is a non-finite number, this usually means the learning rate is too high");
+                gradInput[imageOffset + plane] = value;
             }
             if(label >= numPlanes) {
                 throw runtime_error("Label " + toString(label) + " exceeds number of softmax planes " + toString(numPlanes) );
@@ -172,7 +179,10 @@ VIRTUAL void SoftMaxLayer::calcGradInput(float const *expectedValues) {
                 int imageOffset = (n * numPlanes + plane) * imageSizeSquared;
                 for(int i = 0; i < imageSizeSquared; i++) {
                     int resultIndex = imageOffset + i;
-                    gradInput[resultIndex] = output[resultIndex] - expectedValues[resultIndex];
+                    float value = output[resultIndex];
+                    if (std::isfinite(value) == false)
+                        throw runtime_error("Output is a non-finite number, this usually means the learning rate is too high");
+                    gradInput[resultIndex] = value - expectedValues[resultIndex];
                 }
             }
         }
@@ -185,7 +195,10 @@ VIRTUAL void SoftMaxLayer::calcGradInput(float const *expectedValues) {
             int imageOffset = n * numPlanes * imageSizeSquared;
             for(int plane = 0; plane < numPlanes; plane++) {
                 int resultIndex = imageOffset + plane;
-                gradInput[resultIndex] = output[resultIndex] - expectedValues[resultIndex];
+                float value = output[resultIndex];
+                if (std::isfinite(value) == false)
+                    throw runtime_error("Output is a non-finite number, this usually means the learning rate is too high");
+                gradInput[resultIndex] = value - expectedValues[resultIndex];
             }
         }
     }
