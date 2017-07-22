@@ -107,10 +107,10 @@ public:
         */// ]]]
         // generated using cog:
         gpuIndex = -1;
-        dataDir = "../data/mnist";
-        trainFile = "train-images-idx3-ubyte";
+        dataDir = "";
+        trainFile = "";
         dataset = "";
-        validateFile = "t10k-images-idx3-ubyte";
+        validateFile = "";
         numTrain = -1;
         numTest = -1;
         batchSize = 128;
@@ -592,32 +592,51 @@ int main(int argc, char *argv[]) {
     }
     string dataset = toLower(config.dataset);
     if(dataset != "") {
+        string dataDir;
+        string trainFile;
+        string validateFile;
+        int loadOnDemand = 0;
+
         if(dataset == "mnist") {
-            config.dataDir = "../data/mnist";
-            config.trainFile = "train-images-idx3-ubyte";
-            config.validateFile = "t10k-images-idx3-ubyte";
+            dataDir = "../data/mnist";
+            trainFile = "train-images-idx3-ubyte";
+            validateFile = "t10k-images-idx3-ubyte";
         } else if(dataset == "norb") {
-            config.dataDir = "../data/norb";
-            config.trainFile = "training-shuffled-dat.mat";
-            config.validateFile = "testing-sampled-dat.mat";
+            dataDir = "../data/norb";
+            trainFile = "training-shuffled-dat.mat";
+            validateFile = "testing-sampled-dat.mat";
         } else if(dataset == "cifar10") {
-            config.dataDir = "../data/cifar10";
-            config.trainFile = "train-dat.mat";
-            config.validateFile = "test-dat.mat";
+            dataDir = "../data/cifar10";
+            trainFile = "train-dat.mat";
+            validateFile = "test-dat.mat";
         } else if(dataset == "kgsgo") {
-            config.dataDir = "../data/kgsgo";
-            config.trainFile = "kgsgo-train10k-v2.dat";
-            config.validateFile = "kgsgo-test-v2.dat";
-            config.loadOnDemand = 1;
+            dataDir = "../data/kgsgo";
+            trainFile = "kgsgo-train10k-v2.dat";
+            validateFile = "kgsgo-test-v2.dat";
+            loadOnDemand = 1;
         } else if(dataset == "kgsgoall") {
-            config.dataDir = "../data/kgsgo";
-            config.trainFile = "kgsgo-trainall-v2.dat";
-            config.validateFile = "kgsgo-test-v2.dat";
-            config.loadOnDemand = 1;
+            dataDir = "../data/kgsgo";
+            trainFile = "kgsgo-trainall-v2.dat";
+            validateFile = "kgsgo-test-v2.dat";
+            loadOnDemand = 1;
         } else {
             cout << "dataset " << dataset << " not known.  please choose from: mnist, norb, cifar10, kgsgo" << endl;
             return -1;
         }
+
+        if (config.dataDir.empty()) {
+            config.dataDir = dataDir;
+        }
+        if (config.trainFile.empty()) {
+            config.trainFile = trainFile;
+        }
+        if (config.validateFile.empty()) {
+            config.validateFile = validateFile;
+        }
+        if (config.loadOnDemand == 0) {
+            config.loadOnDemand = loadOnDemand;
+        }
+
         cout << "Using dataset " << dataset << ":" << endl;
         cout << "   datadir: " << config.dataDir << ":" << endl;
         cout << "   trainfile: " << config.trainFile << ":" << endl;
