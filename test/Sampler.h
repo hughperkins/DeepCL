@@ -11,7 +11,7 @@ class Sampler {
 public:
     static void printSamples( std::string arrayName, int arraySize, float *array, int numSamples = 5 ) {
         std::mt19937 random;
-        random.seed(0);
+        random.seed(1);
         for( int sample = 0; sample < numSamples; sample++ ) {
             int index = random() % arraySize;
             std::cout << "EXPECT_FLOAT_NEAR( " << array[index] << ", " << arrayName << "[" << index << "] );" << std::endl;
@@ -21,7 +21,7 @@ public:
         float *weights = layer->getWeights();
         int numWeights = layer->getWeightsSize();
         MT19937 random;
-        random.seed(0);
+        random.seed(1);
 //        RandomSingleton *random = RandomSingleton::instance();
 //        int sampleIdxs[5];
         for( int sample = 0; sample < 5; sample++ ) {
@@ -33,7 +33,7 @@ public:
     static void sampleFloatWrapper( std::string label, CLWrapper *wrapper ) {
         int N = wrapper->size();
         MT19937 random;
-        random.seed(0);
+        random.seed(1);
         wrapper->copyToHost();
         float *hostArray = (float *)wrapper->getHostArray();
         for( int sample = 0; sample < 5; sample++ ) {
@@ -43,7 +43,7 @@ public:
     }
     static void sampleFloats( std::string label, int N, float *floats ) {
         MT19937 random;
-        random.seed(0);
+        random.seed(1);
         for( int sample = 0; sample < 5; sample++ ) {
             int idx = random() % N;
             std::cout << label + ": sample[" << idx << "]=" << floats[idx] << std::endl;

@@ -42,7 +42,7 @@ TEST( testdropoutforward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     unsigned char mask[] = { 1, 0, 0,
                              0,0,1,
@@ -55,7 +55,7 @@ TEST( testdropoutforward, basic ) {
                      3, -33.1f, 14.2f,
     };
     int outputNumElements = dropoutForward->getOutputNumElements( batchSize );
-    EXPECT_FLOAT_NEAR( outputNumElements, imageSize * imageSize );
+    EXPECT_EQ( outputNumElements, imageSize * imageSize );
     float *output = new float[outputNumElements];
 
     dropoutForward->forward( batchSize, mask, data, output );
@@ -81,7 +81,7 @@ TEST( testdropoutforward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float data[] = { 1, 2, 
                     5, 3,
@@ -131,7 +131,7 @@ TEST( testdropoutforward, fromwrappers ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 4;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutForward *dropoutForward = DropoutForward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     float input[] = { 1, -2, -5, 3,
                      3, 8, 4, 1,
@@ -240,7 +240,7 @@ void compareSpecific( CompareSpecificArgs args ) {
     int numPlanes = args._numPlanes;
     int imageSize = args._imageSize;
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     DropoutForward *dropoutForward0 = DropoutForward::instanceSpecific( args._instance0, cl, numPlanes, imageSize, args._dropRatio );
     DropoutForward *dropoutForward1 = DropoutForward::instanceSpecific( args._instance1, cl, numPlanes, imageSize, args._dropRatio );
@@ -316,7 +316,7 @@ void compareSpecific( CompareSpecificArgs args ) {
             break;
         }
     }
-    EXPECT_FLOAT_NEAR( 0, numErrors );
+    EXPECT_EQ( 0, numErrors );
     if( numErrors > 0 ) {
         int num2dPlanes = inputNumElements / imageSize / imageSize;
         for( int plane = 0; plane < num2dPlanes; plane++ ) {

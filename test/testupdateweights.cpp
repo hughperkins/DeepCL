@@ -57,18 +57,18 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
     Layer *layer = net->getLayer(targetLayerIndex);
 
     cout << "layer " << layer->asString() << endl;
-    WeightRandomizer::randomize(0, input, inputTotalSize, -1.0f, 1.0f);
-    WeightRandomizer::randomize(1, expectedOutput, outputTotalSize, -1.0f, 1.0f);
+    WeightRandomizer::randomize(1, input, inputTotalSize, -1.0f, 1.0f);
+    WeightRandomizer::randomize(2, expectedOutput, outputTotalSize, -1.0f, 1.0f);
 
     int weightsSize = layer->getWeightsSize();
     int biasSize = layer->getBiasSize();
     cout << "weightsize=" << weightsSize << " biassize=" << biasSize << endl;
     float *weights = new float[weightsSize];
-    WeightRandomizer::randomize(2, weights, weightsSize, -0.1f, 0.1f);
+    WeightRandomizer::randomize(3, weights, weightsSize, -0.1f, 0.1f);
     float *bias = 0;
     if(layer->biased()) {
         bias = new float[biasSize];
-        WeightRandomizer::randomize(3, bias, biasSize, -0.1f, 0.1f);
+        WeightRandomizer::randomize(4, bias, biasSize, -0.1f, 0.1f);
     }
     if(weightsSize > 0 || biasSize > 0) {
         layer->setWeights(weights, bias);
@@ -93,7 +93,7 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
     const int numSamples = 10;
     for(int i = 0; i < numSamples; i++) {
         int weightIndex;
-        WeightRandomizer::randomizeInts(i, &weightIndex, 1, 0, weightsSize);
+        WeightRandomizer::randomizeInts(i + 1, &weightIndex, 1, 0, weightsSize);
 //        cout << "i=" << i << " index " << inputIndex << endl;
         float oldValue = weights[weightIndex];
         // grad for this index is....
@@ -123,7 +123,7 @@ void checkWeightsUpdate(NeuralNet *net, int targetLayerIndex) {
 }
 
 TEST(testupdateweights, conv1) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 5);
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(0));
@@ -138,7 +138,7 @@ TEST(testupdateweights, conv1) {
 }
 
 TEST(testupdateweights, conv1z) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = new NeuralNet(cl, 2, 3);
     net->addLayer(ConvolutionalMaker::instance()->numFilters(2)->filterSize(3)->biased(0)->padZeros(1));
@@ -155,7 +155,7 @@ TEST(testupdateweights, conv1z) {
 void test(int imageSize, int filterSize, int numPlanes, int batchSize) {
     float learningRate = 0.01f;
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = NeuralNet::maker(cl)->instance();
     net->addLayer(InputLayerMaker::instance()->numPlanes(numPlanes)->imageSize(imageSize));
     net->addLayer(ConvolutionalMaker::instance()->numFilters(1)->filterSize(filterSize)->biased(0));
@@ -294,7 +294,7 @@ void testBackpropWeights(LayerDimensions &dim, int batchSize, float learningMult
     memset(weights, 0, sizeof(float) * max(dim.filtersSize, 20));
     memset(bias, 0, sizeof(float) * 10);
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceForTest(cl, dim);
     backpropWeightsImpl->calcGradWeights(batchSize, errors, data, weights, bias);
     delete backpropWeightsImpl;
@@ -520,7 +520,7 @@ TEST(testupdateweights, backprop_instance3_smaller2) {
     int batchSize = 1;
 //    const float learningRate = 1;
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     int outputNumElements = batchSize * dim.outputCubeSize;
     int inputNumElements = batchSize * dim.inputCubeSize;
@@ -734,7 +734,7 @@ void compareSpecific(bool debug, float learningRate, int its, int batchSize, Lay
 //    WeightRandomizer::randomizeInts(errors, outputAllocated, 0, 99);
 //    WeightRandomizer::randomizeInts(inputData, inputAllocated, 0, 99);
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     
     int instances[2];
     instances[0] = instance0;
@@ -933,7 +933,7 @@ void measurePerf(int batchSize, LayerDimensions dim, int instance) {
     WeightRandomizer::randomizeInts(gradOutput, outputAllocated, 0, 99);
     WeightRandomizer::randomizeInts(inputData, inputAllocated, 0, 99);
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     
     BackpropWeights *backpropWeightsImpl = BackpropWeights::instanceSpecific(instance, cl, dim);
     Timer timer;

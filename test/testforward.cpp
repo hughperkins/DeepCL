@@ -16,7 +16,7 @@
 #include "clBLAS.h"
 
 #include "test/WeightRandomizer.h"
-#include "test/GtestGlobals.h"
+#include "test/DeepCLGtestGlobals.h"
 #include "test/TestArgsParser.h"
 #include "test/DimFromArgs.h"
 
@@ -90,7 +90,7 @@ TEST( testforward, imagesize2_nopadzeros ) {
     };
     cout << "expected number of output: " << resultSize << endl;
 //    int outputSize = 0;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     for( int i = 1; i <= 4; i++ ) {
         Forward *forward = Forward::instanceSpecific( 3, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
@@ -150,7 +150,7 @@ TEST( testforward, DISABLED_imagesize2_nopadzeros_skip1 ) {
     };
     cout << "expected number of output: " << outputNumElements << endl;
 //    int outputSize = 0;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     for( int i = 1; i <= 1; i++ ) {
         Forward *forward = Forward::instanceSpecific( 0, cl,
             LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
@@ -236,7 +236,7 @@ TEST( testforward, imagesize2_padzeros ) {
 //    };
 
 //    int outputSize = 0;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
     float *output = new float[forward->getOutputTotalSize(batchSize)];
@@ -298,7 +298,7 @@ TEST( testforward, imagesize3 ) {
  };
 
 //    int outputSize = 0;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, imageSize, numOutPlanes, filterWidth,
         padZeros == 1, false ) );
     float *output = new float[forward->getOutputTotalSize(batchSize)];
@@ -344,7 +344,7 @@ TEST( testforward, test2 ) {
                          0,0,0
  };
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float *biases = 0;
 
@@ -378,7 +378,7 @@ TEST( testforward, test3 ) {
                      0.5f,0.7f};
 
 //    int outputSize = 0;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     Forward *forward = Forward::instanceTest( cl, LayerDimensions( numInPlanes, inImageSize, numOutPlanes, filterSize,
         padZeros == 1, false ) );
     float *output = new float[forward->getOutputTotalSize(batchSize)];
@@ -409,7 +409,7 @@ TEST( testforward, test3 ) {
 
 void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int instance0, int instance1 ) {
     cout << dim << endl;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance clblasInstance;
 
     int inputsSize = N * dim.inputCubeSize;
@@ -436,9 +436,9 @@ void compareSpecific( bool debug, int N, int batchSize, LayerDimensions dim, int
 ////    filters[1] = 5.0f;
 //    filters[4] = 5.0f;
 
-    WeightRandomizer::randomize( 0, inputs, inputsAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 1, filters, filtersAllocated, -0.1f, 0.1f );
-    WeightRandomizer::randomize( 2, biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 1, inputs, inputsAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 2, filters, filtersAllocated, -0.1f, 0.1f );
+    WeightRandomizer::randomize( 3, biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
     for( int i = 0; i < 8; i++ ) {
         if( debug ) cout << "i " << i << " input[i]=" << inputs[i] << " filters[i]=" << filters[i] << endl;
     }
@@ -577,7 +577,7 @@ TEST( testforward, compare_1_n_biased_nopad ) {
 }
 
 TEST( testforward, compare_1_n_biased_pad ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     int maxWorkgroupSize = cl->getMaxWorkgroupSize();
     delete cl;
 
@@ -739,7 +739,7 @@ TEST( testforward, comparespecific_break2 ) { // this breaks on v5.7.0 for examp
 //}
 
 TEST( testforward, softmax ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = NeuralNet::maker(cl)->imageSize(1)->planes(4)->instance();
     net->addLayer( SoftMaxMaker::instance() );
     net->setBatchSize( 1 );
@@ -799,7 +799,7 @@ TEST( testforward, softmax ) {
 }
 
 TEST( testforward, softmax_byplane ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = NeuralNet::maker(cl)->imageSize(2)->planes(1)->instance();
     net->addLayer( SoftMaxMaker::instance()->perPlane() );
     net->setBatchSize( 1 );
@@ -880,7 +880,7 @@ void testPerf( int instance, int N, int batchSize, LayerDimensions dim ) {
     WeightRandomizer::randomize( filters, filtersAllocated, -0.1f, 0.1f );
     WeightRandomizer::randomize( biasFilters, biasFiltersAllocated, -0.1f, 0.1f );
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     Forward *p1 = Forward::instanceSpecific( instance, cl, dim );
     for( int it = 0; it < (N + batchSize - 1 ) / batchSize; it++ ) {
         int thisBatchSize = it < N - 1 ? batchSize : N - batchSize * it;

@@ -21,7 +21,7 @@ CLKernel *makeTestPosKernel( EasyCL *cl );
 CLKernel *makeBasicKernel( EasyCL *cl );
 
 TEST( testCopyBlock, testPos ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float in[12];
     float res[12];
@@ -60,7 +60,7 @@ TEST( testCopyBlock, testPos ) {
 //}
 
 TEST( testCopyBlock, basic ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float a[] = { 1,2,3,4,
                   5,6,7,8,

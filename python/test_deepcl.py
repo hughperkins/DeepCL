@@ -1,12 +1,11 @@
 #!/usr/bin/python
 
-# train on mnist, storing data in array.arrays
-# see test_deepcl_numpy.py for an example using numpy arrays
+# as test_deepcl, but uses numpy tensors
 
 from __future__ import print_function, division
-import array
 import PyDeepCL
 import sys
+import numpy as np
 print('imports done')
 
 if len(sys.argv) != 2:
@@ -34,13 +33,15 @@ print('added layer ')
 PyDeepCL.NetdefToNet.createNetFromNetdef(
     net, "rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n")
 print(net.asString())
+print(net.getNetdef())
+print('')
 
 (N, planes, size) = PyDeepCL.GenericLoader.getDimensions(mnistFilePath)
 print((N, planes, size))
 
 N = 1280
-images = array.array('f', [0] * (N * planes * size * size))
-labels = array.array('i', [0] * N)
+images = np.zeros((N, planes, size, size), dtype=np.float32)
+labels = np.zeros((N,), dtype=np.int32)
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N)
 print('loaded data')
 

@@ -64,6 +64,7 @@ public:
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputSize() const;
+    VIRTUAL const char *getActivationAsCharStar() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
@@ -72,7 +73,7 @@ public:
     VIRTUAL int getWeightsSize() const;
     VIRTUAL int getBiasSize() const;
     VIRTUAL float *getGradInput();
-    VIRTUAL ActivationFunction const *getActivationFunction();
+    VIRTUAL ActivationFunction const *getActivationFunction() const;
     VIRTUAL void forward();
     VIRTUAL void backward();
     VIRTUAL std::string asString() const;

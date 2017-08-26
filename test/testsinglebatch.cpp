@@ -124,7 +124,7 @@ public:
 void test(float learningRate, int numEpochs, int batchSize, NeuralNet *net, float tolerance = 1.3f) {
     net->setBatchSize(batchSize);
     MT19937 random;
-    random.seed(0); // so always gives same output
+    random.seed(1); // so always gives same output
     const int inputsSize = net->getInputCubeSize() * batchSize;
     float *inputData = new float[ inputsSize ];
     for(int i = 0; i < inputsSize; i++) {
@@ -231,7 +231,7 @@ void test(float learningRate, int numEpochs, int batchSize, NeuralNet *net, floa
 }
 
 void test(ActivationFunction *fn, TestArgs args, float tolerance = 1.3f) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for(int i = 0; i < args.numLayers; i++) {
@@ -322,7 +322,7 @@ void checkErrorsForLayer(int layerId, float lastLoss, NeuralNet *net, float *las
 }
 
 void testLabelled(TestArgs args) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(1)->imageSize(args.imageSize)->instance();
     for(int i = 0; i < args.numLayers; i++) {
@@ -338,7 +338,7 @@ void testLabelled(TestArgs args) {
     net->setBatchSize(args.batchSize);
 
     mt19937 random;
-    random.seed(0); // so always gives same output
+    random.seed(1); // so always gives same output
     const int inputsSize = net->getInputCubeSize() * args.batchSize;
     float *inputData = new float[ inputsSize ];
     for(int i = 0; i < inputsSize; i++) {
@@ -473,7 +473,7 @@ TEST(testsinglebatch, detailedregression) {
     net->setBatchSize(batchSize);
 
     mt19937 random;
-    random.seed(0); // so always gives same output
+    random.seed(1); // so always gives same output
     const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for(int i = 0; i < inputsSize; i++) {
@@ -719,7 +719,7 @@ TEST(SLOW_testsinglebatch, perf) {
     net->setBatchSize(batchSize);
 
     mt19937 random;
-    random.seed(0); // so always gives same output
+    random.seed(1); // so always gives same output
     const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for(int i = 0; i < inputsSize; i++) {
@@ -780,7 +780,7 @@ TEST(testsinglebatch, perf19) {
     net->setBatchSize(batchSize);
 
     mt19937 random;
-    random.seed(0); // so always gives same output
+    random.seed(1); // so always gives same output
     const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for(int i = 0; i < inputsSize; i++) {
@@ -842,7 +842,7 @@ TEST(SLOW_testsinglebatch, perf19_depth12) {
     net->setBatchSize(batchSize);
 
     mt19937 random;
-    random.seed(0); // so always gives same output
+    random.seed(1); // so always gives same output
     const int inputsSize = net->getInputNumElementsPerExample() * batchSize;
     float *inputData = new float[ inputsSize ];
     for(int i = 0; i < inputsSize; i++) {

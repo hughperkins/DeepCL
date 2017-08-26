@@ -8,12 +8,12 @@ using namespace std;
 #define PUBLIC
 
 PUBLIC ClBlasInstance::ClBlasInstance() {
-    cout << "initializing clblas" << endl;
+    // cout << "initializing clblas" << endl;
     clblasSetup();
 }
 
 PUBLIC ClBlasInstance::~ClBlasInstance() {
-    cout << "clblas teardown" << endl;
+    // cout << "clblas teardown" << endl;
     clblasTeardown();
 }
 

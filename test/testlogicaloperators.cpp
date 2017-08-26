@@ -17,6 +17,7 @@ using namespace std;
 #include "batch/EpochMaker.h"
 #include "layer/LayerMakers.h"
 #include "clblas/ClBlasInstance.h"
+#include "test/DeepCLGtestGlobals.h"
 
 //TEST( testlogicaloperators, DISABLED_FullyConnected_Biased_Tanh_And_1layer ) {
 ////    cout << "And" << endl;
@@ -125,7 +126,7 @@ TEST( testlogicaloperators, DISABLED_Convolve_1layer_And_Nobias ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(0) );
@@ -149,7 +150,7 @@ TEST( testlogicaloperators, Convolve_1layer_biased_And ) {
     cout << "And" << endl;
     LogicalDataCreator ldc;
     ldc.applyAndGate();
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
@@ -179,7 +180,7 @@ TEST( testlogicaloperators, Convolve_1layerbiased_Or ) {
     cout << "Or, convolve" << endl;
     LogicalDataCreator ldc;
     ldc.applyOrGate();
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );
@@ -260,7 +261,7 @@ TEST( testlogicaloperators, Convolve_2layers_relu_Xor ) {
         0
     };
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ClBlasInstance blasInstance;
     NeuralNet *net = NeuralNet::maker(cl)->planes(2)->imageSize(1)->instance();
     net->addLayer( ConvolutionalMaker::instance()->numFilters(2)->filterSize(1)->biased(1) );

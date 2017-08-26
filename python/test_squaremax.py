@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-import array
+import numpy as np
 import PyDeepCL
 import sys
 print('imports done')
@@ -25,8 +25,8 @@ planes = 1
 size = 28
 numEpochs = 3
 
-images = array.array('f', [0] * (N*planes*size*size))
-targets = array.array('f', [0] * N)
+images = np.zeros((N, planes, size, size), dtype=np.float32)
+targets = np.zeros((N,), dtype=np.float32)
 
 net.setBatchSize(batchSize)
 for epoch in range(numEpochs):
@@ -37,6 +37,6 @@ for epoch in range(numEpochs):
         sgd.train(
             net,
             context,
-            images[batch * batchSize * planes * size * size:],
-            targets[batch * batchSize:])
+            images[batch * batchSize:(batch + 1) * batchSize],
+            targets[batch * batchSize:(batch + 1) * batchSize])
 

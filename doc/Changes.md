@@ -13,13 +13,7 @@ How to determine the current stable public API is documented at [Stable API](Pub
 
 ## Changes in next release
 
-* `deepclrun` becomes `deepcl_train`: handles training, and validation, using labelled data
-* `deepclexec` becomes `deepcl_predict`: handles creating predictions from unlabelled data
-* lua wrappers removed.  Effort for lua has moved to [cltorch](https://github.com/hughperkins/cltorch) and [clnn](https://github.com/hughperkins/clnn), both of which are well underway :-)
-* `deepcl_predict` can take input from a file, using GenericLoader, same formats as training, or from stdin
-* `deepcl_predict` can output to a file, or to stdout, in text or binary format
+* on linux and Mac, manifest loader can handle relative paths for the jpegs, relative to manifest directory (only absolute paths supported on Windows, for now)
 
 ## Changes under the covers, in next release
-
-* migrated the underlying maths functions to use the new lua kernel templater
 

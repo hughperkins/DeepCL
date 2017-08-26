@@ -72,7 +72,7 @@ Multicolumn net also possible, as in [McDnn](http://arxiv.org/pdf/1202.2745.pdf)
 # Example usages
 
 - obtained 37.2% test accuracy, on next move prediction task, using 33.6 million training examples from [kgsgo v2 dataset](https://github.com/hughperkins/kgsgo-dataset-preprocessor)
-  - commandline used `./deepclrun dataset=kgsgoall netdef=12*(32c5z-relu)-500n-tanh-361n numepochs=15 learningrate=0.0001`
+  - commandline used `./deepcl_train dataset=kgsgoall netdef=12*(32c5z-relu)-500n-tanh-361n numepochs=15 learningrate=0.0001`
   - 2 epochs, 2 days per epoch, on an Amazon GPU instance, comprising half an NVidia GRID K520 GPU (about half as powerful as a GTX780)
 - obtained 99.5% test accuracy on MNIST, using `netdef=rt2-8c5z-relu-mp2-16c5z-relu-mp3-150n-tanh-10n numepochs=20 multinet=6 learningrate=0.002`
    - epoch time 99.8 seconds, using an Amazon GPU instance, ie half an NVidia GRID K520 GPU (since we are learning 6 nets in parallel, so 16.6seconds per epoch per net)
@@ -88,20 +88,17 @@ This section installs the native libraries, and the command-line tools.  You alw
 #### Pre-requisites:
 
 * OpenCL-enabled GPU or APU, along with appropriate OpenCL driver installed
-* Tested using Windows 7, and Visual Studio 2010, this is how the CI builds run
-* Other versions of VS are supported, just not explicitly CI tested (so please go ahead and log issues for any VS versions you are using):
-  * Visual Studio 2008 is implicitly tested by the Python 2.7 builds, which are built with Visual Studio 2008
-  * Visual Studio 2012 seems to be largely backwards compatible with Visual Studio 2010, no known specific build/run issues for DeepCL
-  * Visual Studio 2015 needs a newer version of clBLAS, which you can get by using branch `clblas-2.8.0` of DeepCL.  You'll need to [build from source](doc/Build.md)
+* Tested using Windows 2012 RC2, and (New!) Visual Studio 2015, this is how the CI builds run
 
 #### Procedure:
 
 * Download latest binary zip file from http://deepcl.hughperkins.com/Downloads/ (eg from v8.0.0rc8)
 * unzip it, which creates the `dist` folder
-* To use it:
+* To test it:
   * open a cmd
   * run `call dist\bin\activate.bat` (adjusting the path appropriately for wherever you downloaded deepcl binaries to)
   * now, eg try `deepcl_unittests`
+  * (New!), you can choose which gpu to run tests on now, eg: `deepcl_unittests gpuindex=1`
 
 Note that you need to "activate" the installation each time you open a new cmd prompt (or you could add appropriate environment variables permanently, using Control Panel | System | Advanced System Settings | Environment Variables)
 
@@ -118,6 +115,7 @@ Note that you need to "activate" the installation each time you open a new cmd p
 * untar it, which creates the `dist` sub-folder
 * in a bash prompt, run `source dist/bin/activate.sh` (adjust the path appropriate for wherever you untarred the binaries tar file to)
 * test by doing, from the same bash prompt, eg `deepcl_unittests`
+  * (New!), you can choose which gpu to run tests on now, eg: `deepcl_unittests gpuindex=1`
 
 Note that you need to "activate" the installation each time you open a new bash prompt (or you can call activate.sh from your `.bashrc` file)
 
@@ -183,6 +181,26 @@ License
 Recent changes
 ==============
 
+* 2017 May 2nd:
+  * branch `update-easycl-mac` updated to latest EasyCL, and unit-tests tested on Mac Sierra against:
+    * Intel HD Graphics 530 GPU
+    * Radeon Pro 450 GPU
+  * This latest EasyCL lets you use environment variable `CL_GPUOFFSET` to select gpus, eg set to `1` for second GPU, or `2` for third
+  * Thank you to my employer [ASAPP](http://asapp.com) for providing me use of said Mac Sierra :-)
+* 7th August 2016:
+  * "standard" version of windows compiler changed from msvc2010 to msvc2015 update 3  (no change to linux/mac)
+  * "standard" version of python 3.x on windows changed from 3.4 to 3.5  (no change to linux/mac)
+  * (note: python2.7 continues to work as before on all of Windows 32/64, linux, Mac)
+  * standard c++ version on linux/mac changed from c++0x to c++11
+* 29th July 2016:
+  * python fixes:
+    * CHANGE: must use numpy tensors now, `array.array` no longer accepted
+    * New feature: can provide numpy tensors as 4d tensors now, no longer have to be 1d tensors
+    * Bug fix: q-learning working again now (hopefully)
+* 26th July 2016:
+  * fixed some bugs in manifest loader
+  * no longer need to specify the number of images in the first line of the manifest file
+  * added `gpuindex=` option to `deepcl_unittests` (quite beta for now...)
 * 4th January 2016:
   * fixed a number of build warnings on Mac, both in OpenCL build, and C++ build
 * 3rd January 2016:
@@ -254,3 +272,5 @@ To get in contact
 =================
 
 Just create an issues, in github, in the top right of this page.  Don't worry about whether you think the issue sounds silly or anything.  The more feedback the better!
+
+Note that I'm currently focused 100.000% on [cuda-on-cl](https://github.com/hughperkins/cuda-on-cl), so please be patient during this period.

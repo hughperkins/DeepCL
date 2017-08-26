@@ -14,7 +14,7 @@
 using namespace std;
 
 TEST(testCopyBuffer, floats) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     const int N = 10;
     float *a = new float[N];
@@ -51,7 +51,7 @@ TEST(testCopyBuffer, floats) {
 }
 
 TEST(testCopyBuffer, ints) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     const int N = 10;
     int *a = new int[N];

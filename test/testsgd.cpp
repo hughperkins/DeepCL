@@ -30,7 +30,7 @@ using namespace std;
 
 TEST( testsgd, basic ) {
     // this is mostly to help me figure out how to design the SGD and Trainer classes
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     NeuralNet *net = new NeuralNet( cl, 1, 5 );
     net->addLayer( ConvolutionalMaker::instance()->numFilters(1)->filterSize(3)->biased(0)->padZeros(0) );
     net->addLayer( SquareLossMaker::instance() );
@@ -51,8 +51,8 @@ TEST( testsgd, basic ) {
     float *input = new float[inputTotalSize];
     float *expectedOutput = new float[outputTotalSize];
 
-    WeightRandomizer::randomize( 0, input, inputTotalSize, 0.0f, 1.0f );
-    WeightRandomizer::randomize( 1, expectedOutput, outputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 1, input, inputTotalSize, 0.0f, 1.0f );
+    WeightRandomizer::randomize( 2, expectedOutput, outputTotalSize, 0.0f, 1.0f );
 
     SGD *sgd = new SGD( cl );
     sgd->setLearningRate( 0.002f );

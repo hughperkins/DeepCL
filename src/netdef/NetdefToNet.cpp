@@ -26,12 +26,12 @@ using namespace std;
 // or:
 // prefix-nn*inner-postfix
 STATIC std::string expandMultipliers(std::string netdef) {
-    int starPos = netdef.find("*");
-    if(starPos != (int)string::npos) {
-        int prefixEnd = netdef.rfind("-", starPos);
+    size_t starPos = netdef.find("*");
+    if(starPos != string::npos) {
+        size_t prefixEnd = netdef.rfind("-", starPos);
         string prefix = "";
         string nnString = "";
-        if(prefixEnd == (int)string::npos) {
+        if(prefixEnd == string::npos) {
             prefixEnd = -1;
             nnString = netdef.substr(0, starPos);
         } else {
@@ -49,10 +49,9 @@ STATIC std::string expandMultipliers(std::string netdef) {
         string postfix = "";
         if(remainderString.substr(0, 1) == "(") {
             // need to find other ')', assume not nested for now...
-            int rhBracket = remainderString.find(")");
-            if(rhBracket == (int)string::npos) {
+            size_t rhBracket = remainderString.find(")");
+            if(rhBracket == string::npos) {
                 throw runtime_error("matching bracket not found in " + remainderString);
-//                return false;
             }
             inner = remainderString.substr(1, rhBracket - 1);
             cout << "inner [" << inner << "]" << endl;
@@ -61,14 +60,13 @@ STATIC std::string expandMultipliers(std::string netdef) {
             if(newRemainder != "") {
                 if(newRemainder[0] != '-') {
                     throw runtime_error("expect '-' after ')' in " + remainderString);
-    //                return false;
                 }
                 postfix = newRemainder.substr(1);
                 cout << "postfix [" << postfix << "]" << endl;
             }
         } else {
-            int innerEnd = remainderString.find("-");
-            if(innerEnd == (int)string::npos) {
+            size_t innerEnd = remainderString.find("-");
+            if(innerEnd == string::npos) {
                 innerEnd = remainderString.length();
             } else {
 //                innerEnd;
@@ -122,10 +120,8 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
         int filterSize = atoi(splitConvDef1[0]);
         int skip = 0;
         ActivationFunction *fn = 0;
-        int padZeros = 0;
-        if(splitConvDef1.size() == 2) {
-            padZeros = 1;
-        }
+        bool padZeros = splitConvDef1.size() == 2 ? true : false;
+
         for(int i = 0; i < (int)splitOptionsDef.size(); i++) {
             string optionDef = splitOptionsDef[i];
 //            cout << "optionDef [" << optionDef << "]" << endl;
@@ -150,16 +146,14 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
                     fn = new EluActivation();
                 } else if(optionName == "linear") {
                     fn = new LinearActivation();
-                } else if(optionName == "padzeros") {
-                    padZeros = 1;
-                } else if(optionName == "z") {
-                    padZeros = 1;
+                } else if(optionName == "padzeros" || optionName == "z") {
+                    padZeros = true;
                 } else {
-                    cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
+                    cout << "Error: unknown subkey: [" << optionName << "]" << endl;
                     return false;
                 }
             } else {
-                cout << "Error: unknown subkey: [" << splitOptionsDef[i] << "]" << endl;
+                cout << "Error: unknown subkey: [" << optionName << "]" << endl;
                 return false;
             }
         }
@@ -197,7 +191,7 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
 //            fn = new LinearActivation();
 //        }
 //        int padZeros = 0;
-        int biased = 1;
+        bool biased = true;
         for(int i = 0; i < (int)splitOptionsDef.size(); i++) {
             string optionDef = splitOptionsDef[i];
 //                cout << "optionDef: " << optionDef << endl;
@@ -213,7 +207,7 @@ STATIC bool NetdefToNet::parseSubstring(WeightsInitializer *weightsInitializer, 
                 } else if(optionName == "relu") {
                     fn = new ReluActivation();
                 } else if(optionName == "nobias") {
-                    biased = 0;
+                    biased = false;
                 } else if(optionName == "linear") {
                     fn = new LinearActivation();
                 } else {

@@ -76,9 +76,10 @@ ADD_DEPENDENCIES(clBLAS-external EasyCL)
 include_directories(.)
 include_directories(src)
 include_directories(qlearning)
+# include_directories(test)
 
 if(ON_LINUX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 endif()
 
 if(ON_WINDOWS)
@@ -191,6 +192,7 @@ set(UNITTEST_SOURCES test/testClBlas.cpp
  test/testRandomSingleton.cpp test/testdropoutforward.cpp test/testdropoutbackward.cpp
  test/testsgd.cpp test/testCLMathWrapper.cpp test/testreducesegments.cpp
  test/NetTestHelper.cpp test/testGpuOp.cpp
+ test/testdroplayer.cpp
 )
 if(LIBJPEG_AVAILABLE)
     set(UNITTEST_SOURCES ${UNITTEST_SOURCES} test/testjpeghelper.cpp)
@@ -231,7 +233,7 @@ else()
 endif()
 include_directories(thirdparty/gtest)
 
-add_executable(deepcl_unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/GtestGlobals.cpp
+add_executable(deepcl_unittests ${UNITTEST_SOURCES} test/gtest_main.cpp test/DeepCLGtestGlobals.cpp
     test/TestArgsParser.cpp)
 target_link_libraries(deepcl_unittests deepcl_gtest)
 
@@ -262,11 +264,18 @@ INSTALL(DIRECTORY src/ DESTINATION include/deepcl FILES_MATCHING PATTERN *.h)
 INSTALL(PROGRAMS src/activate.sh DESTINATION bin)
 INSTALL(PROGRAMS src/activate.bat DESTINATION bin)
 #INSTALL(DIRECTORY EasyCL/ DESTINATION include/easycl FILES_MATCHING PATTERN *.h)
-INSTALL(TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest
+INSTALL(TARGETS DeepCL deepcl_train deepcl_predict deepcl_unittests deepcl_gtest mnist-to-floats
+        mnist-to-pipe cifar-to-mat
     EXPORT DeepCLTargets
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib)
+if(LIBJPEG_AVAILABLE)
+    INSTALL(TARGETS mnist-to-jpegs
+        RUNTIME DESTINATION bin
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib)
+endif()
 
 # Generate the project config file.
 export(TARGETS DeepCL
