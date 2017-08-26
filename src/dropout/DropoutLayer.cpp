@@ -110,6 +110,7 @@ VIRTUAL void DropoutLayer::setBatchSize(int batchSize) {
     this->batchSize = batchSize;
     this->allocatedSize = batchSize;
     masks = new unsigned char[ getOutputNumElements() ];
+    generateMasks();
     maskWrapper = cl->wrap(getOutputNumElements(), masks);
     output = new float[ getOutputNumElements() ];
     outputWrapper = cl->wrap(getOutputNumElements(), output);
