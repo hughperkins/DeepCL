@@ -90,6 +90,7 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
             valid[currentIndex] = false;
             delete instances[currentIndex];
             instances[currentIndex] = 0;
+            currentIndex++;
             continue;
         }
     }
