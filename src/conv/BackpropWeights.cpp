@@ -80,11 +80,9 @@ STATIC BackpropWeights *BackpropWeights::instanceSpecific(int idx, EasyCL *cl, L
         return new BackpropWeightsIm2Col(cl, layerDimensions);
     }
     if(idx == 4) {
-        cout << "fword73 kernel" << endl;
         return new BackpropWeightsFsword73(cl, layerDimensions);
     }
 	if (idx == 5) {
-		cout << "fword73 kernel BatchSize" << endl;
 		return new BackpropWeightsFsword73_BatchSize(cl, layerDimensions);
 	}
 	if (idx == 6) {
