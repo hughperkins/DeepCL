@@ -9,6 +9,9 @@ matrix:
 before_install:
   - if [ -f ".git/shallow" ]; then travis_retry git fetch --unshallow; fi
   - git submodule update --init --recursive
+  - env
+  - echo ${NIMBIXUSER}
+  - echo ${TESTVAR}
   - whoami
   - pwd
   - ls

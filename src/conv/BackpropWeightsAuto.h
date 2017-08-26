@@ -32,11 +32,12 @@ public:
 //    ActivationFunction const*fn;
 
     int num;
-    int *milliseconds;
+    int *microseconds;
     bool *valid;
+    int *numTries; // how many times did we try this kernel? ignore the first time, since opencl compilation time would be included
     int chosenIndex;
     BackpropWeights **instances;
-    int nextIndex;
+    int currentIndex;
 
     // [[[cog
     // import cog_addheaders

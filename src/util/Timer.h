@@ -22,74 +22,108 @@
 
 #include "DeepCLDllExport.h"
 
-class DeepCL_EXPORT Timer{
+class DeepCL_EXPORT TimerBase {
 public:
-    #ifdef WINNOCHRONO
-    DWORD last;
-    #else
-//   double last;
-    std::chrono::time_point<std::chrono::high_resolution_clock> last;
-    #endif
-   Timer() {
-//      last = clock();
-      last = getCount();        
-   }
+    virtual double elapsedMicroseconds() = 0;
+    virtual double lap() = 0;
+    virtual void timeCheck(std::string label) = 0;
+    virtual double interval() = 0;
+};
 
-//#ifdef _WIN32
-#ifdef WINNOCHRONO
-   DWORD getCount() {
-      //  time_t thistime;
-       // time(&thistime);
-//	    struct std::timeval tm;
-//	    gettimeofday(&tm, NULL);
-//	    return (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
-        return timeGetTime();
-   }
-#else
-   std::chrono::time_point<std::chrono::high_resolution_clock> getCount() {
-        return std::chrono::high_resolution_clock::now();
-   }
-#endif
+#ifdef WINNOCHRONO  // Windows goes here
 
-   void timeCheck(std::string label) {
-//        #ifdef _WIN32
-    #ifdef WINNOCHRONO
-       DWORD thistime = getCount();
-       DWORD timemilliseconds = (thistime - last);
-        #else
-     std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
-    std::chrono::duration<double> change = thistime - last;
-      double timemilliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds> (change).count());
-        #endif
-      last = thistime;
-      std::cout << label << " " << timemilliseconds << " ms" << std::endl;
-   }
+class DeepCL_EXPORT Timer : public TimerBase {
+public:
+    LARGE_INTEGER  last;     
+    double invFrequency;
+    Timer() {
+        LARGE_INTEGER frequency;
+        QueryPerformanceFrequency(&frequency);
+        invFrequency = 1.0 / frequency.QuadPart;
+        last = getCount();    
+    }
+
+    LARGE_INTEGER getCount() {
+        LARGE_INTEGER t;
+        QueryPerformanceCounter(&t);
+        return t;
+    }
+
+    void timeCheck(std::string label) {
+        LARGE_INTEGER thistime = getCount();
+        DWORD timemilliseconds = (thistime.QuadPart - last.QuadPart) * 1000 * invFrequency;
+        last = thistime;
+        std::cout << label << " " << timemilliseconds << " ms" << std::endl;
+    }
 
     double interval() { // gets interval since last 'lap' or 'timecheck', 
                         // without updating 'last'
-    #ifdef WINNOCHRONO
-       DWORD thistime = getCount();
-      DWORD timemilliseconds = (thistime - last);
-       #else
-      std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
-    std::chrono::duration<double> change = thistime - last;
-      double timemilliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds> (change).count());
-       #endif
-      return timemilliseconds;
+        LARGE_INTEGER thistime = getCount();
+        DWORD timemilliseconds = (thistime.QuadPart - last.QuadPart) * 1000 * invFrequency;
+        return timemilliseconds;
     }
 
-   double lap() {
-//       #ifdef _WIN32
-    #ifdef WINNOCHRONO
-       DWORD thistime = getCount();
-      DWORD timemilliseconds = (thistime - last);
-       #else
-      std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
-    std::chrono::duration<double> change = thistime - last;
-      double timemilliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds> (change).count());
-       #endif
-      last = thistime;
-      return timemilliseconds;
-   }
+    double elapsedMicroseconds()
+    {
+        LARGE_INTEGER thistime = getCount();
+        int64_t timemicroseconds = (thistime.QuadPart - last.QuadPart) * 1000000 * invFrequency;          
+        last = thistime;
+        return timemicroseconds;
+    }
+
+    double lap() {
+        LARGE_INTEGER thistime = getCount();
+        DWORD timemilliseconds = (thistime.QuadPart - last.QuadPart) * 1000 * invFrequency;
+        last = thistime;
+        return timemilliseconds;
+    }
 };
+
+#else  // linux, Mac etc goes here
+
+class DeepCL_EXPORT Timer : public TimerBase {
+public:
+    std::chrono::time_point<std::chrono::high_resolution_clock> last;
+    Timer() {
+        last = getCount();        
+    }
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> getCount() {
+        return std::chrono::high_resolution_clock::now();
+    }
+
+    void timeCheck(std::string label) {
+        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
+        std::chrono::duration<double> change = thistime - last;
+        double timemilliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds> (change).count());
+        last = thistime;
+        std::cout << label << " " << timemilliseconds << " ms" << std::endl;
+    }
+
+    double interval() { // gets interval since last 'lap' or 'timecheck', 
+                        // without updating 'last'
+        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
+        std::chrono::duration<double> change = thistime - last;
+        double timemilliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds> (change).count());
+        return timemilliseconds;
+    }
+
+    double elapsedMicroseconds() { // like lap, but microseconds
+        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
+        std::chrono::duration<double> change = thistime - last;
+        double timemicroseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds> (change).count());
+        last = thistime;
+        return timemicroseconds;
+    }
+
+    double lap() {
+        std::chrono::time_point<std::chrono::high_resolution_clock> thistime = getCount();
+        std::chrono::duration<double> change = thistime - last;
+        double timemilliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds> (change).count());
+        last = thistime;
+        return timemilliseconds;
+    }
+};
+
+#endif
 

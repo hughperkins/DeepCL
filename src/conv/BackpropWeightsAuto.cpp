@@ -23,21 +23,23 @@ using namespace std;
 
 BackpropWeightsAuto::BackpropWeightsAuto(EasyCL *cl, LayerDimensions dim) :
         BackpropWeights(cl, dim),
-        milliseconds(0),
+        microseconds(0),
         valid(0),
         chosenIndex(-1),
         instances(0)
          {
     num = BackpropWeights::getNumImplementations();
-    milliseconds = new int[ num];
+    microseconds = new int[num];
+    numTries = new int[num];
     valid = new bool[ num ];
     instances = new BackpropWeights *[ num ];
     for(int i = 0; i < num; i++) {
         instances[i] = 0;
         valid[i] = false;
-        milliseconds[i] = -1;
+        numTries[i] = 0;
+        microseconds[i] = -1;
     }
-    nextIndex = 0;
+    currentIndex = 0;
 }
 VIRTUAL BackpropWeightsAuto::~BackpropWeightsAuto() {
     for(int i = 0; i < num; i++) {
@@ -45,47 +47,56 @@ VIRTUAL BackpropWeightsAuto::~BackpropWeightsAuto() {
             delete instances[i];
         }
     }
+
+    delete[] microseconds;
+    delete[] numTries;
+    delete[] valid;
+    delete[] instances;
 }
 VIRTUAL void BackpropWeightsAuto::calcGradWeights(
         int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
         CLWrapper *gradInput) {
-    while(chosenIndex == -1 && nextIndex < num) {
-        int thisIndex = nextIndex;
-        nextIndex++;
-        cout << "calcGradWeights try kernel " << thisIndex << endl;
-        if(BackpropWeights::plausiblyOptimal(thisIndex, batchSize, dim)) {
-            BackpropWeights *candidate = 0;
+    while(chosenIndex == -1 && currentIndex < num) {
+        BackpropWeights *candidate = instances[currentIndex];
+        if(candidate == 0) {
+            cout << "calcGradWeights try kernel " << currentIndex << endl;
+            if(!BackpropWeights::plausiblyOptimal(currentIndex, batchSize, dim)) {
+                cout << "  ... not plausibly optimal, skipping" << endl;
+                valid[currentIndex] = false;
+                currentIndex++;
+                continue;
+            }
             try {
-                candidate = BackpropWeights::instanceSpecific(thisIndex, cl, dim);
-                instances[thisIndex] = candidate;
-                valid[thisIndex] = true;
+                candidate = BackpropWeights::instanceSpecific(currentIndex, cl, dim);
+                instances[currentIndex] = candidate;
+                valid[currentIndex] = true;
                 cout << "   ... seems valid" << endl;
             } catch(runtime_error &e) {
-                cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << thisIndex << ": this instance cant be used: " << e.what() << endl;
-                valid[thisIndex] = false;
-            }
-            if(valid[thisIndex]) {
-                Timer timer;
-                try {
-                    candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
-                    milliseconds[thisIndex] = (int)timer.lap();
-                    cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
-                    if (milliseconds[thisIndex] == 0) { //we can't get better time, use this instance
-                        cout << "   calcGradWeights layer selected kernel with zero time" << thisIndex << endl;
-                        this->chosenIndex = thisIndex;
-                    }
-                    return;
-                } catch(runtime_error &e) {
-                    cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
-                    valid[thisIndex] = false;
-                    delete instances[thisIndex];
-                    instances[thisIndex] = 0;
-                }
-            } else {
                 cout << "   ... not valid" << endl;
+                cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << ": this instance cant be used: " << e.what() << endl;
+                valid[currentIndex] = false;
+                currentIndex++;
+                continue;
             }
-        } else {
-            cout << "  ... not plausibly optimal, skipping" << endl;
+        }
+        Timer timer;
+        try {
+            candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
+            microseconds[currentIndex] = (int)timer.elapsedMicroseconds();
+            cout << "  try " << (numTries[currentIndex]+ 1) << " of kernel " << currentIndex << " time " << microseconds[currentIndex] << endl;
+            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << microseconds[currentIndex] << "us" << endl;
+            numTries[currentIndex]++;
+            if(numTries[currentIndex] >= 3) {  // we already tried this kernel 3 times, try next kernel
+                 currentIndex++;
+            }
+            return;
+        } catch(runtime_error &e) {
+            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " this instance cant be used: " << e.what() << endl;
+            valid[currentIndex] = false;
+            delete instances[currentIndex];
+            instances[currentIndex] = 0;
+            currentIndex++;
+            continue;
         }
     }
     if(chosenIndex == -1) {
@@ -97,14 +108,14 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
                 cout << "   calcGradWeights kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-            cout << "   calcGradWeights kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
+            cout << "   calcGradWeights kernel " << i << " time: " << microseconds[i] << "us" << endl;
             if(bestIndex == -1) {
                 bestIndex = i;
-                bestTime = milliseconds[i];
+                bestTime = microseconds[i];
                 continue;
             }
-            if(milliseconds[i] < bestTime) {
-                bestTime = milliseconds[i];
+            if(microseconds[i] < bestTime) {
+                bestTime = microseconds[i];
                 bestIndex = i;
             }
         }

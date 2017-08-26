@@ -23,19 +23,19 @@ using namespace std;
 
 ForwardAuto::ForwardAuto(EasyCL *cl, LayerDimensions dim) :
         Forward(cl, dim),
-        milliseconds(0),
+        microseconds(0),
         valid(0),
         chosenIndex(-1),
         instances(0)
          {
     num = Forward::getNumImplementations();
-    milliseconds = new int[ num];
+    microseconds = new int[ num];
     valid = new bool[ num ];
     instances = new Forward *[ num ];
     for(int i = 0; i < num; i++) {
         instances[i] = 0;
         valid[i] = false;
-        milliseconds[i] = -1;
+        microseconds[i] = -1;
     }
     nextIndex = 0;
 }
@@ -45,6 +45,10 @@ VIRTUAL ForwardAuto::~ForwardAuto() {
             delete instances[i];
         }
     }
+
+    delete[] microseconds;
+    delete[] valid;
+    delete[] instances;
 }
 VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
         CLWrapper *biasWrapper, CLWrapper *outputWrapper) {
@@ -69,12 +73,8 @@ VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapp
                 Timer timer;
                 try {
                     candidate->forward(batchSize, dataWrapper, weightsWrapper, biasWrapper, outputWrapper);
-                    milliseconds[thisIndex] = (int)timer.lap();
-                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
-                    if (milliseconds[thisIndex] == 0) { //we can't get better time, use this instance
-                        cout << "   forward layer selected kernel with zero time" << thisIndex << endl;
-                        this->chosenIndex = thisIndex;
-                    }
+                    microseconds[thisIndex] = (int)timer.lap();
+                    cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " " << microseconds[thisIndex] << "us" << endl;
                     return;
                 } catch(runtime_error &e) {
                     cout << StatefulTimer::instance()->prefix << "ForwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
@@ -98,14 +98,14 @@ VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapp
                 cout << "   forward kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-            cout << "   forward kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
+            cout << "   forward kernel " << i << " time: " << microseconds[i] << "us" << endl;
             if(bestIndex == -1) {
                 bestIndex = i;
-                bestTime = milliseconds[i];
+                bestTime = microseconds[i];
                 continue;
             }
-            if(milliseconds[i] < bestTime) {
-                bestTime = milliseconds[i];
+            if(microseconds[i] < bestTime) {
+                bestTime = microseconds[i];
                 bestIndex = i;
             }
         }
