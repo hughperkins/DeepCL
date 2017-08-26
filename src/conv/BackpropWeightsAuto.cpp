@@ -23,13 +23,13 @@ using namespace std;
 
 BackpropWeightsAuto::BackpropWeightsAuto(EasyCL *cl, LayerDimensions dim) :
         BackpropWeights(cl, dim),
-        milliseconds(0),
+        microseconds(0),
         valid(0),
         chosenIndex(-1),
         instances(0)
          {
     num = BackpropWeights::getNumImplementations();
-    milliseconds = new int[num];
+    microseconds = new int[num];
     numTries = new int[num];
     valid = new bool[ num ];
     instances = new BackpropWeights *[ num ];
@@ -37,7 +37,7 @@ BackpropWeightsAuto::BackpropWeightsAuto(EasyCL *cl, LayerDimensions dim) :
         instances[i] = 0;
         valid[i] = false;
         numTries[i] = 0;
-        milliseconds[i] = -1;
+        microseconds[i] = -1;
     }
     currentIndex = 0;
 }
@@ -77,9 +77,9 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
         Timer timer;
         try {
             candidate->calcGradWeights(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
-            milliseconds[currentIndex] = (int)timer.elapsedMicroseconds();
-            cout << "  try " << (numTries[currentIndex]+ 1) << " of kernel " << currentIndex << " time " << milliseconds[currentIndex] << endl;
-            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << milliseconds[currentIndex] << " microsecond" << endl;
+            microseconds[currentIndex] = (int)timer.elapsedMicroseconds();
+            cout << "  try " << (numTries[currentIndex]+ 1) << " of kernel " << currentIndex << " time " << microseconds[currentIndex] << endl;
+            cout << StatefulTimer::instance()->prefix << "BackpropWeightsAuto: kernel " << currentIndex << " " << microseconds[currentIndex] << "us" << endl;
             numTries[currentIndex]++;
             if(numTries[currentIndex] >= 3) {  // we already tried this kernel 3 times, try next kernel
                  currentIndex++;
@@ -103,14 +103,14 @@ VIRTUAL void BackpropWeightsAuto::calcGradWeights(
                 cout << "   calcGradWeights kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-            cout << "   calcGradWeights kernel " << i << " time: " << milliseconds[i] << " microsecond" << endl;
+            cout << "   calcGradWeights kernel " << i << " time: " << microseconds[i] << "us" << endl;
             if(bestIndex == -1) {
                 bestIndex = i;
-                bestTime = milliseconds[i];
+                bestTime = microseconds[i];
                 continue;
             }
-            if(milliseconds[i] < bestTime) {
-                bestTime = milliseconds[i];
+            if(microseconds[i] < bestTime) {
+                bestTime = microseconds[i];
                 bestIndex = i;
             }
         }
