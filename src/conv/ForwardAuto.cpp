@@ -45,6 +45,10 @@ VIRTUAL ForwardAuto::~ForwardAuto() {
             delete instances[i];
         }
     }
+
+    delete[] microseconds;
+    delete[] valid;
+    delete[] instances;
 }
 VIRTUAL void ForwardAuto::forward(int batchSize, CLWrapper *dataWrapper, CLWrapper *weightsWrapper, 
         CLWrapper *biasWrapper, CLWrapper *outputWrapper) {

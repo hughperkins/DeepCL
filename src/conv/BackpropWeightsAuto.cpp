@@ -47,6 +47,11 @@ VIRTUAL BackpropWeightsAuto::~BackpropWeightsAuto() {
             delete instances[i];
         }
     }
+
+    delete[] microseconds;
+    delete[] numTries;
+    delete[] valid;
+    delete[] instances;
 }
 VIRTUAL void BackpropWeightsAuto::calcGradWeights(
         int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
