@@ -65,18 +65,15 @@ STATIC BackpropWeights *BackpropWeights::instanceSpecific(int idx, EasyCL *cl, L
         return new BackpropWeightsAuto(cl, layerDimensions);
     }
     if(idx == 0) {
-        return new BackpropWeightsCpu(cl, layerDimensions);
-    }
-    if(idx == 1) {
         return new BackpropWeightsNaive(cl, layerDimensions);
     }
-    if(idx == 2) {
+    if(idx == 1) {
         return new BackpropWeightsScratch(cl, layerDimensions);
     }
-    if(idx == 3) {
+    if(idx == 2) {
         return new BackpropWeightsScratchLarge(cl, layerDimensions);
     }
-    if(idx == 4) {
+    if(idx == 3) {
         return new BackpropWeightsIm2Col(cl, layerDimensions);
     }
     throw std::runtime_error("BackpropWeights::instanceSpecific doesnt handle idx " + toString(idx));
