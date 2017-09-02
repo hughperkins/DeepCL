@@ -23,19 +23,19 @@ using namespace std;
 
 BackwardAuto::BackwardAuto(EasyCL *cl, LayerDimensions dim) :
         Backward(cl, dim),
-        microseconds(0),
+        milliseconds(0),
         valid(0),
         chosenIndex(-1),
         instances(0)
          {
     num = Backward::getNumImplementations();
-    microseconds = new int[ num];
+    milliseconds = new int[ num];
     valid = new bool[ num ];
     instances = new Backward *[ num ];
     for(int i = 0; i < num; i++) {
         instances[i] = 0;
         valid[i] = false;
-        microseconds[i] = -1;
+        milliseconds[i] = -1;
     }
     nextIndex = 0;
 }
@@ -45,10 +45,6 @@ VIRTUAL BackwardAuto::~BackwardAuto() {
             delete instances[i];
         }
     }
-
-    delete[] microseconds;
-    delete[] valid;
-    delete[] instances;
 }
 VIRTUAL void BackwardAuto::backward(
         int batchSize, CLWrapper *inputDataWrapper, CLWrapper *gradOutput, CLWrapper *weightsWrapper,
@@ -72,8 +68,12 @@ VIRTUAL void BackwardAuto::backward(
                 Timer timer;
                 try {
                     candidate->backward(batchSize, inputDataWrapper, gradOutput, weightsWrapper, gradInput);
-                    microseconds[thisIndex] = (int)timer.lap();
-                    cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " " << microseconds[thisIndex] << "us" << endl;
+                    milliseconds[thisIndex] = (int)timer.lap();
+                    cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " " << milliseconds[thisIndex] << "ms" << endl;
+                    if (milliseconds[thisIndex] == 0) { //we can't get better time, use this instance
+                        cout << "   backward layer selected kernel with zero time" << thisIndex << endl;
+                        this->chosenIndex = thisIndex;
+                    }
                     return;
                 } catch(runtime_error &e) {
                     cout << StatefulTimer::instance()->prefix << "BackwardAuto: kernel " << thisIndex << " this instance cant be used: " << e.what() << endl;
@@ -97,14 +97,14 @@ VIRTUAL void BackwardAuto::backward(
                 cout << "   backward kernel " << i << ": cannot be used" << endl;
                 continue;
             }
-            cout << "   backward kernel " << i << " time: " << microseconds[i] << "us" << endl;
+            cout << "   backward kernel " << i << " time: " << milliseconds[i] << "ms" << endl;
             if(bestIndex == -1) {
                 bestIndex = i;
-                bestTime = microseconds[i];
+                bestTime = milliseconds[i];
                 continue;
             }
-            if(microseconds[i] < bestTime) {
-                bestTime = microseconds[i];
+            if(milliseconds[i] < bestTime) {
+                bestTime = milliseconds[i];
                 bestIndex = i;
             }
         }

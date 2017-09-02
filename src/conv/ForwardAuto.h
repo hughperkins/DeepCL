@@ -32,7 +32,7 @@ public:
 //    ActivationFunction const*fn;
 
     int num;
-    int *microseconds;
+    int *milliseconds;
     bool *valid;
     int chosenIndex;
     Forward **instances;
