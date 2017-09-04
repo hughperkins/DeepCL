@@ -165,6 +165,7 @@ Hardware/driver specific issues
 * If you're using Clover, you might want to look at:
   * this thread [https://github.com/hughperkins/DeepCL/issues/35](https://github.com/hughperkins/DeepCL/issues/35)
   * this branch [https://github.com/hughperkins/DeepCL/tree/clover-compatibility](https://github.com/hughperkins/DeepCL/tree/clover-compatibility)
+  * Note that Clover is NOT supported, these are just provided as "starting-points", in case someone wants to dabble in this :)
 
 Related projects
 ================
