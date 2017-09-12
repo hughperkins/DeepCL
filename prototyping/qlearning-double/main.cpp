@@ -1,13 +1,8 @@
 #include <iostream>
-
-#include "deepcl/DeepCL.h"
+#include "pendulum.h"
 #include "deepcl/qlearning/QLearner.h"
 #include "NatureQLearner.h"
 #include "DoubleQLearner.h"
-#include "cartenv.h"
-
-#include <vector>
-
 
 int main(int argc, char *argv[])
 {
@@ -16,45 +11,15 @@ int main(int argc, char *argv[])
     DBus::default_dispatcher = &dispatcher;
     DBus::Connection bus = DBus::Connection::SessionBus();
 
-    CartEnv *env = new CartEnv(bus);
+    Pendulum *env = new Pendulum(bus);
     // Reset the gym
     env->reset();
 
-    // Init DeepCL
-    EasyCL *cl = new EasyCL();
-    NeuralNet *net = new NeuralNet( cl );
-    SGD *sgd = SGD::instance( cl, 0.01f, 0.001f );
+//    QLearner qLearner( env->getTrainer(), env, env->getNeuralNet() );
 
-    const int size = env->getPerceptionSize();
-    const int planes = env->getPerceptionPlanes();
-    const int numActions = env->getNumActions();
-    net->addLayer( InputLayerMaker::instance()->numPlanes(planes)->imageSize(size) );
-    net->addLayer( NormalizationLayerMaker::instance()->scale(1.0f/ 3.8));
-    net->addLayer( ConvolutionalMaker::instance()->filterSize(size)->numFilters(planes*4)->biased()->padZeros() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( ConvolutionalMaker::instance()->filterSize(size)->numFilters(planes*2)->biased()->padZeros() );
-    net->addLayer( ActivationMaker::instance()->relu() );
-    net->addLayer( FullyConnectedMaker::instance()->imageSize(size)->numPlanes(size*size*planes*10)->biased() );
-    net->addLayer( ActivationMaker::instance()->tanh() );
-    net->addLayer( FullyConnectedMaker::instance()->imageSize(size)->numPlanes(numActions)->biased() );
-    net->addLayer( SquareLossMaker::instance() );
-    net->print();
+//    NatureQLearner qLearner( env->getTrainer(), env, env->getNeuralNet() );
 
-//    QLearner qLearner( sgd, env, net );
-
-//    NatureQLearner qLearner( sgd, env, net );
-
-    DoubleQLearner qLearner( sgd, env, net );
+    DoubleQLearner qLearner( env->getTrainer(), env, env->getNeuralNet() );
 
     qLearner.run();
-
-//    delete[] expectedOutputs;
-//    delete[] lastPerception;
-//    delete[] perception;
-    delete sgd;
-    delete net;
-    delete env;
-    delete cl;
-
-    return 0;
 }
