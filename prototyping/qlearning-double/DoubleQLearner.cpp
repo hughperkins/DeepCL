@@ -59,10 +59,10 @@ void DoubleQLearner::learnFromPast()
         float weights[netTotalNumWeights];
         WeightsPersister::copyNetWeightsToArray(net, weights);
         WeightsPersister::copyArrayToNetWeights(weights, targetNet);
-        targetNet->setBatchSize(batchSize);
     }
 
     // double DQN
+    targetNet->setBatchSize(batchSize);
     targetNet->forward(afters);
     allOutput = targetNet->getOutput();
     float *bestQ = new float[ batchSize ];
