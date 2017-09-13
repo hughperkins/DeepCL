@@ -50,7 +50,7 @@ void Pendulum::reset()
 
 float Pendulum::act(int index)
 {
-    double floatAction = (index - (numActions/2.0f)) * (2.0f/numActions);
+    double floatAction = (index + 0.5f - (numActions/2.0f)) * (4.0f/(numActions-1));
     double reward;
 
     ob.clear();
