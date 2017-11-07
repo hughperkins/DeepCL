@@ -12,13 +12,15 @@ cdef class Nesterov(Trainer):
     def setMomentum(self, float momentum):
         self.thisptr.setMomentum(momentum)
     def train(self, NeuralNet net, TrainingContext context,
-        float[:] inputdata, float[:] expectedOutput ):
+        inputdata, float[:] expectedOutput ):
+        cdef float[:] inputdata_ = inputdata.reshape(-1)
         cdef cDeepCL.BatchResult result = self.thisptr.train(
-            net.thisptr, context.thisptr, &inputdata[0], &expectedOutput[0])
+            net.thisptr, context.thisptr, &inputdata_[0], &expectedOutput[0])
         return result.getLoss()
     def trainFromLabels(self, NeuralNet net, TrainingContext context,
-        float[:] inputdata, int[:] labels):
+        inputdata, int[:] labels):
+        cdef float[:] inputdata_ = inputdata.reshape(-1)
         cdef cDeepCL.BatchResult result = self.thisptr.trainFromLabels(
-            net.thisptr, context.thisptr, &inputdata[0], &labels[0])
+            net.thisptr, context.thisptr, &inputdata_[0], &labels[0])
         return ( result.getLoss(), result.getNumRight() )
 

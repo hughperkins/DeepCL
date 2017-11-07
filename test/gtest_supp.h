@@ -1,6 +1,9 @@
 #include "gtest/gtest.h"
 #include "util/stringhelper.h"
 
+// hacky to put this here, but gets it working for now... :
+#include "test/DeepCLGtestGlobals.h"
+
 inline ::testing::AssertionResult AssertFloatsNear( const char *expr_one, const char *expr_two,
     float one, float two ) {
     float diff = one - two;

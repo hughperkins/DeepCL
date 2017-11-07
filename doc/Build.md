@@ -31,7 +31,7 @@
 - cmake
 - cmake-curses-gui
 - gfortran
-- g++ (should support c++0x; eg 4.4 or better)
+- g++ (should support c++11; eg 4.6 or better)
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 *Optional:*
@@ -96,15 +96,13 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
 *Required:*
 - git
 - cmake
-- Visual Studio (current 'standard' build system is: Visual Studio 2010 Express, but should also work on Visual Studio 2008 for Python 2.7, and Visual Studio Express 2013)
+- Visual Studio 2015
 - An OpenCL-compatible driver installed, and OpenCL-compatible GPU
 
 *Optional:*
 - (new) libjpeg62, or compatible, eg [libjpeg-turbo](http://www.libjpeg-turbo.org/Documentation/OfficialBinaries)  (libjpeg-turbo is faster than original libjpeg6.2, by around 2-4 times, because it uses SIMD extensions)
-  - if you want, I made a fresh build of libjpeg-turbo 1.4.0:
-    - dynamic library (doesnt work for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64.zip)
-    - static library (works ok for me): [libjpeg-turbo-1.4.0-win32.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win32-static.zip) and [libjpeg-turbo-1.4.0-win64.zip](http://deepcl.hughperkins.com/Downloads/turbojpeg-1.4.0-win64-static.zip)
-- Python 2.7 or Python 3.4 (needs python, and also the development library and include files)
+  - the CI builds use http://deepcl.hughperkins.com/Downloads/jpegturbo-1.5-64.zip and http://deepcl.hughperkins.com/Downloads/jpegturbo-1.5-32.zip
+- Python 2.7 or Python 3.5 (note: python 3.4 no longer supported, on Windows)
 
 ### Procedure
 
@@ -116,7 +114,7 @@ deepcl_train numtest=-1 numtrain=10000 datadir=/data/mnist
   - `git submodule update --recursive`
 - create a subdirectory `build` in the git cloned `DeepCL` directory
 - open cmake, point at the `DeepCL` directory, and set to build in the `build` subdirectory
-  - `configure`, select 'visual studio 2010' (or as appropriate)
+  - `configure`, select 'visual studio 2015' (or as appropriate)
 - choose the options you want, eg turn python on/off, jpeg on/off
 - click `generate`
 - open visual studio, and load any of the projects in the `build` directory
@@ -165,3 +163,20 @@ If you want to use the DeepCL library from C++, you will need to link with the f
 - during build, `fatal error: CppRuntimeBoundary.h: No such file or directory`
   - make sure you ran `source ../dist/bin/activate.sh`, or similar (see above for exact command similar to this)
 
+# Building libjpeg
+
+Using instructoins at https://stackoverflow.com/questions/12652178/compiling-libjpeg/19045485#19045485
+- downloaded http://www.ijg.org/files/jpegsr9b.zip , unzipped
+- downloaded http://www.bvbcode.com/code/f2kivdrh-395674-down , copied to unzipped jpeg-9b directory
+- open cmd
+- run `call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"`
+- run `nmake /f makefile.vc setup-v10`
+- open `jpeg.sln` in msvc2015, and build
+- (dont need `apps.sln`, ignore it)
+- you've built win32, into `release` directory
+  - copy `jpeg.lib` somewhere
+- now, redo, but selecting `x64` in the dropdown, in the menubar, at hte top of msvc ui
+  - you have to do something like right-click, 'add configuration', and select architecture 'x64' to do this
+  - this will build into `x64\release`, instead of simply `release`
+
+This builds as a static library, so no need to distribute dlls and stuff

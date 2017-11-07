@@ -7,7 +7,7 @@
 from __future__ import print_function
 from cython cimport view
 from cpython cimport array as c_array
-from array import array
+# from array import array
 import threading
 from libcpp cimport bool
 import platform
@@ -17,17 +17,15 @@ cimport CppRuntimeBoundary
 cimport cDeepCL
 
 major_version = platform.python_version_tuple()[0]
-print('major_version', major_version)
 if major_version == '2':
-  print('major vresion 2')
   intArrayType = b'i'
   floatArrayType = b'f'
 else:
-  print('major vresion 3')
   intArrayType = 'i'
   floatArrayType = 'f'
 
 include "DeepCL.pyx"
+include "RandomSingleton.pyx"
 #include "DeepCL.pyx"
 include "Trainer.pyx"
 include "SGD.pyx"

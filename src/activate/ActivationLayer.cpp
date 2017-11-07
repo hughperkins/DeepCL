@@ -6,6 +6,7 @@
 
 #include "net/NeuralNet.h"
 #include "util/stringhelper.h"
+#include "CppRuntimeBoundary.h"
 
 #include "activate/ActivationLayer.h"
 #include "activate/ActivationMaker.h"
@@ -151,6 +152,9 @@ VIRTUAL int ActivationLayer::getOutputCubeSize() const {
 VIRTUAL int ActivationLayer::getOutputSize() const {
     return outputSize;
 }
+VIRTUAL const char *ActivationLayer::getActivationAsCharStar() const {
+    return deepcl_stringToCharStar(getActivationFunction()->getName());
+}
 VIRTUAL int ActivationLayer::getOutputPlanes() const {
     return numPlanes;
 }
@@ -179,7 +183,7 @@ VIRTUAL float *ActivationLayer::getGradInput() {
     }
     return gradInput;
 }
-VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() {
+VIRTUAL ActivationFunction const *ActivationLayer::getActivationFunction() const {
     return fn;
 }
 VIRTUAL void ActivationLayer::forward() {

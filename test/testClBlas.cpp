@@ -14,7 +14,7 @@ using namespace std;
 #include "test/gtest_supp.h"
 
 TEST(testClBlas, basic) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -61,8 +61,6 @@ TEST(testClBlas, basic) {
 
 static void transpose(float *matrix, int rows, int cols) {
     float *tempMatrix = new float[rows * cols];
-    int newRows = cols;
-    int newCols = rows;
     for(int row = 0; row < rows; row++) {
         for(int col = 0; col < cols; col++) {
             int pos1 = row * cols + col;
@@ -78,7 +76,7 @@ static void transpose(float *matrix, int rows, int cols) {
 }
 
 TEST(testClBlas, transA) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -126,7 +124,7 @@ TEST(testClBlas, transA) {
 }
 
 TEST(testClBlas, transB) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -174,7 +172,7 @@ TEST(testClBlas, transB) {
 }
 
 TEST(testClBlas, colMajor) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -223,7 +221,7 @@ TEST(testClBlas, colMajor) {
     delete cl;
 }
 TEST(testClBlas, colMajor2) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -274,7 +272,7 @@ TEST(testClBlas, colMajor2) {
     delete cl;
 }
 TEST(testClBlas, colMajorTransA) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,
@@ -323,7 +321,7 @@ TEST(testClBlas, colMajorTransA) {
     delete cl;
 }
 TEST(testClBlas, colMajorTransB) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     float A[] = {1, 3,
                  2, 7,

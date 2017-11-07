@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-import array
+import numpy as np
 import random
+import time
 import PyDeepCL
 
 
@@ -22,7 +23,11 @@ class ScenarioImage(PyDeepCL.Scenario):
         self.appleMoves = apple_moves
         self.finished = False
         self.game = 0
+        self.last = time.time()
         self.reset()
+        self.last = time.time()
+        self.perception = np.zeros((2, size, size), dtype=np.float32)
+        self.netinput = np.zeros((2, size, size), dtype=np.float32)
 
     def getPerceptionSize(self):
         """
@@ -47,12 +52,16 @@ class ScenarioImage(PyDeepCL.Scenario):
         Need to provide the current perception to the qlearning module,
         which should be of size numPlanes * size * size
         """
-        perception = [0] * 2 * self.size * self.size
-        perception[self.appleY * self.size + self.appleX] = 1
-        perception[
-            self.size * self.size +
-            self.posY * self.size + self.posX] = 1
-        return perception
+        self.perception.fill(0)
+        self.perception[0, self.appleY, self.appleX] = 1
+        self.perception[1, self.posY, self.posX] = 1
+        # print(self.appleY, self.appleX, self.posY, self.posX)
+        if time.time() - self.last > 1.0:
+            print('round: %s' % self.game)
+            self._show()
+            self._showQ()
+            self.last = time.time()
+        return self.perception
 
     def act(self, index):
         """
@@ -130,16 +139,18 @@ class ScenarioImage(PyDeepCL.Scenario):
         net = self.net
         print("q directions:")
         size = self.size
-        netinput = array.array('f', [0] * (2*size*size))
-        netinput[self.appleY * size + self .appleX] = 1
+        self.netinput.fill(0)
+        self.netinput[0, self.appleY, self.appleX] = 1
         for y in range(size):
             thisLine = ''
             for x in range(size):
                 highestQ = 0
                 bestAction = 0
-                netinput[size * size + y * size + x] = 1
-                net.forward(netinput)
-                netinput[size * size + y * size + x] = 0
+                self.netinput[1, y, x] = 1
+                # netinput[size * size + y * size + x] = 1
+                net.forward(self.netinput)
+                self.netinput[1, y, x] = 0
+                # netinput[size * size + y * size + x] = 0
                 output = net.getOutput()
                 for action in range(4):
                     thisQ = output[action]
@@ -200,15 +211,15 @@ def go():
 
     cl = PyDeepCL.DeepCL()
     net = PyDeepCL.NeuralNet(cl)
-    sgd = PyDeepCL.SGD(cl, 0.1, 0.0)
+    sgd = PyDeepCL.SGD(cl, 0.02, 0.0)
     net.addLayer(PyDeepCL.InputLayerMaker().numPlanes(planes).imageSize(size))
     net.addLayer(
         PyDeepCL.ConvolutionalMaker()
-        .numFilters(8).filterSize(5).padZeros().biased())
+        .numFilters(8).filterSize(3).padZeros().biased())
     net.addLayer(PyDeepCL.ActivationMaker().relu())
     net.addLayer(
         PyDeepCL.ConvolutionalMaker()
-        .numFilters(8).filterSize(5).padZeros().biased())
+        .numFilters(8).filterSize(3).padZeros().biased())
     net.addLayer(PyDeepCL.ActivationMaker().relu())
     net.addLayer(
         PyDeepCL.FullyConnectedMaker().numPlanes(100).imageSize(1).biased())
@@ -223,13 +234,11 @@ def go():
 
     qlearner = PyDeepCL.QLearner(sgd, scenario, net)
     # sets decay of the eligibility trace decay rate
-    # qlearner.setLambda(0.9)
+    qlearner.setLambda(0.9)
     # how many samples to learn from after each move
-    # qlearner.setMaxSamples(32)
+    qlearner.setMaxSamples(32)
     # probability of exploring, instead of exploiting
-    # qlearner.setEpsilon(0.1)
-    # learning rate of the neural net
-    # qlearner.setLearningRate(0.1)
+    qlearner.setEpsilon(0.1)
     qlearner.run()
 
 if __name__ == '__main__':

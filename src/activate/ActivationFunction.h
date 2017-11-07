@@ -20,6 +20,7 @@ public:
     virtual float getFalse() const {  throw std::runtime_error("getFalse not implemented"); } 
     virtual float getTrue() const {  throw std::runtime_error("getTrue not implemented"); } 
     virtual const char * getDefineName() const { throw std::runtime_error("getDefineName not implemented"); } 
+    virtual const char * getName() const { throw std::runtime_error("getDefineName not implemented"); } 
     static ActivationFunction *fromName(std::string name);
 };
 
@@ -40,6 +41,9 @@ public:
     virtual const char * getDefineName() const {
         return "TANH";
     } 
+    virtual const char * getName() const {
+        return "tanh";
+    } 
 };
 
 class ScaledTanhActivation : public ActivationFunction {
@@ -58,6 +62,9 @@ public:
     }
     virtual const char * getDefineName() const {
         return "SCALEDTANH";
+    } 
+    virtual const char * getName() const {
+        return "scaledtanh";
     } 
 };
 
@@ -78,6 +85,9 @@ public:
     virtual const char * getDefineName() const {
         return "SIGMOID";
     } 
+    virtual const char * getName() const {
+        return "sigmoid";
+    } 
 };
 
 class LinearActivation : public ActivationFunction {
@@ -96,6 +106,9 @@ public:
     }
     virtual const char * getDefineName() const {
         return "LINEAR";
+    } 
+    virtual const char * getName() const {
+        return "linear";
     } 
 };
 
@@ -116,6 +129,9 @@ public:
     virtual const char * getDefineName() const {
         return "RELU";
     } 
+    virtual const char * getName() const {
+        return "relu";
+    } 
 };
 
 
@@ -135,6 +151,9 @@ public:
     }
     virtual const char * getDefineName() const {
         return "ELU";
+    } 
+    virtual const char * getName() const {
+        return "elu";
     } 
 };
 

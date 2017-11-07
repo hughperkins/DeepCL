@@ -12,21 +12,26 @@ import platform
 from setuptools import setup
 from setuptools import Extension
 
-cython_present = False
-
 building_dist = False
+# cython_present = False
+#try:
+#    from Cython.Build import cythonize
+#    cython_present = True
+#except ImportError:
+#    pass
+
+cythonizing = 'CYTHONIZE' in os.environ
 for arg in sys.argv:
     if arg in ('sdist', 'bdist', 'bdist_egg', 'build_ext'):
         building_dist = True
         break
 
-if building_dist:
-    try:
-        import pypandoc
-        pypandoc.convert('README.md', 'rst', outputfile='README.rst')
-    except:
-        print('WARNING: pypandoc not installed, cannot update README.rst')
+if cythonizing:
+    from Cython.Build import cythonize
+    # cython_present = True
 
+    import pypandoc
+    pypandoc.convert('README.md', 'rst', outputfile='README.rst')
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -37,7 +42,7 @@ if osfamily == 'Windows':
     compile_options.append('/EHsc')
 
 if osfamily == 'Linux':
-    compile_options.append('-std=c++0x')
+    compile_options.append('-std=c++11')
 
 if osfamily == 'Darwin':
     compile_options.append('-mmacosx-version-min=10.7')
@@ -74,8 +79,8 @@ if osfamily == 'Linux':
 if osfamily == 'Windows':
     libraries.append('winmm')
 
-sources = ["PyDeepCL.cxx", 'CyWrappers.cpp']
-if cython_present:
+sources = ["PyDeepCL.cpp", 'CyWrappers.cpp']
+if cythonizing:
     sources = ["PyDeepCL.pyx", 'CyWrappers.cpp']
 ext_modules = [
     Extension("PyDeepCL",
@@ -86,6 +91,11 @@ ext_modules = [
               extra_compile_args=compile_options,
               runtime_library_dirs=runtime_library_dirs,
               language="c++")]
+
+
+if cythonizing:
+    print('cythonizing...')
+    ext_modules = cythonize(ext_modules)
 
 
 def read_if_exists(filename):
@@ -116,7 +126,7 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
     ],
-    install_requires=[],
+    install_requires=['numpy'],
     scripts=['test_deepcl.py', 'test_lowlevel.py'],
     ext_modules=ext_modules,
 )

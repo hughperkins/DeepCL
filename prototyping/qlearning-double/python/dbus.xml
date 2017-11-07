@@ -1,0 +1,22 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/gym/pendulum/env">
+  <interface name="gym.pendulum.env">
+    <method name="reset">
+      <arg direction="out" type="ad" />
+    </method>
+    <method name="step">
+      <arg direction="in"  type="d" name="action" />
+      <arg direction="out" type="ad" />
+      <arg direction="out" type="d" />
+      <arg direction="out" type="b" />
+    </method>
+    <method name="render">
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg direction="out" type="s" />
+    </method>
+  </interface>
+</node>

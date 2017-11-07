@@ -228,12 +228,15 @@ void go(Config config) {
             if(config.outputFormat == "text") {
                 float const*output = net->getLayer(config.outputLayer)->getOutput();
                 const int numFields = net->getLayer(config.outputLayer)->getOutputCubeSize();
-                for(int i = 0; i < config.batchSize; i++) {
+                //cout << "writing as text n=" << n << " N=" << N << " batchsize=" << config.batchSize <<
+                //     " numFields=" << numFields << endl;
+                for(int i = 0; i < config.batchSize && (N==-1 || n + i < N); i++) {
                     for(int f = 0; f < numFields; f++) {
                         if(f > 0) {
                             *outFile << " ";
                         }
                         *outFile << output[ i * numFields + f ];
+                        //cout << "writing " << output[ i * numFields + f ] << endl;
                     }
                     *outFile << "\n";
                 }
@@ -248,27 +251,29 @@ void go(Config config) {
             }
             softMaxLayer->getLabels(labels);
             if(config.outputFormat == "text") {
-                for(int i = 0; i < config.batchSize; i++) {
+                for(int i = 0; i < config.batchSize && (N==-1 || n + i < N); i++) {
                     *outFile << labels[i] << "\n";
                 }
             } else {
-                outFile->write(reinterpret_cast< char * >(labels), config.batchSize * 4l);
+                int numToWrite = config.batchSize;
+                if(N - n < numToWrite) {
+                    numToWrite = N - n;
+                }
+                outFile->write(reinterpret_cast< char * >(labels), numToWrite * 4l);
             }
-            outFile->flush();
+//            outFile->flush();
         }
+        outFile->flush();
         n += config.batchSize;
         if(config.inputFile == "") {
             cin.read(reinterpret_cast< char * >(inputData), inputCubeSize * config.batchSize * 4l);
             more = !cin.eof();
         } else {
-            if(n + config.batchSize < N) {
+            if(n < N) {
                 // GenericLoader::load(config.inputFile.c_str(), inputData, 0, n, config.batchSize);
                 loader->load(inputData, 0, n, config.batchSize);
             } else {
                 more = false;
-                if(n != N) {
-                    cout << "breaking prematurely, since file is not an exact multiple of batchsize, and we didnt handle this yet" << endl;
-                }
             }
         }
     }

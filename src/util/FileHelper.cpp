@@ -136,7 +136,7 @@ PUBLIC STATIC void FileHelper::createDirectory(std::string path) {
 }
 PUBLIC STATIC bool FileHelper::folderExists(std::string path) {
     #ifdef _WIN32
-        return GetFileAttributes(path.c_str()) == INVALID_FILE_ATTRIBUTES;
+        return GetFileAttributes(path.c_str()) != INVALID_FILE_ATTRIBUTES;
     #else
         struct stat status;
         stat(path.c_str(), &status);

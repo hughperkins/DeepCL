@@ -1,4 +1,4 @@
-call %~dp0win-py.bat 64 34
+call %~dp0win-py.bat 64 35
 if errorlevel 1 goto :fail
 goto :eof
 
