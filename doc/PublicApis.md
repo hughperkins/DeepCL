@@ -19,7 +19,7 @@ function, within a major release version.  This is a null macro, within the C++ 
 looking at the Doxygen-generated documentation at [4.x.x doxy docs](http://deepcl.hughperkins.com/4.x.x/html/annotated.html)
   * their containing class should also not be removed or change name
 * Compiler standards should ideally be covered, to the extent that the ability to compile on linux
-using g++ with only `-std=c++0x`, and on Windows, using Visual Studio 2010 Express should not be removed without a major version change
+using g++ with only `-std=c++11`, and on Windows, using Visual Studio 2015 should not be removed without a major version change
 
 This is not to say that new methods cant be added in between major versions.  They can, and will be,
 but ideally these existing methods wont be modified, at least: not intentionally.

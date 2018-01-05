@@ -128,6 +128,8 @@ public:
     VIRTUAL bool needsBackProp();
     VIRTUAL int getOutputNumElements() const;
     VIRTUAL int getOutputPlanes() const;
+    VIRTUAL int getFilterSize() const;
+    VIRTUAL bool getPadZeros() const;
     VIRTUAL int getOutputSize() const;
     void randomizeWeights(WeightsInitializer *weightsInitializer);
     VIRTUAL void print();

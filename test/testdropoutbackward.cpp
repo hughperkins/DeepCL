@@ -21,7 +21,7 @@ TEST( testdropoutbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutBackward *dropoutBackprop = DropoutBackward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     uchar mask[] = {
         1,1,0,
@@ -34,7 +34,7 @@ TEST( testdropoutbackward, basic ) {
         0, -1.1f, 3.5f
     };
     int inputTotalSize = dropoutBackprop->getInputNumElements( batchSize );
-    EXPECT_FLOAT_NEAR( batchSize * imageSize * imageSize, inputTotalSize );
+    EXPECT_EQ( batchSize * imageSize * imageSize, inputTotalSize );
     float *errorsForUpstream = new float[ inputTotalSize ];
 
     dropoutBackprop->backward( batchSize, mask, errors, errorsForUpstream );
@@ -63,7 +63,7 @@ TEST( testdropoutbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 2;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutBackward *dropoutBackprop = DropoutBackward::instanceForTest( cl, numPlanes, imageSize, 0.6f );
     uchar mask[] = {
         1,
@@ -116,7 +116,7 @@ TEST( testdropoutbackward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     DropoutBackward *p0 = DropoutBackward::instanceSpecific( instance0, cl, numPlanes, inputSize, dropRatio );
     DropoutBackward *p1 = DropoutBackward::instanceSpecific( instance1, cl, numPlanes, inputSize, dropRatio );
     int outputSize = p1->outputSize;
@@ -140,9 +140,9 @@ TEST( testdropoutbackward, compare_args ) {
         // selectors might go over the edge if we just choose random ints
         // easiest way to select valid selectors might be to just forwardforward first?
 
-        WeightRandomizer::randomize( it, errors, errorsSize, -0.1f, 0.1f );
-        WeightRandomizer::randomize( it, input, inputNumElements, -0.1f, 0.1f );
-        WeightRandomizer::randomizeInts( it, mask, inputNumElements, 0, 2 );    
+        WeightRandomizer::randomize( it + 1, errors, errorsSize, -0.1f, 0.1f );
+        WeightRandomizer::randomize( it + 1, input, inputNumElements, -0.1f, 0.1f );
+        WeightRandomizer::randomizeInts( it + 1, mask, inputNumElements, 0, 2 );
         forwardprop->forward( batchSize, mask, input, output );
 
         for( int instance = 0; instance < 2; instance++ ) {

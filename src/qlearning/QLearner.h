@@ -27,7 +27,6 @@ public:
 };
 
 class DeepCL_EXPORT QLearner {
-    int epoch;
 public:
     Trainer *trainer;
 
@@ -44,7 +43,7 @@ public:
     void run();  // main entry point
     virtual ~QLearner();
 
-    void learnFromPast(); // internal method; probably not useful to user, but who knows, so leaving it 
+    virtual void learnFromPast(); // internal method; probably not useful to user, but who knows, so leaving it 
                           // public :-)
     void setLambda(float lambda) { this->lambda = lambda; }
     void setMaxSamples(int maxSamples) { this->maxSamples = maxSamples; }
@@ -52,6 +51,7 @@ public:
 //    void setLearningRate(float learningRate) { this->learningRate = learningRate; }
 
 protected:
+    int epoch;
     int size;
     int planes;
     int numActions;

@@ -21,7 +21,7 @@ TEST( testactivationbackward, basic ) {
     int batchSize = 1;
     int numPlanes = 1;
     int imageSize = 3;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float outputs[] = {
         1, 0, 0.1f,
@@ -70,7 +70,7 @@ TEST( testactivationbackward, basic_2plane_batchsize2 ) {
     int batchSize = 2;
     int numPlanes = 2;
     int imageSize = 1;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ActivationBackward *activationBackprop = ActivationBackward::instanceForTest( cl, numPlanes, imageSize, new ReluActivation() );
     float outputs[] = {
         2,
@@ -123,7 +123,7 @@ TEST( SLOW_testactivationbackward, compare_args ) {
     TestArgsParser::arg( "instance1", &instance1 );
     TestArgsParser::go();
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     ActivationBackward *p0 = ActivationBackward::instanceSpecific( instance0, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
     ActivationBackward *p1 = ActivationBackward::instanceSpecific( instance1, cl, numPlanes, inputSize, ActivationFunction::fromName( activation ) );
     int outputSize = p1->outputSize;

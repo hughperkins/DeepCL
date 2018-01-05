@@ -2,10 +2,8 @@
 
 ## Compilers
 
-* On linux, it should be buildable using g++ -std=c++0x
-  * this means we can support older compilers, such as gcc 4.4
-* On Windows, since we want to be able to build Python wrappers, so we need to support 
-Visual Studio 2008 and Visual Studio 2010
+* On linux, it should be buildable using g++ -std=c++11, tested with g++ 4.8
+* On Windows, Visual Studio 2015, tested with Visual Studio 2015 community edition
 
 ## Templating
 

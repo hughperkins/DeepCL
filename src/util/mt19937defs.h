@@ -10,4 +10,3 @@ typedef std::tr1::mt19937 MT19937;
 typedef std::mt19937 MT19937;
 #endif
 
-

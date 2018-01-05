@@ -8,7 +8,7 @@
 #include <algorithm>
 
 #include "conv/LayerDimensions.h"
-#include "test/GtestGlobals.h"
+#include "test/DeepCLGtestGlobals.h"
 #include "test/TestArgsParser.h"
 
 #include "DimFromArgs.h"

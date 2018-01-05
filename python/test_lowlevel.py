@@ -48,7 +48,7 @@ N = 1280
 batchSize = 128
 numEpochs = 30
 
-images = np.empty(N * planes * size * size, dtype=np.float32)
+images = np.empty((N, planes, size, size), dtype=np.float32)
 labels = np.empty(N, dtype=np.int32)
 PyDeepCL.GenericLoader.load(mnistFilePath, images, labels, 0, N)
 
@@ -60,9 +60,9 @@ for epoch in range(numEpochs):
         sgd.trainFromLabels(
             net,
             context,
-            images[batch * batchSize * planes * size * size:],
-            labels[batch * batchSize:])
-        net.forward(images[batch * batchSize * planes * size * size:(batch+1) * batchSize * planes * size * size])
+            images[batch * batchSize:(batch+1) * batchSize],
+            labels[batch * batchSize:(batch+1) * batchSize])
+        net.forward(images[batch * batchSize:(batch+1) * batchSize])
         numRight += net.calcNumRight(labels[batch * batchSize:(batch+1) * batchSize])
         # test new getLabels() method:
         if batch == 0:

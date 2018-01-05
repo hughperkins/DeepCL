@@ -85,8 +85,8 @@ bool Batcher2::tick(int epoch) {
     }
     int batch = nextBatch;
 //    std::cout << "BatchLearner.tick() batch=" << batch << std::endl;
-    int batchStart = batch * batchSize;
-    int thisBatchSize = batchSize;
+    int64 batchStart = batch * batchSize;
+    int64 thisBatchSize = batchSize;
     if(batch == numBatches - 1) {
         thisBatchSize = N - batchStart;
     }

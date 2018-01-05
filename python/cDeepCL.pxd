@@ -9,9 +9,9 @@ from libcpp cimport bool
 cdef extern from "DeepCL.h":
     cdef cppclass DeepCL:
         @staticmethod
-        DeepCL *createForFirstGpuOtherwiseCpu()
+        DeepCL *createForFirstGpuOtherwiseCpu() except+
         @staticmethod
-        DeepCL *createForIndexedGpu( int gpu )
+        DeepCL *createForIndexedGpu( int gpu ) except+
 
         void deleteMe()
 
@@ -24,6 +24,7 @@ cdef extern from "DeepCL.h":
         int getMaxWorkgroupSize()
         int getMaxAllocSizeMB()
 
+include "cRandomSingleton.pxd"
 include "cLayerMaker.pxd"
 include "cNeuralNet.pxd"
 include "cTrainer.pxd"

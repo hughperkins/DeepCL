@@ -76,4 +76,9 @@ cdef extern from "layer/LayerMaker.h":
         @staticmethod
         SoftMaxMaker *instance()
 
+cdef extern from "patches/RandomTranslationsMaker.h":
+    cdef cppclass RandomTranslationsMaker(LayerMaker2):
+        @staticmethod
+        RandomTranslationsMaker *instance()
+        RandomTranslationsMaker *translateSize(int translateSize) except+
 

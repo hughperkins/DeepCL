@@ -60,6 +60,7 @@ VIRTUAL void Adadelta::updateWeights(CLWrapper *weightsWrapper, CLWrapper *gradW
     clSumGradSquared += clWorking;
 
     clWorking = clSumGradSquared;
+    clWorking += 0.0000001f;
     clWorking.inv();
     clWorking *= clSumUpdateSquared;
     clWorking.sqrt();

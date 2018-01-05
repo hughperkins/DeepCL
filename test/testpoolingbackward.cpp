@@ -21,7 +21,7 @@ TEST( testpoolingbackward, basic ) {
     int numPlanes = 1;
     int imageSize = 4;
     int poolingSize = 2;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     PoolingBackward *poolingBackprop = PoolingBackward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 5,
@@ -57,7 +57,7 @@ TEST( testpoolingbackward, basic_2plane_batchsize2 ) {
     int numPlanes = 2;
     int imageSize = 2;
     int poolingSize = 2;
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     PoolingBackward *poolingBackprop = PoolingBackward::instanceForTest( cl, false, numPlanes, imageSize, poolingSize );
     float errors[] = {
         3, 
@@ -118,7 +118,7 @@ TEST( SLOW_testpoolingbackward, compare_args ) {
 
     bool padZeros = true;
 
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
     PoolingBackward *p0 = PoolingBackward::instanceSpecific( instance0, cl, padZeros, numPlanes, inputSize, poolingSize );
     PoolingBackward *p1 = PoolingBackward::instanceSpecific( instance1, cl, padZeros, numPlanes, inputSize, poolingSize );
     int outputSize = p1->outputSize;

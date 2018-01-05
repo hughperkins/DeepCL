@@ -18,7 +18,7 @@
 using namespace std;
 
 TEST( testreducesegments, basic ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     ReduceSegments *reduceSegments = new ReduceSegments( cl );
 

@@ -6,10 +6,15 @@
 
 #pragma once
 
-class GtestGlobals {
+class DeepCLGtestGlobals {
 public:
     int argc;
     char **argv;
-    static GtestGlobals *instance();
+    int gpuindex;
+    static DeepCLGtestGlobals *instance();
 };
+
+#include "EasyCL.h"
+
+EasyCL *DeepCLGtestGlobals_createEasyCL();
 

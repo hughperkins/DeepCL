@@ -6,7 +6,7 @@ echo pyversion: %pyversion%
 
 call %~dp0win-cpp.bat %bitness%
 
-call \env-%pyversion%-%bitness%\scripts\activate
+call \py%pyversion%-%bitness%\scripts\activate
 
 python -c "from __future__ import print_function; import platform; print( platform.uname() )"
 python -c "from __future__ import print_function; import platform; print( platform.architecture() )"
@@ -29,6 +29,8 @@ rem  cd
 rem  dir
 cd %~dp0..
 call dist\bin\activate.bat
+pip install numpy
+pip install pytest
 
 copy /y jenkins\version.txt python
 cd python
@@ -37,20 +39,24 @@ rmdir /s /q dist
 rmdir /s /q build
 rmdir /s /q mysrc
 rmdir /s /q src
-dir
+
 if exist dist goto :error
 if exist build goto :error
 if exist mysrc goto :error
 if exist src goto :error
 
-set
 python setup.py build_ext -i
 if errorlevel 1 goto :error
 
 python setup.py bdist_egg
 if errorlevel 1 goto :error
 
-set HOME=%HOMEPATH%
+python setup.py install
+if errorlevel 1 goto :error
+py.test -sv test
+if errorlevel 1 goto :error
+set HOME=c:\Users\Administrator
+echo HOME: %HOME%
 python setup.py bdist_egg upload
 rem ignore any error?
 rem if errorlevel 1 goto :error
@@ -62,4 +68,3 @@ goto :eof
 :error
 echo Error occurred
 exit /B 1
-

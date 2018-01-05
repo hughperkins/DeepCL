@@ -54,16 +54,16 @@ cdef class ConvolutionalMaker(LayerMaker2):
     def filterSize( self, int _filterSize ):
         self.thisptr.filterSize( _filterSize )
         return self
-    def padZeros(self):
-        self.thisptr.padZeros()
+    #def padZeros(self):
+    #    self.thisptr.padZeros()
+    #    return self
+    def padZeros(self, bint _padZeros = True):
+        self.thisptr.padZeros(_padZeros)
         return self
-    def padZeros(self, bint _padZeros):
-        self.thisptr.padZeros( _padZeros )
-        return self
-    def biased(self):
-        self.thisptr.biased()
-        return self
-    def biased(self, bint _biased):
+    #def biased(self):
+    #    self.thisptr.biased()
+    #    return self
+    def biased(self, bint _biased=True):
         self.thisptr.biased( _biased )
         return self
     @staticmethod
@@ -144,6 +144,23 @@ cdef class SquareLossMaker(LayerMaker2):
     @staticmethod
     def instance():
         return SquareLossMaker()
+
+
+cdef class RandomTranslationsMaker(LayerMaker2):
+    cdef cDeepCL.RandomTranslationsMaker *thisptr
+
+    def __cinit__(self):
+        self.thisptr = new cDeepCL.RandomTranslationsMaker()
+        self.baseptr = self.thisptr
+
+    @staticmethod
+    def instance():
+        return RandomTranslationsMaker()
+
+    def translateSize(self, int _translateSize):
+        self.thisptr.translateSize(_translateSize)
+        return self
+
 
 cdef class SoftMaxMaker(LayerMaker2):
     cdef cDeepCL.SoftMaxMaker *thisptr

@@ -11,7 +11,7 @@
 using namespace std;
 
 TEST( testMemset, basic ) {
-    EasyCL *cl = EasyCL::createForFirstGpuOtherwiseCpu();
+    EasyCL *cl = DeepCLGtestGlobals_createEasyCL();
 
     CLKernel *kMemset = 0;
     // [[[cog

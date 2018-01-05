@@ -8,15 +8,15 @@
 #include <stdexcept>
 
 #include "util/stringhelper.h"
-#include "GtestGlobals.h"
+#include "DeepCLGtestGlobals.h"
 
 #include "TestArgsParser.h"
 
 using namespace std;
 
 TestArgsParser::TestArgsParser() :
-    argc(GtestGlobals::instance()->argc),
-    argv(GtestGlobals::instance()->argv) {
+    argc(DeepCLGtestGlobals::instance()->argc),
+    argv(DeepCLGtestGlobals::instance()->argv) {
 }
 void TestArgsParser::_arg( std::string key, int *p_value ) {
     args.push_back( new ArgInt( key, p_value ) );

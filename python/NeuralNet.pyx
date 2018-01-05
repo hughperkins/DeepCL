@@ -1,8 +1,10 @@
 cdef class NeuralNet:
     cdef cDeepCL.NeuralNet *thisptr
+    cdef object cl
 
     def __cinit__(self, DeepCL cl, planes = None, size = None):
 #        print('__cinit__(planes,size)')
+        self.cl = cl
         if planes == None and size == None:
             self.thisptr = cDeepCL.NeuralNet.instance(cl.thisptr)
         else:
@@ -27,16 +29,18 @@ cdef class NeuralNet:
 
     def setBatchSize(self, int batchSize):
         self.thisptr.setBatchSize(batchSize) 
-    def forward(self, const float[:] images):
-        self.thisptr.forward(&images[0])
-    def forwardList(self, imagesList):
-        cdef c_array.array imagesArray = array(floatArrayType, imagesList)
-        cdef float[:] imagesArray_view = imagesArray
-        self.thisptr.forward(&imagesArray_view[0])
+    def forward(self, images):
+        cdef float[:] images_ = images.reshape(-1)
+        self.thisptr.forward(&images_[0])
+    #def forwardList(self, imagesList):
+    #    cdef c_array.array imagesArray = array(floatArrayType, imagesList)
+    #    cdef float[:] imagesArray_view = imagesArray
+    #    self.thisptr.forward(&imagesArray_view[0])
     def backwardFromLabels(self, int[:] labels):
         return self.thisptr.backwardFromLabels(&labels[0]) 
-    def backward(self, float[:] expectedOutput):
-        return self.thisptr.backward(&expectedOutput[0])
+    def backward(self, expectedOutput):
+        cdef float[:] expectedOutput_ = expectedOutput.reshape(-1)
+        return self.thisptr.backward(&expectedOutput_[0])
     def calcNumRight(self, int[:] labels):
         return self.thisptr.calcNumRight(&labels[0])
     def addLayer(self, LayerMaker2 layerMaker):
@@ -51,11 +55,36 @@ cdef class NeuralNet:
         # print('layer.getClassName()', layer.getClassName())
         # print('type(layer.getClassName()', type(layer.getClassName()))
         # print('type(layer.getClassName().decode("utf-8"))', type(layer.getClassName().decode('utf-8')))
-        if layer.getClassName().decode('utf-8') == 'SoftMaxLayer':
+        className = layer.getClassName()
+        if className == 'SoftMaxLayer':
             layer.set_thisptr(<cDeepCL.Layer *>(0))
             layer = SoftMax()
             layer.set_thisptr(cLayer)
+        elif className == 'RandomTranslations':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = RandomTranslations()
+            layer.set_thisptr(cLayer)
+        elif className == 'ConvolutionalLayer':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = ConvolutionalLayer()
+            layer.set_thisptr(cLayer)
+        elif className == 'PoolingLayer':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = PoolingLayer()
+            layer.set_thisptr(cLayer)
+        elif className == 'ActivationLayer':
+            layer.set_thisptr(<cDeepCL.Layer *>(0))
+            layer = ActivationLayer()
+            layer.set_thisptr(cLayer)
         return layer
+    def getNetdef(self):
+        netdefBits = []
+        for i in range(self.getNumLayers()):
+            layer = self.getLayer(i)
+            layerNetdef = layer.getNetdefString()
+            if layerNetdef != '':
+                netdefBits.append(layerNetdef)
+        return '-'.join(netdefBits)
     def getLastLayer(self):
         return self.getLayer(self.getNumLayers() - 1)
     def getNumLayers(self):
@@ -63,9 +92,19 @@ cdef class NeuralNet:
     def getOutput(self):
         cdef const float *output = self.thisptr.getOutput()
         cdef int outputNumElements = self.thisptr.getOutputNumElements()
-        cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements)
+        lastLayer = self.getLastLayer()
+        planes = lastLayer.getOutputPlanes()
+        size = lastLayer.getOutputSize()
+        batchSize = outputNumElements // planes // size // size
+        outputArray = np.zeros((batchSize, planes, size, size), dtype=np.float32)
+        # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements )
+        outreshape = outputArray.reshape(-1)
+        # outreshape = output
         for i in range(outputNumElements):
-            outputArray[i] = output[i]
+            outreshape[i] = output[i]
+        # cdef c_array.array outputArray = array(floatArrayType, [0] * outputNumElements)
+        #for i in range(outputNumElements):
+        #    outputArray[i] = output[i]
         return outputArray
     def setTraining(self, training): # 1 is, we are training net, 0 is we are not
                             # used for example by randomtranslations layer (for now,

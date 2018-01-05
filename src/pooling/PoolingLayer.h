@@ -62,11 +62,13 @@ public:
     VIRTUAL int getOutputCubeSize() const;
     VIRTUAL int getOutputPlanes() const;
     VIRTUAL int getPersistSize(int version) const;
+    VIRTUAL int getPoolingSize() const;
     VIRTUAL bool providesGradInputWrapper() const;
     VIRTUAL CLWrapper *getGradInputWrapper();
     VIRTUAL bool hasOutputWrapper() const;
     VIRTUAL CLWrapper *getOutputWrapper();
     VIRTUAL float *getGradInput();
+    VIRTUAL bool getPadZeros() const;
     VIRTUAL ActivationFunction const *getActivationFunction();
     VIRTUAL void forward();
     VIRTUAL void backward();

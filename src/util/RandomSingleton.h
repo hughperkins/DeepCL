@@ -52,6 +52,7 @@ class DeepCL_EXPORT RandomSingleton {
     RandomSingleton();
     STATIC RandomSingleton *instance();
     VIRTUAL float _uniform();
+    STATIC void seed(unsigned long seed);
     STATIC float uniform();
     STATIC int uniformInt(int minValueInclusive, int maxValueInclusive);
 

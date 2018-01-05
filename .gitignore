@@ -77,4 +77,6 @@ python/results.txt
 lua/*-*.rock
 lua/*.rockspec
 
+~*
 
+doc/doxy/doxygen/
