@@ -50,10 +50,10 @@ void NatureQLearner::learnFromPast()
         float weights[netTotalNumWeights];
         WeightsPersister::copyNetWeightsToArray(net, weights);
         WeightsPersister::copyArrayToNetWeights(weights, targetNet);
-        targetNet->setBatchSize(batchSize);
     }
 
     // get next q values, based on forward prop 'afters'
+    targetNet->setBatchSize(batchSize);
     targetNet->forward(afters);
     float const *allOutput = targetNet->getOutput();
     float *bestQ = new float[ batchSize ];
